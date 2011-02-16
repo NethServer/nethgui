@@ -13,7 +13,7 @@ final class Module_loader extends CI_Model implements ModuleAggregationInterface
 
     public function __construct()
     {
-        parent::__construct();
+        parent::__construct();        
         $this->modules['__ROOT__'] = new RootModule('__ROOT__');
         $this->createInstances();
     }
@@ -41,7 +41,7 @@ final class Module_loader extends CI_Model implements ModuleAggregationInterface
                 }
                 else
                 {
-                    // TODO: log warning
+                    // TODO: log a warning
                 }
             }
         }

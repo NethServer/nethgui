@@ -31,6 +31,16 @@ class Dispatcher extends CI_Controller {
         }
     }
 
+    private function includeClasses()
+    {
+        $classNames = array('StandardModule', 'PermissivePolicyDecisionPoint');
+
+        foreach ($classNames as $className)
+        {
+            require_once(APPPATH . 'libraries/' . $className . '.php');
+        }
+    }
+
     public function _remap($method, $parameters = array())
     {
         if ($method == 'phpinfo')
@@ -40,10 +50,12 @@ class Dispatcher extends CI_Controller {
         }
 
         $this->includeInterfaces();
+        $this->includeClasses();
 
         $this->load->helper('url');
         $this->load->model("local_system_configuration", "systemConfiguration");
         $this->load->model("module_loader", "moduleAggregation");
+
 
         if ($method == 'index')
         {
@@ -59,6 +71,17 @@ class Dispatcher extends CI_Controller {
             {
                 // TODO: log a debug message
                 show_404();
+            }
+        }
+
+        /*
+         * TODO: enforce some security policy
+         */
+        foreach (array($this->moduleAggregation, $this->systemConfiguration) as $pep)
+        {
+            if ($pep instanceof PolicyEnforcementPointInterface)
+            {
+                $pep->setPolicyDecisionPoint(new PermissivePolicyDecisionPoint());
             }
         }
 
@@ -93,7 +116,7 @@ class Dispatcher extends CI_Controller {
         }
         while ( ! is_null($module));
 
-        $rootLine[] = anchor('','Home');
+        $rootLine[] = anchor('', 'Home');
 
         $rootLine = array_reverse($rootLine);
 
