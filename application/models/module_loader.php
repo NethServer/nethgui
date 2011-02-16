@@ -3,6 +3,13 @@
 final class Module_loader extends CI_Model implements ModuleAggregationInterface, PolicyEnforcementPointInterface {
 
     private $modules = array();
+    /**
+     * Policy Decision Point is applied to all attached modules
+     * that implement PolicyEnforcementPointInterface.
+     *
+     * @var PolicyDecisionPointInterface
+     */
+    private $policyDecisionPoint;
 
     public function __construct()
     {
@@ -29,8 +36,8 @@ final class Module_loader extends CI_Model implements ModuleAggregationInterface
 
                 if (class_exists($className))
                 {
-                    $moduleInstance = $this->createInstance($className);
-                    $this->modules[$moduleInstance->getIdentifier()] = $moduleInstance;
+                    $module = $this->createInstance($className);
+                    $this->modules[$module->getIdentifier()] = $module;
                 }
                 else
                 {
@@ -39,11 +46,11 @@ final class Module_loader extends CI_Model implements ModuleAggregationInterface
             }
         }
 
-        foreach ($this->modules as $moduleIdentifier => $moduleInstance)
+        foreach ($this->modules as $moduleIdentifier => $module)
         {
-            if ($moduleInstance !== $this->findRootModule())
+            if ($module !== $this->findRootModule())
             {
-                $this->attachModule($moduleInstance);
+                $this->attachModule($module);
             }
         }
     }
@@ -56,19 +63,19 @@ final class Module_loader extends CI_Model implements ModuleAggregationInterface
      */
     private function createInstance($className)
     {
-        $moduleInstance = new $className();
+        $module = new $className();
 
-        if ( ! $moduleInstance instanceof ModuleInterface)
+        if ( ! $module instanceof ModuleInterface)
         {
-            throw new Exception("`{$moduleIdentifier}` must implement ModuleInterface");
+            throw new Exception("Class `{$className}` must implement ModuleInterface");
         }
 
-        if (is_null($moduleInstance->getIdentifier()))
+        if (is_null($module->getIdentifier()))
         {
             throw new Exception("Each module must provide an unique identifier.");
         }
 
-        return $moduleInstance;
+        return $module;
     }
 
     /**
@@ -85,12 +92,21 @@ final class Module_loader extends CI_Model implements ModuleAggregationInterface
     }
 
     /**
-     * TODO: setPolicyDecisionPoint implementation
+     * Use $pdp as Policy Decision Point for each member of the aggregation
+     * that implements PolicyEnforcementPointInterface.
      * @param PolicyDecisionPointInterface $pdp
      */
     public function setPolicyDecisionPoint(PolicyDecisionPointInterface $pdp)
     {
+        $this->policyDecisionPoint = $pdp;
 
+        foreach ($this->modules as $module)
+        {
+            if ($module instanceof PolicyEnforcementPointInterface)
+            {
+                $module->setPolicyDecisionPoint($pdp);
+            }
+        }
     }
 
     public function attachModule(ModuleInterface $module)
@@ -109,6 +125,12 @@ final class Module_loader extends CI_Model implements ModuleAggregationInterface
         {
             // TODO: write a better error message
             throw new Exception("Composition error");
+        }
+
+        if (isset($this->policyDecisionPoint)
+                && $module instanceof PolicyEnforcementPointInterface)
+        {
+            $module->setPolicyDecisionPoint($this->policyDecisionPoint);
         }
     }
 
