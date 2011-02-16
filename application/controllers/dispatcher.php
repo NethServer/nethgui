@@ -3,9 +3,9 @@
 class Dispatcher extends CI_Controller {
 
     /**
-     * @var ModuleLoaderInterface
+     * @var moduleAggregationInterface
      */
-    public $moduleLoader;
+    public $moduleAggregation;
     /**
      * @var SystemConfigurationInterface
      */
@@ -43,37 +43,58 @@ class Dispatcher extends CI_Controller {
 
         $this->load->helper('url');
         $this->load->model("local_system_configuration", "systemConfiguration");
-        $this->load->model("module_loader", "moduleLoader");
+        $this->load->model("module_loader", "moduleAggregation");
 
         if ($method == 'index')
         {
-            $this->currentModule = $this->moduleLoader->findRootModule();
+            $this->currentModule = $this->moduleAggregation->findRootModule();
         }
         else
         {
             try
             {
-                $this->currentModule = $this->moduleLoader->findModule($method);
+                $this->currentModule = $this->moduleAggregation->findModule($method);
             }
             catch (Exception $e)
             {
-                // TODO: log a debug message
+// TODO: log a debug message
                 show_404();
             }
         }
 
-        // TODO: bind panel parameters and validate.
-        $moduleMenu = $this->renderMenu($this->moduleLoader->findRootModule());
+// TODO: bind panel parameters and validate.
+        $moduleMenu = $this->renderModuleMenu($this->moduleAggregation->findRootModule());
         $moduleContent = $this->renderContent($this->currentModule);
 
         $decoration_parameters = array(
             'css_main' => base_url() . 'css/main.css',
             'module_menu' => $moduleMenu,
             'module_content' => $moduleContent,
-            'breadcrumb_menu' => htmlspecialchars('Bread > Crumb > Menu'),
+            'breadcrumb_menu' => $this->renderBreadcrumbMenu(),
         );
 
         $this->load->view('decoration.php', $decoration_parameters);
+    }
+
+    private function renderBreadcrumbMenu()
+    {
+        $module = $this->currentModule;
+
+        $rootLine = array();
+
+        do
+        {
+            $rootLine[] = $this->renderModuleAnchor($module);
+
+            $module = $this->moduleAggregation->findModule($module->getParentIdentifier());
+        }
+        while(!is_null($module));
+
+        $rootLine[] = 'Home';
+
+        $rootLine = array_reverse($rootLine);
+
+        return implode(' : ', $rootLine);
     }
 
     /**
@@ -81,12 +102,12 @@ class Dispatcher extends CI_Controller {
      * @param ModuleInterface $rootModule
      * @return string
      */
-    private function renderMenu(ModuleInterface $module, $level = 0)
+    private function renderModuleMenu(ModuleInterface $module, $level = 0)
     {
         if ($level > 9)
             throw new Exception("Recursion error");
 
-        $output = htmlspecialchars($module->getTitle());
+        $output = $this->renderModuleAnchor($module);
 
         if (strlen($output) > 0)
         {
@@ -98,7 +119,7 @@ class Dispatcher extends CI_Controller {
             $childOutput = '';
             foreach ($module->getChildren() as $child)
             {
-                $childOutput .= '<li>' . $this->renderMenu($child, $level + 1) . '</li>';
+                $childOutput .= '<li>' . $this->renderModuleMenu($child, $level + 1) . '</li>';
             }
 
             if (strlen($childOutput) > 0)
@@ -122,6 +143,27 @@ class Dispatcher extends CI_Controller {
             }
         }
         return $output;
+    }
+
+    private function renderModuleAnchor(ModuleInterface $module)
+    {
+        $html = '';
+
+        if(strlen($module->getTitle()) == 0)
+        {
+            return '';
+        }
+
+        if ($module === $this->currentModule)
+        {
+            $html = '<span class="moduleTitle">' . htmlspecialchars($module->getTitle()) . '</span>';
+        }
+        else
+        {
+            $html = anchor(strtolower(get_class($this)) . '/' . $module->getIdentifier(), htmlspecialchars($module->getTitle()));
+        }
+        
+        return $html;
     }
 
 }
