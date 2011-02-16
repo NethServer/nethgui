@@ -24,7 +24,9 @@ final class Dummy2Module extends StandardModule {
 
     public function getPanel() {
        if(!isset($this->myPanel)) {
-           $this->myPanel = new Dummy1Panel('UserInfo1');
+           $this->myPanel = new FormPanel($this->getIdentifier(), NULL);
+           $this->myPanel->setPolicyDecisionPoint($this->getPolicyDecisionPoint());
+           $this->myPanel->addChild(new Dummy1Panel('UserData1-Dummy1Panel'));
        }
        return $this->myPanel;
     }

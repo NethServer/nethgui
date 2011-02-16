@@ -109,6 +109,16 @@ final class Module_loader extends CI_Model implements ModuleAggregationInterface
         }
     }
 
+    public function getPolicyDecisionPoint()
+    {
+        return $this->policyDecisionPoint;
+    }
+
+    /**
+     * Adds $module to this aggregation. Each member of this aggregation
+     * shares the same Policy Decision Point.
+     * @param ModuleInterface $module The module to attach to this aggregation
+     */
     public function attachModule(ModuleInterface $module)
     {
         $parentModule = $this->findModule($module->getParentIdentifier());
@@ -150,6 +160,9 @@ final class Module_loader extends CI_Model implements ModuleAggregationInterface
 
 }
 
+/**
+ * Modules without a parent are attached to RootModule by default.
+ */
 final class RootModule extends StandardCompositeModule {
 
     public function getTitle()

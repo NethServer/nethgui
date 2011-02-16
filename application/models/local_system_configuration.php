@@ -2,7 +2,12 @@
 
 final class Local_system_configuration extends CI_Model implements SystemConfigurationInterface, PolicyEnforcementPointInterface {
 
-    public function  __construct()
+    /**
+     * @var PolicyDecisionPointInterface;
+     */
+    private $policyDecisionPoint;
+
+    public function __construct()
     {
         parent::__construct();
     }
@@ -24,7 +29,12 @@ final class Local_system_configuration extends CI_Model implements SystemConfigu
 
     public function setPolicyDecisionPoint(PolicyDecisionPointInterface $pdp)
     {
+        $this->policyDecisionPoint = $pdp;
+    }
 
+    public function getPolicyDecisionPoint()
+    {
+        return $this->policyDecisionPoint;
     }
 
 }
