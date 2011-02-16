@@ -1,57 +1,93 @@
 <?php
 
-abstract class StandardModule implements ModuleInterface {
+abstract class StandardModule implements ModuleInterface, PolicyEnforcementPointInterface {
 
-    abstract public function getTitle();
-    abstract public function getDescription();
+    /**
+     * @var string
+     */
+    private $identifier;
+    /**
+     * @var ModuleAggregationInterface;
+     */
+    private $aggregation;
+    /**
+     * @var PolicyDecisionPointInterface;
+     */
+    private $policyDecisionPoint;
 
-    private $modules;
-
-
-    public function current()
+    /**
+     * @param string $identifier
+     */
+    public function __construct($identifier = NULL)
     {
-        
+        if (isset($identifier))
+        {
+            $this->identifier = $identifier;
+        }
+        else
+        {
+            $this->identifier = get_class($this);
+        }
     }
 
-    public function getChildren()
+    /*
+     * ModuleInterface implementation
+     */
+
+    public function getDescription()
     {
-        
+        return "";
     }
 
-    public function getModules()
+    public function getIdentifier()
     {
-        
+        return $this->identifier;
+    }
+
+    public function getParentIdentifier()
+    {
+        return NULL;
     }
 
     public function getPanels()
     {
-        
+        return array();
     }
 
-    public function hasChildren()
+    public function getTitle()
     {
-        
+        return $this->getIdentifier();
     }
 
-    public function key()
+    public function setPolicyDecisionPoint(PolicyDecisionPointInterface $pdp)
     {
-        
+        $this->policyDecisionPoint = $pdp;
     }
 
-    public function next()
+    public function aggregate(ModuleAggregationInterface $aggregation)
     {
-        
-    }
-
-    public function rewind()
-    {
-        
-    }
-
-    public function valid()
-    {
-        
+        $this->aggregation = $aggregation;
     }
 
 }
-?>
+
+abstract class StandardCompositeModule extends StandardModule implements ModuleCompositeInterface {
+
+    private $children = array();
+
+    public function addChild(ModuleInterface $childModule)
+    {
+        if ( ! isset($this->children[$childModule->getIdentifier()]))
+        {
+            $this->children[$childModule->getIdentifier()] = $childModule;
+            ksort($this->children);
+        }
+    }
+
+    public function getChildren()
+    {
+        // TODO: authorize access request on policy decision point.
+        return array_values($this->children);
+    }
+
+}
