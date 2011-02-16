@@ -121,13 +121,15 @@ final class Module_loader extends CI_Model implements ModuleAggregationInterface
         return $this->findModule('__ROOT__');
     }
 
-    public function  __toString()
+    public function __toString()
     {
         return $this->getTitle();
     }
+
 }
 
 final class RootModule extends StandardCompositeModule {
+
     public function getTitle()
     {
         return "";

@@ -17,5 +17,9 @@ final class Dummy2Module extends StandardModule {
         return "Dummy1Module";
     }
 
+    public function getPanel() {
+        
+    }
+
 }
 ?>

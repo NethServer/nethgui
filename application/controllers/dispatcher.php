@@ -57,12 +57,12 @@ class Dispatcher extends CI_Controller {
             }
             catch (Exception $e)
             {
-// TODO: log a debug message
+                // TODO: log a debug message
                 show_404();
             }
         }
 
-// TODO: bind panel parameters and validate.
+        // TODO: bind panel parameters and validate.
         $moduleMenu = $this->renderModuleMenu($this->moduleAggregation->findRootModule());
         $moduleContent = $this->renderContent($this->currentModule);
 
@@ -84,13 +84,16 @@ class Dispatcher extends CI_Controller {
 
         do
         {
-            $rootLine[] = $this->renderModuleAnchor($module);
-
+            $rootLineElement = $this->renderModuleAnchor($module);
+            if (strlen($rootLineElement) > 0)
+            {
+                $rootLine[] = $rootLineElement;
+            }
             $module = $this->moduleAggregation->findModule($module->getParentIdentifier());
         }
-        while(!is_null($module));
+        while ( ! is_null($module));
 
-        $rootLine[] = 'Home';
+        $rootLine[] = anchor('','Home');
 
         $rootLine = array_reverse($rootLine);
 
@@ -149,7 +152,7 @@ class Dispatcher extends CI_Controller {
     {
         $html = '';
 
-        if(strlen($module->getTitle()) == 0)
+        if (strlen($module->getTitle()) == 0)
         {
             return '';
         }
@@ -162,7 +165,7 @@ class Dispatcher extends CI_Controller {
         {
             $html = anchor(strtolower(get_class($this)) . '/' . $module->getIdentifier(), htmlspecialchars($module->getTitle()));
         }
-        
+
         return $html;
     }
 

@@ -14,4 +14,3 @@ interface PanelInterface {
         public function render();
 }
 
-
