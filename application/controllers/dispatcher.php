@@ -33,7 +33,12 @@ class Dispatcher extends CI_Controller {
 
     private function includeClasses()
     {
-        $classNames = array('StandardModule', 'PermissivePolicyDecisionPoint');
+        $classNames = array(
+            'StandardModule',
+            'StandardPanel',
+            'PermissivePolicyDecisionPoint',
+            'panel/Dummy1Panel'
+        );
 
         foreach ($classNames as $className)
         {
@@ -53,10 +58,24 @@ class Dispatcher extends CI_Controller {
         $this->includeClasses();
 
         $this->load->helper('url');
+        $this->load->helper('form');
         $this->load->model("local_system_configuration", "systemConfiguration");
         $this->load->model("module_loader", "moduleAggregation");
 
+        /*
+         * TODO: enforce some security policy
+         */
+        foreach (array($this->moduleAggregation, $this->systemConfiguration) as $pep)
+        {
+            if ($pep instanceof PolicyEnforcementPointInterface)
+            {
+                $pep->setPolicyDecisionPoint(new PermissivePolicyDecisionPoint());
+            }
+        }
 
+        /*
+         * Module routing
+         */
         if ($method == 'index')
         {
             $this->currentModule = $this->moduleAggregation->findRootModule();
@@ -74,29 +93,37 @@ class Dispatcher extends CI_Controller {
             }
         }
 
-        /*
-         * TODO: enforce some security policy
-         */
-        foreach (array($this->moduleAggregation, $this->systemConfiguration) as $pep)
-        {
-            if ($pep instanceof PolicyEnforcementPointInterface)
-            {
-                $pep->setPolicyDecisionPoint(new PermissivePolicyDecisionPoint());
-            }
-        }
-
-        // TODO: bind panel parameters and validate.
-        $moduleMenu = $this->renderModuleMenu($this->moduleAggregation->findRootModule());
-        $moduleContent = $this->renderContent($this->currentModule);
-
         $decoration_parameters = array(
             'css_main' => base_url() . 'css/main.css',
-            'module_menu' => $moduleMenu,
-            'module_content' => $moduleContent,
+            'module_content' => $this->renderModulePanel(),
+            'module_menu' => $this->renderModuleMenu($this->moduleAggregation->findRootModule()),
             'breadcrumb_menu' => $this->renderBreadcrumbMenu(),
         );
 
         $this->load->view('decoration.php', $decoration_parameters);
+    }
+
+    private function renderModulePanel()
+    {
+        $panel = $this->currentModule->getPanel();
+
+        if ($panel instanceof PanelInterface)
+        {
+            if (isset($_POST[$panel->getIdentifier()]))
+            {
+                $panel->bind($_POST[$panel->getIdentifier()]);
+
+                // TODO: validation errors handling
+                $validate = $panel->validate();
+            }
+            $output = $panel->render();
+        }
+        else
+        {
+            $output = '';
+        }
+
+        return $output;
     }
 
     private function renderBreadcrumbMenu()
@@ -154,20 +181,6 @@ class Dispatcher extends CI_Controller {
             }
         }
 
-        return $output;
-    }
-
-    private function renderContent(ModuleInterface $currentModule)
-    {
-        $output = '';
-        foreach ($currentModule->getPanels() as $panel)
-        {
-            if ($panel instanceof PanelInterface)
-            {
-
-                $output .= $panel->render();
-            }
-        }
         return $output;
     }
 

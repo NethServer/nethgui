@@ -1,6 +1,8 @@
 <?php
 interface PanelInterface {
 
+        public function getIdentifier();
+
         /**
          * @param array $parameters
          */

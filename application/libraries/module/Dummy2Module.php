@@ -2,6 +2,11 @@
 
 final class Dummy2Module extends StandardModule {
 
+    /**
+     * @var Dummy1Panel
+     */
+    private $myPanel;
+
     public function getDescription()
     {
         return "This is a descendant of module 1.";
@@ -18,7 +23,10 @@ final class Dummy2Module extends StandardModule {
     }
 
     public function getPanel() {
-        
+       if(!isset($this->myPanel)) {
+           $this->myPanel = new Dummy1Panel('UserInfo1');
+       }
+       return $this->myPanel;
     }
 
 }

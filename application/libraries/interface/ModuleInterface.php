@@ -23,9 +23,9 @@ interface ModuleInterface {
     public function getDescription();
 
     /**
-     * @return array An array of PanelInterface implementing objects.
+     * @return PanelInterface implementing object.
      */
-    public function getPanels();
+    public function getPanel();
 
     /**
      * Attach the Module instance to an aggregation.

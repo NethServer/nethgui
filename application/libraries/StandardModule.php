@@ -49,9 +49,9 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
         return NULL;
     }
 
-    public function getPanels()
+    public function getPanel()
     {
-        return array();
+        return NULL;
     }
 
     public function getTitle()
