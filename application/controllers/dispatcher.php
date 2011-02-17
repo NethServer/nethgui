@@ -163,11 +163,6 @@ class Dispatcher extends CI_Controller {
 
         $output = $this->renderModuleAnchor($module);
 
-        if (strlen($output) > 0)
-        {
-            $output = '<div class="moduleTitle">' . $output . '</out>';
-        }
-
         if ($module instanceof ModuleCompositeInterface)
         {
             $childOutput = '';
@@ -196,11 +191,11 @@ class Dispatcher extends CI_Controller {
 
         if ($module === $this->currentModule)
         {
-            $html = '<span class="moduleTitle">' . htmlspecialchars($module->getTitle()) . '</span>';
+            $html = '<span class="moduleTitle current" title="' . htmlspecialchars($module->getDescription()) . '">' . htmlspecialchars($module->getTitle()) . '</span>';
         }
         else
         {
-            $html = anchor(strtolower(get_class($this)) . '/' . $module->getIdentifier(), htmlspecialchars($module->getTitle()));
+            $html = anchor(strtolower(get_class($this)) . '/' . $module->getIdentifier(), htmlspecialchars($module->getTitle()), array('class'=>'moduleTitle', 'title'=>htmlspecialchars($module->getDescription())));
         }
 
         return $html;
