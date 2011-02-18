@@ -1,6 +1,6 @@
 <?php
 
-final class Module_loader extends CI_Model implements ModuleAggregationInterface, PolicyEnforcementPointInterface, PanelAggregationInterface {
+final class Component_depot extends CI_Model implements ModuleAggregationInterface, PolicyEnforcementPointInterface, PanelAggregationInterface {
 
     /**
      * @var array
@@ -59,7 +59,7 @@ final class Module_loader extends CI_Model implements ModuleAggregationInterface
             {
                 $this->attachModule($module);
             }
-        }        
+        }
     }
 
     /**
@@ -99,28 +99,52 @@ final class Module_loader extends CI_Model implements ModuleAggregationInterface
         return $this->modules[$moduleIdentifier];
     }
 
-
+    /**
+     * The Client asks for activation of a certain Module
+     * if it wishes to use its Panel.
+     *
+     * @param string $moduleIdentifier
+     */
     public function activate($moduleIdentifier)
     {
         $module = $this->findModule($moduleIdentifier);
-        if(is_null($module))
+        if (is_null($module))
         {
             throw new Exception("Could not activate `{$moduleIdentifier}` module.");
         }
 
         // Iterates into panel composite structure to find all its descendants.
         $panels = array($module->getPanel());
-        while(count($panels) > 0 && $panels[0] instanceof PanelInterface)
+        while (count($panels) > 0 && $panels[0] instanceof PanelInterface)
         {
             $panel = array_shift($panels);
 
             $this->attachPanel($panel);
 
-            if($panel instanceof PanelCompositeInterface)
+            if ($panel instanceof PanelCompositeInterface)
             {
                 $panels = array_merge($panels, $panel->getChildren());
             }
         }
+    }
+
+    /**
+     * @return ModuleAggregationInterface
+     */
+    public function getModuleBag ()
+    {
+        // TODO: hive off ModuleAggregationInterface
+        return $this;
+    }
+
+    /**
+     *
+     * @return PanelAggregationInterface
+     */
+    public function getPanelBag()
+    {
+         // TODO: hive off PanelAggregationInterface
+        return $this;
     }
 
     /**
@@ -194,9 +218,9 @@ final class Module_loader extends CI_Model implements ModuleAggregationInterface
     public function attachPanel(PanelInterface $panel)
     {
         $this->panels[$panel->getIdentifier()] = $panel;
-        if($panel instanceof PolicyEnforcementPointInterface)
+        if ($panel instanceof PolicyEnforcementPointInterface)
         {
-            $panel->setPolicyDecisionPoint($this->policyDecisionPoint);            
+            $panel->setPolicyDecisionPoint($this->policyDecisionPoint);
         }
     }
 

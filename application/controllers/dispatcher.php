@@ -1,12 +1,14 @@
 <?php
 
-class Dispatcher extends CI_Controller {
+final class Dispatcher extends CI_Controller {
 
     /**
-     * @var moduleAggregationInterface
+     * Model for getting components (Modules, Panels) from file system.
+     * @var Component_depot
      */
-    public $moduleAggregation;
+    public $componentDepot;
     /**
+     * Model for changing host system configuration.
      * @var SystemConfigurationInterface
      */
     public $systemConfiguration;
@@ -14,6 +16,32 @@ class Dispatcher extends CI_Controller {
      * @var ModuleInterface
      */
     private $currentModule;
+    /**
+     *
+     * @var ModuleAggregationInterface
+     */
+    private $moduleBag;
+    /**
+     *
+     * @var PanelAggregationInterface
+     */
+    private $panelBag;
+
+
+
+    private function initialize()
+    {
+        $this->includeInterfaces();
+        $this->includeClasses();
+
+        $this->load->helper('url');
+        $this->load->helper('form');
+        $this->load->model("local_system_configuration", "systemConfiguration");
+        $this->load->model("component_depot", "componentDepot");
+
+        $this->moduleBag = $this->componentDepot->getModuleBag();
+        $this->panelBag = $this->componentDepot->getPanelBag();
+    }
 
     /**
      * Loads all `*Interface.php` files under `APPPATH/libraries/interface/`
@@ -61,18 +89,12 @@ class Dispatcher extends CI_Controller {
             return;
         }
 
-        $this->includeInterfaces();
-        $this->includeClasses();
-
-        $this->load->helper('url');
-        $this->load->helper('form');
-        $this->load->model("local_system_configuration", "systemConfiguration");
-        $this->load->model("module_loader", "moduleAggregation");
+        $this->initialize();
 
         /*
-         * TODO: enforce some security policy
+         * TODO: enforce some security policy on Models
          */
-        foreach (array($this->moduleAggregation, $this->systemConfiguration) as $pep)
+        foreach (array($this->componentDepot, $this->systemConfiguration) as $pep)
         {
             if ($pep instanceof PolicyEnforcementPointInterface)
             {
@@ -80,60 +102,57 @@ class Dispatcher extends CI_Controller {
             }
         }
 
+
         /*
-         * Module routing. Chooses which is the active module.
+         * Find current module
          */
         if ($method == 'index')
         {
-            $this->currentModule = $this->moduleAggregation->findRootModule();
+            $this->currentModule = $this->moduleBag->findRootModule();
         }
         else
         {
-            try
-            {
-                $this->currentModule = $this->moduleAggregation->findModule($method);
-            }
-            catch (Exception $e)
-            {
-                // TODO: log a debug message
-                show_404();
-            }
+            $this->currentModule = $this->moduleBag->findModule($method);
+            
+            /*
+             * TODO: by default we activate the current module
+             */
+            $this->componentDepot->activate($method);
         }
 
-        // Activates the current module
-        $this->moduleAggregation->activate($this->currentModule->getIdentifier());
+        if (is_null($this->currentModule))
+        {
+            show_404();
+        }
+
+        $this->dispatchCommands($_POST);
 
         $decoration_parameters = array(
             'css_main' => base_url() . 'css/main.css',
-            'module_content' => $this->renderModulePanel(),
-            'module_menu' => $this->renderModuleMenu($this->moduleAggregation->findRootModule()),
+            'module_content' => ($this->currentModule->getPanel() instanceof PanelInterface) ? $this->currentModule->getPanel()->render() : '',
+            'module_menu' => $this->renderModuleMenu($this->moduleBag->findRootModule()),
             'breadcrumb_menu' => $this->renderBreadcrumbMenu(),
         );
 
         $this->load->view('decoration.php', $decoration_parameters);
     }
 
-    private function renderModulePanel()
+    private function dispatchCommands($data)
     {
-        $panel = $this->currentModule->getPanel();
+        $moduleIdentifier = $this->currentModule->getIdentifier();
 
-        if ($panel instanceof PanelInterface)
+        if (isset($data[$moduleIdentifier]) && is_array($data[$moduleIdentifier]))
         {
-            if (isset($_POST[$panel->getIdentifier()]))
+            foreach (array_keys($data[$moduleIdentifier]) as $panelIdentifier)
             {
-                $panel->bind($_POST[$panel->getIdentifier()]);
-
-                // TODO: validation errors handling
-                $validate = $panel->validate();
+                $panel = $this->panelBag->findPanel($panelIdentifier);
+                if (is_null($panel))
+                {
+                    continue;
+                }
+                $panel->bind($data[$moduleIdentifier][$panelIdentifier]);
             }
-            $output = $panel->render();
         }
-        else
-        {
-            $output = '';
-        }
-
-        return $output;
     }
 
     private function renderBreadcrumbMenu()
@@ -149,11 +168,11 @@ class Dispatcher extends CI_Controller {
             {
                 $rootLine[] = $rootLineElement;
             }
-            $module = $this->moduleAggregation->findModule($module->getParentIdentifier());
+            $module = $this->moduleBag->findModule($module->getParentIdentifier());
         }
         while ( ! is_null($module));
 
-        $rootLine[] = anchor('', 'Dashboard');
+        $rootLine[] = anchor('', 'Home', array('title' => 'Root'));
 
         $rootLine = array_reverse($rootLine);
 

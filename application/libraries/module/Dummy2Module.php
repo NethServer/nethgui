@@ -24,10 +24,10 @@ final class Dummy2Module extends StandardModule {
 
     public function getPanel() {
        if(!isset($this->myPanel)) {
-           $this->myPanel = new FormPanel($this->getIdentifier(), NULL);
-           $this->myPanel->addChild(new Dummy1Panel('UserData1-Dummy1Panel'));
-           $this->myPanel->addChild(new Dummy1Panel('UserData2-Dummy1Panel'));
-           $this->myPanel->addChild(new Dummy1Panel('UserData3-Dummy1Panel'));
+           $this->myPanel = new FormPanel('Form1', NULL);
+           $this->myPanel->addChild(new Dummy1Panel('UserData1'));
+           $this->myPanel->addChild(new Dummy1Panel('UserData2'));
+           $this->myPanel->addChild(new Dummy1Panel('UserData3'));
        }
        return $this->myPanel;
     }

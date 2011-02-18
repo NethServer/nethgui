@@ -1,22 +1,24 @@
+<?php if(! $panel instanceof StandardPanel) die("Invalid Panel instance."); ?>
+
 <h1>Sample View: <code><?php echo basename(__FILE__) ?></code></h1>
 
-<?php echo form_fieldset('User informations') ?>
+<fieldset><legend>User informations</legend>
 
-<div>
- <?php echo form_label('Name', 'user_name') . form_input('user_name') ?>
-</div>
-<div>
- <?php echo form_label('Surname', 'user_surname') . form_input('user_surname') ?>
-</div>
+    <div>
+        <label for="<?php echo $panel->getIdAttribute('fn'); ?>">First name</label>:
+        <input type="text" id="<?php echo $panel->getIdAttribute('fn') ?>" name="<?php echo $panel->getNameAttribute('fn') ?>" />
+    </div>
 
-<?php echo form_button(array(
-    'name' => 'apply',
-    'content' => 'Send data',
-    'type' => 'submit',
-    'value' => 1)) .
- form_fieldset_close();
-?>
+    <div>
+        <label for="<?php echo $panel->getIdAttribute('ln'); ?>">First name</label>:
+        <input type="text" id="<?php echo $panel->getIdAttribute('ln') ?>" name="<?php echo $panel->getNameAttribute('ln') ?>" />
+    </div>
 
-Has PDP:<pre><?php echo $pdpName ?></pre>
+    <button type="submit" name="sendDataBtn">Send data</button>
+</fieldset>
 
-Panel:<pre><?php print_r($panel) ?></pre>
+<?php if(isset($inputParameters) && !empty($inputParameters))
+    echo '<pre>' . print_r($inputParameters, 1) . '</pre>';
+    ?>
+
+

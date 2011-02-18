@@ -26,6 +26,7 @@ class FormPanel extends StandardCompositePanel {
     {
         $output = parent::render();
         return form_open_multipart($this->action) . $output . form_close();
+        //// . "<pre>" . print_r($_POST, 1). "</pre>";
     }
 
 }

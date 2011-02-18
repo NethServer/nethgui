@@ -3,7 +3,10 @@
 abstract class StandardPanel implements PanelInterface, PolicyEnforcementPointInterface {
 
     private $identifier;
-    private $parameters;
+    /**
+     * @var array
+     */
+    private $inputParameters;
     /**
      * @var PolicyDecisionPointInterface;
      */
@@ -14,9 +17,19 @@ abstract class StandardPanel implements PanelInterface, PolicyEnforcementPointIn
         $this->identifier = is_null($identifier) ? get_class($this) : $identifier;
     }
 
-    public function bind($parameters)
+    public function setModule(ModuleInterface $module)
     {
-        $this->parameters = $parameters;
+        $this->module = $module;
+    }
+
+    public function getModule()
+    {
+        return $module;
+    }
+
+    public function bind($inputParameters)
+    {
+        $this->inputParameters = $inputParameters;
     }
 
     public function getIdentifier()
@@ -62,7 +75,24 @@ abstract class StandardPanel implements PanelInterface, PolicyEnforcementPointIn
      */
     protected function renderView($viewName, $parameters = array())
     {
+        $parameters['panel'] = $this;
+        $parameters['inputParameters'] = $this->inputParameters;
         return CI_Controller::get_instance()->load->view($viewName, $parameters, true);
+    }
+
+    public function getNameAttribute($fieldName)
+    {
+        return $this->getModuleIdentifier() . '[' . $this->getIdentifier() . "][{$fieldName}]";
+    }
+
+    public function getIdAttribute($fieldName)
+    {
+        return $this->getModuleIdentifier() . '_' . $this->getIdentifier() . "_{$fieldName}";
+    }
+
+    private function getModuleIdentifier()
+    {
+        
     }
 
 }
@@ -104,6 +134,17 @@ abstract class StandardCompositePanel extends StandardPanel implements PanelComp
                 $output .= $panel->render();
             }
         }
+        return $this->decorate($output);
+    }
+
+    /**
+     * Called after children have been rendered.
+     *
+     * @param string $output Children output
+     * @return string Decorated children output
+     */
+    protected function decorate($output)
+    {
         return $output;
     }
 
