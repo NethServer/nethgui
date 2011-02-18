@@ -1,11 +1,18 @@
 <?php
 
-final class Dummy2Module extends StandardModule {
+final class Dummy2Module extends FormPanel implements ModuleMenuInterface {
 
-    /**
-     * @var Dummy1Panel
-     */
-    private $myPanel;
+    public function  __construct()
+    {
+        parent::__construct(get_class($this));
+    }
+
+    public function createChildren() 
+    {
+        $this->addChild(new DummyForm1Module('UserData1'));
+        $this->addChild(new DummyForm1Module('UserData2'));
+        $this->addChild(new DummyForm1Module('UserData3'));        
+    }
 
     public function getDescription()
     {
@@ -17,20 +24,13 @@ final class Dummy2Module extends StandardModule {
         return "Dummy module 2";
     }
 
-    public function getParentIdentifier()
+    public function getParentMenuIdentifier()
     {
         return "Dummy1Module";
     }
 
-    public function getPanel() {
-       if(!isset($this->myPanel)) {
-           $this->myPanel = new FormPanel('Form1', NULL);
-           $this->myPanel->addChild(new Dummy1Panel('UserData1'));
-           $this->myPanel->addChild(new Dummy1Panel('UserData2'));
-           $this->myPanel->addChild(new Dummy1Panel('UserData3'));
-       }
-       return $this->myPanel;
-    }
+
 
 }
+
 ?>

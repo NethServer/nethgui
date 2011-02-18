@@ -21,13 +21,6 @@ final class Dispatcher extends CI_Controller {
      * @var ModuleAggregationInterface
      */
     private $moduleBag;
-    /**
-     *
-     * @var PanelAggregationInterface
-     */
-    private $panelBag;
-
-
 
     private function initialize()
     {
@@ -40,7 +33,6 @@ final class Dispatcher extends CI_Controller {
         $this->load->model("component_depot", "componentDepot");
 
         $this->moduleBag = $this->componentDepot->getModuleBag();
-        $this->panelBag = $this->componentDepot->getPanelBag();
     }
 
     /**
@@ -63,10 +55,8 @@ final class Dispatcher extends CI_Controller {
     {
         $classNames = array(
             'StandardModule',
-            'StandardPanel',
             'FormPanel',
             'PermissivePolicyDecisionPoint',
-            'panel/Dummy1Panel'
         );
 
         foreach ($classNames as $className)
@@ -115,12 +105,15 @@ final class Dispatcher extends CI_Controller {
             $this->currentModule = $this->moduleBag->findModule($method);
             
             /*
-             * TODO: by default we activate the current module
-             */
+             * TODO : CLEANUP
+             
             $this->componentDepot->activate($method);
+             *
+             */
         }
 
-        if (is_null($this->currentModule))
+        if (is_null($this->currentModule)
+                OR ! $this->currentModule instanceof ModuleMenuInterface)
         {
             show_404();
         }
@@ -130,7 +123,7 @@ final class Dispatcher extends CI_Controller {
         $decoration_parameters = array(
             'css_main' => base_url() . 'css/main.css',
             'module_content' => ($this->currentModule->getPanel() instanceof PanelInterface) ? $this->currentModule->getPanel()->render() : '',
-            'module_menu' => $this->renderModuleMenu($this->moduleBag->findRootModule()),
+            'module_menu' => $this->renderModuleMenu($this->moduleBag->getModuleMenuIterator()),
             'breadcrumb_menu' => $this->renderBreadcrumbMenu(),
         );
 
@@ -140,7 +133,7 @@ final class Dispatcher extends CI_Controller {
     private function dispatchCommands($data)
     {
         $moduleIdentifier = $this->currentModule->getIdentifier();
-
+/*
         if (isset($data[$moduleIdentifier]) && is_array($data[$moduleIdentifier]))
         {
             foreach (array_keys($data[$moduleIdentifier]) as $panelIdentifier)
@@ -153,6 +146,7 @@ final class Dispatcher extends CI_Controller {
                 $panel->bind($data[$moduleIdentifier][$panelIdentifier]);
             }
         }
+ */
     }
 
     private function renderBreadcrumbMenu()
@@ -161,16 +155,15 @@ final class Dispatcher extends CI_Controller {
 
         $rootLine = array();
 
-        do
+        while(!is_null($module) && $module instanceof ModuleMenuInterface)
         {
             $rootLineElement = $this->renderModuleAnchor($module);
             if (strlen($rootLineElement) > 0)
             {
                 $rootLine[] = $rootLineElement;
             }
-            $module = $this->moduleBag->findModule($module->getParentIdentifier());
-        }
-        while ( ! is_null($module));
+            $module = $this->moduleBag->findModule($module->getParentMenuIdentifier());
+        }        
 
         $rootLine[] = anchor('', 'Home', array('title' => 'Root'));
 
@@ -181,29 +174,12 @@ final class Dispatcher extends CI_Controller {
 
     /**
      *
-     * @param ModuleInterface $rootModule
+     * @param RecursiveIterator $rootModule
      * @return string
      */
-    private function renderModuleMenu(ModuleInterface $module, $level = 0)
+    private function renderModuleMenu(RecursiveIterator $menuIterator)
     {
-        if ($level > 9)
-            throw new Exception("Recursion error");
-
-        $output = $this->renderModuleAnchor($module);
-
-        if ($module instanceof ModuleCompositeInterface)
-        {
-            $childOutput = '';
-            foreach ($module->getChildren() as $child)
-            {
-                $childOutput .= '<li>' . $this->renderModuleMenu($child, $level + 1) . '</li>';
-            }
-
-            if (strlen($childOutput) > 0)
-            {
-                $output .= '<ul>' . $childOutput . '</ul>';
-            }
-        }
+        $output = ''; //$this->renderModuleAnchor($module);
 
         return $output;
     }

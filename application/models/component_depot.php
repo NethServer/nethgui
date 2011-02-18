@@ -1,15 +1,12 @@
 <?php
 
-final class Component_depot extends CI_Model implements ModuleAggregationInterface, PolicyEnforcementPointInterface, PanelAggregationInterface {
+final class Component_depot extends CI_Model implements ModuleAggregationInterface, PolicyEnforcementPointInterface {
 
     /**
      * @var array
      */
     private $modules = array();
-    /**
-     * @var array
-     */
-    private $panels = array();
+    private $menu = array();
     /**
      * Policy Decision Point is applied to all attached modules and panels
      * that implement PolicyEnforcementPointInterface.
@@ -113,37 +110,28 @@ final class Component_depot extends CI_Model implements ModuleAggregationInterfa
             throw new Exception("Could not activate `{$moduleIdentifier}` module.");
         }
 
-        // Iterates into panel composite structure to find all its descendants.
-        $panels = array($module->getPanel());
-        while (count($panels) > 0 && $panels[0] instanceof PanelInterface)
-        {
-            $panel = array_shift($panels);
+        /*
+          TODO : CLEANUP
+          $panels = array($module->getPanel());
+          while (count($panels) > 0 && $panels[0] instanceof PanelInterface)
+          {
+          $panel = array_shift($panels);
 
-            $this->attachPanel($panel);
+          $this->attachPanel($panel);
 
-            if ($panel instanceof PanelCompositeInterface)
-            {
-                $panels = array_merge($panels, $panel->getChildren());
-            }
-        }
+          if ($panel instanceof PanelCompositeInterface)
+          {
+          $panels = array_merge($panels, $panel->getChildren());
+          }
+          } */
     }
 
     /**
      * @return ModuleAggregationInterface
      */
-    public function getModuleBag ()
+    public function getModuleBag()
     {
         // TODO: hive off ModuleAggregationInterface
-        return $this;
-    }
-
-    /**
-     *
-     * @return PanelAggregationInterface
-     */
-    public function getPanelBag()
-    {
-         // TODO: hive off PanelAggregationInterface
         return $this;
     }
 
@@ -178,20 +166,32 @@ final class Component_depot extends CI_Model implements ModuleAggregationInterfa
      */
     public function attachModule(ModuleInterface $module)
     {
-        $parentModule = $this->findModule($module->getParentIdentifier());
+        /* TODO : CLEANUP
+          $parentModule = $this->findModule($module->getParentIdentifier());
 
-        if (is_null($parentModule))
+          if (is_null($parentModule))
+          {
+          $this->findRootModule()->addChild($module);
+          }
+          elseif ($parentModule instanceof ModuleCompositeInterface)
+          {
+          $parentModule->addChild($module);
+          }
+          else
+          {
+          // TODO: write a better error message
+          throw new Exception("Composition error");
+          }
+         */
+
+        if ($module instanceof ModuleMenuInterface)
         {
-            $this->findRootModule()->addChild($module);
-        }
-        elseif ($parentModule instanceof ModuleCompositeInterface)
-        {
-            $parentModule->addChild($module);
-        }
-        else
-        {
-            // TODO: write a better error message
-            throw new Exception("Composition error");
+            $parentId = $module->getParentMenuIdentifier();
+            if (is_null($parentId))
+            {
+                $parentId = '__ROOT__';
+            }
+            $this->menu[$parentId][] = $module->getIdentifier();
         }
 
         if (isset($this->policyDecisionPoint)
@@ -215,26 +215,32 @@ final class Component_depot extends CI_Model implements ModuleAggregationInterfa
         return $this->getTitle();
     }
 
-    public function attachPanel(PanelInterface $panel)
+    public function getModuleMenuIterator()
     {
-        $this->panels[$panel->getIdentifier()] = $panel;
-        if ($panel instanceof PolicyEnforcementPointInterface)
-        {
-            $panel->setPolicyDecisionPoint($this->policyDecisionPoint);
-        }
+        return new ModuleMenuIterator($this->menu);
     }
 
-    public function findPanel($panelIdentifier)
-    {
-        return $this->panels[$panelIdentifier];
-    }
+    /* TODO : CLEANUP
+      public function attachPanel(PanelInterface $panel)
+      {
+      $this->panels[$panel->getIdentifier()] = $panel;
+      if ($panel instanceof PolicyEnforcementPointInterface)
+      {
+      $panel->setPolicyDecisionPoint($this->policyDecisionPoint);
+      }
+      }
 
+      public function findPanel($panelIdentifier)
+      {
+      return $this->panels[$panelIdentifier];
+      }
+     */
 }
 
 /**
  * Modules without a parent are attached to RootModule by default.
  */
-final class RootModule extends StandardCompositeModule {
+final class RootModule extends StandardCompositeModule implements ModuleMenuInterface {
 
     public function getTitle()
     {
@@ -244,6 +250,50 @@ final class RootModule extends StandardCompositeModule {
     public function getDescription()
     {
         return "";
+    }
+
+    public function getParentMenuIdentifier()
+    {
+        return NULL;
+    }
+
+}
+
+final class ModuleMenuIterator implements RecursiveIterator {
+
+    public function current()
+    {
+
+    }
+
+    public function getChildren()
+    {
+        
+    }
+
+    public function hasChildren()
+    {
+        return FALSE;
+    }
+
+    public function key()
+    {
+        
+    }
+
+    public function next()
+    {
+
+    }
+
+    public function rewind()
+    {
+        
+    }
+
+    public function valid()
+    {
+        return FALSE;
     }
 
 }

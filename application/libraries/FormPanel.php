@@ -3,7 +3,7 @@
 /**
  * A FormPanel object wraps its child panels into a FORM tag.
  */
-class FormPanel extends StandardCompositePanel {
+class FormPanel extends StandardCompositeModule {
 
     /**
      *

@@ -6,11 +6,18 @@ interface ModuleInterface {
      * @return string Unique module identifier
      */
     public function getIdentifier();
-    
+
     /**
-     * @return string Unique parent module identifier
+     * @return ModuleInterface
      */
-    public function getParentIdentifier();
+    public function getParent();
+
+    /**
+     * TODO: see if can remove this method and leave it to implementation
+     * @param ModuleInterace $parent
+     */
+    public function setParent(ModuleInterface $parent);
+
 
     /**
      * @return string
@@ -23,16 +30,23 @@ interface ModuleInterface {
     public function getDescription();
 
     /**
-     * @return PanelInterface implementing object.
+     * @param array $parameters
      */
-    public function getPanel();
+    public function bind($inputParameters);
 
     /**
-     * Attach the Module instance to an aggregation.
+     * @return boolean
      */
-    public function aggregate(ModuleAggregationInterface $aggregation);
+    public function validate();
 
+    public function render();
 }
 
 
-
+interface ModuleMenuInterface {
+    /**
+     * @return string Unique parent module identifier
+     */
+    public function getParentMenuIdentifier();
+    
+}
