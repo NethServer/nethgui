@@ -1,5 +1,7 @@
 <?php
 
+
+// TODO: rename to "Host_configuration"?
 final class Local_system_configuration extends CI_Model implements SystemConfigurationInterface, PolicyEnforcementPointInterface {
 
     /**

@@ -1,10 +1,17 @@
 <?php
 
-final class Module_loader extends CI_Model implements ModuleAggregationInterface, PolicyEnforcementPointInterface {
+final class Module_loader extends CI_Model implements ModuleAggregationInterface, PolicyEnforcementPointInterface, PanelAggregationInterface {
 
+    /**
+     * @var array
+     */
     private $modules = array();
     /**
-     * Policy Decision Point is applied to all attached modules
+     * @var array
+     */
+    private $panels = array();
+    /**
+     * Policy Decision Point is applied to all attached modules and panels
      * that implement PolicyEnforcementPointInterface.
      *
      * @var PolicyDecisionPointInterface
@@ -13,7 +20,7 @@ final class Module_loader extends CI_Model implements ModuleAggregationInterface
 
     public function __construct()
     {
-        parent::__construct();        
+        parent::__construct();
         $this->modules['__ROOT__'] = new RootModule('__ROOT__');
         $this->createInstances();
     }
@@ -52,7 +59,7 @@ final class Module_loader extends CI_Model implements ModuleAggregationInterface
             {
                 $this->attachModule($module);
             }
-        }
+        }        
     }
 
     /**
@@ -80,6 +87,7 @@ final class Module_loader extends CI_Model implements ModuleAggregationInterface
 
     /**
      * @return ModuleInterface
+     * @
      */
     public function findModule($moduleIdentifier)
     {
@@ -91,10 +99,35 @@ final class Module_loader extends CI_Model implements ModuleAggregationInterface
         return $this->modules[$moduleIdentifier];
     }
 
+
+    public function activate($moduleIdentifier)
+    {
+        $module = $this->findModule($moduleIdentifier);
+        if(is_null($module))
+        {
+            throw new Exception("Could not activate `{$moduleIdentifier}` module.");
+        }
+
+        // Iterates into panel composite structure to find all its descendants.
+        $panels = array($module->getPanel());
+        while(count($panels) > 0 && $panels[0] instanceof PanelInterface)
+        {
+            $panel = array_shift($panels);
+
+            $this->attachPanel($panel);
+
+            if($panel instanceof PanelCompositeInterface)
+            {
+                $panels = array_merge($panels, $panel->getChildren());
+            }
+        }
+    }
+
     /**
      * Use $pdp as Policy Decision Point for each member of the aggregation
      * that implements PolicyEnforcementPointInterface.
      * @param PolicyDecisionPointInterface $pdp
+     * @return void
      */
     public function setPolicyDecisionPoint(PolicyDecisionPointInterface $pdp)
     {
@@ -156,6 +189,20 @@ final class Module_loader extends CI_Model implements ModuleAggregationInterface
     public function __toString()
     {
         return $this->getTitle();
+    }
+
+    public function attachPanel(PanelInterface $panel)
+    {
+        $this->panels[$panel->getIdentifier()] = $panel;
+        if($panel instanceof PolicyEnforcementPointInterface)
+        {
+            $panel->setPolicyDecisionPoint($this->policyDecisionPoint);            
+        }
+    }
+
+    public function findPanel($panelIdentifier)
+    {
+        return $this->panels[$panelIdentifier];
     }
 
 }

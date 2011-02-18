@@ -16,7 +16,7 @@ class Dispatcher extends CI_Controller {
     private $currentModule;
 
     /**
-     * Load all `*Interface.php` files under `APPPATH/libraries/interface/`
+     * Loads all `*Interface.php` files under `APPPATH/libraries/interface/`
      * directory.
      */
     private function includeInterfaces()
@@ -47,6 +47,12 @@ class Dispatcher extends CI_Controller {
         }
     }
 
+    /**
+     * Code Igniter entry point
+     *
+     * @param string $method
+     * @param array $parameters
+     */
     public function _remap($method, $parameters = array())
     {
         if ($method == 'phpinfo')
@@ -75,7 +81,7 @@ class Dispatcher extends CI_Controller {
         }
 
         /*
-         * Module routing
+         * Module routing. Chooses which is the active module.
          */
         if ($method == 'index')
         {
@@ -93,6 +99,9 @@ class Dispatcher extends CI_Controller {
                 show_404();
             }
         }
+
+        // Activates the current module
+        $this->moduleAggregation->activate($this->currentModule->getIdentifier());
 
         $decoration_parameters = array(
             'css_main' => base_url() . 'css/main.css',
@@ -144,11 +153,11 @@ class Dispatcher extends CI_Controller {
         }
         while ( ! is_null($module));
 
-        $rootLine[] = anchor('', 'Home');
+        $rootLine[] = anchor('', 'Dashboard');
 
         $rootLine = array_reverse($rootLine);
 
-        return implode(' : ', $rootLine);
+        return implode(' &gt; ', $rootLine);
     }
 
     /**
@@ -195,7 +204,7 @@ class Dispatcher extends CI_Controller {
         }
         else
         {
-            $html = anchor(strtolower(get_class($this)) . '/' . $module->getIdentifier(), htmlspecialchars($module->getTitle()), array('class'=>'moduleTitle', 'title'=>htmlspecialchars($module->getDescription())));
+            $html = anchor(strtolower(get_class($this)) . '/' . $module->getIdentifier(), htmlspecialchars($module->getTitle()), array('class' => 'moduleTitle', 'title' => htmlspecialchars($module->getDescription())));
         }
 
         return $html;

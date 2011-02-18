@@ -17,4 +17,6 @@
  form_fieldset_close();
 ?>
 
-<pre><?php print_r($_POST) ?></pre>
+Has PDP:<pre><?php echo $pdpName ?></pre>
+
+Panel:<pre><?php print_r($panel) ?></pre>

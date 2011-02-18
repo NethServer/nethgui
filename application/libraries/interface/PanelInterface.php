@@ -2,7 +2,10 @@
 interface PanelInterface {
 
         public function getIdentifier();
+        public function getTitle();
+        public function getDescription();
 
+        
         /**
          * @param array $parameters
          */

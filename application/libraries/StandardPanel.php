@@ -24,11 +24,21 @@ abstract class StandardPanel implements PanelInterface, PolicyEnforcementPointIn
         return $this->identifier;
     }
 
+    public function getTitle()
+    {
+        return "";
+    }
+
+    public function getDescription()
+    {
+        return "";
+    }
+
     public function validate()
     {
         return true;
     }
-    
+
     public function render()
     {
         return "";
@@ -82,7 +92,7 @@ abstract class StandardCompositePanel extends StandardPanel implements PanelComp
      * Default implementation of a composite panel forwards the rendering
      * process to child panels.
      *
-     * @return string 
+     * @return string
      */
     public function render()
     {
