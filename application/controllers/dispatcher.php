@@ -55,7 +55,7 @@ final class Dispatcher extends CI_Controller {
     {
         $classNames = array(
             'StandardModule',
-            'FormPanel',
+            'FormModule',
             'PermissivePolicyDecisionPoint',
         );
 

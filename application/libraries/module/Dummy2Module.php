@@ -1,6 +1,6 @@
 <?php
 
-final class Dummy2Module extends FormPanel implements TopModuleInterface {
+final class Dummy2Module extends FormModule implements TopModuleInterface {
 
     public function  __construct()
     {
