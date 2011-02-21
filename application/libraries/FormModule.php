@@ -1,7 +1,7 @@
 <?php
 
 /**
- * A FormPanel object wraps its child panels into a FORM tag.
+ * A FormModule wraps its children into a FORM tag.
  */
 class FormModule extends StandardCompositeModule {
 
@@ -21,12 +21,10 @@ class FormModule extends StandardCompositeModule {
         parent::__construct($identifier);
         $this->action = is_null($action) ? uri_string() : $action;
     }
-    
-    public function render()
+
+    protected function decorate($output)
     {
-        $output = parent::render();
         return form_open_multipart($this->action) . $output . form_close();
-        //// . "<pre>" . print_r($_POST, 1). "</pre>";
     }
 
 }

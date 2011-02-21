@@ -181,7 +181,6 @@ abstract class StandardCompositeModule extends StandardModule implements ModuleC
         {
             $this->children[$childModule->getIdentifier()] = $childModule;
             $childModule->setParent($this);
-            ksort($this->children);
         }
     }
 

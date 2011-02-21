@@ -9,9 +9,11 @@ final class Dummy2Module extends FormModule implements TopModuleInterface {
     
     public function initialize()
     {
-        
-        $this->addChild(new DummyForm1Module('UserData1'));
-        $this->addChild(new DummyForm1Module('UserData2'));
+        $container = new ContainerModule("c1");        
+        $container->addChild(new DummyForm1Module('UserData1'));
+        $container->addChild(new DummyForm1Module('UserData2'));
+
+        $this->addChild($container);
         $this->addChild(new DummyForm1Module('UserData3'));
 
         parent::initialize();

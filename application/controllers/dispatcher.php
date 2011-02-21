@@ -54,9 +54,10 @@ final class Dispatcher extends CI_Controller {
     private function includeClasses()
     {
         $classNames = array(
+            'PermissivePolicyDecisionPoint',
             'StandardModule',
             'FormModule',
-            'PermissivePolicyDecisionPoint',
+            'ContainerModule',
         );
 
         foreach ($classNames as $className)
@@ -116,7 +117,7 @@ final class Dispatcher extends CI_Controller {
                 OR ! $this->currentModule instanceof TopModuleInterface)
         {
             show_404();
-        }               
+        }
 
         $this->dispatchCommands($_POST);
 
