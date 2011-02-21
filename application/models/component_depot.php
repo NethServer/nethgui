@@ -18,8 +18,7 @@ final class Component_depot extends CI_Model implements ModuleAggregationInterfa
     public function __construct()
     {
         parent::__construct();
-        $this->modules['__ROOT__'] = new RootModule('__ROOT__');
-        $this->createInstances();
+        $this->createTopModules();
     }
 
     /**
@@ -27,21 +26,24 @@ final class Component_depot extends CI_Model implements ModuleAggregationInterfa
      * ending with `Module.php` and create an instance
      * for each Module class.
      */
-    private function createInstances()
+    private function createTopModules()
     {
         $directoryIterator = new DirectoryIterator(APPPATH . 'libraries/module');
         foreach ($directoryIterator as $element)
         {
             if (substr($element->getFilename(), -10) == 'Module.php')
             {
-                $className = substr($element->getFileName(), 0, -4);
-
+                // Filename OK. Include it.
                 require_once($element->getPathname());
 
-                if (class_exists($className))
+                $className = substr($element->getFileName(), 0, -4);
+
+                $classReflector = new ReflectionClass($className);
+
+                if ($classReflector->isInstantiable() && $classReflector->implementsInterface("TopModuleInterface"))
                 {
-                    $module = $this->createInstance($className);
-                    $this->modules[$module->getIdentifier()] = $module;
+                    $module = $this->createModule($className);
+                    $this->registerModule($module);
                 }
                 else
                 {
@@ -49,15 +51,8 @@ final class Component_depot extends CI_Model implements ModuleAggregationInterfa
                 }
             }
         }
-
-        foreach ($this->modules as $moduleIdentifier => $module)
-        {
-            if ($module !== $this->findRootModule())
-            {
-                $this->attachModule($module);
-            }
-        }
     }
+
 
     /**
      * Create an instance of $className, checking for valid identifier.
@@ -65,7 +60,7 @@ final class Component_depot extends CI_Model implements ModuleAggregationInterfa
      * @param string $className
      * @return ModuleInterface
      */
-    private function createInstance($className)
+    private function createModule($className)
     {
         $module = new $className();
 
@@ -79,8 +74,35 @@ final class Component_depot extends CI_Model implements ModuleAggregationInterfa
             throw new Exception("Each module must provide an unique identifier.");
         }
 
+        log_message('debug', "Created `" . $module->getIdentifier() . "`, as `{$className}` instance.");
+
         return $module;
     }
+
+    /**
+     * Adds $module to this aggregation. Each member of this aggregation
+     * shares the same Policy Decision Point.
+     * @param ModuleInterface $module The module to attach to this aggregation
+     */
+    private function registerModule(ModuleInterface $module)
+    {
+        if(isset($this->modules[$module->getIdentifier()]))
+        {
+            throw new Exception("Module id `" . $module->getIdentifier() ."` is already registered.");
+        }
+
+        $this->modules[$module->getIdentifier()] = $module;
+
+        if ($module instanceof TopModuleInterface)
+        {
+            $parentId = $module->getParentMenuIdentifier();
+            if (is_null($parentId))
+            {
+                $parentId = '__ROOT__';
+            }
+            $this->menu[$parentId][] = $module->getIdentifier();
+        }
+    }    
 
     /**
      * @return ModuleInterface
@@ -94,36 +116,6 @@ final class Component_depot extends CI_Model implements ModuleAggregationInterfa
             return NULL;
         }
         return $this->modules[$moduleIdentifier];
-    }
-
-    /**
-     * The Client asks for activation of a certain Module
-     * if it wishes to use its Panel.
-     *
-     * @param string $moduleIdentifier
-     */
-    public function activate($moduleIdentifier)
-    {
-        $module = $this->findModule($moduleIdentifier);
-        if (is_null($module))
-        {
-            throw new Exception("Could not activate `{$moduleIdentifier}` module.");
-        }
-
-        /*
-          TODO : CLEANUP
-          $panels = array($module->getPanel());
-          while (count($panels) > 0 && $panels[0] instanceof PanelInterface)
-          {
-          $panel = array_shift($panels);
-
-          $this->attachPanel($panel);
-
-          if ($panel instanceof PanelCompositeInterface)
-          {
-          $panels = array_merge($panels, $panel->getChildren());
-          }
-          } */
     }
 
     /**
@@ -159,141 +151,70 @@ final class Component_depot extends CI_Model implements ModuleAggregationInterfa
         return $this->policyDecisionPoint;
     }
 
-    /**
-     * Adds $module to this aggregation. Each member of this aggregation
-     * shares the same Policy Decision Point.
-     * @param ModuleInterface $module The module to attach to this aggregation
-     */
-    public function attachModule(ModuleInterface $module)
+    public function getTopModules()
     {
-        /* TODO : CLEANUP
-          $parentModule = $this->findModule($module->getParentIdentifier());
-
-          if (is_null($parentModule))
-          {
-          $this->findRootModule()->addChild($module);
-          }
-          elseif ($parentModule instanceof ModuleCompositeInterface)
-          {
-          $parentModule->addChild($module);
-          }
-          else
-          {
-          // TODO: write a better error message
-          throw new Exception("Composition error");
-          }
-         */
-
-        if ($module instanceof ModuleMenuInterface)
-        {
-            $parentId = $module->getParentMenuIdentifier();
-            if (is_null($parentId))
-            {
-                $parentId = '__ROOT__';
-            }
-            $this->menu[$parentId][] = $module->getIdentifier();
-        }
-
-        if (isset($this->policyDecisionPoint)
-                && $module instanceof PolicyEnforcementPointInterface)
-        {
-            $module->setPolicyDecisionPoint($this->policyDecisionPoint);
-        }
-    }
-
-    /**
-     *
-     * @return ModuleCompositeInterface
-     */
-    public function findRootModule()
-    {
-        return $this->findModule('__ROOT__');
-    }
-
-    public function __toString()
-    {
-        return $this->getTitle();
-    }
-
-    public function getModuleMenuIterator()
-    {
-        return new ModuleMenuIterator($this->menu);
-    }
-
-    /* TODO : CLEANUP
-      public function attachPanel(PanelInterface $panel)
-      {
-      $this->panels[$panel->getIdentifier()] = $panel;
-      if ($panel instanceof PolicyEnforcementPointInterface)
-      {
-      $panel->setPolicyDecisionPoint($this->policyDecisionPoint);
-      }
-      }
-
-      public function findPanel($panelIdentifier)
-      {
-      return $this->panels[$panelIdentifier];
-      }
-     */
-}
-
-/**
- * Modules without a parent are attached to RootModule by default.
- */
-final class RootModule extends StandardCompositeModule implements ModuleMenuInterface {
-
-    public function getTitle()
-    {
-        return "";
-    }
-
-    public function getDescription()
-    {
-        return "";
-    }
-
-    public function getParentMenuIdentifier()
-    {
-        return NULL;
+        // TODO: authorize access
+        return new ModuleMenuIterator($this, $this->menu);
     }
 
 }
 
 final class ModuleMenuIterator implements RecursiveIterator {
 
+    private $elements;
+    /**
+     * @var ModuleAggregationInterface
+     */
+    private $moduleBag;
+    private $pointer;
+    private $key;
+
+
+    public function __construct(ModuleAggregationInterface $moduleBag, &$elements = array(), $pointer = '__ROOT__')
+    {
+        $this->elements = $elements;
+        $this->pointer = $pointer;
+        $this->moduleBag = $moduleBag;
+    }
+
     public function current()
     {
+        return $this->moduleBag->findModule($this->currentIdentifier());
+    }
 
+    private function currentIdentifier()
+    {
+        return $this->elements[$this->pointer][$this->key];
     }
 
     public function getChildren()
     {
-        
+        return new self($this->moduleBag, $this->elements, $this->currentIdentifier());
     }
 
     public function hasChildren()
     {
-        return FALSE;
+        return isset($this->elements[$this->currentIdentifier()]) && is_array($this->elements[$this->currentIdentifier()]) && ! empty($this->elements[$this->currentIdentifier()]);
     }
 
     public function key()
     {
-        
+        return $this->key;
     }
 
     public function next()
     {
-
+        $this->key ++;
     }
 
     public function rewind()
     {
-        
+        $this->key = 0;
     }
 
     public function valid()
     {
-        return FALSE;
+        return isset($this->elements[$this->pointer][$this->key]);
     }
 
 }

@@ -1,17 +1,20 @@
 <?php
 
-final class Dummy2Module extends FormPanel implements ModuleMenuInterface {
+final class Dummy2Module extends FormPanel implements TopModuleInterface {
 
     public function  __construct()
     {
         parent::__construct(get_class($this));
     }
-
-    public function createChildren() 
+    
+    public function initialize()
     {
+        
         $this->addChild(new DummyForm1Module('UserData1'));
         $this->addChild(new DummyForm1Module('UserData2'));
-        $this->addChild(new DummyForm1Module('UserData3'));        
+        $this->addChild(new DummyForm1Module('UserData3'));
+
+        parent::initialize();
     }
 
     public function getDescription()

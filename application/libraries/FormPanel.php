@@ -21,7 +21,7 @@ class FormPanel extends StandardCompositeModule {
         parent::__construct($identifier);
         $this->action = is_null($action) ? uri_string() : $action;
     }
-
+    
     public function render()
     {
         $output = parent::render();

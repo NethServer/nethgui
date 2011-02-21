@@ -3,21 +3,25 @@
 interface ModuleInterface {
 
     /**
+     * After initialization a Module must be ready to receive bind(), validate()
+     * and render() messages.
+     */
+    public function initialize();
+
+    /**
      * @return string Unique module identifier
      */
     public function getIdentifier();
 
     /**
+     * @see ModuleCompositeInterface addChild() operation.
+     */
+    public function setParent(ModuleInterface $parentModule);
+
+    /**
      * @return ModuleInterface
      */
     public function getParent();
-
-    /**
-     * TODO: see if can remove this method and leave it to implementation
-     * @param ModuleInterace $parent
-     */
-    public function setParent(ModuleInterface $parent);
-
 
     /**
      * @return string
@@ -39,14 +43,16 @@ interface ModuleInterface {
      */
     public function validate();
 
+    /**
+     * @return string
+     */
     public function render();
 }
 
+interface TopModuleInterface {
 
-interface ModuleMenuInterface {
     /**
      * @return string Unique parent module identifier
      */
     public function getParentMenuIdentifier();
-    
 }

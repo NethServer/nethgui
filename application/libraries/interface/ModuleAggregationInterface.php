@@ -1,22 +1,21 @@
 <?php
 
+/**
+ * A ModuleBag contains all known modules. It allows adding and finding a
+ * module and also iterating over root modules, arranged in a hierarchical
+ * menu structure.
+ */
 interface ModuleAggregationInterface {
 
     /**
-     * Since Modules are arranged in a composition, one of them plays the
-     * "root" role.
-     * @return ModuleCompositeInterface
+     * @return RecursiveIterator
      */
-    public function findRootModule();
+    public function getTopModules();
 
     /**
      * @return ModuleInterface
      */
     public function findModule($moduleIdentifier);
 
-    /**
-     *
-     */
-    public function attachModule(ModuleInterface $module);
 }
 

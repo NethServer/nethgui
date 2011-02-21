@@ -1,6 +1,6 @@
 <?php
 
-final class Dummy1Module extends StandardCompositeModule implements ModuleMenuInterface {
+final class Dummy1Module extends StandardCompositeModule implements TopModuleInterface {
 
     public function getDescription()
     {
@@ -14,8 +14,9 @@ final class Dummy1Module extends StandardCompositeModule implements ModuleMenuIn
 
     public function getParentMenuIdentifier()
     {
-        return "__ROOT__";
+        return NULL;
     }
+
 
 }
 ?>

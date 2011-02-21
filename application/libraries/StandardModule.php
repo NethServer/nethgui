@@ -19,6 +19,7 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
      * @var ModuleInterface;
      */
     private $parent;
+    private $formPrefix;
 
     /**
      * @param string $identifier
@@ -35,6 +36,11 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
         }
     }
 
+    public function initialize()
+    {
+
+    }
+
     /*
      * ModuleInterface implementation
      */
@@ -47,16 +53,6 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
     public function getIdentifier()
     {
         return $this->identifier;
-    }
-
-    public function getParentIdentifier()
-    {
-        return NULL;
-    }
-
-    public function getPanel()
-    {
-        return NULL;
     }
 
     public function getTitle()
@@ -114,12 +110,42 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
 
     public function getNameAttribute($fieldName)
     {
-        return $this->getModuleIdentifier() . '[' . $this->getIdentifier() . "][{$fieldName}]";
+        if ( ! isset($this->formPrefix))
+        {
+            $this->formPrefix = $this->calculateFormPrefix();
+        }
+        return $this->formPrefix . '[' . $fieldName . ']';
+    }
+
+    private function calculateFormPrefix()
+    {
+        $module = $this;
+        $prefix = '';
+        while (true)
+        {
+            $identifier = $module->getIdentifier();
+            $module = $module->getParent();
+            if (is_null($module))
+            {
+                $prefix = $identifier . $prefix;
+                break;
+            }
+            else
+            {
+                $prefix = '[' . $identifier . ']' . $prefix;
+            }
+        }
+
+        return $prefix;
     }
 
     public function getIdAttribute($fieldName)
     {
-        return $this->getModuleIdentifier() . '_' . $this->getIdentifier() . "_{$fieldName}";
+        $name = $this->getNameAttribute($fieldName);
+        $name = str_replace('[', '_', $name);
+        $name = str_replace(']', '_', $name);
+
+        return $name;
     }
 
     public function setParent(ModuleInterface $parentModule)
@@ -137,6 +163,17 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
 abstract class StandardCompositeModule extends StandardModule implements ModuleCompositeInterface {
 
     private $children = array();
+
+    /**
+     * Propagates initialize() message to children.
+     */
+    public function initialize()
+    {
+        foreach ($this->children as $child)
+        {
+            $child->initialize();
+        }
+    }
 
     public function addChild(ModuleInterface $childModule)
     {
@@ -163,12 +200,9 @@ abstract class StandardCompositeModule extends StandardModule implements ModuleC
     public function render()
     {
         $output = '';
-        foreach ($this->getChildren() as $panel)
+        foreach ($this->getChildren() as $module)
         {
-            if ($panel instanceof PanelInterface)
-            {
-                $output .= $panel->render();
-            }
+            $output .= $module->render();
         }
         return $this->decorate($output);
     }
@@ -182,11 +216,6 @@ abstract class StandardCompositeModule extends StandardModule implements ModuleC
     protected function decorate($output)
     {
         return $output;
-    }
-
-    public function createChildren()
-    {
-        
     }
 
 }
