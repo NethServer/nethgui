@@ -28,7 +28,7 @@ final class Component_depot extends CI_Model implements ModuleAggregationInterfa
      */
     private function createTopModules()
     {
-        $directoryIterator = new DirectoryIterator(APPPATH . 'libraries/module');
+        $directoryIterator = new DirectoryIterator(APPPATH . '../module');
         foreach ($directoryIterator as $element)
         {
             if (substr($element->getFilename(), -10) == 'Module.php')

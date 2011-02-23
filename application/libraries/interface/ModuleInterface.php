@@ -9,6 +9,12 @@ interface ModuleInterface {
     public function initialize();
 
     /**
+     * Prevents double initialization.
+     */
+    public function isInitialized();
+
+
+    /**
      * @return string Unique module identifier
      */
     public function getIdentifier();
