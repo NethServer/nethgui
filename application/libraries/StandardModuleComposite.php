@@ -34,8 +34,8 @@ abstract class StandardModuleComposite extends StandardModule implements ModuleC
     }
 
     /**
-     * Default implementation of a composite panel forwards the rendering
-     * process to child panels.
+     * Default implementation of a ModuleComposite forwards the rendering
+     * process to children modules.
      *
      * @return string
      */

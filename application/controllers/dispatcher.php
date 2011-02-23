@@ -32,7 +32,7 @@ final class Dispatcher extends CI_Controller {
         $this->load->model("local_system_configuration", "systemConfiguration");
         $this->load->model("component_depot", "componentDepot");
 
-        $this->moduleBag = $this->componentDepot->getModuleBag();
+        $this->moduleBag = $this->componentDepot;
     }
 
     /**
@@ -100,18 +100,12 @@ final class Dispatcher extends CI_Controller {
          */
         if ($method == 'index')
         {
+            // TODO: take the default module value from the configuration
             $this->currentModule = $this->moduleBag->findModule('Dummy1Module');
         }
         else
         {
             $this->currentModule = $this->moduleBag->findModule($method);
-
-            /*
-             * TODO : CLEANUP
-
-              $this->componentDepot->activate($method);
-             *
-             */
         }
 
         if (is_null($this->currentModule)
@@ -138,20 +132,9 @@ final class Dispatcher extends CI_Controller {
 
         $this->currentModule->initialize();
 
-        /*
-          if (isset($data[$moduleIdentifier]) && is_array($data[$moduleIdentifier]))
-          {
-          foreach (array_keys($data[$moduleIdentifier]) as $panelIdentifier)
-          {
-          $panel = $this->panelBag->findPanel($panelIdentifier);
-          if (is_null($panel))
-          {
-          continue;
-          }
-          $panel->bind($data[$moduleIdentifier][$panelIdentifier]);
-          }
-          }
-         */
+        
+
+
     }
 
     private function renderBreadcrumbMenu()

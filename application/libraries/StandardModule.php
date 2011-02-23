@@ -70,11 +70,6 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
         return $this->policyDecisionPoint;
     }
 
-    public function aggregate(ModuleAggregationInterface $aggregation)
-    {
-        $this->aggregation = $aggregation;
-    }
-
     /**
      * @var array
      */

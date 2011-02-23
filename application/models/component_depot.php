@@ -105,29 +105,6 @@ final class Component_depot extends CI_Model implements ModuleAggregationInterfa
     }    
 
     /**
-     * @return ModuleInterface
-     * @
-     */
-    public function findModule($moduleIdentifier)
-    {
-        if (is_null($moduleIdentifier)
-                OR ! isset($this->modules[$moduleIdentifier]))
-        {
-            return NULL;
-        }
-        return $this->modules[$moduleIdentifier];
-    }
-
-    /**
-     * @return ModuleAggregationInterface
-     */
-    public function getModuleBag()
-    {
-        // TODO: hive off ModuleAggregationInterface
-        return $this;
-    }
-
-    /**
      * Use $pdp as Policy Decision Point for each member of the aggregation
      * that implements PolicyEnforcementPointInterface.
      * @param PolicyDecisionPointInterface $pdp
@@ -155,6 +132,16 @@ final class Component_depot extends CI_Model implements ModuleAggregationInterfa
     {
         // TODO: authorize access
         return new ModuleMenuIterator($this, $this->menu);
+    }
+
+    public function findModule($moduleIdentifier)
+    {
+        if (is_null($moduleIdentifier)
+                OR ! isset($this->modules[$moduleIdentifier]))
+        {
+            return NULL;
+        }
+        return $this->modules[$moduleIdentifier];
     }
 
 }
