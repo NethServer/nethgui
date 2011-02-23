@@ -7,10 +7,6 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
      */
     private $identifier;
     /**
-     * @var ModuleAggregationInterface;
-     */
-    private $aggregation;
-    /**
      * @var PolicyDecisionPointInterface;
      */
     private $policyDecisionPoint;
@@ -20,6 +16,11 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
      */
     private $parent;
     private $formPrefix;
+
+    /*
+     * @var bool
+     */
+    private $initialized = false;
 
     /**
      * @param string $identifier
@@ -38,7 +39,19 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
 
     public function initialize()
     {
+        if($this->initialized === false)
+        {
+            $this->initialized = true;
+        }
+        else
+        {
+            throw new Exception("Double Module initialization is forbidden.");        
+        }
+    }
 
+    public function isInitialized()
+    {
+        return $this->initialized;
     }
 
     /*

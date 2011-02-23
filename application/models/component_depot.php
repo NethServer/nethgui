@@ -134,6 +134,9 @@ final class Component_depot extends CI_Model implements ModuleAggregationInterfa
         return new ModuleMenuIterator($this, $this->menu);
     }
 
+    /**
+     * @see ModuleAggregationInterface::findModule()
+     */
     public function findModule($moduleIdentifier)
     {
         if (is_null($moduleIdentifier)

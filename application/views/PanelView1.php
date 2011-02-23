@@ -17,8 +17,5 @@
     <button type="submit" name="sendDataBtn">Send data</button>
 </fieldset>
 
-<?php if(isset($inputParameters) && !empty($inputParameters))
-    echo '<pre>' . print_r($inputParameters, 1) . '</pre>';
-    ?>
 
 

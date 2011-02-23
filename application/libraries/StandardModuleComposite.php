@@ -12,9 +12,13 @@ abstract class StandardModuleComposite extends StandardModule implements ModuleC
      */
     public function initialize()
     {
+        parent::initialize();
         foreach ($this->children as $child)
         {
-            $child->initialize();
+            if ( ! $child->isInitialized())
+            {
+                $child->initialize();
+            }
         }
     }
 
@@ -24,6 +28,10 @@ abstract class StandardModuleComposite extends StandardModule implements ModuleC
         {
             $this->children[$childModule->getIdentifier()] = $childModule;
             $childModule->setParent($this);
+            if ($this->isInitialized() && ! $childModule->isInitialized())
+            {
+                $childModule->initialize();
+            }
         }
     }
 

@@ -57,6 +57,7 @@ final class Dispatcher extends CI_Controller {
             'PermissivePolicyDecisionPoint',
             'StandardModule',
             'StandardModuleComposite',
+            'ParameterDictionary',
             'FormModule',
             'ContainerModule',
         );
@@ -114,7 +115,7 @@ final class Dispatcher extends CI_Controller {
             show_404();
         }
 
-        $this->dispatchCommands($_POST);
+        $this->dispatchCommands(new ParameterDictionary($_POST));
 
         $decoration_parameters = array(
             'css_main' => base_url() . 'css/main.css',
@@ -126,15 +127,34 @@ final class Dispatcher extends CI_Controller {
         $this->load->view('decoration.php', $decoration_parameters);
     }
 
-    private function dispatchCommands($data)
+    /**
+     * TODO: 
+     * @param ParameterDictionaryInterface $parameters
+     * @return <type>
+     */
+    private function dispatchCommands(ParameterDictionaryInterface $parameters)
     {
-        $moduleIdentifier = $this->currentModule->getIdentifier();
+        if ($_SERVER['REQUEST_METHOD'] == 'GET')
+        {
+            $this->currentModule->initialize();
+            return;
+        }
+        elseif ($_SERVER['REQUEST_METHOD'] == 'POST')
+        {
+            foreach ($parameters->getKeys() as $moduleIdentifier)
+            {
+                $module = $this->moduleBag->findModule($moduleIdentifier);
+                if (is_null($module))
+                {
+                    continue;
+                }
 
-        $this->currentModule->initialize();
-
-        
-
-
+                if ( ! $module->isInitialized())
+                {
+                    $module->initialize();
+                }
+            }
+        }
     }
 
     private function renderBreadcrumbMenu()
