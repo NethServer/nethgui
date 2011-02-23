@@ -1,5 +1,6 @@
 <?php
 
+// TODO: rename to RequestSomething (?)
 final class ParameterDictionary implements ParameterDictionaryInterface {
 
     /**
@@ -48,6 +49,13 @@ final class ParameterDictionary implements ParameterDictionaryInterface {
         return new self($this->getValue($parameterName));
     }
 
+    /**
+     * @return string
+     */
+    public function getAction()
+    {
+        return $this->hasKey('__ACTION') ? $this->getValue('__ACTION') : 'RENDER';
+    }
 }
 
 ?>

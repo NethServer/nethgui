@@ -1,4 +1,6 @@
 <?php
+
+// TODO: rename to RequestSomethingInterface (?)
 interface ParameterDictionaryInterface {
     /**
      * @param string $parameterName
@@ -29,5 +31,10 @@ interface ParameterDictionaryInterface {
     /**
      * @return array
      */
-    public function getKeys();    
+    public function getKeys();
+
+    /**
+     * @return string
+     */
+    public function getAction();
 }

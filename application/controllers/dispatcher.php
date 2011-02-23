@@ -110,11 +110,32 @@ final class Dispatcher extends CI_Controller {
             show_404();
         }
 
-        $this->dispatchCommands(new ParameterDictionary($_POST));
+
+        if ($_SERVER['REQUEST_METHOD'] == 'GET')
+        {
+            $this->currentModule->initialize();
+            $data = array();
+        }
+        elseif ($_SERVER['REQUEST_METHOD'] == 'POST')
+        {
+            if (isset($_SERVER['X_REQUESTED_WITH'])
+                    && $_SERVER['X_REQUESTED_WITH'] == 'XMLHttpRequest')
+            {
+                // TODO: decode json query
+                $data = array();
+            }
+            else
+            {
+                $data = $_POST;
+            }
+            
+        }
+
+        $this->dispatchCommands(new ParameterDictionary($data));
 
         $decoration_parameters = array(
             'css_main' => base_url() . 'css/main.css',
-            'module_content' => $this->currentModule->render(),
+            'module_content' => '',
             'module_menu' => $this->renderModuleMenu($this->componentDepot->getTopModules()),
             'breadcrumb_menu' => $this->renderBreadcrumbMenu(),
         );
@@ -129,38 +150,25 @@ final class Dispatcher extends CI_Controller {
      */
     private function dispatchCommands(ParameterDictionaryInterface $parameters)
     {
-        if ($_SERVER['REQUEST_METHOD'] == 'GET')
-        {
-            $this->currentModule->initialize();
-            return;
-        }
-        elseif ($_SERVER['REQUEST_METHOD'] == 'POST')
-        {
+        $validationReport = new ValidationReport();
 
-            $validationReport = new ValidationReport();
-
-            foreach ($parameters->getKeys() as $moduleIdentifier)
+        foreach ($parameters->getKeys() as $moduleIdentifier)
+        {
+            $module = $this->componentDepot->findModule($moduleIdentifier);
+            if (is_null($module))
             {
-                $module = $this->componentDepot->findModule($moduleIdentifier);
-                if (is_null($module))
-                {
-                    continue;
-                }
-
-                if ( ! $module->isInitialized())
-                {
-                    $module->initialize();
-                }
-
-                if ($parameters->hasKey($moduleIdentifier))
-                {
-                    $module->bind($parameters->getValueAsParameterDictionary($moduleIdentifier));
-                    
-                    $validated = $module->validate($validationReport);
-
-                    
-                }
+                continue;
             }
+
+            if ( ! $module->isInitialized())
+            {
+                $module->initialize();
+            }
+
+            $module->bind($parameters->getValueAsParameterDictionary($moduleIdentifier));
+            $module->validate($validationReport);
+
+            // TODO: call process()
         }
     }
 

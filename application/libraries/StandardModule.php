@@ -23,6 +23,12 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
     private $initialized = FALSE;
 
     /**
+     *
+     * @var ParameterDictionaryInterface
+     */
+    protected $parameters;
+
+    /**
      * @param string $identifier
      */
     public function __construct($identifier = NULL)
@@ -91,15 +97,25 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
 
     public function bind(ParameterDictionaryInterface $parameters)
     {
-        
+        $this->parameters = $parameters;
     }
 
     public function validate(ValidationReportInterface $report)
     {
-        return true;
+        return $this->parameters instanceof ParameterDictionaryInterface;
     }
 
-    public function render()
+    public function process(ResponseInterface $response)
+    {
+        if($this->parameters->getAction() == 'RENDER')
+        {
+            $htmlOutput = $this->render();
+            $response->put($htmlOutput);
+        }
+    }
+
+
+    protected function render()
     {
         return "";
     }

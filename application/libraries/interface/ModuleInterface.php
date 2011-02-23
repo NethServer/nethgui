@@ -52,9 +52,23 @@ interface ModuleInterface {
     public function validate(ValidationReportInterface $report);
 
     /**
-     * @return string
+     * @return void
      */
-    public function render();
+    public function process(ResponseInterface $response);
+}
+
+interface ResponseInterface {
+    /**
+     * Create a ResponseInterface instance for a specific Module, given its
+     * identifier.
+     * @param string $moduleIdentifier Identifier of the Module
+     * @return ResponseInterface
+     */
+    public function createModuleResponse($moduleIdentifier);
+
+    public function put($data);
+
+    public function setValidationReport(ValidationReportInterface $report);
 }
 
 interface ValidationReportInterface {
