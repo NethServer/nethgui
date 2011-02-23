@@ -12,6 +12,11 @@ final class ParameterDictionary implements ParameterDictionaryInterface {
         $this->data = $data;
     }
 
+    public function hasKey($parameterName)
+    {
+        return isset($this->data[$parameterName]);
+    }
+
     public function getKeys()
     {
         return array_keys($this->data);
@@ -19,12 +24,30 @@ final class ParameterDictionary implements ParameterDictionaryInterface {
 
     public function getValue($parameterName)
     {
-        if ( ! isset($this->data[$parameterName]))
+        return $this->data[$parameterName];
+    }
+
+    public function getValueAsArray($parameterName)
+    {
+        $value = $this->getValue($parameterName);
+
+        if(is_null($value))
         {
             return NULL;
         }
-        return $this->data[$parameterName];
+        elseif(is_array($value))
+        {
+            return array_values($value);
+        }
+        
+        return array($value);
     }
+
+    public function getValueAsParameterDictionary($parameterName)
+    {
+        return new self($this->getValue($parameterName));
+    }
+
 }
 
 ?>

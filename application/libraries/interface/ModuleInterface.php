@@ -40,20 +40,32 @@ interface ModuleInterface {
     public function getDescription();
 
     /**
-     * @param array $parameters
+     * Binds parameters to Module internal state.
+     * @param ParameterDictionaryInterface $parameters
      */
-    public function bind($inputParameters);
+    public function bind(ParameterDictionaryInterface $parameters);
 
     /**
-     * @return boolean
+     * Validate input data. Messages are sent to $report.
+     * @return void
      */
-    public function validate();
+    public function validate(ValidationReportInterface $report);
 
     /**
      * @return string
      */
     public function render();
 }
+
+interface ValidationReportInterface {
+    public function addError($fieldId, $message);
+
+    /**
+     * @return array
+     */
+    public function getErrors();
+}
+
 
 interface TopModuleInterface {
 

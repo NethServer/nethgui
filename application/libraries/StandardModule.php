@@ -20,7 +20,7 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
     /*
      * @var bool
      */
-    private $initialized = false;
+    private $initialized = FALSE;
 
     /**
      * @param string $identifier
@@ -39,28 +39,19 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
 
     public function initialize()
     {
-        if($this->initialized === false)
+        if ($this->initialized === FALSE)
         {
-            $this->initialized = true;
+            $this->initialized = TRUE;
         }
         else
         {
-            throw new Exception("Double Module initialization is forbidden.");        
+            throw new Exception("Double Module initialization is forbidden.");
         }
     }
 
     public function isInitialized()
     {
         return $this->initialized;
-    }
-
-    /*
-     * ModuleInterface implementation
-     */
-
-    public function getDescription()
-    {
-        return "";
     }
 
     public function getIdentifier()
@@ -73,6 +64,21 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
         return $this->getIdentifier();
     }
 
+    public function getDescription()
+    {
+        return "";
+    }
+
+    public function setParent(ModuleInterface $parentModule)
+    {
+        $this->parent = $parentModule;
+    }
+
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
     public function setPolicyDecisionPoint(PolicyDecisionPointInterface $pdp)
     {
         $this->policyDecisionPoint = $pdp;
@@ -83,17 +89,12 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
         return $this->policyDecisionPoint;
     }
 
-    /**
-     * @var array
-     */
-    private $inputParameters;
-
-    public function bind($inputParameters)
+    public function bind(ParameterDictionaryInterface $parameters)
     {
-        $this->inputParameters = $inputParameters;
+        
     }
 
-    public function validate()
+    public function validate(ValidationReportInterface $report)
     {
         return true;
     }
@@ -112,7 +113,6 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
     protected function renderView($viewName, $parameters = array())
     {
         $parameters['panel'] = $this;
-        $parameters['inputParameters'] = $this->inputParameters;
         return CI_Controller::get_instance()->load->view($viewName, $parameters, true);
     }
 
@@ -154,16 +154,6 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
         $name = str_replace(']', '_', $name);
 
         return $name;
-    }
-
-    public function setParent(ModuleInterface $parentModule)
-    {
-        $this->parent = $parentModule;
-    }
-
-    public function getParent()
-    {
-        return $this->parent;
     }
 
 }

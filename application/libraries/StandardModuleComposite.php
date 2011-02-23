@@ -41,6 +41,28 @@ abstract class StandardModuleComposite extends StandardModule implements ModuleC
         return array_values($this->children);
     }
 
+    public function bind(ParameterDictionaryInterface $parameters)
+    {
+        parent::bind($parameters);
+        foreach($this->getChildren() as $module)
+        {
+            if($parameters->hasKey($module->getIdentifier()))
+            {
+                $module->bind($parameters->getValueAsParameterDictionary($module->getIdentifier()));
+            }
+        }
+    }
+
+    public function validate(ValidationReportInterface $report)
+    {
+        parent::validate($report);
+
+        foreach($this->getChildren() as $module)
+        {
+            $module->validate($report);
+        }
+    }
+
     /**
      * Default implementation of a ModuleComposite forwards the rendering
      * process to children modules.

@@ -52,6 +52,7 @@ final class Dispatcher extends CI_Controller {
             'StandardModule',
             'StandardModuleComposite',
             'ParameterDictionary',
+            'ValidationReport',
             'FormModule',
             'ContainerModule',
         );
@@ -135,6 +136,9 @@ final class Dispatcher extends CI_Controller {
         }
         elseif ($_SERVER['REQUEST_METHOD'] == 'POST')
         {
+
+            $validationReport = new ValidationReport();
+
             foreach ($parameters->getKeys() as $moduleIdentifier)
             {
                 $module = $this->componentDepot->findModule($moduleIdentifier);
@@ -146,6 +150,15 @@ final class Dispatcher extends CI_Controller {
                 if ( ! $module->isInitialized())
                 {
                     $module->initialize();
+                }
+
+                if ($parameters->hasKey($moduleIdentifier))
+                {
+                    $module->bind($parameters->getValueAsParameterDictionary($moduleIdentifier));
+                    
+                    $validated = $module->validate($validationReport);
+
+                    
                 }
             }
         }
