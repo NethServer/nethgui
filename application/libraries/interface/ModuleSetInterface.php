@@ -5,7 +5,7 @@
  * module and also iterating over root modules, arranged in a hierarchical
  * menu structure.
  */
-interface ModuleAggregationInterface {
+interface ModuleSetInterface {
 
     /**
      * @return RecursiveIterator

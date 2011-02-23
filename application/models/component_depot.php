@@ -1,6 +1,6 @@
 <?php
 
-final class Component_depot extends CI_Model implements ModuleAggregationInterface, PolicyEnforcementPointInterface {
+final class Component_depot extends CI_Model implements ModuleSetInterface, PolicyEnforcementPointInterface {
 
     /**
      * @var array
@@ -136,7 +136,7 @@ final class Component_depot extends CI_Model implements ModuleAggregationInterfa
     }
 
     /**
-     * @see ModuleAggregationInterface::findModule()
+     * @see ModuleSetInterface::findModule()
      */
     public function findModule($moduleIdentifier)
     {
@@ -154,23 +154,23 @@ final class ModuleMenuIterator implements RecursiveIterator {
 
     private $elements;
     /**
-     * @var ModuleAggregationInterface
+     * @var ModuleSetInterface
      */
-    private $moduleBag;
+    private $moduleSet;
     private $pointer;
     private $key;
 
 
-    public function __construct(ModuleAggregationInterface $moduleBag, &$elements = array(), $pointer = '__ROOT__')
+    public function __construct(ModuleSetInterface $moduleSet, &$elements = array(), $pointer = '__ROOT__')
     {
         $this->elements = $elements;
         $this->pointer = $pointer;
-        $this->moduleBag = $moduleBag;
+        $this->moduleSet = $moduleSet;
     }
 
     public function current()
     {
-        return $this->moduleBag->findModule($this->currentIdentifier());
+        return $this->moduleSet->findModule($this->currentIdentifier());
     }
 
     private function currentIdentifier()
@@ -180,7 +180,7 @@ final class ModuleMenuIterator implements RecursiveIterator {
 
     public function getChildren()
     {
-        return new self($this->moduleBag, $this->elements, $this->currentIdentifier());
+        return new self($this->moduleSet, $this->elements, $this->currentIdentifier());
     }
 
     public function hasChildren()
