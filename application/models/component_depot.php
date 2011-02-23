@@ -28,6 +28,7 @@ final class Component_depot extends CI_Model implements ModuleAggregationInterfa
      */
     private function createTopModules()
     {
+        // TODO: set a configuration parameter for modules directory
         $directoryIterator = new DirectoryIterator(APPPATH . '../module');
         foreach ($directoryIterator as $element)
         {

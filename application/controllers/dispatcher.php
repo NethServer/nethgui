@@ -16,11 +16,7 @@ final class Dispatcher extends CI_Controller {
      * @var ModuleInterface
      */
     private $currentModule;
-    /**
-     *
-     * @var ModuleAggregationInterface
-     */
-    private $moduleBag;
+
 
     private function initialize()
     {
@@ -31,8 +27,6 @@ final class Dispatcher extends CI_Controller {
         $this->load->helper('form');
         $this->load->model("local_system_configuration", "systemConfiguration");
         $this->load->model("component_depot", "componentDepot");
-
-        $this->moduleBag = $this->componentDepot;
     }
 
     /**
@@ -102,11 +96,11 @@ final class Dispatcher extends CI_Controller {
         if ($method == 'index')
         {
             // TODO: take the default module value from the configuration
-            $this->currentModule = $this->moduleBag->findModule('Dummy1Module');
+            $this->currentModule = $this->componentDepot->findModule('Dummy1Module');
         }
         else
         {
-            $this->currentModule = $this->moduleBag->findModule($method);
+            $this->currentModule = $this->componentDepot->findModule($method);
         }
 
         if (is_null($this->currentModule)
@@ -120,7 +114,7 @@ final class Dispatcher extends CI_Controller {
         $decoration_parameters = array(
             'css_main' => base_url() . 'css/main.css',
             'module_content' => $this->currentModule->render(),
-            'module_menu' => $this->renderModuleMenu($this->moduleBag->getTopModules()),
+            'module_menu' => $this->renderModuleMenu($this->componentDepot->getTopModules()),
             'breadcrumb_menu' => $this->renderBreadcrumbMenu(),
         );
 
@@ -143,7 +137,7 @@ final class Dispatcher extends CI_Controller {
         {
             foreach ($parameters->getKeys() as $moduleIdentifier)
             {
-                $module = $this->moduleBag->findModule($moduleIdentifier);
+                $module = $this->componentDepot->findModule($moduleIdentifier);
                 if (is_null($module))
                 {
                     continue;
@@ -170,7 +164,7 @@ final class Dispatcher extends CI_Controller {
             {
                 $rootLine[] = $rootLineElement;
             }
-            $module = $this->moduleBag->findModule($module->getParentMenuIdentifier());
+            $module = $this->componentDepot->findModule($module->getParentMenuIdentifier());
         }
 
         $rootLine = array_reverse($rootLine);
