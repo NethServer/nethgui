@@ -1,6 +1,6 @@
 <?php
 
-final class Dummy1Module extends StandardCompositeModule implements TopModuleInterface {
+final class Dummy1Module extends StandardModuleComposite implements TopModuleInterface {
 
     public function getDescription()
     {

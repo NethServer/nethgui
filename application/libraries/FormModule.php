@@ -3,7 +3,7 @@
 /**
  * A FormModule wraps its children into a FORM tag.
  */
-class FormModule extends StandardCompositeModule {
+class FormModule extends StandardModuleComposite {
 
     /**
      *
