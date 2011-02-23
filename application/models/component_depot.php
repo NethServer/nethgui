@@ -81,9 +81,9 @@ final class Component_depot extends CI_Model implements ModuleSetInterface, Poli
     }
 
     /**
-     * Adds $module to this aggregation. Each member of this aggregation
+     * Adds $module to this set. Each member of this set
      * shares the same Policy Decision Point.
-     * @param ModuleInterface $module The module to attach to this aggregation
+     * @param ModuleInterface $module The module to be attached to this set.
      */
     private function registerModule(ModuleInterface $module)
     {
@@ -106,7 +106,7 @@ final class Component_depot extends CI_Model implements ModuleSetInterface, Poli
     }    
 
     /**
-     * Use $pdp as Policy Decision Point for each member of the aggregation
+     * Use $pdp as Policy Decision Point for each member of the set
      * that implements PolicyEnforcementPointInterface.
      * @param PolicyDecisionPointInterface $pdp
      * @return void

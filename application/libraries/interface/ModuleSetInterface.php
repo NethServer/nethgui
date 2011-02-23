@@ -1,7 +1,7 @@
 <?php
 
 /**
- * A ModuleBag contains all known modules. It allows adding and finding a
+ * A ModuleSet contains all known modules. It allows adding and finding a
  * module and also iterating over root modules, arranged in a hierarchical
  * menu structure.
  */
