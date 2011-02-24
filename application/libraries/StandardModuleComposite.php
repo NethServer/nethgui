@@ -41,14 +41,14 @@ abstract class StandardModuleComposite extends StandardModule implements ModuleC
         return array_values($this->children);
     }
 
-    public function bind(ParameterDictionaryInterface $parameters)
+    public function bind(RequestInterface $parameters)
     {
         parent::bind($parameters);
         foreach($this->getChildren() as $module)
         {
-            if($parameters->hasKey($module->getIdentifier()))
+            if($parameters->hasParameter($module->getIdentifier()))
             {
-                $module->bind($parameters->getValueAsParameterDictionary($module->getIdentifier()));
+                $module->bind($parameters->getParameterAsInnerRequest($module->getIdentifier()));
             }
         }
     }
@@ -69,14 +69,14 @@ abstract class StandardModuleComposite extends StandardModule implements ModuleC
      *
      * @return string
      */
-    protected function render()
+    public function renderView(Response $response)
     {
         $output = '';
         foreach ($this->getChildren() as $module)
         {
-            $output .= $module->render();
+            $output .= $module->renderView($response);
         }
-        return $this->decorate($output);
+        return $this->decorate($output, $response);
     }
 
     /**
@@ -85,7 +85,7 @@ abstract class StandardModuleComposite extends StandardModule implements ModuleC
      * @param string $output Children output
      * @return string Decorated children output
      */
-    protected function decorate($output)
+    protected function decorate($output, Response $response)
     {
         return $output;
     }

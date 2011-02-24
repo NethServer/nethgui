@@ -16,33 +16,3 @@ final class ValidationReport implements ValidationReportInterface {
 
 }
 
-final class Response implements ResponseInterface {
-
-    private $responseData = NULL;
-
-    private function __construct($identifier, &$responseData)
-    {
-        if(!isset($responseData))
-        {
-            $responseData = array();
-        }
-
-        $this->responseData = &$responseData;
-    }
-
-    public function createModuleResponse($moduleIdentifier)
-    {
-
-    }
-
-    public function put($data)
-    {
-        
-    }
-
-    public function setValidationReport(ValidationReportInterface $report)
-    {
-
-    }
-
-}

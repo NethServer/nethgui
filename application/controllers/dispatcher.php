@@ -48,11 +48,12 @@ final class Dispatcher extends CI_Controller {
     private function includeClasses()
     {
         $classNames = array(
+            'Request',
+            'Response',
+            'ValidationReport',
             'PermissivePolicyDecisionPoint',
             'StandardModule',
             'StandardModuleComposite',
-            'ParameterDictionary',
-            'ValidationReport',
             'FormModule',
             'ContainerModule',
         );
@@ -114,28 +115,16 @@ final class Dispatcher extends CI_Controller {
         if ($_SERVER['REQUEST_METHOD'] == 'GET')
         {
             $this->currentModule->initialize();
-            $data = array();
         }
         elseif ($_SERVER['REQUEST_METHOD'] == 'POST')
         {
-            if (isset($_SERVER['X_REQUESTED_WITH'])
-                    && $_SERVER['X_REQUESTED_WITH'] == 'XMLHttpRequest')
-            {
-                // TODO: decode json query
-                $data = array();
-            }
-            else
-            {
-                $data = $_POST;
-            }
-            
+            $request = Request::createInstanceFromServer();
+            $this->process($request);
         }
-
-        $this->dispatchCommands(new ParameterDictionary($data));
 
         $decoration_parameters = array(
             'css_main' => base_url() . 'css/main.css',
-            'module_content' => '',
+            'module_content' => $this->currentModule->renderView(new Response(Response::HTML)),
             'module_menu' => $this->renderModuleMenu($this->componentDepot->getTopModules()),
             'breadcrumb_menu' => $this->renderBreadcrumbMenu(),
         );
@@ -145,16 +134,17 @@ final class Dispatcher extends CI_Controller {
 
     /**
      * TODO: 
-     * @param ParameterDictionaryInterface $parameters
-     * @return <type>
+     * @param RequestInterface $parameters
+     * @return Response
      */
-    private function dispatchCommands(ParameterDictionaryInterface $parameters)
+    private function process(RequestInterface $request)
     {
         $validationReport = new ValidationReport();
 
-        foreach ($parameters->getKeys() as $moduleIdentifier)
+        foreach ($request->getParameters() as $moduleIdentifier)
         {
             $module = $this->componentDepot->findModule($moduleIdentifier);
+
             if (is_null($module))
             {
                 continue;
@@ -165,10 +155,14 @@ final class Dispatcher extends CI_Controller {
                 $module->initialize();
             }
 
-            $module->bind($parameters->getValueAsParameterDictionary($moduleIdentifier));
+            $module->bind($request->getParameterAsInnerRequest($moduleIdentifier));
+
             $module->validate($validationReport);
 
+            // TODO: assign $validationReport
+
             // TODO: call process()
+            $module->process();
         }
     }
 

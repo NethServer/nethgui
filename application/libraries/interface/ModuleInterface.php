@@ -41,9 +41,9 @@ interface ModuleInterface {
 
     /**
      * Binds parameters to Module internal state.
-     * @param ParameterDictionaryInterface $parameters
+     * @param RequestInterface $parameters
      */
-    public function bind(ParameterDictionaryInterface $parameters);
+    public function bind(RequestInterface $parameters);
 
     /**
      * Validate input data. Messages are sent to $report.
@@ -51,35 +51,13 @@ interface ModuleInterface {
      */
     public function validate(ValidationReportInterface $report);
 
-    /**
-     * @return void
-     */
-    public function process(ResponseInterface $response);
-}
-
-interface ResponseInterface {
-    /**
-     * Create a ResponseInterface instance for a specific Module, given its
-     * identifier.
-     * @param string $moduleIdentifier Identifier of the Module
-     * @return ResponseInterface
-     */
-    public function createModuleResponse($moduleIdentifier);
-
-    public function put($data);
-
-    public function setValidationReport(ValidationReportInterface $report);
-}
-
-interface ValidationReportInterface {
-    public function addError($fieldId, $message);
+    public function process();
 
     /**
-     * @return array
+     * @return string
      */
-    public function getErrors();
+    public function renderView(Response $response);
 }
-
 
 interface TopModuleInterface {
 

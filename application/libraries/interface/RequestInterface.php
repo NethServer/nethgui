@@ -1,40 +1,42 @@
 <?php
 
 // TODO: rename to RequestSomethingInterface (?)
-interface ParameterDictionaryInterface {
+interface RequestInterface {
     /**
      * @param string $parameterName
      * @return mixed
      */
-    public function getValue($parameterName);
+    public function getParameter($parameterName);
 
     /**
      * Gets given entry as array()
      * @param string $parameterName
      * @return array
      */
-    public function getValueAsArray($parameterName);
+    public function getParameterAsArray($parameterName);
     
     /**
      * Gets given entry as array()
      * @param string $parameterName
-     * @return ParameterDictionaryInterface
+     * @return RequestInterface
      */
-    public function getValueAsParameterDictionary($parameterName);
+    public function getParameterAsInnerRequest($parameterName);
 
     /**
      * Checks if $parameterName exists.
      * @return bool
      */
-    public function hasKey($parameterName);
+    public function hasParameter($parameterName);
 
     /**
      * @return array
      */
-    public function getKeys();
+    public function getParameters();
+
 
     /**
-     * @return string
+     * @return bool
      */
-    public function getAction();
+    public function isEmpty();
+
 }

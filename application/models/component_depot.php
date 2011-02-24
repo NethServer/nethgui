@@ -139,7 +139,7 @@ final class Component_depot extends CI_Model implements ModuleSetInterface, Poli
     }
 
     /**
-     * @see ModuleSetInterface::findModule()
+     * @return ModuleInterface
      */
     public function findModule($moduleIdentifier)
     {

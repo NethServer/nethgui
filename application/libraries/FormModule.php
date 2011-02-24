@@ -22,9 +22,12 @@ class FormModule extends StandardModuleComposite {
         $this->action = is_null($action) ? uri_string() : $action;
     }
 
-    protected function decorate($output)
+    protected function decorate($output, Response $response)
     {
-        return form_open_multipart($this->action) . $output . form_close();
+        if ($response->getViewType() === Response::HTML)
+        {
+            return form_open_multipart($this->action) . $output . form_close();
+        }
     }
 
 }

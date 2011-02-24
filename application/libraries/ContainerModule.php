@@ -1,11 +1,18 @@
 <?php
+
 /**
  * A ContainerModule wraps its children into a DIV tag.
  */
 class ContainerModule extends StandardModuleComposite {
-    protected function decorate($output)
+
+    protected function decorate($output, Response $response)
     {
-        return '<div class="'. $this->getIdentifier() .'">' . $output . '</div>';
+        if ($response->getViewType() === Response::HTML)
+        {
+            return '<div class="' . $this->getIdentifier() . '">' . $output . '</div>';
+        }
     }
+
 }
+
 ?>

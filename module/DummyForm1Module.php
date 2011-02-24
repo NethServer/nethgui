@@ -1,8 +1,13 @@
 <?php
 
 final class DummyForm1Module extends StandardModule {
-    public function render()
+
+    public function renderView(Response $response)
     {
-        return $this->renderView('PanelView1', array('module'=>$this));
+        if ($response->getViewType() === Response::HTML)
+        {
+            return $this->renderCodeIgniterView('PanelView1');
+        }
     }
+
 }

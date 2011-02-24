@@ -21,10 +21,9 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
      * @var bool
      */
     private $initialized = FALSE;
-
     /**
      *
-     * @var ParameterDictionaryInterface
+     * @var RequestInterface
      */
     protected $parameters;
 
@@ -43,6 +42,9 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
         }
     }
 
+    /**
+     *  Overriding methods can read current state from model.
+     */
     public function initialize()
     {
         if ($this->initialized === FALSE)
@@ -95,40 +97,32 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
         return $this->policyDecisionPoint;
     }
 
-    public function bind(ParameterDictionaryInterface $parameters)
+    public function bind(RequestInterface $parameters)
     {
         $this->parameters = $parameters;
     }
 
     public function validate(ValidationReportInterface $report)
     {
-        return $this->parameters instanceof ParameterDictionaryInterface;
-    }
-
-    public function process(ResponseInterface $response)
-    {
-        if($this->parameters->getAction() == 'RENDER')
+        if ( ! $this->parameters instanceof RequestInterface)
         {
-            $htmlOutput = $this->render();
-            $response->put($htmlOutput);
+            throw new Exception("Unbounded parameters.");
         }
     }
 
+    public function process()
+    {
 
-    protected function render()
+    }
+
+    public function renderView(Response $response)
     {
         return "";
     }
 
-    /**
-     * Renders a PHP view by means of Code Igniter Framework.
-     * @param string $viewName Name of the view .php file under `views/` directory.
-     * @param array $parameters View parameters
-     * @return string View output
-     */
-    protected function renderView($viewName, $parameters = array())
+    protected function renderCodeIgniterView($viewName, $parameters = array())
     {
-        $parameters['panel'] = $this;
+        $parameters['module'] = $this;
         return CI_Controller::get_instance()->load->view($viewName, $parameters, true);
     }
 
@@ -171,6 +165,7 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
 
         return $name;
     }
+
 
 }
 
