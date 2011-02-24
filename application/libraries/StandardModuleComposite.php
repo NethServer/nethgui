@@ -69,7 +69,7 @@ abstract class StandardModuleComposite extends StandardModule implements ModuleC
      *
      * @return string
      */
-    public function render()
+    protected function render()
     {
         $output = '';
         foreach ($this->getChildren() as $module)
