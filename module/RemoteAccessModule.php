@@ -27,7 +27,7 @@ final class RemoteAccessModule extends FormModule implements TopModuleInterface 
     protected function decorate($output, Response $response)
     {
         // Append SAVE button.
-        $output .= '<div style="text-align: right"><input id="' . $this->getIdAttribute('save') . '" name="' . $this->getNameAttribute('save') . '" type="submit" value="Save" /></div>';
+        $output .= '<div style="text-align: right"><input id="' . $response->getWidgetId($this, 'save') . '" name="' . $response->getParameterName($this, 'save') . '" type="submit" value="Save" /></div>';
         return parent::decorate($output, $response);
     }
 

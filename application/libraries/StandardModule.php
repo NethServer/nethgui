@@ -112,7 +112,7 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
 
     public function process()
     {
-        // DO NOTHING 
+        // DO NOTHING : override.
     }
 
     public function renderView(Response $response)
@@ -123,50 +123,11 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
         }
     }
 
-    protected function renderCodeIgniterView($viewName, $parameters = array())
+    protected function renderCodeIgniterView(Response $response, $viewName, $parameters = array())
     {
         $parameters['module'] = $this;
+        $parameters['response'] = $response;
         return CI_Controller::get_instance()->load->view($viewName, $parameters, true);
-    }
-
-    public function getNameAttribute($fieldName)
-    {
-        if ( ! isset($this->formPrefix))
-        {
-            $this->formPrefix = $this->calculateFormPrefix();
-        }
-        return $this->formPrefix . '[' . $fieldName . ']';
-    }
-
-    private function calculateFormPrefix()
-    {
-        $module = $this;
-        $prefix = '';
-        while (true)
-        {
-            $identifier = $module->getIdentifier();
-            $module = $module->getParent();
-            if (is_null($module))
-            {
-                $prefix = $identifier . $prefix;
-                break;
-            }
-            else
-            {
-                $prefix = '[' . $identifier . ']' . $prefix;
-            }
-        }
-
-        return $prefix;
-    }
-
-    public function getIdAttribute($fieldName)
-    {
-        $name = $this->getNameAttribute($fieldName);
-        $name = str_replace('[', '_', $name);
-        $name = str_replace(']', '_', $name);
-
-        return $name;
     }
 
 }

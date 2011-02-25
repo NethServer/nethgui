@@ -135,7 +135,6 @@ final class Dispatcher extends CI_Controller {
     }
 
     /**
-     * TODO: 
      * @param RequestInterface $parameters
      * @return Response
      */

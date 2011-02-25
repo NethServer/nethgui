@@ -9,8 +9,8 @@
 </p>
 
 <div>
-    <label>Indirizzo di rete</label><input type="text" value="">
+    <label>Indirizzo di rete</label><input type="text" name="<? echo $response->getParameterName($module, 'networkAddress') ?>" value="">
 </div>
 <div>
-    <label>Maschera di rete</label><input type="text" value="">
+    <label>Maschera di rete</label><input type="text" name="<? echo $response->getParameterName($module, 'networkMask') ?>" value="">
 </div>

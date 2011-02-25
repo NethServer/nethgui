@@ -11,7 +11,7 @@ final class RemoteManagementModule extends StandardModule {
     {
         $output = parent::renderView($response);
 
-        $output = $this->renderCodeIgniterView('RemoteAccess/RemoteManagementView.php');
+        $output = $this->renderCodeIgniterView($response, 'RemoteAccess/RemoteManagementView.php');
 
         return $output;
     }
