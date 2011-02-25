@@ -27,6 +27,8 @@ interface UserInterface {
      * @return array
      */
     public function getCredentials();
+
+    public function hasCredential($credentialName);
 }
 
 

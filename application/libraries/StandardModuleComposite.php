@@ -44,12 +44,9 @@ abstract class StandardModuleComposite extends StandardModule implements ModuleC
     public function bind(RequestInterface $parameters)
     {
         parent::bind($parameters);
-        foreach($this->getChildren() as $module)
+        foreach ($this->getChildren() as $module)
         {
-            if($parameters->hasParameter($module->getIdentifier()))
-            {
-                $module->bind($parameters->getParameterAsInnerRequest($module->getIdentifier()));
-            }
+            $module->bind($parameters->getParameterAsInnerRequest($module->getIdentifier()));
         }
     }
 
@@ -57,7 +54,7 @@ abstract class StandardModuleComposite extends StandardModule implements ModuleC
     {
         parent::validate($report);
 
-        foreach($this->getChildren() as $module)
+        foreach ($this->getChildren() as $module)
         {
             $module->validate($report);
         }

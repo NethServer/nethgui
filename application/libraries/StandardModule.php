@@ -117,7 +117,10 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
 
     public function renderView(Response $response)
     {
-        return "";
+        if ($response->getViewType() === Response::HTML)
+        {
+            return '<h2>' . $this->getTitle() . '</h2><div class="moduleDescription">' . $this->getDescription() . '</div>';
+        }
     }
 
     protected function renderCodeIgniterView($viewName, $parameters = array())
@@ -165,7 +168,6 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
 
         return $name;
     }
-
 
 }
 

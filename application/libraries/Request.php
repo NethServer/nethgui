@@ -36,7 +36,7 @@ final class Request implements RequestInterface {
         {
             $data = array();
         }
-        if(!is_array($data))
+        if ( ! is_array($data))
         {
             $data = array($data);
         }
@@ -60,6 +60,10 @@ final class Request implements RequestInterface {
 
     public function getParameter($parameterName)
     {
+        if ( ! isset($this->data[$parameterName]))
+        {
+            return NULL;
+        }
         return $this->data[$parameterName];
     }
 

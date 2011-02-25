@@ -1,6 +1,9 @@
 <?php
+
 final class RemoteAccessModule extends FormModule implements TopModuleInterface {
-    public function getTitle() {
+
+    public function getTitle()
+    {
         return "Remote access";
     }
 
@@ -8,4 +11,24 @@ final class RemoteAccessModule extends FormModule implements TopModuleInterface 
     {
         return "SecurityModule";
     }
+
+    public function initialize()
+    {
+        parent::initialize();
+        foreach (array('Pptp', 'RemoteManagement', 'Ssh', 'Ftp') as $dependency)
+        {
+            require_once('RemoteAccess/' . $dependency . 'Module.php');
+            $childModuleClass = $dependency . 'Module';
+            $childModule = new $childModuleClass();
+            $this->addChild($childModule);
+        }
+    }
+
+    protected function decorate($output, Response $response)
+    {
+        // Append SAVE button.
+        $output .= '<div style="text-align: right"><input id="' . $this->getIdAttribute('save') . '" name="' . $this->getNameAttribute('save') . '" type="submit" value="Save" /></div>';
+        return parent::decorate($output, $response);
+    }
+
 }

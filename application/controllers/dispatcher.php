@@ -9,9 +9,9 @@ final class Dispatcher extends CI_Controller {
     public $componentDepot;
     /**
      * Model for changing host system configuration.
-     * @var SystemConfigurationInterface
+     * @var HostConfigurationInterface
      */
-    public $systemConfiguration;
+    public $hostConfiguration;
     /**
      * @var ModuleInterface
      */
@@ -25,7 +25,7 @@ final class Dispatcher extends CI_Controller {
 
         $this->load->helper('url');
         $this->load->helper('form');
-        $this->load->model("local_system_configuration", "systemConfiguration");
+        $this->load->model("host_configuration", "hostConfiguration");
         $this->load->model("component_depot", "componentDepot");
     }
 
@@ -48,6 +48,7 @@ final class Dispatcher extends CI_Controller {
     private function includeClasses()
     {
         $classNames = array(
+            'AlwaysAuthenticatedUser',
             'Request',
             'Response',
             'ValidationReport',
@@ -83,7 +84,7 @@ final class Dispatcher extends CI_Controller {
         /*
          * TODO: enforce some security policy on Models
          */
-        foreach (array($this->componentDepot, $this->systemConfiguration) as $pep)
+        foreach (array($this->componentDepot, $this->hostConfiguration) as $pep)
         {
             if ($pep instanceof PolicyEnforcementPointInterface)
             {
@@ -122,6 +123,7 @@ final class Dispatcher extends CI_Controller {
             $this->process($request);
         }
 
+        header("Content-Type: text/html; charset=UTF-8");
         $decoration_parameters = array(
             'css_main' => base_url() . 'css/main.css',
             'module_content' => $this->currentModule->renderView(new Response(Response::HTML)),

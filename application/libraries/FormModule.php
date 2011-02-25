@@ -24,6 +24,7 @@ class FormModule extends StandardModuleComposite {
 
     protected function decorate($output, Response $response)
     {
+        // TODO: insert CSRF token.
         if ($response->getViewType() === Response::HTML)
         {
             return form_open_multipart($this->action) . $output . form_close();

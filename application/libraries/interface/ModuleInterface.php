@@ -4,7 +4,7 @@ interface ModuleInterface {
 
     /**
      * After initialization a Module must be ready to receive bind(), validate()
-     * and render() messages.
+     * process() and renderView() messages.
      */
     public function initialize();
 
@@ -46,7 +46,7 @@ interface ModuleInterface {
     public function bind(RequestInterface $parameters);
 
     /**
-     * Validate input data. Messages are sent to $report.
+     * Validate input data. Errors are sent to $report.
      * @return void
      */
     public function validate(ValidationReportInterface $report);

@@ -3,7 +3,7 @@
 interface AccessControlRequestInterface {
 
     /**
-     * @return AccessControlAttributeAggregationInterface
+     * @return UserInterface
      */
     public function getSubject();
 
