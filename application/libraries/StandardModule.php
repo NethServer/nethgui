@@ -112,7 +112,7 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
 
     public function process()
     {
-
+        // DO NOTHING 
     }
 
     public function renderView(Response $response)

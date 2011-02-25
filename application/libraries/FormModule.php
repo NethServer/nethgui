@@ -13,10 +13,10 @@ class FormModule extends StandardModuleComposite {
 
     /**
      *
-     * @param string $identifier Panel unique identifier.
+     * @param string $identifier Module unique identifier.
      * @param string $action FORM tag action.
      */
-    public function __construct($identifier, $action = NULL)
+    public function __construct($identifier = NULL, $action = NULL)
     {
         parent::__construct($identifier);
         $this->action = is_null($action) ? uri_string() : $action;

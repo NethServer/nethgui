@@ -98,7 +98,7 @@ final class Dispatcher extends CI_Controller {
         if ($method == 'index')
         {
             // TODO: take the default module value from the configuration
-            $this->currentModule = $this->componentDepot->findModule('Dummy1Module');
+            $this->currentModule = $this->componentDepot->findModule('SecurityModule');
         }
         else
         {
