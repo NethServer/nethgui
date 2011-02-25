@@ -20,7 +20,7 @@ final class AlwaysAuthenticatedUser implements UserInterface {
 
     public function isAuthenticated()
     {
-        return true;
+        return TRUE;
     }
 
     public function setAuthenticated($status)

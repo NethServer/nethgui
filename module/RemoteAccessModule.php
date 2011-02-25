@@ -20,6 +20,7 @@ final class RemoteAccessModule extends FormModule implements TopModuleInterface 
             require_once('RemoteAccess/' . $dependency . 'Module.php');
             $childModuleClass = $dependency . 'Module';
             $childModule = new $childModuleClass();
+            $childModule->setHostConfiguration($this->hostConfiguration);
             $this->addChild($childModule);
         }
     }

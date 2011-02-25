@@ -3,6 +3,11 @@
 interface ModuleInterface {
 
     /**
+     * Sets the host configuration Model.
+     */
+    public function setHostConfiguration(HostConfigurationInterface $hostConfiguration);
+
+    /**
      * After initialization a Module must be ready to receive bind(), validate()
      * process() and renderView() messages.
      */
@@ -40,10 +45,10 @@ interface ModuleInterface {
     public function getDescription();
 
     /**
-     * Binds parameters to Module internal state.
-     * @param RequestInterface $parameters
+     * Binds Reqiest parameters to Module internal state.
+     * @param RequestInterface $request
      */
-    public function bind(RequestInterface $parameters);
+    public function bind(RequestInterface $request);
 
     /**
      * Validate input data. Errors are sent to $report.
@@ -51,9 +56,13 @@ interface ModuleInterface {
      */
     public function validate(ValidationReportInterface $report);
 
+    /**
+     * Performs Module logics.
+     */
     public function process();
 
     /**
+     * Returns the Module view contents.
      * @return string
      */
     public function renderView(Response $response);
@@ -66,3 +75,4 @@ interface TopModuleInterface {
      */
     public function getParentMenuIdentifier();
 }
+

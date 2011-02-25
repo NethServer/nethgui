@@ -1,6 +1,8 @@
 <?php
 
-// TODO: rename to RequestSomething (?)
+/**
+ * Request.  
+ */
 final class Request implements RequestInterface {
 
     /**
@@ -8,11 +10,21 @@ final class Request implements RequestInterface {
      */
     private $data;
 
-    static public function createInstanceFromServer()
+    /**
+     * @var UserInterface
+     */
+    private $user;
+
+    /**
+     * Create a new Request object from current application state.
+     * @param string $defaultModuleIdentifier
+     * @return RequestInterface
+     */
+    static public function createInstanceFromServer($defaultModuleIdentifier)
     {
         if ($_SERVER['REQUEST_METHOD'] == 'GET')
         {
-            $data = array();
+            $data = array($defaultModuleIdentifier => array());
         }
         elseif ($_SERVER['REQUEST_METHOD'] == 'POST')
         {
@@ -27,10 +39,14 @@ final class Request implements RequestInterface {
                 $data = $_POST;
             }
         }
-        return new self($data);
+
+        // TODO: retrieve user state from Session
+        $user = new AlwaysAuthenticatedUser();
+        
+        return new self($user, $data);
     }
 
-    private function __construct($data = array())
+    private function __construct(UserInterface $user, $data = array())
     {
         if (is_null($data))
         {
@@ -41,6 +57,7 @@ final class Request implements RequestInterface {
             $data = array($data);
         }
         $this->data = $data;
+        $this->user = $user;
     }
 
     public function hasParameter($parameterName)
@@ -67,25 +84,24 @@ final class Request implements RequestInterface {
         return $this->data[$parameterName];
     }
 
-    public function getParameterAsArray($parameterName)
-    {
-        $value = $this->getParameter($parameterName);
-
-        if (is_null($value))
-        {
-            return NULL;
-        }
-        elseif (is_array($value))
-        {
-            return array_values($value);
-        }
-
-        return array($value);
-    }
-
     public function getParameterAsInnerRequest($parameterName)
     {
-        return new self($this->getParameter($parameterName));
+        return new self($this->user, $this->getParameter($parameterName));
+    }
+
+    public function __toString()
+    {
+        $output = '';
+        foreach($this->getParameters() as $parameterName)
+        {
+            $output .= $parameterName . ' = ' . $this->getParameter($parameterName) . ', ';
+        }
+        return $output;
+    }
+
+    public function getUser()
+    {
+        return $this->user;
     }
 
 }

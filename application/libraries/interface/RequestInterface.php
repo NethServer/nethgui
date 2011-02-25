@@ -1,19 +1,11 @@
 <?php
 
-// TODO: rename to RequestSomethingInterface (?)
 interface RequestInterface {
     /**
      * @param string $parameterName
      * @return mixed
      */
     public function getParameter($parameterName);
-
-    /**
-     * Gets given entry as array()
-     * @param string $parameterName
-     * @return array
-     */
-    public function getParameterAsArray($parameterName);
     
     /**
      * Gets given entry as array()
@@ -38,5 +30,10 @@ interface RequestInterface {
      * @return bool
      */
     public function isEmpty();
+
+    /**
+     * @return UserInterface
+     */
+    public function getUser();
 
 }

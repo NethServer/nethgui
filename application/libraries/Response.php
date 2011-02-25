@@ -1,7 +1,6 @@
 <?php
 
-final class Response  {
-
+final class Response {
     const HTML = 0;
     const JS = 1;
 
@@ -36,11 +35,10 @@ final class Response  {
         return $name;
     }
 
-
     private function calculateModulePrefix(ModuleInterface $module)
     {
         $prefix = '';
-        while (true)
+        while (TRUE)
         {
             $identifier = $module->getIdentifier();
             $module = $module->getParent();
@@ -54,7 +52,6 @@ final class Response  {
                 $prefix = '[' . $identifier . ']' . $prefix;
             }
         }
-
         return $prefix;
     }
 

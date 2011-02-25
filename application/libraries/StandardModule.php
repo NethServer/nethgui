@@ -1,31 +1,35 @@
 <?php
 
-abstract class StandardModule implements ModuleInterface, PolicyEnforcementPointInterface {
+abstract class StandardModule implements ModuleInterface {
 
     /**
      * @var string
      */
     private $identifier;
     /**
-     * @var PolicyDecisionPointInterface;
-     */
-    private $policyDecisionPoint;
-    /**
      *
      * @var ModuleInterface;
      */
     private $parent;
-    private $formPrefix;
-
     /*
      * @var bool
      */
     private $initialized = FALSE;
     /**
+     * @var HostConfigurationInterface
+     */
+    protected $hostConfiguration;
+    /**
      *
      * @var RequestInterface
      */
-    protected $parameters;
+    protected $request;
+
+    /**
+     *
+     * @var array
+     */
+    protected $parameters = array();
 
     /**
      * @param string $identifier
@@ -39,7 +43,12 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
         else
         {
             $this->identifier = get_class($this);
-        }
+        }        
+    }
+
+    public function setHostConfiguration(HostConfigurationInterface $hostConfiguration)
+    {
+        $this->hostConfiguration = $hostConfiguration;
     }
 
     /**
@@ -87,32 +96,23 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
         return $this->parent;
     }
 
-    public function setPolicyDecisionPoint(PolicyDecisionPointInterface $pdp)
-    {
-        $this->policyDecisionPoint = $pdp;
-    }
 
-    public function getPolicyDecisionPoint()
+    public function bind(RequestInterface $request)
     {
-        return $this->policyDecisionPoint;
-    }
-
-    public function bind(RequestInterface $parameters)
-    {
-        $this->parameters = $parameters;
+        $this->request = $request;
     }
 
     public function validate(ValidationReportInterface $report)
     {
-        if ( ! $this->parameters instanceof RequestInterface)
+        foreach ($this->parameters as $parameter)
         {
-            throw new Exception("Unbounded parameters.");
+            // TODO: do parameter validation
         }
     }
 
     public function process()
     {
-        // DO NOTHING : override.
+
     }
 
     public function renderView(Response $response)
@@ -123,11 +123,21 @@ abstract class StandardModule implements ModuleInterface, PolicyEnforcementPoint
         }
     }
 
-    protected function renderCodeIgniterView(Response $response, $viewName, $parameters = array())
+    protected function renderCodeIgniterView(Response $response, $viewName, $viewState = array())
     {
-        $parameters['module'] = $this;
-        $parameters['response'] = $response;
-        return CI_Controller::get_instance()->load->view($viewName, $parameters, true);
+        $viewState['module'] = $this;
+        $viewState['response'] = $response;
+        $viewState['parameter'] = array();
+        $viewState['id'] = array();
+        $viewState['name'] = array();
+
+        foreach($this->parameters as $parameterName => $parameterValue)
+        {
+            $viewState['id'][$parameterName] = htmlspecialchars($response->getWidgetId($this, $parameterName));
+            $viewState['name'][$parameterName] = htmlspecialchars($response->getParameterName($this, $parameterName));
+            $viewState['parameter'][$parameterName] = htmlspecialchars($parameterValue);
+        }
+        return CI_Controller::get_instance()->load->view($viewName, $viewState, TRUE);
     }
 
 }

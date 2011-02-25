@@ -4,7 +4,7 @@ final class Dispatcher extends CI_Controller {
 
     /**
      * Model for getting components (Modules, Panels) from file system.
-     * @var Component_depot
+     * @var ComponentDepot
      */
     public $componentDepot;
     /**
@@ -25,8 +25,18 @@ final class Dispatcher extends CI_Controller {
 
         $this->load->helper('url');
         $this->load->helper('form');
-        $this->load->model("host_configuration", "hostConfiguration");
-        $this->load->model("component_depot", "componentDepot");
+
+        /*
+         * Create models.
+         */
+        $this->hostConfiguration = new MockHostConfiguration();
+        $this->componentDepot = new ComponentDepot($this->hostConfiguration);
+
+        /*
+         * TODO: enforce some security policy on Models
+         */
+        $this->hostConfiguration->setPolicyDecisionPoint(new PermissivePolicyDecisionPoint());
+        $this->componentDepot->setPolicyDecisionPoint(new PermissivePolicyDecisionPoint());
     }
 
     /**
@@ -48,7 +58,12 @@ final class Dispatcher extends CI_Controller {
     private function includeClasses()
     {
         $classNames = array(
+            'AccessControlRequest',
+            'AccessControlResponse',
             'AlwaysAuthenticatedUser',
+            'MockHostConfiguration',
+            'ModuleMenuIterator',
+            'ComponentDepot',
             'Request',
             'Response',
             'ValidationReport',
@@ -82,23 +97,11 @@ final class Dispatcher extends CI_Controller {
         $this->initialize();
 
         /*
-         * TODO: enforce some security policy on Models
-         */
-        foreach (array($this->componentDepot, $this->hostConfiguration) as $pep)
-        {
-            if ($pep instanceof PolicyEnforcementPointInterface)
-            {
-                $pep->setPolicyDecisionPoint(new PermissivePolicyDecisionPoint());
-            }
-        }
-
-
-        /*
          * Find current module
          */
         if ($method == 'index')
         {
-            // TODO: take the default module value from the configuration
+// TODO: take the default module value from the configuration
             $this->currentModule = $this->componentDepot->findModule('SecurityModule');
         }
         else
@@ -112,33 +115,29 @@ final class Dispatcher extends CI_Controller {
             show_404();
         }
 
+        $request = Request::createInstanceFromServer($this->currentModule->getIdentifier());
 
-        if ($_SERVER['REQUEST_METHOD'] == 'GET')
-        {
-            $this->currentModule->initialize();
-        }
-        elseif ($_SERVER['REQUEST_METHOD'] == 'POST')
-        {
-            $request = Request::createInstanceFromServer();
-            $this->process($request);
-        }
+        $this->hostConfiguration->setUser($request->getUser());
 
-        header("Content-Type: text/html; charset=UTF-8");
-        $decoration_parameters = array(
+        $this->dispatch($request);
+
+        $decorationParameters = array(
             'css_main' => base_url() . 'css/main.css',
             'module_content' => $this->currentModule->renderView(new Response(Response::HTML)),
             'module_menu' => $this->renderModuleMenu($this->componentDepot->getTopModules()),
             'breadcrumb_menu' => $this->renderBreadcrumbMenu(),
         );
 
-        $this->load->view('decoration.php', $decoration_parameters);
+        header("Content-Type: text/html; charset=UTF-8");
+        $this->load->view('decoration.php', $decorationParameters);
     }
 
     /**
+     * Dispatch $request to top modules.
      * @param RequestInterface $parameters
      * @return Response
      */
-    private function process(RequestInterface $request)
+    private function dispatch(RequestInterface $request)
     {
         $validationReport = new ValidationReport();
 
@@ -160,10 +159,10 @@ final class Dispatcher extends CI_Controller {
 
             $module->validate($validationReport);
 
-            // TODO: assign $validationReport
-
-            // TODO: call process()
-            $module->process();
+            if (count($validationReport->getErrors()) == 0)
+            {
+                $module->process();
+            }
         }
     }
 

@@ -16,7 +16,7 @@ abstract class StandardModuleComposite extends StandardModule implements ModuleC
         foreach ($this->children as $child)
         {
             if ( ! $child->isInitialized())
-            {
+            {                
                 $child->initialize();
             }
         }
@@ -41,22 +41,29 @@ abstract class StandardModuleComposite extends StandardModule implements ModuleC
         return array_values($this->children);
     }
 
-    public function bind(RequestInterface $parameters)
+    public function bind(RequestInterface $request)
     {
-        parent::bind($parameters);
+        parent::bind($request);
         foreach ($this->getChildren() as $module)
         {
-            $module->bind($parameters->getParameterAsInnerRequest($module->getIdentifier()));
+            $module->bind($request->getParameterAsInnerRequest($module->getIdentifier()));
         }
     }
 
     public function validate(ValidationReportInterface $report)
     {
         parent::validate($report);
-
         foreach ($this->getChildren() as $module)
         {
             $module->validate($report);
+        }
+    }
+
+    public function process()
+    {
+        foreach($this->getChildren() as $childModule)
+        {
+            $childModule->process();
         }
     }
 

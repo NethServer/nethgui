@@ -1,8 +1,21 @@
 <?php
 
 interface HostConfigurationInterface {
-    public function read($resource);
-    public function write($resource, $value);
-    public function apply();
+
+    /**
+     * @param array $resourcePath
+     */    
+    public function read($resourcePath);
+
+    /**
+     * @param array $resourcePath
+     * @param string $value
+     */
+    public function write($resourcePath, $value);
+
+    /**
+     * @return bool FALSE on failure
+     */
+    public function commit();
 }
 

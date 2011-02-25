@@ -1,9 +1,6 @@
 <?php
 
-// TODO: autoloading?
-require_once('ModuleMenuIterator.php');
-
-final class Component_depot extends CI_Model implements ModuleSetInterface, PolicyEnforcementPointInterface {
+final class ComponentDepot implements ModuleSetInterface, PolicyEnforcementPointInterface {
 
     /**
      * @var array
@@ -18,9 +15,19 @@ final class Component_depot extends CI_Model implements ModuleSetInterface, Poli
      */
     private $policyDecisionPoint;
 
-    public function __construct()
+    /**
+     * @var UserInterface
+     */
+    private $user;
+
+    /**
+     * @var HostConfigurationInterface
+     */
+    private $hostConfiguration;
+
+    public function __construct(HostConfigurationInterface $hostConfiguration)
     {
-        parent::__construct();
+        $this->hostConfiguration = $hostConfiguration;
         $this->createTopModules();
     }
 
@@ -78,8 +85,10 @@ final class Component_depot extends CI_Model implements ModuleSetInterface, Poli
             throw new Exception("Each module must provide an unique identifier.");
         }
 
-        log_message('debug', "Created `" . $module->getIdentifier() . "`, as `{$className}` instance.");
+        $module->setHostConfiguration($this->hostConfiguration);
 
+        log_message('debug', "Created `" . $module->getIdentifier() . "`, as `{$className}` instance.");
+      
         return $module;
     }
 
@@ -130,6 +139,11 @@ final class Component_depot extends CI_Model implements ModuleSetInterface, Poli
     public function getPolicyDecisionPoint()
     {
         return $this->policyDecisionPoint;
+    }
+
+    public function setUser(UserInterface $user)
+    {
+        $this->user = $user;
     }
 
     public function getTopModules()

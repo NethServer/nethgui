@@ -1,5 +1,3 @@
-<?php if(! $module instanceof ModuleInterface) die("Invalid Module instance."); ?>
-
 <h2>Gestione Remota</h2>
 <p>
     E' possibile consentire l'accesso a computer su reti remote al
@@ -9,8 +7,16 @@
 </p>
 
 <div>
-    <label>Indirizzo di rete</label><input type="text" name="<? echo $response->getParameterName($module, 'networkAddress') ?>" value="">
+    <label for="<?php echo $id['networkAddress'] ?>">Indirizzo di rete</label>
+    <input type="text"
+           id="<?php echo $id['networkAddress'] ?>"
+           name="<?php echo $name['networkAddress'] ?>"
+           value="<?php echo $parameter['networkAddress'] ?>">
 </div>
 <div>
-    <label>Maschera di rete</label><input type="text" name="<? echo $response->getParameterName($module, 'networkMask') ?>" value="">
+    <label for="<?php echo $id['networkMask'] ?>">Maschera di rete</label>
+    <input type="text"
+           id="<?php echo $id['networkMask'] ?>"
+           name="<?php echo $name['networkMask'] ?>"
+           value="<?php echo $parameter['networkMask'] ?>">
 </div>
