@@ -6,7 +6,7 @@
  */
 
 /**
- * TODO: interface description.
+ * A complex module, composed by other modules, must implement this interface.
  *
  * @package ExtensibleApi
  */

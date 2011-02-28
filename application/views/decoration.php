@@ -15,6 +15,6 @@
                 <div class="col2"><div id="moduleMenu"><?php echo $module_menu ?></div></div>
             </div>
         </div>
-        <div id="footer">Copyright 2011 &copy; Nethesis S.r.l</div>
+        <div id="footer">Powered by <a href="<?php echo site_url('../doc') ?>">NethGuiFramework</a> &ndash; Copyright 2011 &copy; Nethesis S.r.l</div>
     </body>
 </html>

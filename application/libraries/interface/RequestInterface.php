@@ -6,7 +6,7 @@
  */
 
 /**
- * TODO: describe interface
+ * A RequestInterface object carries parameters to a Module (and its submodules).
  *
  * @package NethGuiFramework
  */

@@ -6,22 +6,28 @@
  */
 
 /**
- * TODO: describe interface
+ * AccessControlRequestInterface.
  *
+ * An AccessControlRequestInterface implementing object encapsulates the authorization
+ * response that can be ``GRANTED`` or ``NOT GRANTED``.
+ *
+ * @see AccessControlRequestInterface
  * @package Authorization
  */
 interface AccessControlResponseInterface {
     /**
-     * @return AccessControlRequestInterface
+     * Get a reference to the original Request.
+     * @return AccessControlRequestInterface The original Request.
      */
     public function getRequest();
 
     /**
-     * @return bool
+     * @return bool TRUE, if granted, FALSE otherwise.
      */
     public function isAccessGranted();
 
     /**
+     * Can contain a message explaining the response state.
      * @return string
      */
     public function getMessage();

@@ -6,7 +6,7 @@
  */
 
 /**
- * TODO: describe interface
+ * UserInterface provides access to the login information of the current user.
  *
  * @package NethGuiFramework
  */

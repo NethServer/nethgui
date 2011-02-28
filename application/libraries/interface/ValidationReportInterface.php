@@ -6,6 +6,7 @@
  */
 
 /**
+ * UNSTABLE
  * TODO: describe interface
  *
  * @package NethGuiFramework

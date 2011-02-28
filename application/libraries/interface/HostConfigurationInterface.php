@@ -6,7 +6,12 @@
  */
 
 /**
- * TODO: describe interface
+ * HostConfigurationInterface
+ *
+ * An HostConfigurationInterface implementing object allows reading and changing
+ * the current host machine configuration.
+ *
+ * Access to a certain configuration values is defined by an array of keys.
  *
  * @package NethGuiFramework
  */

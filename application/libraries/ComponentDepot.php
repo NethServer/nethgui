@@ -6,7 +6,14 @@
  */
 
 /**
- * TODO: describe class
+ * ComponentDepot
+ *
+ * TODO: rename this class
+ * 
+ * Responsibility:
+ *    - creating instances of "Top" Modules
+ *    - accessing  "Top" Modules
+ *    - filtering access to "Top" Modules depending on User's credentials
  *
  * @package NethGuiFramework
  * @subpackage StandardImplementation

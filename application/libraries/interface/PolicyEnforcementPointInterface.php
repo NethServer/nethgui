@@ -6,8 +6,13 @@
  */
 
 /**
- * TODO: describe interface
+ * PolicyEnforcementPointInterface (PEP)
  *
+ * A PEP interface implementing object authorizes access to its resources
+ * depending on the responses of another object, implementing
+ * PolicyDecisionPointInterface.
+ *
+ * @see PolicyDecisionPointInterface
  * @package Authorization
  */
 interface PolicyEnforcementPointInterface {
@@ -21,7 +26,11 @@ interface PolicyEnforcementPointInterface {
      */
     public function setPolicyDecisionPoint(PolicyDecisionPointInterface $pdp);
 
-    // TODO: verify if `setUser` is consistent with the concept of "PEP".
+    /**
+     * TODO: verify if `setUser` is consistent with the concept of "PEP".
+     * @deprecated
+     * @param UserInterface $user;
+     */
     public function setUser(UserInterface $user);
     
 }

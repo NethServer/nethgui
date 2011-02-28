@@ -6,8 +6,12 @@
  */
 
 /**
- * TODO: describe interface
+ * AccessControlRequestInterface.
  *
+ * An AccessControlRequestInterface implementing object represents a request
+ * originating from a Subject to perform a specific Action on a given Resource.
+ *
+ * @see AccessControlResponseInterface
  * @package Authorization
  */
 interface AccessControlRequestInterface {
