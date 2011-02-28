@@ -1,7 +1,15 @@
 <?php
+/**
+ * NethGui
+ *
+ * @package NethGuiFramework
+ */
 
 /**
- * Request.  
+ * TODO: describe class
+ *
+ * @package NethGuiFramework
+ * @subpackage StandardImplementation
  */
 final class Request implements RequestInterface {
 

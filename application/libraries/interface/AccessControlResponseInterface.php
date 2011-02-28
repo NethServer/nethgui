@@ -1,4 +1,15 @@
 <?php
+/**
+ * NethGui
+ *
+ * @package Authorization
+ */
+
+/**
+ * TODO: describe interface
+ *
+ * @package Authorization
+ */
 interface AccessControlResponseInterface {
     /**
      * @return AccessControlRequestInterface

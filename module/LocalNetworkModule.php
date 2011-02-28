@@ -1,5 +1,15 @@
 <?php
+/**
+ * NethGui
+ *
+ * @package Modules
+ */
 
+/**
+ * TODO: describe class
+ *
+ * @package Modules
+ */
 final class LocalNetworkModule extends StandardModule implements TopModuleInterface {
 
     public function getTitle()

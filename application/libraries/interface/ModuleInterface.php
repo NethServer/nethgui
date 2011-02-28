@@ -1,5 +1,16 @@
 <?php
+/**
+ * NethGui
+ *
+ * @package ExtensibleApi
+ */
 
+/**
+ * An object implementing a ModuleInterface...
+ *
+ * TODO: interface description.
+ * @package ExtensibleApi
+ */
 interface ModuleInterface {
 
     /**
@@ -68,6 +79,11 @@ interface ModuleInterface {
     public function renderView(Response $response);
 }
 
+/**
+ * TODO: interface description.
+ *
+ * @package ExtensibleApi
+ */
 interface TopModuleInterface {
 
     /**

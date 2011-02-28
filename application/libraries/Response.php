@@ -1,5 +1,16 @@
 <?php
+/**
+ * NethGui
+ *
+ * @package NethGuiFramework
+ */
 
+/**
+ * TODO: describe class
+ *
+ * @package NethGuiFramework
+ * @subpackage StandardImplementation
+ */
 final class Response {
     const HTML = 0;
     const JS = 1;

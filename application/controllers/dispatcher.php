@@ -1,5 +1,16 @@
 <?php
+/**
+ * NethGui
+ *
+ * @package NethGuiFramework
+ */
 
+/**
+ * TODO: describe class
+ *
+ * @package NethGuiFramework
+ * @subpackage CodeIgniter
+ */
 final class Dispatcher extends CI_Controller {
 
     /**

@@ -1,5 +1,15 @@
 <?php
+/**
+ * NethGui
+ *
+ * @package Authorization
+ */
 
+/**
+ * TODO: describe class
+ *
+ * @package Authorization
+ */
 final class AccessControlResponse implements AccessControlResponseInterface {
 
     public function __construct(AccessControlRequestInterface $originalRequest, $granted = TRUE, $message = '')

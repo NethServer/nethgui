@@ -1,5 +1,15 @@
 <?php
+/**
+ * NethGui
+ *
+ * @package NethGuiFramework
+ */
 
+/**
+ * TODO: describe interface
+ *
+ * @package NethGuiFramework
+ */
 interface RequestInterface {
     /**
      * @param string $parameterName

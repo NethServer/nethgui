@@ -1,5 +1,16 @@
 <?php
+/**
+ * NethGui
+ *
+ * @package Modules
+ */
 
+/**
+ * TODO: describe class
+ *
+ * @package Modules
+ * @subpackage RemoteAccess
+ */
 final class RemoteManagementModule extends StandardModule {
 
     public function getDescription()
@@ -45,8 +56,7 @@ final class RemoteManagementModule extends StandardModule {
     }
 
     public function renderView(Response $response)
-    {
-        $output = parent::renderView($response);
+    {        
         $output = $this->renderCodeIgniterView($response, 'RemoteAccess/RemoteManagementView.php');
         return $output;
     }

@@ -1,7 +1,15 @@
 <?php
+/**
+ * NethGui
+ *
+ * @package NethGuiFramework
+ */
 
 /**
  * A FormModule wraps its children into a FORM tag.
+ *
+ * @package NethGuiFramework
+ * @subpackage StandardImplementation
  */
 class FormModule extends StandardModuleComposite {
 

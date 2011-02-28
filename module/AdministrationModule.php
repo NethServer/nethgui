@@ -1,4 +1,15 @@
 <?php
+/**
+ * NethGui
+ *
+ * @package Modules
+ */
+
+/**
+ * TODO: describe class
+ *
+ * @package Modules
+ */
 final class AdministrationModule extends StandardModule implements TopModuleInterface {
 
     public function getTitle() {

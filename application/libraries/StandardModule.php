@@ -1,5 +1,16 @@
 <?php
+/**
+ * NethGui
+ *
+ * @package NethGuiFramework
+ */
 
+/**
+ * TODO: describe class
+ *
+ * @package NethGuiFramework
+ * @subpackage StandardImplementation
+ */
 abstract class StandardModule implements ModuleInterface {
 
     /**

@@ -1,4 +1,15 @@
 <?php
+/**
+ * NethGui
+ *
+ * @package ExtensibleApi
+ */
+
+/**
+ * TODO: interface description.
+ *
+ * @package ExtensibleApi
+ */
 interface ModuleCompositeInterface {
     /**
      * @return array An array of ModuleInterface implementing objects.

@@ -1,7 +1,16 @@
 <?php
 
 /**
- * Implementation of ModuleCompositeInterface
+ * NethGui
+ *
+ * @package NethGuiFramework
+ */
+
+/**
+ * TODO: describe class
+ *
+ * @package NethGuiFramework
+ * @subpackage StandardImplementation
  */
 abstract class StandardModuleComposite extends StandardModule implements ModuleCompositeInterface {
 
@@ -16,7 +25,7 @@ abstract class StandardModuleComposite extends StandardModule implements ModuleC
         foreach ($this->children as $child)
         {
             if ( ! $child->isInitialized())
-            {                
+            {
                 $child->initialize();
             }
         }
@@ -61,7 +70,7 @@ abstract class StandardModuleComposite extends StandardModule implements ModuleC
 
     public function process()
     {
-        foreach($this->getChildren() as $childModule)
+        foreach ($this->getChildren() as $childModule)
         {
             $childModule->process();
         }

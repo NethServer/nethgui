@@ -1,5 +1,16 @@
 <?php
+/**
+ * NethGui
+ *
+ * @package NethGuiFramework
+ */
 
+/**
+ * TODO: describe class
+ *
+ * @package NethGuiFramework
+ * @subpackage Testing
+ */
 final class MockHostConfiguration implements HostConfigurationInterface, PolicyEnforcementPointInterface {
 
     /**

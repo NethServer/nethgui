@@ -1,7 +1,15 @@
 <?php
+/**
+ * NethGui
+ *
+ * @package NethGuiFramework
+ */
 
 /**
  * A ContainerModule wraps its children into a DIV tag.
+ *
+ * @package NethGuiFramework
+ * @subpackage StandardImplementation
  */
 class ContainerModule extends StandardModuleComposite {
 
