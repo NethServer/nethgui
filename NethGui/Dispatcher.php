@@ -1,17 +1,6 @@
 <?php
-/**
- * NethGui
- *
- * @package NethGuiFramework
- */
 
-/**
- * TODO: describe class
- *
- * @package NethGuiFramework
- * @subpackage CodeIgniter
- */
-final class Dispatcher extends CI_Controller {
+final class NethGui_Dispatcher {
 
     /**
      * Model for getting components (Modules, Panels) from file system.
@@ -29,14 +18,20 @@ final class Dispatcher extends CI_Controller {
     private $currentModule;
 
 
+    /**
+     *
+     * @param CI_Controller $controller 
+     */
+    public function __construct(CI_Controller $controller)
+    {
+        $this->controller = $controller;
+        $this->initialize();
+    }
+
     private function initialize()
     {
-        $this->includeInterfaces();
-        $this->includeClasses();
-
-        $this->load->helper('url');
-        $this->load->helper('form');
-
+        $this->includeArtifacts();
+        
         /*
          * Create models.
          */
@@ -50,44 +45,42 @@ final class Dispatcher extends CI_Controller {
         $this->componentDepot->setPolicyDecisionPoint(new PermissivePolicyDecisionPoint());
     }
 
-    /**
-     * Loads all `*Interface.php` files under `APPPATH/libraries/interface/`
-     * directory.
-     */
-    private function includeInterfaces()
-    {
-        $directoryIterator = new DirectoryIterator(APPPATH . 'libraries/interface');
-        foreach ($directoryIterator as $element)
-        {
-            if (substr($element->getFilename(), -13) == 'Interface.php')
-            {
-                require_once($element->getPathname());
-            }
-        }
-    }
 
-    private function includeClasses()
+    private function includeArtifacts()
     {
         $classNames = array(
-            'AccessControlRequest',
-            'AccessControlResponse',
-            'AlwaysAuthenticatedUser',
-            'MockHostConfiguration',
-            'ModuleMenuIterator',
-            'ComponentDepot',
-            'Request',
-            'Response',
-            'ValidationReport',
-            'PermissivePolicyDecisionPoint',
-            'StandardModule',
-            'StandardModuleComposite',
-            'FormModule',
-            'ContainerModule',
+            'Authorization/AccessControlRequestInterface',
+            'Authorization/AccessControlResponseInterface',
+            'Authorization/PolicyDecisionPointInterface',
+            'Authorization/PolicyEnforcementPointInterface',
+
+            'Core/HostConfigurationInterface',
+            'Core/ModuleCompositeInterface',
+            'Core/ModuleInterface',
+            'Core/ModuleSetInterface',
+            'Core/RequestInterface',
+            'Core/UserInterface',
+            'Core/ValidationReportInterface',
+
+            'Authorization/AccessControlRequest',
+            'Authorization/AccessControlResponse',
+            'Core/AlwaysAuthenticatedUser',
+            'Core/MockHostConfiguration',
+            'Core/ModuleMenuIterator',
+            'Core/ComponentDepot',
+            'Core/Request',
+            'Core/Response',
+            'Core/ValidationReport',
+            'Authorization/PermissivePolicyDecisionPoint',
+            'Core/StandardModule',
+            'Core/StandardModuleComposite',
+            'Core/FormModule',
+            'Core/ContainerModule',
         );
 
         foreach ($classNames as $className)
         {
-            require_once(APPPATH . 'libraries/' . $className . '.php');
+            require_once($className . '.php');
         }
     }
 
@@ -97,15 +90,9 @@ final class Dispatcher extends CI_Controller {
      * @param string $method
      * @param array $parameters
      */
-    public function _remap($method, $parameters = array())
+    public function main($method, $parameters = array())
     {
-        if ($method == 'phpinfo')
-        {
-            phpinfo();
-            return;
-        }
 
-        $this->initialize();
 
         /*
          * Find current module
@@ -140,8 +127,9 @@ final class Dispatcher extends CI_Controller {
             'breadcrumb_menu' => $this->renderBreadcrumbMenu(),
         );
 
-        header("Content-Type: text/html; charset=UTF-8");
-        $this->load->view('decoration.php', $decorationParameters);
+        header("Content-Type: text/html; charset=UTF-8");        
+        $this->controller->load->view('../../NethGui/Core/View/decoration.php', $decorationParameters);
+        
     }
 
     /**
@@ -248,11 +236,10 @@ final class Dispatcher extends CI_Controller {
         }
         else
         {
-            $html = anchor(strtolower(get_class($this)) . '/' . $module->getIdentifier(), htmlspecialchars($module->getTitle()), array('class' => 'moduleTitle', 'title' => htmlspecialchars($module->getDescription())));
+            $html = anchor(strtolower(get_class($this->controller)) . '/' . $module->getIdentifier(), htmlspecialchars($module->getTitle()), array('class' => 'moduleTitle', 'title' => htmlspecialchars($module->getDescription())));
         }
 
         return $html;
     }
 
 }
-

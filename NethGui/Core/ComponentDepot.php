@@ -57,7 +57,7 @@ final class ComponentDepot implements ModuleSetInterface, PolicyEnforcementPoint
     private function createTopModules()
     {
         // TODO: set a configuration parameter for modules directory
-        $directoryIterator = new DirectoryIterator(APPPATH . '../module');
+        $directoryIterator = new DirectoryIterator(dirname(__FILE__) . '/../Module');
         foreach ($directoryIterator as $element)
         {
             if (substr($element->getFilename(), -10) == 'Module.php')

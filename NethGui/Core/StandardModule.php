@@ -148,7 +148,7 @@ abstract class StandardModule implements ModuleInterface {
             $viewState['name'][$parameterName] = htmlspecialchars($response->getParameterName($this, $parameterName));
             $viewState['parameter'][$parameterName] = htmlspecialchars($parameterValue);
         }
-        return CI_Controller::get_instance()->load->view($viewName, $viewState, TRUE);
+        return CI_Controller::get_instance()->load->view('../../NethGui/View/' . $viewName, $viewState, TRUE);
     }
 
 }
