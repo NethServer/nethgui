@@ -129,6 +129,7 @@ final class Dispatcher extends CI_Controller {
         $request = Request::createInstanceFromServer($this->currentModule->getIdentifier());
 
         $this->hostConfiguration->setUser($request->getUser());
+        $this->componentDepot->setUser($request->getUser());
 
         $this->dispatch($request);
 
