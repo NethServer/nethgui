@@ -11,14 +11,14 @@
  * @package Modules
  * @subpackage RemoteAccess
  */
-final class RemoteManagementModule extends StandardModule {
+final class NethGui_Module_RemoteAccess_RemoteManagementModule extends NethGui_Core_StandardModule {
 
     public function getDescription()
     {
         return "Controllo di accesso al server-manager.";
     }
 
-    public function bind(RequestInterface $request)
+    public function bind(NethGui_Core_RequestInterface $request)
     {
         parent::bind($request);
         if ($request->hasParameter('networkMask'))
@@ -55,7 +55,7 @@ final class RemoteManagementModule extends StandardModule {
         }
     }
 
-    public function renderView(Response $response)
+    public function renderView(NethGui_Core_Response $response)
     {        
         $output = $this->renderCodeIgniterView($response, 'RemoteAccess/RemoteManagementView.php');
         return $output;

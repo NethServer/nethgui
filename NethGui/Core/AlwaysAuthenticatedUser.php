@@ -11,7 +11,7 @@
  * @package NethGuiFramework
  * @subpackage Testing
  */
-final class AlwaysAuthenticatedUser implements UserInterface {
+final class NethGui_Core_AlwaysAuthenticatedUser implements NethGui_Core_UserInterface {
 
     private $credentials;
 

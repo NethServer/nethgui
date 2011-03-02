@@ -6,14 +6,14 @@
  */
 
 /**
- * A ContainerModule wraps its children into a DIV tag.
+ * A NethGui_Core_ContainerModule wraps its children into a DIV tag.
  *
  * @package NethGuiFramework
  * @subpackage StandardImplementation
  */
-class ContainerModule extends StandardModuleComposite {
+class NethGui_Core_ContainerModule extends NethGui_Core_StandardModuleComposite {
 
-    protected function decorate($output, Response $response)
+    protected function decorate($output, NethGui_Core_Response $response)
     {
         if ($response->getViewType() === Response::HTML)
         {

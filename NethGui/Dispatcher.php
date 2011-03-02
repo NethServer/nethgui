@@ -35,14 +35,14 @@ final class NethGui_Dispatcher {
         /*
          * Create models.
          */
-        $this->hostConfiguration = new MockHostConfiguration();
-        $this->componentDepot = new ComponentDepot($this->hostConfiguration);
+        $this->hostConfiguration = new NethGui_Core_MockHostConfiguration();
+        $this->componentDepot = new NethGui_Core_ComponentDepot($this->hostConfiguration);
 
         /*
          * TODO: enforce some security policy on Models
          */
-        $this->hostConfiguration->setPolicyDecisionPoint(new PermissivePolicyDecisionPoint());
-        $this->componentDepot->setPolicyDecisionPoint(new PermissivePolicyDecisionPoint());
+        $this->hostConfiguration->setPolicyDecisionPoint(new NethGui_Authorization_PermissivePolicyDecisionPoint());
+        $this->componentDepot->setPolicyDecisionPoint(new NethGui_Authorization_PermissivePolicyDecisionPoint());
     }
 
 
@@ -100,7 +100,7 @@ final class NethGui_Dispatcher {
         if ($method == 'index')
         {
 // TODO: take the default module value from the configuration
-            $this->currentModule = $this->componentDepot->findModule('SecurityModule');
+            $this->currentModule = $this->componentDepot->findModule('NethGui_Module_SecurityModule');
         }
         else
         {
@@ -108,12 +108,12 @@ final class NethGui_Dispatcher {
         }
 
         if (is_null($this->currentModule)
-                OR ! $this->currentModule instanceof TopModuleInterface)
+                OR ! $this->currentModule instanceof NethGui_Core_TopModuleInterface)
         {
             show_404();
         }
 
-        $request = Request::createInstanceFromServer($this->currentModule->getIdentifier());
+        $request = NethGui_Core_Request::createInstanceFromServer($this->currentModule->getIdentifier());
 
         $this->hostConfiguration->setUser($request->getUser());
         $this->componentDepot->setUser($request->getUser());
@@ -122,7 +122,7 @@ final class NethGui_Dispatcher {
 
         $decorationParameters = array(
             'css_main' => base_url() . 'css/main.css',
-            'module_content' => $this->currentModule->renderView(new Response(Response::HTML)),
+            'module_content' => $this->currentModule->renderView(new NethGui_Core_Response(NethGui_Core_Response::HTML)),
             'module_menu' => $this->renderModuleMenu($this->componentDepot->getTopModules()),
             'breadcrumb_menu' => $this->renderBreadcrumbMenu(),
         );
@@ -134,12 +134,12 @@ final class NethGui_Dispatcher {
 
     /**
      * Dispatch $request to top modules.
-     * @param RequestInterface $parameters
+     * @param NethGui_Core_RequestInterface $parameters
      * @return Response
      */
-    private function dispatch(RequestInterface $request)
+    private function dispatch(NethGui_Core_RequestInterface $request)
     {
-        $validationReport = new ValidationReport();
+        $validationReport = new NethGui_Core_ValidationReport();
 
         foreach ($request->getParameters() as $moduleIdentifier)
         {
@@ -172,7 +172,7 @@ final class NethGui_Dispatcher {
 
         $rootLine = array();
 
-        while ( ! is_null($module) && $module instanceof TopModuleInterface)
+        while ( ! is_null($module) && $module instanceof NethGui_Core_TopModuleInterface)
         {
             $rootLineElement = $this->renderModuleAnchor($module);
             if (strlen($rootLineElement) > 0)
@@ -221,7 +221,7 @@ final class NethGui_Dispatcher {
         return '<ul>' . $output . '</ul>';
     }
 
-    private function renderModuleAnchor(ModuleInterface $module)
+    private function renderModuleAnchor(NethGui_Core_ModuleInterface $module)
     {
         $html = '';
 

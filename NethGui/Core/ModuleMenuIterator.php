@@ -12,7 +12,7 @@
  * @subpackage StandardImplementation
  * @internal
  */
-final class ModuleMenuIterator implements RecursiveIterator {
+final class NethGui_Core_ModuleMenuIterator implements RecursiveIterator {
 
     private $elements;
     /**
@@ -23,7 +23,7 @@ final class ModuleMenuIterator implements RecursiveIterator {
     private $key;
 
 
-    public function __construct(ModuleSetInterface $moduleSet, $pointer, &$elements = array())
+    public function __construct(NethGui_Core_ModuleSetInterface $moduleSet, $pointer, &$elements = array())
     {
         $this->elements = $elements;
         $this->pointer = $pointer;

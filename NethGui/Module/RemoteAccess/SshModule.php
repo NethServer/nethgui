@@ -11,7 +11,7 @@
  * @package Modules
  * @subpackage RemoteAccess
  */
-final class SshModule extends StandardModule {
+final class NethGui_Module_RemoteAccess_SshModule extends NethGui_Core_StandardModule {
 
 
 }

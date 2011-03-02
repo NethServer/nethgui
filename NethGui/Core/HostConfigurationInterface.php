@@ -8,14 +8,14 @@
 /**
  * HostConfigurationInterface
  *
- * An HostConfigurationInterface implementing object allows reading and changing
+ * An NethGui_Core_HostConfigurationInterface implementing object allows reading and changing
  * the current host machine configuration.
  *
  * Access to a certain configuration values is defined by an array of keys.
  *
  * @package NethGuiFramework
  */
-interface HostConfigurationInterface {
+interface NethGui_Core_HostConfigurationInterface {
 
     /**
      * @param array $resourcePath

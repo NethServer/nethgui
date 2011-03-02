@@ -6,11 +6,11 @@
  */
 
 /**
- * UserInterface provides access to the login information of the current user.
+ * NethGui_Core_UserInterface provides access to the login information of the current user.
  *
  * @package NethGuiFramework
  */
-interface UserInterface {
+interface NethGui_Core_UserInterface {
     /**
      * @return boolean
      */

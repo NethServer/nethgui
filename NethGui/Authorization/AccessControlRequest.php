@@ -10,9 +10,9 @@
  *
  * @package Authorization
  */
-final class AccessControlRequest implements AccessControlRequestInterface {
+final class NethGui_Authorization_AccessControlRequest implements NethGui_Authorization_AccessControlRequestInterface {
 
-    public function __construct(UserInterface $subject, $resource, $action)
+    public function __construct(NethGui_Core_UserInterface $subject, $resource, $action)
     {
         $this->subject = $subject;
         $this->action = $action;

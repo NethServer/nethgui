@@ -6,18 +6,18 @@
  */
 
 /**
- * A ModuleInterface implementation is delegated to receive input parameters,
+ * A NethGui_Core_ModuleInterface implementation is delegated to receive input parameters,
  * validate, process and (optionally) return an html view of the Module.
  *
  * TODO: interface description.
  * @package ExtensibleApi
  */
-interface ModuleInterface {
+interface NethGui_Core_ModuleInterface {
 
     /**
      * Sets the host configuration Model.
      */
-    public function setHostConfiguration(HostConfigurationInterface $hostConfiguration);
+    public function setHostConfiguration(NethGui_Core_HostConfigurationInterface $hostConfiguration);
 
     /**
      * After initialization a Module must be ready to receive bind(), validate()
@@ -40,9 +40,9 @@ interface ModuleInterface {
 
     /**
      * Sets the reference to the parent Module.
-     * @see ModuleCompositeInterface addChild() operation.
+     * @see NethGui_Core_ModuleCompositeInterface addChild() operation.
      */
-    public function setParent(ModuleInterface $parentModule);
+    public function setParent(NethGui_Core_ModuleInterface $parentModule);
 
     /**
      * Gets a reference to the parent Module.
@@ -63,16 +63,16 @@ interface ModuleInterface {
     public function getDescription();
 
     /**
-     * Binds Request parameters to Module internal state.
-     * @param RequestInterface $request
+     * Binds NethGui_Core_Request parameters to Module internal state.
+     * @param NethGui_Core_RequestInterface $request
      */
-    public function bind(RequestInterface $request);
+    public function bind(NethGui_Core_RequestInterface $request);
 
     /**
      * Validate input data. Errors are sent to $report.
      * @return void
      */
-    public function validate(ValidationReportInterface $report);
+    public function validate(NethGui_Core_ValidationReportInterface $report);
 
     /**
      * Performs Module logics.
@@ -83,7 +83,7 @@ interface ModuleInterface {
      * Returns the Module view contents.
      * @return string An (HTML formatted) string
      */
-    public function renderView(Response $response);
+    public function renderView(NethGui_Core_Response $response);
 }
 
 /**
@@ -96,7 +96,7 @@ interface ModuleInterface {
  *
  * @package ExtensibleApi
  */
-interface TopModuleInterface {
+interface NethGui_Core_TopModuleInterface {
 
     /**
      * @return string Unique parent module identifier

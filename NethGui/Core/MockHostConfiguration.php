@@ -11,7 +11,7 @@
  * @package NethGuiFramework
  * @subpackage Testing
  */
-final class MockHostConfiguration implements HostConfigurationInterface, PolicyEnforcementPointInterface {
+final class NethGui_Core_MockHostConfiguration implements NethGui_Core_HostConfigurationInterface, NethGui_Authorization_PolicyEnforcementPointInterface {
 
     /**
      * @var PolicyDecisionPointInterface;
@@ -39,7 +39,7 @@ final class MockHostConfiguration implements HostConfigurationInterface, PolicyE
 
     public function read($resourcePath)
     {
-        $request = new AccessControlRequest($this->user, implode('/', $resourcePath), 'READ');
+        $request = new NethGui_Authorization_AccessControlRequest($this->user, implode('/', $resourcePath), 'READ');
 
         $response = $this->policyDecisionPoint->authorizeRequest($request);
 
@@ -65,7 +65,7 @@ final class MockHostConfiguration implements HostConfigurationInterface, PolicyE
         
     }
 
-    public function setPolicyDecisionPoint(PolicyDecisionPointInterface $pdp)
+    public function setPolicyDecisionPoint(NethGui_Authorization_PolicyDecisionPointInterface $pdp)
     {
         $this->policyDecisionPoint = $pdp;
     }
@@ -75,7 +75,7 @@ final class MockHostConfiguration implements HostConfigurationInterface, PolicyE
         return $this->policyDecisionPoint;
     }
 
-    public function  setUser(UserInterface $user)
+    public function  setUser(NethGui_Core_UserInterface $user)
     {
         $this->user = $user;
     }

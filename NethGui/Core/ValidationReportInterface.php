@@ -11,7 +11,7 @@
  *
  * @package NethGuiFramework
  */
-interface ValidationReportInterface {
+interface NethGui_Core_ValidationReportInterface {
     public function addError($fieldId, $message);
 
     /**

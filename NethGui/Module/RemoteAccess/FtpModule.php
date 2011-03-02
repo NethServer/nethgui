@@ -11,7 +11,7 @@
  * @package Modules
  * @subpackage RemoteAccess
  */
-final class FtpModule extends StandardModule {
+final class NethGui_Module_RemoteAccess_FtpModule extends NethGui_Core_StandardModule {
 
 
 

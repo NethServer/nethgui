@@ -18,7 +18,7 @@
  * @package NethGuiFramework
  * @subpackage StandardImplementation
  */
-final class ComponentDepot implements ModuleSetInterface, PolicyEnforcementPointInterface {
+final class NethGui_Core_ComponentDepot implements NethGui_Core_ModuleSetInterface, NethGui_Authorization_PolicyEnforcementPointInterface {
 
     /**
      * @var array
@@ -43,7 +43,7 @@ final class ComponentDepot implements ModuleSetInterface, PolicyEnforcementPoint
      */
     private $hostConfiguration;
 
-    public function __construct(HostConfigurationInterface $hostConfiguration)
+    public function __construct(NethGui_Core_HostConfigurationInterface $hostConfiguration)
     {
         $this->hostConfiguration = $hostConfiguration;
         $this->createTopModules();
@@ -65,11 +65,11 @@ final class ComponentDepot implements ModuleSetInterface, PolicyEnforcementPoint
                 // Filename OK. Include it.
                 require_once($element->getPathname());
 
-                $className = substr($element->getFileName(), 0, -4);
+                $className = 'NethGui_Module_' . substr($element->getFileName(), 0, -4);
 
                 $classReflector = new ReflectionClass($className);
 
-                if ($classReflector->isInstantiable() && $classReflector->implementsInterface("TopModuleInterface"))
+                if ($classReflector->isInstantiable() && $classReflector->implementsInterface("NethGui_Core_TopModuleInterface"))
                 {
                     $module = $this->createModule($className);
                     $this->registerModule($module);
@@ -93,9 +93,9 @@ final class ComponentDepot implements ModuleSetInterface, PolicyEnforcementPoint
     {
         $module = new $className();
 
-        if ( ! $module instanceof ModuleInterface)
+        if ( ! $module instanceof NethGui_Core_ModuleInterface)
         {
-            throw new Exception("Class `{$className}` must implement ModuleInterface");
+            throw new Exception("Class `{$className}` must implement NethGui_Core_ModuleInterface");
         }
 
         if (is_null($module->getIdentifier()))
@@ -113,9 +113,9 @@ final class ComponentDepot implements ModuleSetInterface, PolicyEnforcementPoint
     /**
      * Adds $module to this set. Each member of this set
      * shares the same Policy Decision Point.
-     * @param ModuleInterface $module The module to be attached to this set.
+     * @param NethGui_Core_ModuleInterface $module The module to be attached to this set.
      */
-    private function registerModule(ModuleInterface $module)
+    private function registerModule(NethGui_Core_ModuleInterface $module)
     {
         if(isset($this->modules[$module->getIdentifier()]))
         {
@@ -124,7 +124,7 @@ final class ComponentDepot implements ModuleSetInterface, PolicyEnforcementPoint
 
         $this->modules[$module->getIdentifier()] = $module;
 
-        if ($module instanceof TopModuleInterface)
+        if ($module instanceof NethGui_Core_TopModuleInterface)
         {
             $parentId = $module->getParentMenuIdentifier();
             if (is_null($parentId))
@@ -138,16 +138,16 @@ final class ComponentDepot implements ModuleSetInterface, PolicyEnforcementPoint
     /**
      * Use $pdp as Policy Decision Point for each member of the set
      * that implements PolicyEnforcementPointInterface.
-     * @param PolicyDecisionPointInterface $pdp
+     * @param NethGui_Authorization_PolicyDecisionPointInterface $pdp
      * @return void
      */
-    public function setPolicyDecisionPoint(PolicyDecisionPointInterface $pdp)
+    public function setPolicyDecisionPoint(NethGui_Authorization_PolicyDecisionPointInterface $pdp)
     {
         $this->policyDecisionPoint = $pdp;
 
         foreach ($this->modules as $module)
         {
-            if ($module instanceof PolicyEnforcementPointInterface)
+            if ($module instanceof NethGui_Authorization_PolicyEnforcementPointInterface)
             {
                 $module->setPolicyDecisionPoint($pdp);
             }
@@ -159,7 +159,7 @@ final class ComponentDepot implements ModuleSetInterface, PolicyEnforcementPoint
         return $this->policyDecisionPoint;
     }
 
-    public function setUser(UserInterface $user)
+    public function setUser(NethGui_Core_UserInterface $user)
     {
         $this->user = $user;
     }
@@ -167,7 +167,7 @@ final class ComponentDepot implements ModuleSetInterface, PolicyEnforcementPoint
     public function getTopModules()
     {
         // TODO: authorize access
-        return new ModuleMenuIterator($this, '__ROOT__', $this->menu);
+        return new NethGui_Core_ModuleMenuIterator($this, '__ROOT__', $this->menu);
     }
 
     /**

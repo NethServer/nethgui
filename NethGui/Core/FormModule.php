@@ -6,12 +6,12 @@
  */
 
 /**
- * A FormModule wraps its children into a FORM tag.
+ * A NethGui_Core_FormModule wraps its children into a FORM tag.
  *
  * @package NethGuiFramework
  * @subpackage StandardImplementation
  */
-class FormModule extends StandardModuleComposite {
+class NethGui_Core_FormModule extends NethGui_Core_StandardModuleComposite {
 
     /**
      *
@@ -30,10 +30,10 @@ class FormModule extends StandardModuleComposite {
         $this->action = is_null($action) ? uri_string() : $action;
     }
 
-    protected function decorate($output, Response $response)
+    protected function decorate($output, NethGui_Core_Response $response)
     {
         // TODO: insert CSRF token.
-        if ($response->getViewType() === Response::HTML)
+        if ($response->getViewType() === NethGui_Core_Response::HTML)
         {
             return form_open_multipart($this->action) . $output . form_close();
         }

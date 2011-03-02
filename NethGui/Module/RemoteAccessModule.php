@@ -10,7 +10,7 @@
  *
  * @package Modules
  */
-final class RemoteAccessModule extends FormModule implements TopModuleInterface {
+final class NethGui_Module_RemoteAccessModule extends NethGui_Core_FormModule implements NethGui_Core_TopModuleInterface {
 
     public function getTitle()
     {
@@ -19,7 +19,7 @@ final class RemoteAccessModule extends FormModule implements TopModuleInterface 
 
     public function getParentMenuIdentifier()
     {
-        return "SecurityModule";
+        return "NethGui_Module_SecurityModule";
     }
 
     public function initialize()
@@ -28,14 +28,14 @@ final class RemoteAccessModule extends FormModule implements TopModuleInterface 
         foreach (array('Pptp', 'RemoteManagement', 'Ssh', 'Ftp') as $dependency)
         {
             require_once('RemoteAccess/' . $dependency . 'Module.php');
-            $childModuleClass = $dependency . 'Module';
+            $childModuleClass = 'NethGui_Module_RemoteAccess_' . $dependency . 'Module';
             $childModule = new $childModuleClass();
             $childModule->setHostConfiguration($this->hostConfiguration);
             $this->addChild($childModule);
         }
     }
 
-    protected function decorate($output, Response $response)
+    protected function decorate($output, NethGui_Core_Response $response)
     {
         // Append SAVE button.
         $output .= '<div style="text-align: right"><input id="' . $response->getWidgetId($this, 'save') . '" name="' . $response->getParameterName($this, 'save') . '" type="submit" value="Save" /></div>';

@@ -10,7 +10,7 @@
  *
  * @package Modules
  */
-final class LocalNetworkModule extends StandardModule implements TopModuleInterface {
+final class NethGui_Module_LocalNetworkModule extends NethGui_Core_StandardModule implements NethGui_Core_TopModuleInterface {
 
     public function getTitle()
     {
@@ -24,7 +24,7 @@ final class LocalNetworkModule extends StandardModule implements TopModuleInterf
 
     public function getParentMenuIdentifier()
     {
-        return "SecurityModule";
+        return "NethGui_Module_SecurityModule";
     }
 
 }

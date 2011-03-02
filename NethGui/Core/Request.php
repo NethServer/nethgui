@@ -11,7 +11,7 @@
  * @package NethGuiFramework
  * @subpackage StandardImplementation
  */
-final class Request implements RequestInterface {
+final class NethGui_Core_Request implements NethGui_Core_RequestInterface {
 
     /**
      * @var array
@@ -24,7 +24,7 @@ final class Request implements RequestInterface {
     private $user;
 
     /**
-     * Create a new Request object from current application state.
+     * Create a new NethGui_Core_Request object from current application state.
      * @param string $defaultModuleIdentifier
      * @return RequestInterface
      */
@@ -49,12 +49,12 @@ final class Request implements RequestInterface {
         }
 
         // TODO: retrieve user state from Session
-        $user = new AlwaysAuthenticatedUser();
+        $user = new NethGui_Core_AlwaysAuthenticatedUser();
         
         return new self($user, $data);
     }
 
-    private function __construct(UserInterface $user, $data = array())
+    private function __construct(NethGui_Core_UserInterface $user, $data = array())
     {
         if (is_null($data))
         {

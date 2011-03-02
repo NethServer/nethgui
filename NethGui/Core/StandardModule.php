@@ -11,7 +11,7 @@
  * @package NethGuiFramework
  * @subpackage StandardImplementation
  */
-abstract class StandardModule implements ModuleInterface {
+abstract class NethGui_Core_StandardModule implements NethGui_Core_ModuleInterface {
 
     /**
      * @var string
@@ -57,7 +57,7 @@ abstract class StandardModule implements ModuleInterface {
         }        
     }
 
-    public function setHostConfiguration(HostConfigurationInterface $hostConfiguration)
+    public function setHostConfiguration(NethGui_Core_HostConfigurationInterface $hostConfiguration)
     {
         $this->hostConfiguration = $hostConfiguration;
     }
@@ -89,7 +89,7 @@ abstract class StandardModule implements ModuleInterface {
 
     public function getTitle()
     {
-        return $this->getIdentifier();
+        return array_pop(explode('_', $this->getIdentifier()));
     }
 
     public function getDescription()
@@ -97,7 +97,7 @@ abstract class StandardModule implements ModuleInterface {
         return "";
     }
 
-    public function setParent(ModuleInterface $parentModule)
+    public function setParent(NethGui_Core_ModuleInterface $parentModule)
     {
         $this->parent = $parentModule;
     }
@@ -108,12 +108,12 @@ abstract class StandardModule implements ModuleInterface {
     }
 
 
-    public function bind(RequestInterface $request)
+    public function bind(NethGui_Core_RequestInterface $request)
     {
         $this->request = $request;
     }
 
-    public function validate(ValidationReportInterface $report)
+    public function validate(NethGui_Core_ValidationReportInterface $report)
     {
         foreach ($this->parameters as $parameter)
         {
@@ -126,15 +126,15 @@ abstract class StandardModule implements ModuleInterface {
 
     }
 
-    public function renderView(Response $response)
+    public function renderView(NethGui_Core_Response $response)
     {
-        if ($response->getViewType() === Response::HTML)
+        if ($response->getViewType() === NethGui_Core_Response::HTML)
         {
             return '<h2>' . $this->getTitle() . '</h2><div class="moduleDescription">' . $this->getDescription() . '</div>';
         }
     }
 
-    protected function renderCodeIgniterView(Response $response, $viewName, $viewState = array())
+    protected function renderCodeIgniterView(NethGui_Core_Response $response, $viewName, $viewState = array())
     {
         $viewState['module'] = $this;
         $viewState['response'] = $response;

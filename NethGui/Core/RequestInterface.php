@@ -6,11 +6,11 @@
  */
 
 /**
- * A RequestInterface object carries parameters to a Module (and its submodules).
+ * A NethGui_Core_RequestInterface object carries parameters to a Module (and its submodules).
  *
  * @package NethGuiFramework
  */
-interface RequestInterface {
+interface NethGui_Core_RequestInterface {
     /**
      * @param string $parameterName
      * @return mixed

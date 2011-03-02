@@ -13,7 +13,7 @@
  * @package NethGuiFramework
  * @subpackage StandardImplementation
  */
-final class Response {
+final class NethGui_Core_Response {
     const HTML = 0;
     const JS = 1;
 
@@ -29,7 +29,7 @@ final class Response {
         return $this->viewType;
     }
 
-    public function getParameterName(ModuleInterface $module, $parameterName)
+    public function getParameterName(NethGui_Core_ModuleInterface $module, $parameterName)
     {
         $moduleObjectId = spl_object_hash($module);
         if ( ! isset($this->modulePrefixes[$moduleObjectId]))
@@ -39,7 +39,7 @@ final class Response {
         return $this->modulePrefixes[$moduleObjectId] . '[' . $parameterName . ']';
     }
 
-    public function getWidgetId(ModuleInterface $module, $widgetId)
+    public function getWidgetId(NethGui_Core_ModuleInterface $module, $widgetId)
     {
         $name = $this->getParameterName($module, $widgetId);
         $name = str_replace('[', '_', $name);
@@ -48,7 +48,7 @@ final class Response {
         return $name;
     }
 
-    private function calculateModulePrefix(ModuleInterface $module)
+    private function calculateModulePrefix(NethGui_Core_ModuleInterface $module)
     {
         $prefix = '';
         while (TRUE)

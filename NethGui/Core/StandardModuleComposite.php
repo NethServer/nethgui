@@ -11,7 +11,7 @@
  * @package NethGuiFramework
  * @subpackage StandardImplementation
  */
-abstract class StandardModuleComposite extends StandardModule implements ModuleCompositeInterface {
+abstract class NethGui_Core_StandardModuleComposite extends NethGui_Core_StandardModule implements NethGui_Core_ModuleCompositeInterface {
 
     private $children = array();
 
@@ -30,7 +30,7 @@ abstract class StandardModuleComposite extends StandardModule implements ModuleC
         }
     }
 
-    public function addChild(ModuleInterface $childModule)
+    public function addChild(NethGui_Core_ModuleInterface $childModule)
     {
         if ( ! isset($this->children[$childModule->getIdentifier()]))
         {
@@ -49,7 +49,7 @@ abstract class StandardModuleComposite extends StandardModule implements ModuleC
         return array_values($this->children);
     }
 
-    public function bind(RequestInterface $request)
+    public function bind(NethGui_Core_RequestInterface $request)
     {
         parent::bind($request);
         foreach ($this->getChildren() as $module)
@@ -58,7 +58,7 @@ abstract class StandardModuleComposite extends StandardModule implements ModuleC
         }
     }
 
-    public function validate(ValidationReportInterface $report)
+    public function validate(NethGui_Core_ValidationReportInterface $report)
     {
         parent::validate($report);
         foreach ($this->getChildren() as $module)
@@ -81,7 +81,7 @@ abstract class StandardModuleComposite extends StandardModule implements ModuleC
      *
      * @return string
      */
-    public function renderView(Response $response)
+    public function renderView(NethGui_Core_Response $response)
     {
         $output = '';
         foreach ($this->getChildren() as $module)
@@ -97,7 +97,7 @@ abstract class StandardModuleComposite extends StandardModule implements ModuleC
      * @param string $output Children output
      * @return string Decorated children output
      */
-    protected function decorate($output, Response $response)
+    protected function decorate($output, NethGui_Core_Response $response)
     {
         return $output;
     }
