@@ -27,19 +27,20 @@ final class NethGui_Core_Request implements NethGui_Core_RequestInterface
     /**
      * Create a new NethGui_Core_Request object from current application state.
      * @param string $defaultModuleIdentifier
+     * @param array $parameters 
      * @return RequestInterface
      */
-    static public function createInstanceFromServer($defaultModuleIdentifier)
+    static public function createInstanceFromServer($defaultModuleIdentifier, $parameters = array())
     {
         if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-            $data = array($defaultModuleIdentifier => array());
+            $data = array($defaultModuleIdentifier => $parameters);
         } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (isset($_SERVER['X_REQUESTED_WITH'])
                 && $_SERVER['X_REQUESTED_WITH'] == 'XMLHttpRequest') {
                 // TODO: decode json query
                 $data = array();
             } else {
-                $data = $_POST;
+                $data = array_merge($parameters, $_POST);
             }
         }
 

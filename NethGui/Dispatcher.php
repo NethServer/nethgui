@@ -26,7 +26,6 @@ final class NethGui_Dispatcher
     {
         $this->controller = $controller;
         $this->initialize();
-
     }
 
     private function initialize()
@@ -44,7 +43,6 @@ final class NethGui_Dispatcher
          */
         $this->hostConfiguration->setPolicyDecisionPoint(new NethGui_Authorization_PermissivePolicyDecisionPoint());
         $this->componentDepot->setPolicyDecisionPoint(new NethGui_Authorization_PermissivePolicyDecisionPoint());
-
     }
 
     private function includeArtifacts()
@@ -80,7 +78,6 @@ final class NethGui_Dispatcher
         foreach ($classNames as $className) {
             require_once($className . '.php');
         }
-
     }
 
     /**
@@ -96,7 +93,7 @@ final class NethGui_Dispatcher
          */
         if ($method == 'index') {
 // TODO: take the default module value from the configuration
-            $this->currentModule = $this->componentDepot->findModule('NethGui_Module_SecurityModule');
+            $this->currentModule = $this->componentDepot->findModule('SecurityModule');
         } else {
             $this->currentModule = $this->componentDepot->findModule($method);
         }
@@ -107,7 +104,10 @@ final class NethGui_Dispatcher
             show_404();
         }
 
-        $request = NethGui_Core_Request::createInstanceFromServer($this->currentModule->getIdentifier());
+        $request = NethGui_Core_Request::createInstanceFromServer(
+                $this->currentModule->getIdentifier(),
+                $parameters
+        );
 
         $this->hostConfiguration->setUser($request->getUser());
         $this->componentDepot->setUser($request->getUser());
@@ -135,6 +135,10 @@ final class NethGui_Dispatcher
         if ($response->getViewType() === NethGui_Core_Response::HTML) {
             $decorationParameters = array(
                 'css_main' => base_url() . 'css/main.css',
+                'js' => array(
+                    'base' => base_url() . 'js/jquery-1.5.1.min',
+                    'ui' => base_url() . 'js/jquery-ui-1.8.10.custom.min.js',
+                ),
                 'module_content' => $this->currentModule->renderView($response),
                 'module_menu' => $this->renderModuleMenu($this->componentDepot->getTopModules()),
                 'breadcrumb_menu' => $this->renderBreadcrumbMenu(),
@@ -145,13 +149,12 @@ final class NethGui_Dispatcher
         } elseif ($response->getViewType() === NethGui_Core_Response::JS) {
             // What's the correct mime-type for js?
             header("Content-Type: application/x-javascript; charset=UTF-8");
-            return $this->currentModule->renderView($response);
+            echo $this->currentModule->renderView($response);
         } elseif ($response->getViewType() === NethGui_Core_Response::CSS) {
             // What's the correct mime-type for js?
             header("Content-Type: text/css; charset=UTF-8");
-            return $this->currentModule->renderView($response);
+            echo $this->currentModule->renderView($response);
         }
-
     }
 
     /**
@@ -182,7 +185,6 @@ final class NethGui_Dispatcher
                 $module->process();
             }
         }
-
     }
 
     private function renderBreadcrumbMenu()
@@ -205,7 +207,6 @@ final class NethGui_Dispatcher
 
         // TODO: wrap into LI tag.
         return implode(' &gt; ', $rootLine);
-
     }
 
     /**
@@ -236,7 +237,6 @@ final class NethGui_Dispatcher
         }
 
         return '<ul>' . $output . '</ul>';
-
     }
 
     private function renderModuleAnchor(NethGui_Core_ModuleInterface $module)
@@ -254,7 +254,6 @@ final class NethGui_Dispatcher
         }
 
         return $html;
-
     }
 
 }

@@ -20,6 +20,8 @@ class NethGui_Core_ContainerModule extends NethGui_Core_StandardModuleComposite
         if ($response->getViewType() === Response::HTML) {
             return '<div class="' . $this->getIdentifier() . '">' . $output . '</div>';
         }
+
+        return $output;
     }
 
 }

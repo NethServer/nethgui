@@ -51,7 +51,7 @@ abstract class NethGui_Core_StandardModule implements NethGui_Core_ModuleInterfa
         if (isset($identifier)) {
             $this->identifier = $identifier;
         } else {
-            $this->identifier = get_class($this);
+            $this->identifier = array_pop(explode('_', get_class($this)));
         }
     }
 
@@ -127,21 +127,32 @@ abstract class NethGui_Core_StandardModule implements NethGui_Core_ModuleInterfa
      */
     public function renderView(NethGui_Core_Response $response)
     {
-        if ($response->getViewType() === NethGui_Core_Response::HTML
+        $viewType = $response->getViewType();
+
+        if (
+            $viewType === NethGui_Core_Response::HTML
             && method_exists($this, 'renderViewHtml')
         ) {
             return $this->renderViewHtml($response);
-        } elseif ($response->getViewType() === NethGui_Core_Response::JS
+            //
+        } elseif (
+            $viewType === NethGui_Core_Response::JS
             && method_exists($this, 'renderViewJavascript')
         ) {
             return $this->renderViewJavascript($response);
-        } elseif ($response->getViewType() === NethGui_Core_Response::CSS
+            //
+        } elseif (
+            $viewType === NethGui_Core_Response::CSS
             && method_exists($this, 'renderViewCss')
         ) {
             return $this->renderViewCss($response);
-        } elseif ($response->getViewType() === NethGui_Core_Response::HTML) {
+            //
+        } elseif ($viewType === NethGui_Core_Response::HTML) {
             return '<h2>' . $this->getTitle() . '</h2><div class="moduleDescription">' . $this->getDescription() . '</div>';
+            //
         }
+
+        return "";
     }
 
     protected function renderCodeIgniterView(NethGui_Core_Response $response, $viewName, $viewState = array())

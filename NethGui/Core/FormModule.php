@@ -38,6 +38,8 @@ class NethGui_Core_FormModule extends NethGui_Core_StandardModuleComposite
         if ($response->getViewType() === NethGui_Core_Response::HTML) {
             return form_open_multipart($this->action) . $output . form_close();
         }
+
+        return $output;
     }
 
 }
