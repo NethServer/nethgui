@@ -131,8 +131,11 @@ final class NethGui_Dispatcher
             }
         }
 
-        $response = new NethGui_Core_Response($responseType);
+        $this->sendResponse(new NethGui_Core_Response($responseType));
+    }
 
+    private function sendResponse(NethGui_Core_ResponseInterface $response)
+    {
         if ($response->getViewType() === NethGui_Core_ResponseInterface::HTML) {
             $decorationParameters = array(
                 'css_main' => base_url() . 'css/main.css',
@@ -145,15 +148,13 @@ final class NethGui_Dispatcher
                 'breadcrumb_menu' => $this->renderBreadcrumbMenu(),
             );
 
-            header("Content-Type: text/html; charset=UTF-8");
             $this->controller->load->view('../../NethGui/Core/View/decoration.php', $decorationParameters);
         } elseif ($response->getViewType() === NethGui_Core_ResponseInterface::JS) {
-            // What's the correct mime-type for js?
-            header("Content-Type: application/x-javascript; charset=UTF-8");
+            
             echo $this->currentModule->renderView($response);
         } elseif ($response->getViewType() === NethGui_Core_ResponseInterface::CSS) {
-            // What's the correct mime-type for js?
-            header("Content-Type: text/css; charset=UTF-8");
+            
+            
             echo $this->currentModule->renderView($response);
         }
     }
