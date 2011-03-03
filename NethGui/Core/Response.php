@@ -14,11 +14,8 @@
  * @package NethGuiFramework
  * @subpackage StandardImplementation
  */
-final class NethGui_Core_Response
+final class NethGui_Core_Response implements NethGui_Core_ResponseInterface
 {
-    const HTML = 0;
-    const JS = 1;
-    const CSS = 2;
 
     private $modulePrefixes = array();
 

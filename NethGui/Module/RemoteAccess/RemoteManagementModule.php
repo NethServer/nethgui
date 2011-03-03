@@ -55,12 +55,12 @@ final class NethGui_Module_RemoteAccess_RemoteManagementModule extends NethGui_C
         }
     }
 
-    public function renderViewJavascript(NethGui_Core_Response $response)
+    public function renderViewJavascript(NethGui_Core_ResponseInterface $response)
     {
         return '/* javascript */';
     }
 
-    public function renderViewHtml(NethGui_Core_Response $response)
+    public function renderViewHtml(NethGui_Core_ResponseInterface $response)
     {        
         return $this->renderCodeIgniterView($response, 'RemoteAccess/RemoteManagementView.php');
     }

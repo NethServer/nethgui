@@ -121,33 +121,33 @@ abstract class NethGui_Core_StandardModule implements NethGui_Core_ModuleInterfa
 
     /**
      * Returns an appropriate view string based on $response type.
-     * @see NethGui_Core_Response::getViewType()
-     * @param NethGui_Core_Response $response
+     * @see NethGui_Core_ResponseInterface::getViewType()
+     * @param NethGui_Core_ResponseInterface $response
      * @return string
      */
-    public function renderView(NethGui_Core_Response $response)
+    public function renderView(NethGui_Core_ResponseInterface $response)
     {
         $viewType = $response->getViewType();
 
         if (
-            $viewType === NethGui_Core_Response::HTML
+            $viewType === NethGui_Core_ResponseInterface::HTML
             && method_exists($this, 'renderViewHtml')
         ) {
             return $this->renderViewHtml($response);
             //
         } elseif (
-            $viewType === NethGui_Core_Response::JS
+            $viewType === NethGui_Core_ResponseInterface::JS
             && method_exists($this, 'renderViewJavascript')
         ) {
             return $this->renderViewJavascript($response);
             //
         } elseif (
-            $viewType === NethGui_Core_Response::CSS
+            $viewType === NethGui_Core_ResponseInterface::CSS
             && method_exists($this, 'renderViewCss')
         ) {
             return $this->renderViewCss($response);
             //
-        } elseif ($viewType === NethGui_Core_Response::HTML) {
+        } elseif ($viewType === NethGui_Core_ResponseInterface::HTML) {
             return '<h2>' . $this->getTitle() . '</h2><div class="moduleDescription">' . $this->getDescription() . '</div>';
             //
         }
@@ -155,7 +155,7 @@ abstract class NethGui_Core_StandardModule implements NethGui_Core_ModuleInterfa
         return "";
     }
 
-    protected function renderCodeIgniterView(NethGui_Core_Response $response, $viewName, $viewState = array())
+    protected function renderCodeIgniterView(NethGui_Core_ResponseInterface $response, $viewName, $viewState = array())
     {
         $viewState['module'] = $this;
         $viewState['response'] = $response;

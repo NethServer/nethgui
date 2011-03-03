@@ -57,6 +57,7 @@ final class NethGui_Dispatcher
             'Core/ModuleInterface',
             'Core/ModuleSetInterface',
             'Core/RequestInterface',
+            'Core/ResponseInterface',
             'Core/UserInterface',
             'Core/ValidationReportInterface',
             'Authorization/AccessControlRequest',
@@ -92,7 +93,7 @@ final class NethGui_Dispatcher
          * Find current module
          */
         if ($method == 'index') {
-// TODO: take the default module value from the configuration
+            // TODO: take the default module value from the configuration
             $this->currentModule = $this->componentDepot->findModule('SecurityModule');
         } else {
             $this->currentModule = $this->componentDepot->findModule($method);
@@ -115,7 +116,7 @@ final class NethGui_Dispatcher
         $this->dispatch($request);
 
         // Default response view type: HTML
-        $responseType = NethGui_Core_Response::HTML;
+        $responseType = NethGui_Core_ResponseInterface::HTML;
 
         /*
          * A first parameter ending with `.js` or `.css` triggers 
@@ -124,15 +125,15 @@ final class NethGui_Dispatcher
         if (count($parameters) === 1) {
             $resourceName = $parameters[0];
             if (substr($resourceName, -3) == '.js') {
-                $responseType = NethGui_Core_Response::JS;
+                $responseType = NethGui_Core_ResponseInterface::JS;
             } elseif (substr($resourceName, -4) == '.css') {
-                $responseType = NethGui_Core_Response::CSS;
+                $responseType = NethGui_Core_ResponseInterface::CSS;
             }
         }
 
         $response = new NethGui_Core_Response($responseType);
 
-        if ($response->getViewType() === NethGui_Core_Response::HTML) {
+        if ($response->getViewType() === NethGui_Core_ResponseInterface::HTML) {
             $decorationParameters = array(
                 'css_main' => base_url() . 'css/main.css',
                 'js' => array(
@@ -146,11 +147,11 @@ final class NethGui_Dispatcher
 
             header("Content-Type: text/html; charset=UTF-8");
             $this->controller->load->view('../../NethGui/Core/View/decoration.php', $decorationParameters);
-        } elseif ($response->getViewType() === NethGui_Core_Response::JS) {
+        } elseif ($response->getViewType() === NethGui_Core_ResponseInterface::JS) {
             // What's the correct mime-type for js?
             header("Content-Type: application/x-javascript; charset=UTF-8");
             echo $this->currentModule->renderView($response);
-        } elseif ($response->getViewType() === NethGui_Core_Response::CSS) {
+        } elseif ($response->getViewType() === NethGui_Core_ResponseInterface::CSS) {
             // What's the correct mime-type for js?
             header("Content-Type: text/css; charset=UTF-8");
             echo $this->currentModule->renderView($response);

@@ -32,10 +32,10 @@ class NethGui_Core_FormModule extends NethGui_Core_StandardModuleComposite
         $this->action = is_null($action) ? uri_string() : $action;
     }
 
-    protected function decorate($output, NethGui_Core_Response $response)
+    protected function decorate($output, NethGui_Core_ResponseInterface $response)
     {
         // TODO: insert CSRF token.
-        if ($response->getViewType() === NethGui_Core_Response::HTML) {
+        if ($response->getViewType() === NethGui_Core_ResponseInterface::HTML) {
             return form_open_multipart($this->action) . $output . form_close();
         }
 
