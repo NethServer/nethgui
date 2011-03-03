@@ -26,6 +26,7 @@ final class NethGui_Dispatcher
     {
         $this->controller = $controller;
         $this->initialize();
+
     }
 
     private function initialize()
@@ -43,6 +44,7 @@ final class NethGui_Dispatcher
          */
         $this->hostConfiguration->setPolicyDecisionPoint(new NethGui_Authorization_PermissivePolicyDecisionPoint());
         $this->componentDepot->setPolicyDecisionPoint(new NethGui_Authorization_PermissivePolicyDecisionPoint());
+
     }
 
     private function includeArtifacts()
@@ -78,6 +80,7 @@ final class NethGui_Dispatcher
         foreach ($classNames as $className) {
             require_once($className . '.php');
         }
+
     }
 
     /**
@@ -88,8 +91,6 @@ final class NethGui_Dispatcher
      */
     public function main($method, $parameters = array())
     {
-
-
         /*
          * Find current module
          */
@@ -113,15 +114,44 @@ final class NethGui_Dispatcher
 
         $this->dispatch($request);
 
-        $decorationParameters = array(
-            'css_main' => base_url() . 'css/main.css',
-            'module_content' => $this->currentModule->renderView(new NethGui_Core_Response(NethGui_Core_Response::HTML)),
-            'module_menu' => $this->renderModuleMenu($this->componentDepot->getTopModules()),
-            'breadcrumb_menu' => $this->renderBreadcrumbMenu(),
-        );
+        // Default response view type: HTML
+        $responseType = NethGui_Core_Response::HTML;
 
-        header("Content-Type: text/html; charset=UTF-8");
-        $this->controller->load->view('../../NethGui/Core/View/decoration.php', $decorationParameters);
+        /*
+         * A first parameter ending with `.js` or `.css` triggers 
+         * alternate response types.
+         */
+        if (count($parameters) === 1) {
+            $resourceName = $parameters[0];
+            if (substr($resourceName, -3) == '.js') {
+                $responseType = NethGui_Core_Response::JS;
+            } elseif (substr($resourceName, -4) == '.css') {
+                $responseType = NethGui_Core_Response::CSS;
+            }
+        }
+
+        $response = new NethGui_Core_Response($responseType);
+
+        if ($response->getViewType() === NethGui_Core_Response::HTML) {
+            $decorationParameters = array(
+                'css_main' => base_url() . 'css/main.css',
+                'module_content' => $this->currentModule->renderView($response),
+                'module_menu' => $this->renderModuleMenu($this->componentDepot->getTopModules()),
+                'breadcrumb_menu' => $this->renderBreadcrumbMenu(),
+            );
+
+            header("Content-Type: text/html; charset=UTF-8");
+            $this->controller->load->view('../../NethGui/Core/View/decoration.php', $decorationParameters);
+        } elseif ($response->getViewType() === NethGui_Core_Response::JS) {
+            // What's the correct mime-type for js?
+            header("Content-Type: application/x-javascript; charset=UTF-8");
+            return $this->currentModule->renderView($response);
+        } elseif ($response->getViewType() === NethGui_Core_Response::CSS) {
+            // What's the correct mime-type for js?
+            header("Content-Type: text/css; charset=UTF-8");
+            return $this->currentModule->renderView($response);
+        }
+
     }
 
     /**
@@ -152,6 +182,7 @@ final class NethGui_Dispatcher
                 $module->process();
             }
         }
+
     }
 
     private function renderBreadcrumbMenu()
@@ -174,6 +205,7 @@ final class NethGui_Dispatcher
 
         // TODO: wrap into LI tag.
         return implode(' &gt; ', $rootLine);
+
     }
 
     /**
@@ -204,6 +236,7 @@ final class NethGui_Dispatcher
         }
 
         return '<ul>' . $output . '</ul>';
+
     }
 
     private function renderModuleAnchor(NethGui_Core_ModuleInterface $module)
@@ -221,6 +254,7 @@ final class NethGui_Dispatcher
         }
 
         return $html;
+
     }
 
 }

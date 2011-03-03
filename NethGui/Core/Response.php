@@ -18,6 +18,7 @@ final class NethGui_Core_Response
 {
     const HTML = 0;
     const JS = 1;
+    const CSS = 2;
 
     private $modulePrefixes = array();
 
