@@ -120,7 +120,7 @@ final class NethGui_Dispatcher
 
         /*
          * A first parameter ending with `.js` or `.css` triggers 
-         * alternate response types.
+         * alternative response types (namely JS & CSS).
          */
         if (count($parameters) === 1) {
             $resourceName = $parameters[0];
@@ -147,15 +147,14 @@ final class NethGui_Dispatcher
                 'module_menu' => $this->renderModuleMenu($this->componentDepot->getTopModules()),
                 'breadcrumb_menu' => $this->renderBreadcrumbMenu(),
             );
-
             $this->controller->load->view('../../NethGui/Core/View/decoration.php', $decorationParameters);
+            //
         } elseif ($response->getViewType() === NethGui_Core_ResponseInterface::JS) {
-            
             echo $this->currentModule->renderView($response);
+            //
         } elseif ($response->getViewType() === NethGui_Core_ResponseInterface::CSS) {
-            
-            
             echo $this->currentModule->renderView($response);
+            //
         }
     }
 
