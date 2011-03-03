@@ -1,4 +1,5 @@
 <?php
+
 /**
  * NethGui
  *
@@ -12,7 +13,8 @@
  * TODO: interface description.
  * @package ExtensibleApi
  */
-interface NethGui_Core_ModuleInterface {
+interface NethGui_Core_ModuleInterface
+{
 
     /**
      * Sets the host configuration Model.
@@ -30,7 +32,6 @@ interface NethGui_Core_ModuleInterface {
      * @return bool FALSE, if not yet initialized, TRUE otherwise.
      */
     public function isInitialized();
-
 
     /**
      * The Module Identifier is a string that univocally identifies a Module.
@@ -96,7 +97,8 @@ interface NethGui_Core_ModuleInterface {
  *
  * @package ExtensibleApi
  */
-interface NethGui_Core_TopModuleInterface {
+interface NethGui_Core_TopModuleInterface
+{
 
     /**
      * @return string Unique parent module identifier

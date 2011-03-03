@@ -1,4 +1,5 @@
 <?php
+
 /**
  * NethGui
  *
@@ -14,12 +15,13 @@
  * @see PolicyEnforcementPointInterface
  * @package Authorization
  */
-interface NethGui_Authorization_PolicyDecisionPointInterface {
+interface NethGui_Authorization_PolicyDecisionPointInterface
+{
+
     /**
      * Checks if $request is satisfiable.
      * @return NethGui_Authorization_AccessControlResponseInterface The response to the request.
      */
     public function authorizeRequest(NethGui_Authorization_AccessControlRequestInterface $request);
 }
-
 

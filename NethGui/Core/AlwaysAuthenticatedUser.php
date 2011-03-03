@@ -1,4 +1,5 @@
 <?php
+
 /**
  * NethGui
  *
@@ -11,14 +12,14 @@
  * @package NethGuiFramework
  * @subpackage Testing
  */
-final class NethGui_Core_AlwaysAuthenticatedUser implements NethGui_Core_UserInterface {
+final class NethGui_Core_AlwaysAuthenticatedUser implements NethGui_Core_UserInterface
+{
 
     private $credentials;
 
     public function getCredential($credentialName)
     {
-        if ( ! isset($this->credentials[$credentialName]))
-        {
+        if ( ! isset($this->credentials[$credentialName])) {
             return NULL;
         }
         return $this->credentials[$credentialName];

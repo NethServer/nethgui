@@ -1,4 +1,5 @@
 <?php
+
 /**
  * NethGui
  *
@@ -10,7 +11,8 @@
  *
  * @package Authorization
  */
-final class NethGui_Authorization_AccessControlRequest implements NethGui_Authorization_AccessControlRequestInterface {
+final class NethGui_Authorization_AccessControlRequest implements NethGui_Authorization_AccessControlRequestInterface
+{
 
     public function __construct(NethGui_Core_UserInterface $subject, $resource, $action)
     {

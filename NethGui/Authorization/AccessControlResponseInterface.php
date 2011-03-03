@@ -1,4 +1,5 @@
 <?php
+
 /**
  * NethGui
  *
@@ -14,7 +15,9 @@
  * @see AccessControlRequestInterface
  * @package Authorization
  */
-interface NethGui_Authorization_AccessControlResponseInterface {
+interface NethGui_Authorization_AccessControlResponseInterface
+{
+
     /**
      * Get a reference to the original Request.
      * @return NethGui_Authorization_AccessControlRequestInterface The original Request.

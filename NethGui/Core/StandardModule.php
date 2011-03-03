@@ -1,4 +1,5 @@
 <?php
+
 /**
  * NethGui
  *
@@ -11,7 +12,8 @@
  * @package NethGuiFramework
  * @subpackage StandardImplementation
  */
-abstract class NethGui_Core_StandardModule implements NethGui_Core_ModuleInterface {
+abstract class NethGui_Core_StandardModule implements NethGui_Core_ModuleInterface
+{
 
     /**
      * @var string
@@ -35,7 +37,6 @@ abstract class NethGui_Core_StandardModule implements NethGui_Core_ModuleInterfa
      * @var RequestInterface
      */
     protected $request;
-
     /**
      *
      * @var array
@@ -47,14 +48,11 @@ abstract class NethGui_Core_StandardModule implements NethGui_Core_ModuleInterfa
      */
     public function __construct($identifier = NULL)
     {
-        if (isset($identifier))
-        {
+        if (isset($identifier)) {
             $this->identifier = $identifier;
-        }
-        else
-        {
+        } else {
             $this->identifier = get_class($this);
-        }        
+        }
     }
 
     public function setHostConfiguration(NethGui_Core_HostConfigurationInterface $hostConfiguration)
@@ -67,12 +65,9 @@ abstract class NethGui_Core_StandardModule implements NethGui_Core_ModuleInterfa
      */
     public function initialize()
     {
-        if ($this->initialized === FALSE)
-        {
+        if ($this->initialized === FALSE) {
             $this->initialized = TRUE;
-        }
-        else
-        {
+        } else {
             throw new Exception("Double Module initialization is forbidden.");
         }
     }
@@ -107,7 +102,6 @@ abstract class NethGui_Core_StandardModule implements NethGui_Core_ModuleInterfa
         return $this->parent;
     }
 
-
     public function bind(NethGui_Core_RequestInterface $request)
     {
         $this->request = $request;
@@ -115,8 +109,7 @@ abstract class NethGui_Core_StandardModule implements NethGui_Core_ModuleInterfa
 
     public function validate(NethGui_Core_ValidationReportInterface $report)
     {
-        foreach ($this->parameters as $parameter)
-        {
+        foreach ($this->parameters as $parameter) {
             // TODO: do parameter validation
         }
     }
@@ -128,8 +121,7 @@ abstract class NethGui_Core_StandardModule implements NethGui_Core_ModuleInterfa
 
     public function renderView(NethGui_Core_Response $response)
     {
-        if ($response->getViewType() === NethGui_Core_Response::HTML)
-        {
+        if ($response->getViewType() === NethGui_Core_Response::HTML) {
             return '<h2>' . $this->getTitle() . '</h2><div class="moduleDescription">' . $this->getDescription() . '</div>';
         }
     }
@@ -142,8 +134,7 @@ abstract class NethGui_Core_StandardModule implements NethGui_Core_ModuleInterfa
         $viewState['id'] = array();
         $viewState['name'] = array();
 
-        foreach($this->parameters as $parameterName => $parameterValue)
-        {
+        foreach ($this->parameters as $parameterName => $parameterValue) {
             $viewState['id'][$parameterName] = htmlspecialchars($response->getWidgetId($this, $parameterName));
             $viewState['name'][$parameterName] = htmlspecialchars($response->getParameterName($this, $parameterName));
             $viewState['parameter'][$parameterName] = htmlspecialchars($parameterValue);

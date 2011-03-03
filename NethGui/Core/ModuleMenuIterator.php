@@ -1,4 +1,5 @@
 <?php
+
 /**
  * NethGui
  *
@@ -12,7 +13,8 @@
  * @subpackage StandardImplementation
  * @internal
  */
-final class NethGui_Core_ModuleMenuIterator implements RecursiveIterator {
+final class NethGui_Core_ModuleMenuIterator implements RecursiveIterator
+{
 
     private $elements;
     /**

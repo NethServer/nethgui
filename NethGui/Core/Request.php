@@ -1,4 +1,5 @@
 <?php
+
 /**
  * NethGui
  *
@@ -11,13 +12,13 @@
  * @package NethGuiFramework
  * @subpackage StandardImplementation
  */
-final class NethGui_Core_Request implements NethGui_Core_RequestInterface {
+final class NethGui_Core_Request implements NethGui_Core_RequestInterface
+{
 
     /**
      * @var array
      */
     private $data;
-
     /**
      * @var UserInterface
      */
@@ -30,38 +31,30 @@ final class NethGui_Core_Request implements NethGui_Core_RequestInterface {
      */
     static public function createInstanceFromServer($defaultModuleIdentifier)
     {
-        if ($_SERVER['REQUEST_METHOD'] == 'GET')
-        {
+        if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             $data = array($defaultModuleIdentifier => array());
-        }
-        elseif ($_SERVER['REQUEST_METHOD'] == 'POST')
-        {
+        } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (isset($_SERVER['X_REQUESTED_WITH'])
-                    && $_SERVER['X_REQUESTED_WITH'] == 'XMLHttpRequest')
-            {
+                && $_SERVER['X_REQUESTED_WITH'] == 'XMLHttpRequest') {
                 // TODO: decode json query
                 $data = array();
-            }
-            else
-            {
+            } else {
                 $data = $_POST;
             }
         }
 
         // TODO: retrieve user state from Session
         $user = new NethGui_Core_AlwaysAuthenticatedUser();
-        
+
         return new self($user, $data);
     }
 
     private function __construct(NethGui_Core_UserInterface $user, $data = array())
     {
-        if (is_null($data))
-        {
+        if (is_null($data)) {
             $data = array();
         }
-        if ( ! is_array($data))
-        {
+        if ( ! is_array($data)) {
             $data = array($data);
         }
         $this->data = $data;
@@ -85,8 +78,7 @@ final class NethGui_Core_Request implements NethGui_Core_RequestInterface {
 
     public function getParameter($parameterName)
     {
-        if ( ! isset($this->data[$parameterName]))
-        {
+        if ( ! isset($this->data[$parameterName])) {
             return NULL;
         }
         return $this->data[$parameterName];
@@ -100,8 +92,7 @@ final class NethGui_Core_Request implements NethGui_Core_RequestInterface {
     public function __toString()
     {
         $output = '';
-        foreach($this->getParameters() as $parameterName)
-        {
+        foreach ($this->getParameters() as $parameterName) {
             $output .= $parameterName . ' = ' . $this->getParameter($parameterName) . ', ';
         }
         return $output;

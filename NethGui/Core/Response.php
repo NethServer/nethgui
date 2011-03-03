@@ -1,4 +1,5 @@
 <?php
+
 /**
  * NethGui
  *
@@ -13,7 +14,8 @@
  * @package NethGuiFramework
  * @subpackage StandardImplementation
  */
-final class NethGui_Core_Response {
+final class NethGui_Core_Response
+{
     const HTML = 0;
     const JS = 1;
 
@@ -32,8 +34,7 @@ final class NethGui_Core_Response {
     public function getParameterName(NethGui_Core_ModuleInterface $module, $parameterName)
     {
         $moduleObjectId = spl_object_hash($module);
-        if ( ! isset($this->modulePrefixes[$moduleObjectId]))
-        {
+        if ( ! isset($this->modulePrefixes[$moduleObjectId])) {
             $this->modulePrefixes[$moduleObjectId] = $this->calculateModulePrefix($module);
         }
         return $this->modulePrefixes[$moduleObjectId] . '[' . $parameterName . ']';
@@ -51,17 +52,13 @@ final class NethGui_Core_Response {
     private function calculateModulePrefix(NethGui_Core_ModuleInterface $module)
     {
         $prefix = '';
-        while (TRUE)
-        {
+        while (TRUE) {
             $identifier = $module->getIdentifier();
             $module = $module->getParent();
-            if (is_null($module))
-            {
+            if (is_null($module)) {
                 $prefix = $identifier . $prefix;
                 break;
-            }
-            else
-            {
+            } else {
                 $prefix = '[' . $identifier . ']' . $prefix;
             }
         }

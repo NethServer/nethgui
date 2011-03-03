@@ -1,4 +1,5 @@
 <?php
+
 /**
  * NethGui
  *
@@ -10,12 +11,13 @@
  *
  * @package Authorization
  */
-final class NethGui_Authorization_AccessControlResponse implements NethGui_Authorization_AccessControlResponseInterface {
+final class NethGui_Authorization_AccessControlResponse implements NethGui_Authorization_AccessControlResponseInterface
+{
 
     public function __construct(NethGui_Authorization_AccessControlRequestInterface $originalRequest, $granted = TRUE, $message = '')
     {
         $this->originalRequest = $originalRequest;
-        $this->message = $message;        
+        $this->message = $message;
         $this->granted = $granted;
     }
 

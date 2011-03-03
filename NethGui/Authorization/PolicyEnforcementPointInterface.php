@@ -1,4 +1,5 @@
 <?php
+
 /**
  * NethGui
  *
@@ -15,7 +16,9 @@
  * @see PolicyDecisionPointInterface
  * @package Authorization
  */
-interface NethGui_Authorization_PolicyEnforcementPointInterface {
+interface NethGui_Authorization_PolicyEnforcementPointInterface
+{
+
     /**
      * @return PolicyDecisionPointInterface
      */
@@ -25,6 +28,5 @@ interface NethGui_Authorization_PolicyEnforcementPointInterface {
      * @param NethGui_Authorization_PolicyDecisionPointInterface $pdp
      */
     public function setPolicyDecisionPoint(NethGui_Authorization_PolicyDecisionPointInterface $pdp);
-    
 }
 

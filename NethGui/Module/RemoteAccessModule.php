@@ -1,4 +1,5 @@
 <?php
+
 /**
  * NethGui
  *
@@ -10,7 +11,8 @@
  *
  * @package Modules
  */
-final class NethGui_Module_RemoteAccessModule extends NethGui_Core_FormModule implements NethGui_Core_TopModuleInterface {
+final class NethGui_Module_RemoteAccessModule extends NethGui_Core_FormModule implements NethGui_Core_TopModuleInterface
+{
 
     public function getTitle()
     {
@@ -25,8 +27,7 @@ final class NethGui_Module_RemoteAccessModule extends NethGui_Core_FormModule im
     public function initialize()
     {
         parent::initialize();
-        foreach (array('Pptp', 'RemoteManagement', 'Ssh', 'Ftp') as $dependency)
-        {
+        foreach (array('Pptp', 'RemoteManagement', 'Ssh', 'Ftp') as $dependency) {
             require_once('RemoteAccess/' . $dependency . 'Module.php');
             $childModuleClass = 'NethGui_Module_RemoteAccess_' . $dependency . 'Module';
             $childModule = new $childModuleClass();

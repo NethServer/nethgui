@@ -1,4 +1,5 @@
 <?php
+
 /**
  * NethGui
  *
@@ -11,7 +12,8 @@
  *
  * @package NethGuiFramework
  */
-interface NethGui_Core_ValidationReportInterface {
+interface NethGui_Core_ValidationReportInterface
+{
     public function addError($fieldId, $message);
 
     /**

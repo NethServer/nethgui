@@ -1,4 +1,5 @@
 <?php
+
 /**
  * NethGui
  *
@@ -10,13 +11,15 @@
  *
  * @package Modules
  */
-final class NethGui_Module_AdministrationModule extends NethGui_Core_StandardModule implements NethGui_Core_TopModuleInterface {
+final class NethGui_Module_AdministrationModule extends NethGui_Core_StandardModule implements NethGui_Core_TopModuleInterface
+{
 
-    public function getTitle() {
+    public function getTitle()
+    {
         return "Administration";
     }
 
-    public function  getDescription()
+    public function getDescription()
     {
         return "Backup Ripristino, Log etc...";
     }

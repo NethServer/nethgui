@@ -1,4 +1,5 @@
 <?php
+
 /**
  * NethGui
  *
@@ -11,12 +12,12 @@
  * @package NethGuiFramework
  * @subpackage StandardImplementation
  */
-class NethGui_Core_ContainerModule extends NethGui_Core_StandardModuleComposite {
+class NethGui_Core_ContainerModule extends NethGui_Core_StandardModuleComposite
+{
 
     protected function decorate($output, NethGui_Core_Response $response)
     {
-        if ($response->getViewType() === Response::HTML)
-        {
+        if ($response->getViewType() === Response::HTML) {
             return '<div class="' . $this->getIdentifier() . '">' . $output . '</div>';
         }
     }

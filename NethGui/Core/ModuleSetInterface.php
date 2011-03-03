@@ -1,4 +1,5 @@
 <?php
+
 /**
  * NethGui
  *
@@ -13,7 +14,8 @@
  *
  * @package NethGuiFramework
  */
-interface NethGui_Core_ModuleSetInterface {
+interface NethGui_Core_ModuleSetInterface
+{
 
     /**
      * @return RecursiveIterator A RecursiveIterator to iterate over all accessible Modules
@@ -25,6 +27,5 @@ interface NethGui_Core_ModuleSetInterface {
      * @return ModuleInterface
      */
     public function findModule($moduleIdentifier);
-
 }
 

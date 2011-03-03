@@ -1,4 +1,5 @@
 <?php
+
 /**
  * NethGui
  *
@@ -10,7 +11,9 @@
  *
  * @package NethGuiFramework
  */
-interface NethGui_Core_UserInterface {
+interface NethGui_Core_UserInterface
+{
+
     /**
      * @return boolean
      */
@@ -40,6 +43,4 @@ interface NethGui_Core_UserInterface {
 
     public function hasCredential($credentialName);
 }
-
-
 

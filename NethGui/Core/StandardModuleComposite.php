@@ -1,4 +1,5 @@
 <?php
+
 /**
  * NethGui
  *
@@ -11,7 +12,8 @@
  * @package NethGuiFramework
  * @subpackage StandardImplementation
  */
-abstract class NethGui_Core_StandardModuleComposite extends NethGui_Core_StandardModule implements NethGui_Core_ModuleCompositeInterface {
+abstract class NethGui_Core_StandardModuleComposite extends NethGui_Core_StandardModule implements NethGui_Core_ModuleCompositeInterface
+{
 
     private $children = array();
 
@@ -21,10 +23,8 @@ abstract class NethGui_Core_StandardModuleComposite extends NethGui_Core_Standar
     public function initialize()
     {
         parent::initialize();
-        foreach ($this->children as $child)
-        {
-            if ( ! $child->isInitialized())
-            {
+        foreach ($this->children as $child) {
+            if ( ! $child->isInitialized()) {
                 $child->initialize();
             }
         }
@@ -32,12 +32,10 @@ abstract class NethGui_Core_StandardModuleComposite extends NethGui_Core_Standar
 
     public function addChild(NethGui_Core_ModuleInterface $childModule)
     {
-        if ( ! isset($this->children[$childModule->getIdentifier()]))
-        {
+        if ( ! isset($this->children[$childModule->getIdentifier()])) {
             $this->children[$childModule->getIdentifier()] = $childModule;
             $childModule->setParent($this);
-            if ($this->isInitialized() && ! $childModule->isInitialized())
-            {
+            if ($this->isInitialized() && ! $childModule->isInitialized()) {
                 $childModule->initialize();
             }
         }
@@ -52,8 +50,7 @@ abstract class NethGui_Core_StandardModuleComposite extends NethGui_Core_Standar
     public function bind(NethGui_Core_RequestInterface $request)
     {
         parent::bind($request);
-        foreach ($this->getChildren() as $module)
-        {
+        foreach ($this->getChildren() as $module) {
             $module->bind($request->getParameterAsInnerRequest($module->getIdentifier()));
         }
     }
@@ -61,16 +58,14 @@ abstract class NethGui_Core_StandardModuleComposite extends NethGui_Core_Standar
     public function validate(NethGui_Core_ValidationReportInterface $report)
     {
         parent::validate($report);
-        foreach ($this->getChildren() as $module)
-        {
+        foreach ($this->getChildren() as $module) {
             $module->validate($report);
         }
     }
 
     public function process()
     {
-        foreach ($this->getChildren() as $childModule)
-        {
+        foreach ($this->getChildren() as $childModule) {
             $childModule->process();
         }
     }
@@ -84,8 +79,7 @@ abstract class NethGui_Core_StandardModuleComposite extends NethGui_Core_Standar
     public function renderView(NethGui_Core_Response $response)
     {
         $output = '';
-        foreach ($this->getChildren() as $module)
-        {
+        foreach ($this->getChildren() as $module) {
             $output .= $module->renderView($response);
         }
         return $this->decorate($output, $response);

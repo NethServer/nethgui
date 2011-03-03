@@ -1,4 +1,5 @@
 <?php
+
 /**
  * NethGui
  *
@@ -14,7 +15,8 @@
  * @see AccessControlResponseInterface
  * @package Authorization
  */
-interface NethGui_Authorization_AccessControlRequestInterface {
+interface NethGui_Authorization_AccessControlRequestInterface
+{
 
     /**
      * @return UserInterface

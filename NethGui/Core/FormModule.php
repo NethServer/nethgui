@@ -1,4 +1,5 @@
 <?php
+
 /**
  * NethGui
  *
@@ -11,7 +12,8 @@
  * @package NethGuiFramework
  * @subpackage StandardImplementation
  */
-class NethGui_Core_FormModule extends NethGui_Core_StandardModuleComposite {
+class NethGui_Core_FormModule extends NethGui_Core_StandardModuleComposite
+{
 
     /**
      *
@@ -33,8 +35,7 @@ class NethGui_Core_FormModule extends NethGui_Core_StandardModuleComposite {
     protected function decorate($output, NethGui_Core_Response $response)
     {
         // TODO: insert CSRF token.
-        if ($response->getViewType() === NethGui_Core_Response::HTML)
-        {
+        if ($response->getViewType() === NethGui_Core_Response::HTML) {
             return form_open_multipart($this->action) . $output . form_close();
         }
     }

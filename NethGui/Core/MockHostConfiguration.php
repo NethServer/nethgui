@@ -1,4 +1,5 @@
 <?php
+
 /**
  * NethGui
  *
@@ -11,14 +12,14 @@
  * @package NethGuiFramework
  * @subpackage Testing
  */
-final class NethGui_Core_MockHostConfiguration implements NethGui_Core_HostConfigurationInterface, NethGui_Authorization_PolicyEnforcementPointInterface {
+final class NethGui_Core_MockHostConfiguration implements NethGui_Core_HostConfigurationInterface, NethGui_Authorization_PolicyEnforcementPointInterface
+{
 
     /**
      * @var PolicyDecisionPointInterface;
      */
     private $policyDecisionPoint;
     private $esmith = array();
-
     /**
      *
      * @var UserInterface
@@ -43,17 +44,15 @@ final class NethGui_Core_MockHostConfiguration implements NethGui_Core_HostConfi
 
         $response = $this->policyDecisionPoint->authorizeRequest($request);
 
-        if(! $response )
-        {
+        if ( ! $response) {
             throw new Exception($response->getMessage());
         }
 
         $db = $resourcePath[0];
         $key = $resourcePath[1];
         $property = isset($resourcePath[2]) ? $resourcePath[2] : NULL;
-      
-        if (isset($property))
-        {
+
+        if (isset($property)) {
             return $this->esmith[$db][$key][$property];
         }
 
@@ -75,10 +74,9 @@ final class NethGui_Core_MockHostConfiguration implements NethGui_Core_HostConfi
         return $this->policyDecisionPoint;
     }
 
-    public function  setUser(NethGui_Core_UserInterface $user)
+    public function setUser(NethGui_Core_UserInterface $user)
     {
         $this->user = $user;
     }
-
 
 }

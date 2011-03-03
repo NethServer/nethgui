@@ -1,4 +1,5 @@
 <?php
+
 /**
  * NethGui
  *
@@ -10,7 +11,8 @@
  *
  * @package Authorization
  */
-class NethGui_Authorization_PermissivePolicyDecisionPoint implements NethGui_Authorization_PolicyDecisionPointInterface {
+class NethGui_Authorization_PermissivePolicyDecisionPoint implements NethGui_Authorization_PolicyDecisionPointInterface
+{
 
     public function authorizeRequest(NethGui_Authorization_AccessControlRequestInterface $request)
     {

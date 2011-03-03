@@ -1,4 +1,5 @@
 <?php
+
 /**
  * NethGui
  *
@@ -10,13 +11,15 @@
  *
  * @package NethGuiFramework
  */
-interface NethGui_Core_RequestInterface {
+interface NethGui_Core_RequestInterface
+{
+
     /**
      * @param string $parameterName
      * @return mixed
      */
     public function getParameter($parameterName);
-    
+
     /**
      * Gets given entry as array()
      * @param string $parameterName
@@ -35,7 +38,6 @@ interface NethGui_Core_RequestInterface {
      */
     public function getParameters();
 
-
     /**
      * @return bool
      */
@@ -45,5 +47,4 @@ interface NethGui_Core_RequestInterface {
      * @return UserInterface
      */
     public function getUser();
-
 }

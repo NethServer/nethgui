@@ -1,4 +1,5 @@
 <?php
+
 /**
  * NethGui
  *
@@ -15,11 +16,12 @@
  *
  * @package NethGuiFramework
  */
-interface NethGui_Core_HostConfigurationInterface {
+interface NethGui_Core_HostConfigurationInterface
+{
 
     /**
      * @param array $resourcePath
-     */    
+     */
     public function read($resourcePath);
 
     /**
