@@ -1,5 +1,4 @@
 <?php
-
 /**
  * NethGui
  *
@@ -29,18 +28,18 @@ interface NethGui_Core_ResponseInterface
     public function getViewType();
 
     /**
-     * Return the fully qualified name of a module parameter
+     * Returns the fully qualified name of a module parameter
      * @param NethGui_Core_ModuleInterface $module The module owning the parameter
      * @param string $parameterName Name of the parameter
-     * @return string
+     * @return string Fully qualified module parameter name
      */
     public function getParameterName(NethGui_Core_ModuleInterface $module, $parameterName);
 
     /**
-     * Return the fully qualified name of a module UI element
+     * Returns the fully qualified name of a module UI element
      * @param NethGui_Core_ModuleInterface $module The module owning the widget
      * @param string $widgetId The widget identifier
-     * @return string
+     * @return string Fully qualified widget identifier
      */
     public function getWidgetId(NethGui_Core_ModuleInterface $module, $widgetId);
 }

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * NethGui
  *
@@ -25,29 +24,44 @@ final class NethGui_Core_Request implements NethGui_Core_RequestInterface
     private $user;
 
     /**
-     * Create a new NethGui_Core_Request object from current application state.
+     * Creates a new NethGui_Core_Request object from current web request.
      * @param string $defaultModuleIdentifier
      * @param array $parameters 
      * @return RequestInterface
      */
-    static public function createInstanceFromServer($defaultModuleIdentifier, $parameters = array())
+    static public function getWebRequestInstance($defaultModuleIdentifier, $parameters = array())
     {
-        if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-            $data = array($defaultModuleIdentifier => $parameters);
-        } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            if (isset($_SERVER['X_REQUESTED_WITH'])
-                && $_SERVER['X_REQUESTED_WITH'] == 'XMLHttpRequest') {
-                // TODO: decode json query
-                $data = array();
-            } else {
-                $data = array_merge($parameters, $_POST);
+        static $instance;
+
+        if ( ! isset($instance)) {
+            if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+                $data = array($defaultModuleIdentifier => $parameters);
+                //
+            } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                if (isset($_SERVER['X_REQUESTED_WITH'])
+                    && $_SERVER['X_REQUESTED_WITH'] == 'XMLHttpRequest') {
+                    // Ajax POST request.
+                    // TODO: decode json query
+                    $data = array();
+                } else {
+                    // Browser POST request.
+                    $data = array_merge(array($defaultModuleIdentifier => $parameters), $_POST);
+                }
             }
+
+            // TODO: retrieve user state from Session
+            $user = new NethGui_Core_AlwaysAuthenticatedUser();
+
+            $instance = new self($user, $data);
+
+            /*
+             * Clear global variables
+             */
+            $_POST = array();
+            $_GET = array();
         }
 
-        // TODO: retrieve user state from Session
-        $user = new NethGui_Core_AlwaysAuthenticatedUser();
-
-        return new self($user, $data);
+        return $instance;
     }
 
     private function __construct(NethGui_Core_UserInterface $user, $data = array())

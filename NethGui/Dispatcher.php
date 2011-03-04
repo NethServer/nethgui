@@ -1,5 +1,4 @@
 <?php
-
 /**
  * NethGui
  *
@@ -76,11 +75,14 @@ final class NethGui_Dispatcher
             show_404();
         }
 
-        $request = NethGui_Core_Request::createInstanceFromServer(
+        $request = NethGui_Core_Request::getWebRequestInstance(
                 $this->currentModule->getIdentifier(),
                 $parameters
         );
 
+        /**
+         * Retrieve current User object from $request and set it on PEPs.
+         */
         $this->hostConfiguration->setUser($request->getUser());
         $this->componentDepot->setUser($request->getUser());
 

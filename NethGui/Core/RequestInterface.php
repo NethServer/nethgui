@@ -21,7 +21,10 @@ interface NethGui_Core_RequestInterface
     public function getParameter($parameterName);
 
     /**
-     * Gets given entry as array()
+     * Gets given entry as an inner request object.
+     *
+     * This
+     *
      * @param string $parameterName
      * @return RequestInterface
      */
