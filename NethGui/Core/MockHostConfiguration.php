@@ -25,7 +25,7 @@ final class NethGui_Core_MockHostConfiguration implements NethGui_Core_HostConfi
     /**
     * @var SME DB database command
     **/
-    private $command = "sudo /sbin/e-smith/db";
+    private $command = "/usr/bin/sudo /sbin/e-smith/db";
 
     /**
     * @var $db DB name
@@ -47,17 +47,6 @@ final class NethGui_Core_MockHostConfiguration implements NethGui_Core_HostConfi
      * @var UserInterface
      */
     private $user;
-
-    public function __construct($db)
-    {
-        if(!$db)
-            throw new Exception("Can't find NethServer database");
-        $this->db = $db;
-
-        //TODO: eliminare quando funzioneranno i policyDecisionPoint
-	$this->canRead = TRUE;
-	$this->canWrite = TRUE;
-    }
 
     public function setPolicyDecisionPoint(NethGui_Authorization_PolicyDecisionPointInterface $pdp)
     {
@@ -86,24 +75,37 @@ final class NethGui_Core_MockHostConfiguration implements NethGui_Core_HostConfi
         $this->user = $user;
     }
 
+    public function setDB($db)
+    {
+       if(!$db)
+            throw new Exception("Can't find NethServer database");
+        $this->db = $db;
+
+        //TODO: eliminare quando funzioneranno i policyDecisionPoint
+        $this->canRead = TRUE;
+        $this->canWrite = TRUE;
+    }
 
     /**
     * /sbin/e-smith/db dbfile get key
     */
     public function getKey($key)
     {
+        if(!$this->db)
+            throw new Exception("No database selected");
+        
         if(!$this->canRead)
              throw new Exception("Permission Denied");
 
         $result = array();
-        $output = shell_exec($this->command." $db get $key");
+        $output = shell_exec($this->command." ".$this->db." get ".escapeshellarg($key));
         if($output != "")
         {
             $tokens = split("\|",$output);
             for($i=1;$i<=count($tokens);$i++) //skip type
             {
                 if(isset($tokens[$i])) //avoid outbound tokens
-                    $result[$tokens[$i]]=$tokens[++$i];
+                    $result[trim($tokens[$i])]=trim($tokens[++$i]);
             }
         }
         return $result;
@@ -114,6 +116,9 @@ final class NethGui_Core_MockHostConfiguration implements NethGui_Core_HostConfi
     */
     public function setKey($key,$type,$props)
     { 
+        if(!$this->db)
+            throw new Exception("No database selected");
+        
         if(!$this->canWrite)
              throw new Exception("Permission Denied");
        
@@ -127,10 +132,13 @@ final class NethGui_Core_MockHostConfiguration implements NethGui_Core_HostConfi
     */
     public function deleteKey($key)
     {
+        if(!$this->db)
+            throw new Exception("No database selected");
+        
         if(!$this->canWrite)
              throw new Exception("Permission Denied");
 
-        exec($this->command." $db delete $key ",$ret);
+        exec($this->command." ".$this->db." delete ".escapeshellarg($key), $output, $ret);
         return ($ret == 0);
     }
 
@@ -139,10 +147,12 @@ final class NethGui_Core_MockHostConfiguration implements NethGui_Core_HostConfi
     */
     public function getType($key)
     {
+        if(!$this->db)
+            throw new Exception("No database selected");
+        
         if(!$this->canRead)
              throw new Exception("Permission Denied");
-
-        return shell_exec($this->command." $db gettype $key");
+        return trim(shell_exec($this->command." ".$this->db." gettype ".escapeshellarg($key)));
     }
 
     /**
@@ -150,10 +160,13 @@ final class NethGui_Core_MockHostConfiguration implements NethGui_Core_HostConfi
     */
     public function setType($key,$type)
     {
+        if(!$this->db)
+            throw new Exception("No database selected");
+        
         if(!$this->canWrite)
              throw new Exception("Permission Denied");
 
-        exec($this->command." $db settype $key $type",$ret);
+        exec($this->command." ".$this->db." settype ".escapeshellarg($key)." ".escapeshellarg($type),$ret);
         return ($ret == 0);
     }
 
@@ -163,10 +176,13 @@ final class NethGui_Core_MockHostConfiguration implements NethGui_Core_HostConfi
     */
     public function getProp($key,$prop)
     {
+        if(!$this->db)
+            throw new Exception("No database selected");
+        
         if(!$this->canRead)
              throw new Exception("Permission Denied");
 
-        return shell_exec($this->command." $db getprop $key $prop");
+        return trim(shell_exec($this->command." ".$this->db." getprop ".escapeshellarg($key)." ".escapeshellarg($prop)));
     }
 
 
@@ -175,10 +191,14 @@ final class NethGui_Core_MockHostConfiguration implements NethGui_Core_HostConfi
     */
     public function setProp($key,$props)
     {
+        if(!$this->db)
+            throw new Exception("No database selected");
+        
         if(!$this->canWrite)
              throw new Exception("Permission Denied");
 
-        exec($this->command." $db setprop $key ".join(" ",$props),$ret);
+        $params = " setprop ".escapeshellarg($key)." ".$this->propsToString($props);
+        exec($this->command." ".$this->db." $params ",$output, $ret);
         return ($ret == 0);
     }
 
@@ -188,10 +208,14 @@ final class NethGui_Core_MockHostConfiguration implements NethGui_Core_HostConfi
     */
     public function delProp($key,$props)
     {
+        if(!$this->db)
+            throw new Exception("No database selected");
+        
         if(!$this->canWrite)
              throw new Exception("Permission Denied");
 
-        exec($this->command." $db delprop $key ".join(" ",$props),$ret);
+        $params = " delprop ".escapeshellarg($key)." ".join(" ",$props);
+        exec($this->command." ".$this->db." $params", $output, $ret);
         return ($ret == 0);
     }
   

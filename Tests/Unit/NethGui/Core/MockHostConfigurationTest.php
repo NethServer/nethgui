@@ -19,7 +19,8 @@ class NethGui_Core_MockHostConfigurationTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new NethGui_Core_MockHostConfiguration('testdb');
+        $this->object = new NethGui_Core_MockHostConfiguration();
+        $this->object->setDB('testdb');
     }
 
     /**
@@ -64,89 +65,94 @@ class NethGui_Core_MockHostConfigurationTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @todo Implement testGetKey().
+     * Implement testGetKey().
      */
     public function testGetKey()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $props = array("FirstProp" => "firstvalue", "SecondProp" => "2ndvalue");
+        $this->object->setKey("testkey","service",$props);
+        $tmp = $this->object->getKey("testkey");
+        foreach($tmp as $key=>$val)
+        {
+            $this->assertEquals($val,$props[$key]);
+        }
     }
 
     /**
-     * @todo Implement testSetKey().
+     * Implement testSetKey().
      */
     public function testSetKey()
     {
         $props = array("FirstProp" => "firstvalue", "SecondProp" => "2ndvalue");
         $this->assertEquals(true,$this->object->setKey("testkey","service",$props));
     }
-
+ 
     /**
-     * @todo Implement testDeleteKey().
-     */
+    *
+    */
     public function testDeleteKey()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $this->assertEquals(true,$this->object->deleteKey("testkey"));
     }
 
     /**
-     * @todo Implement testGetType().
-     */
+     * 
+    */
     public function testGetType()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $props = array("FirstProp" => "firstvalue");
+        $this->object->setKey("testkey","service",$props);
+        $this->assertEquals("service",$this->object->getType("testkey"));
     }
 
     /**
-     * @todo Implement testSetType().
+     * @depends testGetType
      */
     public function testSetType()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $props = array("FirstProp" => "firstvalue");
+        $this->object->setKey("testkey","service",$props);
+        $this->object->setType("testkey","service2");
+        $this->assertEquals("service2",$this->object->getType("testkey"));
     }
 
     /**
-     * @todo Implement testGetProp().
+     * @depends testSetKey
      */
     public function testGetProp()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $props = array("FirstProp" => "firstvalue");
+        $this->object->setKey("testkey","service",$props);
+        $this->assertEquals("firstvalue",$this->object->getProp("testkey","FirstProp"));
     }
 
     /**
-     * @todo Implement testSetProp().
+     * @depends testGetProp
      */
     public function testSetProp()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $props = array("FirstProp" => "firstvalue");
+        $props2 = array("SecondProp" => "2ndvalue");
+        $props3 = array("FirstProp" => "newvalue", "ThirdProp" => "3");
+        $this->object->setKey("testkey","service",$props);
+        $this->object->setProp("testkey",$props2);
+        $this->assertEquals("2ndvalue",$this->object->getProp("testkey","SecondProp"));
+        $this->object->setProp("testkey",$props3);
+        $this->assertEquals("2ndvalue",$this->object->getProp("testkey","SecondProp"), "Lost SecondProp");
+        $this->assertEquals("newvalue",$this->object->getProp("testkey","FirstProp"));
+        $this->assertEquals("3",$this->object->getProp("testkey","ThirdProp"));
     }
 
     /**
-     * @todo Implement testDelProp().
+     * @depends testGetProp
      */
     public function testDelProp()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $props = array("FirstProp" => "1", "SecondProp" => "2", "ThirdProp" => "3");
+        $this->object->setKey("testkey","service",$props);
+        $this->object->delProp("testkey",array("SecondProp","ThirdProp"));
+        $this->assertEquals("",$this->object->getProp("testkey","SecondProp"));
+        $this->assertEquals("",$this->object->getProp("testkey","ThirdProp"));
     }
 }
 ?>

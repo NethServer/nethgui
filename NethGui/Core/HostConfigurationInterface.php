@@ -19,7 +19,11 @@
 interface NethGui_Core_HostConfigurationInterface
 {
 
-    public function __construct($db);
+    /**
+    * Set the database
+    * @param $db string database name
+    */
+    public function setDB($db);
 
     /**
     * /sbin/e-smith/db dbfile get key
