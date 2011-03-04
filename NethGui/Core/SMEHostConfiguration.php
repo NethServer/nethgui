@@ -99,7 +99,7 @@ final class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfig
      * 
      * @param streing $db Database name
      * @access public
-     * @return void
+     * @return NethGui_Core_HostConfigurationInterface
      */
     public function setDB($db)
     {
@@ -108,6 +108,8 @@ final class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfig
         $this->db = $db;
 
         $this->authorizeDbAccess();
+
+        return $this;
     }
 
     private function authorizeDbAccess()
