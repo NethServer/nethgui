@@ -52,7 +52,7 @@ class NethGui_Core_SMEHostConfigurationTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @todo Implement testSetUser().
+     * Implement testSetUser().
      */
     public function testSetUser()
     {
@@ -64,6 +64,7 @@ class NethGui_Core_SMEHostConfigurationTest extends PHPUnit_Framework_TestCase
 
     /**
      * Implement testGetKey().
+     * @requires testSetKey
      */
     public function testGetKey()
     {
@@ -86,7 +87,7 @@ class NethGui_Core_SMEHostConfigurationTest extends PHPUnit_Framework_TestCase
     }
  
     /**
-    *
+    * Implement testDeleteKey()
     */
     public function testDeleteKey()
     {
@@ -94,7 +95,8 @@ class NethGui_Core_SMEHostConfigurationTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * 
+     * Implement testGetKey()
+     * @depends testSetKey
     */
     public function testGetType()
     {
@@ -104,7 +106,9 @@ class NethGui_Core_SMEHostConfigurationTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Implement testSetType()
      * @depends testGetType
+     * @depends testSetKey
      */
     public function testSetType()
     {
@@ -115,6 +119,7 @@ class NethGui_Core_SMEHostConfigurationTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Implement testGetProp()
      * @depends testSetKey
      */
     public function testGetProp()
@@ -125,7 +130,9 @@ class NethGui_Core_SMEHostConfigurationTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Implement testSetProp()
      * @depends testGetProp
+     * @depends testSetKey
      */
     public function testSetProp()
     {
@@ -142,7 +149,9 @@ class NethGui_Core_SMEHostConfigurationTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Implement testDelProp()
      * @depends testGetProp
+     * @depends testGetKey
      */
     public function testDelProp()
     {
