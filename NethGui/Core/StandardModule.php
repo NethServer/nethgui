@@ -168,7 +168,7 @@ abstract class NethGui_Core_StandardModule implements NethGui_Core_ModuleInterfa
             $viewState['name'][$parameterName] = htmlspecialchars($response->getParameterName($this, $parameterName));
             $viewState['parameter'][$parameterName] = htmlspecialchars($parameterValue);
         }
-        return CI_Controller::get_instance()->load->view('../../NethGui/View/' . $viewName, $viewState, TRUE);
+        return NethGui_Framework::getInstance()->getView('../../NethGui/View/' . $viewName, $viewState);
     }
 
 }

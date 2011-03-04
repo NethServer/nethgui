@@ -16,19 +16,13 @@ final class Dispatcher extends CI_Controller {
 
     public function _remap($method, $parameters = array())
     {
-        if ($method == 'phpinfo')
-        {
-            phpinfo();
-            return;
-        }
-
         $this->load->helper('url');
         $this->load->helper('form');
 
-        require_once(APPPATH . '../NethGui/Dispatcher.php');
+        require_once(APPPATH . '../NethGui/Framework.php');
 
-        $nethgui = new NethGui_Dispatcher($this);
-        $nethgui->main($method, $parameters);
+        $NFW = NethGui_Framework::getInstance($this);
+        $NFW->getDispatcher()->dispatch($method, $parameters);
     }
 
 }

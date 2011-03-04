@@ -1,5 +1,16 @@
 <?php
 
+/**
+ * NethGui
+ *
+ * @package NethGuiFramework
+ */
+
+/**
+ * NethGui_Dispatcher
+ *
+ * @package NethGuiFramework
+ */
 final class NethGui_Dispatcher
 {
 
@@ -7,12 +18,12 @@ final class NethGui_Dispatcher
      * Model for getting components (Modules, Panels) from file system.
      * @var ComponentDepot
      */
-    public $componentDepot;
+    private $componentDepot;
     /**
      * Model for changing host system configuration.
      * @var HostConfigurationInterface
      */
-    public $hostConfiguration;
+    private $hostConfiguration;
     /**
      * @var ModuleInterface
      */
@@ -22,18 +33,12 @@ final class NethGui_Dispatcher
      *
      * @param CI_Controller $controller 
      */
-    public function __construct(CI_Controller $controller)
+    public function __construct()
     {
-        $this->controller = $controller;
-        $this->initialize();
-    }
-
-    private function initialize()
-    {
-        $this->includeArtifacts();
-
         /*
          * Create models.
+         * TODO: get hostConfiguration and componentDepot clas names
+         * from NethGui_Framework.
          */
         $this->hostConfiguration = new NethGui_Core_MockHostConfiguration();
         $this->componentDepot = new NethGui_Core_ComponentDepot($this->hostConfiguration);
@@ -41,53 +46,19 @@ final class NethGui_Dispatcher
         /*
          * TODO: enforce some security policy on Models
          */
-        $this->hostConfiguration->setPolicyDecisionPoint(new NethGui_Authorization_PermissivePolicyDecisionPoint());
-        $this->componentDepot->setPolicyDecisionPoint(new NethGui_Authorization_PermissivePolicyDecisionPoint());
-    }
+        $pdp = new NethGui_Authorization_PermissivePolicyDecisionPoint();
 
-    private function includeArtifacts()
-    {
-        $classNames = array(
-            'Authorization/AccessControlRequestInterface',
-            'Authorization/AccessControlResponseInterface',
-            'Authorization/PolicyDecisionPointInterface',
-            'Authorization/PolicyEnforcementPointInterface',
-            'Core/HostConfigurationInterface',
-            'Core/ModuleCompositeInterface',
-            'Core/ModuleInterface',
-            'Core/ModuleSetInterface',
-            'Core/RequestInterface',
-            'Core/ResponseInterface',
-            'Core/UserInterface',
-            'Core/ValidationReportInterface',
-            'Authorization/AccessControlRequest',
-            'Authorization/AccessControlResponse',
-            'Core/AlwaysAuthenticatedUser',
-            'Core/MockHostConfiguration',
-            'Core/ModuleMenuIterator',
-            'Core/ComponentDepot',
-            'Core/Request',
-            'Core/Response',
-            'Core/ValidationReport',
-            'Authorization/PermissivePolicyDecisionPoint',
-            'Core/StandardModule',
-            'Core/StandardModuleComposite',
-            'Core/FormModule',
-            'Core/ContainerModule',
-        );
-
-        foreach ($classNames as $className) {
-            require_once($className . '.php');
-        }
+        $this->hostConfiguration->setPolicyDecisionPoint($pdp);
+        $this->componentDepot->setPolicyDecisionPoint($pdp);
     }
 
     /**
-     * Code Igniter entry point
+     * Forwards control to Modules and creates output views.
      *
      * @param string $method
      * @param array $parameters
      */
-    public function main($method, $parameters = array())
+    public function dispatch($method, $parameters = array())
     {
         /*
          * Find current module
@@ -113,7 +84,7 @@ final class NethGui_Dispatcher
         $this->hostConfiguration->setUser($request->getUser());
         $this->componentDepot->setUser($request->getUser());
 
-        $this->dispatch($request);
+        $this->_dispatch($request);
 
         // Default response view type: HTML
         $responseType = NethGui_Core_ResponseInterface::HTML;
@@ -147,7 +118,7 @@ final class NethGui_Dispatcher
                 'module_menu' => $this->renderModuleMenu($this->componentDepot->getTopModules()),
                 'breadcrumb_menu' => $this->renderBreadcrumbMenu(),
             );
-            $this->controller->load->view('../../NethGui/Core/View/decoration.php', $decorationParameters);
+            echo NethGui_Framework::getInstance()->getView('../../NethGui/Core/View/decoration.php', $decorationParameters);
             //
         } elseif ($response->getViewType() === NethGui_Core_ResponseInterface::JS) {
             echo $this->currentModule->renderView($response);
@@ -163,7 +134,7 @@ final class NethGui_Dispatcher
      * @param NethGui_Core_RequestInterface $parameters
      * @return Response
      */
-    private function dispatch(NethGui_Core_RequestInterface $request)
+    private function _dispatch(NethGui_Core_RequestInterface $request)
     {
         $validationReport = new NethGui_Core_ValidationReport();
 
@@ -240,6 +211,11 @@ final class NethGui_Dispatcher
         return '<ul>' . $output . '</ul>';
     }
 
+    /**
+     * @see anchor()
+     * @param NethGui_Core_ModuleInterface $module
+     * @return <type>
+     */
     private function renderModuleAnchor(NethGui_Core_ModuleInterface $module)
     {
         $html = '';
@@ -251,7 +227,12 @@ final class NethGui_Dispatcher
         if ($module === $this->currentModule) {
             $html = '<span class="moduleTitle current" title="' . htmlspecialchars($module->getDescription()) . '">' . htmlspecialchars($module->getTitle()) . '</span>';
         } else {
-            $html = anchor(strtolower(get_class($this->controller)) . '/' . $module->getIdentifier(), htmlspecialchars($module->getTitle()), array('class' => 'moduleTitle', 'title' => htmlspecialchars($module->getDescription())));
+            $ciControllerClassName = NethGui_Framework::getInstance()->getControllerName();
+            $html = anchor($ciControllerClassName . '/' . $module->getIdentifier(),
+                    htmlspecialchars($module->getTitle()),
+                    array('class' => 'moduleTitle', 'title' => htmlspecialchars($module->getDescription())
+                    )
+            );
         }
 
         return $html;

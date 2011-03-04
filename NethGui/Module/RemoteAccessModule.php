@@ -30,7 +30,6 @@ final class NethGui_Module_RemoteAccessModule extends NethGui_Core_FormModule im
     {
         parent::initialize();
         foreach (array('Pptp', 'RemoteManagement', 'Ssh', 'Ftp') as $dependency) {
-            require_once('RemoteAccess/' . $dependency . 'Module.php');
             $childModuleClass = 'NethGui_Module_RemoteAccess_' . $dependency . 'Module';
             $childModule = new $childModuleClass();
             $childModule->setHostConfiguration($this->hostConfiguration);

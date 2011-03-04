@@ -60,8 +60,6 @@ final class NethGui_Core_ComponentDepot implements NethGui_Core_ModuleSetInterfa
         $directoryIterator = new DirectoryIterator(dirname(__FILE__) . '/../Module');
         foreach ($directoryIterator as $element) {
             if (substr($element->getFilename(), -10) == 'Module.php') {
-                // Filename OK. Include it.
-                require_once($element->getPathname());
 
                 $className = 'NethGui_Module_' . substr($element->getFileName(), 0, -4);
 
