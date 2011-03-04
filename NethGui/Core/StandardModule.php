@@ -51,7 +51,7 @@ abstract class NethGui_Core_StandardModule implements NethGui_Core_ModuleInterfa
         if (isset($identifier)) {
             $this->identifier = $identifier;
         } else {
-            $this->identifier = get_class($this);
+            $this->identifier = array_pop(explode('_', get_class($this)));
         }
     }
 
@@ -119,14 +119,43 @@ abstract class NethGui_Core_StandardModule implements NethGui_Core_ModuleInterfa
 
     }
 
-    public function renderView(NethGui_Core_Response $response)
+    /**
+     * Returns an appropriate view string based on $response type.
+     * @see NethGui_Core_ResponseInterface::getViewType()
+     * @param NethGui_Core_ResponseInterface $response
+     * @return string
+     */
+    public function renderView(NethGui_Core_ResponseInterface $response)
     {
-        if ($response->getViewType() === NethGui_Core_Response::HTML) {
+        $viewType = $response->getViewType();
+
+        if (
+            $viewType === NethGui_Core_ResponseInterface::HTML
+            && method_exists($this, 'renderViewHtml')
+        ) {
+            return $this->renderViewHtml($response);
+            //
+        } elseif (
+            $viewType === NethGui_Core_ResponseInterface::JS
+            && method_exists($this, 'renderViewJavascript')
+        ) {
+            return $this->renderViewJavascript($response);
+            //
+        } elseif (
+            $viewType === NethGui_Core_ResponseInterface::CSS
+            && method_exists($this, 'renderViewCss')
+        ) {
+            return $this->renderViewCss($response);
+            //
+        } elseif ($viewType === NethGui_Core_ResponseInterface::HTML) {
             return '<h2>' . $this->getTitle() . '</h2><div class="moduleDescription">' . $this->getDescription() . '</div>';
+            //
         }
+
+        return "";
     }
 
-    protected function renderCodeIgniterView(NethGui_Core_Response $response, $viewName, $viewState = array())
+    protected function renderCodeIgniterView(NethGui_Core_ResponseInterface $response, $viewName, $viewState = array())
     {
         $viewState['module'] = $this;
         $viewState['response'] = $response;
