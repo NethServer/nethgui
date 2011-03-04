@@ -63,22 +63,6 @@ interface NethGui_Core_ModuleInterface
      */
     public function getDescription();
 
-    /**
-     * Binds NethGui_Core_Request parameters to Module internal state.
-     * @param NethGui_Core_RequestInterface $request
-     */
-    public function bind(NethGui_Core_RequestInterface $request);
-
-    /**
-     * Validate input data. Errors are sent to $report.
-     * @return void
-     */
-    public function validate(NethGui_Core_ValidationReportInterface $report);
-
-    /**
-     * Performs Module logics.
-     */
-    public function process();
 
     /**
      * Returns the Module view contents.

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * NethGui
  *
@@ -37,6 +36,9 @@ abstract class NethGui_Core_StandardModuleComposite extends NethGui_Core_Standar
             $childModule->setParent($this);
             if ($this->isInitialized() && ! $childModule->isInitialized()) {
                 $childModule->initialize();
+            }
+            if ($childModule instanceof NethGui_Core_RequestHandlerInterface) {
+                $this->addRequestHandler($childModule->getIdentifier(), $childModule);
             }
         }
     }

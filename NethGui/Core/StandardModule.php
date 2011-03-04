@@ -1,5 +1,4 @@
 <?php
-
 /**
  * NethGui
  *
@@ -12,7 +11,7 @@
  * @package NethGuiFramework
  * @subpackage StandardImplementation
  */
-abstract class NethGui_Core_StandardModule implements NethGui_Core_ModuleInterface
+abstract class NethGui_Core_StandardModule implements NethGui_Core_ModuleInterface, NethGui_Core_RequestHandlerInterface
 {
 
     /**
@@ -34,14 +33,14 @@ abstract class NethGui_Core_StandardModule implements NethGui_Core_ModuleInterfa
     private $hostConfiguration;
     /**
      *
-     * @var RequestInterface
-     */
-    protected $request;
-    /**
-     *
      * @var array
      */
     protected $parameters = array();
+    /**
+     * @see NethGui_Core_RequestHandlerInterface
+     * @var array
+     */
+    private $requestHandlers = array();
 
     /**
      * @param string $identifier
@@ -63,10 +62,10 @@ abstract class NethGui_Core_StandardModule implements NethGui_Core_ModuleInterfa
     /**
      * @return NethGui_Core_HostConfigurationInterface
      */
-    protected function getHostConfiguration() {
+    protected function getHostConfiguration()
+    {
         return $this->hostConfiguration;
     }
-
 
     /**
      *  Overriding methods can read current state from model.
@@ -112,7 +111,9 @@ abstract class NethGui_Core_StandardModule implements NethGui_Core_ModuleInterfa
 
     public function bind(NethGui_Core_RequestInterface $request)
     {
-        $this->request = $request;
+        foreach ($request->getParameters() as $parameterName) {
+            $this->parameter[$parameterName] = $request->getParameter($parameterName);
+        }
     }
 
     public function validate(NethGui_Core_ValidationReportInterface $report)
@@ -177,6 +178,15 @@ abstract class NethGui_Core_StandardModule implements NethGui_Core_ModuleInterfa
             $viewState['parameter'][$parameterName] = htmlspecialchars($parameterValue);
         }
         return NethGui_Framework::getInstance()->getView('../../NethGui/View/' . $viewName, $viewState);
+    }
+
+    /**
+     * @param string $identifier
+     * @param NethGui_Core_RequestHandlerInterface $handler
+     */
+    protected function addRequestHandler($identifier, NethGui_Core_RequestHandlerInterface $handler)
+    {
+        $this->requestHandlers[$identifier] = $handler;
     }
 
 }
