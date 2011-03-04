@@ -68,18 +68,6 @@ final class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfig
     public function setPolicyDecisionPoint(NethGui_Authorization_PolicyDecisionPointInterface $pdp)
     {
         $this->policyDecisionPoint = $pdp;
-        $request = new NethGui_Authorization_AccessControlRequest($this->user, $this->db, 'READ');
-        $response = $this->policyDecisionPoint->authorizeRequest($request);
-
-        if ( $response )
-	     $this->canRead = TRUE;
-
-        $request = new NethGui_Authorization_AccessControlRequest($this->user, $this->db, 'WRITE');
-        $response = $this->policyDecisionPoint->authorizeRequest($request);
-
-        if ( $response )
-             $this->canWrite = TRUE;
-
     }
 
     /**
@@ -119,9 +107,22 @@ final class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfig
             throw new Exception("Can't find NethServer database");
         $this->db = $db;
 
-        //TODO: eliminare quando funzioneranno i policyDecisionPoint
-        $this->canRead = TRUE;
-        $this->canWrite = TRUE;
+        $this->authorizeDbAccess();
+    }
+
+    private function authorizeDbAccess()
+    {
+        $request = new NethGui_Authorization_AccessControlRequest($this->user, $this->db, 'READ');
+        $response = $this->policyDecisionPoint->authorizeRequest($request);
+
+        if ( $response )
+	     $this->canRead = TRUE;
+
+        $request = new NethGui_Authorization_AccessControlRequest($this->user, $this->db, 'WRITE');
+        $response = $this->policyDecisionPoint->authorizeRequest($request);
+
+        if ( $response )
+             $this->canWrite = TRUE;
     }
 
     /**

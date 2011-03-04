@@ -18,6 +18,8 @@ class NethGui_Core_SMEHostConfigurationTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->object = new NethGui_Core_SMEHostConfiguration();
+        $this->object->setPolicyDecisionPoint(new NethGui_Authorization_PermissivePolicyDecisionPoint());
+        $this->object->setUser(new NethGui_Core_AlwaysAuthenticatedUser());
         $this->object->setDB('testdb');
     }
 
