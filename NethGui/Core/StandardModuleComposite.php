@@ -76,7 +76,7 @@ abstract class NethGui_Core_StandardModuleComposite extends NethGui_Core_Standar
      *
      * @return string
      */
-    public function renderView(NethGui_Core_Response $response)
+    public function renderView(NethGui_Core_ResponseInterface $response)
     {
         $output = '';
         foreach ($this->getChildren() as $module) {
@@ -91,7 +91,7 @@ abstract class NethGui_Core_StandardModuleComposite extends NethGui_Core_Standar
      * @param string $output Children output
      * @return string Decorated children output
      */
-    protected function decorate($output, NethGui_Core_Response $response)
+    protected function decorate($output, NethGui_Core_ResponseInterface $response)
     {
         return $output;
     }

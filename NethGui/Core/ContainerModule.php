@@ -15,11 +15,13 @@
 class NethGui_Core_ContainerModule extends NethGui_Core_StandardModuleComposite
 {
 
-    protected function decorate($output, NethGui_Core_Response $response)
+    protected function decorate($output, NethGui_Core_ResponseInterface $response)
     {
         if ($response->getViewType() === Response::HTML) {
             return '<div class="' . $this->getIdentifier() . '">' . $output . '</div>';
         }
+
+        return $output;
     }
 
 }

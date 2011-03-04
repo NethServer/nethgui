@@ -28,8 +28,7 @@ final class Dispatcher extends CI_Controller {
         require_once(APPPATH . '../NethGui/Dispatcher.php');
 
         $nethgui = new NethGui_Dispatcher($this);
-
-        return $nethgui->main($method, $parameters);
+        $nethgui->main($method, $parameters);
     }
 
 }

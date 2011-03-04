@@ -84,7 +84,7 @@ interface NethGui_Core_ModuleInterface
      * Returns the Module view contents.
      * @return string An (HTML formatted) string
      */
-    public function renderView(NethGui_Core_Response $response);
+    public function renderView(NethGui_Core_ResponseInterface $response);
 }
 
 /**

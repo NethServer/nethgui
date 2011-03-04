@@ -14,16 +14,33 @@
  * @package NethGuiFramework
  * @subpackage StandardImplementation
  */
-final class NethGui_Core_Response
+final class NethGui_Core_Response implements NethGui_Core_ResponseInterface
 {
-    const HTML = 0;
-    const JS = 1;
 
     private $modulePrefixes = array();
 
     public function __construct($viewType)
     {
         $this->viewType = $viewType;
+
+        switch ($this->viewType) {
+            case self::HTML:
+                header("Content-Type: text/html; charset=UTF-8");
+                break;
+
+            case self::JS:
+                // XXX: Non-compliant browsers may have a problem with
+                //      JS mime-type.
+                header("Content-Type: application/x-javascript; charset=UTF-8");
+                break;
+
+            case self::CSS:
+                header("Content-Type: text/css; charset=UTF-8");
+                break;
+
+            default:
+                throw new Exception("Unknown view type code: " . $viewType);
+        }
     }
 
     public function getViewType()

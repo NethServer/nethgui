@@ -57,6 +57,7 @@ final class NethGui_Dispatcher
             'Core/ModuleInterface',
             'Core/ModuleSetInterface',
             'Core/RequestInterface',
+            'Core/ResponseInterface',
             'Core/UserInterface',
             'Core/ValidationReportInterface',
             'Authorization/AccessControlRequest',
@@ -88,14 +89,12 @@ final class NethGui_Dispatcher
      */
     public function main($method, $parameters = array())
     {
-
-
         /*
          * Find current module
          */
         if ($method == 'index') {
-// TODO: take the default module value from the configuration
-            $this->currentModule = $this->componentDepot->findModule('NethGui_Module_SecurityModule');
+            // TODO: take the default module value from the configuration
+            $this->currentModule = $this->componentDepot->findModule('SecurityModule');
         } else {
             $this->currentModule = $this->componentDepot->findModule($method);
         }
@@ -106,22 +105,57 @@ final class NethGui_Dispatcher
             show_404();
         }
 
-        $request = NethGui_Core_Request::createInstanceFromServer($this->currentModule->getIdentifier());
+        $request = NethGui_Core_Request::createInstanceFromServer(
+                $this->currentModule->getIdentifier(),
+                $parameters
+        );
 
         $this->hostConfiguration->setUser($request->getUser());
         $this->componentDepot->setUser($request->getUser());
 
         $this->dispatch($request);
 
-        $decorationParameters = array(
-            'css_main' => base_url() . 'css/main.css',
-            'module_content' => $this->currentModule->renderView(new NethGui_Core_Response(NethGui_Core_Response::HTML)),
-            'module_menu' => $this->renderModuleMenu($this->componentDepot->getTopModules()),
-            'breadcrumb_menu' => $this->renderBreadcrumbMenu(),
-        );
+        // Default response view type: HTML
+        $responseType = NethGui_Core_ResponseInterface::HTML;
 
-        header("Content-Type: text/html; charset=UTF-8");
-        $this->controller->load->view('../../NethGui/Core/View/decoration.php', $decorationParameters);
+        /*
+         * A first parameter ending with `.js` or `.css` triggers 
+         * alternative response types (namely JS & CSS).
+         */
+        if (count($parameters) === 1) {
+            $resourceName = $parameters[0];
+            if (substr($resourceName, -3) == '.js') {
+                $responseType = NethGui_Core_ResponseInterface::JS;
+            } elseif (substr($resourceName, -4) == '.css') {
+                $responseType = NethGui_Core_ResponseInterface::CSS;
+            }
+        }
+
+        $this->sendResponse(new NethGui_Core_Response($responseType));
+    }
+
+    private function sendResponse(NethGui_Core_ResponseInterface $response)
+    {
+        if ($response->getViewType() === NethGui_Core_ResponseInterface::HTML) {
+            $decorationParameters = array(
+                'css_main' => base_url() . 'css/main.css',
+                'js' => array(
+                    'base' => base_url() . 'js/jquery-1.5.1.min',
+                    'ui' => base_url() . 'js/jquery-ui-1.8.10.custom.min.js',
+                ),
+                'module_content' => $this->currentModule->renderView($response),
+                'module_menu' => $this->renderModuleMenu($this->componentDepot->getTopModules()),
+                'breadcrumb_menu' => $this->renderBreadcrumbMenu(),
+            );
+            $this->controller->load->view('../../NethGui/Core/View/decoration.php', $decorationParameters);
+            //
+        } elseif ($response->getViewType() === NethGui_Core_ResponseInterface::JS) {
+            echo $this->currentModule->renderView($response);
+            //
+        } elseif ($response->getViewType() === NethGui_Core_ResponseInterface::CSS) {
+            echo $this->currentModule->renderView($response);
+            //
+        }
     }
 
     /**

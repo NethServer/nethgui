@@ -26,7 +26,7 @@ final class NethGui_Module_LocalNetworkModule extends NethGui_Core_StandardModul
 
     public function getParentMenuIdentifier()
     {
-        return "NethGui_Module_SecurityModule";
+        return "SecurityModule";
     }
 
 }

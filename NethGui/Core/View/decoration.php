@@ -3,6 +3,9 @@
     <head>
         <title>NethGui</title>
         <link rel="stylesheet" type="text/css" href="<?php echo $css_main; ?>" />
+<?php foreach($js as $scriptPath): ?>
+        <script type="text/javascript" src="<?php echo $scriptPath ?>" ></script>
+<?php endforeach ?>
     </head>
     <body>
         <div id="header">NethGui</div>
