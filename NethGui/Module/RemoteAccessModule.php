@@ -32,7 +32,7 @@ final class NethGui_Module_RemoteAccessModule extends NethGui_Core_FormModule im
         foreach (array('Pptp', 'RemoteManagement', 'Ssh', 'Ftp') as $dependency) {
             $childModuleClass = 'NethGui_Module_RemoteAccess_' . $dependency . 'Module';
             $childModule = new $childModuleClass();
-            $childModule->setHostConfiguration($this->hostConfiguration);
+            $childModule->setHostConfiguration($this->getHostConfiguration());
             $this->addChild($childModule);
         }
 

@@ -31,7 +31,7 @@ abstract class NethGui_Core_StandardModule implements NethGui_Core_ModuleInterfa
     /**
      * @var HostConfigurationInterface
      */
-    protected $hostConfiguration;
+    private $hostConfiguration;
     /**
      *
      * @var RequestInterface
@@ -59,6 +59,14 @@ abstract class NethGui_Core_StandardModule implements NethGui_Core_ModuleInterfa
     {
         $this->hostConfiguration = $hostConfiguration;
     }
+
+    /**
+     * @return NethGui_Core_HostConfigurationInterface
+     */
+    protected function getHostConfiguration() {
+        return $this->hostConfiguration;
+    }
+
 
     /**
      *  Overriding methods can read current state from model.

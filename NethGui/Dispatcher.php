@@ -40,7 +40,7 @@ final class NethGui_Dispatcher
          * TODO: get hostConfiguration and componentDepot clas names
          * from NethGui_Framework.
          */
-        $this->hostConfiguration = new NethGui_Core_MockHostConfiguration();
+        $this->hostConfiguration = new NethGui_Core_SMEHostConfiguration();
         $this->componentDepot = new NethGui_Core_ComponentDepot($this->hostConfiguration);
 
         /*

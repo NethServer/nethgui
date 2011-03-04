@@ -37,21 +37,21 @@ final class NethGui_Module_RemoteAccess_RemoteManagementModule extends NethGui_C
         // Reading default values:
         if ( ! isset($this->parameters['networkMask']))
         {
-            $this->parameters['networkMask'] = $this->hostConfiguration->read(array('configuration', 'validFromNetworkMask'));
+            $this->parameters['networkMask'] = '';
         }
         else
         {
             // TODO: check if value has changed
-            $this->hostConfiguration->write(array('configuration', 'validFromNetworkMask'), $this->parameters['networkMask']);
+            // call SME
         }
         if ( ! isset($this->parameters['networkAddress']))
         {
-            $this->parameters['networkAddress'] = $this->hostConfiguration->read(array('configuration', 'validFromNetworkAddress'));
+            $this->parameters['networkAddress'] = '';
         }
         else
         {
             // TODO: check if value has changed
-            $this->hostConfiguration->write(array('configuration', 'validFromNetworkMask'), $this->parameters['networkAddress']);
+            // call SME
         }
     }
 
