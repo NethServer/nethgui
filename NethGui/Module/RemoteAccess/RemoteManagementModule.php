@@ -1,4 +1,5 @@
 <?php
+
 /**
  * NethGui
  *
@@ -11,7 +12,8 @@
  * @package Modules
  * @subpackage RemoteAccess
  */
-final class NethGui_Module_RemoteAccess_RemoteManagementModule extends NethGui_Core_StandardModule {
+final class NethGui_Module_RemoteAccess_RemoteManagementModule extends NethGui_Core_StandardModule
+{
 
     public function getDescription()
     {
@@ -34,21 +36,34 @@ final class NethGui_Module_RemoteAccess_RemoteManagementModule extends NethGui_C
 
     public function process()
     {
+        $confDb = $this->getHostConfiguration();
+
+        // Value in property ValidFrom is stored as a comma separated value list
+        // of network-address/network-mask couples.
+        $network =
+            explode('/',
+                current(
+                    explode(',',
+                        $confDb->setDb('configuration')->getProp('httpd-admin', 'ValidFrom')
+                    )
+                )
+            )
+        ;
+
         // Reading default values:
         if ( ! isset($this->parameters['networkMask']))
         {
-            $this->parameters['networkMask'] = '';
-        }
-        else
+
+            $this->parameters['networkMask'] = $network[1];
+        } else
         {
             // TODO: check if value has changed
             // call SME
         }
         if ( ! isset($this->parameters['networkAddress']))
         {
-            $this->parameters['networkAddress'] = '';
-        }
-        else
+            $this->parameters['networkAddress'] = $network[0];
+        } else
         {
             // TODO: check if value has changed
             // call SME
@@ -61,7 +76,7 @@ final class NethGui_Module_RemoteAccess_RemoteManagementModule extends NethGui_C
     }
 
     public function renderViewHtml(NethGui_Core_ResponseInterface $response)
-    {        
+    {
         return $this->renderCodeIgniterView($response, 'RemoteAccess/RemoteManagementView.php');
     }
 
