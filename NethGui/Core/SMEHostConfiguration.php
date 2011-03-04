@@ -14,7 +14,7 @@
  * @subpackage TODO
  * TODO class documentation
  */
-final class NethGui_Core_MockHostConfiguration implements NethGui_Core_HostConfigurationInterface, NethGui_Authorization_PolicyEnforcementPointInterface
+final class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfigurationInterface, NethGui_Authorization_PolicyEnforcementPointInterface
 {
 
     /**
