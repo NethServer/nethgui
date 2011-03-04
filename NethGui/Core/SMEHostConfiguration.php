@@ -10,9 +10,19 @@
 /**
  * Read and write parameters into SME DB
  *
+ * Ths class implements an interface to SME database executing the command /sbin/e-smith/db with sudo.
+ * The class needs /etc/sudoers configurazione. In the sudoers file you must have something like this:
+ * <code>
+ * Cmnd_Alias SMEDB = /sbin/e-smith/db
+ * www ALL=NOPASSWD: SMEDB
+ * </code>
+ *
+ * Before use any method in the class, the method st($db) must be called. 
+ *
  * @package NethGuiFramework
  * @subpackage TODO
- * TODO class documentation
+ * 
+ * 
  */
 final class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfigurationInterface, NethGui_Authorization_PolicyEnforcementPointInterface
 {
@@ -28,17 +38,17 @@ final class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfig
     private $command = "/usr/bin/sudo /sbin/e-smith/db";
 
     /**
-    * @var $db DB name
+    * @var $db Database name, it's translated into the db file path. For example: /home/e-smith/db/testdb
     **/
     private $db = null;
 
     /**
-    * @var $canRead
+    * @var $canRead Read flag permission, it's true if the current user can read the database, false otherwise
     **/
     private $canRead = FALSE;
     
     /**
-    * @var $canWrite
+    * @var $canWrite Write flag permission, it's true if the current user can write the database, false otherwise
     **/
     private $canWrite = FALSE;
 
@@ -48,6 +58,13 @@ final class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfig
      */
     private $user;
 
+    /**
+     * setPolicyDecisionPoint 
+     * 
+     * @param NethGui_Authorization_PolicyDecisionPointInterface $pdp 
+     * @access public
+     * @return void
+     */
     public function setPolicyDecisionPoint(NethGui_Authorization_PolicyDecisionPointInterface $pdp)
     {
         $this->policyDecisionPoint = $pdp;
@@ -65,16 +82,37 @@ final class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfig
 
     }
 
+    /**
+     * Return current getPolicyDecisionPoint 
+     * 
+     * @access public
+     * @return policyDecisionPoint
+     */
     public function getPolicyDecisionPoint()
     {
         return $this->policyDecisionPoint;
     }
 
+    /**
+     * setUser 
+     * 
+     * @param NethGui_Core_UserInterface $user 
+     * @access public
+     * @return void
+     */
     public function setUser(NethGui_Core_UserInterface $user)
     {
         $this->user = $user;
     }
 
+
+    /**
+     * Set the working database 
+     * 
+     * @param streing $db Database name
+     * @access public
+     * @return void
+     */
     public function setDB($db)
     {
        if(!$db)
@@ -87,8 +125,13 @@ final class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfig
     }
 
     /**
-    * /sbin/e-smith/db dbfile get key
-    */
+     * Retrieve a key from the database. 
+     * Act like : /sbin/e-smith/db dbfile get key
+     *
+     * @param string $key the key to read
+     * @access public
+     * @return array associative array in the form [PropName] => [PropValue]
+     */
     public function getKey($key)
     {
         if(!$this->db)
@@ -111,9 +154,17 @@ final class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfig
         return $result;
     }
 
-    /** 
-    * /sbin/e-smith/db dbfile set key type [prop1 val1] [prop2 val2] ...
-    */
+    /**
+     * Set a database key with type and properties.
+     * Act like: /sbin/e-smith/db dbfile set key type [prop1 val1] [prop2 val2] ... 
+     * 
+     * @param string $key Key to write
+     * @param string $type Type of the key
+     * @param string $props Array of properties in the form  [PropName] => [PropValue]
+     * @access public
+     * @return bool TRUE on success, FALSE otherwise
+     *
+     */
     public function setKey($key,$type,$props)
     { 
         if(!$this->db)
@@ -127,9 +178,14 @@ final class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfig
         return ($ret == 0);
     }
 
-    /** 
-    * /sbin/e-smith/db dbfile delete key
-    */
+    /**
+     * Delete a key and all its properties 
+     * Act like: /sbin/e-smith/db dbfile delete key
+     * 
+     * @param mixed $key 
+     * @access public
+     * @return void
+     */
     public function deleteKey($key)
     {
         if(!$this->db)
@@ -143,8 +199,13 @@ final class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfig
     }
 
     /**
-    * /sbin/e-smith/db dbfile gettype key
-    */
+     * Return the type of a key
+     * Act like: /sbin/e-smith/db dbfile gettype key
+     * 
+     * @param string $key the key to retrieve
+     * @access public
+     * @return string the type of the key
+     */
     public function getType($key)
     {
         if(!$this->db)
@@ -156,8 +217,14 @@ final class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfig
     }
 
     /**
-    * /sbin/e-smith/db dbfile settype key type
-    */
+     * Set the type of a key 
+     * Act like: /sbin/e-smith/db dbfile settype key type
+     * 
+     * @param string $key the key to change
+     * @param string $type the new type
+     * @access public
+     * @return bool true on success, FALSE otherwise
+     */
     public function setType($key,$type)
     {
         if(!$this->db)
@@ -172,8 +239,14 @@ final class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfig
 
 
     /**
-    * /sbin/e-smith/db dbfile getprop key prop
-    */
+     * Read the value of the given property
+     * Act like: /sbin/e-smith/db dbfile getprop key prop
+     * 
+     * @param string $key the parent property key
+     * @param string $prop the name of the property
+     * @access public
+     * @return string the value of the property
+     */
     public function getProp($key,$prop)
     {
         if(!$this->db)
@@ -187,8 +260,14 @@ final class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfig
 
 
     /**
-    * /sbin/e-smith/db dbfile setprop key prop1 val1 [prop2 val2] [prop3 val3] ...
-    */
+     * Set one or more properties under the given key
+     * Act like: /sbin/e-smith/db dbfile setprop key prop1 val1 [prop2 val2] [prop3 val3] ...
+     * 
+     * @param string $key the property parent key
+     * @param array $props an associative array in the form [PropName] => [PropValue]  
+     * @access public
+     * @return bool TRUE on success, FALSE otherwise
+     */
     public function setProp($key,$props)
     {
         if(!$this->db)
@@ -204,8 +283,14 @@ final class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfig
 
 
     /**
-    * sbin/e-smith/db dbfile delprop key prop1 [prop2] [prop3] ...
-    */
+     * Delete one or more properties under the given key 
+     * Act like: sbin/e-smith/db dbfile delprop key prop1 [prop2] [prop3] ...
+     * 
+     * @param string $key the property parent key
+     * @param array $props a simple array containg the properties to be deleted
+     * @access public
+     * @return bool TRUE on success, FALSE otherwise
+     */
     public function delProp($key,$props)
     {
         if(!$this->db)
@@ -220,6 +305,13 @@ final class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfig
     }
   
 
+    /**
+     * Transform an associative array in the form [PropName] => [PropValue] into a string "PropName PropValue". The function escapes all values to prevent shell injection 
+     * 
+     * @param array $props in the form [PropName] => [PropValue]
+     * @access private
+     * @return string a safe string like "PropName PropValue ..."
+     */
     private function propsToString($props)
     {
         $ret = "";
