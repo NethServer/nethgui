@@ -54,23 +54,26 @@ final class NethGui_Core_MockHostConfiguration implements NethGui_Core_HostConfi
             throw new Exception("Can't find NethServer database");
         $this->db = $db;
 
+        //TODO: eliminare quando funzioneranno i policyDecisionPoint
+	$this->canRead = TRUE;
+	$this->canWrite = TRUE;
+    }
+
+    public function setPolicyDecisionPoint(NethGui_Authorization_PolicyDecisionPointInterface $pdp)
+    {
+        $this->policyDecisionPoint = $pdp;
         $request = new NethGui_Authorization_AccessControlRequest($this->user, $this->db, 'READ');
         $response = $this->policyDecisionPoint->authorizeRequest($request);
 
         if ( $response )
 	     $this->canRead = TRUE;
 
-        $request = new NethGui_Authorization_AccessControlRequest($this->user, implode('/', $resourcePath), 'WRITE');
+        $request = new NethGui_Authorization_AccessControlRequest($this->user, $this->db, 'WRITE');
         $response = $this->policyDecisionPoint->authorizeRequest($request);
-    
+
         if ( $response )
              $this->canWrite = TRUE;
 
-    }
-
-    public function setPolicyDecisionPoint(NethGui_Authorization_PolicyDecisionPointInterface $pdp)
-    {
-        $this->policyDecisionPoint = $pdp;
     }
 
     public function getPolicyDecisionPoint()
@@ -109,12 +112,13 @@ final class NethGui_Core_MockHostConfiguration implements NethGui_Core_HostConfi
     /** 
     * /sbin/e-smith/db dbfile set key type [prop1 val1] [prop2 val2] ...
     */
-    public function setKey($type,$props)
+    public function setKey($key,$type,$props)
     { 
         if(!$this->canWrite)
              throw new Exception("Permission Denied");
-
-        exec($this->command." $db set $key ".join(" ",$props),$ret);
+       
+        $params = " set ".escapeshellarg($key)." ".escapeshellarg($type)." ".$this->propsToString($props);
+        exec($this->command." ".$this->db." $params", $output, $ret);
         return ($ret == 0);
     }
 
@@ -192,4 +196,11 @@ final class NethGui_Core_MockHostConfiguration implements NethGui_Core_HostConfi
     }
   
 
+    private function propsToString($props)
+    {
+        $ret = "";
+        foreach($props as $key=>$value)
+             $ret .= " ".escapeshellarg($key)." ".escapeshellarg($value)." ";
+        return $ret;
+    }
 }

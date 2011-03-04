@@ -29,7 +29,7 @@ interface NethGui_Core_HostConfigurationInterface
     /** 
     * /sbin/e-smith/db dbfile set key type [prop1 val1] [prop2 val2] ...
     */
-    public function setKey($type,$props);
+    public function setKey($key,$type,$props);
 
     /** 
     * /sbin/e-smith/db dbfile delete key
