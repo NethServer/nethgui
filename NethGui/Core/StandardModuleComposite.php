@@ -38,7 +38,7 @@ abstract class NethGui_Core_StandardModuleComposite extends NethGui_Core_Standar
                 $childModule->initialize();
             }
             if ($childModule instanceof NethGui_Core_RequestHandlerInterface) {
-                $this->addRequestHandler($childModule->getIdentifier(), $childModule);
+                $this->setRequestHandler($childModule->getIdentifier(), $childModule);
             }
         }
     }
@@ -65,38 +65,11 @@ abstract class NethGui_Core_StandardModuleComposite extends NethGui_Core_Standar
         }
     }
 
-    public function process()
+    public function process(NethGui_Core_ResponseInterface $response)
     {
         foreach ($this->getChildren() as $childModule) {
-            $childModule->process();
+            $childModule->process($response);
         }
-    }
-
-    /**
-     * Default implementation of a ModuleComposite forwards the rendering
-     * process to children modules.
-     *
-     * @return string
-     */
-    public function renderView(NethGui_Core_ResponseInterface $response)
-    {
-        $output = '';
-        foreach ($this->getChildren() as $module) {
-            $output .= $module->renderView($response);
-        }
-        return $this->decorate($output, $response);
-    }
-
-    /**
-     * Called after children have been rendered.
-     *
-     * @param string $output Children output
-     * @return string Decorated children output
-     */
-    protected function decorate($output, NethGui_Core_ResponseInterface $response)
-    {
-        return $output;
-    }
-
+    } 
 }
 

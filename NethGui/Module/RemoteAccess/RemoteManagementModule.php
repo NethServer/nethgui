@@ -1,5 +1,4 @@
 <?php
-
 /**
  * NethGui
  *
@@ -23,19 +22,7 @@ final class NethGui_Module_RemoteAccess_RemoteManagementModule extends NethGui_C
     public function bind(NethGui_Core_RequestInterface $request)
     {
         parent::bind($request);
-        if ($request->hasParameter('networkMask'))
-        {
-            $this->parameters['networkMask'] = $request->getParameter('networkMask');
-        }
 
-        if ($request->hasParameter('networkAddress'))
-        {
-            $this->parameters['networkAddress'] = $request->getParameter('networkAddress');
-        }
-    }
-
-    public function process()
-    {
         $confDb = $this->getHostConfiguration();
 
         // Value in property ValidFrom is stored as a comma separated value list
@@ -50,34 +37,59 @@ final class NethGui_Module_RemoteAccess_RemoteManagementModule extends NethGui_C
             )
         ;
 
-        // Reading default values:
-        if ( ! isset($this->parameters['networkMask']))
+        if ($request->hasParameter('networkMask'))
         {
-
-            $this->parameters['networkMask'] = $network[1];
+            $this->parameters['networkMask'] = $request->getParameter('networkMask');
         } else
         {
-            // TODO: check if value has changed
-            // call SME
+            $this->parameters['networkMask'] = $network[1];
         }
-        if ( ! isset($this->parameters['networkAddress']))
+
+        if ($request->hasParameter('networkAddress'))
+        {
+            $this->parameters['networkAddress'] = $request->getParameter('networkAddress');
+        } else
         {
             $this->parameters['networkAddress'] = $network[0];
-        } else
-        {
-            // TODO: check if value has changed
-            // call SME
         }
     }
 
-    public function renderViewJavascript(NethGui_Core_ResponseInterface $response)
+    public function validate(NethGui_Core_ValidationReportInterface $report)
     {
-        return '/* javascript */';
+        parent::validate($report);
+        
+        $pattern = '/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/';
+        if(preg_match($pattern, $this->parameters['networkMask']) == 0)
+        {
+            $report->addError('networkMask', 'Invalid network mask');
+        }
+        if(preg_match($pattern, $this->parameters['networkAddress']) == 0)
+        {
+            $report->addError('networkAddress', 'Invalid network address');
+        }
     }
 
-    public function renderViewHtml(NethGui_Core_ResponseInterface $response)
+    public function process(NethGui_Core_ResponseInterface $response)
     {
-        return $this->renderCodeIgniterView($response, 'RemoteAccess/RemoteManagementView.php');
+        $valueHasChanged = false;
+
+        if($valueHasChanged) {
+            $confDb = $this->getHostConfiguration();
+
+           // TODO: setKey...
+        }
+
+        $response->setViewData($this, $this->parameters);
+        
+        if($response->getViewType() === NethGui_Core_ResponseInterface::HTML)
+        {
+            $response->setViewName($this, 'NethGui_View_RemoteAccess_RemoteManagementView');
+        }
+        // TODO: cleanup
+        //elseif($response->getViewType() === NethGui_Core_ResponseInterface::JS)
+        //{
+        //    $response->setViewName($this, 'NethGui_View_RemoteAccess_RemoteManagementView');
+        //}
     }
 
 }

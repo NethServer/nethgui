@@ -11,7 +11,7 @@
  *
  * @package Modules
  */
-final class NethGui_Module_RemoteAccessModule extends NethGui_Core_FormModule implements NethGui_Core_TopModuleInterface
+final class NethGui_Module_RemoteAccessModule extends NethGui_Core_StandardModuleComposite implements NethGui_Core_TopModuleInterface
 {
 
     public function getTitle()
@@ -38,14 +38,11 @@ final class NethGui_Module_RemoteAccessModule extends NethGui_Core_FormModule im
 
     }
 
-    protected function decorate($output, NethGui_Core_ResponseInterface $response)
+    public function process(NethGui_Core_ResponseInterface $response)
     {
-        if ($response->getViewType() === NethGui_Core_ResponseInterface::HTML) {
-            // Append SAVE button.
-            $output .= '<div style="text-align: right"><input id="' . $response->getWidgetId($this, 'save') . '" name="' . $response->getParameterName($this, 'save') . '" type="submit" value="Save" /></div>';
-        }
-        return parent::decorate($output, $response);
-
+        parent::process($response);
+        $response->setViewName($this, 'NethGui_Core_View_form');
+        $response->setViewData($this, array('save' => 1));
     }
 
 }

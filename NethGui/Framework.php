@@ -69,6 +69,11 @@ final class NethGui_Framework
 
     public function getView($viewName, $viewParameters)
     {
+        $viewFile = APPPATH . 'views/' . $viewName;
+        if(! file_exists($viewFile)) {
+            //return "missing view " . $viewFile;
+            return '';
+        }
         return $this->controller->load->view($viewName, $viewParameters, true);
     }
 

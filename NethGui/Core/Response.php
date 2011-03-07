@@ -1,5 +1,4 @@
 <?php
-
 /**
  * NethGui
  *
@@ -17,7 +16,23 @@
 final class NethGui_Core_Response implements NethGui_Core_ResponseInterface
 {
 
+    /**
+     * Internal cache of module fully qualified prefixes
+     * @var array
+     */
     private $modulePrefixes = array();
+    /**
+     * View Data repository
+     * @var array
+     */
+    private $moduleViewData = array();
+    /**
+     * View names
+     * @var array
+     */
+    private $moduleViewNames = array();
+
+
 
     public function __construct($viewType)
     {
@@ -82,4 +97,49 @@ final class NethGui_Core_Response implements NethGui_Core_ResponseInterface
         return $prefix;
     }
 
+    /**
+     *
+     * @param NethGui_Core_ModuleInterface $module
+     * @param mixed $data
+     */
+    public function setViewData(NethGui_Core_ModuleInterface $module, $data)
+    {
+        $this->moduleViewData[spl_object_hash($module)] = $data;
+    }
+
+    /**
+     *
+     * @param NethGui_Core_ModuleInterface $module
+     * @return mixed 
+     */
+    public function getViewData(NethGui_Core_ModuleInterface $module)
+    {
+        $objectHash = spl_object_hash($module);
+        if ( ! isset($this->moduleViewData[$objectHash]))
+        {
+            return NULL;
+        }
+
+        return $this->moduleViewData[$objectHash];
+    }
+
+    public function setViewName($module, $viewName)
+    {
+        $objectHash = spl_object_hash($module);
+
+        $this->moduleViewNames[$objectHash] = $viewName;
+    }
+
+    public function getViewName($module)
+    {
+        $objectHash = spl_object_hash($module);
+        if ( ! isset($this->moduleViewNames[$objectHash]))
+        {
+            $defaultViewName = str_replace('_Module_', '_View_', get_class($module));
+            return $defaultViewName;
+        }
+
+        return $this->moduleViewNames[$objectHash];
+    }
+    
 }

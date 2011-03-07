@@ -22,18 +22,6 @@ interface NethGui_Core_ModuleInterface
     public function setHostConfiguration(NethGui_Core_HostConfigurationInterface $hostConfiguration);
 
     /**
-     * After initialization a Module must be ready to receive bind(), validate()
-     * process() and renderView() messages.
-     */
-    public function initialize();
-
-    /**
-     * Prevents double initialization.
-     * @return bool FALSE, if not yet initialized, TRUE otherwise.
-     */
-    public function isInitialized();
-
-    /**
      * The Module Identifier is a string that univocally identifies a Module.
      * @return string Returns the unique module identifier
      */
@@ -63,12 +51,6 @@ interface NethGui_Core_ModuleInterface
      */
     public function getDescription();
 
-
-    /**
-     * Returns the Module view contents.
-     * @return string An (HTML formatted) string
-     */
-    public function renderView(NethGui_Core_ResponseInterface $response);
 }
 
 /**

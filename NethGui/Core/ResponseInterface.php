@@ -42,6 +42,20 @@ interface NethGui_Core_ResponseInterface
      * @return string Fully qualified widget identifier
      */
     public function getWidgetId(NethGui_Core_ModuleInterface $module, $widgetId);
+
+    /**
+     * @param NethGui_Core_ModuleInterface $module 
+     * @param string
+     */
+    public function setViewName($module, $viewName);
+
+    /**
+     * Specifies data related to module for a view.
+     * @param NethGui_Core_ModuleInterface $module
+     * @param mixed $data
+     */
+    public function setViewData(NethGui_Core_ModuleInterface $module, $data);
+
 }
 
 ?>
