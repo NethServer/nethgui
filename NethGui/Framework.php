@@ -67,48 +67,59 @@ final class NethGui_Framework
         return strtolower(get_class($this->controller));
     }
 
-    private function getView($viewName, $viewParameters)
+    /**
+     * Loads a view passing $viewState as view parameters.
+     * 
+     * @param string $viewName Full view name. Follows class naming convention.
+     * @param array $viewState Array of view parameters.
+     * @return string
+     */
+    public function renderView($viewName, $viewState)
     {
-        $viewFile = APPPATH . 'views/' . $viewName;
-        if(! file_exists($viewFile)) {
+        $ciViewPath = '../../' . str_replace('_', '/', $viewName);
+
+        $absoluteViewPath = realpath(APPPATH . 'views/' . $ciViewPath . '.php');
+        
+        if(!$absoluteViewPath) {
             // TODO: log a warning.
             return '';
         }
-        return $this->controller->load->view($viewName, $viewParameters, true);
+
+        return $this->controller->load->view($ciViewPath, $viewState, true);
     }
 
-    public function renderView($viewName, $viewState)
-    {
-        $viewName = str_replace('_', '/', $viewName);
-        return NethGui_Framework::getInstance()->getView('../../' . $viewName . '.php', $viewState);
-    }
-
+    /**
+     * Renders
+     *
+     * @param NethGui_Core_Response $response
+     * @return string
+     */
     public function renderResponse(NethGui_Core_Response $response) {
-
-        $viewData = $response->getData();
-        $viewName = $response->getViewName();
 
         $viewState['response'] = $response;
         $viewState['id'] = array();
         $viewState['name'] = array();
-        //$viewState['data'] = $response->getWholeData();
+
         $viewState['module'] = $response->getModule();
 
         $viewState['framework'] = $this;
 
+        // Add a reference to forward current view state into inner views.
         $viewState['self'] = &$viewState;
 
+
+        $responseData = $response->getData();
         // Put all view data into id, name, parameter helper arrays.
-        if (is_array($viewData)
-            OR $viewData instanceof Traversable) {
-            foreach ($viewData as $parameterName => $parameterValue) {
+        if (is_array($responseData)
+            OR $responseData instanceof Traversable) {
+            foreach ($responseData as $parameterName => $parameterValue) {
                 $viewState['id'][$parameterName] = htmlspecialchars($response->getWidgetId($parameterName));
                 $viewState['name'][$parameterName] = htmlspecialchars($response->getParameterName($parameterName));
                 $viewState['parameter'][$parameterName] = htmlspecialchars($parameterValue);
             }
         }
 
-        return $this->renderView($viewName, $viewState);
+        return $this->renderView($response->getViewName(), $viewState);
     }
 
 
