@@ -13,19 +13,19 @@
  */
 interface NethGui_Core_ResponseInterface
 {
-    const HTML = 0;
-    const JS = 1;
-    const CSS = 2;
+    const JSON = 0;
+    const HTML = 1;
+    const JS = 2;
+    const CSS = 3;
 
     /**
      * Returns an integer representing current response view type.
      *
      * @see NethGui_Core_ResponseInterface::HTML
-     * @see NethGui_Core_ResponseInterface::JS
-     * @see NethGui_Core_ResponseInterface::CSS
+     * @see NethGui_Core_ResponseInterface::JSON     
      * @return int Integer corresponding to constants defined by this interface
      */
-    public function getViewType();
+    public function getFormat();
 
     /**
      * Returns the fully qualified name of a module parameter
@@ -33,7 +33,7 @@ interface NethGui_Core_ResponseInterface
      * @param string $parameterName Name of the parameter
      * @return string Fully qualified module parameter name
      */
-    public function getParameterName(NethGui_Core_ModuleInterface $module, $parameterName);
+    public function getParameterName($parameterName);
 
     /**
      * Returns the fully qualified name of a module UI element
@@ -41,20 +41,25 @@ interface NethGui_Core_ResponseInterface
      * @param string $widgetId The widget identifier
      * @return string Fully qualified widget identifier
      */
-    public function getWidgetId(NethGui_Core_ModuleInterface $module, $widgetId);
+    public function getWidgetId($widgetId);
 
     /**
-     * @param NethGui_Core_ModuleInterface $module 
      * @param string
      */
-    public function setViewName($module, $viewName);
+    public function setViewName($viewName);
 
     /**
      * Specifies data related to module for a view.
      * @param NethGui_Core_ModuleInterface $module
      * @param mixed $data
      */
-    public function setViewData(NethGui_Core_ModuleInterface $module, $data);
+    public function setData($data);
+
+    /**
+     *
+     * @return NethGui_Core_ResponseInterface
+     */
+    public function getInnerResponse(NethGui_Core_ModuleInterface $module);
 
 }
 

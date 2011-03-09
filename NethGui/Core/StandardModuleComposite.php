@@ -67,8 +67,9 @@ abstract class NethGui_Core_StandardModuleComposite extends NethGui_Core_Standar
 
     public function process(NethGui_Core_ResponseInterface $response)
     {
+        parent::process($response);
         foreach ($this->getChildren() as $childModule) {
-            $childModule->process($response);
+            $childModule->process($response->getInnerResponse($childModule));
         }
     } 
 }

@@ -67,15 +67,50 @@ final class NethGui_Framework
         return strtolower(get_class($this->controller));
     }
 
-    public function getView($viewName, $viewParameters)
+    private function getView($viewName, $viewParameters)
     {
         $viewFile = APPPATH . 'views/' . $viewName;
         if(! file_exists($viewFile)) {
-            //return "missing view " . $viewFile;
+            // TODO: log a warning.
             return '';
         }
         return $this->controller->load->view($viewName, $viewParameters, true);
     }
+
+    public function renderView($viewName, $viewState)
+    {
+        $viewName = str_replace('_', '/', $viewName);
+        return NethGui_Framework::getInstance()->getView('../../' . $viewName . '.php', $viewState);
+    }
+
+    public function renderResponse(NethGui_Core_Response $response) {
+
+        $viewData = $response->getData();
+        $viewName = $response->getViewName();
+
+        $viewState['response'] = $response;
+        $viewState['id'] = array();
+        $viewState['name'] = array();
+        //$viewState['data'] = $response->getWholeData();
+        $viewState['module'] = $response->getModule();
+
+        $viewState['framework'] = $this;
+
+        $viewState['self'] = &$viewState;
+
+        // Put all view data into id, name, parameter helper arrays.
+        if (is_array($viewData)
+            OR $viewData instanceof Traversable) {
+            foreach ($viewData as $parameterName => $parameterValue) {
+                $viewState['id'][$parameterName] = htmlspecialchars($response->getWidgetId($parameterName));
+                $viewState['name'][$parameterName] = htmlspecialchars($response->getParameterName($parameterName));
+                $viewState['parameter'][$parameterName] = htmlspecialchars($parameterValue);
+            }
+        }
+
+        return $this->renderView($viewName, $viewState);
+    }
+
 
     /**
      * Class autoloader

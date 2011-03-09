@@ -79,14 +79,14 @@ final class NethGui_Module_RemoteAccess_RemoteManagementModule extends NethGui_C
            // TODO: setKey...
         }
 
-        $response->setViewData($this, $this->parameters);
+        $response->setData($this->parameters);
         
-        if($response->getViewType() === NethGui_Core_ResponseInterface::HTML)
+        if($response->getFormat() === NethGui_Core_ResponseInterface::HTML)
         {
-            $response->setViewName($this, 'NethGui_View_RemoteAccess_RemoteManagementView');
+            $response->setViewName('NethGui_View_RemoteAccess_RemoteManagementView');
         }
         // TODO: cleanup
-        //elseif($response->getViewType() === NethGui_Core_ResponseInterface::JS)
+        //elseif($response->getFormat() === NethGui_Core_ResponseInterface::JS)
         //{
         //    $response->setViewName($this, 'NethGui_View_RemoteAccess_RemoteManagementView');
         //}

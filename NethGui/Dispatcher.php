@@ -107,43 +107,51 @@ final class NethGui_Dispatcher
             }
         }
 
-        $this->response = new NethGui_Core_Response($responseType);
+        $response = NethGui_Core_Response::getRootInstance($responseType);
 
-        $this->handle($request);
+        $this->handle($request, $response);
 
-        $this->sendResponse();
+        $this->sendResponse($response->getInnerResponse($this->currentModule));
     }
 
-    private function sendResponse()
+    private function sendResponse(NethGui_Core_Response $response)
     {
-        if ($this->response->getViewType() === NethGui_Core_ResponseInterface::HTML) {
+        if ($response->getFormat() === NethGui_Core_ResponseInterface::HTML) {
+            header("Content-Type: text/html; charset=UTF-8");
+
+            // TODO: implement menu, breadcrumb and validatorreport as Modules
+            $moduleContent = NethGui_Framework::getInstance()->renderResponse($response);
+
+
+
             $decorationParameters = array(
                 'cssMain' => base_url() . 'css/main.css',
                 'js' => array(
                     'base' => base_url() . 'js/jquery-1.5.1.min',
                     'ui' => base_url() . 'js/jquery-ui-1.8.10.custom.min.js',
                 ),
-                'moduleContent' => $this->renderModule($this->currentModule),
+                'moduleContent' => $moduleContent,
                 'moduleMenu' => $this->renderModuleMenu($this->componentDepot->getTopModules()),
                 'breadcrumbMenu' => $this->renderBreadcrumbMenu(),
             );
-            echo NethGui_Framework::getInstance()->getView('../../NethGui/Core/View/decoration.php', $decorationParameters);
+            echo NethGui_Framework::getInstance()->renderView('NethGui_Core_View_decoration', $decorationParameters);
             //
-        } elseif ($this->response->getViewType() === NethGui_Core_ResponseInterface::JS) {
-
+        } elseif ($response->getFormat() === NethGui_Core_ResponseInterface::JS) {
+            header("Content-Type: application/x-javascript; charset=UTF-8");
             //
-        } elseif ($this->response->getViewType() === NethGui_Core_ResponseInterface::CSS) {
-
+        } elseif ($response->getFormat() === NethGui_Core_ResponseInterface::CSS) {
+            header("Content-Type: text/css; charset=UTF-8");
             //
         }
     }
+
 
     /**
      * Dispatch $request to top modules.
      * @param NethGui_Core_RequestInterface $parameters
      * @return Response
      */
-    private function handle(NethGui_Core_RequestInterface $request)
+    private function handle(NethGui_Core_RequestInterface $request, NethGui_Core_ResponseInterface $response)
     {
         $validationReport = new NethGui_Core_ValidationReport();
 
@@ -167,8 +175,10 @@ final class NethGui_Dispatcher
             }
 
 
-            $module->process($this->response);
+            $module->process($response->getInnerResponse($module));
         }
+
+        // TODO: attach validationReport to a "ValidationReportModule"
     }
 
     private function renderBreadcrumbMenu()
@@ -250,49 +260,6 @@ final class NethGui_Dispatcher
         return $html;
     }
 
-    public function renderModule(NethGui_Core_ModuleInterface $module)
-    {
 
-        $viewState['view'] = $this;
-        $viewState['response'] = $this->response;
-        $viewState['module'] = $module;
-
-        $viewState['id'] = array();
-        $viewState['name'] = array();
-
-        $viewData = $this->response->getViewData($module);
-        $viewName = str_replace('_', '/', $this->response->getViewName($module));
-
-        if (is_array($viewData)
-            OR $viewData instanceof Traversable) {
-            foreach ($viewData as $parameterName => $parameterValue) {
-                $viewState['id'][$parameterName] = htmlspecialchars($this->response->getWidgetId($module, $parameterName));
-                $viewState['name'][$parameterName] = htmlspecialchars($this->response->getParameterName($module, $parameterName));
-                $viewState['parameter'][$parameterName] = htmlspecialchars($parameterValue);
-            }
-        }
-
-        $viewState['viewState'] = &$viewState;
-
-        return NethGui_Framework::getInstance()->getView('../../' . $viewName . $this->getViewFileExtension($this->response), $viewState);
-    }
-
-    public function renderView($viewName, $viewState)
-    {
-        $viewName = str_replace('_', '/', $viewName);
-        return NethGui_Framework::getInstance()->getView('../../' . $viewName . $this->getViewFileExtension($this->response), $viewState);
-    }
-
-    private function getViewFileExtension(NethGui_Core_ResponseInterface $response)
-    {
-        switch ($response->getViewType()) {
-            case NethGui_Core_ResponseInterface::CSS:
-                return '.css';
-            case NethGui_Core_ResponseInterface::JS:
-                return '.js';
-            default:
-                return '.php';
-        }
-    }
 
 }

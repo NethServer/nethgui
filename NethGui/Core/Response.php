@@ -16,68 +16,73 @@
 final class NethGui_Core_Response implements NethGui_Core_ResponseInterface
 {
 
+    private $children;
     /**
-     * Internal cache of module fully qualified prefixes
+     *
+     * @var NethGui_Core_ModuleInterface
+     */
+    private $module;
+    /**
+     *
+     * @var int
+     */
+    private $viewType;
+    /**
+     *
      * @var array
      */
-    private $modulePrefixes = array();
+    private $data;
     /**
-     * View Data repository
-     * @var array
+     *
+     * @var string
      */
-    private $moduleViewData = array();
+    private $viewName;
+
     /**
-     * View names
-     * @var array
+     * Get the root response singleton instance.
+     * 
+     * @staticvar NethGui_Core_Response $rootResponse
+     * @param int $viewType
+     * @return NethGui_Core_Response
      */
-    private $moduleViewNames = array();
-
-
-
-    public function __construct($viewType)
+    public function getRootInstance($viewType)
     {
-        $this->viewType = $viewType;
+        static $rootResponse;
 
-        switch ($this->viewType) {
-            case self::HTML:
-                header("Content-Type: text/html; charset=UTF-8");
-                break;
-
-            case self::JS:
-                // XXX: Non-compliant browsers may have a problem with
-                //      JS mime-type.
-                header("Content-Type: application/x-javascript; charset=UTF-8");
-                break;
-
-            case self::CSS:
-                header("Content-Type: text/css; charset=UTF-8");
-                break;
-
-            default:
-                throw new Exception("Unknown view type code: " . $viewType);
+        if ( ! isset($rootResponse)) {
+            $rootResponse = new self($viewType, new NethGui_Core_Module_Root());
         }
+
+        return $rootResponse;
     }
 
-    public function getViewType()
+    private function __construct($viewType, NethGui_Core_ModuleInterface $module)
+    {
+        $this->children = array();
+        $this->viewType = $viewType;
+        $this->module = $module;
+        $this->data = array();
+        $this->viewName = str_replace('_Module_', '_View_', get_class($module));
+    }
+
+    public function getFormat()
     {
         return $this->viewType;
     }
 
-    public function getParameterName(NethGui_Core_ModuleInterface $module, $parameterName)
+    public function getParameterName($parameterName)
     {
-        $moduleObjectId = spl_object_hash($module);
-        if ( ! isset($this->modulePrefixes[$moduleObjectId])) {
-            $this->modulePrefixes[$moduleObjectId] = $this->calculateModulePrefix($module);
-        }
-        return $this->modulePrefixes[$moduleObjectId] . '[' . $parameterName . ']';
+        // TODO: cache prefix value
+        return $this->calculateModulePrefix($this->module) . '[' . $parameterName . ']';
     }
 
-    public function getWidgetId(NethGui_Core_ModuleInterface $module, $widgetId)
+    public function getWidgetId($widgetId)
     {
-        $name = $this->getParameterName($module, $widgetId);
+        $name = $this->getParameterName($widgetId);
+        $name = str_replace('][', '_', $name);
         $name = str_replace('[', '_', $name);
         $name = str_replace(']', '_', $name);
-
+        $name = trim($name, '_');
         return $name;
     }
 
@@ -98,48 +103,65 @@ final class NethGui_Core_Response implements NethGui_Core_ResponseInterface
     }
 
     /**
-     *
-     * @param NethGui_Core_ModuleInterface $module
      * @param mixed $data
      */
-    public function setViewData(NethGui_Core_ModuleInterface $module, $data)
+    public function setData($data)
     {
-        $this->moduleViewData[spl_object_hash($module)] = $data;
+        $this->data = $data;
     }
 
-    /**
-     *
-     * @param NethGui_Core_ModuleInterface $module
-     * @return mixed 
-     */
-    public function getViewData(NethGui_Core_ModuleInterface $module)
+    public function getData()
     {
-        $objectHash = spl_object_hash($module);
-        if ( ! isset($this->moduleViewData[$objectHash]))
-        {
-            return NULL;
+        return $this->data;
+    }
+
+//    public function getWholeData()
+//    {
+//        $wholeData = array();
+//
+//        foreach ($this->getInnerResponses() as $innerResponse) {
+//            $innerId = $innerResponse->getModule()->getIdentifier();
+//
+//            $wholeData = array_merge($wholeData, array($innerId => $innerResponse->getWholeData()));
+//        }
+//
+//        $wholeData = array_merge($wholeData, $this->getData());
+//
+//        return $wholeData;
+//    }
+
+    public function setViewName($viewName)
+    {
+        $this->viewName = $viewName;
+    }
+
+    public function getViewName()
+    {
+        return $this->viewName;
+    }
+
+    public function getInnerResponses()
+    {
+        return array_values($this->children);
+    }
+
+    public function getInnerResponse(NethGui_Core_ModuleInterface $module)
+    {
+        $moduleId = $module->getIdentifier();
+        
+        if ( ! isset($this->children[$moduleId])) {
+            // Registers a new child
+            $child = new self($this->getFormat(), $module);
+            $this->children[$moduleId] = $child;
         }
 
-        return $this->moduleViewData[$objectHash];
+        return $this->children[$moduleId];
     }
 
-    public function setViewName($module, $viewName)
+
+    public function getModule()
     {
-        $objectHash = spl_object_hash($module);
-
-        $this->moduleViewNames[$objectHash] = $viewName;
+        return $this->module;
     }
 
-    public function getViewName($module)
-    {
-        $objectHash = spl_object_hash($module);
-        if ( ! isset($this->moduleViewNames[$objectHash]))
-        {
-            $defaultViewName = str_replace('_Module_', '_View_', get_class($module));
-            return $defaultViewName;
-        }
-
-        return $this->moduleViewNames[$objectHash];
-    }
-    
 }

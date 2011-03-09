@@ -125,7 +125,9 @@ abstract class NethGui_Core_StandardModule implements NethGui_Core_ModuleInterfa
 
     public function process(NethGui_Core_ResponseInterface $response)
     {
-        return NULL;
+        // TODO: call handlers
+        
+        $response->setData($this->parameters);
     }
 
     /**

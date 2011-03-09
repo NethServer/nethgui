@@ -41,8 +41,8 @@ final class NethGui_Module_RemoteAccessModule extends NethGui_Core_StandardModul
     public function process(NethGui_Core_ResponseInterface $response)
     {
         parent::process($response);
-        $response->setViewName($this, 'NethGui_Core_View_form');
-        $response->setViewData($this, array('save' => 1));
+        $response->setViewName('NethGui_Core_View_form');
+        $response->setData(array('save' => 1));
     }
 
 }
