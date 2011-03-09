@@ -7,18 +7,6 @@
 interface NethGui_Core_RequestHandlerInterface {
 
     /**
-     * After initialization an handler must be ready to receive bind(), validate()
-     * process() messages.
-     */
-    public function initialize();
-
-    /**
-     * Prevents double initialization.
-     * @return bool FALSE, if not yet initialized, TRUE otherwise.
-     */
-    public function isInitialized();
-
-    /**
      * Binds NethGui_Core_Request parameters to object internal state.
      * @param NethGui_Core_RequestInterface $request
      */

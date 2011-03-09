@@ -51,6 +51,18 @@ interface NethGui_Core_ModuleInterface
      */
     public function getDescription();
 
+
+    /**
+     * After initialization a module...
+     */
+    public function initialize();
+
+    /**
+     * Prevents double initialization.
+     * @return bool FALSE, if not yet initialized, TRUE otherwise.
+     */
+    public function isInitialized();
+
 }
 
 /**
