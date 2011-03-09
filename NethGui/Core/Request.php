@@ -24,10 +24,16 @@ final class NethGui_Core_Request implements NethGui_Core_RequestInterface
     private $user;
 
     /**
+     * @see NethGui_Core_ResponseInterface
+     * @var int
+     */
+    private $contentType;
+
+    /**
      * Creates a new NethGui_Core_Request object from current web request.
      * @param string $defaultModuleIdentifier
      * @param array $parameters 
-     * @return RequestInterface
+     * @return NethGui_Core_Request
      */
     static public function getWebRequestInstance($defaultModuleIdentifier, $parameters = array())
     {
@@ -36,23 +42,30 @@ final class NethGui_Core_Request implements NethGui_Core_RequestInterface
         if ( ! isset($instance)) {
             if ($_SERVER['REQUEST_METHOD'] == 'GET') {
                 $data = array($defaultModuleIdentifier => $parameters);
+                $contentType = NethGui_Core_ResponseInterface::HTML;
                 //
             } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                if (isset($_SERVER['X_REQUESTED_WITH'])
-                    && $_SERVER['X_REQUESTED_WITH'] == 'XMLHttpRequest') {
+                if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
+                    && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'
+                    && $_SERVER['CONTENT_TYPE'] == 'application/json; charset=UTF-8') {
                     // Ajax POST request.
                     // TODO: decode json query
-                    $data = array();
+                    $data = json_decode($GLOBALS['HTTP_RAW_POST_DATA'], true);
+                    if(is_null($data)) {
+                        $data = array();
+                    }
+                    $contentType = NethGui_Core_ResponseInterface::JSON;
                 } else {
                     // Browser POST request.
                     $data = array_merge(array($defaultModuleIdentifier => $parameters), $_POST);
+                    $contentType = NethGui_Core_ResponseInterface::HTML;
                 }
             }
 
             // TODO: retrieve user state from Session
             $user = new NethGui_Core_AlwaysAuthenticatedUser();
 
-            $instance = new self($user, $data);
+            $instance = new self($user, $data, $contentType);
 
             /*
              * Clear global variables
@@ -64,7 +77,7 @@ final class NethGui_Core_Request implements NethGui_Core_RequestInterface
         return $instance;
     }
 
-    private function __construct(NethGui_Core_UserInterface $user, $data = array())
+    private function __construct(NethGui_Core_UserInterface $user, $data, $contentType)
     {
         if (is_null($data)) {
             $data = array();
@@ -74,7 +87,19 @@ final class NethGui_Core_Request implements NethGui_Core_RequestInterface
         }
         $this->data = $data;
         $this->user = $user;
+        $this->contentType = $contentType;
     }
+
+    /**
+     * Returns the content type code for Response object constructor.
+     * @see NethGui_Core_ResponseInterface
+     * @return int The content type for Response
+     */
+    public function getContentType()
+    {
+        return $this->contentType;
+    }
+
 
     public function hasParameter($parameterName)
     {
@@ -101,7 +126,7 @@ final class NethGui_Core_Request implements NethGui_Core_RequestInterface
 
     public function getParameterAsInnerRequest($parameterName)
     {
-        return new self($this->user, $this->getParameter($parameterName));
+        return new self($this->user, $this->getParameter($parameterName), $this->contentType);
     }
 
     public function __toString()

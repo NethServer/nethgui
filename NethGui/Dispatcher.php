@@ -92,7 +92,7 @@ final class NethGui_Dispatcher
         $this->componentDepot->setUser($request->getUser());
 
         // Default response view type: HTML
-        $responseType = NethGui_Core_ResponseInterface::HTML;
+        $responseType = $request->getContentType();
 
         /*
          * A first parameter ending with `.js` or `.css` triggers 
@@ -107,10 +107,13 @@ final class NethGui_Dispatcher
             }
         }
 
+
+
         $response = NethGui_Core_Response::getRootInstance($responseType);
 
-        $this->handle($request, $response);
 
+        // TODO: some refactoring...
+        $this->handle($request, $response);
         $this->sendResponse($response->getInnerResponse($this->currentModule));
     }
 
@@ -122,13 +125,12 @@ final class NethGui_Dispatcher
             // TODO: implement menu, breadcrumb and validatorreport as Modules
             $moduleContent = NethGui_Framework::getInstance()->renderResponse($response);
 
-
-
             $decorationParameters = array(
                 'cssMain' => base_url() . 'css/main.css',
                 'js' => array(
-                    'base' => base_url() . 'js/jquery-1.5.1.min',
+                    'base' => base_url() . 'js/jquery-1.5.1.min.js',
                     'ui' => base_url() . 'js/jquery-ui-1.8.10.custom.min.js',
+                    'test' => base_url() . 'js/test.js',
                 ),
                 'moduleContent' => $moduleContent,
                 'moduleMenu' => $this->renderModuleMenu($this->componentDepot->getTopModules()),
@@ -136,15 +138,22 @@ final class NethGui_Dispatcher
             );
             echo NethGui_Framework::getInstance()->renderView('NethGui_Core_View_decoration', $decorationParameters);
             //
+        } elseif ($response->getFormat() === NethGui_Core_ResponseInterface::JSON) {
+            header("Content-Type: application/json; charset=UTF-8");
+
+            echo NethGui_Framework::getInstance()->renderView('NethGui_Core_View_json', array('data' => $response->getWholeData()));
+            //
+
         } elseif ($response->getFormat() === NethGui_Core_ResponseInterface::JS) {
             header("Content-Type: application/x-javascript; charset=UTF-8");
+
+            
             //
         } elseif ($response->getFormat() === NethGui_Core_ResponseInterface::CSS) {
             header("Content-Type: text/css; charset=UTF-8");
             //
         }
     }
-
 
     /**
      * Dispatch $request to top modules.
@@ -259,7 +268,5 @@ final class NethGui_Dispatcher
 
         return $html;
     }
-
-
 
 }

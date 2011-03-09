@@ -62,7 +62,20 @@ final class NethGui_Core_Response implements NethGui_Core_ResponseInterface
         $this->viewType = $viewType;
         $this->module = $module;
         $this->data = array();
-        $this->viewName = str_replace('_Module_', '_View_', get_class($module));
+
+        // Set default view name.
+        switch ($viewType) {
+            case self::JSON:
+                $this->viewName = 'NethGui_Core_View_json';
+                break;
+
+            case self::HTML:
+                $this->viewName = str_replace('_Module_', '_View_', get_class($module));
+                break;
+
+            default:
+                $this->viewName = '';
+        }
     }
 
     public function getFormat()
@@ -115,20 +128,20 @@ final class NethGui_Core_Response implements NethGui_Core_ResponseInterface
         return $this->data;
     }
 
-//    public function getWholeData()
-//    {
-//        $wholeData = array();
-//
-//        foreach ($this->getInnerResponses() as $innerResponse) {
-//            $innerId = $innerResponse->getModule()->getIdentifier();
-//
-//            $wholeData = array_merge($wholeData, array($innerId => $innerResponse->getWholeData()));
-//        }
-//
-//        $wholeData = array_merge($wholeData, $this->getData());
-//
-//        return $wholeData;
-//    }
+    public function getWholeData()
+    {
+        $wholeData = array();
+
+        foreach ($this->children as $innerResponse) {
+            $innerId = $innerResponse->getModule()->getIdentifier();
+
+            $wholeData = array_merge($wholeData, array($innerId => $innerResponse->getWholeData()));
+        }
+
+        $wholeData = array_merge($wholeData, $this->data);
+
+        return $wholeData;
+    }
 
     public function setViewName($viewName)
     {
@@ -140,15 +153,15 @@ final class NethGui_Core_Response implements NethGui_Core_ResponseInterface
         return $this->viewName;
     }
 
-    public function getInnerResponses()
-    {
-        return array_values($this->children);
-    }
-
+    /**
+     * Returns a Response associated with $module.
+     * @param NethGui_Core_ModuleInterface $module
+     * @return NethGui_Core_ResponseInterface
+     */
     public function getInnerResponse(NethGui_Core_ModuleInterface $module)
     {
-        $moduleId = $module->getIdentifier();
-        
+        $moduleId = spl_object_hash($module);
+
         if ( ! isset($this->children[$moduleId])) {
             // Registers a new child
             $child = new self($this->getFormat(), $module);
@@ -158,7 +171,11 @@ final class NethGui_Core_Response implements NethGui_Core_ResponseInterface
         return $this->children[$moduleId];
     }
 
-
+    /**
+     * Returns the Module associated with this Response instance.
+     * 
+     * @return NethGui_Core_ModuleInterface Module associated with this Response instance.
+     */
     public function getModule()
     {
         return $this->module;

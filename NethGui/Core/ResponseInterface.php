@@ -19,7 +19,7 @@ interface NethGui_Core_ResponseInterface
     const CSS = 3;
 
     /**
-     * Returns an integer representing current response view type.
+     * Returns an integer representing current Response type.
      *
      * @see NethGui_Core_ResponseInterface::HTML
      * @see NethGui_Core_ResponseInterface::JSON     
@@ -44,18 +44,20 @@ interface NethGui_Core_ResponseInterface
     public function getWidgetId($widgetId);
 
     /**
+     * Set the View to be applied to this object.
      * @param string
      */
     public function setViewName($viewName);
 
     /**
-     * Specifies data related to module for a view.
+     * Specifies the data for the View.
      * @param NethGui_Core_ModuleInterface $module
-     * @param mixed $data
+     * @param array $data
      */
     public function setData($data);
 
     /**
+     * Returns a Response associated with $module.  
      *
      * @return NethGui_Core_ResponseInterface
      */

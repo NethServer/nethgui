@@ -128,6 +128,7 @@ final class NethGui_Framework
      *
      * This function is registered as SPL class autoloader.
      *
+     * @todo XXX Check for class names cheating!
      * @param string $className
      * @return void
      */
