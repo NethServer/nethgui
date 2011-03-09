@@ -50,7 +50,7 @@ final class NethGui_Core_Response implements NethGui_Core_ResponseInterface
         static $rootResponse;
 
         if ( ! isset($rootResponse)) {
-            $rootResponse = new self($viewType, new NethGui_Core_Module_Root());
+            $rootResponse = new self($viewType, new NethGui_Core_Module_World());
         }
 
         return $rootResponse;

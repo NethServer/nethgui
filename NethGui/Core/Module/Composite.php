@@ -11,7 +11,7 @@
  * @package NethGuiFramework
  * @subpackage StandardImplementation
  */
-abstract class NethGui_Core_StandardModuleComposite extends NethGui_Core_StandardModule implements NethGui_Core_ModuleCompositeInterface
+abstract class NethGui_Core_Module_Composite extends NethGui_Core_Module_Standard implements NethGui_Core_ModuleCompositeInterface
 {
 
     private $children = array();

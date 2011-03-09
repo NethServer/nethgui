@@ -20,7 +20,7 @@ final class NethGui_Framework
      */
     private $dispatcher;
     /**
-     * Underlying framework controller
+     * Underlying Code Igniter framework controller.
      * @var CI_Controller
      */
     private $controller;
@@ -68,7 +68,7 @@ final class NethGui_Framework
     }
 
     /**
-     * Loads a view passing $viewState as view parameters.
+     * Renders a view passing $viewState as view parameters.
      * 
      * @param string $viewName Full view name. Follows class naming convention.
      * @param array $viewState Array of view parameters.
@@ -89,7 +89,7 @@ final class NethGui_Framework
     }
 
     /**
-     * Renders
+     * Renders the view associated with a Response.
      *
      * @param NethGui_Core_Response $response
      * @return string
