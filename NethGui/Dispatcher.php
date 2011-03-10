@@ -113,11 +113,11 @@ final class NethGui_Dispatcher
 
 
         // TODO: some refactoring...
-        $this->handle($request, $response);
-        $this->sendResponse($response);
+        $validationReport = $this->handle($request, $response);
+        $this->sendResponse($response, $validationReport);
     }
 
-    private function sendResponse(NethGui_Core_Response $response)
+    private function sendResponse(NethGui_Core_Response $response, NethGui_Core_ValidationReport $validationReport)
     {
         if ($response->getFormat() === NethGui_Core_ResponseInterface::HTML) {
             header("Content-Type: text/html; charset=UTF-8");
@@ -133,6 +133,7 @@ final class NethGui_Dispatcher
                     'test' => base_url() . 'js/test.js',
                 ),
                 'moduleContent' => $moduleContent,
+                'validationReport' => print_r($validationReport->getErrors(), 1),
                 'moduleMenu' => $this->renderModuleMenu($this->componentDepot->getTopModules()),
                 'breadcrumbMenu' => $this->renderBreadcrumbMenu(),
             );
@@ -188,6 +189,7 @@ final class NethGui_Dispatcher
         }
 
         // TODO: attach validationReport to a "ValidationReportModule"
+        return $validationReport;
     }
 
     private function renderBreadcrumbMenu()

@@ -14,6 +14,7 @@
                 <div class="colleft">
                     <div class="col1">
                         <div id="breadcrumbMenu"><?php echo $breadcrumbMenu ?></div>
+                        <pre id="validationReport">Validation report: <?php echo $validationReport ?></pre>
                         <div id="moduleContent"><?php echo $moduleContent ?></div>
                     </div>
                     <div class="col2"><div id="moduleMenu"><?php echo $moduleMenu ?></div></div>

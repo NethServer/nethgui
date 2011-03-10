@@ -129,15 +129,6 @@ final class NethGui_Core_Request implements NethGui_Core_RequestInterface
         return new self($this->user, $this->getParameter($parameterName), $this->contentType);
     }
 
-    public function __toString()
-    {
-        $output = '';
-        foreach ($this->getParameters() as $parameterName) {
-            $output .= $parameterName . ' = ' . $this->getParameter($parameterName) . ', ';
-        }
-        return $output;
-    }
-
     public function getUser()
     {
         return $this->user;
