@@ -114,7 +114,7 @@ final class NethGui_Dispatcher
 
         // TODO: some refactoring...
         $this->handle($request, $response);
-        $this->sendResponse($response->getInnerResponse($this->currentModule));
+        $this->sendResponse($response);
     }
 
     private function sendResponse(NethGui_Core_Response $response)
@@ -123,7 +123,7 @@ final class NethGui_Dispatcher
             header("Content-Type: text/html; charset=UTF-8");
 
             // TODO: implement menu, breadcrumb and validatorreport as Modules
-            $moduleContent = NethGui_Framework::getInstance()->renderResponse($response);
+            $moduleContent = NethGui_Framework::getInstance()->renderResponse($response->getInnerResponse($this->currentModule));
 
             $decorationParameters = array(
                 'cssMain' => base_url() . 'css/main.css',

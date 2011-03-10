@@ -135,7 +135,12 @@ final class NethGui_Core_Response implements NethGui_Core_ResponseInterface
         foreach ($this->children as $innerResponse) {
             $innerId = $innerResponse->getModule()->getIdentifier();
 
-            $wholeData = array_merge($wholeData, array($innerId => $innerResponse->getWholeData()));
+            $innerData = $innerResponse->getWholeData();
+
+            if ( ! empty($innerData))
+            {
+                $wholeData = array_merge($wholeData, array($innerId => $innerData));
+            }
         }
 
         $wholeData = array_merge($wholeData, $this->data);

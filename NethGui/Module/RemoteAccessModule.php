@@ -48,8 +48,8 @@ final class NethGui_Module_RemoteAccessModule extends NethGui_Core_Module_Compos
         {
             log_message('info', '$response->setViewName(\'NethGui_Core_View_form\');');
             $response->setViewName('NethGui_Core_View_form');
+            $response->setData(array('save' => 1));
         }
-        $response->setData(array('save' => 1));
     }
 
 }
