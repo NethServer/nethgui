@@ -32,10 +32,14 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
      */
     private $hostConfiguration;
     /**
-     *
      * @var array
      */
     protected $parameters = array();
+    /**
+     * Validator configuration
+     * @var array
+     */
+    private $validators = array();
     /**
      * @see NethGui_Core_RequestHandlerInterface
      * @var array
@@ -109,24 +113,60 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
         return $this->parent;
     }
 
+    protected function declareParameter($parameterName, $validationRule)
+    {
+        $this->validators[$parameterName] = $validationRule;
+    }
+
     public function bind(NethGui_Core_RequestInterface $request)
     {
-        foreach ($request->getParameters() as $parameterName) {
+        foreach (array_keys($this->validators) as $parameterName) {
             $this->parameters[$parameterName] = $request->getParameter($parameterName);
         }
     }
 
     public function validate(NethGui_Core_ValidationReportInterface $report)
     {
-        foreach ($this->parameters as $parameter) {
-            // TODO: do parameter validation
+        foreach ($this->parameters as $parameter => $value) {
+            if ( ! isset($this->validators[$parameter]))
+            {
+                throw new NethGui_Exception_Validation("Unknown parameter " . $parameter);
+            }
+
+            $pattern = $this->validators[$parameter];
+
+            // TODO: implement a real validation
+            if (preg_match($pattern, $value) == 0)
+            {
+                $report->addError($parameter, 'Invalid ' . $parameter);
+            }
         }
     }
 
+    /**
+     * Default Standard behaviour calls fillResponse()
+     * @see fillResponse()
+     * @param NethGui_Core_ResponseInterface $response
+     */
     public function process(NethGui_Core_ResponseInterface $response)
     {
-        // TODO: call handlers
-        
+       $this->fillResponse($response);
+    }
+
+    /**
+     * Ensure response object has all declared parameters.  Missing parameters
+     * are set to FALSE as default.
+     * @param NethGui_Core_ResponseInterface $response 
+     */
+    protected function fillResponse(NethGui_Core_ResponseInterface $response)
+    {
+
+        foreach(array_keys($this->validators) as $parameter) {
+            if(!isset($this->parameters[$parameter])) {
+                $this->parameters[$parameter] = false;
+            }
+        }
+
         $response->setData($this->parameters);
     }
 
