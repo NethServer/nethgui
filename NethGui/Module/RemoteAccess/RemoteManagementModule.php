@@ -19,10 +19,15 @@ final class NethGui_Module_RemoteAccess_RemoteManagementModule extends NethGui_C
         return "Controllo di accesso al server-manager.";
     }
 
-    public function bind(NethGui_Core_RequestInterface $request)
+    public function initialize()
     {
-        parent::bind($request);
+        parent::initialize();
+        $this->declareParameter('networkAddress', '/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|^$)/');
+        $this->declareParameter('networkMask', '/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|^$)/');
+    }
 
+    private function readNetworkData()
+    {
         $confDb = $this->getHostConfiguration();
 
         // Value in property ValidFrom is stored as a comma separated value list
@@ -37,59 +42,40 @@ final class NethGui_Module_RemoteAccess_RemoteManagementModule extends NethGui_C
             )
         ;
 
-        if ($request->hasParameter('networkMask'))
-        {
-            $this->parameters['networkMask'] = $request->getParameter('networkMask');
-        } else
-        {
-            $this->parameters['networkMask'] = $network[1];
-        }
-
-        if ($request->hasParameter('networkAddress'))
-        {
-            $this->parameters['networkAddress'] = $request->getParameter('networkAddress');
-        } else
-        {
-            $this->parameters['networkAddress'] = $network[0];
-        }
+        return $network;
     }
 
-    public function validate(NethGui_Core_ValidationReportInterface $report)
+    private function writeValidFrom($networkAddress, $networkMask)
     {
-        parent::validate($report);
-        
-        $pattern = '/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/';
-        if(preg_match($pattern, $this->parameters['networkMask']) == 0)
-        {
-            $report->addError('networkMask', 'Invalid network mask');
-        }
-        if(preg_match($pattern, $this->parameters['networkAddress']) == 0)
-        {
-            $report->addError('networkAddress', 'Invalid network address');
-        }
+           $confDb = $this->getHostConfiguration();
+
+           $validFrom = $networkAddress . '/' . $networkMask;
+
+           $confDb->setDB('configuration')->setProp('httpd-admin', array('ValidFrom' => $validFrom));
     }
 
     public function process(NethGui_Core_ResponseInterface $response)
     {
-        $valueHasChanged = false;
+        list($networkAddress, $networkMask) = $this->readNetworkData();
 
-        if($valueHasChanged) {
-            $confDb = $this->getHostConfiguration();
-
-           // TODO: setKey...
+        $changedValues = $this->parameters['networkAddress']
+            || $this->parameters['networkMask'];
+        
+        if ($changedValues) {
+            $this->writeValidFrom($this->parameters['networkAddress'], $this->parameters['networkMask']);
+        }
+        else
+        {
+            $this->parameters['networkMask'] = $networkMask;
+            $this->parameters['networkAddress'] = $networkAddress;
         }
 
-        $response->setData($this->parameters);
-        
-        if($response->getFormat() === NethGui_Core_ResponseInterface::HTML)
+        if ($response->getFormat() === NethGui_Core_ResponseInterface::HTML)
         {
             $response->setViewName('NethGui_View_RemoteAccess_RemoteManagementView');
         }
-        // TODO: cleanup
-        //elseif($response->getFormat() === NethGui_Core_ResponseInterface::JS)
-        //{
-        //    $response->setViewName($this, 'NethGui_View_RemoteAccess_RemoteManagementView');
-        //}
+
+        $this->fillResponse($response);
     }
 
 }
