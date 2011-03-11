@@ -11,7 +11,7 @@
  *
  * @package Modules
  */
-final class NethGui_Module_RemoteAccessModule extends NethGui_Core_Module_Composite implements NethGui_Core_TopModuleInterface
+final class NethGui_Module_RemoteAccess extends NethGui_Core_Module_Composite implements NethGui_Core_TopModuleInterface
 {
 
     public function getTitle()
@@ -22,7 +22,7 @@ final class NethGui_Module_RemoteAccessModule extends NethGui_Core_Module_Compos
 
     public function getParentMenuIdentifier()
     {
-        return "SecurityModule";
+        return "Security";
 
     }
 
@@ -30,7 +30,7 @@ final class NethGui_Module_RemoteAccessModule extends NethGui_Core_Module_Compos
     {
         parent::initialize();
         foreach (array('Pptp', 'RemoteManagement', 'Ssh', 'Ftp') as $dependency) {
-            $childModuleClass = 'NethGui_Module_RemoteAccess_' . $dependency . 'Module';
+            $childModuleClass = 'NethGui_Module_RemoteAccess_' . $dependency;
             $childModule = new $childModuleClass();
             $childModule->setHostConfiguration($this->getHostConfiguration());
             $this->addChild($childModule);

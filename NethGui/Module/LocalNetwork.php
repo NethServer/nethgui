@@ -11,22 +11,22 @@
  *
  * @package Modules
  */
-final class NethGui_Module_AdministrationModule extends NethGui_Core_Module_Standard implements NethGui_Core_TopModuleInterface
+final class NethGui_Module_LocalNetwork extends NethGui_Core_Module_Standard implements NethGui_Core_TopModuleInterface
 {
 
     public function getTitle()
     {
-        return "Administration";
+        return "Local network";
     }
 
     public function getDescription()
     {
-        return "Backup Ripristino, Log etc...";
+        return "Placeholder description.";
     }
 
     public function getParentMenuIdentifier()
     {
-        return NULL;
+        return "Security";
     }
 
 }

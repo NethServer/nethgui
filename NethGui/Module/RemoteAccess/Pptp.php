@@ -11,7 +11,7 @@
  * @package Modules
  * @subpackage RemoteAccess
  */
-final class NethGui_Module_RemoteAccess_PptpModule extends NethGui_Core_Module_Standard {
+final class NethGui_Module_RemoteAccess_Pptp extends NethGui_Core_Module_Standard {
 
     public function  getDescription()
     {

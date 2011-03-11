@@ -69,7 +69,7 @@ final class NethGui_Dispatcher
          */
         if ($method == 'index') {
             // TODO: take the default module value from the configuration
-            $this->currentModule = $this->componentDepot->findModule('SecurityModule');
+            $this->currentModule = $this->componentDepot->findModule('Security');
         } else {
             $this->currentModule = $this->componentDepot->findModule($method);
         }

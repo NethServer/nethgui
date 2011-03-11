@@ -11,7 +11,7 @@
  * @package Modules
  * @subpackage RemoteAccess
  */
-final class NethGui_Module_RemoteAccess_RemoteManagementModule extends NethGui_Core_Module_Standard
+final class NethGui_Module_RemoteAccess_RemoteManagement extends NethGui_Core_Module_Standard
 {
 
     private $command = 'NOOP';
@@ -93,11 +93,11 @@ final class NethGui_Module_RemoteAccess_RemoteManagementModule extends NethGui_C
             )
         ;
 
-        if(! isset($network[1]))
+        if ( ! isset($network[1]))
         {
             $network[1] = '';
         }
-        
+
         return $network;
     }
 
