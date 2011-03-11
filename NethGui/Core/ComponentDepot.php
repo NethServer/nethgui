@@ -150,9 +150,13 @@ final class NethGui_Core_ComponentDepot implements NethGui_Core_ModuleSetInterfa
         $this->user = $user;
     }
 
+    /**
+     *
+     * @return RecursiveIterator
+     */
     public function getTopModules()
     {
-// TODO: authorize access
+        // TODO: authorize access
         return new NethGui_Core_ModuleMenuIterator($this, '__ROOT__', $this->menu);
     }
 

@@ -80,7 +80,7 @@ final class NethGui_Framework
         $absoluteViewPath = realpath(APPPATH . 'views/' . $ciViewPath . '.php');
 
         if ( ! $absoluteViewPath) {
-            // TODO: log a warning.
+            log_message('error', "Unable to load `{$viewName}`.");
             return '';
         }
 
@@ -99,14 +99,11 @@ final class NethGui_Framework
         $viewState['response'] = $response;
         $viewState['id'] = array();
         $viewState['name'] = array();
-
         $viewState['module'] = $response->getModule();
-
         $viewState['framework'] = $this;
 
         // Add a reference to forward current view state into inner views.
         $viewState['self'] = &$viewState;
-
 
         $responseData = $response->getData();
         // Put all view data into id, name, parameter helper arrays.
@@ -124,6 +121,36 @@ final class NethGui_Framework
         }
 
         return $this->renderView($response->getViewName(), $viewState);
+    }
+
+
+    /**
+     * @see anchor()
+     * @param NethGui_Core_ModuleInterface $module
+     * @return <type>
+     */
+    public function renderModuleAnchor(NethGui_Core_ModuleInterface $module)
+    {
+        $html = '';
+
+        if (strlen($module->getTitle()) == 0) {
+            return '';
+        }
+
+        $currentModule = FALSE;
+
+        if ($module === $currentModule) {
+            $html = '<span class="moduleTitle current" title="' . htmlspecialchars($module->getDescription()) . '">' . htmlspecialchars($module->getTitle()) . '</span>';
+        } else {
+            $ciControllerClassName = NethGui_Framework::getInstance()->getControllerName();
+            $html = anchor($ciControllerClassName . '/' . $module->getIdentifier(),
+                    htmlspecialchars($module->getTitle()),
+                    array('class' => 'moduleTitle', 'title' => htmlspecialchars($module->getDescription())
+                    )
+            );
+        }
+
+        return $html;
     }
 
     /**

@@ -13,7 +13,7 @@
  * @package NethGuiFramework
  * @subpackage StandardImplementation
  */
-final class NethGui_Core_Response implements NethGui_Core_ResponseInterface
+final class NethGui_Core_Response implements NethGui_Core_ResponseInterface, ArrayAccess
 {
 
     private $children;
@@ -45,12 +45,12 @@ final class NethGui_Core_Response implements NethGui_Core_ResponseInterface
      * @param int $viewType
      * @return NethGui_Core_Response
      */
-    public function getRootInstance($viewType)
+    public static function getRootInstance($viewType, NethGui_Core_Module_World $worldModule)
     {
         static $rootResponse;
 
         if ( ! isset($rootResponse)) {
-            $rootResponse = new self($viewType, new NethGui_Core_Module_World());
+            $rootResponse = new self($viewType, $worldModule);
         }
 
         return $rootResponse;
@@ -105,7 +105,7 @@ final class NethGui_Core_Response implements NethGui_Core_ResponseInterface
         while (TRUE) {
             $identifier = $module->getIdentifier();
             $module = $module->getParent();
-            if (is_null($module)) {
+            if (is_null($module) || $module instanceof NethGui_Core_Module_World) {
                 $prefix = $identifier . $prefix;
                 break;
             } else {
@@ -165,7 +165,7 @@ final class NethGui_Core_Response implements NethGui_Core_ResponseInterface
      */
     public function getInnerResponse(NethGui_Core_ModuleInterface $module)
     {
-        $moduleId = spl_object_hash($module);
+        $moduleId = $module->getIdentifier();
 
         if ( ! isset($this->children[$moduleId])) {
             // Registers a new child
@@ -184,6 +184,38 @@ final class NethGui_Core_Response implements NethGui_Core_ResponseInterface
     public function getModule()
     {
         return $this->module;
+    }
+
+    public function offsetExists($offset)
+    {
+        if (isset($this->data[$offset])) {
+            return TRUE;
+        } elseif (isset($this->children[$offset])) {
+            return TRUE;
+        }
+
+        return FALSE;
+    }
+
+    public function offsetGet($offset)
+    {
+        if (isset($this->data[$offset])) {
+            return $this->data[$offset];
+        } elseif (isset($this->children[$offset])) {
+            return $this->children[$offset];
+        }
+
+        return NULL;
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        throw new Exception("Invalid operation");
+    }
+
+    public function offsetUnset($offset)
+    {
+        throw new Exception("Invalid operation");
     }
 
 }
