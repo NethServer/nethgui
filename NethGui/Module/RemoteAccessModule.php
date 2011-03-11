@@ -41,7 +41,7 @@ final class NethGui_Module_RemoteAccessModule extends NethGui_Core_Module_Compos
     public function process(NethGui_Core_ResponseInterface $response)
     {
         parent::process($response);
-
+        // TODO: cleanup
         log_message('info', 'Format: ' . $response->getFormat());
 
         if($response->getFormat() === NethGui_Core_ResponseInterface::HTML)

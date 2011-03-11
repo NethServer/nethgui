@@ -36,7 +36,7 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
      */
     protected $parameters = array();
     /**
-     * Validator configuration
+     * Validator configuration. Holds declared parameters.
      * @var array
      */
     private $validators = array();
@@ -113,15 +113,25 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
         return $this->parent;
     }
 
-    protected function declareParameter($parameterName, $validationRule)
+    /**
+     * Declare a Module parameter.
+     * 
+     * @param string $parameterName
+     * @param string $validationRule A regular expression catching the correct value format
+     * @param mixed $defaultValue Value to assign if parameter is missing during binding
+     */
+    protected function declareParameter($parameterName, $validationRule, $defaultValue = NULL)
     {
         $this->validators[$parameterName] = $validationRule;
+        $this->parameters[$parameterName] = $defaultValue;
     }
 
     public function bind(NethGui_Core_RequestInterface $request)
     {
-        foreach (array_keys($this->validators) as $parameterName) {
-            $this->parameters[$parameterName] = $request->getParameter($parameterName);
+        foreach (array_keys($this->parameters) as $parameterName) {
+            if ($request->hasParameter($parameterName)) {
+                $this->parameters[$parameterName] = $request->getParameter($parameterName);
+            }
         }
     }
 
@@ -133,9 +143,8 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
                 throw new NethGui_Exception_Validation("Unknown parameter " . $parameter);
             }
 
-            $pattern = $this->validators[$parameter];
-
             // TODO: implement a real validation
+            $pattern = $this->validators[$parameter];
             if (preg_match($pattern, $value) == 0)
             {
                 $report->addError($parameter, 'Invalid ' . $parameter);
@@ -150,24 +159,7 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
      */
     public function process(NethGui_Core_ResponseInterface $response)
     {
-       $this->fillResponse($response);
-    }
-
-    /**
-     * Ensure response object has all declared parameters.  Missing parameters
-     * are set to FALSE as default.
-     * @param NethGui_Core_ResponseInterface $response 
-     */
-    protected function fillResponse(NethGui_Core_ResponseInterface $response)
-    {
-
-        foreach(array_keys($this->validators) as $parameter) {
-            if(!isset($this->parameters[$parameter])) {
-                $this->parameters[$parameter] = false;
-            }
-        }
-
-        $response->setData($this->parameters);
+         $response->setData($this->parameters);
     }
 
     /**
