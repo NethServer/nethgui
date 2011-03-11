@@ -1,5 +1,4 @@
 <?php
-
 /**
  * NethGui
  *
@@ -17,9 +16,9 @@ final class NethGui_Core_ValidationReport implements NethGui_Core_ValidationRepo
 
     private $errors = array();
 
-    public function addError($fieldId, $message)
+    public function addError(NethGui_Core_ModuleInterface $module, $fieldId, $message)
     {
-        $this->errors[] = array($fieldId, $message);
+        $this->errors[] = array($fieldId, $message, $module);
     }
 
     public function getErrors()

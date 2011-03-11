@@ -75,6 +75,8 @@ final class NethGui_Dispatcher
             show_404();
         }
 
+
+
         $worldModule = new NethGui_Core_Module_World($this->currentModule);
 
         $request = NethGui_Core_Request::getWebRequestInstance(
@@ -83,7 +85,7 @@ final class NethGui_Dispatcher
         );
 
         $report = new NethGui_Core_ValidationReport();
-
+        
         $response = NethGui_Core_Response::getRootInstance($request->getContentType(), $worldModule);
 
         /**
@@ -92,12 +94,12 @@ final class NethGui_Dispatcher
         $this->hostConfiguration->setUser($request->getUser());
         $this->componentDepot->setUser($request->getUser());
 
-        
+
         if ($response->getFormat() === NethGui_Core_ResponseInterface::HTML) {
             $worldModule->addChild(new NethGui_Core_Module_Menu($this->componentDepot->getTopModules()));
             $worldModule->addChild(new NethGui_Core_Module_BreadCrumb($this->componentDepot, $this->currentModule));
         }
-        
+
         $worldModule->addChild(new NethGui_Core_Module_ValidationReport($report));
 
         $moduleActivationList = $request->getParameters();
@@ -114,7 +116,8 @@ final class NethGui_Dispatcher
         $worldModule->initialize();
         $worldModule->bind($request);
         $worldModule->validate($report);
-        $worldModule->process($response);
+        $worldModule->process();
+        $worldModule->prepareResponse($response);
 
         if ($response->getFormat() === NethGui_Core_ResponseInterface::HTML) {
             header("Content-Type: text/html; charset=UTF-8");

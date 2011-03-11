@@ -118,8 +118,10 @@ final class NethGui_Module_RemoteAccess_RemoteManagement extends NethGui_Core_Mo
         ;
     }
 
-    public function process(NethGui_Core_ResponseInterface $response)
+    public function  process()
     {
+        parent::process();
+
         switch ($this->command) {
             case 'DELETE':
                 $this->deleteValidFrom();
@@ -128,13 +130,15 @@ final class NethGui_Module_RemoteAccess_RemoteManagement extends NethGui_Core_Mo
                 $this->writeValidFrom($this->parameters['networkAddress'], $this->parameters['networkMask']);
                 break;
         }
+    }
 
+    public function prepareResponse(NethGui_Core_ResponseInterface $response)
+    {
         if ($response->getFormat() === NethGui_Core_ResponseInterface::HTML)
         {
             $response->setViewName('NethGui_View_RemoteAccess_RemoteManagementView');
         }
-
-        parent::process($response);
+        parent::prepareResponse($response);
     }
 
 }

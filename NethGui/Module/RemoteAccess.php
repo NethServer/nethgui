@@ -38,9 +38,9 @@ final class NethGui_Module_RemoteAccess extends NethGui_Core_Module_Composite im
         }
     }
 
-    public function process(NethGui_Core_ResponseInterface $response)
+    public function prepareResponse(NethGui_Core_ResponseInterface $response)
     {
-        parent::process($response);
+        parent::prepareResponse($response);
         // TODO: cleanup
         log_message('info', 'Format: ' . $response->getFormat());
 

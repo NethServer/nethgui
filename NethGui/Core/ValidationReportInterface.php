@@ -14,7 +14,7 @@
  */
 interface NethGui_Core_ValidationReportInterface
 {
-    public function addError($fieldId, $message);
+    public function addError(NethGui_Core_ModuleInterface $module, $fieldId, $message);
 
     /**
      * @return array

@@ -41,9 +41,9 @@ final class NethGui_Core_Module_BreadCrumb extends NethGui_Core_Module_Standard 
         return implode(' &gt; ', $rootLine);
     }
 
-    public function process(NethGui_Core_ResponseInterface $response)
+    public function prepareResponse(NethGui_Core_ResponseInterface $response)
     {
         $this->parameters['html'] = $this->renderBreadcrumbMenu();
-        parent::process($response);
+        parent::prepareResponse($response);
     }
 }

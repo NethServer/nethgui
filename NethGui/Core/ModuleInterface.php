@@ -63,6 +63,12 @@ interface NethGui_Core_ModuleInterface extends NethGui_Core_RequestHandlerInterf
      */
     public function isInitialized();
 
+
+    /**
+     * Prepare view layer data, putting it into $response.
+     */
+    public function prepareResponse(NethGui_Core_ResponseInterface $response);
+
 }
 
 /**

@@ -19,9 +19,9 @@ interface NethGui_Core_RequestHandlerInterface {
     public function validate(NethGui_Core_ValidationReportInterface $report);
 
     /**
-     * Performs object logics, preparing view data.
+     * Performs object logics
      * @return string view name
      */
-    public function process(NethGui_Core_ResponseInterface $response);
+    public function process();
     
 }

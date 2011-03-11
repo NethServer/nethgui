@@ -15,9 +15,9 @@ final class NethGui_Core_Module_ValidationReport extends NethGui_Core_Module_Sta
         $this->report =$report;
     }
 
-    public function process(NethGui_Core_ResponseInterface $response)
+    public function prepareResponse(NethGui_Core_ResponseInterface $response)
     {
         $this->parameters['errors'] = $this->report->getErrors();
-        parent::process($response);
+        parent::prepareResponse($response);
     }
 }

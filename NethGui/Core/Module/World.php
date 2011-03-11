@@ -14,11 +14,16 @@
  */
 final class NethGui_Core_Module_World extends NethGui_Core_Module_Composite
 {
+
     /**
      *
      * @var NethGui_Core_ModuleInterface
      */
     private $currentModule;
+    /**
+     * @var NethGui_Core_ValidationReport
+     */
+    private $validationReport;
 
     public function __construct(NethGui_Core_ModuleInterface $currentModule)
     {
@@ -26,8 +31,28 @@ final class NethGui_Core_Module_World extends NethGui_Core_Module_Composite
         $this->currentModule = $currentModule;
     }
 
+    public function validate(NethGui_Core_ValidationReportInterface $report)
+    {
+        $this->validationReport = $report;
+        parent::validate($report);
+    }
 
-    public function process(NethGui_Core_ResponseInterface $response)
+    public function process()
+    {
+        $skipUserModules = count($this->validationReport->getErrors()) > 0;
+
+        foreach ($this->getChildren() as $child) {
+            // FIXME: 
+            if ($skipUserModules
+                && substr(get_class($child), 0, 20) != 'NethGui_Core_Module_') {
+                continue;
+            }
+
+            $child->process();
+        }
+    }
+
+    public function prepareResponse(NethGui_Core_ResponseInterface $response)
     {
         $this->parameters = array(
             'cssMain' => base_url() . 'css/main.css',
@@ -42,7 +67,8 @@ final class NethGui_Core_Module_World extends NethGui_Core_Module_Composite
         if ($response->getFormat() == NethGui_Core_ResponseInterface::HTML) {
             $response->setViewName('NethGui_Core_View_decoration');
         }
-        parent::process($response);
+
+        parent::prepareResponse($response);
     }
 
 }

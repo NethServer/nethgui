@@ -147,19 +147,26 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
             $pattern = $this->validators[$parameter];
             if (preg_match($pattern, $value) == 0)
             {
-                $report->addError($parameter, 'Invalid ' . $parameter);
+                $report->addError($this, $parameter, 'Invalid ' . $parameter);
             }
         }
     }
 
     /**
-     * Default Standard behaviour calls fillResponse()
-     * @see fillResponse()
+     * Do nothing
+     */
+    public function process()
+    {
+
+    }
+
+    /**
+     * Passes module parameters to response
      * @param NethGui_Core_ResponseInterface $response
      */
-    public function process(NethGui_Core_ResponseInterface $response)
+    public function prepareResponse(NethGui_Core_ResponseInterface $response)
     {
-         $response->setData($this->parameters);
+        $response->setData($this->parameters);
     }
 
     /**
