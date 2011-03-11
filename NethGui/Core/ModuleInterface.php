@@ -13,7 +13,7 @@
  * TODO: interface description.
  * @package ExtensibleApi
  */
-interface NethGui_Core_ModuleInterface
+interface NethGui_Core_ModuleInterface extends NethGui_Core_RequestHandlerInterface
 {
 
     /**

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * NethGui
  *
@@ -79,8 +78,8 @@ final class NethGui_Framework
         $ciViewPath = '../../' . str_replace('_', '/', $viewName);
 
         $absoluteViewPath = realpath(APPPATH . 'views/' . $ciViewPath . '.php');
-        
-        if(!$absoluteViewPath) {
+
+        if ( ! $absoluteViewPath) {
             // TODO: log a warning.
             return '';
         }
@@ -94,7 +93,8 @@ final class NethGui_Framework
      * @param NethGui_Core_Response $response
      * @return string
      */
-    public function renderResponse(NethGui_Core_Response $response) {
+    public function renderResponse(NethGui_Core_Response $response)
+    {
 
         $viewState['response'] = $response;
         $viewState['id'] = array();
@@ -115,13 +115,16 @@ final class NethGui_Framework
             foreach ($responseData as $parameterName => $parameterValue) {
                 $viewState['id'][$parameterName] = htmlspecialchars($response->getWidgetId($parameterName));
                 $viewState['name'][$parameterName] = htmlspecialchars($response->getParameterName($parameterName));
-                $viewState['parameter'][$parameterName] = htmlspecialchars($parameterValue);
+                if (is_string($parameterValue)) {
+                    $viewState['parameter'][$parameterName] = htmlspecialchars($parameterValue);
+                } else {
+                    $viewState['parameter'][$parameterName] = $parameterValue;
+                }
             }
         }
 
         return $this->renderView($response->getViewName(), $viewState);
     }
-
 
     /**
      * Class autoloader

@@ -136,6 +136,7 @@ final class NethGui_Dispatcher
                 'validationReport' => print_r($validationReport->getErrors(), 1),
                 'moduleMenu' => $this->renderModuleMenu($this->componentDepot->getTopModules()),
                 'breadcrumbMenu' => $this->renderBreadcrumbMenu(),
+                'request' => 'xxx' //print_r($request, 1),
             );
             echo NethGui_Framework::getInstance()->renderView('NethGui_Core_View_decoration', $decorationParameters);
             //

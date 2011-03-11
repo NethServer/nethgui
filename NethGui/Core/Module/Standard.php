@@ -11,7 +11,7 @@
  * @package NethGuiFramework
  * @subpackage StandardImplementation
  */
-abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterface, NethGui_Core_RequestHandlerInterface
+abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterface
 {
 
     /**
