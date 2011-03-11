@@ -124,7 +124,7 @@ final class NethGui_Dispatcher
             echo NethGui_Framework::getInstance()->renderResponse($response);
         } elseif ($response->getFormat() === NethGui_Core_ResponseInterface::JSON) {
             header("Content-Type: application/json; charset=UTF-8");
-            echo NethGui_Framework::getInstance()->renderView('NethGui_Core_View_json', array('data' => $response->getWholeData()));
+            echo json_encode($response->getWholeData());
             //
         }
     }
