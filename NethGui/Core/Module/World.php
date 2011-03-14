@@ -39,11 +39,11 @@ final class NethGui_Core_Module_World extends NethGui_Core_Module_Composite
 
     public function process()
     {
-        $skipUserModules = count($this->validationReport->getErrors()) > 0;
+        $validationErrors = count($this->validationReport->getErrors()) > 0;
 
         foreach ($this->getChildren() as $child) {
-            // FIXME: 
-            if ($skipUserModules
+            // FIXME: skip processing on non-core modules.
+            if ($validationErrors
                 && substr(get_class($child), 0, 20) != 'NethGui_Core_Module_') {
                 continue;
             }
@@ -60,7 +60,7 @@ final class NethGui_Core_Module_World extends NethGui_Core_Module_Composite
             $this->parameters = array(
                 'cssMain' => base_url() . 'css/main.css',
                 'js' => array(
-                    'base' => base_url() . 'js/jquery-1.5.1.min.js',
+                    'base' => base_url() . 'js/jquery-1.5.1.js',
                     'ui' => base_url() . 'js/jquery-ui-1.8.10.custom.min.js',
                     'test' => base_url() . 'js/test.js',
                 ),

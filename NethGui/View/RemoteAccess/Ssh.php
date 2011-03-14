@@ -24,7 +24,7 @@
 </div>
 <div>
     <label for="<?php echo $id['allowPassword'] ?>">Consenti l'uso delle password</label>
-    <?php echo form_checkbox($name['allowPassword'], 1, $parameter['allowPassword'], "id='{$id['allowRootAccess']}'") ?>
+    <?php echo form_checkbox($name['allowPassword'], 1, $parameter['allowPassword'], "id='{$id['allowPassword']}'") ?>
 
 </div>
 <div>

@@ -17,7 +17,14 @@ final class NethGui_Core_Module_ValidationReport extends NethGui_Core_Module_Sta
 
     public function prepareResponse(NethGui_Core_ResponseInterface $response)
     {
-        $this->parameters['errors'] = $this->report->getErrors();
+        $this->parameters['errors'] = array();
+        foreach($this->report->getErrors() as $error)
+        {
+            list($fieldId, $message, $module) = $error;
+            //$this->parameters['errors'][$fieldId] = $message;
+            $this->parameters['errors'][] = array($fieldId, $message);
+        }
+        
         parent::prepareResponse($response);
     }
 }
