@@ -19,6 +19,8 @@ final class NethGui_Module_RemoteAccess_Ftp extends NethGui_Core_Module_Standard
         parent::initialize();
         $this->declareParameter('ftpPassword', '/.*/');
         $this->declareParameter('allowFtp', '/.*/');
+
+        
     }
 
     public function process()
@@ -26,7 +28,7 @@ final class NethGui_Module_RemoteAccess_Ftp extends NethGui_Core_Module_Standard
         parent::process();
     }
 
-    public function prepareResponse(NethGui_Core_ResponseInterface $response)
+    public function prepareView(NethGui_Core_ViewInterface $response)
     {
 
         $this->parameters['allowFtpOptions'] = array(
@@ -34,7 +36,7 @@ final class NethGui_Module_RemoteAccess_Ftp extends NethGui_Core_Module_Standard
             'private' => 'Consenti accesso da reti locali',
             'off' => 'Disabilitato'
         );
-        parent::prepareResponse($response);
+        parent::prepareView($response);
     }
 
 }

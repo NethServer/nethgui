@@ -24,7 +24,7 @@ final class NethGui_Core_Request implements NethGui_Core_RequestInterface
     private $user;
 
     /**
-     * @see NethGui_Core_ResponseInterface
+     * @see NethGui_Core_ViewInterface
      * @var int
      */
     private $contentType;
@@ -42,7 +42,7 @@ final class NethGui_Core_Request implements NethGui_Core_RequestInterface
         if ( ! isset($instance)) {
             if ($_SERVER['REQUEST_METHOD'] == 'GET') {
                 $data = array($defaultModuleIdentifier => $parameters);
-                $contentType = NethGui_Core_ResponseInterface::HTML;
+                $contentType = NethGui_Core_ViewInterface::HTML;
                 //
             } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
@@ -54,11 +54,11 @@ final class NethGui_Core_Request implements NethGui_Core_RequestInterface
                     if(is_null($data)) {
                         $data = array();
                     }
-                    $contentType = NethGui_Core_ResponseInterface::JSON;
+                    $contentType = NethGui_Core_ViewInterface::JSON;
                 } else {
                     // Browser POST request.
                     $data = array_merge(array($defaultModuleIdentifier => $parameters), $_POST);
-                    $contentType = NethGui_Core_ResponseInterface::HTML;
+                    $contentType = NethGui_Core_ViewInterface::HTML;
                 }
             }
 
@@ -92,7 +92,7 @@ final class NethGui_Core_Request implements NethGui_Core_RequestInterface
 
     /**
      * Returns the content type code for Response object constructor.
-     * @see NethGui_Core_ResponseInterface
+     * @see NethGui_Core_ViewInterface
      * @return int The content type for Response
      */
     public function getContentType()

@@ -38,13 +38,13 @@ final class NethGui_Module_RemoteAccess extends NethGui_Core_Module_Composite im
         }
     }
 
-    public function prepareResponse(NethGui_Core_ResponseInterface $response)
+    public function prepareView(NethGui_Core_ViewInterface $response)
     {
-        parent::prepareResponse($response);
+        parent::prepareView($response);
         // TODO: cleanup
         log_message('info', 'Format: ' . $response->getFormat());
 
-        if($response->getFormat() === NethGui_Core_ResponseInterface::HTML)
+        if($response->getFormat() === NethGui_Core_ViewInterface::HTML)
         {
             log_message('info', '$response->setViewName(\'NethGui_Core_View_form\');');
             $response->setViewName('NethGui_Core_View_form');

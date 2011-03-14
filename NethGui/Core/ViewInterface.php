@@ -6,12 +6,11 @@
  */
 
 /**
- * Implementor of Response Interface supports Modules by giving informations
- * about the current view.
+ * Each module has a view attacched to it during prepareView operation.
  *
  * @package NethGuiFramework
  */
-interface NethGui_Core_ResponseInterface
+interface NethGui_Core_ViewInterface
 {
     const JSON = 0;
     const HTML = 1;
@@ -21,8 +20,8 @@ interface NethGui_Core_ResponseInterface
     /**
      * Returns an integer representing current Response type.
      *
-     * @see NethGui_Core_ResponseInterface::HTML
-     * @see NethGui_Core_ResponseInterface::JSON     
+     * @see NethGui_Core_ViewInterface::HTML
+     * @see NethGui_Core_ViewInterface::JSON     
      * @return int Integer corresponding to constants defined by this interface
      */
     public function getFormat();
@@ -59,9 +58,9 @@ interface NethGui_Core_ResponseInterface
     /**
      * Returns a Response associated with $module.  
      *
-     * @return NethGui_Core_ResponseInterface
+     * @return NethGui_Core_ViewInterface
      */
-    public function getInnerResponse(NethGui_Core_ModuleInterface $module);
+    public function getInnerView(NethGui_Core_ModuleInterface $module);
 
 }
 

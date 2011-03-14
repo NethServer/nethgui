@@ -22,14 +22,14 @@ final class NethGui_Module_RemoteAccess_Ssh extends NethGui_Core_Module_Standard
         $this->declareParameter('accessMode', '/(internet|none|local)/', 'none');
     }
 
-    public function prepareResponse(NethGui_Core_ResponseInterface $response)
+    public function prepareView(NethGui_Core_ViewInterface $response)
     {
         $this->parameters['accessModeOptions'] = array(
             'local' => 'rete locale',
             'internet' => 'tutta internet',
             'none' => 'nessun host',
         );
-        parent::prepareResponse($response);
+        parent::prepareView($response);
     }
 
     

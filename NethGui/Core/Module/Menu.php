@@ -46,9 +46,9 @@ final class NethGui_Core_Module_Menu extends NethGui_Core_Module_Standard {
         return '<ul>' . $output . '</ul>';
     }
 
-    public function prepareResponse(NethGui_Core_ResponseInterface $response)
+    public function prepareView(NethGui_Core_ViewInterface $response)
     {
         $this->parameters['html'] = $this->renderModuleMenu($this->menuIterator);
-        parent::prepareResponse($response);
+        parent::prepareView($response);
     }
 }

@@ -33,7 +33,7 @@ final class NethGui_Module_RemoteAccess_RemoteManagement extends NethGui_Core_Mo
         parent::bind($request);
 
         /*
-         * If network parameters are not set by Request, read values from db.
+         * If network parameters are set neither by Request nor by declarations, read values from db.
          */
         if ( ! isset($this->parameters['networkAddress'], $this->parameters['networkMask'])) {
             list($networkAddress, $networkMask) = $this->readValidFrom();
@@ -49,6 +49,10 @@ final class NethGui_Module_RemoteAccess_RemoteManagement extends NethGui_Core_Mo
          */
     }
 
+    /**
+     * This implements a GUI behaviour: if both fields are empty we want
+     * to DELETE the database key. In this case, we skip normal validation.
+     */
     public function validate(NethGui_Core_ValidationReportInterface $report)
     {
         /*
@@ -132,13 +136,13 @@ final class NethGui_Module_RemoteAccess_RemoteManagement extends NethGui_Core_Mo
         }
     }
 
-    public function prepareResponse(NethGui_Core_ResponseInterface $response)
+    public function prepareView(NethGui_Core_ViewInterface $response)
     {
-        if ($response->getFormat() === NethGui_Core_ResponseInterface::HTML)
+        if ($response->getFormat() === NethGui_Core_ViewInterface::HTML)
         {
             $response->setViewName('NethGui_View_RemoteAccess_RemoteManagementView');
         }
-        parent::prepareResponse($response);
+        parent::prepareView($response);
     }
 
 }

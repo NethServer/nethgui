@@ -37,13 +37,17 @@ final class NethGui_Core_Module_World extends NethGui_Core_Module_Composite
         parent::validate($report);
     }
 
+    /**
+     * Override default implementation, skipping non-core child modules if we have
+     * validation errors.
+     */
     public function process()
     {
-        $validationErrors = count($this->validationReport->getErrors()) > 0;
+        $hasValidationErrors = count($this->validationReport->getErrors()) > 0;
 
         foreach ($this->getChildren() as $child) {
-            // FIXME: skip processing on non-core modules
-            if ($validationErrors
+            // FIXME: skip process() call on non-core modules
+            if ($hasValidationErrors
                 && substr(get_class($child), 0, 20) != 'NethGui_Core_Module_') {
                 continue;
             }
@@ -52,9 +56,9 @@ final class NethGui_Core_Module_World extends NethGui_Core_Module_Composite
         }
     }
 
-    public function prepareResponse(NethGui_Core_ResponseInterface $response)
+    public function prepareView(NethGui_Core_ViewInterface $response)
     {
-        if ($response->getFormat() == NethGui_Core_ResponseInterface::HTML) {
+        if ($response->getFormat() == NethGui_Core_ViewInterface::HTML) {
             $response->setViewName('NethGui_Core_View_decoration');
 
             $this->parameters = array(
@@ -64,11 +68,11 @@ final class NethGui_Core_Module_World extends NethGui_Core_Module_Composite
                     'ui' => base_url() . 'js/jquery-ui-1.8.10.custom.min.js',
                     'test' => base_url() . 'js/test.js',
                 ),
-                'currentModule' => $response->getInnerResponse($this->currentModule),
+                'currentModule' => $response->getInnerView($this->currentModule),
             );
         }
 
-        parent::prepareResponse($response);
+        parent::prepareView($response);
     }
 
 }

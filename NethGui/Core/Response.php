@@ -13,7 +13,7 @@
  * @package NethGuiFramework
  * @subpackage StandardImplementation
  */
-final class NethGui_Core_Response implements NethGui_Core_ResponseInterface, ArrayAccess
+final class NethGui_Core_Response implements NethGui_Core_ViewInterface, ArrayAccess
 {
 
     private $children;
@@ -161,9 +161,9 @@ final class NethGui_Core_Response implements NethGui_Core_ResponseInterface, Arr
     /**
      * Returns a Response associated with $module.
      * @param NethGui_Core_ModuleInterface $module
-     * @return NethGui_Core_ResponseInterface
+     * @return NethGui_Core_ViewInterface
      */
-    public function getInnerResponse(NethGui_Core_ModuleInterface $module)
+    public function getInnerView(NethGui_Core_ModuleInterface $module)
     {
         $moduleId = $module->getIdentifier();
 
