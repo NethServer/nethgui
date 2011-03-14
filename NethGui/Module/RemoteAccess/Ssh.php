@@ -11,7 +11,8 @@
  * @package Modules
  * @subpackage RemoteAccess
  */
-final class NethGui_Module_RemoteAccess_Ssh extends NethGui_Core_Module_Standard {
+final class NethGui_Module_RemoteAccess_Ssh extends NethGui_Core_Module_Standard
+{
 
     public function initialize()
     {
@@ -24,13 +25,14 @@ final class NethGui_Module_RemoteAccess_Ssh extends NethGui_Core_Module_Standard
 
     public function prepareView(NethGui_Core_ViewInterface $response)
     {
-        $this->parameters['accessModeOptions'] = array(
-            'local' => 'rete locale',
-            'internet' => 'tutta internet',
-            'none' => 'nessun host',
-        );
+        if ($response->getFormat() == NethGui_Core_ViewInterface::HTML) {
+            $this->parameters['accessModeOptions'] = array(
+                'local' => 'rete locale',
+                'internet' => 'tutta internet',
+                'none' => 'nessun host',
+            );
+        }
         parent::prepareView($response);
     }
 
-    
 }
