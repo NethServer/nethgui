@@ -13,7 +13,7 @@
  * @package NethGuiFramework
  * @subpackage StandardImplementation
  */
-final class NethGui_Core_Response implements NethGui_Core_ViewInterface, ArrayAccess
+class NethGui_Core_Response implements NethGui_Core_ViewInterface, ArrayAccess
 {
 
     private $children;

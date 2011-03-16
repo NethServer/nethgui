@@ -24,7 +24,7 @@
  * 
  * 
  */
-final class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfigurationInterface, NethGui_Core_EventInterface, NethGui_Authorization_PolicyEnforcementPointInterface
+class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfigurationInterface, NethGui_Core_EventInterface, NethGui_Authorization_PolicyEnforcementPointInterface
 {
 
     /**
