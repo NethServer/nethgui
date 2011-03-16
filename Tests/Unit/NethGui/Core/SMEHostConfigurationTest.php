@@ -161,5 +161,15 @@ class NethGui_Core_SMEHostConfigurationTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("",$this->object->getProp("testkey","SecondProp"));
         $this->assertEquals("",$this->object->getProp("testkey","ThirdProp"));
     }
+
+   /**
+    * Implement testSignalEvent()
+    */
+   public function testSignalEvent()
+   {
+        $this->assertEquals(false,$this->object->signalEvent("not-exist-event"));
+        $this->assertEquals(true,$this->object->signalEvent("remoteaccess-update"));
+   }
+
 }
 ?>

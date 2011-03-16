@@ -24,7 +24,7 @@
  * 
  * 
  */
-final class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfigurationInterface, NethGui_Authorization_PolicyEnforcementPointInterface
+final class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfigurationInterface, NethGui_Core_EventInterface, NethGui_Authorization_PolicyEnforcementPointInterface
 {
 
     /**
@@ -319,4 +319,19 @@ final class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfig
              $ret .= " ".escapeshellarg($key)." ".escapeshellarg($value)." ";
         return $ret;
     }
+
+
+    /**
+     * Signal an event and return the status
+     * 
+     * @param string $event Event name
+     * @access public
+     * @return boolean true on success, false otherwise
+     */
+    public function signalEvent($event,&$output=array())
+    {
+          exec('/sbin/e-smith/signal-event'.' '.escapeshellarg($event),$output, $ret);
+          return ($ret == 0);
+    }
+
 }

@@ -22,7 +22,7 @@ interface NethGui_Core_HostConfigurationInterface
     /**
      * Set the working database 
      * 
-     * @param streing $db Database name
+     * @param string $db Database name
      * @access public
      * @return void
      */
