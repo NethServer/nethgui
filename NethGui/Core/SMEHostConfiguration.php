@@ -13,8 +13,8 @@
  * Ths class implements an interface to SME database executing the command /sbin/e-smith/db with sudo.
  * The class needs /etc/sudoers configurazione. In the sudoers file you must have something like this:
  * <code>
- * Cmnd_Alias SMEDB = /sbin/e-smith/db
- * www ALL=NOPASSWD: SMEDB
+ * Cmnd_Alias SME = /sbin/e-smith/db, /sbin/e-smith/signal-event
+ * www ALL=NOPASSWD: SME
  * </code>
  *
  * Before use any method in the class, the method st($db) must be called. 
@@ -331,7 +331,7 @@ final class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfig
      */
     public function signalEvent($event,&$output=array())
     {
-          exec('/sbin/e-smith/signal-event'.' '.escapeshellarg($event),$output, $ret);
+          exec('/usr/bin/sudo /sbin/e-smith/signal-event'.' '.escapeshellarg($event),$output, $ret);
           return ($ret == 0);
     }
 
