@@ -23,6 +23,14 @@ final class NethGui_Framework
      * @var CI_Controller
      */
     private $controller;
+    private $languageCode;
+
+    /**
+     * This is a stack of catalog names. Current catalog is the last element
+     * of the array.
+     * @var array
+     */
+    private $languageCatalog;
 
     /**
      * Returns framework singleton instance.
@@ -35,6 +43,7 @@ final class NethGui_Framework
 
         if ( ! isset($instance)) {
             $instance = new self($codeIgniterController);
+            $instance->languageCatalog = array('default');
         }
 
         return $instance;
@@ -68,12 +77,16 @@ final class NethGui_Framework
 
     /**
      * Renders a view passing $viewState as view parameters.
+     *
+     * If specified, this function sets the default language catalog used
+     * by T() translation function.
      * 
      * @param string $viewName Full view name. Follows class naming convention.
      * @param array $viewState Array of view parameters.
+     * @param string $languageCatalog Name of language strings catalog.
      * @return string
      */
-    public function renderView($viewName, $viewState)
+    public function renderView($viewName, $viewState, $languageCatalog = NULL)
     {
         $ciViewPath = '../../' . str_replace('_', '/', $viewName);
 
@@ -84,7 +97,13 @@ final class NethGui_Framework
             return '';
         }
 
-        return $this->controller->load->view($ciViewPath, $viewState, true);
+        $this->languageCatalog[] = $languageCatalog;
+
+        $viewOutput = $this->controller->load->view($ciViewPath, $viewState, true);
+
+        array_pop($this->languageCatalog);
+
+        return $viewOutput;
     }
 
     /**
@@ -120,9 +139,11 @@ final class NethGui_Framework
             }
         }
 
-        return $this->renderView($response->getViewName(), $viewState);
-    }
+        // TODO: add a getLanguageCatalog to ModuleInterface.
+        $languageCatalog = get_class($response->getModule());
 
+        return $this->renderView($response->getViewName(), $viewState, $languageCatalog);
+    }
 
     /**
      * @see anchor()
@@ -154,6 +175,52 @@ final class NethGui_Framework
     }
 
     /**
+     * Translate $string substituting $args
+     *
+     * Each key in array $args is searched and replaced in $string with
+     * correspondent value.
+     *
+     * @see strtr()
+     *
+     * @param string $string
+     * @param array $args
+     * @param string $languageCode
+     * @param string $languageCatalog
+     * @return string
+     */
+    public function translate($string, $args, $languageCode = NULL, $languageCatalog = NULL)
+    {
+        if ( ! isset($languageCatalog)) {
+            $languageCatalog = end($this->languageCatalog);
+        }
+        if ( ! isset($languageCode)) {
+            $languageCode = $this->languageCode;
+        }
+
+        if (empty($languageCatalog)
+            || empty($languageCode)
+        ) {
+            $translation = $string;
+        } else {
+            // TODO pick translated string from language string catalog.
+            $translation = $string;
+        }
+
+        /**
+         * Applies args to string
+         */
+        return strtr($translation, $args);
+    }
+
+    /**
+     * 
+     * @param string $code ISO 639-1 language code (2 characters).
+     */
+    public function setLanguageCode($code) {
+        $this->languageCode = strtolower(substr($code, 0, 2));
+    }
+
+    /**
      * Class autoloader
      *
      * This function is registered as SPL class autoloader.
@@ -174,15 +241,15 @@ final class NethGui_Framework
 
 }
 
-/*
+/**
  * Registers translator function if gettext is not available.
+ * @see NethGui_Framework::translate()
  */
-if(!  function_exists('__') ) {
-    function __($string) {
-        return $string;
+if ( ! function_exists('T')) {
+
+    function T($string, $args = array(), $language = NULL, $catalog = NULL)
+    {
+        return NethGui_Framework::getInstance()->translate($string, $args, $language, $catalog);
     }
-    log_message('debug', 'Registered Translator helper.');
-    
-} else {
-    log_message('warning', 'Translator function already registered');
+
 }
