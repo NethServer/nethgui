@@ -11,7 +11,7 @@
  * @package NethGuiFramework
  * @subpackage StandardImplementation
  */
-final class NethGui_Core_ValidationReport implements NethGui_Core_ValidationReportInterface
+class NethGui_Core_ValidationReport implements NethGui_Core_ValidationReportInterface
 {
 
     private $errors = array();

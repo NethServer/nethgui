@@ -1,5 +1,4 @@
 <?php
-
 /**
  * NethGui
  *
@@ -7,10 +6,12 @@
  */
 
 /**
- * A NethGui_Core_ModuleInterface implementation is delegated to receive input parameters,
- * validate, process and (optionally) return an html view of the Module.
+ * A NethGui_Core_ModuleInterface implementation is delegated to
+ *    - receive input parameters (parameter binding),
+ *    - validate,
+ *    - perform process()-ing,
+ *    - prepare view parameters.
  *
- * TODO: interface description.
  * @package ExtensibleApi
  */
 interface NethGui_Core_ModuleInterface extends NethGui_Core_RequestHandlerInterface
@@ -67,7 +68,7 @@ interface NethGui_Core_ModuleInterface extends NethGui_Core_RequestHandlerInterf
     /**
      * Prepare view layer data, putting it into $response.
      */
-    public function prepareView(NethGui_Core_ViewInterface $response);
+    public function prepareView(NethGui_Core_ViewInterface $view);
 
 }
 
@@ -80,6 +81,7 @@ interface NethGui_Core_ModuleInterface extends NethGui_Core_RequestHandlerInterf
  * Also a "Top" Module is reachable with a specific URL, unlike other Modules.
  *
  * @package ExtensibleApi
+ * @todo add a method to sort the menu elements
  */
 interface NethGui_Core_TopModuleInterface
 {

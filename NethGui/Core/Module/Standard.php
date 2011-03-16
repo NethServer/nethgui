@@ -164,9 +164,9 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
      * Passes module parameters to response
      * @param NethGui_Core_ViewInterface $response
      */
-    public function prepareView(NethGui_Core_ViewInterface $response)
+    public function prepareView(NethGui_Core_ViewInterface $view)
     {
-        $response->setData($this->parameters);
+        $view->setData($this->parameters);
     }
 
     /**

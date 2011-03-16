@@ -38,17 +38,17 @@ final class NethGui_Module_RemoteAccess extends NethGui_Core_Module_Composite im
         }
     }
 
-    public function prepareView(NethGui_Core_ViewInterface $response)
+    public function prepareView(NethGui_Core_ViewInterface $view)
     {
-        parent::prepareView($response);
+        parent::prepareView($view);
         // TODO: cleanup
-        log_message('info', 'Format: ' . $response->getFormat());
+        log_message('info', 'Format: ' . $view->getFormat());
 
-        if($response->getFormat() === NethGui_Core_ViewInterface::HTML)
+        if($view->getFormat() === NethGui_Core_ViewInterface::HTML)
         {
-            log_message('info', '$response->setViewName(\'NethGui_Core_View_form\');');
-            $response->setViewName('NethGui_Core_View_form');
-            $response->setData(array('save' => 1));
+            log_message('info', '$view->setViewName(\'NethGui_Core_View_form\');');
+            $view->setViewName('NethGui_Core_View_form');
+            $view->setData(array('save' => 1));
         }
     }
 

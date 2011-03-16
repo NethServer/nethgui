@@ -20,20 +20,39 @@ class NethGui_Module_RemoteAccess_RemoteManagementTest extends PHPUnit_Framework
     {
         $this->object = new NethGui_Module_RemoteAccess_RemoteManagement;
 
-        $configurationMock = $this->getMock('NethGui_Core_SMEHostConfiguration');
+        $configurationMock = $this->getMockBuilder('NethGui_Core_SMEHostConfiguration')
+                //->setMethods(array('setProp'))
+                ->getMock();
+
+        $this->object->setHostConfiguration($configurationMock);
 
         $configurationMock
             ->expects($this->any())
-            ->method('setDb')
-            ->will($this->returnValue($configurationMock));
+            ->method('setDB')
+            ->with($this->equalTo('configuration'))
+            ->will($this->returnValue($configurationMock))
+        ;
 
         $configurationMock
             ->expects($this->any())
             ->method('getProp')
-            ->will($this->returnValue('0.0.0.0'))
+            ->with('httpd-admin', 'ValidFrom')
+            ->will($this->returnValue('192.168.1.0/255.255.255.0,192.168.1.2/255.255.255.0'))
         ;
 
-        $this->object->setHostConfiguration($configurationMock);
+        $configurationMock
+            ->expects($this->any())
+            ->method('setProp')
+            ->withAnyParameters()
+            ->will($this->returnValue(true));
+        ;
+
+        $configurationMock
+            ->expects($this->any())
+            ->method('delProp')
+            ->withAnyParameters()
+            ->will($this->returnValue(true));
+        ;
 
         $this->object->initialize();
 
@@ -47,15 +66,15 @@ class NethGui_Module_RemoteAccess_RemoteManagementTest extends PHPUnit_Framework
         ;
 
         $this->object->bind($request);
+
+        $validationReport = $this->getMock('NethGui_Core_ValidationReport');
+
+        $this->object->validate($validationReport);
     }
 
-    /**
-     * @todo Implement testProcess().
-     */
-    public function testProcess()
+    public function testProcessRead()
     {
         $this->object->process();
-        
 
         $response = $this->getMockBuilder('NethGui_Core_Response')
                 ->disableOriginalConstructor()
@@ -69,9 +88,36 @@ class NethGui_Module_RemoteAccess_RemoteManagementTest extends PHPUnit_Framework
                     $this->arrayHasKey('networkMask')
                 )
             )
+            ->will($this->returnCallback(array($this, 'requestSetData')))
         ;
 
-        $this->object->prepareView($response);        
+        $this->object->prepareView($response);
+    }
+
+    /**
+     * @todo testProcessWrite
+     */
+    public function testProcessWrite()
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @todo testProcessDelete
+     */
+    public function testProcessDelete()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function requestSetData()
+    {
+        $args = func_get_args();
+
+        $array = array_shift($args);
+
+        $this->assertEquals('192.168.1.0', $array['networkAddress']);
+        $this->assertEquals('255.255.255.0', $array['networkMask']);
     }
 
 }

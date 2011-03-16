@@ -56,10 +56,10 @@ final class NethGui_Core_Module_World extends NethGui_Core_Module_Composite
         }
     }
 
-    public function prepareView(NethGui_Core_ViewInterface $response)
+    public function prepareView(NethGui_Core_ViewInterface $view)
     {
-        if ($response->getFormat() == NethGui_Core_ViewInterface::HTML) {
-            $response->setViewName('NethGui_Core_View_decoration');
+        if ($view->getFormat() == NethGui_Core_ViewInterface::HTML) {
+            $view->setViewName('NethGui_Core_View_decoration');
 
             $this->parameters = array(
                 'cssMain' => base_url() . 'css/main.css',
@@ -68,11 +68,11 @@ final class NethGui_Core_Module_World extends NethGui_Core_Module_Composite
                     'ui' => base_url() . 'js/jquery-ui-1.8.10.custom.min.js',
                     'test' => base_url() . 'js/nethgui.js',
                 ),
-                'currentModule' => $response->getInnerView($this->currentModule),
+                'currentModule' => $view->getInnerView($this->currentModule),
             );
         }
 
-        parent::prepareView($response);
+        parent::prepareView($view);
     }
 
 }

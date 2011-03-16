@@ -73,11 +73,11 @@ abstract class NethGui_Core_Module_Composite extends NethGui_Core_Module_Standar
         }
     }
     
-    public function prepareView(NethGui_Core_ViewInterface $response)
+    public function prepareView(NethGui_Core_ViewInterface $view)
     {
-        parent::prepareView($response);
+        parent::prepareView($view);
         foreach ($this->getChildren() as $childModule) {
-            $childModule->prepareView($response->getInnerView($childModule));
+            $childModule->prepareView($view->getInnerView($childModule));
         }
     }
 
