@@ -19,6 +19,11 @@ final class Dispatcher extends CI_Controller {
         $this->load->helper('url');
         $this->load->helper('form');
 
+        if($method == 'phpinfo' && ENVIRONMENT == 'development') {
+            phpinfo();
+            exit;
+        }
+
         require_once(APPPATH . '../NethGui/Framework.php');
 
         $NFW = NethGui_Framework::getInstance($this);

@@ -173,3 +173,16 @@ final class NethGui_Framework
     }
 
 }
+
+/*
+ * Registers translator function if gettext is not available.
+ */
+if(!  function_exists('__') ) {
+    function __($string) {
+        return $string;
+    }
+    log_message('debug', 'Registered Translator helper.');
+    
+} else {
+    log_message('warning', 'Translator function already registered');
+}

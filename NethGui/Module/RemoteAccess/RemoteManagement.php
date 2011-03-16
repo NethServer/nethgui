@@ -136,14 +136,5 @@ final class NethGui_Module_RemoteAccess_RemoteManagement extends NethGui_Core_Mo
         }
     }
 
-    public function prepareView(NethGui_Core_ViewInterface $response)
-    {
-        if ($response->getFormat() === NethGui_Core_ViewInterface::HTML)
-        {
-            $response->setViewName('NethGui_View_RemoteAccess_RemoteManagementView');
-        }
-        parent::prepareView($response);
-    }
-
 }
 
