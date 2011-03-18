@@ -19,7 +19,7 @@ final class NethGui_Core_Module_Menu extends NethGui_Core_Module_Standard {
      * @param RecursiveIterator $rootModule
      * @return string
      */
-    private function renderModuleMenu(RecursiveIterator $menuIterator, $level = 0)
+    private function iteratorToHtml(RecursiveIterator $menuIterator, $level = 0)
     {
         if ($level > 4) {
             return '';
@@ -35,7 +35,7 @@ final class NethGui_Core_Module_Menu extends NethGui_Core_Module_Standard {
             $output .= '<li><div class="moduleTitle">' . $framework->renderModuleAnchor($menuIterator->current()) . '</div>';
 
             if ($menuIterator->hasChildren()) {
-                $output .= $this->renderModuleMenu($menuIterator->getChildren(), $level + 1);
+                $output .= $this->iteratorToHtml($menuIterator->getChildren(), $level + 1);
             }
 
             $output .= '</li>';
@@ -46,9 +46,13 @@ final class NethGui_Core_Module_Menu extends NethGui_Core_Module_Standard {
         return '<ul>' . $output . '</ul>';
     }
 
-    public function prepareView(NethGui_Core_ViewInterface $response)
+    public function renderModuleMenu($viewState) {       
+        return $this->iteratorToHtml($this->menuIterator);
+    }
+
+    public function prepareView(NethGui_Core_ViewInterface $view)
     {
-        $this->parameters['html'] = $this->renderModuleMenu($this->menuIterator);
-        parent::prepareView($response);
+        parent::prepareView($view);
+        $view->setTemplate(array($this, 'renderModuleMenu'));
     }
 }
