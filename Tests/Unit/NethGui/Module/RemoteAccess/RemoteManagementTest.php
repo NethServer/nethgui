@@ -70,6 +70,7 @@ class NethGui_Module_RemoteAccess_RemoteManagementTest extends PHPUnit_Framework
 
         $request->expects($this->any())
             ->method('hasParameter')
+            ->will($this->returnValue(NULL));
         ;
 
         $this->object->bind($request);
@@ -83,22 +84,11 @@ class NethGui_Module_RemoteAccess_RemoteManagementTest extends PHPUnit_Framework
     {
         $this->object->process();
 
-        $response = $this->getMockBuilder('NethGui_Core_Response')
-                ->disableOriginalConstructor()
-                ->getMock();
+        $view = new NethGui_Core_View($this->object);
+        $this->object->prepareView($view);
 
-        $response->expects($this->once())
-            ->method('setData')
-            ->with(
-                $this->logicalAnd(
-                    $this->arrayHasKey('networkAddress'),
-                    $this->arrayHasKey('networkMask')
-                )
-            )
-            ->will($this->returnCallback(array($this, 'requestSetData')))
-        ;
-
-        $this->object->prepareView($response);
+        $this->assertEquals('192.168.1.0', $view['networkAddress']);
+        $this->assertEquals('255.255.255.0', $view['networkMask']);
     }
 
     /**
@@ -115,16 +105,6 @@ class NethGui_Module_RemoteAccess_RemoteManagementTest extends PHPUnit_Framework
     public function testProcessDelete()
     {
         $this->markTestIncomplete();
-    }
-
-    public function requestSetData()
-    {
-        $args = func_get_args();
-
-        $array = array_shift($args);
-
-        $this->assertEquals('192.168.1.0', $array['networkAddress']);
-        $this->assertEquals('255.255.255.0', $array['networkMask']);
     }
 
 }

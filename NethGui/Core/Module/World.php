@@ -29,6 +29,21 @@ final class NethGui_Core_Module_World extends NethGui_Core_Module_Composite
     {
         parent::__construct('');
         $this->currentModule = $currentModule;
+
+        $this->constants = array(
+            'cssMain' => base_url() . 'css/main.css',
+            'js' => array(
+                'base' => base_url() . 'js/jquery-1.5.1.min.js',
+                'ui' => base_url() . 'js/jquery-ui-1.8.10.custom.min.js',
+                'test' => base_url() . 'js/nethgui.js',
+            ),            
+        );
+    }
+
+    public function initialize()
+    {
+        parent::initialize();
+        $this->addChild($this->currentModule);
     }
 
     public function validate(NethGui_Core_ValidationReportInterface $report)
@@ -46,33 +61,20 @@ final class NethGui_Core_Module_World extends NethGui_Core_Module_Composite
         $hasValidationErrors = count($this->validationReport->getErrors()) > 0;
 
         foreach ($this->getChildren() as $child) {
-            // FIXME: skip process() call on non-core modules
+            // XXX: skip process() call on non-core modules
             if ($hasValidationErrors
                 && substr(get_class($child), 0, 20) != 'NethGui_Core_Module_') {
                 continue;
             }
 
             $child->process();
-        }
+        }        
     }
 
     public function prepareView(NethGui_Core_ViewInterface $view)
     {
-        if ($view->getFormat() == NethGui_Core_ViewInterface::HTML) {
-            $view->setViewName('NethGui_Core_View_decoration');
-
-            $this->parameters = array(
-                'cssMain' => base_url() . 'css/main.css',
-                'js' => array(
-                    'base' => base_url() . 'js/jquery-1.5.1.min.js',
-                    'ui' => base_url() . 'js/jquery-ui-1.8.10.custom.min.js',
-                    'test' => base_url() . 'js/nethgui.js',
-                ),
-                'currentModule' => $view->getInnerView($this->currentModule),
-            );
-        }
-
         parent::prepareView($view);
+        $view['CurrentModule'] = $view[$this->currentModule->getIdentifier()];
     }
 
 }

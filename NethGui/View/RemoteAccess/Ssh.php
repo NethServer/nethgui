@@ -11,20 +11,20 @@
     <label for="<?php echo $id['accessMode'] ?>">Ammetti connessioni sshd da</label>
     <?php echo form_dropdown(
         $name['accessMode'],
-        $parameter['accessModeOptions'],
-        $parameter['accessMode'],
+        $parameters['accessModeOptions'],
+        $parameters['accessMode'],
         "id='{$id['accessMode']}'") ?>
 
 </div>
 
 <div>
     <label for="<?php echo $id['allowRootAccess'] ?>">Consenti accesso per l'utente <tt>root</tt></label>
-    <?php echo form_checkbox($name['allowRootAccess'], 1, $parameter['allowRootAccess'], "id='{$id['allowRootAccess']}'") ?>
+    <?php echo form_checkbox($name['allowRootAccess'], 1, $parameters['allowRootAccess'], "id='{$id['allowRootAccess']}'") ?>
 
 </div>
 <div>
     <label for="<?php echo $id['allowPassword'] ?>">Consenti l'uso delle password</label>
-    <?php echo form_checkbox($name['allowPassword'], 1, $parameter['allowPassword'], "id='{$id['allowPassword']}'") ?>
+    <?php echo form_checkbox($name['allowPassword'], 1, $parameters['allowPassword'], "id='{$id['allowPassword']}'") ?>
 
 </div>
 <div>
@@ -34,6 +34,6 @@
         'size' => 4, 
         'maxlength' => 5, 
         'id' => $id['sshdPort'],
-        'value' => $parameter['sshdPort']
+        'value' => $parameters['sshdPort']
         )) ?>    
 </div>

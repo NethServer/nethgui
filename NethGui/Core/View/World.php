@@ -2,8 +2,8 @@
 <html>
     <head>
         <title>NethGui</title>
-        <link rel="stylesheet" type="text/css" href="<?php echo $parameter['cssMain']; ?>" />
-        <?php foreach ($parameter['js'] as $scriptPath): ?>
+        <link rel="stylesheet" type="text/css" href="<?php echo $parameters['cssMain']; ?>" />
+        <?php foreach ($parameters['js'] as $scriptPath): ?>
             <script type="text/javascript" src="<?php echo $scriptPath ?>" ></script>
         <?php endforeach ?>
     </head>
@@ -13,13 +13,13 @@
             <div class="colmask leftmenu">
                 <div class="colleft">
                     <div class="col1">
-                        <div id="breadcrumbMenu"><?php echo $response['BreadCrumb']['html'] ?></div>
-                        <pre style="background: yellow" id="validationReport"><?php foreach($response['ValidationReport']['errors'] as $error) {
+                        <div id="breadcrumbMenu"><?php echo $view['BreadCrumb']->render() ?></div>
+                        <pre style="background: yellow" id="validationReport"><?php foreach($view['ValidationReport']['errors'] as $error) {
                             echo $error[1] . " ({$error[0]})\n";
                         } ?></pre>
-                        <div id="moduleContent"><?php echo $framework->renderResponse($response['currentModule']) ?></div>
+                        <div id="moduleContent"><?php echo $view['CurrentModule']->render() ?></div>
                     </div>
-                    <div class="col2"><div id="moduleMenu"><?php echo $response['Menu']['html'] ?></div></div>
+                    <div class="col2"><div id="moduleMenu"><?php echo $view['Menu']->render() ?></div></div>
                 </div>
             </div>
             <div id="footer">

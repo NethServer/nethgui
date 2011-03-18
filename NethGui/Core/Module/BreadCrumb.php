@@ -18,7 +18,7 @@ final class NethGui_Core_Module_BreadCrumb extends NethGui_Core_Module_Standard 
         $this->moduleSet = $moduleSet;
     }
 
-    private function renderBreadcrumbMenu()
+    public function renderBreadcrumbMenu($viewState)
     {
         $module = $this->currentModule;
         $framework = NethGui_Framework::getInstance();
@@ -41,9 +41,9 @@ final class NethGui_Core_Module_BreadCrumb extends NethGui_Core_Module_Standard 
         return implode(' &gt; ', $rootLine);
     }
 
-    public function prepareView(NethGui_Core_ViewInterface $response)
-    {
-        $this->parameters['html'] = $this->renderBreadcrumbMenu();
-        parent::prepareView($response);
+    public function prepareView(NethGui_Core_ViewInterface $view)
+    {        
+        parent::prepareView($view);
+        $view->setTemplate(array($this, 'renderBreadcrumbMenu'));
     }
 }

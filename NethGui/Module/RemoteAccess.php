@@ -1,5 +1,4 @@
 <?php
-
 /**
  * NethGui
  *
@@ -17,13 +16,11 @@ final class NethGui_Module_RemoteAccess extends NethGui_Core_Module_Composite im
     public function getTitle()
     {
         return "Remote access";
-
     }
 
     public function getParentMenuIdentifier()
     {
         return "Security";
-
     }
 
     public function initialize()
@@ -36,20 +33,14 @@ final class NethGui_Module_RemoteAccess extends NethGui_Core_Module_Composite im
             $childModule->setHostConfiguration($this->getHostConfiguration());
             $this->addChild($childModule);
         }
+
+        $this->constants['save'] = 1;
     }
 
     public function prepareView(NethGui_Core_ViewInterface $view)
     {
         parent::prepareView($view);
-        // TODO: cleanup
-        log_message('info', 'Format: ' . $view->getFormat());
-
-        if($view->getFormat() === NethGui_Core_ViewInterface::HTML)
-        {
-            log_message('info', '$view->setViewName(\'NethGui_Core_View_form\');');
-            $view->setViewName('NethGui_Core_View_form');
-            $view->setData(array('save' => 1));
-        }
+        $view->setTemplate('NethGui_Core_View_form');
     }
 
 }

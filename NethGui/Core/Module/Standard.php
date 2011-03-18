@@ -35,6 +35,9 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
      * @var array
      */
     protected $parameters = array();
+
+    protected $constants = array();
+
     /**
      * Validator configuration. Holds declared parameters.
      * @var array
@@ -144,10 +147,15 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
             }
 
             // TODO: implement a real validation
-            $pattern = $this->validators[$parameter];
-            if (preg_match($pattern, $value) == 0)
-            {
-                $report->addError($this, $parameter, 'Invalid ' . $parameter);
+            $validator = $this->validators[$parameter];
+            if($validator === false) {
+                // PASS...
+            } elseif (is_string($validator) && $validator[0] == '/') {
+                if (preg_match($validator, strval($value)) == 0) {
+                    $report->addError($this, $parameter, 'Invalid ' . $parameter);
+                }
+            } else {
+                throw new NethGui_Exception_Validation("Invalid validator value for parameter `" . $parameter . '` in module `' . get_class($this) . '`.');
             }
         }
     }
@@ -167,7 +175,8 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
      */
     public function prepareView(NethGui_Core_ViewInterface $view)
     {
-        $view->setData($this->parameters);
+        $view->copyFrom($this->parameters);
+        $view->copyFrom($this->constants);
     }
 
     /**

@@ -86,9 +86,9 @@ final class NethGui_Dispatcher
 
         $report = new NethGui_Core_ValidationReport();
         
-        $view = NethGui_Core_Response::getRootInstance($request->getContentType(), $worldModule);
+        $view = new NethGui_Core_View($worldModule);
 
-        if ($view->getFormat() === NethGui_Core_ViewInterface::HTML) {
+        if ($request->getContentType() === NethGui_Core_RequestInterface::CONTENT_TYPE_HTML) {
             $worldModule->addChild(new NethGui_Core_Module_Menu($this->topModuleDepot->getModules()));
             $worldModule->addChild(new NethGui_Core_Module_BreadCrumb($this->topModuleDepot, $this->currentModule));
         }
@@ -108,10 +108,10 @@ final class NethGui_Dispatcher
         $worldModule->process();
         $worldModule->prepareView($view);
 
-        if ($view->getFormat() === NethGui_Core_ViewInterface::HTML) {
+        if ($request->getContentType() === NethGui_Core_RequestInterface::CONTENT_TYPE_HTML) {
             header("Content-Type: text/html; charset=UTF-8");
-            echo NethGui_Framework::getInstance()->renderResponse($view);
-        } elseif ($view->getFormat() === NethGui_Core_ViewInterface::JSON) {
+            echo $view->render();
+        } elseif ($request->getContentType() === NethGui_Core_RequestInterface::CONTENT_TYPE_JSON) {
             header("Content-Type: application/json; charset=UTF-8");
             echo json_encode($view->getWholeData());
             //

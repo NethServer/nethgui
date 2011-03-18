@@ -106,45 +106,7 @@ final class NethGui_Framework
         return $viewOutput;
     }
 
-    /**
-     * Renders the view associated with a Response.
-     *
-     * @param NethGui_Core_Response $response
-     * @return string
-     */
-    public function renderResponse(NethGui_Core_Response $response)
-    {
-
-        $viewState['response'] = $response;
-        $viewState['id'] = array();
-        $viewState['name'] = array();
-        $viewState['module'] = $response->getModule();
-        $viewState['framework'] = $this;
-
-        // Add a reference to forward current view state into inner views.
-        $viewState['self'] = &$viewState;
-
-        $responseData = $response->getData();
-        // Put all view data into id, name, parameter helper arrays.
-        if (is_array($responseData)
-            OR $responseData instanceof Traversable) {
-            foreach ($responseData as $parameterName => $parameterValue) {
-                $viewState['id'][$parameterName] = htmlspecialchars($response->getWidgetId($parameterName));
-                $viewState['name'][$parameterName] = htmlspecialchars($response->getParameterName($parameterName));
-                if (is_string($parameterValue)) {
-                    $viewState['parameter'][$parameterName] = htmlspecialchars($parameterValue);
-                } else {
-                    $viewState['parameter'][$parameterName] = $parameterValue;
-                }
-            }
-        }
-
-        // TODO: add a getLanguageCatalog to ModuleInterface.
-        $languageCatalog = get_class($response->getModule());
-
-        return $this->renderView($response->getViewName(), $viewState, $languageCatalog);
-    }
-
+   
     /**
      * @see anchor()
      * @param NethGui_Core_ModuleInterface $module

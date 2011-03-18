@@ -10,58 +10,46 @@
  *
  * @package NethGuiFramework
  */
-interface NethGui_Core_ViewInterface
+interface NethGui_Core_ViewInterface extends ArrayAccess
 {
-    const JSON = 0;
-    const HTML = 1;
-    const JS = 2;
-    const CSS = 3;
 
     /**
-     * Returns an integer representing current Response type.
-     *
-     * @see NethGui_Core_ViewInterface::HTML
-     * @see NethGui_Core_ViewInterface::JSON     
-     * @return int Integer corresponding to constants defined by this interface
+     * Set the template to be applied to this object.
+     * @param mixed
      */
-    public function getFormat();
+    public function setTemplate($template);
 
     /**
-     * Returns the fully qualified name of a module parameter
-     * @param NethGui_Core_ModuleInterface $module The module owning the parameter
-     * @param string $parameterName Name of the parameter
-     * @return string Fully qualified module parameter name
-     */
-    public function getParameterName($parameterName);
-
-    /**
-     * Returns the fully qualified name of a module UI element
-     * @param NethGui_Core_ModuleInterface $module The module owning the widget
-     * @param string $widgetId The widget identifier
-     * @return string Fully qualified widget identifier
-     */
-    public function getWidgetId($widgetId);
-
-    /**
-     * Set the View to be applied to this object.
-     * @param string
-     */
-    public function setViewName($viewName);
-
-    /**
-     * Specifies the data for the View.
-     * @param NethGui_Core_ModuleInterface $module
+     * Specifies the data for the View.     
      * @param array $data
      */
-    public function setData($data);
+    public function copyFrom($data);
 
     /**
-     * Returns a Response associated with $module.  
+     * @param string $parameterName
+     * @param mixed $value
+     */
+    public function setParameterValue($parameterName, $value);
+
+    /**
+     * @param string $parameterName
+     * @return mixed
+     */
+    public function getParameterValue($parameterName);
+
+    /**
+     * Returns the View associated with $module.
      *
      * @return NethGui_Core_ViewInterface
      */
     public function getInnerView(NethGui_Core_ModuleInterface $module);
 
+    /**
+     * Renders a string representation of the view.
+     * @return string
+     */
+    public function render();
+   
 }
 
 ?>

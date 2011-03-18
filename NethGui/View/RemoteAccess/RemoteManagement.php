@@ -12,12 +12,12 @@
     <input type="text"
            id="<?php echo $id['networkAddress'] ?>"
            name="<?php echo $name['networkAddress'] ?>"
-           value="<?php echo $parameter['networkAddress'] ?>">
+           value="<?php echo $parameters['networkAddress'] ?>">
 </div>
 <div>
     <label for="<?php echo $id['networkMask'] ?>"><?php echo T('Maschera di rete') ?></label>
     <input type="text"
            id="<?php echo $id['networkMask'] ?>"
            name="<?php echo $name['networkMask'] ?>"
-           value="<?php echo $parameter['networkMask'] ?>">
+           value="<?php echo $parameters['networkMask'] ?>">
 </div>

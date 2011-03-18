@@ -13,7 +13,9 @@
  */
 interface NethGui_Core_RequestInterface
 {
-
+    const CONTENT_TYPE_JSON = 1;
+    const CONTENT_TYPE_HTML = 2;
+    
     /**
      * @param string $parameterName
      * @return mixed
