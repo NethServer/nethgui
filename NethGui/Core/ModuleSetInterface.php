@@ -20,7 +20,7 @@ interface NethGui_Core_ModuleSetInterface
     /**
      * @return RecursiveIterator A RecursiveIterator to iterate over all accessible Modules
      */
-    public function getTopModules();
+    public function getModules();
 
     /**
      * @param string $moduleIdentifier

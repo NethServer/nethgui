@@ -6,7 +6,7 @@
  */
 
 /**
- * ComponentDepot
+ * TopModuleDepot
  *
  * TODO: rename this class
  * 
@@ -18,7 +18,7 @@
  * @package NethGuiFramework
  * @subpackage StandardImplementation
  */
-final class NethGui_Core_ComponentDepot implements NethGui_Core_ModuleSetInterface, NethGui_Authorization_PolicyEnforcementPointInterface
+class NethGui_Core_TopModuleDepot implements NethGui_Core_ModuleSetInterface, NethGui_Authorization_PolicyEnforcementPointInterface
 {
 
     /**
@@ -154,7 +154,7 @@ final class NethGui_Core_ComponentDepot implements NethGui_Core_ModuleSetInterfa
      *
      * @return RecursiveIterator
      */
-    public function getTopModules()
+    public function getModules()
     {
         // TODO: authorize access
         return new NethGui_Core_ModuleMenuIterator($this, '__ROOT__', $this->menu);

@@ -15,9 +15,9 @@ final class NethGui_Dispatcher
 
     /**
      * Model for getting components (Modules, Panels) from file system.
-     * @var NethGui_Core_ComponentDepot
+     * @var NethGui_Core_TopModuleDepot
      */
-    private $componentDepot;
+    private $topModuleDepot;
     /**
      * Model for changing host system configuration.
      * @var HostConfigurationInterface
@@ -36,11 +36,11 @@ final class NethGui_Dispatcher
     {
         /*
          * Create models.
-         * TODO: get hostConfiguration and componentDepot clas names
+         * TODO: get hostConfiguration and topModuleDepot class names
          * from NethGui_Framework.
          */
         $this->hostConfiguration = new NethGui_Core_SMEHostConfiguration();
-        $this->componentDepot = new NethGui_Core_ComponentDepot($this->hostConfiguration);
+        $this->topModuleDepot = new NethGui_Core_TopModuleDepot($this->hostConfiguration);
 
         /*
          * TODO: enforce some security policy on Models
@@ -48,7 +48,7 @@ final class NethGui_Dispatcher
         $pdp = new NethGui_Authorization_PermissivePolicyDecisionPoint();
 
         $this->hostConfiguration->setPolicyDecisionPoint($pdp);
-        $this->componentDepot->setPolicyDecisionPoint($pdp);
+        $this->topModuleDepot->setPolicyDecisionPoint($pdp);
     }
 
     /**
@@ -64,9 +64,9 @@ final class NethGui_Dispatcher
          */
         if ($method == 'index') {
             // TODO: take the default module value from the configuration
-            $this->currentModule = $this->componentDepot->findModule('Security');
+            $this->currentModule = $this->topModuleDepot->findModule('Security');
         } else {
-            $this->currentModule = $this->componentDepot->findModule($method);
+            $this->currentModule = $this->topModuleDepot->findModule($method);
         }
 
         if (is_null($this->currentModule)
@@ -92,12 +92,12 @@ final class NethGui_Dispatcher
          * Retrieve current User object from $request and set it on PEPs.
          */
         $this->hostConfiguration->setUser($request->getUser());
-        $this->componentDepot->setUser($request->getUser());
+        $this->topModuleDepot->setUser($request->getUser());
 
 
         if ($response->getFormat() === NethGui_Core_ViewInterface::HTML) {
-            $worldModule->addChild(new NethGui_Core_Module_Menu($this->componentDepot->getTopModules()));
-            $worldModule->addChild(new NethGui_Core_Module_BreadCrumb($this->componentDepot, $this->currentModule));
+            $worldModule->addChild(new NethGui_Core_Module_Menu($this->topModuleDepot->getModules()));
+            $worldModule->addChild(new NethGui_Core_Module_BreadCrumb($this->topModuleDepot, $this->currentModule));
         }
 
         $worldModule->addChild(new NethGui_Core_Module_ValidationReport($report));
@@ -109,7 +109,7 @@ final class NethGui_Dispatcher
         }
 
         foreach ($moduleActivationList as $moduleIdentifier) {
-            $module = $this->componentDepot->findModule($moduleIdentifier);
+            $module = $this->topModuleDepot->findModule($moduleIdentifier);
             $worldModule->addChild($module);
         }
 

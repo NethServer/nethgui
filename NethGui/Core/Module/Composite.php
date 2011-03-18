@@ -22,6 +22,7 @@ abstract class NethGui_Core_Module_Composite extends NethGui_Core_Module_Standar
     public function initialize()
     {
         parent::initialize();
+        // TODO: implement child autoloading
         foreach ($this->children as $child) {
             if ( ! $child->isInitialized()) {
                 $child->initialize();
@@ -29,6 +30,12 @@ abstract class NethGui_Core_Module_Composite extends NethGui_Core_Module_Standar
         }
     }
 
+    /**
+     * Adds a child to Composite, initializing it, if current Composite is
+     * initialized.
+     * 
+     * @param NethGui_Core_ModuleInterface $childModule
+     */
     public function addChild(NethGui_Core_ModuleInterface $childModule)
     {
         if ( ! isset($this->children[$childModule->getIdentifier()])) {
@@ -43,6 +50,11 @@ abstract class NethGui_Core_Module_Composite extends NethGui_Core_Module_Standar
         }
     }
 
+    /**
+     * Get the parts of this Composite.
+     *
+     * @return array
+     */
     public function getChildren()
     {
         // TODO: authorize access request on policy decision point.
@@ -65,14 +77,14 @@ abstract class NethGui_Core_Module_Composite extends NethGui_Core_Module_Standar
         }
     }
 
-    public function  process()
+    public function process()
     {
         parent::process();
         foreach ($this->getChildren() as $childModule) {
             $childModule->process();
         }
     }
-    
+
     public function prepareView(NethGui_Core_ViewInterface $view)
     {
         parent::prepareView($view);
