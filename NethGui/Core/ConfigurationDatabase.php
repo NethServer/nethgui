@@ -1,5 +1,4 @@
 <?php
-
 /**
  * NethGui
  *
@@ -24,37 +23,32 @@
  * 
  * 
  */
-class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfigurationInterface, NethGui_Core_EventInterface, NethGui_Authorization_PolicyEnforcementPointInterface
+class NethGui_Core_ConfigurationDatabase implements NethGui_Authorization_PolicyEnforcementPointInterface
 {
 
     /**
      * @var PolicyDecisionPointInterface;
      */
     private $policyDecisionPoint;
-
     /**
-    * @var SME DB database command
-    **/
+     * @var SME DB database command
+     * */
     private $command = "/usr/bin/sudo /sbin/e-smith/db";
-
     /**
-    * @var $db Database name, it's translated into the db file path. For example: /home/e-smith/db/testdb
-    **/
-    private $db = null;
-
+     * @var $db Database name, it's translated into the db file path. For example: /home/e-smith/db/testdb
+     * */
+    private $db;
     /**
-    * @var $canRead Read flag permission, it's true if the current user can read the database, false otherwise
-    **/
+     * @var $canRead Read flag permission, it's true if the current user can read the database, false otherwise
+     * */
     private $canRead = FALSE;
-    
     /**
-    * @var $canWrite Write flag permission, it's true if the current user can write the database, false otherwise
-    **/
+     * @var $canWrite Write flag permission, it's true if the current user can write the database, false otherwise
+     * */
     private $canWrite = FALSE;
-
     /**
-     *
-     * @var UserInterface
+     * Keeps User object acting on this database. 
+     * @var NethGui_Core_UserInterface
      */
     private $user;
 
@@ -68,6 +62,7 @@ class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfiguratio
     public function setPolicyDecisionPoint(NethGui_Authorization_PolicyDecisionPointInterface $pdp)
     {
         $this->policyDecisionPoint = $pdp;
+        $this->authorizeDbAccess();
     }
 
     /**
@@ -82,49 +77,33 @@ class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfiguratio
     }
 
     /**
-     * setUser 
+     * Construct an object to access a SME Configuration database file
+     * with $user's privileges.
      * 
-     * @param NethGui_Core_UserInterface $user 
-     * @access public
-     * @return void
+     * @param string $database Database name
      */
-    public function setUser(NethGui_Core_UserInterface $user)
+    public function __construct($database, NethGui_Core_UserInterface $user)
     {
+        if ( ! $database)
+            throw new Exception("You must provide a valid database name.");
+
+        $this->db = $database;
         $this->user = $user;
-    }
-
-
-    /**
-     * Set the working database 
-     * 
-     * @param streing $db Database name
-     * @access public
-     * @return NethGui_Core_HostConfigurationInterface
-     */
-    public function setDB($db)
-    {
-       if(!$db)
-            throw new Exception("Can't find NethServer database");
-        $this->db = $db;
-
-        $this->authorizeDbAccess();
-
-        return $this;
     }
 
     private function authorizeDbAccess()
     {
-        $request = new NethGui_Authorization_AccessControlRequest($this->user, $this->db, 'READ');
-        $response = $this->policyDecisionPoint->authorizeRequest($request);
+        $requestRead = new NethGui_Authorization_AccessControlRequest($this->user, $this->db, 'READ');
+        $responseRead = $this->policyDecisionPoint->authorizeRequest($requestRead);
+        if ($responseRead) {
+            $this->canRead = TRUE;
+        }
 
-        if ( $response )
-	     $this->canRead = TRUE;
-
-        $request = new NethGui_Authorization_AccessControlRequest($this->user, $this->db, 'WRITE');
-        $response = $this->policyDecisionPoint->authorizeRequest($request);
-
-        if ( $response )
-             $this->canWrite = TRUE;
+        $requestWrite = new NethGui_Authorization_AccessControlRequest($this->user, $this->db, 'WRITE');
+        $responseWrite = $this->policyDecisionPoint->authorizeRequest($requestWrite);
+        if ($responseWrite) {
+            $this->canWrite = TRUE;
+        }
     }
 
     /**
@@ -137,21 +116,17 @@ class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfiguratio
      */
     public function getKey($key)
     {
-        if(!$this->db)
-            throw new Exception("No database selected");
-        
-        if(!$this->canRead)
-             throw new Exception("Permission Denied");
+        if ( ! $this->canRead)
+            throw new Exception("Permission Denied");
 
         $result = array();
-        $output = shell_exec($this->command." ".$this->db." get ".escapeshellarg($key));
-        if($output != "")
+        $output = shell_exec($this->command . " " . $this->db . " get " . escapeshellarg($key));
+        if ($output != "")
         {
-            $tokens = split("\|",$output);
-            for($i=1;$i<=count($tokens);$i++) //skip type
-            {
-                if(isset($tokens[$i])) //avoid outbound tokens
-                    $result[trim($tokens[$i])]=trim($tokens[++$i]);
+            $tokens = split("\|", $output);
+            for ($i = 1; $i <= count($tokens); $i ++ ) { //skip type
+                if (isset($tokens[$i])) //avoid outbound tokens
+                    $result[trim($tokens[$i])] = trim($tokens[ ++ $i]);
             }
         }
         return $result;
@@ -168,16 +143,13 @@ class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfiguratio
      * @return bool TRUE on success, FALSE otherwise
      *
      */
-    public function setKey($key,$type,$props)
-    { 
-        if(!$this->db)
-            throw new Exception("No database selected");
-        
-        if(!$this->canWrite)
-             throw new Exception("Permission Denied");
-       
-        $params = " set ".escapeshellarg($key)." ".escapeshellarg($type)." ".$this->propsToString($props);
-        exec($this->command." ".$this->db." $params", $output, $ret);
+    public function setKey($key, $type, $props)
+    {
+        if ( ! $this->canWrite)
+            throw new Exception("Permission Denied");
+
+        $params = " set " . escapeshellarg($key) . " " . escapeshellarg($type) . " " . $this->propsToString($props);
+        exec($this->command . " " . $this->db . " $params", $output, $ret);
         return ($ret == 0);
     }
 
@@ -191,13 +163,10 @@ class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfiguratio
      */
     public function deleteKey($key)
     {
-        if(!$this->db)
-            throw new Exception("No database selected");
-        
-        if(!$this->canWrite)
-             throw new Exception("Permission Denied");
+        if ( ! $this->canWrite)
+            throw new Exception("Permission Denied");
 
-        exec($this->command." ".$this->db." delete ".escapeshellarg($key), $output, $ret);
+        exec($this->command . " " . $this->db . " delete " . escapeshellarg($key), $output, $ret);
         return ($ret == 0);
     }
 
@@ -211,12 +180,9 @@ class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfiguratio
      */
     public function getType($key)
     {
-        if(!$this->db)
-            throw new Exception("No database selected");
-        
-        if(!$this->canRead)
-             throw new Exception("Permission Denied");
-        return trim(shell_exec($this->command." ".$this->db." gettype ".escapeshellarg($key)));
+        if ( ! $this->canRead)
+            throw new Exception("Permission Denied");
+        return trim(shell_exec($this->command . " " . $this->db . " gettype " . escapeshellarg($key)));
     }
 
     /**
@@ -228,18 +194,14 @@ class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfiguratio
      * @access public
      * @return bool true on success, FALSE otherwise
      */
-    public function setType($key,$type)
+    public function setType($key, $type)
     {
-        if(!$this->db)
-            throw new Exception("No database selected");
-        
-        if(!$this->canWrite)
-             throw new Exception("Permission Denied");
+        if ( ! $this->canWrite)
+            throw new Exception("Permission Denied");
 
-        exec($this->command." ".$this->db." settype ".escapeshellarg($key)." ".escapeshellarg($type),$ret);
+        exec($this->command . " " . $this->db . " settype " . escapeshellarg($key) . " " . escapeshellarg($type), $ret);
         return ($ret == 0);
     }
-
 
     /**
      * Read the value of the given property
@@ -250,17 +212,13 @@ class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfiguratio
      * @access public
      * @return string the value of the property
      */
-    public function getProp($key,$prop)
+    public function getProp($key, $prop)
     {
-        if(!$this->db)
-            throw new Exception("No database selected");
-        
-        if(!$this->canRead)
-             throw new Exception("Permission Denied");
+        if ( ! $this->canRead)
+            throw new Exception("Permission Denied");
 
-        return trim(shell_exec($this->command." ".$this->db." getprop ".escapeshellarg($key)." ".escapeshellarg($prop)));
+        return trim(shell_exec($this->command . " " . $this->db . " getprop " . escapeshellarg($key) . " " . escapeshellarg($prop)));
     }
-
 
     /**
      * Set one or more properties under the given key
@@ -271,19 +229,15 @@ class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfiguratio
      * @access public
      * @return bool TRUE on success, FALSE otherwise
      */
-    public function setProp($key,$props)
+    public function setProp($key, $props)
     {
-        if(!$this->db)
-            throw new Exception("No database selected");
-        
-        if(!$this->canWrite)
-             throw new Exception("Permission Denied");
+        if ( ! $this->canWrite)
+            throw new Exception("Permission Denied");
 
-        $params = " setprop ".escapeshellarg($key)." ".$this->propsToString($props);
-        exec($this->command." ".$this->db." $params ",$output, $ret);
+        $params = " setprop " . escapeshellarg($key) . " " . $this->propsToString($props);
+        exec($this->command . " " . $this->db . " $params ", $output, $ret);
         return ($ret == 0);
     }
-
 
     /**
      * Delete one or more properties under the given key 
@@ -294,19 +248,15 @@ class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfiguratio
      * @access public
      * @return bool TRUE on success, FALSE otherwise
      */
-    public function delProp($key,$props)
+    public function delProp($key, $props)
     {
-        if(!$this->db)
-            throw new Exception("No database selected");
-        
-        if(!$this->canWrite)
-             throw new Exception("Permission Denied");
+        if ( ! $this->canWrite)
+            throw new Exception("Permission Denied");
 
-        $params = " delprop ".escapeshellarg($key)." ".join(" ",$props);
-        exec($this->command." ".$this->db." $params", $output, $ret);
+        $params = " delprop " . escapeshellarg($key) . " " . join(" ", $props);
+        exec($this->command . " " . $this->db . " $params", $output, $ret);
         return ($ret == 0);
     }
-  
 
     /**
      * Transform an associative array in the form [PropName] => [PropValue] into a string "PropName PropValue". The function escapes all values to prevent shell injection 
@@ -318,24 +268,9 @@ class NethGui_Core_SMEHostConfiguration implements NethGui_Core_HostConfiguratio
     private function propsToString($props)
     {
         $ret = "";
-        foreach($props as $key=>$value)
-             $ret .= " ".escapeshellarg($key)." ".escapeshellarg($value)." ";
+        foreach ($props as $key => $value)
+            $ret .= " " . escapeshellarg($key) . " " . escapeshellarg($value) . " ";
         return $ret;
-    }
-
-
-    /**
-     * Signal an event and return the status
-     * 
-     * @param string $event Event name
-     * @param array &$output Optional output array. If the output argument is present, then the specified array will be filled with every line of output from the event.
-     * @access public
-     * @return boolean true on success, false otherwise
-     */
-    public function signalEvent($event,&$output=array())
-    {
-          exec('/usr/bin/sudo /sbin/e-smith/signal-event'.' '.escapeshellarg($event),$output, $ret);
-          return ($ret == 0);
     }
 
 }

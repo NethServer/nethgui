@@ -20,34 +20,41 @@ class NethGui_Module_RemoteAccess_RemoteManagementTest extends PHPUnit_Framework
     {
         $this->object = new NethGui_Module_RemoteAccess_RemoteManagement;
 
-        $configurationMock = $this->getMockBuilder('NethGui_Core_SMEHostConfiguration')
-                //->setMethods(array('setProp'))
-                ->getMock();
+        $configurationMock = $this->getMockBuilder('NethGui_Core_HostConfiguration')
+                ->disableOriginalConstructor()
+                ->getMock()
+        ;
 
         $this->object->setHostConfiguration($configurationMock);
 
-        $configurationMock
-            ->expects($this->any())
-            ->method('setDB')
-            ->with($this->equalTo('configuration'))
-            ->will($this->returnValue($configurationMock))
+
+        $databaseMock = $this->getMockBuilder('NethGui_Core_ConfigurationDatabase')
+                ->disableOriginalConstructor()
+                ->getMock()
         ;
 
         $configurationMock
+            ->expects($this->any())
+            ->method('getDatabase')
+            ->with($this->equalTo('configuration'))
+            ->will($this->returnValue($databaseMock))
+        ;
+
+        $databaseMock
             ->expects($this->any())
             ->method('getProp')
             ->with('httpd-admin', 'ValidFrom')
             ->will($this->returnValue('192.168.1.0/255.255.255.0,192.168.1.2/255.255.255.0'))
         ;
 
-        $configurationMock
+        $databaseMock
             ->expects($this->any())
             ->method('setProp')
             ->withAnyParameters()
             ->will($this->returnValue(true));
         ;
 
-        $configurationMock
+        $databaseMock
             ->expects($this->any())
             ->method('delProp')
             ->withAnyParameters()

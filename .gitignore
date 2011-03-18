@@ -1,4 +1,5 @@
 CodeIgniter/logs/
 www/doc/
+www/coverage/
 *~
 *.html

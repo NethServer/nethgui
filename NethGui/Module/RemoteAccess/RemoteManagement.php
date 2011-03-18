@@ -11,7 +11,7 @@
  * @package Modules
  * @subpackage RemoteAccess
  */
-final class NethGui_Module_RemoteAccess_RemoteManagement extends NethGui_Core_Module_Standard
+class NethGui_Module_RemoteAccess_RemoteManagement extends NethGui_Core_Module_Standard
 {
 
     private $command = 'NOOP';
@@ -24,24 +24,26 @@ final class NethGui_Module_RemoteAccess_RemoteManagement extends NethGui_Core_Mo
     public function initialize()
     {
         parent::initialize();
-        $this->declareParameter('networkAddress', '/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/');
-        $this->declareParameter('networkMask', '/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/');
+        $this->declareParameter('networkAddress', '/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/', NULL);
+        $this->declareParameter('networkMask', '/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/', NULL);
     }
 
     public function bind(NethGui_Core_RequestInterface $request)
     {
         parent::bind($request);
 
-        /*
-         * If network parameters are set neither by Request nor by declarations, read values from db.
-         */
-        if ( ! isset($this->parameters['networkAddress'], $this->parameters['networkMask'])) {
+        if (isset($this->parameters['networkAddress'], $this->parameters['networkMask'])) {
+            $this->command = 'UPDATE';
+        } else {
+
+            /*
+             * If network parameters are set neither by Request nor by declarations,
+             * read values from db.
+             */
             list($networkAddress, $networkMask) = $this->readValidFrom();
             $this->parameters['networkAddress'] = $networkAddress;
             $this->parameters['networkMask'] = $networkMask;
             $this->command = 'NOOP';
-        } else {
-            $this->command = 'UPDATE';
         }
 
         /*
@@ -83,7 +85,7 @@ final class NethGui_Module_RemoteAccess_RemoteManagement extends NethGui_Core_Mo
     private function readValidFrom()
     {
         $validFrom = $this->getHostConfiguration()
-                ->setDb('configuration')
+                ->getDatabase('configuration')
                 ->getProp('httpd-admin', 'ValidFrom')
         ;
 
@@ -109,7 +111,7 @@ final class NethGui_Module_RemoteAccess_RemoteManagement extends NethGui_Core_Mo
     {
         $validFrom = $networkAddress . '/' . $networkMask;
         $this->getHostConfiguration()
-            ->setDB('configuration')
+            ->getDatabase('configuration')
             ->setProp('httpd-admin', array('ValidFrom' => $validFrom))
         ;
     }
@@ -117,12 +119,12 @@ final class NethGui_Module_RemoteAccess_RemoteManagement extends NethGui_Core_Mo
     private function deleteValidFrom()
     {
         $this->getHostConfiguration()
-            ->setDB('configuration')
+            ->getDatabase('configuration')
             ->delProp('httpd-admin', array('ValidFrom'))
         ;
     }
 
-    public function  process()
+    public function process()
     {
         parent::process();
 

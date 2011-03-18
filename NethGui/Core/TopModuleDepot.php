@@ -34,7 +34,7 @@ class NethGui_Core_TopModuleDepot implements NethGui_Core_ModuleSetInterface, Ne
      */
     private $policyDecisionPoint;
     /**
-     * @var UserInterface
+     * @var NethGui_Core_UserInterface
      */
     private $user;
     /**
@@ -42,9 +42,10 @@ class NethGui_Core_TopModuleDepot implements NethGui_Core_ModuleSetInterface, Ne
      */
     private $hostConfiguration;
 
-    public function __construct(NethGui_Core_HostConfigurationInterface $hostConfiguration)
+    public function __construct(NethGui_Core_HostConfigurationInterface $hostConfiguration, NethGui_Core_UserInterface $user)
     {
         $this->hostConfiguration = $hostConfiguration;
+        $this->user = $user;
         $this->createTopModules();
     }
 
@@ -145,10 +146,6 @@ class NethGui_Core_TopModuleDepot implements NethGui_Core_ModuleSetInterface, Ne
         return $this->policyDecisionPoint;
     }
 
-    public function setUser(NethGui_Core_UserInterface $user)
-    {
-        $this->user = $user;
-    }
 
     /**
      *
