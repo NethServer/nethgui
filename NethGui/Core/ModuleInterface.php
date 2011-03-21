@@ -16,6 +16,8 @@
  */
 interface NethGui_Core_ModuleInterface extends NethGui_Core_RequestHandlerInterface
 {
+    const VIEW_REFRESH = 0;
+    const VIEW_UPDATE = 1;
 
     /**
      * Sets the host configuration Model.
@@ -68,8 +70,8 @@ interface NethGui_Core_ModuleInterface extends NethGui_Core_RequestHandlerInterf
     /**
      * Prepare view layer data, putting it into $response.
      */
-    public function prepareView(NethGui_Core_ViewInterface $view);
-
+    public function prepareView(NethGui_Core_ViewInterface $view, $mode);
+ 
 }
 
 /**

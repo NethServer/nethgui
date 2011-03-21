@@ -26,7 +26,4 @@ final class NethGui_Module_RemoteAccess_Ftp extends NethGui_Core_Module_Standard
             'off' => 'Disabilitato'
         );
     }
-
-
-
 }

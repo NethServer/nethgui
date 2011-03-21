@@ -37,9 +37,9 @@ final class NethGui_Module_RemoteAccess extends NethGui_Core_Module_Composite im
         $this->constants['save'] = 1;
     }
 
-    public function prepareView(NethGui_Core_ViewInterface $view)
+    public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
-        parent::prepareView($view);
+        parent::prepareView($view, $mode);
         $view->setTemplate('NethGui_Core_View_form');
     }
 

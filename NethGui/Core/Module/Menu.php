@@ -50,9 +50,9 @@ final class NethGui_Core_Module_Menu extends NethGui_Core_Module_Standard {
         return $this->iteratorToHtml($this->menuIterator);
     }
 
-    public function prepareView(NethGui_Core_ViewInterface $view)
+    public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
-        parent::prepareView($view);
+        parent::prepareView($view, $mode);
         $view->setTemplate(array($this, 'renderModuleMenu'));
     }
 }

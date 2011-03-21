@@ -106,13 +106,14 @@ final class NethGui_Dispatcher
         $worldModule->bind($request);
         $worldModule->validate($report);
         $worldModule->process();
-        $worldModule->prepareView($view);
-
+        
         if ($request->getContentType() === NethGui_Core_RequestInterface::CONTENT_TYPE_HTML) {
             header("Content-Type: text/html; charset=UTF-8");
+            $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_REFRESH);
             echo $view->render();
         } elseif ($request->getContentType() === NethGui_Core_RequestInterface::CONTENT_TYPE_JSON) {
             header("Content-Type: application/json; charset=UTF-8");
+            $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_UPDATE);
             echo json_encode($view->getWholeData());
             //
         }

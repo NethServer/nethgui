@@ -71,9 +71,9 @@ final class NethGui_Core_Module_World extends NethGui_Core_Module_Composite
         }        
     }
 
-    public function prepareView(NethGui_Core_ViewInterface $view)
+    public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
-        parent::prepareView($view);
+        parent::prepareView($view, $mode);
         $view['CurrentModule'] = $view[$this->currentModule->getIdentifier()];
     }
 
