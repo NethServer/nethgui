@@ -23,16 +23,17 @@ class NethGui_Core_ScalarAdapter implements NethGui_Core_AdapterInterface
 
     public function get()
     {
-        if (is_null($this->value)) {
-            $this->value = $this->serializer->read();
+        if (is_null($this->modified)) {
             $this->modified = FALSE;
+            $this->value = $this->serializer->read();            
         }
         return $this->value;
     }
 
     public function set($value)
     {
-        if (is_null($this->value)) {
+        if (is_null($this->modified)) {
+            $this->modified = FALSE;
             $this->value = $this->serializer->read();
         }
 
@@ -54,7 +55,6 @@ class NethGui_Core_ScalarAdapter implements NethGui_Core_AdapterInterface
         }
 
         $this->serializer->write($this->value);
-
         $this->modified = FALSE;
     }
 

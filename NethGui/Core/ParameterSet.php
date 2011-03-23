@@ -10,10 +10,11 @@
  *
  * @package NethGuiFramework
  */
-class NethGui_Core_ParameterSet implements ArrayAccess, IteratorAggregate, Countable
+class NethGui_Core_ParameterSet implements NethGui_Core_AdapterAggregationInterface, ArrayAccess, Iterator, Countable
 {
 
     private $data = array();
+       
 
     /**
      * The number of members of this set.
@@ -22,15 +23,6 @@ class NethGui_Core_ParameterSet implements ArrayAccess, IteratorAggregate, Count
     public function count()
     {
         return count($this->data);
-    }
-
-    /**
-     * An iterator for all memebers of this set.
-     * @return Iterator
-     */
-    public function getIterator()
-    {
-        return new ArrayIterator($this->data);
     }
 
     public function offsetExists($offset)
@@ -51,10 +43,7 @@ class NethGui_Core_ParameterSet implements ArrayAccess, IteratorAggregate, Count
 
     public function offsetSet($offset, $value)
     {
-        if ($value instanceof NethGui_Core_AdapterInterface) {
-            // TODO check if substituting another object.
-            $this->data[$offset] = $value;
-        } elseif (isset($this->data[$offset]) && $this->data[$offset] instanceof NethGui_Core_AdapterInterface) {
+        if (isset($this->data[$offset]) && $this->data[$offset] instanceof NethGui_Core_AdapterInterface) {
             $this->data[$offset]->set($value);
         } else {
             $this->data[$offset] = $value;
@@ -75,14 +64,46 @@ class NethGui_Core_ParameterSet implements ArrayAccess, IteratorAggregate, Count
      *
      * This is an helper function.
      */
-    public function save() {
-        foreach($this->data as $value) {
-            if($value instanceof NethGui_Core_AdapterInterface) {
+    public function save()
+    {
+        foreach ($this->data as $value) {
+            if ($value instanceof NethGui_Core_AdapterInterface) {
                 $value->save();
-            } elseif ($value instanceof NethGui_Core_ParameterSet) {
+            } elseif ($value instanceof NethGui_Core_AdapterAggregationInterface) {
                 $value->save();
             }
         }
+    }
+
+    public function register(NethGui_Core_AdapterInterface $adapter, $key)
+    {
+        $this->data[$key] = $adapter;
+    }
+
+    
+    public function current()
+    {
+        return $this->offsetGet(key($this->data));
+    }
+
+    public function key()
+    {
+        return key($this->data);
+    }
+
+    public function next()
+    {
+        next($this->data);
+    }
+
+    public function rewind()
+    {
+        reset($this->data);
+    }
+
+    public function valid()
+    {
+        return key($this->data) !== NULL;
     }
 
 }

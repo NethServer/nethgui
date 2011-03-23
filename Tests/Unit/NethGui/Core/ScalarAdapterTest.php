@@ -7,51 +7,101 @@
 class NethGui_Core_ScalarAdapterTest extends PHPUnit_Framework_TestCase
 {
 
-    public function testGet1()
+    /**
+     *
+     * @var NethGui_Core_SerializerInterface
+     */
+    private $serializer;
+    /**
+     *
+     * @var NethGui_Core_ScalarAdapter
+     */
+    private $fixture;
+
+    protected function setUp()
     {
-        $fixture = false;
-        $this->markTestIncomplete();
-        return $fixture;
+        $this->serializer = $this->getMockBuilder('NethGui_Core_KeySerializer')
+                ->disableOriginalConstructor()
+                ->getMock();
+
+        $this->serializer->expects($this->any())
+            ->method('read')
+            ->withAnyParameters()
+            ->will($this->returnValue('ORIGINAL'));
+
+        $this->fixture = new NethGui_Core_ScalarAdapter($this->serializer);
+    }
+
+    public function testGet()
+    {
+        $this->serializer->expects($this->once())
+            ->method('read')
+            ->withAnyParameters()
+            ->will($this->returnValue('ORIGINAL'));
+
+        $this->assertEquals('ORIGINAL', $this->fixture->get());
+        $this->assertFalse($this->fixture->isModified());
+
+        return $this->fixture;
+    }
+
+    public function testSet()
+    {
+        $this->fixture->set('MODIFIED');
+        $this->assertEquals('MODIFIED', $this->fixture->get());
+        $this->assertTrue($this->fixture->isModified());
+
+        return $this->fixture;
     }
 
     /**
-     * @depends testGet1
+     *
+     * @depends testSet
+     * @param NethGui_Core_ScalarAdapter $changedFixture
      */
-    public function testSet1(NethGui_Core_ScalarAdapter $fixture)
+    public function testSaveModified($changedFixture)
     {
+        $this->serializer->expects($this->never())
+            ->method('write')
+            ->withAnyParameters();
 
-        $this->markTestIncomplete();
-        return $fixture;
+        $changedFixture->save();
     }
 
     /**
-     * @depends testSet1
+     * @depends testGet
+     * @param NethGui_Core_ScalarAdapter $unchangedFixture
      */
-    public function testDelete1(NethGui_Core_ScalarAdapter $fixture)
+    public function testSaveNotModified($unchangedFixture)
     {
-        $this->markTestIncomplete();
-        return $fixture;
+        $this->serializer->expects($this->never())
+            ->method('write')
+            ->withAnyParameters();
+
+        $unchangedFixture->save();
     }
 
-    /**
-     * @depends testDelete1
-     */
-    public function testIsModified1(NethGui_Core_ScalarAdapter $fixture)
+    public function testSaveUninitialized()
     {
-        $this->markTestIncomplete();
-        return $fixture;
+        $this->serializer->expects($this->never())
+            ->method('write')
+            ->withAnyParameters();
+
+        $this->fixture->save();
     }
 
-    /**
-     * @depends testIsModified1
-     */
-    public function testSave1(NethGui_Core_ScalarAdapter $fixture)
+    public function testDelete()
     {
-        $this->markTestIncomplete();
-        return $fixture;
+        $this->assertFalse($this->fixture->isModified());
+        $this->fixture->delete();
+        $this->assertTrue($this->fixture->isModified());
+        $this->assertNull($this->fixture->get());
     }
 
-
+    public function testToString()
+    {
+        $this->assertEquals('ORIGINAL', (String) $this->fixture);
+    }
 
 }
 

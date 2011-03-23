@@ -45,7 +45,7 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
 
 
     /**
-     * @return AdapterInterface
+     * @return NethGui_Core_AdapterInterface
      */
     public function getAdapter($database, $key, $prop = NULL, $separator = NULL)
     {

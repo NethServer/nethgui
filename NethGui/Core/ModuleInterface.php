@@ -16,7 +16,13 @@
  */
 interface NethGui_Core_ModuleInterface extends NethGui_Core_RequestHandlerInterface
 {
+    /**
+     * To require a full view refresh
+     */
     const VIEW_REFRESH = 0;
+    /**
+     * To require a partial view update
+     */
     const VIEW_UPDATE = 1;
 
     /**
@@ -69,6 +75,11 @@ interface NethGui_Core_ModuleInterface extends NethGui_Core_RequestHandlerInterf
 
     /**
      * Prepare view layer data, putting it into $response.
+     *
+     * @param NethGui_Core_ViewInterface $view The view to put the data into
+     * @param integer $mode One of VIEW_UPDATE or VIEW_REFRESH values
+     * @see NethGui_Core_ModuleInterface::VIEW_REFRESH
+     * @see NethGui_Core_ModuleInterface::VIEW UPDATE
      */
     public function prepareView(NethGui_Core_ViewInterface $view, $mode);
  

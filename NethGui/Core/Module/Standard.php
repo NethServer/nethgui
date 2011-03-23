@@ -32,10 +32,14 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
      */
     private $hostConfiguration;
     /**
-     * @var array
+     * @var NethGui_Core_ParameterSet
      */
-    protected $parameters = array();
-    protected $constants = array();
+    protected $parameters;
+
+    /**
+     * @var ArrayObject
+     */    
+    protected $constants;
     /**
      *
      * @var NethGui_Core_RequestInterface
@@ -57,6 +61,9 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
      */
     public function __construct($identifier = NULL)
     {
+        $this->parameters = new NethGui_Core_ParameterSet();
+        $this->constants = new ArrayObject();
+
         if (isset($identifier)) {
             $this->identifier = $identifier;
         } else {
@@ -129,12 +136,17 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
     protected function declareParameter($parameterName, $validationRule, $defaultValue = NULL)
     {
         $this->validators[$parameterName] = $validationRule;
-        $this->parameters[$parameterName] = $defaultValue;
+
+        if($defaultValue instanceof NethGui_Core_AdapterInterface) {
+            $this->parameters->register($defaultValue, $parameterName);
+        } else {
+            $this->parameters[$parameterName] = $defaultValue;
+        }
     }
 
     public function bind(NethGui_Core_RequestInterface $request)
     {
-        foreach (array_keys($this->parameters) as $parameterName) {
+        foreach ($this->parameters as $parameterName => $parameterValue) {
             if ($request->hasParameter($parameterName)) {
                 $this->parameters[$parameterName] = $request->getParameter($parameterName);
             }

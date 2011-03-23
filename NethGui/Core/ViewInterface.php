@@ -10,7 +10,7 @@
  *
  * @package NethGuiFramework
  */
-interface NethGui_Core_ViewInterface extends ArrayAccess
+interface NethGui_Core_ViewInterface extends ArrayAccess, IteratorAggregate
 {
 
     /**
@@ -21,21 +21,9 @@ interface NethGui_Core_ViewInterface extends ArrayAccess
 
     /**
      * Specifies the data for the View.     
-     * @param array $data
+     * @param $data
      */
     public function copyFrom($data);
-
-    /**
-     * @param string $parameterName
-     * @param mixed $value
-     */
-    public function setParameterValue($parameterName, $value);
-
-    /**
-     * @param string $parameterName
-     * @return mixed
-     */
-    public function getParameterValue($parameterName);
 
     /**
      * Returns the View associated with $module.
@@ -49,7 +37,7 @@ interface NethGui_Core_ViewInterface extends ArrayAccess
      * @return string
      */
     public function render();
-   
+  
 }
 
 ?>

@@ -93,36 +93,15 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
      */
     public function copyFrom($data)
     {
-        foreach ($data as $name => $value) {
-            $this->setParameterValue($name, $value);
+        foreach ($data as $offset => $value) {
+            $this->offsetSet($offset, $value);
         }
-    }
-
-    public function getWholeData()
-    {
-        $wholeData = array();
-
-        foreach ($this->children as $innerView) {
-            $innerId = $innerView->getModule()->getIdentifier();
-
-            $innerData = $innerView->getWholeData();
-
-            if ( ! empty($innerData))
-            {
-                $wholeData = array_merge($wholeData, array($innerId => $innerData));
-            }
-        }
-
-        $wholeData = array_merge($wholeData, $this->data);
-
-        return $wholeData;
     }
 
     public function setTemplate($template)
     {
         $this->template = $template;
     }
-
 
     /**
      * Returns the View associated with $module.
@@ -140,6 +119,11 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
         }
 
         return $this->children[$moduleId];
+    }
+
+    public function getIterator()
+    {
+        return new ArrayIterator(array_merge($this->children, $this->data));
     }
 
     /**
@@ -177,16 +161,6 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
     public function offsetUnset($offset)
     {
         unset($this->data[$offset]);
-    }
-
-    public function getParameterValue($parameterName)
-    {
-        return $this->offsetGet($parameterName);
-    }
-
-    public function setParameterValue($parameterName, $value)
-    {
-        $this->offsetSet($parameterName, $value);
     }
 
     /**
@@ -234,5 +208,8 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
 
         return $string;
     }
+
+
+
 
 }
