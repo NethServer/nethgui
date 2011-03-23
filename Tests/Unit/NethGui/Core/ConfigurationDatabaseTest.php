@@ -45,20 +45,9 @@ class NethGui_Core_ConfigurationDatabaseTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @todo Implement testGetPolicyDecisionPoint().
+     * @depends testSetPolicyDecisionPoint
      */
     public function testGetPolicyDecisionPoint()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * Implement testSetUser().
-     */
-    public function testSetUser()
     {
         // Remove the following lines when you implement this test.
         $this->markTestIncomplete(
