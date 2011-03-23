@@ -21,7 +21,6 @@ class NethGui_Module_RemoteAccess_Ssh extends NethGui_Core_Module_Standard
         $this->declareParameter('allowPassword', '/.*/');
         $this->declareParameter('allowRootAccess', '/.*/');
         $this->declareParameter('accessMode', '/(internet|none|local)/', 'none');
-
         
         $this->constants['accessModeOptions'] = array(
             'local' => 'rete locale',

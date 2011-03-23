@@ -14,26 +14,21 @@
         $parameters['accessModeOptions'],
         $parameters['accessMode'],
         "id='{$id['accessMode']}'") ?>
-
-</div>
-
-<div>
-    <label for="<?php echo $id['allowRootAccess'] ?>">Consenti accesso per l'utente <tt>root</tt></label>
-    <?php echo form_checkbox($name['allowRootAccess'], 1, $parameters['allowRootAccess'], "id='{$id['allowRootAccess']}'") ?>
-
-</div>
-<div>
-    <label for="<?php echo $id['allowPassword'] ?>">Consenti l'uso delle password</label>
-    <?php echo form_checkbox($name['allowPassword'], 1, $parameters['allowPassword'], "id='{$id['allowPassword']}'") ?>
-
-</div>
-<div>
     <label for="<?php echo $id['sshdPort'] ?>">Porta <tt>sshd</tt></label>
     <?php echo form_input(array(
-        'name'=>$name['sshdPort'], 
-        'size' => 4, 
-        'maxlength' => 5, 
+        'name'=>$name['sshdPort'],
+        'size' => 4,
+        'maxlength' => 5,
         'id' => $id['sshdPort'],
         'value' => $parameters['sshdPort']
-        )) ?>    
+        )) ?>   
+</div>
+
+<div>
+    <?php echo form_checkbox($name['allowRootAccess'], 1, $parameters['allowRootAccess'], "id='{$id['allowRootAccess']}'") ?>
+    <label for="<?php echo $id['allowRootAccess'] ?>">Consenti accesso per l'utente <tt>root</tt></label>   
+</div>
+<div>
+    <?php echo form_checkbox($name['allowPassword'], 1, $parameters['allowPassword'], "id='{$id['allowPassword']}'") ?>
+    <label for="<?php echo $id['allowPassword'] ?>">Consenti l'uso delle password</label>
 </div>

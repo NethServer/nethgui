@@ -32,7 +32,8 @@ class NethGui_Module_RemoteAccess_RemoteManagement extends NethGui_Core_Module_S
     {
         parent::bind($request);
 
-        if (isset($this->parameters['networkAddress'], $this->parameters['networkMask'])) {
+        if ( ! is_null($this->parameters['networkAddress'])
+            && ! is_null($this->parameters['networkMask'])) {
             $this->command = 'UPDATE';
         } else {
 

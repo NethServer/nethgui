@@ -9,8 +9,8 @@
         </div><?php endforeach; ?>
     </fieldset>
 </div>
-<div>
-    <label for="<?php echo $id['ftpPassword'] ?>">Consenti l'uso delle password</label>
-    <?php echo form_checkbox($name['ftpPassword'], 1, $parameters['ftpPassword'], "id='{$id['ftpPassword']}'") ?>
 
+<div>
+    <?php echo form_checkbox($name['ftpPassword'], 1, $parameters['ftpPassword'], "id='{$id['ftpPassword']}'") ?>
+    <label for="<?php echo $id['ftpPassword'] ?>">Consenti l'uso delle password</label>
 </div>
