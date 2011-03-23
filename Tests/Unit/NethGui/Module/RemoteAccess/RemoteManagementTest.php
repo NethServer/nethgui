@@ -85,7 +85,7 @@ class NethGui_Module_RemoteAccess_RemoteManagementTest extends PHPUnit_Framework
         $this->object->process();
 
         $view = new NethGui_Core_View($this->object);
-        $this->object->prepareView($view);
+        $this->object->prepareView($view, 0);
 
         $this->assertEquals('192.168.1.0', $view['networkAddress']);
         $this->assertEquals('255.255.255.0', $view['networkMask']);

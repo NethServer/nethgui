@@ -23,6 +23,7 @@ interface NethGui_Core_HostConfigurationInterface
      * @return NethGui_Core_ConfigurationDatabase
      */
     public function getDatabase($database);
+    public function getAdapter($database, $key, $prop = NULL, $separator = NULL);
 
     /**
      * Signal an event and return the status

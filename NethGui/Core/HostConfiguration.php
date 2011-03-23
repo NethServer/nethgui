@@ -18,12 +18,12 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
      */
     private $user;
 
-
     /**
      * We must specify who acts on host configuration.
      * @param NethGui_Core_UserInterface $user
      */
-    public function __construct(NethGui_Core_UserInterface $user) {
+    public function __construct(NethGui_Core_UserInterface $user)
+    {
         $this->user = $user;
     }
 
@@ -41,6 +41,29 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
         }
 
         return $this->databases[$database];
+    }
+
+
+    /**
+     * @return AdapterInterface
+     */
+    public function getAdapter($database, $key, $prop = NULL, $separator = NULL)
+    {
+        $db = $this->getDatabase($database);
+
+        if (is_null($prop)) {
+            $serializer = new NethGui_Core_KeySerializer($db, $key);
+        } else {
+            $serializer = new NethGui_Core_PropSerializer($db, $key, $prop);
+        }
+
+        if(is_null($separator)) {
+            $adapter = new NethGui_Core_ScalarAdapter($serializer);
+        } else {
+            $adapter = new NethGui_Core_ArrayAdapter($separator, $serializer);
+        }
+
+        return $adapter;
     }
 
     /**
