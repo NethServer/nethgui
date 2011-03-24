@@ -16,6 +16,12 @@ class NethGui_Module_RemoteAccess_RemoteManagement extends NethGui_Core_Module_S
 
     private $command = 'NOOP';
 
+    /**
+     *
+     * @var NethGui_Core_AdapterInterface
+     */
+    private $validFromAdapter;
+
     public function getDescription()
     {
         return "Controllo di accesso al server-manager.";
@@ -26,6 +32,9 @@ class NethGui_Module_RemoteAccess_RemoteManagement extends NethGui_Core_Module_S
         parent::initialize();
         $this->declareParameter('networkAddress', '/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/', NULL);
         $this->declareParameter('networkMask', '/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/', NULL);
+
+        $this->autosave = FALSE;
+        $this->validFromAdapter = $this->getHostConfiguration()->getAdapter('configuration', 'httpd-admin', 'ValidFrom', ',');
     }
 
     public function bind(NethGui_Core_RequestInterface $request)
@@ -41,7 +50,9 @@ class NethGui_Module_RemoteAccess_RemoteManagement extends NethGui_Core_Module_S
              * If network parameters are set neither by Request nor by declarations,
              * read values from db.
              */
-            list($networkAddress, $networkMask) = $this->readValidFrom();
+            $value = $this->validFromAdapter[0];
+
+            list($networkAddress, $networkMask) = explode('/', $value);
             $this->parameters['networkAddress'] = $networkAddress;
             $this->parameters['networkMask'] = $networkMask;
             $this->command = 'NOOP';
@@ -77,53 +88,6 @@ class NethGui_Module_RemoteAccess_RemoteManagement extends NethGui_Core_Module_S
         parent::validate($report);
     }
 
-    /**
-     * Read `ValidFrom` property from SMEdb. If not set, empty strings are
-     * returned.
-     * 
-     * @return array Two element array: (NetworkAddress, NetworkMask)
-     */
-    private function readValidFrom()
-    {
-        $validFrom = $this->getHostConfiguration()
-                ->getDatabase('configuration')
-                ->getProp('httpd-admin', 'ValidFrom')
-        ;
-
-        // Value in property ValidFrom is stored as a comma separated value list
-        // of network-address/network-mask couples.
-        $network =
-            explode('/',
-                current(
-                    explode(',', $validFrom)
-                )
-            )
-        ;
-
-        if ( ! isset($network[1]))
-        {
-            $network[1] = '';
-        }
-
-        return $network;
-    }
-
-    private function writeValidFrom($networkAddress, $networkMask)
-    {
-        $validFrom = $networkAddress . '/' . $networkMask;
-        $this->getHostConfiguration()
-            ->getDatabase('configuration')
-            ->setProp('httpd-admin', array('ValidFrom' => $validFrom))
-        ;
-    }
-
-    private function deleteValidFrom()
-    {
-        $this->getHostConfiguration()
-            ->getDatabase('configuration')
-            ->delProp('httpd-admin', array('ValidFrom'))
-        ;
-    }
 
     public function process()
     {
@@ -131,10 +95,12 @@ class NethGui_Module_RemoteAccess_RemoteManagement extends NethGui_Core_Module_S
 
         switch ($this->command) {
             case 'DELETE':
-                $this->deleteValidFrom();
+                $this->validFromAdapter->delete();
+                $this->validFromAdapter->save();
                 break;
             case 'UPDATE':
-                $this->writeValidFrom($this->parameters['networkAddress'], $this->parameters['networkMask']);
+                $this->validFromAdapter[0] = implode('/', array($this->parameters['networkAddress'], $this->parameters['networkMask']));
+                $this->validFromAdapter->save();
                 break;
         }
     }
