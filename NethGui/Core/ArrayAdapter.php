@@ -28,6 +28,10 @@ class NethGui_Core_ArrayAdapter implements NethGui_Core_AdapterInterface, ArrayA
             $this->lazyInitialization();
         }
 
+        if (is_null($this->data)) {
+            return NULL;
+        }
+
         return $this;
     }
 
@@ -80,6 +84,10 @@ class NethGui_Core_ArrayAdapter implements NethGui_Core_AdapterInterface, ArrayA
             $this->lazyInitialization();
         }
 
+        if (is_null($this->data)) {
+            return 0;
+        }
+
         return count($this->data);
     }
 
@@ -89,10 +97,10 @@ class NethGui_Core_ArrayAdapter implements NethGui_Core_AdapterInterface, ArrayA
             $this->lazyInitialization();
         }
 
-        if(is_null($this->data)) {
+        if (is_null($this->data)) {
             return new ArrayIterator(array());
         }
-        
+
         return new ArrayIterator($this->data);
     }
 
@@ -123,10 +131,10 @@ class NethGui_Core_ArrayAdapter implements NethGui_Core_AdapterInterface, ArrayA
             $this->lazyInitialization();
         }
 
-        if(is_null($this->data)) {
+        if (is_null($this->data)) {
             $this->data = array();
         }
-        
+
         $this->data[$offset] = $value;
         $this->modified = TRUE;
     }
@@ -148,8 +156,11 @@ class NethGui_Core_ArrayAdapter implements NethGui_Core_AdapterInterface, ArrayA
         $value = $this->serializer->read();
 
         if (is_null($value)) {
+            $this->data = NULL;
+        } elseif ($value === '') {
             $this->data = array();
-        } else {
+        } else
+        {
             $this->data = explode($this->separator, $value);
         }
 
