@@ -32,6 +32,11 @@ class NethGui_Core_ParameterSet implements NethGui_Core_AdapterAggregationInterf
 
     public function offsetGet($offset)
     {
+        if(!$this->offsetExists($offset)) {
+            trigger_error('Undefined offset `' . $offset . '`', E_USER_NOTICE);
+            return NULL;
+        }
+
         if ($this->data[$offset] instanceof NethGui_Core_AdapterInterface) {
             $value = $this->data[$offset]->get();
         } else {

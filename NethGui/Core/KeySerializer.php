@@ -31,7 +31,7 @@ class NethGui_Core_KeySerializer implements NethGui_Core_SerializerInterface
      */
     public function write($value)
     {
-        $this->database->setType($key, strval($value));
+        $this->database->setType($this->key, strval($value));
     }
 
 }

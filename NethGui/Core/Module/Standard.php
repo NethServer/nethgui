@@ -35,10 +35,10 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
      * @var NethGui_Core_ParameterSet
      */
     protected $parameters;
-
+    protected $autosave;
     /**
      * @var ArrayObject
-     */    
+     */
     protected $constants;
     /**
      *
@@ -94,6 +94,8 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
         } else {
             throw new Exception("Double Module initialization is forbidden.");
         }
+
+        $this->autosave = true;
     }
 
     public function isInitialized()
@@ -137,7 +139,7 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
     {
         $this->validators[$parameterName] = $validationRule;
 
-        if($defaultValue instanceof NethGui_Core_AdapterInterface) {
+        if ($defaultValue instanceof NethGui_Core_AdapterInterface) {
             $this->parameters->register($defaultValue, $parameterName);
         } else {
             $this->parameters[$parameterName] = $defaultValue;
@@ -180,7 +182,9 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
      */
     public function process()
     {
-
+        if ($this->autosave === TRUE) {
+            $this->parameters->save();
+        }
     }
 
     /**

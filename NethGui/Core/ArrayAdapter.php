@@ -9,6 +9,10 @@ class NethGui_Core_ArrayAdapter implements NethGui_Core_AdapterInterface, ArrayA
      */
     private $separator;
     private $modified;
+    /**
+     *
+     * @var ArrayObject
+     */
     private $data;
     /**
      *
@@ -45,10 +49,27 @@ class NethGui_Core_ArrayAdapter implements NethGui_Core_AdapterInterface, ArrayA
             $this->lazyInitialization();
         }
 
-        if ($this->data !== $value) {
-            $this->modified = TRUE;
-            $this->data = $value;
+        if (is_null($value) && is_null($this->data))
+        {
+            $this->modified = FALSE;
+            return;
         }
+
+        if (is_null($value) && !is_null($this->data))
+        {
+            $this->modified = TRUE;
+            $this->data = NULL;
+            return;
+        }
+
+        if (is_null($this->data)) {
+            $this->data = new ArrayObject($value);
+            $this->modified = TRUE;
+        } elseif ($this->data->getArrayCopy() !== $value) {
+            $this->data->exchangeArray($value);
+            $this->modified = TRUE;
+        }
+
     }
 
     public function delete()
@@ -67,8 +88,8 @@ class NethGui_Core_ArrayAdapter implements NethGui_Core_AdapterInterface, ArrayA
             return;
         }
 
-        if (is_array($this->data)) {
-            $value = implode($this->separator, $this->data);
+        if (is_object($this->data)) {
+            $value = implode($this->separator, $this->data->getArrayCopy());
         } else {
             $value = NULL;
         }
@@ -101,7 +122,7 @@ class NethGui_Core_ArrayAdapter implements NethGui_Core_AdapterInterface, ArrayA
             return new ArrayIterator(array());
         }
 
-        return new ArrayIterator($this->data);
+        return $this->data->getIterator();
     }
 
     public function offsetExists($offset)
@@ -109,7 +130,7 @@ class NethGui_Core_ArrayAdapter implements NethGui_Core_AdapterInterface, ArrayA
         if (is_null($this->modified)) {
             $this->lazyInitialization();
         }
-        return is_array($this->data) && array_key_exists($offset, $this->data);
+        return is_object($this->data) && $this->data->offsetExists($offset);
     }
 
     public function offsetGet($offset)
@@ -132,7 +153,7 @@ class NethGui_Core_ArrayAdapter implements NethGui_Core_AdapterInterface, ArrayA
         }
 
         if (is_null($this->data)) {
-            $this->data = array();
+            $this->data = new ArrayObject();
         }
 
         $this->data[$offset] = $value;
@@ -158,10 +179,10 @@ class NethGui_Core_ArrayAdapter implements NethGui_Core_AdapterInterface, ArrayA
         if (is_null($value)) {
             $this->data = NULL;
         } elseif ($value === '') {
-            $this->data = array();
+            $this->data = new ArrayObject();
         } else
         {
-            $this->data = explode($this->separator, $value);
+            $this->data = new ArrayObject(explode($this->separator, $value));
         }
 
         $this->modified = FALSE;
