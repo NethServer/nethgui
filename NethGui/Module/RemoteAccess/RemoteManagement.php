@@ -22,6 +22,10 @@ class NethGui_Module_RemoteAccess_RemoteManagement extends NethGui_Core_Module_S
      */
     private $validFromAdapter;
 
+    /**
+     * @codeCoverageIgnore
+     * @return string
+     */
     public function getDescription()
     {
         return "Controllo di accesso al server-manager.";

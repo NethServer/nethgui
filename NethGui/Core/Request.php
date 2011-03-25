@@ -104,7 +104,7 @@ class NethGui_Core_Request implements NethGui_Core_RequestInterface
 
     public function hasParameter($parameterName)
     {
-        return isset($this->data[$parameterName]);
+        return array_key_exists($parameterName, $this->data);
     }
 
     public function isEmpty()

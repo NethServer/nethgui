@@ -15,13 +15,12 @@ class NethGui_Core_KeySerializerTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->database = $this->getMockBuilder('NethGui_Core_ConfigurationDatabase')
-            ->disableOriginalConstructor()
-            ->getMock();
-        
+                ->disableOriginalConstructor()
+                ->getMock();
+
         $this->object = new NethGui_Core_KeySerializer($this->database, 'TestKey');
     }
 
- 
     public function testRead()
     {
         $this->database->expects($this->once())
@@ -30,17 +29,26 @@ class NethGui_Core_KeySerializerTest extends PHPUnit_Framework_TestCase
             ->will($this->returnValue('VALUE'));
 
         $this->assertEquals('VALUE', $this->object->read());
-
     }
 
-    public function testWrite()
+    public function testWriteValue()
     {
-       $this->database->expects($this->once())
+        $this->database->expects($this->once())
             ->method('setType')
             ->with('TestKey', 'VALUE')
             ->will($this->returnValue(TRUE));
 
         $this->object->write('VALUE');
+    }
+
+    public function testWriteDelete()
+    {
+        $this->database->expects($this->once())
+            ->method('deleteKey')
+            ->with('TestKey')
+            ->will($this->returnValue(TRUE));
+
+        $this->object->write(NULL);
     }
 
 }

@@ -28,7 +28,11 @@ class NethGui_Core_PropSerializer implements NethGui_Core_SerializerInterface
 
     public function write($value)
     {
-        $this->database->setProp($this->key, array($this->prop => $value));
+        if($value === NULL) {
+            $this->database->delProp($this->key, array($this->prop));
+        } else {
+            $this->database->setProp($this->key, array($this->prop => $value));
+        }
     }
 
 }

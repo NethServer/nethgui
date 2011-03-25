@@ -95,7 +95,7 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
             throw new Exception("Double Module initialization is forbidden.");
         }
 
-        $this->autosave = true;
+        $this->autosave = TRUE;
     }
 
     public function isInitialized()

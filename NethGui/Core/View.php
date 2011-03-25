@@ -89,6 +89,7 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
     }
 
     /**
+     * TODO: rename to "mergeFrom()"
      * @param mixed $data
      */
     public function copyFrom($data)
