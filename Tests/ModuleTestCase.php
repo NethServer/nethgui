@@ -1,4 +1,7 @@
 <?php
+/**
+ * @package NethGuiFramework
+ */
 
 /**
  * This is a base abstract class module testing.
@@ -8,6 +11,9 @@
  *  2. call runModuleTestProcedure()
  *
  * Refs #11
+ *
+ * @package NethGuiFramework
+ * @subpackage Test
  */
 abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
 {
@@ -85,36 +91,31 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
      */
     public function getMockForConfigurationDatabase($database)
     {
-        static $mockCache;
+        $databaseMock = $this->getMockBuilder('NethGui_Core_ConfigurationDatabase')
+                ->disableOriginalConstructor()
+                ->setMethods(array(
+                    'getProp',
+                    'setProp',
+                    'delProp',
+                    'deleteKey',
+                    'setKey',
+                    'getKey',
+                    'getType',
+                    'setType'))
+                ->getMock();
 
-        if ( ! isset($mockCache[$database])) {
-            $databaseMock = $this->getMockBuilder('NethGui_Core_ConfigurationDatabase')
-                    ->disableOriginalConstructor()
-                    ->setMethods(array(
-                        'getProp',
-                        'setProp',
-                        'deleteKey',
-                        'setKey',
-                        'getKey',
-                        'getType',
-                        'setType'))
-                    ->getMock();
-
-            foreach ($this->expectedDb as $index => $op) {
-                if ($op[0] !== $database) {
-                    continue;
-                }
-
-                $method = $databaseMock->expects($this->at($index))
-                        ->method($op[1]);
-                $with = call_user_func_array(array($method, 'with'), is_array($op[2]) ? $op[2] : array($op[2]));
-                $with->will($this->returnValue($op[3]));
+        foreach ($this->expectedDb as $index => $op) {
+            if ($op[0] !== $database) {
+                continue;
             }
 
-            $mockCache[$database] = $databaseMock;
+            $method = $databaseMock->expects($this->at($index))
+                    ->method($op[1]);
+            $with = call_user_func_array(array($method, 'with'), is_array($op[2]) ? $op[2] : array($op[2]));
+            $with->will($this->returnValue($op[3]));
         }
 
-        return $mockCache[$database];
+        return $databaseMock;
     }
 
     /**
