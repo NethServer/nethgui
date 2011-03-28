@@ -17,6 +17,14 @@
  */
 abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
 {
+    const DB_SET_KEY = 'setType';
+    const DB_GET_KEY = 'getType';
+    const DB_DEL_KEY = 'deleteKey';
+    const DB_SET_PROP = 'setProp';
+    const DB_GET_PROP = 'getProp';
+    const DB_DEL_PROP = 'delProp';
+    const DB_GET_TYPE = 'getType';
+    const DB_SET_TYPE = 'setType';
 
     /**
      * @var NethGui_Core_Module_Standard

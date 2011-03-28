@@ -29,7 +29,7 @@ class NethGui_Module_RemoteAccess_RemoteManagementTest extends ModuleTestCase
         );
 
         $this->expectedDb = array(
-            array('configuration', 'getProp', array('httpd-admin', 'ValidFrom'),  '192.168.1.0/255.255.255.0,10.0.0.0/255.128.0.0'),
+            array('configuration', self::DB_GET_PROP, array('httpd-admin', 'ValidFrom'),  '192.168.1.0/255.255.255.0,10.0.0.0/255.128.0.0'),
         );
 
         $this->runModuleTestProcedure();
@@ -48,8 +48,8 @@ class NethGui_Module_RemoteAccess_RemoteManagementTest extends ModuleTestCase
         );
 
         $this->expectedDb = array(
-            array('configuration', 'getProp', array('httpd-admin', 'ValidFrom'),  '192.168.1.0/255.255.255.0,10.0.0.0/255.128.0.0'),
-            array('configuration', 'setProp', array('httpd-admin', array('ValidFrom' =>  '192.168.1.2/255.255.128.0,10.0.0.0/255.128.0.0')), true),
+            array('configuration', self::DB_GET_PROP, array('httpd-admin', 'ValidFrom'),  '192.168.1.0/255.255.255.0,10.0.0.0/255.128.0.0'),
+            array('configuration', self::DB_SET_PROP, array('httpd-admin', array('ValidFrom' =>  '192.168.1.2/255.255.128.0,10.0.0.0/255.128.0.0')), true),
         );
 
         $this->runModuleTestProcedure();
@@ -68,8 +68,8 @@ class NethGui_Module_RemoteAccess_RemoteManagementTest extends ModuleTestCase
         );
 
         $this->expectedDb = array(
-            array('configuration', 'getProp', array('httpd-admin', 'ValidFrom'),  '192.168.1.0/255.255.255.0,10.0.0.0/255.128.0.0'),
-            array('configuration', 'delProp', array('httpd-admin', array('ValidFrom')), true),
+            array('configuration', self::DB_GET_PROP, array('httpd-admin', 'ValidFrom'),  '192.168.1.0/255.255.255.0,10.0.0.0/255.128.0.0'),
+            array('configuration', self::DB_DEL_PROP, array('httpd-admin', array('ValidFrom')), true),
         );
 
         $this->runModuleTestProcedure();
