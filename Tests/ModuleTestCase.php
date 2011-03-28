@@ -56,6 +56,7 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
      * @var array
      */
     protected $expectedEvents;
+    private $databaseMocks;
 
     /**
      * @return NethGui_Core_HostConfigurationInterface
@@ -99,31 +100,37 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
      */
     public function getMockForConfigurationDatabase($database)
     {
-        $databaseMock = $this->getMockBuilder('NethGui_Core_ConfigurationDatabase')
-                ->disableOriginalConstructor()
-                ->setMethods(array(
-                    'getProp',
-                    'setProp',
-                    'delProp',
-                    'deleteKey',
-                    'setKey',
-                    'getKey',
-                    'getType',
-                    'setType'))
-                ->getMock();
+        if ( ! isset($this->databaseMocks[$database])) {
+            $databaseMock = $this->getMockBuilder('NethGui_Core_ConfigurationDatabase')
+                    ->disableOriginalConstructor()
+                    ->setMethods(array(
+                        'getProp',
+                        'setProp',
+                        'delProp',
+                        'deleteKey',
+                        'setKey',
+                        'getKey',
+                        'getType',
+                        'setType'))
+                    ->getMock();
 
-        foreach ($this->expectedDb as $index => $op) {
-            if ($op[0] !== $database) {
-                continue;
+            $index = 0;
+            foreach ($this->expectedDb as $op) {
+                if ($op[0] !== $database) {
+                    continue;
+                }
+
+                $method = $databaseMock->expects($this->at($index))
+                        ->method($op[1]);
+                $with = call_user_func_array(array($method, 'with'), is_array($op[2]) ? $op[2] : array($op[2]));
+                $with->will($this->returnValue($op[3]));
+                $index ++;
             }
 
-            $method = $databaseMock->expects($this->at($index))
-                    ->method($op[1]);
-            $with = call_user_func_array(array($method, 'with'), is_array($op[2]) ? $op[2] : array($op[2]));
-            $with->will($this->returnValue($op[3]));
+            $this->databaseMocks[$database] = $databaseMock;
         }
-
-        return $databaseMock;
+        
+        return $this->databaseMocks[$database];
     }
 
     /**
@@ -219,6 +226,7 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
         $this->expectedView = array();
         $this->expectedDb = array();
         $this->expectedEvents = array();
+        $this->databaseMocks = array();
     }
 
     protected function runModuleTestProcedure($viewMode = NethGui_Core_ModuleInterface::VIEW_REFRESH)
