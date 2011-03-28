@@ -56,6 +56,10 @@ class NethGui_Module_RemoteAccess_RemoteManagement extends NethGui_Core_Module_S
              */
             $value = $this->validFromAdapter[0];
 
+            if(is_null($value)) {
+                $value = '/';
+            }
+            
             list($networkAddress, $networkMask) = explode('/', $value);
             $this->parameters['networkAddress'] = $networkAddress;
             $this->parameters['networkMask'] = $networkMask;

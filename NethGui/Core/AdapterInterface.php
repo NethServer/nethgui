@@ -1,6 +1,15 @@
 <?php
 /**
+ * @package NethGuiFramework
+ */
+
+
+/**
  * Adapter Interface allows changing a ConfigurationDatabase key or property value
+ * through a simplified interface.
+ * @see NethGui_Core_AdapterAggregationInterface
+ * @package NethGuiFramework
+ * @subpackage Core
  */
 interface NethGui_Core_AdapterInterface {
     /**

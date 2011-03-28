@@ -77,4 +77,3 @@ class NethGui_Module_RemoteAccess_RemoteManagementTest extends ModuleTestCase
 
 }
 
-?>
