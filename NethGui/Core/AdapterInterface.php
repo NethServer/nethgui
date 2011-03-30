@@ -7,6 +7,7 @@
 /**
  * Adapter Interface allows changing a ConfigurationDatabase key or property value
  * through a simplified interface.
+ * 
  * @see NethGui_Core_AdapterAggregationInterface
  * @package NethGuiFramework
  * @subpackage Core

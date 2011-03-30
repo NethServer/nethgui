@@ -1,5 +1,15 @@
 <?php
+/**
+ * @package NethGuiFramework
+ */
 
+
+/**
+ * Scalar adapter maps a scalar value to a key or prop value through a Serializer.
+ *
+ * @package NethGuiFramework
+ * @subpackage Core
+ */
 class NethGui_Core_ScalarAdapter implements NethGui_Core_AdapterInterface
 {
 

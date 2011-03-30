@@ -1,16 +1,32 @@
 <?php
+/**
+ * @package NethGuiFramework
+ */
 
+
+/**
+ * Array adapter maps a PHP array-like interface to a key or prop value
+ * where values are separated by a separator character.
+ *
+ * @package NethGuiFramework
+ * @subpackage Core
+ */
 class NethGui_Core_ArrayAdapter implements NethGui_Core_AdapterInterface, ArrayAccess, IteratorAggregate, Countable
 {
 
     /**
-     *
+     * The character used as separator to encode/decode the array string value.
      * @var string
      */
     private $separator;
+    /**
+     * This boolean is indeed a tri-state value, where NULL indicates
+     * that object state is uninitialized.
+     * @var boolean
+     */
     private $modified;
     /**
-     *
+     * Keeps the array values.
      * @var ArrayObject
      */
     private $data;
