@@ -29,27 +29,27 @@ final class NethGui_Core_Module_World extends NethGui_Core_Module_Composite
     {
         parent::__construct('');
         $this->currentModule = $currentModule;
-
-        $this->constants = array(
-            'cssMain' => base_url() . 'css/main.css',
-            'js' => array(
-                'base' => base_url() . 'js/jquery-1.5.1.min.js',
-                'ui' => base_url() . 'js/jquery-ui-1.8.10.custom.min.js',
-                'test' => base_url() . 'js/nethgui.js',
-            ),            
-        );
     }
 
     public function initialize()
     {
         parent::initialize();
         $this->addChild($this->currentModule);
+        $this->constants = array(
+            'cssMain' => base_url() . 'css/main.css',
+            'js' => array(
+                'base' => base_url() . 'js/jquery-1.5.1.min.js',
+                'ui' => base_url() . 'js/jquery-ui-1.8.10.custom.min.js',
+                'test' => base_url() . 'js/nethgui.js',
+            ),
+            'currentModule' => $this->currentModule->getIdentifier(),
+        );
     }
 
     public function validate(NethGui_Core_ValidationReportInterface $report)
     {
-        $this->validationReport = $report;
         parent::validate($report);
+        $this->validationReport = $report;
     }
 
     /**
@@ -68,13 +68,6 @@ final class NethGui_Core_Module_World extends NethGui_Core_Module_Composite
             }
 
             $child->process();
-        }        
+        }
     }
-
-    public function prepareView(NethGui_Core_ViewInterface $view, $mode)
-    {
-        parent::prepareView($view, $mode);
-        $view['CurrentModule'] = $view[$this->currentModule->getIdentifier()];
-    }
-
 }

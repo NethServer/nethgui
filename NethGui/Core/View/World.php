@@ -17,7 +17,7 @@
                         <pre style="background: yellow" id="validationReport"><?php foreach($view['ValidationReport']['errors'] as $error) {
                             echo $error[1] . " ({$error[0]})\n";
                         } ?></pre>
-                        <div id="moduleContent"><?php echo $view['CurrentModule']->render() ?></div>
+                        <div id="moduleContent"><?php echo $view[$view['currentModule']]->render() ?></div>
                     </div>
                     <div class="col2"><div id="moduleMenu"><?php echo $view['Menu']->render() ?></div></div>
                 </div>
