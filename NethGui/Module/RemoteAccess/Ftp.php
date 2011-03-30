@@ -39,9 +39,7 @@ class NethGui_Module_RemoteAccess_Ftp extends NethGui_Core_Module_Standard
             new NethGui_Core_MultipleAdapter(
                 array($this, 'readAcceptPasswordFromAnyNetwork'),
                 array($this, 'writeAcceptPasswordFromAnyNetwork'),
-                array(
-                    new NethGui_Core_PropSerializer($this->getHostConfiguration()->getDatabase('configuration'), 'ftp', 'LoginAccess'),
-                )
+                array(new NethGui_Core_PropSerializer($this->getHostConfiguration()->getDatabase('configuration'), 'ftp', 'LoginAccess'))
             ),
             ''
         );
