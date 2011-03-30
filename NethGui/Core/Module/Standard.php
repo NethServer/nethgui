@@ -141,7 +141,7 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
      * @param NethGui_Core_AdapterInterface $adapter
      * @param mixed $onSubmitDefaultValue Value to assign if parameter is missing when binding a submitted request
      */
-    protected function declareParameter($parameterName, $validationRule, $adapter = NULL, $onSubmitDefaultValue = NULL)
+    protected function declareParameter($parameterName, $validationRule = FALSE, $adapter = NULL, $onSubmitDefaultValue = NULL)
     {
         $this->validators[$parameterName] = $validationRule;
 
@@ -184,7 +184,7 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
                 // PASS...
             } elseif (is_string($validator) && $validator[0] == '/') {
                 if (preg_match($validator, strval($value)) == 0) {
-                    $report->addError($this, $parameter, 'Invalid ' . $parameter);
+                    $report->addError($this, $parameter, 'Invalid `' . $parameter . '`');
                 }
             } else {
                 throw new NethGui_Exception_Validation("Invalid validator value for parameter `" . $parameter . '` in module `' . get_class($this) . '`.');

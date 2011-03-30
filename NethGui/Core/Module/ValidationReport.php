@@ -15,18 +15,25 @@ final class NethGui_Core_Module_ValidationReport extends NethGui_Core_Module_Sta
         $this->report =$report;
     }
 
-    public function prepareView(NethGui_Core_ViewInterface $view, $mode)
+    public function initialize()
     {
+        parent::initialize();
+        $this->declareParameter('errors');
+    }
+
+    public function process()
+    {
+        parent::process();
         $this->parameters['errors'] = new ArrayObject();
         foreach($this->report->getErrors() as $error)
         {
             list($fieldId, $message, $module) = $error;
-            //$this->parameters['errors'][$fieldId] = $message;
-            $this->parameters['errors'][] = array($fieldId, $message);
+
+            $this->parameters['errors'][] = array($module->getIdentifier() . '.' . $fieldId, $message);
         }
-        
-        parent::prepareView($view, $mode);
     }
+
+    
 }
 
 
