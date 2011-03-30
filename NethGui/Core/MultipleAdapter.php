@@ -13,7 +13,7 @@
 class NethGui_Core_MultipleAdapter implements NethGui_Core_AdapterInterface
 {
 
-    private $serializers = array();
+    private $innerAdapters = array();
     private $readerCallback;
     private $writerCallback;
     private $modified;
@@ -26,7 +26,7 @@ class NethGui_Core_MultipleAdapter implements NethGui_Core_AdapterInterface
      */
     public function __construct($readerCallback, $writerCallback, $serializers)
     {
-        if (empty($serializer)) {
+        if (empty($serializers)) {
             throw new NethGui_Exception_Adapter('Must provide one serializer, at least.');
         }
 
@@ -47,7 +47,7 @@ class NethGui_Core_MultipleAdapter implements NethGui_Core_AdapterInterface
                 throw new NethGui_Exception_Adapter('Invalid serializer instance. A serializer must implement NethGui_Core_SerializerInterface.');
             }
 
-            $this->serializers[] = $serializer;
+            $this->innerAdapters[] = new NethGui_Core_ScalarAdapter($serializer);
         }
     }
 
@@ -93,7 +93,8 @@ class NethGui_Core_MultipleAdapter implements NethGui_Core_AdapterInterface
         $index = 0;
         
         foreach($values as $value) {
-            $this->serializers[$index]->write($value);            
+            $this->innerAdapters[$index]->set($value);
+            $this->innerAdapters[$index]->save();
             $index++;
         }
         
@@ -102,8 +103,8 @@ class NethGui_Core_MultipleAdapter implements NethGui_Core_AdapterInterface
     private function lazyInitialization()
     {
         $values = array();
-        foreach ($this->serializers as $serializer) {
-            $values[] = $serializer->read();
+        foreach ($this->innerAdapters as $innerAdapter) {
+            $values[] = $innerAdapter->get();
         }
 
         $this->value = call_user_func_array($this->readerCallback, $values);
