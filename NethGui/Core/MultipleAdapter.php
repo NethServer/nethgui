@@ -1,11 +1,12 @@
 <?php
 /**
  * @package NethGuiFramework
- * @author Davide Principi <davide.principi@nethesis.it>
  */
 
 /**
- * TODO describe this class
+ * A Multiple adapter maps a scalar value to multiple keys or props through
+ * a "reader" and a "writer" callback function.
+ *
  * @package NethGuiFramework
  * @subpackage Core
  */
@@ -17,6 +18,12 @@ class NethGui_Core_MultipleAdapter implements NethGui_Core_AdapterInterface
     private $writerCallback;
     private $modified;
 
+    /**
+     * @see NethGui_Core_SerializerInterface
+     * @param callback $readerCallback The reader PHP callback function: (p1, ..., pN) -> V
+     * @param callback $writerCallback The writer PHP callback function: V -> (p1, ..., pN)
+     * @param array $serializers An array of NethGui_Core_SerializerInterface objects
+     */
     public function __construct($readerCallback, $writerCallback, $serializers)
     {
         if (empty($serializer)) {
@@ -44,25 +51,30 @@ class NethGui_Core_MultipleAdapter implements NethGui_Core_AdapterInterface
         }
     }
 
-    public function delete()
-    {
-
-    }
-
     public function get()
     {
         if (is_null($this->modified)) {
-
-            $values = array();
-            foreach ($this->serializers as $serializer) {
-                $values[] = $serializer->read();
-            }
-
-            $this->modified = FALSE;
-            $this->value = call_user_func($this->readerCallback, $values);
+            $this->lazyInitialization();
         }
 
         return $this->value;
+    }
+
+    public function set($value)
+    {
+        if (is_null($this->modified)) {
+            $this->lazyInitialization();
+        }
+
+        if ($this->value !== $value) {
+            $this->value = $value;
+            $this->modified = TRUE;
+        }
+    }
+
+    public function delete()
+    {
+        $this->set(NULL);
     }
 
     public function isModified()
@@ -72,12 +84,30 @@ class NethGui_Core_MultipleAdapter implements NethGui_Core_AdapterInterface
 
     public function save()
     {
+        if ( ! $this->isModified()) {
+            return;
+        }
 
+        $values = call_user_func($this->writerCallback, $this->value);
+        
+        $index = 0;
+        
+        foreach($values as $value) {
+            $this->serializers[$index]->write($value);            
+            $index++;
+        }
+        
     }
 
-    public function set($value)
+    private function lazyInitialization()
     {
+        $values = array();
+        foreach ($this->serializers as $serializer) {
+            $values[] = $serializer->read();
+        }
 
+        $this->value = call_user_func_array($this->readerCallback, $values);
+        $this->modified = FALSE;
     }
 
 }
