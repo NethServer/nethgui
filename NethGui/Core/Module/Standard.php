@@ -133,16 +133,21 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
      * 
      * @param string $parameterName
      * @param string $validationRule A regular expression catching the correct value format
+     * @param NethGui_Core_AdapterInterface $adapter
      * @param mixed $defaultValue Value to assign if parameter is missing during binding
      */
-    protected function declareParameter($parameterName, $validationRule, $defaultValue = NULL)
+    protected function declareParameter($parameterName, $validationRule, $adapter = NULL, $defaultValue = NULL)
     {
         $this->validators[$parameterName] = $validationRule;
 
-        if ($defaultValue instanceof NethGui_Core_AdapterInterface) {
-            $this->parameters->register($defaultValue, $parameterName);
-        } else {
-            $this->parameters[$parameterName] = $defaultValue;
+        if ($adapter instanceof NethGui_Core_AdapterInterface) {
+            $this->parameters->register($adapter, $parameterName);
+        }
+
+        if (is_null($adapter)
+            OR ! is_null($defaultValue)
+        ) {
+            $this->parameters->offsetSet($parameterName, $defaultValue);
         }
     }
 

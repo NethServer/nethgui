@@ -34,8 +34,8 @@ class NethGui_Module_RemoteAccess_RemoteManagement extends NethGui_Core_Module_S
     public function initialize()
     {
         parent::initialize();
-        $this->declareParameter('networkAddress', '/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/', NULL);
-        $this->declareParameter('networkMask', '/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/', NULL);
+        $this->declareParameter('networkAddress', '/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/');
+        $this->declareParameter('networkMask', '/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/');
 
         $this->autosave = FALSE;
         $this->validFromAdapter = $this->getHostConfiguration()->getAdapter('configuration', 'httpd-admin', 'ValidFrom', ',');
@@ -45,8 +45,8 @@ class NethGui_Module_RemoteAccess_RemoteManagement extends NethGui_Core_Module_S
     {
         parent::bind($request);
 
-        if ( ! is_null($this->parameters['networkAddress'])
-            && ! is_null($this->parameters['networkMask'])) {
+        if ( $request->hasParameter('networkAddress')
+            && $request->hasParameter('networkMask')) {
             $this->command = 'UPDATE';
         } else {
 

@@ -15,29 +15,35 @@
  */
 class NethGui_Module_RemoteAccess_Ftp extends NethGui_Core_Module_Standard
 {
+
     public function initialize()
     {
         parent::initialize();
 
-        $this->db = new NethGui_Core_ParameterSet();
-
-        $this->db['status'] = $this->getHostConfiguration()->getAdapter('configuration', 'ftp', 'status');
-        $this->db['access'] = $this->getHostConfiguration()->getAdapter('configuration', 'ftp', 'access');
-        $this->db['LoginAccess'] = $this->getHostConfiguration()->getAdapter('configuration', 'ftp', 'LoginAccess');       
-
         $this->declareParameter(
             'serviceStatus', // parameter name
             '/^(disabled|localNetwork|anyNetwork)$/', // regexp validation
-            $this->calcServiceStatus(// mapping function
-                $this->db['status'],
-                $this->db['access']
+            new NethGui_Core_MultipleAdapter(
+                array($this, 'readServiceStatus'),
+                array($this, 'writeServiceStatus'),
+                array(
+                    new NethGui_Core_PropSerializer($this->getHostConfiguration()->getDatabase('configuration'), 'ftp', 'status'),
+                    new NethGui_Core_PropSerializer($this->getHostConfiguration()->getDatabase('configuration'), 'ftp', 'access'),
+                )
             )
         );
 
         $this->declareParameter(
             'acceptPasswordFromAnyNetwork',
             '/^1?$/',
-            $this->db['LoginAccess'] == 'public' ? '1' : ''
+            new NethGui_Core_MultipleAdapter(
+                array($this, 'readAcceptPasswordFromAnyNetwork'),
+                array($this, 'writeAcceptPasswordFromAnyNetwork'),
+                array(
+                    new NethGui_Core_PropSerializer($this->getHostConfiguration()->getDatabase('configuration'), 'ftp', 'LoginAccess'),
+                )
+            ),
+            ''
         );
 
         // TODO: use translator function
@@ -48,7 +54,14 @@ class NethGui_Module_RemoteAccess_Ftp extends NethGui_Core_Module_Standard
         );
     }
 
-    private function calcServiceStatus($status, $access)
+    /**
+     * @codeCoverageIgnore
+     * 
+     * @param string $status
+     * @param string $access
+     * @return string
+     */
+    public function readServiceStatus($status, $access)
     {
         if ($status == 'enabled') {
             if ($access == 'public') {
@@ -61,40 +74,56 @@ class NethGui_Module_RemoteAccess_Ftp extends NethGui_Core_Module_Standard
         return 'disabled';
     }
 
-    public function bind(NethGui_Core_RequestInterface $request)
+    /**
+     * @codeCoverageIgnore
+     *
+     * @param string $value
+     * @return array
+     */
+    public function writeServiceStatus($value)
     {
-        parent::bind($request);
-
-        switch ($this->parameters['serviceStatus']) {
-
-            case 'disabled':
-                $this->db['status'] = 'disabled';
-                $this->db['access'] = 'private';
-                break;
-
+        switch ($value) {
             case 'localNetwork':
-                $this->db['status'] = 'enabled';
-                $this->db['access'] = 'private';
-                break;
+                return array('enabled', 'private');
 
             case 'anyNetwork':
-                $this->db['status'] = 'enabled';
-                $this->db['access'] = 'public';
-                break;
-        }
+                return array('enabled', 'public');
 
-        if ($this->parameters['acceptPasswordFromAnyNetwork'] == 1) {
-            $this->db['LoginAccess'] = 'public';
-        } else {
-            $this->db['LoginAccess'] = 'private';
+
+            case 'disabled':
+            default:
+                return array('disabled', 'private');
         }
     }
 
-    public function process()
+    /**
+     * @codeCoverageIgnore
+     *
+     * @param string $value
+     * @return string
+     */
+    public function readAcceptPasswordFromAnyNetwork($value)
     {
-        parent::process();
-        $this->db->save();
+        if ($value == 'public') {
+            return 1;
+        }
+
+        return '';
     }
 
+    /**
+     * @codeCoverageIgnore
+     *
+     * @param string $value
+     * @return array
+     */
+    public function writeAcceptPasswordFromAnyNetwork($value)
+    {
+        if ($value == 1) {
+            return array('public');
+        } else {
+            return array('private');
+        }
+    }
 
 }

@@ -17,10 +17,10 @@ class NethGui_Module_RemoteAccess_Ssh extends NethGui_Core_Module_Standard
     public function initialize()
     {
         parent::initialize();
-        $this->declareParameter('sshdPort', '/[0-9]*/', '22');
-        $this->declareParameter('allowPassword', '/.*/');
-        $this->declareParameter('allowRootAccess', '/.*/');
-        $this->declareParameter('accessMode', '/(internet|none|local)/', 'none');
+        $this->declareParameter('sshdPort', '/[0-9]*/', NULL, '22');
+        $this->declareParameter('allowPassword', '/.*/', NULL, '');
+        $this->declareParameter('allowRootAccess', '/.*/', NULL, '');
+        $this->declareParameter('accessMode', '/(internet|none|local)/', NULL, 'none');
         
         $this->constants['accessModeOptions'] = array(
             'local' => 'rete locale',

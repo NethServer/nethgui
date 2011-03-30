@@ -30,13 +30,13 @@ class NethGui_Module_RemoteAccess_FtpTest extends ModuleTestCase
 
         $this->expectedView = array(
             array('serviceStatus', 'disabled'),
-            array('acceptPasswordFromAnyNetwork', ''),            
+            array('acceptPasswordFromAnyNetwork', ''),
         );
 
         $this->expectedDb = array(
+            array('configuration', self::DB_GET_PROP, array('ftp', 'LoginAccess'), 'private'),
             array('configuration', self::DB_GET_PROP, array('ftp', 'status'), 'disabled'),
             array('configuration', self::DB_GET_PROP, array('ftp', 'access'), 'private'),
-            array('configuration', self::DB_GET_PROP, array('ftp', 'LoginAccess'), 'private'),
         );
 
         $this->runModuleTestProcedure();
@@ -51,10 +51,9 @@ class NethGui_Module_RemoteAccess_FtpTest extends ModuleTestCase
         );
 
         $this->expectedDb = array(
-            array('configuration', self::DB_GET_PROP, array('ftp', 'status'), 'disabled'),
-            array('configuration', self::DB_GET_PROP, array('ftp', 'access'), 'private'),
             array('configuration', self::DB_GET_PROP, array('ftp', 'LoginAccess'), 'private'),
-            
+            array('configuration', self::DB_GET_PROP, array('ftp', 'status'), 'disabled'),
+            array('configuration', self::DB_GET_PROP, array('ftp', 'access'), 'private'),            
             array('configuration', self::DB_SET_PROP, array('ftp', array('status' => 'enabled')), TRUE),
         );
 
@@ -64,52 +63,81 @@ class NethGui_Module_RemoteAccess_FtpTest extends ModuleTestCase
     public function testEnableNormalService()
     {
         $this->moduleParameters = array('serviceStatus' => 'anyNetwork');
-        $this->expectedView = array(
-            array('acceptPasswordFromAnyNetwork', ''),
+        $this->expectedView = array(            
             array('serviceStatus', 'anyNetwork'),
+            array('acceptPasswordFromAnyNetwork', ''),
         );
 
         $this->expectedDb = array(
-            array('configuration', self::DB_GET_PROP, array('ftp', 'status'), 'disabled'),
-            array('configuration', self::DB_GET_PROP, array('ftp', 'access'), 'private'),
             array('configuration', self::DB_GET_PROP, array('ftp', 'LoginAccess'), 'private'),
-            
+            array('configuration', self::DB_GET_PROP, array('ftp', 'status'), 'disabled'),
+            array('configuration', self::DB_GET_PROP, array('ftp', 'access'), 'private'),            
             array('configuration', self::DB_SET_PROP, array('ftp', array('status' => 'enabled')), TRUE),
-            array('configuration', self::DB_SET_PROP, array('ftp', array('access' => 'normal')), TRUE),
+            array('configuration', self::DB_SET_PROP, array('ftp', array('access' => 'public')), TRUE),
         );
 
-        $this->markTestIncomplete();
+        $this->runModuleTestProcedure();
     }
 
     public function testDisableService()
     {
         $this->moduleParameters = array('serviceStatus' => 'disabled');
-        $this->expectedView = array(
-            array('acceptPasswordFromAnyNetwork', ''),
+        $this->expectedView = array(            
             array('serviceStatus', 'disabled'),
+            array('acceptPasswordFromAnyNetwork', ''),
         );
 
 
         $this->expectedDb = array(
-            array('configuration', self::DB_GET_PROP, array('ftp', 'status'), 'enabled'),
-            array('configuration', self::DB_GET_PROP, array('ftp', 'access'), 'normal'),
             array('configuration', self::DB_GET_PROP, array('ftp', 'LoginAccess'), 'private'),
+            array('configuration', self::DB_GET_PROP, array('ftp', 'status'), 'enabled'),
+            array('configuration', self::DB_GET_PROP, array('ftp', 'access'), 'public'),
+            
 
             array('configuration', self::DB_SET_PROP, array('ftp', array('status' => 'disabled')), TRUE),
             array('configuration', self::DB_SET_PROP, array('ftp', array('access' => 'private')), TRUE),
         );
 
-        $this->markTestIncomplete();
+        $this->runModuleTestProcedure();
     }
 
     public function testEnablePassword()
     {
-        $this->markTestIncomplete();
+        $this->moduleParameters = array('acceptPasswordFromAnyNetwork' => '1');
+        $this->expectedView = array(            
+            array('serviceStatus', 'anyNetwork'),
+            array('acceptPasswordFromAnyNetwork', '1'),
+        );
+
+        $this->expectedDb = array(
+            array('configuration', self::DB_GET_PROP, array('ftp', 'LoginAccess'), 'private'),
+            array('configuration', self::DB_GET_PROP, array('ftp', 'status'), 'enabled'),
+            array('configuration', self::DB_GET_PROP, array('ftp', 'access'), 'public'),
+            
+
+            array('configuration', self::DB_SET_PROP, array('ftp', array('LoginAccess'=>'public')), TRUE),
+        );
+
+        $this->runModuleTestProcedure();
     }
 
     public function testDisablePassword()
     {
-        $this->markTestIncomplete();
+        $this->moduleParameters = array();
+        $this->expectedView = array(            
+            array('serviceStatus', 'anyNetwork'),
+            array('acceptPasswordFromAnyNetwork', ''),
+        );
+
+        $this->expectedDb = array(
+            array('configuration', self::DB_GET_PROP, array('ftp', 'LoginAccess'), 'public'),
+            array('configuration', self::DB_GET_PROP, array('ftp', 'status'), 'enabled'),
+            array('configuration', self::DB_GET_PROP, array('ftp', 'access'), 'public'),            
+            
+            array('configuration', self::DB_SET_PROP, array('ftp', array('LoginAccess'=>'private')), TRUE),
+        );
+
+        $this->runModuleTestProcedure();
     }
 
 }
