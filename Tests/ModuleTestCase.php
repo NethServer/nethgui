@@ -56,6 +56,15 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
      * @var array
      */
     protected $expectedEvents;
+
+
+    /**
+     * Controls return value of NethGui_Core_Request::isSubmitted() mock
+     * @var bool
+     */
+    protected $submittedRequest;
+
+
     private $databaseMocks;
 
     /**
@@ -129,7 +138,7 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
 
             $this->databaseMocks[$database] = $databaseMock;
         }
-        
+
         return $this->databaseMocks[$database];
     }
 
@@ -141,7 +150,7 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
     {
         $requestMock = $this->getMockBuilder("NethGui_Core_Request")
                 ->disableOriginalConstructor()
-                ->setMethods(array('hasParameter', 'getParameter', 'isEmpty', 'getParameters'))
+                ->setMethods(array('hasParameter', 'getParameter', 'isEmpty', 'isSubmitted', 'getParameters'))
                 ->getMock()
         ;
 
@@ -152,6 +161,16 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
         } else {
             $requestMock->expects($this->any())
                 ->method('isEmpty')
+                ->will($this->returnValue(FALSE));
+        }
+
+        if ($this->submittedRequest) {
+            $requestMock->expects($this->any())
+                ->method('isSubmitted')
+                ->will($this->returnValue(TRUE));
+        } else {
+            $requestMock->expects($this->any())
+                ->method('isSubmitted')
                 ->will($this->returnValue(FALSE));
         }
 
@@ -227,6 +246,7 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
         $this->expectedDb = array();
         $this->expectedEvents = array();
         $this->databaseMocks = array();
+        $this->submittedRequest = TRUE;
     }
 
     protected function runModuleTestProcedure($viewMode = NethGui_Core_ModuleInterface::VIEW_REFRESH)

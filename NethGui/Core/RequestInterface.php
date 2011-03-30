@@ -47,6 +47,11 @@ interface NethGui_Core_RequestInterface
     public function isEmpty();
 
     /**
+     * @return bool
+     */
+    public function isSubmitted();
+
+    /**
      * @return UserInterface
      */
     public function getUser();

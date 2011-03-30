@@ -35,6 +35,11 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
      * @var NethGui_Core_ParameterSet
      */
     protected $parameters;
+    /**
+     * 
+     * @var array
+     */
+    private $submitDefaults = array();
     protected $autosave;
     /**
      * @var ArrayObject
@@ -134,21 +139,22 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
      * @param string $parameterName
      * @param string $validationRule A regular expression catching the correct value format
      * @param NethGui_Core_AdapterInterface $adapter
-     * @param mixed $defaultValue Value to assign if parameter is missing during binding
+     * @param mixed $onSubmitDefaultValue Value to assign if parameter is missing when binding a submitted request
      */
-    protected function declareParameter($parameterName, $validationRule, $adapter = NULL, $defaultValue = NULL)
+    protected function declareParameter($parameterName, $validationRule, $adapter = NULL, $onSubmitDefaultValue = NULL)
     {
         $this->validators[$parameterName] = $validationRule;
 
         if ($adapter instanceof NethGui_Core_AdapterInterface) {
             $this->parameters->register($adapter, $parameterName);
+        } else {
+            $this->parameters->offsetSet($parameterName, NULL);
         }
 
-        if (is_null($adapter)
-            OR ! is_null($defaultValue)
-        ) {
-            $this->parameters->offsetSet($parameterName, $defaultValue);
+        if (! is_null($onSubmitDefaultValue)) {
+            $this->submitDefaults[$parameterName] = $onSubmitDefaultValue;
         }
+
     }
 
     public function bind(NethGui_Core_RequestInterface $request)
@@ -156,6 +162,9 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
         foreach ($this->parameters as $parameterName => $parameterValue) {
             if ($request->hasParameter($parameterName)) {
                 $this->parameters[$parameterName] = $request->getParameter($parameterName);
+            } elseif($request->isSubmitted()
+                && isset($this->submitDefaults[$parameterName])) {
+                $this->parameters[$parameterName] = $this->submitDefaults[$parameterName];
             }
         }
     }
@@ -168,9 +177,10 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
                 throw new NethGui_Exception_Validation("Unknown parameter " . $parameter);
             }
 
-            // TODO: implement a real validation
+            // TODO: implement a real validation see issue #12
             $validator = $this->validators[$parameter];
-            if ($validator === false) {
+
+            if ($validator === FALSE) {
                 // PASS...
             } elseif (is_string($validator) && $validator[0] == '/') {
                 if (preg_match($validator, strval($value)) == 0) {

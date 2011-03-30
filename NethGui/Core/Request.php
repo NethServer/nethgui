@@ -31,6 +31,11 @@ class NethGui_Core_Request implements NethGui_Core_RequestInterface
     private $contentType;
 
     /**
+     * @var bool
+     */
+    private $submitted;
+
+    /**
      * Creates a new NethGui_Core_Request object from current web request.
      * @param string $defaultModuleIdentifier
      * @param array $parameters 
@@ -44,6 +49,7 @@ class NethGui_Core_Request implements NethGui_Core_RequestInterface
             if ($_SERVER['REQUEST_METHOD'] == 'GET') {
                 $data = array($defaultModuleIdentifier => $parameters);
                 $contentType = self::CONTENT_TYPE_HTML;
+                $submitted = FALSE;
                 //
             } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
@@ -61,12 +67,13 @@ class NethGui_Core_Request implements NethGui_Core_RequestInterface
                     $data = array_merge(array($defaultModuleIdentifier => $parameters), $_POST);
                     $contentType = self::CONTENT_TYPE_HTML;
                 }
+                $submitted = TRUE;
             }
 
             // TODO: retrieve user state from Session
             $user = new NethGui_Core_AlwaysAuthenticatedUser();
 
-            $instance = new self($user, $data, $contentType);
+            $instance = new self($user, $data, $submitted, $contentType);
 
             /*
              * Clear global variables
@@ -78,7 +85,7 @@ class NethGui_Core_Request implements NethGui_Core_RequestInterface
         return $instance;
     }
 
-    private function __construct(NethGui_Core_UserInterface $user, $data, $contentType)
+    private function __construct(NethGui_Core_UserInterface $user, $data, $submitted, $contentType)
     {
         if (is_null($data)) {
             $data = array();
@@ -86,8 +93,9 @@ class NethGui_Core_Request implements NethGui_Core_RequestInterface
         if ( ! is_array($data)) {
             $data = array($data);
         }
-        $this->data = $data;
         $this->user = $user;
+        $this->data = $data;
+        $this->submitted = (bool) $submitted;
         $this->contentType = $contentType;
     }
 
@@ -112,6 +120,11 @@ class NethGui_Core_Request implements NethGui_Core_RequestInterface
         return empty($this->data);
     }
 
+    public function isSubmitted()
+    {
+        return $this->submitted;
+    }
+
     public function getParameters()
     {
         return array_keys($this->data);
@@ -127,7 +140,7 @@ class NethGui_Core_Request implements NethGui_Core_RequestInterface
 
     public function getParameterAsInnerRequest($parameterName)
     {
-        return new self($this->user, $this->getParameter($parameterName), $this->contentType);
+        return new self($this->user, $this->getParameter($parameterName), $this->submitted, $this->contentType);
     }
 
     public function getUser()
