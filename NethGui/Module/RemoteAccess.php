@@ -34,7 +34,7 @@ final class NethGui_Module_RemoteAccess extends NethGui_Core_Module_Composite im
             $this->addChild($childModule);
         }
 
-        $this->constants['save'] = 1;
+        $this->declareImmutable('save', 1);
     }
 
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)

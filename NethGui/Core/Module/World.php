@@ -35,7 +35,7 @@ final class NethGui_Core_Module_World extends NethGui_Core_Module_Composite
     {
         parent::initialize();
         $this->addChild($this->currentModule);
-        $this->constants = array(
+        $immutables = array(
             'cssMain' => base_url() . 'css/main.css',
             'js' => array(
                 'base' => base_url() . 'js/jquery-1.5.1.min.js',
@@ -44,6 +44,10 @@ final class NethGui_Core_Module_World extends NethGui_Core_Module_Composite
             ),
             'currentModule' => $this->currentModule->getIdentifier(),
         );
+
+        foreach ($immutables as $immutableName => $immutableValue) {
+            $this->declareImmutable($immutableName, $immutableValue);
+        }
     }
 
     public function validate(NethGui_Core_ValidationReportInterface $report)

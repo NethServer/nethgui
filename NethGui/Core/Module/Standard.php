@@ -158,7 +158,18 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
         }
 
     }
-    
+
+    /**
+     * Immutable parameters cannot be changed after declaration.  The View
+     * associated to the Module receives immutable parameters only if
+     * REFRESHing.
+     *
+     * Enumerations and constants are examples of immutable parameters.
+     *
+     * @see prepareView()
+     * @param string $immutableName
+     * @param mixed $immutableValue
+     */
     protected function declareImmutable($immutableName, $immutableValue) {
         if(isset($this->immutables[$immutableName])) {
             throw new Exception('Immutable `' . $immutableName . '` is already declared.');
