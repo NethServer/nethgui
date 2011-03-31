@@ -1,6 +1,19 @@
 <?php
+/**
+ * NethGui
+ *
+ * @package NethGuiFramework
+ */
 
-final class NethGui_Core_Module_ValidationReport extends NethGui_Core_Module_Standard {
+/**
+ * Validation report.
+ *
+ * Displays validation error messages.
+ *
+ * @package NethGuiFramework
+ */
+class NethGui_Core_Module_ValidationReport extends NethGui_Core_Module_Standard
+{
 
     /**
      *
@@ -8,11 +21,10 @@ final class NethGui_Core_Module_ValidationReport extends NethGui_Core_Module_Sta
      */
     private $report;
 
-
     public function __construct(NethGui_Core_ValidationReportInterface $report)
     {
         parent::__construct();
-        $this->report =$report;
+        $this->report = $report;
     }
 
     public function initialize()
@@ -25,15 +37,12 @@ final class NethGui_Core_Module_ValidationReport extends NethGui_Core_Module_Sta
     {
         parent::process();
         $this->parameters['errors'] = new ArrayObject();
-        foreach($this->report->getErrors() as $error)
-        {
+        foreach ($this->report->getErrors() as $error) {
             list($fieldId, $message, $module) = $error;
 
             $this->parameters['errors'][] = array($module->getIdentifier() . '.' . $fieldId, $message);
         }
     }
 
-    
 }
-
 
