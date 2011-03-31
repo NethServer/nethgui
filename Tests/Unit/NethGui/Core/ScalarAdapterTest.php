@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Tests
+ * @subpackage Core
+ */
 
 /**
  * Test class for NethGui_Core_ScalarAdapter.

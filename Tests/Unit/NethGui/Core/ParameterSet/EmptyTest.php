@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Tests
+ * @subpackage Core_ParameterSet
+ */
 
 /**
  * Test class for NethGui_Core_ParameterSet.

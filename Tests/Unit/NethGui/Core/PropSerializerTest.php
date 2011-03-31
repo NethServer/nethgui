@@ -1,6 +1,7 @@
 <?php
 /**
- * @package NethGuiFramework
+ * @package Tests
+ * @subpackage Core
  */
 
 /**
