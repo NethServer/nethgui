@@ -44,7 +44,7 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
     /**
      * @var ArrayObject
      */
-    protected $constants;
+    private $immutables;
     /**
      *
      * @var NethGui_Core_RequestInterface
@@ -67,7 +67,7 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
     public function __construct($identifier = NULL)
     {
         $this->parameters = new NethGui_Core_ParameterSet();
-        $this->constants = new ArrayObject();
+        $this->immutables = new ArrayObject();
 
         if (isset($identifier)) {
             $this->identifier = $identifier;
@@ -75,6 +75,8 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
             $this->identifier = array_pop(explode('_', get_class($this)));
         }
     }
+
+
 
     public function setHostConfiguration(NethGui_Core_HostConfigurationInterface $hostConfiguration)
     {
@@ -156,6 +158,14 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
         }
 
     }
+    
+    protected function declareImmutable($immutableName, $immutableValue) {
+        if(isset($this->immutables[$immutableName])) {
+            throw new Exception('Immutable `' . $immutableName . '` is already declared.');
+        }
+
+        $this->immutables[$immutableName]  = $immutableValue;
+    }
 
     public function bind(NethGui_Core_RequestInterface $request)
     {
@@ -211,7 +221,7 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
     {
         $view->copyFrom($this->parameters);
         if ($mode == self::VIEW_REFRESH) {
-            $view->copyFrom($this->constants);
+            $view->copyFrom($this->immutables);
         }
     }
 
