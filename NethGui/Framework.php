@@ -204,6 +204,16 @@ final class NethGui_Framework
         require_once($classPath);
     }
 
+    /**
+     * Send a message to logging facility.
+     * @param string $message
+     * @param string $level
+     */
+    public static function logMessage($message, $level = 'error')
+    {
+        log_message($level, $message);
+    }
+
 }
 
 /**
