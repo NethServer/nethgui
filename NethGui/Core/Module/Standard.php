@@ -299,5 +299,10 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
         $this->requestHandlers[$identifier] = $handler;
     }
 
+    public function getLanguageCatalog()
+    {
+        return get_class($this);
+    }
+
 }
 

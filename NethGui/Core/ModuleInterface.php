@@ -14,7 +14,7 @@
  *
  * @package ExtensibleApi
  */
-interface NethGui_Core_ModuleInterface extends NethGui_Core_RequestHandlerInterface
+interface NethGui_Core_ModuleInterface extends NethGui_Core_RequestHandlerInterface, NethGui_Core_LanguageCatalogProvider
 {
     /**
      * To require a full view refresh

@@ -24,7 +24,6 @@ final class NethGui_Framework
      */
     private $controller;
     private $languageCode;
-
     /**
      * This is a stack of catalog names. Current catalog is the last element
      * of the array.
@@ -97,16 +96,19 @@ final class NethGui_Framework
             return '';
         }
 
-        $this->languageCatalog[] = $languageCatalog;
+        if ( ! is_null($languageCatalog)) {
+            $this->languageCatalog[] = $languageCatalog;
+        }
 
         $viewOutput = $this->controller->load->view($ciViewPath, $viewState, true);
 
-        array_pop($this->languageCatalog);
+        if ( ! is_null($languageCatalog)) {
+            array_pop($this->languageCatalog);
+        }
 
         return $viewOutput;
     }
 
-   
     /**
      * @see anchor()
      * @param NethGui_Core_ModuleInterface $module
@@ -178,7 +180,8 @@ final class NethGui_Framework
      * 
      * @param string $code ISO 639-1 language code (2 characters).
      */
-    public function setLanguageCode($code) {
+    public function setLanguageCode($code)
+    {
         $this->languageCode = strtolower(substr($code, 0, 2));
     }
 

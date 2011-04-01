@@ -15,12 +15,21 @@ interface NethGui_Core_ViewInterface extends ArrayAccess, IteratorAggregate
 
     /**
      * Set the template to be applied to this object.
-     * @param mixed
+     *
+     * If a string is given, it identifies a php script
+     * (ie. NethGui_View_MyTemplate).
+     *
+     * If a callback function is givent, it is invoked with an array
+     * representing the view state as argument and is expected to return
+     * a string representing the view.
+     *
+     * @see render();
+     * @param string|callback $template The template converting the view state to a string
      */
     public function setTemplate($template);
 
     /**
-     * Specifies the data for the View.     
+     * Assign data to the View state.
      * @param $data
      */
     public function copyFrom($data);
@@ -34,9 +43,11 @@ interface NethGui_Core_ViewInterface extends ArrayAccess, IteratorAggregate
 
     /**
      * Renders a string representation of the view.
+     * @see setTemplate();
      * @return string
      */
     public function render();
+    
   
 }
 

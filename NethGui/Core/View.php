@@ -88,10 +88,6 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
         return $prefix;
     }
 
-    /**
-     * TODO: rename to "mergeFrom()"
-     * @param mixed $data
-     */
     public function copyFrom($data)
     {
         foreach ($data as $offset => $value) {
@@ -125,16 +121,6 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
     public function getIterator()
     {
         return new ArrayIterator(array_merge($this->children, $this->data));
-    }
-
-    /**
-     * Returns the Module associated with this instance.
-     * 
-     * @return NethGui_Core_ModuleInterface Module associated with this instance.
-     */
-    public function getModule()
-    {
-        return $this->module;
     }
 
     public function offsetExists($offset)
@@ -177,7 +163,7 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
         $state['id'] = array();
         $state['name'] = array();
         $state['parameters'] = array();
-        $state['module'] = $this->getModule();
+        $state['module'] = $this->module;
         $state['framework'] = NethGui_Framework::getInstance();
 
         // Add a reference to forward current view state into inner views.
@@ -195,22 +181,51 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
             }
         }
 
-        // TODO: add a getLanguageCatalog to ModuleInterface.
-        $languageCatalog = get_class($this->getModule());
-
-        if(is_string($this->template))
-        {
-            $string = NethGui_Framework::getInstance()->renderView($this->template, $state, $languageCatalog);
-        } elseif (is_array($this->template)) {
-            $string = call_user_func($this->template, $state);
-        } elseif (is_null($this->template)) {
-            $string = '';
+        if ($this->module instanceof NethGui_Core_LanguageCatalogProvider) {
+            $languageCatalog = $this->module->getLanguageCatalog();
+        } else {
+            $languageCatalog = NULL;
         }
 
-        return $string;
+        if (is_string($this->template))
+        {
+            $viewString = NethGui_Framework::getInstance()->renderView($this->template, $state, $languageCatalog);
+        } elseif (is_callable($this->template)) {
+            $viewString = call_user_func($this->template, $state);
+        } elseif (is_null($this->template)) {
+            $viewString = '';
+        }
+
+        return $viewString;
     }
 
+    public function getArrayCopy(NethGui_Core_View $view = NULL, $depth = 0)
+    {
+        if ($depth > 10) {
+            return;
+        }
 
+        if (is_null($view)) {
+            $view = $this;
+        }
 
+        $data = array();
+
+        foreach ($view as $offset => $value) {
+            if ($value instanceof NethGui_Core_View) {
+                $data[$offset] = $this->getArrayCopy($value, $depth + 1);
+            } elseif ($value instanceof ArrayObject) {
+                $data[$offset] = $value->getArrayCopy();
+            } elseif (is_string($value)
+                && $this->module instanceof NethGui_Core_LanguageCatalogProvider) {
+                $languageCatalog = $this->module->getLanguageCatalog();
+                $data[$offset] = T($value, array(), NULL, $languageCatalog);
+            } else {
+                $data[$offset] = $value;
+            }
+        }
+
+        return $data;
+    }
 
 }
