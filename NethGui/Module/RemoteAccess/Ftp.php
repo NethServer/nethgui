@@ -23,27 +23,19 @@ class NethGui_Module_RemoteAccess_Ftp extends NethGui_Core_Module_Standard
         $this->declareParameter(
             'serviceStatus', // parameter name
             '/^(disabled|localNetwork|anyNetwork)$/', // regexp validation
-            new NethGui_Core_MultipleAdapter(
-                array($this, 'readServiceStatus'),
-                array($this, 'writeServiceStatus'),
-                array(
-                    new NethGui_Core_PropSerializer($this->getHostConfiguration()->getDatabase('configuration'), 'ftp', 'status'),
-                    new NethGui_Core_PropSerializer($this->getHostConfiguration()->getDatabase('configuration'), 'ftp', 'access'),
-                )
+            array(
+                array('configuration', 'ftp', 'status'),
+                array('configuration', 'ftp', 'access')
             )
         );
 
         $this->declareParameter(
             'acceptPasswordFromAnyNetwork',
             '/^1?$/',
-            new NethGui_Core_MultipleAdapter(
-                array($this, 'readAcceptPasswordFromAnyNetwork'),
-                array($this, 'writeAcceptPasswordFromAnyNetwork'),
-                array(new NethGui_Core_PropSerializer($this->getHostConfiguration()->getDatabase('configuration'), 'ftp', 'LoginAccess'))
-            ),
+            array('configuration', 'ftp', 'LoginAccess'),
             ''
         );
-        
+
         $this->declareImmutable('serviceStatusOptions', array(
             'anyNetwork' => 'Consenti accesso da qualsiasi rete', // TODO: use translator function
             'localNetwork' => 'Consenti accesso da reti locali',
