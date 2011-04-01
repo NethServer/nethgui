@@ -52,27 +52,74 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
         return $this->databases[$database];
     }
 
-
     /**
+     * Get an identity adapter
+     *
+     * An identity adapter is associated with a database value stored in a key or prop value.
+     * If a $separator character is specified, the adapter is enhance with an ArrayAccess interface,
+     * and the value is stored imploding its elements on that $separator.
+     *
+     *
+     *
      * @return NethGui_Core_AdapterInterface
      */
-    public function getAdapter($database, $key, $prop = NULL, $separator = NULL)
+    public function getIdentityAdapter($database, $key, $prop = NULL, $separator = NULL)
     {
         $db = $this->getDatabase($database);
 
-        if (is_null($prop)) {
-            $serializer = new NethGui_Core_KeySerializer($db, $key);
-        } else {
-            $serializer = new NethGui_Core_PropSerializer($db, $key, $prop);
-        }
+        if (is_string($key)) {
+            $serializer = $this->getSerializer($database, $key, $prop);
 
-        if(is_null($separator)) {
-            $adapter = new NethGui_Core_ScalarAdapter($serializer);
-        } else {
-            $adapter = new NethGui_Core_ArrayAdapter($separator, $serializer);
+            if (is_null($separator)) {
+                $adapter = new NethGui_Core_ScalarAdapter($serializer);
+            } else {
+                $adapter = new NethGui_Core_ArrayAdapter($separator, $serializer);
+            }
+        } elseif (is_callback($key)) {
+            // TODO
         }
 
         return $adapter;
+    }
+
+    /**
+     * Get a Map Adapter.
+     *
+     * A Map Adapter maps database values through a "reader" and a "writer" functions
+     *
+     * @return NethGui_Core_AdapterInterface
+     */
+    public function getMapAdapter($readCallback, $writeCallback, $args)
+    {
+
+        // Create a Multiple adapter
+        $serializers = array();
+
+        foreach ($args as $serializerSpec) {
+            $serializers[] = call_user_func_array(array($this, 'getSerializer'), $serializerSpec);
+        }
+
+        $adapter = new NethGui_Core_MultipleAdapter($readCallback, $writeCallback, $serializers);
+
+        return $adapter;
+    }
+
+    /**
+     *
+     * @param string $database
+     * @param string $key
+     * @param string $prop
+     * @return NethGui_Core_SerializerInterface
+     */
+    private function getSerializer($database, $key, $prop = NULL)
+    {
+        if (is_null($prop)) {
+            $serializer = new NethGui_Core_KeySerializer($this->getDatabase($database), $key);
+        } else {
+            $serializer = new NethGui_Core_PropSerializer($this->getDatabase($database), $key, $prop);
+        }
+
+        return $serializer;
     }
 
     /**

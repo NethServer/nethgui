@@ -1,5 +1,4 @@
 <?php
-
 /**
  * NethGui
  *
@@ -18,6 +17,7 @@
  */
 interface NethGui_Core_HostConfigurationInterface
 {
+
     /**
      * @var string
      * @return NethGui_Core_ConfigurationDatabase
@@ -25,7 +25,7 @@ interface NethGui_Core_HostConfigurationInterface
     public function getDatabase($database);
 
     /**
-     * Obtain an adapter for a "key" or "prop".
+     * Get an adapter for a "key" or "prop".
      * Adapters may be aggregated into an Adapter aggregation.
      *
      * @see NethGui_Core_AdapterAggregationInterface
@@ -35,7 +35,18 @@ interface NethGui_Core_HostConfigurationInterface
      * @param string $separator Specify a single character string to obtain an array-like interface.
      * @return NethGui_Core_AdapterInterface
      */
-    public function getAdapter($database, $key, $prop = NULL, $separator = NULL);
+    public function getIdentityAdapter($database, $key, $prop = NULL, $separator = NULL);
+
+    /**
+     * Get an adapter to one to many values through callback functions.
+     *
+     * @param callback $readCallback
+     * @param callback $writeCallback
+     * @param array $args
+     * @return NethGui_Core_AdapterInterface
+     */
+    public function getMapAdapter($readCallback, $writeCallback, $args);
+
 
     /**
      * Signal an event and return the status
