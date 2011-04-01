@@ -6,7 +6,8 @@
  */
 
 /**
- * Each module has a view attacched to it during prepareView operation.
+ * Each module has a view attacched to it during prepareView operation. A view
+ * contains generic elements such as strings, numbers or other (inner) views.
  *
  * @package NethGuiFramework
  */
@@ -42,7 +43,8 @@ interface NethGui_Core_ViewInterface extends ArrayAccess, IteratorAggregate
     public function getInnerView(NethGui_Core_ModuleInterface $module);
 
     /**
-     * Renders a string representation of the view.
+     * Renders a string representation of the view, performing string translations
+     * on view string elements.
      * @see setTemplate();
      * @return string
      */

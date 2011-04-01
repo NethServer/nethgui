@@ -146,10 +146,10 @@ final class NethGui_Framework
      *
      * @see strtr()
      *
-     * @param string $string
-     * @param array $args
-     * @param string $languageCode
-     * @param string $languageCatalog
+     * @param string $string The string to be translated
+     * @param array $args Values substituted in output string.
+     * @param string $languageCode The language to translate the string into.
+     * @param string $languageCatalog The catalog where to search the translation
      * @return string
      */
     public function translate($string, $args, $languageCode = NULL, $languageCatalog = NULL)
