@@ -52,17 +52,6 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
         return $this->databases[$database];
     }
 
-    /**
-     * Get an identity adapter
-     *
-     * An identity adapter is associated with a database value stored in a key or prop value.
-     * If a $separator character is specified, the adapter is enhance with an ArrayAccess interface,
-     * and the value is stored imploding its elements on that $separator.
-     *
-     *
-     *
-     * @return NethGui_Core_AdapterInterface
-     */
     public function getIdentityAdapter($database, $key, $prop = NULL, $separator = NULL)
     {
         $db = $this->getDatabase($database);
@@ -82,13 +71,6 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
         return $adapter;
     }
 
-    /**
-     * Get a Map Adapter.
-     *
-     * A Map Adapter maps database values through a "reader" and a "writer" functions
-     *
-     * @return NethGui_Core_AdapterInterface
-     */
     public function getMapAdapter($readCallback, $writeCallback, $args)
     {
 

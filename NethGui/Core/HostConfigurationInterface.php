@@ -26,23 +26,34 @@ interface NethGui_Core_HostConfigurationInterface
 
     /**
      * Get an adapter for a "key" or "prop".
-     * Adapters may be aggregated into an Adapter aggregation.
+     *
+     * An Identity Adapter is associated with a database value stored in a key
+     * or prop value. If a $separator character is specified, the adapter
+     * is enhanced with an ArrayAccess interface, and the value is stored
+     * imploding its elements on that $separator.
      *
      * @see NethGui_Core_AdapterAggregationInterface
+     * @see getMapAdapter()
      * @param string $database Database name
      * @param string $key Key connected to the adapter.
-     * @param string $prop Optional. Set to a prop name to connect a prop instead of a key.
-     * @param string $separator Specify a single character string to obtain an array-like interface.
+     * @param string $prop Optional - Set to a prop name to connect a prop instead of a key.
+     * @param string $separator Optional - Specify a single character string to obtain an ArrayAccess and Countable interface.
      * @return NethGui_Core_AdapterInterface
      */
     public function getIdentityAdapter($database, $key, $prop = NULL, $separator = NULL);
 
     /**
-     * Get an adapter to one to many values through callback functions.
+     * Get a mapping Adapter.
      *
-     * @param callback $readCallback
-     * @param callback $writeCallback
-     * @param array $args
+     * A Map Adapter maps database values through a "reader" and a "writer"
+     * function. Values are specified through $args parameter.
+     *
+     * @see getIdentityAdapter()
+     * @see NethGui_Core_AdapterAggregationInterface
+     * @param callback $readCallback If $args has N elements $readCallback must accept N parameters and return a value.
+     * @param callback $writeCallback If $args has N elements $writeCallback must accept a parameter and return an array of N elements.
+     * @param array $args An array of arrays in the form ($database, $key, $prop). $prop is optional.
+     *
      * @return NethGui_Core_AdapterInterface
      */
     public function getMapAdapter($readCallback, $writeCallback, $args);
