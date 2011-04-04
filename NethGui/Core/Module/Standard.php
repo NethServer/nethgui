@@ -2,14 +2,14 @@
 /**
  * NethGui
  *
- * @package NethGuiFramework
+ * @package NethGui
  */
 
 /**
  * TODO: describe class
  *
- * @package NethGuiFramework
- * @subpackage StandardImplementation
+ * @package NethGui
+ * @subpackage Core
  */
 abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterface
 {
