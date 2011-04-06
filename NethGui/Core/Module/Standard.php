@@ -289,11 +289,6 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
         }
     }
 
-    /**
-     * Transfers module parameters to view.
-     * 
-     * @param NethGui_Core_ViewInterface $response
-     */
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
         $view->copyFrom($this->parameters);

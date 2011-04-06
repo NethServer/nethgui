@@ -17,10 +17,10 @@ interface NethGui_Core_ViewInterface extends ArrayAccess, IteratorAggregate
     /**
      * Set the template to be applied to this object.
      *
-     * If a string is given, it identifies a php script
+     * If a string is given, it identifies a PHP Template script
      * (ie. NethGui_View_MyTemplate).
      *
-     * If a callback function is givent, it is invoked with an array
+     * If a callback function is given, it is invoked with an array
      * representing the view state as argument and is expected to return
      * a string representing the view.
      *

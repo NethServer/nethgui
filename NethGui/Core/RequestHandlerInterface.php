@@ -20,7 +20,7 @@ interface NethGui_Core_RequestHandlerInterface {
 
     /**
      * Performs object logics
-     * @return string view name
+     * @return void
      */
     public function process();
     

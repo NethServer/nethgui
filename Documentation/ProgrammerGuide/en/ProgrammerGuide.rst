@@ -5,7 +5,6 @@
  Programmer Guide
 ------------------
 
-
 This guide is addressed to the Programmer (you) who wants to add new
 functions to NethGui.  It shows how to achieve this goal, implementing
 a Module using different techniques.
@@ -14,17 +13,138 @@ Modules in NethGui constitute the functional part of the System.  The
 Programmer achieves the wished behaviour
 
 * by mapping input data to proper values into Host Configuration
-  Database (see `Parameters and Adapters`_), or by processing input data
+  Database (see `Parameters`_ and `Adapters`_), or by processing input data
   in some other way;
 
 * through Modules composition, breaking down the functionalities and
   delegating them to sub-Modules (see `Module Composition`_);
 
-* through building the Module user interface, (see `Templates`_).
-
 The Framework is provided with a `basic testing class`_ to easily verify
 the Module behaviour.
 
+A Module is associated to its View, which represents the user
+interface abstraction.  Such abstraction is translated into HTML code
+by providing a Template_ or a callback method (see `View layer`_ for
+details).
+
+
+Module dissection
+=================
+
+A Module must implement a set of well-known methods defined by
+`NethGui_Core_ModuleInterface`_.  
+
+Every module extending `NethGui_Core_Module_Standard`_ class inherits
+these implementations for free.  From now on, if not otherwise stated,
+we will refer to this class as the "base class" or "basic
+implementation".
+
+The Framework calls these methods at some point during
+execution time in a fixed order:
+
+Initialization phase 
+    When initialize_ is called, the Module is ready to use the database object (see getHostConfiguration_). Here we declare our Parameters_ and how they are
+    connected to the database through Adapters_ (see
+    declareParameter_).
+
+Request handling phase 
+    With bind_ the Module receive the input
+    parameters and can store their values in its internal
+    state. validate_ checks if parameter values are correct and it
+    signals if an error occurs.  process_ persists necessary changes
+    to the database.
+
+Rendering phase 
+    prepareView_ transfers the module internal state and
+    necessary database values to the view state.
+
+
+.. _getHostConfiguration: http://nethgui.nethesis.it/dev/nethgui-dev_davidep/www/doc/NethGui/Core/NethGui_Core_Module_Standard.html#getHostConfiguration
+
+Parameters
+----------
+
+
+Adapters
+--------
+
+
+
+.. _bind:
+.. _validate:
+.. _process:
+.. _NethGui_Core_ModuleInterface: http://nethgui.nethesis.it/dev/nethgui-dev_davidep/www/doc/ExtensibleApi/NethGui_Core_ModuleInterface.html
+.. _NethGui_Core_Module_Standard: http://nethgui.nethesis.it/docs/NethGui/Core/NethGui_Core_Module_Standard.html
+.. _NethGui_Core_Module_Composite: http://nethgui.nethesis.it/docs/NethGui/Core/NethGui_Core_Module_Composite.html
+
+
+Module composition
+==================
+
+Todo
+
+
+View layer
+==========
+
+After the processing phase the Framework asks our Module to fill a
+View object with the output data. The Module receives a View
+object as first argument to prepareView_ method::
+
+   public function prepareView(NethGui_Core_ViewInterface $view, $mode) 
+   {
+       parent::prepareView($view, $mode);
+   }
+
+Basic implementation transfers all module parameters and invariants to
+the view object.
+
+A View object resembles a PHP array, where we can store data using
+keys and values, indeed a View implements ArrayAccess_ and
+IteratorAggregate_ interfaces.
+
+What about ``$mode`` argument? TODO: explain $mode argument.
+
+Later on the view object is rendered, calling a Template_ or a `Callback method`_.
+
+.. _ArrayAccess: http://php.net/manual/en/class.arrayaccess.php
+.. _IteratorAggregate: http://php.net/manual/en/class.iteratoraggregate.php
+.. _prepareView: http://nethgui.nethesis.it/dev/nethgui-dev_davidep/www/doc/NethGui/Core/NethGui_Core_Module_Standard.html#prepareVie
+
+
+Template
+--------
+
+The View layer guesses the PHP Template to 
+
+::
+
+   class NethGui_Module_MyModule extends NethGui_Core_Module_Standard 
+   {
+
+     .
+     .
+     .
+
+     public function prepareView(NethGui_Core_ViewInterface $view, $mode) 
+     {
+         parent::prepareView($view, $mode);
+  
+         // Use NethGui/View/AlternativeTemplate.php
+         // instead of NethGui/View/MyModule.php
+         $view->setTemplate("NethGui_View_AlternativeTemplate");
+     }
+
+     .
+     .
+     .
+     
+
+
+Callback method
+---------------
+
+Describe how to configure a callback method for a View
 
 
 Implementing a simple Module
@@ -78,7 +198,7 @@ Things to note down here are:
 * We re-implement ``initialize()`` method to declare a Module parameter so we *must* call parent's initialize_.
 
 
-In our ``initialize()`` body we declare a parameter, calling declareParameter_:
+In ``initialize()`` body we declare a parameter, calling declareParameter_:
   
 - the parameter name is ``serviceStatus``;
     
@@ -90,8 +210,8 @@ The OnOffModule class is now fully functional, as the base class
 implementation provides transferring the parameter to/from database
 value, if it is correctly validated.
 
-Moreover the base class transfers the parameter value to the View
-layer, so that we can put it in HTML format through a Template.
+Moreover the base class transfers the parameter value to the `View
+layer`_, so that we can put it in HTML format through a Template.
 
 Of course, we have to write the Template first, so we create another
 PHP file, this time under ``NethGui/View/`` directory,
@@ -104,15 +224,16 @@ PHP file, this time under ``NethGui/View/`` directory,
 .. _ModuleTestCase: 
 .. _basic testing class: http://nethgui.nethesis.it/docs/Tests/ModuleTestCase.html
 .. _NethGui_Core_Module_Standard: http://nethgui.nethesis.it/docs/NethGui/Core/NethGui_Core_Module_Standard.html
+.. _NethGui_Core_Module_Composite: http://nethgui.nethesis.it/docs/NethGui/Core/NethGui_Core_Module_Composite.html
 .. _initialize: http://nethgui.nethesis.it/docs/NethGui/Core/NethGui_Core_Module_Standard.html#initialize
 .. _declareParameter: http://nethgui.nethesis.it/docs/NethGui/Core/NethGui_Core_Module_Standard.html#declareParameter
 .. _regular expression: http://php.net/manual/en/function.preg-match.php
 
 
 Module Testing
-^^^^^^^^^^^^^^
+==============
 
-In our example we must test OnOffService in three scenarios:
+In `our example`_ we must test OnOffService in three scenarios:
 
 1. The User turns the service ON.
 
@@ -120,11 +241,13 @@ In our example we must test OnOffService in three scenarios:
 
 3. The User takes no action.
 
-We can check if our OnOffService module is correct by writing a
+We can check if OnOffService module is correct by writing a
 PHPUnit_ test case. NethGui comes with a basic class to be extended to
 build module tests upon it: ModuleTestCase_.
 
-As we are testing a module, we put our test case class under ``Tests/Unit/NethGui/Module/`` directory; the class file name must be ending with ``Test.php``.
+As we are testing a module, we put our test case class under
+``Tests/Unit/NethGui/Module/`` directory; the class file name must be
+ending with ``Test.php``.
 
 In ``OnOffServiceTest.php`` we write::
 
@@ -174,7 +297,8 @@ In ``OnOffServiceTest.php`` we write::
 
    } // end of class
 
-Consider the body of ``testTurnOn()`` method.  To run the test procedure we first set up three member variables:
+Consider the body of ``testTurnOn()`` method.  To run the test
+procedure we first set up three member variables:
 
 * moduleParameters_
 
@@ -189,37 +313,12 @@ In expectedView_ we prepare an array of couples ``<name, value>``.
 The module is expected to transfer to the View layer exactly that list
 of values in that order.
 
-In expectedDb_ we specify the list of low level database calls the module must execute.
+In expectedDb_ we specify the list of low level database calls the
+module must execute.
 
 .. _PHPUnit: http://www.phpunit.de/manual/3.5/en/index.html
 .. _expectedDb: http://nethgui.nethesis.it/docs/Tests/ModuleTestCase.html#$expectedDb
 .. _expectedView: http://nethgui.nethesis.it/docs/Tests/ModuleTestCase.html#$expectedView
 .. _moduleParameters: http://nethgui.nethesis.it/docs/Tests/ModuleTestCase.html#$moduleParameters
-
-
-Templates
-=========
-
-Todo
-
-Parameters and Adapters
-=======================
-
-Todo
-
-Module Composition
-==================
-
-Todo
-
-
-
-
-
-
-
-
-
-
-
+.. _our example: `Implementing a simple Module`_
 
