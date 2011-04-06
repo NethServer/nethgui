@@ -192,25 +192,25 @@ of values in that order.
 In expectedDb_ we specify the list of low level database calls the module must execute.
 
 .. _PHPUnit: http://www.phpunit.de/manual/3.5/en/index.html
-.. _expectedDb: 
-.. _expectedView:
-.. _moduleParameters: http://nethgui.nethesis.it/docs/Tests/ModuleTestCase.html
+.. _expectedDb: http://nethgui.nethesis.it/docs/Tests/ModuleTestCase.html#$expectedDb
+.. _expectedView: http://nethgui.nethesis.it/docs/Tests/ModuleTestCase.html#$expectedView
+.. _moduleParameters: http://nethgui.nethesis.it/docs/Tests/ModuleTestCase.html#$moduleParameters
 
 
 Templates
 =========
 
-T
+Todo
 
 Parameters and Adapters
 =======================
 
-A
+Todo
 
 Module Composition
 ==================
 
-C
+Todo
 
 
 
