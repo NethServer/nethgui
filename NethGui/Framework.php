@@ -217,7 +217,7 @@ final class NethGui_Framework
 }
 
 /**
- * Registers translator function if gettext is not available.
+ * This is a shortcut to NethGui_Framework::translate() 
  * @see NethGui_Framework::translate()
  */
 if ( ! function_exists('T')) {
