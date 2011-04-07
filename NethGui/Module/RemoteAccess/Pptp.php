@@ -25,7 +25,7 @@ class NethGui_Module_RemoteAccess_Pptp extends NethGui_Core_Module_Standard
 
         $this->declareParameter(
             'status',
-            '/(enabled|disabled)/',
+            self::VALID_SERVICESTATUS,
             array('configuration', 'pptpd', 'status')
         );
        

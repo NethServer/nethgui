@@ -34,15 +34,18 @@ class NethGui_Core_ValidatorTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @todo Implement testMemberOf().
-     */
-    public function testMemberOf()
+    public function testMemberOf1()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $this->object->memberOf('a', 'b', 'c');
+        $this->assertTrue($this->object->evaluate('a'));
+        $this->assertFalse($this->object->evaluate('z'));
+    }
+
+    public function testMemberOf2()
+    {
+        $this->object->memberOf(array('a', 'b', 'c'));
+        $this->assertTrue($this->object->evaluate('a'));
+        $this->assertFalse($this->object->evaluate('z'));
     }
 
     public function testRegexpSuccess()

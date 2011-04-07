@@ -30,7 +30,15 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
 
     public function memberOf()
     {
-        return $this->notImplemented(__FUNCTION__);
+        $args = func_get_args();
+
+        if(isset($args[0]) && is_array($args[0]) && count($args) == 1) {
+            $set = $args[0];
+        } else {
+            $set = $args;
+        }
+
+        return $this->addToChain(__FUNCTION__, $set);
     }
 
     /**
@@ -191,6 +199,10 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
     private function evalRegexp($value, $exp)
     {
         return (preg_match($exp, $value) > 0);
+    }
+
+    private function evalMemberOf($value, $args) {
+        return in_array($value, $args, TRUE);
     }
 
 }

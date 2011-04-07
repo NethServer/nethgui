@@ -22,7 +22,7 @@ class NethGui_Module_RemoteAccess_Ftp extends NethGui_Core_Module_Standard
 
         $this->declareParameter(
             'serviceStatus', // parameter name
-            '/^(disabled|localNetwork|anyNetwork)$/', // regexp validation
+            $this->getValidator()->memberOf('disabled', 'anyNetwork', 'localNetwork'),
             array(
                 array('configuration', 'ftp', 'status'),
                 array('configuration', 'ftp', 'access')

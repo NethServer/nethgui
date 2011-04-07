@@ -13,6 +13,10 @@
  */
 abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterface
 {
+    /**
+     * A valid service status is a 'disabled' or 'enabled' string.
+     */
+    const VALID_SERVICESTATUS = 100;
 
     /**
      * @var string
@@ -153,6 +157,8 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
             $validator = $this->getValidator()->regexp($validator);
         } elseif ($validator === FALSE) {
             $validator = $this->getValidator()->forceResult(TRUE);
+        } elseif (is_integer($validator)) {
+            $validator = $this->createValidatorFromInteger($validator);
         }
 
         // At this point $validator MUST be an object implementing the right interface
@@ -173,6 +179,24 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
         if ( ! is_null($onSubmitDefaultValue)) {
             $this->submitDefaults[$parameterName] = $onSubmitDefaultValue;
         }
+    }
+
+    /**
+     * Creates a Validator object that checks against $ruleCode.
+     *
+     * @param integer $ruleCode
+     * @return NethGui_Core_Validator
+     */
+    private function createValidatorFromInteger($ruleCode)
+    {
+        $validator = $this->getValidator();
+
+        switch ($ruleCode) {
+            case self::VALID_SERVICESTATUS;
+                return $validator->memberOf('enabled', 'disabled');
+        }
+
+        throw new InvalidArgumentException('Unknown standard validator code: ' . $ruleCode);
     }
 
     /**
