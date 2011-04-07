@@ -136,7 +136,7 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
     /**
      * Declare a Module parameter.
      *
-     * A parameter is validated thrugh $validationRule and optionally linked to
+     * A parameter is validated through $validationRule and optionally linked to
      * one or more database values through an $adapter.
      *
      * @see NethGui_Core_HostConfigurationInterface::getIdentityAdapter()
