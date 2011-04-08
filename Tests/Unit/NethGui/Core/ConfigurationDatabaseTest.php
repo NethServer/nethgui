@@ -55,6 +55,55 @@ class NethGui_Core_ConfigurationDatabaseTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    
+
+    /**
+     * Implement testGetAll().
+     * @requires testSetKey
+     */
+    public function testGetAll()
+    {
+        $props = array("FirstProp" => "firstvalue", "SecondProp" => "2ndvalue");
+        $this->object->setKey("testkey","testService",$props);
+        $tmp = $this->object->getAll("testService"); //getByType
+        foreach($tmp as $record)
+        {
+            foreach($record as $key=>$val)
+            {
+                if($key=='type')
+                   $this->assertEquals("testService",$record['type']);
+                else
+                   $this->assertEquals($val,$props[$key]);
+            }
+        }
+
+        $tmp = $this->object->getAll(false,"testk"); //getByName
+        foreach($tmp as $record) //getByType
+        {
+            foreach($record as $key=>$val)
+            {
+                if($key=='type')
+                   $this->assertEquals("testService",$record['type']);
+                else
+                   $this->assertEquals($val,$props[$key]);
+            }
+        }
+
+        $tmp = $this->object->getAll("testService","testk"); //getByType && getByName
+        foreach($tmp as $record) //getByType
+        {
+            foreach($record as $key=>$val)
+            {
+                if($key=='type')
+                   $this->assertEquals("testService",$record['type']);
+                else
+                   $this->assertEquals($val,$props[$key]);
+            }
+        }
+
+    }
+
+
     /**
      * Implement testGetKey().
      * @requires testSetKey

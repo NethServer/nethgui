@@ -106,6 +106,49 @@ class NethGui_Core_ConfigurationDatabase implements NethGui_Authorization_Policy
         }
     }
 
+
+    /**
+     * Retrieve all keys from the database. If needed, you can use filter the results by type and key name. 
+     *
+     * @param string $type (optional) type of the key
+     * @param string $filter (optional) case insensitive fulltext search on key value
+     * @access public
+     * @return array associative array in the form "[KeyName] => array( [type] => [TypeValue], [PropName1] => [PropValue1], [PropName2] => [PropValue2], ...) 
+     */
+    public function getAll($type=false,$filter=false)
+    {
+        if ( ! $this->canRead)
+            throw new Exception("Permission Denied");
+
+        $result = array();
+        $output = shell_exec($this->command . " " . $this->db . " print");
+        if ($output != "")
+        {
+            foreach(explode("\n",$output) as $line)
+            {
+                $line = trim($line);
+                if($line)
+		{
+                    $tokens = split("=", $line);
+                    $key = $tokens[0];
+                    $tokens = split("\|", $tokens[1]);
+                    if($type && $tokens[0] != $type)
+                       continue;
+                    if($filter && stristr($key, $filter) === FALSE)
+                       continue;
+
+                    $result[$key]['type'] = $tokens[0];
+                    for ($i = 1; $i <= count($tokens); $i ++ ) { //skip type
+                        if (isset($tokens[$i])) //avoid outbound tokens
+                             $result[$key][trim($tokens[$i])] = trim($tokens[ ++ $i]);
+                    }
+                }
+            }
+        }
+        return $result;
+    }
+
+
     /**
      * Retrieve a key from the database. 
      * Act like : /sbin/e-smith/db dbfile get key
