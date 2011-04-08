@@ -28,9 +28,26 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
         return $this;
     }
 
+    /**
+     * If the first and only argument is an array checks if current value is
+     * in that array.
+     *
+     * Otherwise you can pass arbitrary arguments. It will be checked if the
+     * current value matches any of them.
+     *
+     * @return  NethGui_Core_Validator
+     */
     public function memberOf()
     {
-        return $this->notImplemented(__FUNCTION__);
+        $args = func_get_args();
+
+        if (isset($args[0]) && is_array($args[0]) && count($args) == 1) {
+            $set = $args[0];
+        } else {
+            $set = $args;
+        }
+
+        return $this->addToChain(__FUNCTION__, $set);
     }
 
     /**
@@ -44,7 +61,9 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
     }
 
     /**
-     *
+     * Checks if current value is not empty
+     * 
+     * @see PHP empty
      * @return NethGui_Core_Validator
      */
     public function notEmpty()
@@ -63,27 +82,48 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
         return $this;
     }
 
+    /**
+     * @todo
+     * @return NethGui_Core_Validator
+     */
     public function ipV4Address()
     {
         return $this->notImplemented(__FUNCTION__);
     }
 
+    /**
+     * @todo
+     * @return NethGui_Core_Validator
+     */
     public function ipV6Address()
     {
         return $this->notImplemented(__FUNCTION__);
     }
 
+    /**
+     * @todo
+     * @return NethGui_Core_Validator
+     */
     public function ipV4Netmask()
     {
         return $this->notImplemented(__FUNCTION__);
     }
 
+    /**
+     * @todo
+     * @return NethGui_Core_Validator
+     */
     public function ipV6Netmask()
     {
         return $this->notImplemented(__FUNCTION__);
     }
 
-    public function not() {
+    /**
+     * Invert the evaluation result for the next rule.
+     * @return NethGui_Core_Validator
+     */
+    public function not()
+    {
         $this->chain[] = -1;
         return $this;
     }
@@ -102,11 +142,10 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
         $notFlag = FALSE;
 
         foreach ($this->chain as $expression) {
-            if(is_integer($expression) && $expression < 0) {
+            if (is_integer($expression) && $expression < 0) {
                 // set $notFlag flag. Next $expression will be inverted: NOT(exp)
                 $notFlag = TRUE;
                 continue;
-                
             } elseif (is_array($expression) && is_callable($expression[1])) {
                 $args = array();
                 if (isset($expression[2]) && is_array($expression[2])) {
@@ -117,7 +156,7 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
                 array_unshift($args, $value);
                 $isValid = call_user_func_array($expression[1], $args);
                 if (($isValid XOR $notFlag) === FALSE) {
-                    $this->failureReason =  $expression[0];
+                    $this->failureReason = $expression[0];
                     return FALSE;
                 }
             } elseif ($expression instanceof NethGui_Core_ValidatorInterface) {
@@ -161,7 +200,11 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
     }
 
     /**
-     * 
+     * @param string the calling Method name
+     * @param mixed Optional - First argument to evaluation function
+     * @param mixed Optional - Second argument to evaluation function
+     * @param mixed Optional - ...
+     *
      */
     private function addToChain()
     {
@@ -191,6 +234,11 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
     private function evalRegexp($value, $exp)
     {
         return (preg_match($exp, $value) > 0);
+    }
+
+    private function evalMemberOf($value, $args)
+    {
+        return in_array($value, $args, TRUE);
     }
 
 }
