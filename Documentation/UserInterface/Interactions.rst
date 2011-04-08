@@ -166,7 +166,7 @@ The User wants to delete a table element
 
 5. The deleted row folds up.
 
-5. The original table is refreshed, coherently with its current
+6. The original table is refreshed, coherently with its current
    sorting and pagination state.
 
 
