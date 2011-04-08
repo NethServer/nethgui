@@ -25,25 +25,57 @@ class NethGui_Core_HostConfigurationTest extends PHPUnit_Framework_TestCase
         $this->object->setPolicyDecisionPoint(new NethGui_Authorization_PermissivePolicyDecisionPoint());
     }
 
+    public function testPdp() {
+        $db = $this->object->getDatabase('testdb');
+        $this->assertSame($this->object->getPolicyDecisionPoint(), $db->getPolicyDecisionPoint());
+    }
+
     /**
      * Asserts a database object interface has the same PDP of the fixture.
      */
     public function testGetDatabase()
     {
         $db = $this->object->getDatabase('testdb');
-
         $this->assertInstanceOf('NethGui_Core_ConfigurationDatabase', $db, $message);
-        $this->assertSame($this->object->getPolicyDecisionPoint(), $db->getPolicyDecisionPoint());
-
     }
 
-   /**
-    * 
-    */
-   public function testSignalEvent()
-   {
-        $this->assertEquals(false,$this->object->signalEvent("not-exist-event"));
-        $this->assertEquals(true,$this->object->signalEvent("remoteaccess-update"));
-   }
+    /**
+     *
+     */
+    public function testSignalEvent()
+    {
+        $this->assertEquals(false, $this->object->signalEvent("not-exist-event"));
+        $this->assertEquals(true, $this->object->signalEvent("remoteaccess-update"));
+    }
+
+    public function testGetMapAdapter()
+    { 
+        $adapter = $this->object->getMapAdapter(
+            array($this, 'readCallback'),
+            array($this, 'writeCallback'),
+            array(
+                array('testdb', 'testkey1'),
+                array('testdb', 'testkey2', 'testpropA'),
+                array('testdb', 'testkey3', 'testpropB'),
+            )
+        );
+        $this->assertInstanceOf('NethGui_Core_AdapterInterface', $adapter);
+        
+    }
+
+    public function readCallback($key1, $propA, $propB) {
+        return implode(',', array($key1, $propA, $propB));
+    }
+
+    public function writeCallback($value) {
+        return explode(',', $value);
+    }
+    
+    public function testGetIdentityAdapter()
+    {
+        $this->assertInstanceOf('NethGui_Core_AdapterInterface', $this->object->getIdentityAdapter('testdb', 'testkey'));
+        $this->assertInstanceOf('ArrayAccess', $this->object->getIdentityAdapter('testdb', 'testkey', NULL, ','));
+    }
+
 }
 

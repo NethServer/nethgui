@@ -38,7 +38,7 @@ class NethGui_Module_RemoteAccess_RemoteManagement extends NethGui_Core_Module_S
         $this->declareParameter('networkMask', '/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/');
 
         $this->autosave = FALSE;
-        $this->validFromAdapter = $this->getHostConfiguration()->getAdapter('configuration', 'httpd-admin', 'ValidFrom', ',');
+        $this->validFromAdapter = $this->getHostConfiguration()->getIdentityAdapter('configuration', 'httpd-admin', 'ValidFrom', ',');
     }
 
     public function bind(NethGui_Core_RequestInterface $request)

@@ -20,13 +20,13 @@ class NethGui_Module_RemoteAccess_Pptp extends NethGui_Core_Module_Standard
         $this->declareParameter(
             'client',
             '/\d+/',
-            $this->getHostConfiguration()->getAdapter('configuration', 'pptpd', 'sessions')
+            array('configuration', 'pptpd', 'sessions')
         );
 
         $this->declareParameter(
             'status',
-            '/(enabled|disabled)/',
-            $this->getHostConfiguration()->getAdapter('configuration', 'pptpd', 'status')
+            self::VALID_SERVICESTATUS,
+            array('configuration', 'pptpd', 'status')
         );
        
     }

@@ -14,7 +14,7 @@
  *
  * @package ExtensibleApi
  */
-interface NethGui_Core_ModuleInterface extends NethGui_Core_RequestHandlerInterface
+interface NethGui_Core_ModuleInterface extends NethGui_Core_RequestHandlerInterface, NethGui_Core_LanguageCatalogProvider
 {
     /**
      * To require a full view refresh
@@ -74,12 +74,13 @@ interface NethGui_Core_ModuleInterface extends NethGui_Core_RequestHandlerInterf
 
 
     /**
-     * Prepare view layer data, putting it into $response.
+     * Prepare view layer data, putting it into $view.
      *
      * @param NethGui_Core_ViewInterface $view The view to put the data into
      * @param integer $mode One of VIEW_UPDATE or VIEW_REFRESH values
      * @see NethGui_Core_ModuleInterface::VIEW_REFRESH
      * @see NethGui_Core_ModuleInterface::VIEW UPDATE
+     * @see NethGui_Core_ViewInterface
      */
     public function prepareView(NethGui_Core_ViewInterface $view, $mode);
  

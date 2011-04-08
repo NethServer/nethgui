@@ -114,29 +114,10 @@ final class NethGui_Dispatcher
         } elseif ($request->getContentType() === NethGui_Core_RequestInterface::CONTENT_TYPE_JSON) {
             header("Content-Type: application/json; charset=UTF-8");
             $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_UPDATE);
-            echo json_encode($this->getViewData($view));            
+            echo json_encode($view->getArrayCopy());
         }
     }
 
-    private function getViewData(NethGui_Core_View $view, $depth = 0)
-    {
-        if($depth > 10) {
-            return;
-        }
 
-        $data = array();
-        
-        foreach($view as $offset => $value) {
-            if($value instanceof NethGui_Core_View) {
-                $data[$offset] = $this->getViewData($value, $depth + 1);
-            } elseif ($value instanceof ArrayObject) {
-                $data[$offset] = $value->getArrayCopy();
-            } else {
-                $data[$offset] = $value;
-            }
-        }
-        
-        return $data;
-    }
 
 }

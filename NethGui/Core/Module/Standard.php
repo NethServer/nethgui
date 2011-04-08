@@ -2,17 +2,21 @@
 /**
  * NethGui
  *
- * @package NethGuiFramework
+ * @package NethGui
  */
 
 /**
  * TODO: describe class
  *
- * @package NethGuiFramework
- * @subpackage StandardImplementation
+ * @package NethGui
+ * @subpackage Core
  */
 abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterface
 {
+    /**
+     * A valid service status is a 'disabled' or 'enabled' string.
+     */
+    const VALID_SERVICESTATUS = 100;
 
     /**
      * @var string
@@ -76,8 +80,6 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
         }
     }
 
-
-
     public function setHostConfiguration(NethGui_Core_HostConfigurationInterface $hostConfiguration)
     {
         $this->hostConfiguration = $hostConfiguration;
@@ -137,26 +139,120 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
 
     /**
      * Declare a Module parameter.
-     * 
-     * @param string $parameterName
-     * @param string $validationRule A regular expression catching the correct value format
-     * @param NethGui_Core_AdapterInterface $adapter
-     * @param mixed $onSubmitDefaultValue Value to assign if parameter is missing when binding a submitted request
+     *
+     * A parameter is validated through $validationRule and optionally linked to
+     * one or more database values through an $adapter.
+     *
+     * @see NethGui_Core_HostConfigurationInterface::getIdentityAdapter()
+     * @see NethGui_Core_HostConfigurationInterface::getMapAdapter()
+     *
+     * @param string $parameterName The name of the parameter
+     * @param string $validator Optional - A regular expression catching the correct value format
+     * @param NethGui_Core_AdapterInterface|array $adapter Optional - An adapter instance or an array of arguments to create it
+     * @param mixed $onSubmitDefaultValue Optional - Value to assign if parameter is missing when binding a submitted request
      */
-    protected function declareParameter($parameterName, $validationRule = FALSE, $adapter = NULL, $onSubmitDefaultValue = NULL)
+    protected function declareParameter($parameterName, $validator = FALSE, $adapter = NULL, $onSubmitDefaultValue = NULL)
     {
-        $this->validators[$parameterName] = $validationRule;
+        if (is_string($validator) && $validator[0] == '/') {
+            $validator = $this->getValidator()->regexp($validator);
+        } elseif ($validator === FALSE) {
+            $validator = $this->getValidator()->forceResult(TRUE);
+        } elseif (is_integer($validator)) {
+            $validator = $this->createValidatorFromInteger($validator);
+        }
+
+        // At this point $validator MUST be an object implementing the right interface
+        if ($validator instanceof NethGui_Core_ValidatorInterface) {
+            $this->validators[$parameterName] = $validator;
+        } else {
+            throw new NethGui_Exception_Validation("Invalid validator value for parameter `" . $parameter . '` in module `' . get_class($this) . '`.');
+        }
 
         if ($adapter instanceof NethGui_Core_AdapterInterface) {
             $this->parameters->register($adapter, $parameterName);
+        } elseif (is_array($adapter)) {
+            $this->parameters->register($this->getAdapterForParameter($parameterName, $adapter), $parameterName);
         } else {
             $this->parameters->offsetSet($parameterName, NULL);
         }
 
-        if (! is_null($onSubmitDefaultValue)) {
+        if ( ! is_null($onSubmitDefaultValue)) {
             $this->submitDefaults[$parameterName] = $onSubmitDefaultValue;
         }
+    }
 
+    /**
+     * Creates a Validator object that checks against $ruleCode.
+     *
+     * @param integer $ruleCode
+     * @return NethGui_Core_Validator
+     */
+    private function createValidatorFromInteger($ruleCode)
+    {
+        $validator = $this->getValidator();
+
+        switch ($ruleCode) {
+            case self::VALID_SERVICESTATUS;
+                return $validator->memberOf('enabled', 'disabled');
+        }
+
+        throw new InvalidArgumentException('Unknown standard validator code: ' . $ruleCode);
+    }
+
+    /**
+     * @return NethGui_Core_Validator
+     */
+    protected function getValidator()
+    {
+        return new NethGui_Core_Validator();
+    }
+
+    /**
+     * Helps in creation of complex adapters.
+     * @param array $args
+     * @return NethGui_Core_AdapterInterface
+     */
+    private function getAdapterForParameter($parameterName, $args)
+    {
+        $readerCallback = 'read' . ucfirst($parameterName);
+        $writerCallback = 'write' . ucfirst($parameterName);
+
+        $hasCallbacks = method_exists($this, $readerCallback)
+            && method_exists($this, $writerCallback);
+
+        if ($hasCallbacks) {
+            /*
+             * Perhaps we have callbacks defined but only one serializer;
+             * in this case wrap $args into an array.
+             *
+             * If first argument is a string, it contains the $database name.
+             */
+            if (is_string($args[0])) {
+                $args = array($args);
+            }
+
+            if (is_array($args)) {
+                $adapterObject = $this->getHostConfiguration()->getMapAdapter(
+                        array($this, $readerCallback),
+                        array($this, $writerCallback),
+                        $args
+                );
+            }
+        } elseif (isset($args[0], $args[1])) {
+            // Get an identity adapter:
+            $database = (string) $args[0];
+            $key = (string) $args[1];
+            $prop = isset($args[2]) ? (string) $args[2] : NULL;
+            $separator = isset($args[3]) ? (string) $args[3] : NULL;
+
+            $adapterObject = $this->getHostConfiguration()->getIdentityAdapter($database, $key, $prop, $separator);
+        }
+
+        if (is_null($adapterObject)) {
+            throw new Exception("Cannot create an adapter for parameter `" . $parameterName . "`");
+        }
+
+        return $adapterObject;
     }
 
     /**
@@ -170,12 +266,13 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
      * @param string $immutableName
      * @param mixed $immutableValue
      */
-    protected function declareImmutable($immutableName, $immutableValue) {
-        if(isset($this->immutables[$immutableName])) {
+    protected function declareImmutable($immutableName, $immutableValue)
+    {
+        if (isset($this->immutables[$immutableName])) {
             throw new Exception('Immutable `' . $immutableName . '` is already declared.');
         }
 
-        $this->immutables[$immutableName]  = $immutableValue;
+        $this->immutables[$immutableName] = $immutableValue;
     }
 
     public function bind(NethGui_Core_RequestInterface $request)
@@ -183,7 +280,7 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
         foreach ($this->parameters as $parameterName => $parameterValue) {
             if ($request->hasParameter($parameterName)) {
                 $this->parameters[$parameterName] = $request->getParameter($parameterName);
-            } elseif($request->isSubmitted()
+            } elseif ($request->isSubmitted()
                 && isset($this->submitDefaults[$parameterName])) {
                 $this->parameters[$parameterName] = $this->submitDefaults[$parameterName];
             }
@@ -193,22 +290,15 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
     public function validate(NethGui_Core_ValidationReportInterface $report)
     {
         foreach ($this->parameters as $parameter => $value) {
-            if ( ! isset($this->validators[$parameter]))
-            {
+            if ( ! isset($this->validators[$parameter])) {
                 throw new NethGui_Exception_Validation("Unknown parameter " . $parameter);
             }
 
-            // TODO: implement a real validation see issue #12
             $validator = $this->validators[$parameter];
 
-            if ($validator === FALSE) {
-                // PASS...
-            } elseif (is_string($validator) && $validator[0] == '/') {
-                if (preg_match($validator, strval($value)) == 0) {
-                    $report->addError($this, $parameter, 'Invalid `' . $parameter . '`');
-                }
-            } else {
-                throw new NethGui_Exception_Validation("Invalid validator value for parameter `" . $parameter . '` in module `' . get_class($this) . '`.');
+            $isValid = $validator->evaluate($value);
+            if ($isValid !== TRUE) {
+                $report->addError($this, $parameter, $validator->getMessage());
             }
         }
     }
@@ -223,11 +313,6 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
         }
     }
 
-    /**
-     * Transfers module parameters to view.
-     * 
-     * @param NethGui_Core_ViewInterface $response
-     */
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
         $view->copyFrom($this->parameters);
@@ -243,6 +328,11 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
     protected function setRequestHandler($identifier, NethGui_Core_RequestHandlerInterface $handler)
     {
         $this->requestHandlers[$identifier] = $handler;
+    }
+
+    public function getLanguageCatalog()
+    {
+        return get_class($this);
     }
 
 }

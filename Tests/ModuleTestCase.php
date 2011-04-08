@@ -1,6 +1,6 @@
 <?php
 /**
- * @package NethGuiFramework
+ * @package Tests
  */
 
 /**
@@ -12,8 +12,7 @@
  *
  * Refs #11
  *
- * @package NethGuiFramework
- * @subpackage Test
+ * @package Tests
  */
 abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
 {
