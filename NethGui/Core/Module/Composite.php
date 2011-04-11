@@ -41,6 +41,9 @@ abstract class NethGui_Core_Module_Composite extends NethGui_Core_Module_Standar
         if ( ! isset($this->children[$childModule->getIdentifier()])) {
             $this->children[$childModule->getIdentifier()] = $childModule;
             $childModule->setParent($this);
+            if ($this->getHostConfiguration() !== NULL) {
+                $childModule->setHostConfiguration($this->getHostConfiguration());
+            }
             if ($this->isInitialized() && ! $childModule->isInitialized()) {
                 $childModule->initialize();
             }
@@ -90,6 +93,14 @@ abstract class NethGui_Core_Module_Composite extends NethGui_Core_Module_Standar
         parent::prepareView($view, $mode);
         foreach ($this->getChildren() as $childModule) {
             $childModule->prepareView($view->getInnerView($childModule), $mode);
+        }
+    }
+
+    public function setHostConfiguration(NethGui_Core_HostConfigurationInterface $hostConfiguration)
+    {
+        parent::setHostConfiguration($hostConfiguration);
+        foreach ($this->getChildren() as $childModule) {
+            $childModule->setHostConfiguration($hostConfiguration);
         }
     }
 
