@@ -18,6 +18,27 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
      */
     const VALID_SERVICESTATUS = 100;
 
+     /**
+     * A valid IPv4 address like '192.168.1.1' 
+     */
+    const VALID_IPv4 = 200;
+     
+     /**
+     * A valid IPv4 address like '192.168.1.1' ore empty
+     */
+    const VALID_IPv4_OR_EMPTY = 201;
+
+     /**
+     * Alias for VALID_IPv4 
+     */
+    const VALID_IP = 202;
+
+     /**
+     * Alias for VALID_IPv4_OR_EMPTY
+     */
+    const VALID_IP_OR_EMPTY = 203;
+
+
     /**
      * @var string
      */
@@ -192,8 +213,17 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
         $validator = $this->getValidator();
 
         switch ($ruleCode) {
-            case self::VALID_SERVICESTATUS;
+            case self::VALID_SERVICESTATUS:
                 return $validator->memberOf('enabled', 'disabled');
+
+            case self::VALID_IP:
+            case self::VALID_IPv4:
+                return $validator->ipV4Address();
+
+            case self::VALID_IP_OR_EMPTY:
+                return $validator->orValidator($this->getValidator()->ipV4Address(),$this->getValidator()->isEmpty());
+
+          
         }
 
         throw new InvalidArgumentException('Unknown standard validator code: ' . $ruleCode);
