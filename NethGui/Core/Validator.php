@@ -5,7 +5,6 @@
 
 /**
  * 
- *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @package NethGui
  * @subpackage Core
@@ -248,6 +247,7 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
  * @package NethGui
  * @subpackage Core
  * @internal
+ * @see NethGui_Core_Validator::orValidator()
  */
 class NethGui_Core_OrValidator implements NethGui_Core_ValidatorInterface
 {

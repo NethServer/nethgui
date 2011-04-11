@@ -322,6 +322,7 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
     }
 
     /**
+     * @todo This method and the member variable seems to be needless...
      * @param string $identifier
      * @param NethGui_Core_RequestHandlerInterface $handler
      */

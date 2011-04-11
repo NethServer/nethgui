@@ -8,13 +8,8 @@
  *
  * @package Modules
  */
-class NethGui_Module_LocalNetwork extends NethGui_Core_Module_Table implements NethGui_Core_TopModuleInterface
+class NethGui_Module_LocalNetwork extends NethGui_Core_Module_Composite implements NethGui_Core_TopModuleInterface
 {
-    public function getTitle()
-    {
-        return "Local network";
-    }
-
     public function getParentMenuIdentifier()
     {
         return NULL;
@@ -23,13 +18,18 @@ class NethGui_Module_LocalNetwork extends NethGui_Core_Module_Table implements N
     public function initialize()
     {
         parent::initialize();
-        $this->declareImmutable('save', 1);
-    }
 
-    public function prepareView(NethGui_Core_ViewInterface $view, $mode)
-    {
-        parent::prepareView($view, $mode);
-        $view->setTemplate('NethGui_Core_View_form');
+        $dialog = new NethGui_Core_Module_TableDialog(
+            'NethGui_View_LocalNetwork_Dialog',
+            array(
+                array('network', FALSE, NULL),
+                array('mask', FALSE, NULL),
+                array('router', FALSE, NULL),
+            )
+        );
+
+        $tableModule = new NethGui_Core_Module_Table('networks', 'network', $dialog);
+        $this->addChild($tableModule);
     }
 
 }

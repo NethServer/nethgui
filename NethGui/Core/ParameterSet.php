@@ -111,4 +111,19 @@ class NethGui_Core_ParameterSet implements NethGui_Core_AdapterAggregationInterf
         return key($this->data) !== NULL;
     }
 
+    /**
+     * Converts the current instance to an array in the form key => value.
+     * @return array
+     */
+    public function getArrayCopy() {
+        $a = array();
+
+        foreach($this as $key => $value){
+            $a[$key] = $value;
+        }
+
+        return $a;
+    }
+
+
 }

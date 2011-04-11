@@ -10,7 +10,7 @@
  *
  * @package Modules
  */
-final class NethGui_Module_RemoteAccess extends NethGui_Core_Module_Composite implements NethGui_Core_TopModuleInterface
+class NethGui_Module_RemoteAccess extends NethGui_Core_Module_Composite implements NethGui_Core_TopModuleInterface
 {
 
     public function getTitle()
