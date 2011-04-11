@@ -71,6 +71,19 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
         return $this->addToChain(__FUNCTION__);
     }
 
+
+    /**
+     * Checks if current value is empty
+     * 
+     * @see PHP empty
+     * @return NethGui_Core_Validator
+     */
+    public function isEmpty()
+    {
+        return $this->addToChain(__FUNCTION__);
+    }
+
+
     /**
      * Force the evaluation result
      * @param bool exit status
@@ -83,12 +96,12 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
     }
 
     /**
-     * @todo
+     * Check if the given value is a valid IPv4 address
      * @return NethGui_Core_Validator
      */
     public function ipV4Address()
     {
-        return $this->notImplemented(__FUNCTION__);
+        return $this->addToChain(__FUNCTION__);
     }
 
     /**
@@ -231,6 +244,13 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
         return FALSE;
     }
 
+
+    private function evalIsEmpty($value)
+    {
+        return empty($value);
+    }
+
+
     private function evalRegexp($value, $exp)
     {
         return (preg_match($exp, $value) > 0);
@@ -240,6 +260,42 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
     {
         return in_array($value, $args, TRUE);
     }
+
+    /**
+     * Validate IP Address
+     *
+     * Updated version suggested by Geert De Deckere
+     *
+     * @access       public
+     * @param        string
+     * @return       string
+     * @author CodeIgniter
+     */
+     private function evalIpV4Address($value)
+     {
+         $ip_segments = explode('.', $value);
+
+         // Always 4 segments needed
+         if (count($ip_segments) != 4) {
+              return FALSE;
+         }
+         // IP can not start with 0
+         if ($ip_segments[0][0] == '0') {
+               return FALSE;
+         }
+         
+         // Check each segment
+         foreach ($ip_segments as $segment) {
+                // IP segments must be digits and can not be
+                // longer than 3 digits or greater then 255
+                if ($segment == '' OR preg_match("/[^0-9]/", $segment) OR $segment > 255 OR strlen($segment) > 3) {
+                    return FALSE;
+                }
+          }
+
+          return TRUE;
+      }
+
 
 }
 
@@ -275,15 +331,13 @@ class NethGui_Core_OrValidator implements NethGui_Core_ValidatorInterface
         $e1 = $this->v1->evaluate($value);
 
         if ($e1 === FALSE) {
-            $this->failureReason = $this->v1->getMessage();
-            return FALSE;
-        }
+            $e2 = $this->v2->evaluate($value);
 
-        $e2 = $this->v2->evaluate($value);
-
-        if ($e2 === FALSE) {
-            $this->failureReason = $this->v2->getMessage();
-            return FALSE;
+            if ($e2 === FALSE) {
+                $this->failureReason = $this->v2->getMessage()." ".$this->v1->getMessage();
+                return FALSE;
+            }
+            return TRUE;
         }
 
         return TRUE;
