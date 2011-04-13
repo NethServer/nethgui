@@ -30,7 +30,7 @@ class NethGui_Module_LocalNetwork extends NethGui_Core_Module_Composite implemen
         );
 
         $columns = array('network', 'Mask', 'Router', 'SystemLocalNetwork');
-        $tableModule = new NethGui_Core_Module_Table('networks', 'network', $columns, NULL);
+        $tableModule = new NethGui_Core_Module_TableController('networks', 'network', $columns, $dialog);
         $this->addChild($tableModule);
     }
 

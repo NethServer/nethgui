@@ -11,7 +11,7 @@
  * @package NethGuiFramework
  * @subpackage StandardImplementation
  */
-class NethGui_Core_Module_Table extends NethGui_Core_Module_Composite
+class NethGui_Core_Module_TableController extends NethGui_Core_Module_Composite
 {
     const READ = 0;
     const CREATE = 1;
@@ -197,4 +197,9 @@ class NethGui_Core_Module_Table extends NethGui_Core_Module_Composite
         }
     }
 
+    public function prepareView(NethGui_Core_ViewInterface $view, $mode)
+    {
+        parent::prepareView($view, $mode);
+        $view->setTemplate('NethGui_Core_View_table');
+    }
 }
