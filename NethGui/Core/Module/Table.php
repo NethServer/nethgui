@@ -33,34 +33,65 @@ class NethGui_Core_Module_Table extends NethGui_Core_Module_Composite
      * @var string
      */
     private $type;
+    /**
+     * @var bool;
+     */
+    private $readonly;
+    /**
+     *
+     * @param array $columns
+     */
+    private $columns;
 
     /**
      *
      * @param string $database
      * @param string $type
+     * @param array $columns
      * @param NethGui_Core_Module_TableDialog|array
      */
-    public function __construct($database, $type, $dialog = NULL, $events = array())
+    public function __construct($database, $type, $columns, $dialog = NULL, $events = array())
     {
         parent::__construct($database . '_' . $type);
         $this->autosave = FALSE; // disable auto saving of parameters in process()
         $this->database = $database;
         $this->type = $type;
+        $this->columns = array_values($columns);
         $this->events = $events;
 
         if (is_array($dialog)) {
-            $dialog = $this->createDialog($dialog);
+            $dialog = $this->createDialogFromArray($dialog);
         }
 
-        $this->addChild($dialog);
+        if ($dialog instanceof NethGui_Core_Module_TableDialog) {
+            $this->addChild($dialog);
+            $this->readonly = FALSE;
+        } else {
+            $this->readonly = TRUE;
+        }
     }
 
     public function initialize()
     {
         parent::initialize();
-        foreach (array('action', 'limit', 'key', 'page', 'data') as $internalParameter) {
-            $this->declareParameter($internalParameter);
+
+        if ($this->readonly) {
+            $actionValidator = $this->getValidator()->memberOf('READ');
+        } else {
+            $actionValidator = $this->getValidator()->memberOf('READ', 'CREATE', 'UPDATE', 'DELETE');
         }
+
+        $this->declareParameter('action', $actionValidator, NULL, 'READ');
+
+        $this->declareParameter('key', FALSE, NULL, NULL);
+
+        $this->declareParameter('page', FALSE, NULL, 1);
+
+        $this->declareParameter('size', $this->getValidator()->memberOf(10, 20, 50, 100), NULL, 20);
+
+        $this->declareParameter('rows', FALSE, NULL, NULL);
+
+        $this->declareImmutable('columns', $this->columns);
     }
 
     /**
@@ -68,7 +99,7 @@ class NethGui_Core_Module_Table extends NethGui_Core_Module_Composite
      * @param array $dialogArguments
      * @return NethGui_Core_Module_TableDialog
      */
-    private function createDialog($dialogArguments)
+    private function createDialogFromArray($dialogArguments)
     {
         throw new Exception('not implemented!');
     }
@@ -85,10 +116,10 @@ class NethGui_Core_Module_Table extends NethGui_Core_Module_Composite
             $key = NULL;
         }
 
-        $this->parameters['limit'] = 20;
+        $this->parameters['size'] = 20;
         $this->parameters['key'] = $key;
         $this->parameters['page'] = 0;
-        $this->parameters['data'] = array();
+        $this->parameters['rows'] = $this->fetchRows();
 
         if (strtolower($action) == 'update') {
             $this->action = self::UPDATE;
@@ -104,6 +135,28 @@ class NethGui_Core_Module_Table extends NethGui_Core_Module_Composite
             $this->action = self::READ;
             $this->parameters['action'] = 'READ';
         }
+    }
+
+    private function fetchRows()
+    {
+        $rows = array();
+
+        foreach($this->getHostConfiguration()->getDatabase($this->database)->getAll($this->type) as $key => $values)
+        {
+            $row = array();
+
+            foreach($this->columns as $columnIndex => $column) {
+                if($columnIndex == 0) {
+                    $row[] = $key;
+                } else {
+                    $row[] = isset($values[$column]) ? $values[$column] : NULL;
+                }
+            }
+
+            $rows[] = $row;
+        }
+
+        return $rows;
     }
 
     private function loadDialogValues($key)

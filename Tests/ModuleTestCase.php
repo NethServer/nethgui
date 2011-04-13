@@ -24,6 +24,7 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
     const DB_DEL_PROP = 'delProp';
     const DB_GET_TYPE = 'getType';
     const DB_SET_TYPE = 'setType';
+    const DB_GET_ALL = 'getAll';
 
     /**
      * @var NethGui_Core_Module_Standard
@@ -55,15 +56,11 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
      * @var array
      */
     protected $expectedEvents;
-
-
     /**
      * Controls return value of NethGui_Core_Request::isSubmitted() mock
      * @var bool
      */
     protected $submittedRequest;
-
-
     private $databaseMocks;
 
     /**
@@ -119,7 +116,8 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
                         'setKey',
                         'getKey',
                         'getType',
-                        'setType'))
+                        'setType',
+                        'getAll'))
                     ->getMock();
 
             $index = 0;
@@ -195,6 +193,9 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
 
     public function requestGetParameter($parameter)
     {
+        if ( ! isset($this->moduleParameters[$parameter])) {
+            return NULL;
+        }
         return $this->moduleParameters[$parameter];
     }
 
@@ -210,7 +211,6 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
                 ->setConstructorArgs(array($this->object))
                 ->getMock()
         ;
-
 
         foreach ($this->expectedView as $index => $args) {
             $viewMock->expects($this->at($index))

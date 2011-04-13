@@ -11,9 +11,9 @@ class NethGui_Core_Module_TableDialog extends NethGui_Core_Module_Standard
      * @param string|array $template See {@link NethGui_Core_View::setTemplate()} method.
      * @param array $dbSchema
      */
-    public function __construct($template, $dbSchema)
+    public function __construct($identifier, $template, $dbSchema)
     {
-        parent::__construct();
+        parent::__construct($identifier);
         $this->dialogTemplate = $template;
         $this->dbSchema = $dbSchema;
         $this->autosave = FALSE;

@@ -20,15 +20,17 @@ class NethGui_Module_LocalNetwork extends NethGui_Core_Module_Composite implemen
         parent::initialize();
 
         $dialog = new NethGui_Core_Module_TableDialog(
+            'DlgLocalNetwork',
             'NethGui_View_LocalNetwork_Dialog',
             array(
-                array('network', FALSE, NULL),
-                array('mask', FALSE, NULL),
-                array('router', FALSE, NULL),
+                array('network', self::VALID_IPv4, NULL),
+                array('mask', self::VALID_IPv4, NULL),
+                array('router', self::VALID_IP_OR_EMPTY, FALSE, NULL),
             )
         );
 
-        $tableModule = new NethGui_Core_Module_Table('networks', 'network', $dialog);
+        $columns = array('network', 'Mask', 'Router', 'SystemLocalNetwork');
+        $tableModule = new NethGui_Core_Module_Table('networks', 'network', $columns, NULL);
         $this->addChild($tableModule);
     }
 

@@ -1,5 +1,6 @@
-<p>Implement this template.</p>
-<code><?php echo __FILE__ ?></code>
 
 <?php echo $view['networks_network']->render(); ?>
 
+<form method="POST" action="">
+<input type="submit" value="Save" />
+</form>
