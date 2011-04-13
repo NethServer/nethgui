@@ -65,13 +65,18 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
      * @var array
      */
     private $submitDefaults = array();
+    /**
+     * Set to FALSE if you want to inhibit saving of parameters.
+     * @var bool
+     */
     protected $autosave;
     /**
      * @var ArrayObject
      */
     private $immutables;
     /**
-     *
+     * @todo remove $request member.
+     * @deprecated
      * @var NethGui_Core_RequestInterface
      */
     protected $request;
@@ -81,10 +86,18 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
      */
     private $validators = array();
     /**
+     * @deprecated
+     * @todo remove $requestHandlers member.
      * @see NethGui_Core_RequestHandlerInterface
      * @var array
      */
     private $requestHandlers = array();
+    /**
+     * This array holds the names of parameters submitted in Request.
+     * Only those parameters will be validated.
+     * @var array
+     */
+    private $submittedParameters = array();
 
     /**
      * @param string $identifier
@@ -145,7 +158,7 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
 
     public function getDescription()
     {
-        return "";
+        return $this->getTitle();
     }
 
     public function setParent(NethGui_Core_ModuleInterface $parentModule)
@@ -310,6 +323,7 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
         foreach ($this->parameters as $parameterName => $parameterValue) {
             if ($request->hasParameter($parameterName)) {
                 $this->parameters[$parameterName] = $request->getParameter($parameterName);
+                $this->submittedParameters[] = $parameterName;
             } elseif ($request->isSubmitted()
                 && isset($this->submitDefaults[$parameterName])) {
                 $this->parameters[$parameterName] = $this->submitDefaults[$parameterName];
@@ -319,14 +333,14 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
 
     public function validate(NethGui_Core_ValidationReportInterface $report)
     {
-        foreach ($this->parameters as $parameter => $value) {
+        foreach ($this->submittedParameters as $parameter) {
             if ( ! isset($this->validators[$parameter])) {
                 throw new NethGui_Exception_Validation("Unknown parameter " . $parameter);
             }
 
             $validator = $this->validators[$parameter];
 
-            $isValid = $validator->evaluate($value);
+            $isValid = $validator->evaluate($this->parameters[$parameter]);
             if ($isValid !== TRUE) {
                 $report->addError($this, $parameter, $validator->getMessage());
             }
