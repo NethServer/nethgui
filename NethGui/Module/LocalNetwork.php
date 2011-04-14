@@ -1,19 +1,20 @@
 <?php
 /**
- * @package Modules
+ * @package NethGui
+ * @subpackage Module
  */
 
 /**
- * TODO: describe class
- *
- * @package Modules
+ * @todo describe class
+ * @package NethGui
+ * @subpackage Module
  */
 class NethGui_Module_LocalNetwork extends NethGui_Core_Module_TableController implements NethGui_Core_TopModuleInterface
 {
 
     public function getParentMenuIdentifier()
     {
-        return NULL;
+        return "Administration";
     }
 
     public function __construct()

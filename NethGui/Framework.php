@@ -1,14 +1,10 @@
 <?php
 /**
- * NethGui
- *
- * @package NethGuiFramework
+ * @package NethGui
  */
 
 /**
- * NethGui Framework singleton.
- *
- * @package NethGuiFramework
+ * @package NethGui
  */
 final class NethGui_Framework
 {

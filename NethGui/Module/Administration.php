@@ -1,32 +1,18 @@
 <?php
-
 /**
- * NethGui
- *
- * @package Modules
+ * @package NethGui
+ * @subpackage Module
  */
 
 /**
- * TODO: describe class
- *
- * @package Modules
+ * @todo describe class
+ * @package NethGui
+ * @subpackage Module
  */
-final class NethGui_Module_Administration extends NethGui_Core_Module_Standard implements NethGui_Core_TopModuleInterface
+class NethGui_Module_Administration extends NethGui_Core_Module_Standard implements NethGui_Core_TopModuleInterface
 {
-
-    public function getTitle()
-    {
-        return "Administration";
-    }
-
-    public function getDescription()
-    {
-        return "Backup Ripristino, Log etc...";
-    }
-
     public function getParentMenuIdentifier()
     {
         return NULL;
     }
-
 }

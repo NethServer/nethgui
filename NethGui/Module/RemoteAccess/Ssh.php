@@ -1,15 +1,13 @@
 <?php
 /**
- * NethGui
- *
- * @package Modules
+ * @package NethGui
+ * @subpackage Module_RemoteAccess
  */
 
 /**
- * TODO: describe class
- *
- * @package Modules
- * @subpackage RemoteAccess
+ * @todo Describe Module class
+ * @package NethGui
+ * @subpackage Module_RemoteAccess
  */
 class NethGui_Module_RemoteAccess_Ssh extends NethGui_Core_Module_Standard
 {

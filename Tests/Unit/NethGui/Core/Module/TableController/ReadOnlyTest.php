@@ -1,5 +1,13 @@
 <?php
+/**
+ * @package Tests
+ * @subpackage NethGui_Core_Module_TableController
+ */
 
+/**
+ * @package Tests
+ * @subpackage NethGui_Core_Module_TableController
+ */
 class NethGui_Core_Module_TableReadOnlyTest extends ModuleTestCase
 {
 

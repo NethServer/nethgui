@@ -1,27 +1,18 @@
 <?php
-
 /**
- * NethGui
- *
- * @package Modules
+ * @package NethGui
+ * @subpackage Module
  */
 
 /**
- * TODO: describe class
- *
- * @package Modules 
+ * @todo describe class
+ * @package NethGui
+ * @subpackage Module
  */
-final class NethGui_Module_Security extends NethGui_Core_Module_Standard implements NethGui_Core_TopModuleInterface
+class NethGui_Module_Security extends NethGui_Core_Module_Standard implements NethGui_Core_TopModuleInterface
 {
-
-    public function getTitle()
-    {
-        return "Security";
-    }
-
     public function getParentMenuIdentifier()
     {
         return NULL;
     }
-
 }

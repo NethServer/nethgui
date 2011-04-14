@@ -1,28 +1,16 @@
 <?php
 /**
- * NethGui
- *
- * @package Modules
+ * @package NethGui
+ * @subpackage Module
  */
 
 /**
- * TODO: describe class
- *
- * @package Modules
+ * @todo describe class
+ * @package NethGui
+ * @subpackage Module
  */
 class NethGui_Module_RemoteAccess extends NethGui_Core_Module_Composite implements NethGui_Core_TopModuleInterface
 {
-
-    public function getTitle()
-    {
-        return "Remote access";
-    }
-
-    public function getParentMenuIdentifier()
-    {
-        return "Security";
-    }
-
     public function initialize()
     {
         parent::initialize();
@@ -41,6 +29,11 @@ class NethGui_Module_RemoteAccess extends NethGui_Core_Module_Composite implemen
     {
         parent::prepareView($view, $mode);
         $view->setTemplate('NethGui_Core_View_form');
+    }
+
+    public function getParentMenuIdentifier()
+    {
+        return "Security";
     }
 
 }
