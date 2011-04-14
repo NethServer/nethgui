@@ -10,7 +10,7 @@
  * @todo describe class
  *
  * @package NethGui
- * @subpackage Coren
+ * @subpackage Core
  */
 class NethGui_Core_ValidationReport implements NethGui_Core_ValidationReportInterface
 {

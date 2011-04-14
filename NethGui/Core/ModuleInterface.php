@@ -94,8 +94,9 @@ interface NethGui_Core_ModuleInterface extends NethGui_Core_RequestHandlerInterf
  *
  * Also a "Top" Module is reachable with a specific URL, unlike other Modules.
  *
- * @package ExtensibleApi
- * @todo add a method to sort the menu elements
+ * @package NethGui
+ * @subpackage Core
+ *
  */
 interface NethGui_Core_TopModuleInterface
 {
