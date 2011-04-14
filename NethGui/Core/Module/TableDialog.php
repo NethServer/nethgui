@@ -1,5 +1,13 @@
 <?php
+/**
+ * @package NethGui
+ * @subpackage Core_Module
+ */
 
+/**
+ * @package NethGui
+ * @subpackage Core_Module
+ */
 class NethGui_Core_Module_TableDialog extends NethGui_Core_Module_Standard
 {
 

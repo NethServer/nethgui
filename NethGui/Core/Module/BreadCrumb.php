@@ -1,5 +1,13 @@
 <?php
+/**
+ * @package NethGui
+ * @subpackage Core_Module
+ */
 
+/**
+ * @package NethGui
+ * @subpackage Core_Module
+ */
 final class NethGui_Core_Module_BreadCrumb extends NethGui_Core_Module_Standard {
     /**
      *

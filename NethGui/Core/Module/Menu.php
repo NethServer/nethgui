@@ -1,6 +1,15 @@
 <?php
+/**
+ * @package NethGui
+ * @subpackage Core_Module
+ */
 
-final class NethGui_Core_Module_Menu extends NethGui_Core_Module_Standard {
+/**
+ * @package NethGui
+ * @subpackage Core_Module
+ */
+final class NethGui_Core_Module_Menu extends NethGui_Core_Module_Standard
+{
 
     /**
      *
@@ -46,7 +55,8 @@ final class NethGui_Core_Module_Menu extends NethGui_Core_Module_Standard {
         return '<ul>' . $output . '</ul>';
     }
 
-    public function renderModuleMenu($viewState) {       
+    public function renderModuleMenu($viewState)
+    {
         return $this->iteratorToHtml($this->menuIterator);
     }
 
@@ -55,4 +65,5 @@ final class NethGui_Core_Module_Menu extends NethGui_Core_Module_Standard {
         parent::prepareView($view, $mode);
         $view->setTemplate(array($this, 'renderModuleMenu'));
     }
+
 }

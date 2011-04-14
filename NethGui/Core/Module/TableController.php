@@ -2,14 +2,15 @@
 /**
  * NethGui
  *
- * @package NethGuiFramework
+ * @package NethGui
+ * @subpackage Core_Module
  */
 
 /**
  * TODO: describe class
  *
- * @package NethGuiFramework
- * @subpackage StandardImplementation
+ * @package NethGui
+ * @subpackage Core_Module
  */
 class NethGui_Core_Module_TableController extends NethGui_Core_Module_Composite
 {

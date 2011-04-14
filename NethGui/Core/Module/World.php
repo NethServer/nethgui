@@ -2,7 +2,8 @@
 /**
  * NethGui
  *
- * @package NethGuiFramework
+ * @package NethGui
+ * @subpackage Core_Module
  */
 
 /**
@@ -10,7 +11,8 @@
  *
  * This is the root of the modules composition.
  *
- * @package NethGuiFramework
+ * @package NethGui
+ * @subpackage Core_Module
  */
 final class NethGui_Core_Module_World extends NethGui_Core_Module_Composite
 {
