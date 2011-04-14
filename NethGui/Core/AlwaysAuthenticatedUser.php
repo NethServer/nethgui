@@ -1,16 +1,18 @@
 <?php
-
 /**
  * NethGui
  *
- * @package NethGuiFramework
+ * @package NethGui
+ * @subpackage Core
+ *
  */
 
 /**
  * TODO: describe class
  *
- * @package NethGuiFramework
- * @subpackage Testing
+ * @deprecated Substitute with the complete implementation in version Phi.
+ * @package NethGui
+ * @subpackage Core
  */
 final class NethGui_Core_AlwaysAuthenticatedUser implements NethGui_Core_UserInterface
 {

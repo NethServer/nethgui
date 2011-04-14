@@ -1,16 +1,15 @@
 <?php
-
 /**
- * NethGui
- *
- * @package NethGuiFramework
+ * @package NethGui
+ * @subpackage Core
  */
 
 /**
  * UNSTABLE
- * TODO: describe interface
+ * @todo describe interface
  *
- * @package NethGuiFramework
+ * @package NethGui
+ * @subpackage Core
  */
 interface NethGui_Core_ValidationReportInterface
 {

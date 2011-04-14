@@ -1,21 +1,20 @@
 <?php
-
 /**
- * NethGui
- *
- * @package NethGuiFramework
+ * @package NethGui
+ * @subpackage Core
  */
 
 /**
  * A NethGui_Core_RequestInterface object carries parameters to a Module (and its submodules).
  *
- * @package NethGuiFramework
+ * @package NethGui
+ * @subpackage Core
  */
 interface NethGui_Core_RequestInterface
 {
     const CONTENT_TYPE_JSON = 1;
     const CONTENT_TYPE_HTML = 2;
-    
+
     /**
      * @param string $parameterName
      * @return mixed

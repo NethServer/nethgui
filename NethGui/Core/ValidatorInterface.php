@@ -1,11 +1,10 @@
 <?php
 /**
  * @package NethGui
+ * @subpackage Core
  */
 
 /**
- *
- *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @package NethGui
  * @subpackage Core

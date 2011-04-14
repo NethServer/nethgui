@@ -2,7 +2,8 @@
 /**
  * NethGui
  *
- * @package NethGuiFramework
+ * @package NethGui
+ * @subpackage Core
  */
 
 /**
@@ -12,8 +13,8 @@
  * access to configuration databases and event signaling.
  *
  *
- * @package NethGuiFramework
- * @subpackage HostConfiguration
+ * @package NethGui
+ * @subpackage Core
  */
 interface NethGui_Core_HostConfigurationInterface
 {

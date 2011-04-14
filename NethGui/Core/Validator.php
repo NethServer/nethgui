@@ -1,6 +1,7 @@
 <?php
 /**
  * @package NethGui
+ * @subpackage Core
  */
 
 /**
@@ -70,7 +71,6 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
         return $this->addToChain(__FUNCTION__);
     }
 
-
     /**
      * Checks if current value is empty
      * 
@@ -81,7 +81,6 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
     {
         return $this->addToChain(__FUNCTION__);
     }
-
 
     /**
      * Force the evaluation result
@@ -243,12 +242,10 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
         return FALSE;
     }
 
-
     private function evalIsEmpty($value)
     {
         return empty($value);
     }
-
 
     private function evalRegexp($value, $exp)
     {
@@ -270,31 +267,30 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
      * @return       string
      * @author CodeIgniter
      */
-     private function evalIpV4Address($value)
-     {
-         $ip_segments = explode('.', $value);
+    private function evalIpV4Address($value)
+    {
+        $ip_segments = explode('.', $value);
 
-         // Always 4 segments needed
-         if (count($ip_segments) != 4) {
-              return FALSE;
-         }
-         // IP can not start with 0
-         if ($ip_segments[0][0] == '0') {
-               return FALSE;
-         }
-         
-         // Check each segment
-         foreach ($ip_segments as $segment) {
-                // IP segments must be digits and can not be
-                // longer than 3 digits or greater then 255
-                if ($segment == '' OR preg_match("/[^0-9]/", $segment) OR $segment > 255 OR strlen($segment) > 3) {
-                    return FALSE;
-                }
-          }
+        // Always 4 segments needed
+        if (count($ip_segments) != 4) {
+            return FALSE;
+        }
+        // IP can not start with 0
+        if ($ip_segments[0][0] == '0') {
+            return FALSE;
+        }
 
-          return TRUE;
-      }
+        // Check each segment
+        foreach ($ip_segments as $segment) {
+            // IP segments must be digits and can not be
+            // longer than 3 digits or greater then 255
+            if ($segment == '' OR preg_match("/[^0-9]/", $segment) OR $segment > 255 OR strlen($segment) > 3) {
+                return FALSE;
+            }
+        }
 
+        return TRUE;
+    }
 
 }
 
@@ -334,7 +330,7 @@ class NethGui_Core_OrValidator implements NethGui_Core_ValidatorInterface
             $e2 = $this->v2->evaluate($value);
 
             if ($e2 === FALSE) {
-                $this->failureReason = $this->v2->getMessage()." ".$this->v1->getMessage();
+                $this->failureReason = $this->v2->getMessage() . " " . $this->v1->getMessage();
                 return FALSE;
             }
             return TRUE;

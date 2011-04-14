@@ -1,15 +1,14 @@
 <?php
 /**
- * NethGui
- *
- * @package NethGuiFramework
+ * @package NethGui
+ * @subpackage Core
  */
 
 /**
- * TODO: describe class
+ * @todo describe class
  *
- * @package NethGuiFramework
- * @subpackage StandardImplementation
+ * @package NethGui
+ * @subpackage Core
  */
 class NethGui_Core_Request implements NethGui_Core_RequestInterface
 {

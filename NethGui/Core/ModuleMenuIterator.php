@@ -1,16 +1,13 @@
 <?php
-
 /**
- * NethGui
- *
- * @package NethGuiFramework
+ * @package NethGui
+ * @subpackage Core
  */
 
 /**
- * TODO: describe class
- *
- * @package NethGuiFramework
- * @subpackage StandardImplementation
+ * @todo Describe class...
+ * @package NethGui
+ * @subpackage Core
  * @internal
  */
 final class NethGui_Core_ModuleMenuIterator implements RecursiveIterator

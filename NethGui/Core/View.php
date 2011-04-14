@@ -2,7 +2,8 @@
 /**
  * NethGui
  *
- * @package NethGuiFramework
+ * @package NethGui
+ * @subpackage Core
  */
 
 /**
@@ -21,8 +22,8 @@
  * prepareView() operation.
  *
  * @see NethGui_Core_ModuleInterface::prepareView()
- * @package NethGuiFramework
- * @subpackage StandardImplementation
+ * @package NethGui
+ * @subpackage Core
  */
 class NethGui_Core_View implements NethGui_Core_ViewInterface
 {

@@ -1,12 +1,13 @@
 <?php
 /**
- * @package NethGuiFramework
+ * @package NethGui
+ * @subpackage Core
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
 /**
  * TODO describe this class
- * @package NethGuiFramework
+ * @package NethGui
  * @subpackage Core
  */
 class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationInterface, NethGui_Authorization_PolicyEnforcementPointInterface

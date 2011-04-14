@@ -1,8 +1,7 @@
 <?php
 /**
- * NethGui
- *
- * @package ExtensibleApi
+ * @package NethGui
+ * @subpackage Core
  */
 
 /**
@@ -12,7 +11,8 @@
  *    - perform process()-ing,
  *    - prepare view parameters.
  *
- * @package ExtensibleApi
+ * @package NethGui
+ * @subpackage Core
  */
 interface NethGui_Core_ModuleInterface extends NethGui_Core_RequestHandlerInterface, NethGui_Core_LanguageCatalogProvider
 {
