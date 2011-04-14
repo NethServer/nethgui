@@ -3,7 +3,15 @@
 class NethGui_Core_Module_TableDialog extends NethGui_Core_Module_Standard
 {
 
+    /**
+     *
+     * @var array
+     */
     private $dbSchema;
+    /**
+     *
+     * @var array|string See {@link NethGui_Core_View::setTemplate()} method.
+     */
     private $dialogTemplate;
 
     /**
@@ -16,7 +24,6 @@ class NethGui_Core_Module_TableDialog extends NethGui_Core_Module_Standard
         parent::__construct($identifier);
         $this->dialogTemplate = $template;
         $this->dbSchema = $dbSchema;
-        $this->autosave = FALSE;
     }
 
     public function initialize()
@@ -25,6 +32,7 @@ class NethGui_Core_Module_TableDialog extends NethGui_Core_Module_Standard
         foreach ($this->dbSchema as $d) {
             $this->declareParameter($d[0], $d[1], NULL, $d[2]);
         }
+        //$this->declareParameter('action');
     }
 
     /**
@@ -37,7 +45,7 @@ class NethGui_Core_Module_TableDialog extends NethGui_Core_Module_Standard
         $parentModule = $this->getParent();
         if ($parentModule instanceOf NethGui_Core_ModuleInterface
             && method_exists($parentModule, 'onDialogSave')) {
-            $values =  $this->parameters->getArrayCopy();
+            $values = $this->parameters->getArrayCopy();
             if ( ! empty($values)) {
                 $key = array_shift($values);
                 $parentModule->onDialogSave($key, $values);
@@ -45,13 +53,14 @@ class NethGui_Core_Module_TableDialog extends NethGui_Core_Module_Standard
         }
     }
 
-    public function loadValues($key, $values)
+    public function loadValues($action, $key, $values)
     {
         // set the "primary key": the unique identifier
         $this->parameters[$this->dbSchema[0][0]] = $key;
         foreach ($values as $name => $value) {
             $this->parameters[$name] = $value;
         }
+        $this->parameters['action'] = $action;
     }
 
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)

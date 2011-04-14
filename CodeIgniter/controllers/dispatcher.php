@@ -12,7 +12,7 @@
  * @package NethGuiFramework
  * @subpackage CodeIgniter
  */
-final class Dispatcher extends CI_Controller {
+class Dispatcher extends CI_Controller {
 
     public function _remap($method, $parameters = array())
     {

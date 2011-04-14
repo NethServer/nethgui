@@ -13,16 +13,7 @@
  */
 class NethGui_Core_Module_TableController extends NethGui_Core_Module_Composite
 {
-    const READ = 0;
-    const CREATE = 1;
-    const UPDATE = 2;
-    const DELETE = 3;
 
-    /**
-     * Action type.
-     * @var integer
-     */
-    private $action;
     /**
      *
      * @var string
@@ -45,14 +36,15 @@ class NethGui_Core_Module_TableController extends NethGui_Core_Module_Composite
 
     /**
      *
+     * @param string $identifier
      * @param string $database
      * @param string $type
      * @param array $columns
      * @param NethGui_Core_Module_TableDialog|array
      */
-    public function __construct($database, $type, $columns, $dialog = NULL, $events = array())
+    public function __construct($identifier, $database, $type, $columns, $dialog = NULL, $events = array())
     {
-        parent::__construct($database . '_' . $type);
+        parent::__construct($identifier);
         $this->autosave = FALSE; // disable auto saving of parameters in process()
         $this->database = $database;
         $this->type = $type;
@@ -76,12 +68,12 @@ class NethGui_Core_Module_TableController extends NethGui_Core_Module_Composite
         parent::initialize();
 
         if ($this->readonly) {
-            $actionValidator = $this->getValidator()->memberOf('READ');
+            $actionValidator = $this->getValidator()->memberOf('read');
         } else {
-            $actionValidator = $this->getValidator()->memberOf('READ', 'CREATE', 'UPDATE', 'DELETE');
+            $actionValidator = $this->getValidator()->memberOf('read', 'create', 'update', 'delete');
         }
 
-        $this->declareParameter('action', $actionValidator, NULL, 'READ');
+        $this->declareParameter('action', $actionValidator, NULL, 'read');
 
         $this->declareParameter('key', FALSE, NULL, NULL);
 
@@ -109,54 +101,58 @@ class NethGui_Core_Module_TableController extends NethGui_Core_Module_Composite
         parent::bind($request);
 
         if ( ! $request->isSubmitted()) {
-            $action = $request->getParameter('0');
-            $key = $request->getParameter('1');
-        } else {
-            $action = $request->getParameter('action');
-            $key = NULL;
+            if ($request->hasParameter('0')) {
+                $this->parameters['action'] = $request->getParameter('0');
+            } else {
+                $this->parameters['action'] = 'read';
+            }
+            if ($request->hasParameter('1')) {
+                $this->parameters['key'] = $request->getParameter('1');
+            } else {
+                $this->parameters['key'] = NULL;
+            }
         }
 
         $this->parameters['size'] = 20;
-        $this->parameters['key'] = $key;
         $this->parameters['page'] = 0;
-        $this->parameters['rows'] = $this->fetchRows();
 
-        if (strtolower($action) == 'update') {
-            $this->action = self::UPDATE;
-            $this->loadDialogValues($key);
-            $this->parameters['action'] = 'UPDATE';
-        } elseif (strtolower($action) == 'create') {
-            $this->action = self::CREATE;
-            $this->parameters['action'] = 'CREATE';
-        } elseif (strtolower($action) == 'delete') {
-            $this->action = self::DELETE;
-            $this->parameters['action'] = 'DELETE';
-        } else {
-            $this->action = self::READ;
-            $this->parameters['action'] = 'READ';
+        if ($this->parameters['action'] == 'update') {
+            $this->loadDialogValues($this->parameters['key']);
         }
     }
 
-    private function fetchRows()
+    private function prepareRows($view, $mode)
     {
         $rows = array();
 
-        foreach($this->getHostConfiguration()->getDatabase($this->database)->getAll($this->type) as $key => $values)
-        {
+        foreach ($this->getHostConfiguration()->getDatabase($this->database)->getAll($this->type) as $key => $values) {
             $row = array();
 
-            foreach($this->columns as $columnIndex => $column) {
-                if($columnIndex == 0) {
-                    $row[] = $key;
-                } else {
-                    $row[] = isset($values[$column]) ? $values[$column] : NULL;
-                }
+            // adds the key to the values:
+            $values[$this->columns[0]] = $key;
+
+            foreach ($this->columns as $columnIndex => $column) {
+                $row[] = $this->prepareColumnValue($view, $mode, $columnIndex, $column, $values);
             }
 
             $rows[] = $row;
         }
 
         return $rows;
+    }
+
+    private function prepareColumnValue($view, $mode, $columnIndex, $column, $values)
+    {
+
+        $methodName = 'prepareColumn' . ucfirst($column);
+
+        if (method_exists($this, $methodName)) {
+            $columnValue = call_user_func(array($this, $methodName), $view, $mode, $values);
+        } else {
+            $columnValue = isset($values[$column]) ? $values[$column] : NULL;
+        }
+
+        return $columnValue;
     }
 
     private function loadDialogValues($key)
@@ -168,7 +164,7 @@ class NethGui_Core_Module_TableController extends NethGui_Core_Module_Composite
         }
         $db = $this->getHostConfiguration()->getDatabase($this->database);
         $values = $db->getKey($key);
-        $dialog->loadValues($key, $values);
+        $dialog->loadValues($this->parameters['action'], $key, $values);
     }
 
     /**
@@ -180,14 +176,22 @@ class NethGui_Core_Module_TableController extends NethGui_Core_Module_Composite
     {
         $db = $this->getHostConfiguration()->getDatabase($this->database);
 
-        switch ($this->action) {
-            case self::UPDATE:
+        $success = FALSE;
+
+        switch ($this->parameters['action']) {
+            case 'update':
                 $success = $db->setProp($key, $values);
                 break;
 
-            case self::CREATE:
-                $success = $db->setKey($key, $this->type, $values);
+            case 'create':
+                // XXX: check if a key exists by querying its type.
+                if ($db->getType($key) === '') {
+                    $success = $db->setKey($key, $this->type, $values);
+                } else {
+                    throw new NethGui_Exception_Process('Key already exists');
+                }
                 break;
+
             default:
                 $success = FALSE;
         }
@@ -197,9 +201,36 @@ class NethGui_Core_Module_TableController extends NethGui_Core_Module_Composite
         }
     }
 
+    public function process()
+    {
+        parent::process();
+
+        if ($this->parameters['action'] == 'delete') {
+            $db = $this->getHostConfiguration()->getDatabase($this->database);
+
+            $success = $db->deleteKey($this->parameters['key']);
+        }
+    }
+
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
+        $this->parameters['rows'] = $this->prepareRows($view, $mode);
         parent::prepareView($view, $mode);
-        $view->setTemplate('NethGui_Core_View_table');
     }
+
+    public function prepareColumnActions(NethGui_Core_ViewInterface $view, $mode, $values)
+    {
+        if ($mode == self::VIEW_REFRESH) {
+            $cheapView = clone $view;
+            $cheapView->setTemplate('NethGui_Core_View_TableActions');
+        } else {
+            $cheapView = array();
+        }
+
+        $cheapView['update'] = $cheapView->buildUrl('update', $values['network']);
+        $cheapView['delete'] = $cheapView->buildUrl('delete', $values['network']);
+
+        return $cheapView;
+    }
+
 }

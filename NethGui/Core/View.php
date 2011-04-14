@@ -47,6 +47,12 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
      * @var string
      */
     private $template;
+    /**
+     * Module path contains the identifier of all ancestors from root to the
+     * current module.
+     * @var array
+     */
+    private $modulePath;
 
     public function __construct(NethGui_Core_ModuleInterface $module)
     {
@@ -60,32 +66,36 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
 
     private function getFullName($parameterName)
     {
-        // TODO: cache prefix value
-        return $this->calculateModulePrefix($this->module) . '[' . $parameterName . ']';
+        $path = $this->getModulePath();
+        $path[] = $parameterName;
+        $prefix = array_shift($path);
+
+        return $prefix . '[' . implode('][', $path) . ']';
     }
 
     private function getFullId($widgetId)
     {
-        $name = $this->getFullName($widgetId);
-        $name = str_replace('[', '_', $name);
-        $name = str_replace(']', '', $name);
-        return $name;
+        return implode('_', $this->getModulePath()) . '_' . $widgetId;
     }
 
-    private function calculateModulePrefix(NethGui_Core_ModuleInterface $module)
+    private function getModulePath()
     {
-        $prefix = '';
-        while (TRUE) {
-            $identifier = $module->getIdentifier();
-            $module = $module->getParent();
-            if (is_null($module) || $module instanceof NethGui_Core_Module_World) {
-                $prefix = $identifier . $prefix;
-                break;
-            } else {
-                $prefix = '[' . $identifier . ']' . $prefix;
+        if ( ! isset($this->modulePath)) {
+            $this->modulePath = array();
+
+            $watchdog = 0;
+            $module = $this->module;
+
+            while ( ! (is_null($module) || $module instanceof NethGui_Core_Module_World)) {
+                if ( ++ $watchdog > 20) {
+                    throw new Exception("Too many nested modules or cyclic module structure.");
+                }
+                array_unshift($this->modulePath, $module->getIdentifier());
+                $module = $module->getParent();
             }
         }
-        return $prefix;
+
+        return $this->modulePath;
     }
 
     public function copyFrom($data)
@@ -187,8 +197,7 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
             $languageCatalog = NULL;
         }
 
-        if (is_string($this->template))
-        {
+        if (is_string($this->template)) {
             $viewString = NethGui_Framework::getInstance()->renderView($this->template, $state, $languageCatalog);
         } elseif (is_callable($this->template)) {
             $viewString = call_user_func($this->template, $state);
@@ -199,6 +208,19 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
         return $viewString;
     }
 
+    /**
+     * @see NethGui_Core_View::render()
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->render();
+    }
+
+    /**
+     * Returns an array representation of this view and all its aggregates.
+     * @return array
+     */
     public function getArrayCopy(NethGui_Core_View $view = NULL, $depth = 0)
     {
         if ($depth > 10) {
@@ -226,6 +248,33 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
         }
 
         return $data;
+    }
+
+    /**
+     *
+     * @param array|string $_ Arguments for URL
+     * @return string the URL
+     */
+    public function buildUrl()
+    {
+        $parameters = array();
+        $path = $this->getModulePath();
+
+        foreach (func_get_args () as $arg) {
+            if (is_string($arg)) {
+                $path[] = $arg;
+            } elseif (is_array($arg)) {
+                $parameters = array_merge($parameters, $arg);
+            }
+        }
+
+        return NethGui_Framework::getInstance()->buildUrl($path, $parameters);
+    }
+
+    public function __clone()
+    {
+        $this->children = array();
+        $this->data = array();
     }
 
 }

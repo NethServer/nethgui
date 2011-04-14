@@ -28,7 +28,6 @@ final class NethGui_Dispatcher
      */
     private $currentModule;
 
-
     /**
      * Forwards control to Modules and creates output views.
      *
@@ -37,9 +36,9 @@ final class NethGui_Dispatcher
      */
     public function dispatch($method, $parameters = array())
     {
-         if ($method == 'index') {
-             $method = 'Security';
-         }
+        if ($method == 'index') {
+            $method = 'Security';
+        }
 
 
         $request = NethGui_Core_Request::getWebRequestInstance(
@@ -48,14 +47,14 @@ final class NethGui_Dispatcher
         );
 
         $user = $request->getUser();
-       
+
         /*
          * Create models.
          *
          * TODO: get hostConfiguration and topModuleDepot class names
          * from NethGui_Framework.
          */
-        $this->hostConfiguration = new NethGui_Core_HostConfiguration($user);        
+        $this->hostConfiguration = new NethGui_Core_HostConfiguration($user);
         $this->topModuleDepot = new NethGui_Core_TopModuleDepot($this->hostConfiguration, $user);
 
         /*
@@ -66,13 +65,11 @@ final class NethGui_Dispatcher
         $this->hostConfiguration->setPolicyDecisionPoint($pdp);
         $this->topModuleDepot->setPolicyDecisionPoint($pdp);
 
-
-
         /*
          * Find current module
          */
         $this->currentModule = $this->topModuleDepot->findModule($method);
-        
+
 
         if (is_null($this->currentModule)
             OR ! $this->currentModule instanceof NethGui_Core_TopModuleInterface
@@ -85,7 +82,7 @@ final class NethGui_Dispatcher
         $worldModule = new NethGui_Core_Module_World($this->currentModule);
 
         $report = new NethGui_Core_ValidationReport();
-        
+
         $view = new NethGui_Core_View($worldModule);
 
         if ($request->getContentType() === NethGui_Core_RequestInterface::CONTENT_TYPE_HTML) {
@@ -103,10 +100,18 @@ final class NethGui_Dispatcher
         }
 
         $worldModule->initialize();
+
         $worldModule->bind($request);
         $worldModule->validate($report);
-        $worldModule->process();
-        
+
+        try {
+            $worldModule->process();
+        } catch (NethGui_Exception_Process $e) {
+            NethGui_Framework::logMessage($e->getMessage(), 'error');
+            $view['Exception'] = $e->getMessage();
+            $view['StackTrace'] = $e->getTrace();
+        }
+
         if ($request->getContentType() === NethGui_Core_RequestInterface::CONTENT_TYPE_HTML) {
             header("Content-Type: text/html; charset=UTF-8");
             $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_REFRESH);
@@ -117,7 +122,5 @@ final class NethGui_Dispatcher
             echo json_encode($view->getArrayCopy());
         }
     }
-
-
 
 }

@@ -9,7 +9,7 @@ class NethGui_Core_Module_TableReadOnlyTest extends ModuleTestCase
 
         $columns = array('network', 'Mask', 'Router', 'SystemLocalNetwork');
 
-        $this->object = new NethGui_Core_Module_TableController('networks', 'network', $columns);
+        $this->object = new NethGui_Core_Module_TableController(get_class(), 'networks', 'network', $columns);
 
         $databaseData = array(
             '192.168.1.0' => array(
@@ -33,7 +33,7 @@ class NethGui_Core_Module_TableReadOnlyTest extends ModuleTestCase
         );
 
         $this->expectedView = array(
-            array('action', 'READ'),
+            array('action', 'read'),
             array('key', NULL),
             array('page', 0),
             array('size', 20),

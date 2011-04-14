@@ -127,7 +127,7 @@ final class NethGui_Framework
         if ($module === $currentModule) {
             $html = '<span class="moduleTitle current" title="' . htmlspecialchars($module->getDescription()) . '">' . htmlspecialchars($module->getTitle()) . '</span>';
         } else {
-            $ciControllerClassName = NethGui_Framework::getInstance()->getControllerName();
+            $ciControllerClassName = $this->getControllerName();
             $html = anchor($ciControllerClassName . '/' . $module->getIdentifier(),
                     htmlspecialchars($module->getTitle()),
                     array('class' => 'moduleTitle', 'title' => htmlspecialchars($module->getDescription())
@@ -136,6 +136,27 @@ final class NethGui_Framework
         }
 
         return $html;
+    }
+
+    /**
+     * @param string|array $path
+     * @param array $parameters
+     */
+    public function buildUrl($path, $parameters)
+    {
+        if(is_string($path)) {
+            $path = explode('/', $path);
+        }
+
+        
+        array_unshift($path, $this->getControllerName());
+
+        if ( ! empty($parameters)) {
+            $url = site_url($path) . '?' . http_build_query($parameters);
+        } else {
+            $url = site_url($path);
+        }
+        return $url;
     }
 
     /**
