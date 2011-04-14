@@ -227,8 +227,8 @@ class NethGui_Core_Module_TableController extends NethGui_Core_Module_Composite
             $cheapView = array();
         }
 
-        $cheapView['update'] = $cheapView->buildUrl('update', $values['network']);
-        $cheapView['delete'] = $cheapView->buildUrl('delete', $values['network']);
+        $cheapView['update'] = $view->buildUrl('update', $values['network']);
+        $cheapView['delete'] = $view->buildUrl('delete', $values['network']);
 
         return $cheapView;
     }
