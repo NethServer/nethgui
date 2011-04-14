@@ -45,7 +45,12 @@ class NethGui_Core_Module_TableDialog extends NethGui_Core_Module_Standard
         $parentModule = $this->getParent();
         if ($parentModule instanceOf NethGui_Core_ModuleInterface
             && method_exists($parentModule, 'onDialogSave')) {
-            $values = $this->parameters->getArrayCopy();
+            $values = array();
+
+            foreach($this->dbSchema as $fieldDescriptor) {
+                $values[$fieldDescriptor[0]] = $this->parameters[$fieldDescriptor[0]];
+            }
+            
             if ( ! empty($values)) {
                 $key = array_shift($values);
                 $parentModule->onDialogSave($key, $values);

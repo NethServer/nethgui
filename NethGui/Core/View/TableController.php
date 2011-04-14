@@ -18,7 +18,7 @@
 </table>
 
 <?php foreach ($module->getChildren() as $childModule): ?>
-<fieldset><?php echo $view[$childModule->getIdentifier()]->render() ?></fieldset>
+<fieldset><?php $view[$childModule->getIdentifier()]['action'] = $view['action']; echo $view[$childModule->getIdentifier()]; ?></fieldset>
 <?php endforeach; ?>
 
 <?php
