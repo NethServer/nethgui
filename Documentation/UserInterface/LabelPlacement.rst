@@ -59,7 +59,3 @@ Label text is above the control::
 
 
 
-Label and help text
-===================
-
-

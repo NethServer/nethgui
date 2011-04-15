@@ -51,6 +51,82 @@ After the last step::
 
 
 
+
+Notifications
+-------------
+
+The User has performed some kind of *system change
+operation*. Depending on the operation outcome, there can be three
+types of messages:
+
+1. **Success** message, if the change was successful and
+   accomplished the wished effect.
+
+2. **Warning** message, if the change was successful, but brought the
+   system in an unexpected state that must be embossed.
+
+3. **Error** message, if the change was unsuccessful.
+
+Messages can be displayed in two ways: (1) embedded frame, (2) modal dialog.
+
+The **embedded frame** is displayed on the top of the screen. The User can
+close it by clicking on the "X" button, or ignore it::
+
+   +----------------------------------------+
+   |                                     [X]|
+   | Warning: the specified ntp host is     |
+   |          unreachable!                  |
+   |                                        |
+   +----------------------------------------+
+
+The **modal dialog box** is ovelayed on the screen and represents a
+mandatory decision point. Each decision closes the dialog and possibly
+causes a further action to occur::
+
+   +----------------------------------------+
+   |                                     [X]|
+   | Warning: the specified ntp host is     |
+   |          unreachable!                  |
+   |                                        |
+   |             [ Ignore ] [ Disable ntp ] |
+   +----------------------------------------+
+
+
+Validation errors
+^^^^^^^^^^^^^^^^^
+
+Validation errors are a special case of Notifications_.  
+
+1. The User submitted some invalid input data. 
+
+2. An embedded frame message appears, reporting the problems as a
+   list. For each invalid input field:
+
+  1. The label is displayed. A click on the label give focus to the
+     input field.
+  2. A text explaining why the problem occurred follows.
+
+3. The invalid input fields are embossed in a different color/style.
+
+For instance::
+
+   +-------------------------------------------------+
+   |                                              [X]|
+   |    Email: invalid email address                 |
+   | Username: only lowercase letters are allowed    |
+   |                                                 |
+   +-------------------------------------------------+
+  
+     First Name:  [John______________]
+
+      Last Name:  [Doe_______________]   
+
+          Email: *[johndo@com________]*
+
+       Username: *[JohnDoe___________]*
+
+
+
 Choose and fill
 ---------------
 
@@ -189,7 +265,7 @@ form. For each step:
 3. The form is validated.
 
    a) In case of validation error the standard validation error
-   procedure and visual feedback applies.
+   procedure and visual feedback applies. See `Validation errors`_.
 
 4. The next step form is displayed
 
@@ -219,3 +295,14 @@ Wizard at intermediate step::
 
 A brief summary of all the wizard steps is displayed on the top of
 each form, emphasizing the current step.
+
+
+
+Tabs
+----
+
+Tabs::
+
+   .-----------. .-----------.
+   |   Tab 1   | |   Tab 2   |
+  -+           +-+-----------+-----------...
