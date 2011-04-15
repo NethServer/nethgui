@@ -107,6 +107,7 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
     {
         $this->parameters = new NethGui_Core_ParameterSet();
         $this->immutables = new ArrayObject();
+        $this->autosave = TRUE;
 
         if (isset($identifier)) {
             $this->identifier = $identifier;
@@ -138,8 +139,6 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
         } else {
             throw new Exception("Double Module initialization is forbidden.");
         }
-
-        $this->autosave = TRUE;
     }
 
     public function isInitialized()
