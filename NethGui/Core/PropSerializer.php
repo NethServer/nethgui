@@ -1,12 +1,10 @@
 <?php
 /**
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 
 /**
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 class NethGui_Core_PropSerializer implements NethGui_Core_SerializerInterface
 {

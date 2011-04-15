@@ -1,11 +1,9 @@
 <?php
 /**
- * @package NethGui
- * @subpackage Exception
+ * @package Exception
  */
 
 /**
- * @package NethGui
- * @subpackage Exception
+ * @package Exception
  */
 class NethGui_Exception_Process extends Exception {}

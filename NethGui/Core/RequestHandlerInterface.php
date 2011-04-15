@@ -1,13 +1,11 @@
 <?php
 /**
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 
 /**
  * Request handlers executes Module logics.
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 interface NethGui_Core_RequestHandlerInterface {
 

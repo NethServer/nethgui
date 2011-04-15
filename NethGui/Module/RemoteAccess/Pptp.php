@@ -1,13 +1,13 @@
 <?php
 /**
- * @package NethGui
- * @subpackage Module_RemoteAccess
+ * @package Module
+ * @subpackage RemoteAccess
  */
 
 /**
  * @todo Describe Module class
- * @package NethGui
- * @subpackage Module_RemoteAccess
+ * @package Module
+ * @subpackage RemoteAccess
  */
 class NethGui_Module_RemoteAccess_Pptp extends NethGui_Core_Module_Standard
 {

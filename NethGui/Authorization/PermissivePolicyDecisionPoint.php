@@ -3,15 +3,13 @@
 /**
  * NethGui
  *
- * @package NethGui
- * @subpackage Authorization
+ * @package Authorization
  */
 
 /**
  * TODO: describe class
  *
- * @package NethGui
- * @subpackage Authorization
+ * @package Authorization
  */
 class NethGui_Authorization_PermissivePolicyDecisionPoint implements NethGui_Authorization_PolicyDecisionPointInterface
 {

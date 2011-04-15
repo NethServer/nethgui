@@ -2,15 +2,13 @@
 /**
  * NethGui
  *
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 
 /**
  * TODO: describe class
  *
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 class NethGui_Core_ParameterSet implements NethGui_Core_AdapterAggregationInterface, ArrayAccess, Iterator, Countable
 {

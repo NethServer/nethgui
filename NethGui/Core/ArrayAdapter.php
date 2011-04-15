@@ -1,7 +1,6 @@
 <?php
 /**
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 
 
@@ -9,8 +8,7 @@
  * Array adapter maps a PHP array-like interface to a key or prop value
  * where values are separated by a separator character.
  *
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 class NethGui_Core_ArrayAdapter implements NethGui_Core_AdapterInterface, ArrayAccess, IteratorAggregate, Countable
 {

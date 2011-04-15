@@ -1,7 +1,6 @@
 <?php
 /**
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 
 /**
@@ -14,8 +13,7 @@
  *    - accessing  "Top" Modules
  *    - filtering access to "Top" Modules depending on User's credentials
  *
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 class NethGui_Core_TopModuleDepot implements NethGui_Core_ModuleSetInterface, NethGui_Authorization_PolicyEnforcementPointInterface
 {

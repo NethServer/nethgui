@@ -2,15 +2,13 @@
 /**
  * NethGui
  *
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 
 /**
  * @todo describe class
  *
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 class NethGui_Core_ValidationReport implements NethGui_Core_ValidationReportInterface
 {

@@ -3,8 +3,7 @@
 /**
  * NethGui
  *
- * @package NethGui
- * @subpackage Authorization
+ * @package Authorization
  */
 
 /**
@@ -14,8 +13,7 @@
  * from PEPs (PolicyEnforcementPointInterfaces).
  *
  * @see PolicyEnforcementPointInterface
- * @package NethGui
- * @subpackage Authorization
+ * @package Authorization
  */
 interface NethGui_Authorization_PolicyDecisionPointInterface
 {

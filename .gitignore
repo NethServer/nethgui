@@ -1,4 +1,6 @@
 CodeIgniter/logs/
+Documentation/CodeCoverage/
+Documentation/Api/
 www/doc/
 www/coverage/
 *~

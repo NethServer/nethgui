@@ -1,7 +1,6 @@
 <?php
 /**
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 
 /**
@@ -10,8 +9,7 @@
  * It allows finding a module and iterating over root modules,
  * arranged in a hierarchical structure.
  *
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 interface NethGui_Core_ModuleSetInterface
 {

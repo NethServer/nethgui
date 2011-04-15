@@ -1,14 +1,12 @@
 <?php
 /**
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 
 /**
  * NethGui_Core_UserInterface provides access to the login information of the current user.
  *
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 interface NethGui_Core_UserInterface
 {

@@ -1,7 +1,6 @@
 <?php
 /**
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 
 /**
@@ -9,8 +8,7 @@
  * through a simplified interface.
  * 
  * @see NethGui_Core_AdapterAggregationInterface
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 interface NethGui_Core_AdapterInterface
 {

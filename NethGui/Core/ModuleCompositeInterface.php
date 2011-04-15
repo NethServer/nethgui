@@ -1,14 +1,12 @@
 <?php
 /**
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 
 /**
  * A complex module, composed by other modules, must implement this interface.
  *
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 interface NethGui_Core_ModuleCompositeInterface
 {

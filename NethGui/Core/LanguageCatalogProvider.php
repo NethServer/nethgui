@@ -1,7 +1,6 @@
 <?php
 /**
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 
 /**
@@ -10,8 +9,7 @@
  *
  * @see NethGui_Core_ViewInterface
  * @author Davide Principi <davide.principi@nethesis.it>
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 interface NethGui_Core_LanguageCatalogProvider {
     /**

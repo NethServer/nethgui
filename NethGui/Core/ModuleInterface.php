@@ -1,7 +1,6 @@
 <?php
 /**
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 
 /**
@@ -11,8 +10,7 @@
  *    - perform process()-ing,
  *    - prepare view parameters.
  *
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 interface NethGui_Core_ModuleInterface extends NethGui_Core_RequestHandlerInterface, NethGui_Core_LanguageCatalogProvider
 {
@@ -94,8 +92,7 @@ interface NethGui_Core_ModuleInterface extends NethGui_Core_RequestHandlerInterf
  *
  * Also a "Top" Module is reachable with a specific URL, unlike other Modules.
  *
- * @package NethGui
- * @subpackage Core
+ * @package Core
  *
  */
 interface NethGui_Core_TopModuleInterface

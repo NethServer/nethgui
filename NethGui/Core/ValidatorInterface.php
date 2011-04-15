@@ -1,13 +1,11 @@
 <?php
 /**
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 
 /**
  * @author Davide Principi <davide.principi@nethesis.it>
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 interface NethGui_Core_ValidatorInterface {
 

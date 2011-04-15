@@ -1,14 +1,12 @@
 <?php
 /**
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 
 /**
  * 
  * @author Davide Principi <davide.principi@nethesis.it>
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
 {
@@ -296,8 +294,7 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
 
 /**
  * @author Davide Principi <davide.principi@nethesis.it>
- * @package NethGui
- * @subpackage Core
+ * @package Core
  * @internal
  * @see NethGui_Core_Validator::orValidator()
  */

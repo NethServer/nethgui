@@ -3,15 +3,13 @@
 /**
  * NethGui
  *
- * @package NethGui
- * @subpackage Authorization
+ * @package Authorization
  */
 
 /**
  * TODO: describe class
  *
- * @package NethGui
- * @subpackage Authorization
+ * @package Authorization
  */
 final class NethGui_Authorization_AccessControlResponse implements NethGui_Authorization_AccessControlResponseInterface
 {

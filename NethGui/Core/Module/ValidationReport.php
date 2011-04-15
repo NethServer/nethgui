@@ -2,8 +2,8 @@
 /**
  * NethGui
  *
- * @package NethGui
- * @subpackage Core_Module
+ * @package Core
+ * @subpackage Module
  */
 
 /**
@@ -11,8 +11,8 @@
  *
  * Displays validation error messages.
  *
- * @package NethGui
- * @subpackage Core_Module
+ * @package Core
+ * @subpackage Module
  */
 class NethGui_Core_Module_ValidationReport extends NethGui_Core_Module_Standard
 {

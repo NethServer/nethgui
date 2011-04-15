@@ -1,15 +1,13 @@
 <?php
 /**
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 
 /**
  * A Multiple adapter maps a scalar value to multiple keys or props through
  * a "reader" and a "writer" callback function.
  *
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 class NethGui_Core_MultipleAdapter implements NethGui_Core_AdapterInterface
 {

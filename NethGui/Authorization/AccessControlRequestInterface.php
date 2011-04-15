@@ -3,8 +3,7 @@
 /**
  * NethGui
  *
- * @package NethGui
- * @subpackage Authorization
+ * @package Authorization
  */
 
 /**
@@ -14,8 +13,7 @@
  * originating from a Subject to perform a specific Action on a given Resource.
  *
  * @see AccessControlResponseInterface
- * @package NethGui
- * @subpackage Authorization
+ * @package Authorization
  */
 interface NethGui_Authorization_AccessControlRequestInterface
 {

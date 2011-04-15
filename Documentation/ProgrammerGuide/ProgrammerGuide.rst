@@ -67,7 +67,7 @@ Rendering phase
     necessary database values to the view state.
 
 
-.. _getHostConfiguration: http://nethgui.nethesis.it/dev/nethgui-dev_davidep/www/doc/NethGui/Core/NethGui_Core_Module_Standard.html#getHostConfiguration
+.. _getHostConfiguration: http://nethgui.nethesis.it/Documentation/Api/Core/Module/NethGui_Core_Module_Standard.html#getHostConfiguration
 
 
 
@@ -167,10 +167,10 @@ TODO
 .. _bind:
 .. _validate:
 .. _process:
-.. _NethGui_Core_ModuleInterface: http://nethgui.nethesis.it/dev/nethgui-dev_davidep/www/doc/ExtensibleApi/NethGui_Core_ModuleInterface.html
+.. _NethGui_Core_ModuleInterface: http://nethgui.nethesis.it/Documentation/Api/Core/NethGui_Core_ModuleInterface.html
 .. _getAdapter:
-.. _NethGui_Core_Module_Standard: http://nethgui.nethesis.it/docs/NethGui/Core/NethGui_Core_Module_Standard.html
-.. _NethGui_Core_Module_Composite: http://nethgui.nethesis.it/docs/NethGui/Core/NethGui_Core_Module_Composite.html
+.. _NethGui_Core_Module_Standard: http://nethgui.nethesis.it/Documentation/Api/Core/Module/NethGui_Core_Module_Standard.html
+.. _NethGui_Core_Module_Composite: http://nethgui.nethesis.it/Documentation/Api/Core/Module/NethGui_Core_Module_Composite.html
 
 
 
@@ -207,7 +207,7 @@ Later on the view object is rendered, calling a Template_ or a
 
 .. _ArrayAccess: http://php.net/manual/en/class.arrayaccess.php
 .. _IteratorAggregate: http://php.net/manual/en/class.iteratoraggregate.php
-.. _prepareView: http://nethgui.nethesis.it/dev/nethgui-dev_davidep/www/doc/NethGui/Core/NethGui_Core_Module_Standard.html#prepareVie
+.. _prepareView: http://nethgui.nethesis.it/Documentation/Api/Core/Module/NethGui_Core_Module_Standard.html#prepareView
 
 
 
@@ -321,10 +321,10 @@ PHP file, this time under ``NethGui/View/`` directory,
 
 .. _ModuleTestCase: 
 .. _basic testing class: http://nethgui.nethesis.it/docs/Tests/ModuleTestCase.html
-.. _NethGui_Core_Module_Standard: http://nethgui.nethesis.it/docs/NethGui/Core/NethGui_Core_Module_Standard.html
-.. _NethGui_Core_Module_Composite: http://nethgui.nethesis.it/docs/NethGui/Core/NethGui_Core_Module_Composite.html
-.. _initialize: http://nethgui.nethesis.it/docs/NethGui/Core/NethGui_Core_Module_Standard.html#initialize
-.. _declareParameter: http://nethgui.nethesis.it/docs/NethGui/Core/NethGui_Core_Module_Standard.html#declareParameter
+.. _NethGui_Core_Module_Standard: http://nethgui.nethesis.it/Documentation/Api/Core/Module/NethGui_Core_Module_Standard.html
+.. _NethGui_Core_Module_Composite: http://nethgui.nethesis.it/Documentation/Api/Core/Module/NethGui_Core_Module_Composite.html
+.. _initialize: http://nethgui.nethesis.it/Documentation/Api/Core/Module/NethGui_Core_Module_Standard.html#initialize
+.. _declareParameter: http://nethgui.nethesis.it/Documentation/Api/Core/Module/NethGui_Core_Module_Standard.html#declareParameter
 .. _regular expression: http://php.net/manual/en/function.preg-match.php
 
 
@@ -415,8 +415,8 @@ In expectedDb_ we specify the list of low level database calls the
 module must execute.
 
 .. _PHPUnit: http://www.phpunit.de/manual/3.5/en/index.html
-.. _expectedDb: http://nethgui.nethesis.it/docs/Tests/ModuleTestCase.html#$expectedDb
-.. _expectedView: http://nethgui.nethesis.it/docs/Tests/ModuleTestCase.html#$expectedView
-.. _moduleParameters: http://nethgui.nethesis.it/docs/Tests/ModuleTestCase.html#$moduleParameters
+.. _expectedDb: http://nethgui.nethesis.it/Documentation/Api/Tests/ModuleTestCase.html#$expectedDb
+.. _expectedView: http://nethgui.nethesis.it/Documentation/Api/Tests/ModuleTestCase.html#$expectedView
+.. _moduleParameters: http://nethgui.nethesis.it/Documentation/Api/Tests/ModuleTestCase.html#$moduleParameters
 .. _our example: `Implementing a simple Module`_
 

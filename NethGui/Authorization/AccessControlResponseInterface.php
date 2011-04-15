@@ -3,8 +3,7 @@
 /**
  * NethGui
  *
- * @package NethGui
- * @subpackage Authorization
+ * @package Authorization
  */
 
 /**
@@ -14,8 +13,7 @@
  * response that can be ``GRANTED`` or ``NOT GRANTED``.
  *
  * @see AccessControlRequestInterface
- * @package NethGui
- * @subpackage Authorization
+ * @package Authorization
  */
 interface NethGui_Authorization_AccessControlResponseInterface
 {

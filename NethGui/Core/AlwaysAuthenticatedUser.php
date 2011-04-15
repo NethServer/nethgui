@@ -2,8 +2,7 @@
 /**
  * NethGui
  *
- * @package NethGui
- * @subpackage Core
+ * @package Core
  *
  */
 
@@ -11,8 +10,7 @@
  * TODO: describe class
  *
  * @deprecated Substitute with the complete implementation in version Phi.
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 final class NethGui_Core_AlwaysAuthenticatedUser implements NethGui_Core_UserInterface
 {

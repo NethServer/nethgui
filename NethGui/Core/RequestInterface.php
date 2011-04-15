@@ -1,14 +1,12 @@
 <?php
 /**
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 
 /**
  * A NethGui_Core_RequestInterface object carries parameters to a Module (and its submodules).
  *
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 interface NethGui_Core_RequestInterface
 {

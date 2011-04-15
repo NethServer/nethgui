@@ -1,13 +1,11 @@
 <?php
 /**
- * @package NethGui
- * @subpackage Module
+ * @package Module
  */
 
 /**
  * @todo describe class
- * @package NethGui
- * @subpackage Module
+ * @package Module
  */
 class NethGui_Module_LocalNetwork extends NethGui_Core_Module_TableController implements NethGui_Core_TopModuleInterface
 {

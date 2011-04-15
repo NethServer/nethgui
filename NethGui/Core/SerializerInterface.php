@@ -1,12 +1,10 @@
 <?php
 /**
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 
 /**
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 interface NethGui_Core_SerializerInterface {
     public function read();

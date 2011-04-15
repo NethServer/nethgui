@@ -1,12 +1,12 @@
 <?php
 /**
  * @package Tests
- * @subpackage NethGui_Module_RemoteAccess
+ * @subpackage Unit
  */
 
 /**
  * @package Tests
- * @subpackage NethGui_Module_RemoteAccess
+ * @subpackage Unit
  */
 class NethGui_Module_RemoteAccess_RemoteManagementTest extends ModuleTestCase
 {

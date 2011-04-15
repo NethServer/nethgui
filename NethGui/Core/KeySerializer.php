@@ -1,14 +1,12 @@
 <?php
 /**
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 
 /**
  * @todo Describe class
  *
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 class NethGui_Core_KeySerializer implements NethGui_Core_SerializerInterface
 {

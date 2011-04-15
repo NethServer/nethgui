@@ -2,8 +2,7 @@
 /**
  * NethGui
  *
- * @package NethGui
- * @subpackage Core
+ * @package Core
  * @author Giacomo Sanchietti 
  */
 
@@ -19,8 +18,7 @@
  *
  * Before use any method in the class, the method st($db) must be called. 
  *
- * @package NethGui
- * @subpackage Core
+ * @package Core
  * 
  * 
  */

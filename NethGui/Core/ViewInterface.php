@@ -2,16 +2,14 @@
 /**
  * NethGui
  *
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 
 /**
  * Each module has a view attacched to it during prepareView operation. A view
  * contains generic elements such as strings, numbers or other (inner) views.
  *
- * @package NethGui
- * @subpackage Core
+ * @package Core
  */
 interface NethGui_Core_ViewInterface extends ArrayAccess, IteratorAggregate
 {
