@@ -25,17 +25,18 @@
  */
 class NethGui_Core_View implements NethGui_Core_ViewInterface
 {
-
-    /**
-     * Holds child views
-     * @var array
-     */
-    private $children;
     /**
      * Reference to associated module
      * @var NethGui_Core_ModuleInterface
      */
     private $module;
+    /**
+     * Module path caches the identifier of all ancestors from the root to the
+     * associated module.
+     * @var array
+     */
+    private $modulePath;
+
     /**
      * Holds view state
      * @var array
@@ -46,16 +47,10 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
      * @var string
      */
     private $template;
-    /**
-     * Module path contains the identifier of all ancestors from root to the
-     * current module.
-     * @var array
-     */
-    private $modulePath;
+
 
     public function __construct(NethGui_Core_ModuleInterface $module)
     {
-        $this->children = array();
         $this->module = $module;
         $this->data = array();
 
@@ -77,6 +72,10 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
         return implode('_', $this->getModulePath()) . '_' . $widgetId;
     }
 
+    /**
+     * Return the array of parent module identifiers.
+     * @return array
+     */
     private function getModulePath()
     {
         if ( ! isset($this->modulePath)) {
@@ -109,41 +108,25 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
         $this->template = $template;
     }
 
-    /**
-     * Returns the View associated with $module.
-     * @param NethGui_Core_ModuleInterface $module
-     * @return NethGui_Core_ViewInterface
-     */
-    public function getInnerView(NethGui_Core_ModuleInterface $module)
+    public function spawnView(NethGui_Core_ModuleInterface $module)
     {
-        $moduleId = $module->getIdentifier();
-
-        if ( ! isset($this->children[$moduleId])) {
-            // Registers a new child
-            $child = new self($module);
-            $this->children[$moduleId] = $child;
-        }
-
-        return $this->children[$moduleId];
+        return new self($module);
     }
 
     public function getIterator()
     {
-        return new ArrayIterator(array_merge($this->children, $this->data));
+        return new ArrayIterator($this->data);
     }
 
     public function offsetExists($offset)
     {
-        return array_key_exists($offset, $this->data)
-        || isset($this->children[$offset]);
+        return array_key_exists($offset, $this->data);
     }
 
     public function offsetGet($offset)
     {
-        if (array_key_exists($offset, $this->data)) {
+        if ($this->offsetExists($offset)) {
             return $this->data[$offset];
-        } elseif (isset($this->children[$offset])) {
-            return $this->children[$offset];
         }
 
         return NULL;
@@ -270,10 +253,5 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
         return NethGui_Framework::getInstance()->buildUrl($path, $parameters);
     }
 
-    public function __clone()
-    {
-        $this->children = array();
-        $this->data = array();
-    }
 
 }

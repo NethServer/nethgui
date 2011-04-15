@@ -36,11 +36,11 @@ interface NethGui_Core_ViewInterface extends ArrayAccess, IteratorAggregate
     public function copyFrom($data);
 
     /**
-     * Returns the View associated with $module.
-     *
-     * @return NethGui_Core_ViewInterface
+     * Create a new view object associated to $module
+     * @param NethGui_Core_ModuleInterface $module The associated $module
+     * @return NethGui_Core_ViewInterface The new view object, of the same type of the actual.
      */
-    public function getInnerView(NethGui_Core_ModuleInterface $module);
+    public function spawnView(NethGui_Core_ModuleInterface $module);
 
     /**
      * Renders a string representation of the view, performing string translations
