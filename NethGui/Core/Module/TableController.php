@@ -222,16 +222,16 @@ class NethGui_Core_Module_TableController extends NethGui_Core_Module_Composite
     public function prepareColumnActions(NethGui_Core_ViewInterface $view, $mode, $values)
     {
         if ($mode == self::VIEW_REFRESH) {
-            $cheapView = clone $view;
-            $cheapView->setTemplate('NethGui_Core_View_TableActions');
+            $columnView = $view->spawnView($this);
+            $columnView->setTemplate('NethGui_Core_View_TableActions');
         } else {
-            $cheapView = array();
+            $columnView = array();
         }
 
-        $cheapView['update'] = $view->buildUrl('update', $values['network']);
-        $cheapView['delete'] = $view->buildUrl('delete', $values['network']);
+        $columnView['update'] = $view->buildUrl('update', $values['network']);
+        $columnView['delete'] = $view->buildUrl('delete', $values['network']);
 
-        return $cheapView;
+        return $columnView;
     }
 
 }
