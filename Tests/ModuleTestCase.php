@@ -62,6 +62,11 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
      */
     protected $submittedRequest;
     private $databaseMocks;
+    /**
+     * The string is prefixed to values returned by NethGui_Core_View::buildUrl()
+     * @var string
+     */
+    protected $urlReturnPrefix = 'http://localhost/';
 
     /**
      * @return NethGui_Core_HostConfigurationInterface
@@ -204,19 +209,31 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
      *
      * @return NethGui_Core_ViewInterface
      */
-    protected function provideView()
+    public function spawnView(NethGui_Core_ModuleInterface $module, $expectedOffsetSet)
     {
         $viewMock = $this->getMockBuilder('NethGui_Core_View')
-                ->setMethods(array('offsetSet'))
-                ->setConstructorArgs(array($this->object))
+                ->setMethods(array('offsetSet', 'buildUrl', 'spawnView'))
+                ->setConstructorArgs(array($module))
                 ->getMock()
         ;
 
-        foreach ($this->expectedView as $index => $args) {
+        foreach ($expectedOffsetSet as $index => $args) {
             $viewMock->expects($this->at($index))
                 ->method('offsetSet')
                 ->with($args[0], $args[1]);
         }
+
+
+        $viewMock->expects($this->any())
+            ->method('spawnView')
+            ->withAnyParameters()
+            ->will($this->returnCallback(array($this, 'spawnView')));
+
+
+        $viewMock->expects($this->any())
+            ->method('buildUrl')
+            ->withAnyParameters()
+            ->will(new UrlReturn($this->urlReturnPrefix));
 
         return $viewMock;
     }
@@ -255,7 +272,43 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
         $this->object->bind($this->provideRequest());
         $this->object->validate($this->provideValidationReport());
         $this->object->process();
-        $this->object->prepareView($this->provideView(), $viewMode);
+
+        $this->object->prepareView($this->spawnView($this->object, $this->expectedView), $viewMode);
+    }
+
+}
+
+/**
+ * @package Tests
+ */
+class UrlReturn extends PHPUnit_Framework_MockObject_Stub_Return
+{
+
+    /**
+     *
+     * @var string
+     */
+    protected $urlPrefix;
+
+    public function __construct($urlPrefix)
+    {
+        $this->urlPrefix = $urlPrefix;
+    }
+
+    public function invoke(PHPUnit_Framework_MockObject_Invocation $invocation)
+    {
+        if (isset($invocation->parameters) && is_array($invocation->parameters)) {
+            $parameters = implode('/', $invocation->parameters);
+        } else {
+            $parameters = '';
+        }
+
+        return $this->urlPrefix . $parameters;
+    }
+
+    public function toString()
+    {
+        return sprintf('return url from arguments (%s)', implode(', ', $this->parameters));
     }
 
 }
