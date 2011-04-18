@@ -276,8 +276,9 @@ Notes:
 
 * At every step except the first a *Previous* button allows the User
   to switch back to previous step.
-
 * Field values are remembered while the User moves forward and backward.
+* Moreover the next step may be dependent on values inserted on the
+  previous one *(branches)*.
 
 
 Wizard at intermediate step:: 
@@ -301,8 +302,36 @@ each form, emphasizing the current step.
 Tabs
 ----
 
-Tabs::
+The User faces a complex configuration.  Tabs allows grouping of
+strictly related form controls into distinct (and loosely related)
+tab-pages::
+   
+    .-----------. .-----------.
+    |   Tab 1   | |   Tab 2   |
+   -+           +-+-----------+-----------...  
+   
+   // form controls omitted
+   
+                                    [ Save ]
+   ------------------------------------------
+    
 
-   .-----------. .-----------.
-   |   Tab 1   | |   Tab 2   |
-  -+           +-+-----------+-----------...
+1. "Tab 1" (see figure) is currently selected.
+
+2. The User changes some values in "Tab 1" form.
+
+3. The User switches to "Tab 2" by clicking on its label.
+
+4. The User changes some values in "Tab 2" form.
+
+5. The User click on "Save" button of "Tab 2" form.
+
+   a) Validation occurs on "Tab 2" only.
+   b) Only "Tab 2" form controls are saved.
+
+8. The User switches back to "Tab 1" again: previously changed values
+   in "Tab 1" are **still unsaved**.
+
+Thus each page keeps an indipendent validation and saving state.
+
+
