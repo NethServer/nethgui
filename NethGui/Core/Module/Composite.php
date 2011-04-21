@@ -29,7 +29,7 @@ abstract class NethGui_Core_Module_Composite extends NethGui_Core_Module_Standar
                 $child->initialize();
             }
         }
-    }
+     }
 
     /**
      * Adds a child to Composite, initializing it, if current Composite is

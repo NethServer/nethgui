@@ -11,7 +11,6 @@
 class NethGui_Core_Request implements NethGui_Core_RequestInterface
 {
 
-
     /**
      * @var array
      */
@@ -20,13 +19,11 @@ class NethGui_Core_Request implements NethGui_Core_RequestInterface
      * @var UserInterface
      */
     private $user;
-
     /**
      * @see NethGui_Core_RequestInterface
      * @var int
      */
     private $contentType;
-
     /**
      * @var bool
      */
@@ -43,28 +40,29 @@ class NethGui_Core_Request implements NethGui_Core_RequestInterface
         static $instance;
 
         if ( ! isset($instance)) {
+            $data = array($defaultModuleIdentifier => $parameters);
+
             if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-                $data = array($defaultModuleIdentifier => $parameters);
-                $contentType = self::CONTENT_TYPE_HTML;
                 $submitted = FALSE;
-                //
+                $contentType = self::CONTENT_TYPE_HTML;
             } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                $submitted = TRUE;
+
                 if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
                     && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'
                     && $_SERVER['CONTENT_TYPE'] == 'application/json; charset=UTF-8') {
                     // Ajax POST request.
-                    // TODO: decode json query
-                    $data = json_decode($GLOBALS['HTTP_RAW_POST_DATA'], true);
-                    if(is_null($data)) {
-                        $data = array();
+                    $postData = json_decode($GLOBALS['HTTP_RAW_POST_DATA'], true);
+                    if (is_null($postData)) {
+                        $postData = array();
                     }
+                    $data = array_merge($data, $postData);
                     $contentType = self::CONTENT_TYPE_JSON;
                 } else {
                     // Browser POST request.
-                    $data = array_merge(array($defaultModuleIdentifier => $parameters), $_POST);
+                    $data = array_merge($data, $_POST);
                     $contentType = self::CONTENT_TYPE_HTML;
                 }
-                $submitted = TRUE;
             }
 
             // TODO: retrieve user state from Session
@@ -105,7 +103,6 @@ class NethGui_Core_Request implements NethGui_Core_RequestInterface
     {
         return $this->contentType;
     }
-
 
     public function hasParameter($parameterName)
     {
