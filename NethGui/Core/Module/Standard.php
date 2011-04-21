@@ -94,11 +94,20 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
      */
     private $requestHandlers = array();
     /**
-     * This array holds the names of parameters submitted in Request.
+     * This array holds the names of parameters passed by Request during bind().
      * Only those parameters will be validated.
+     *
      * @var array
      */
-    private $submittedParameters = array();
+    private $parameterValidationList = array();
+
+    /**
+     * Template applied to view, if different from NULL
+     *
+     * @see NethGui_Core_ViewInterface::setTemplate()
+     * @var string|callable
+     */
+    protected $viewTemplate;
 
     /**
      * @param string $identifier
@@ -108,6 +117,7 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
         $this->parameters = new NethGui_Core_ParameterSet();
         $this->immutables = new ArrayObject();
         $this->autosave = TRUE;
+        $this->viewTemplate = NULL;
 
         if (isset($identifier)) {
             $this->identifier = $identifier;
@@ -177,6 +187,10 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
      * A parameter is validated through $validationRule and optionally linked to
      * one or more database values through an $adapter.
      *
+     * If the parameter is using an adapter keep in mind that the
+     * Host Configuration link is available after initialization only: don't
+     * call in class constructor in this case!
+     *
      * @see NethGui_Core_HostConfigurationInterface::getIdentityAdapter()
      * @see NethGui_Core_HostConfigurationInterface::getMapAdapter()
      *
@@ -190,7 +204,7 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
         if (is_string($validator) && $validator[0] == '/') {
             $validator = $this->getValidator()->regexp($validator);
         } elseif ($validator === FALSE) {
-            $validator = $this->getValidator()->forceResult(TRUE);
+            $validator = $this->getValidator()->forceResult(FALSE);
         } elseif (is_integer($validator)) {
             $validator = $this->createValidatorFromInteger($validator);
         }
@@ -315,7 +329,15 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
             throw new Exception('Immutable `' . $immutableName . '` is already declared.');
         }
 
+        if(is_object($immutableValue)) {
+            $immutableValue = clone $immutableValue;
+        }
+
         $this->immutables[$immutableName] = $immutableValue;
+    }
+
+    protected function getImmutableValue($immutableName) {
+        return $this->immutables[$immutableName];
     }
 
     public function bind(NethGui_Core_RequestInterface $request)
@@ -323,7 +345,7 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
         foreach ($this->parameters as $parameterName => $parameterValue) {
             if ($request->hasParameter($parameterName)) {
                 $this->parameters[$parameterName] = $request->getParameter($parameterName);
-                $this->submittedParameters[] = $parameterName;
+                $this->parameterValidationList[] = $parameterName;
             } elseif ($request->isSubmitted()
                 && isset($this->submitDefaults[$parameterName])) {
                 $this->parameters[$parameterName] = $this->submitDefaults[$parameterName];
@@ -333,7 +355,7 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
 
     public function validate(NethGui_Core_ValidationReportInterface $report)
     {
-        foreach ($this->submittedParameters as $parameter) {
+        foreach ($this->parameterValidationList as $parameter) {
             if ( ! isset($this->validators[$parameter])) {
                 throw new NethGui_Exception_Validation("Unknown parameter " . $parameter);
             }
@@ -362,6 +384,9 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
         $view->copyFrom($this->parameters);
         if ($mode == self::VIEW_REFRESH) {
             $view->copyFrom($this->immutables);
+        }
+        if(is_string($this->viewTemplate) || is_callable($this->viewTemplate)) {
+            $view->setTemplate($this->viewTemplate);
         }
     }
 

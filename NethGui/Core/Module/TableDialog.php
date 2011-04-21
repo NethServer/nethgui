@@ -12,35 +12,77 @@ class NethGui_Core_Module_TableDialog extends NethGui_Core_Module_Standard
 {
 
     /**
-     *
      * @var array
      */
     private $dbSchema;
     /**
      *
-     * @var array|string See {@link NethGui_Core_View::setTemplate()} method.
+     * @var array
      */
-    private $dialogTemplate;
+    private $actions;
 
     /**
-     *
+     * @param string $identifier
      * @param string|array $template See {@link NethGui_Core_View::setTemplate()} method.
-     * @param array $dbSchema
+     * @param array $dbSchema An array of "reduced" parameter declarations: <paramName, paramValidator, paramSubmitDefault>. First parameter is the "primary key".
+     * @param array $actions A list of handled action names.
      */
-    public function __construct($identifier, $template, $dbSchema)
+    public function __construct($identifier, $template, $dbSchema, $actions = array())
     {
         parent::__construct($identifier);
-        $this->dialogTemplate = $template;
+        $this->viewTemplate = $template;
         $this->dbSchema = $dbSchema;
+        $this->actions = $actions;
+    }
+
+    /**
+     * We assume that the parent Module is a DialogDataProviderInterface implementor.
+     * @return NethGui_Core_Module_DialogDataProviderInterface
+     */
+    private function getDialogDataProvider()
+    {
+        $parentModule = $this->getParent();
+        if ( ! $parentModule instanceof NethGui_Core_Module_DialogDataProviderInterface) {
+            throw new Exception("Dialog is not correctly bound to its DataProvider");
+        }
+        return $parentModule;
     }
 
     public function initialize()
     {
         parent::initialize();
+        $this->declareParameter('enabled');
+        $this->declareParameter('action');
         foreach ($this->dbSchema as $d) {
             $this->declareParameter($d[0], $d[1], NULL, $d[2]);
         }
-        //$this->declareParameter('action');
+    }
+
+    public function bind(NethGui_Core_RequestInterface $request)
+    {
+        parent::bind($request);
+
+        // Get parameters value from dialog data provider, if it's not a User submission.
+        if ( ! $request->isSubmitted()) {
+            foreach ($this->getDialogDataProvider()->getDialogData() as $parameterName => $parameterValue) {
+                $this->parameters[$parameterName] = $parameterValue;
+            }
+        }
+    }
+
+    /**
+     * Set the dialog action
+     * @param string $actionName
+     */
+    public function setAction($actionName)
+    {
+        if (in_array($actionName, $this->actions)) {
+            $this->parameters['action'] = $actionName;
+            $this->parameters['enabled'] = TRUE;
+        } else {
+            $this->parameters['action'] = FALSE;
+            $this->parameters['enabled'] = FALSE;
+        }
     }
 
     /**
@@ -50,36 +92,15 @@ class NethGui_Core_Module_TableDialog extends NethGui_Core_Module_Standard
     {
         parent::process();
 
-        $parentModule = $this->getParent();
-        if ($parentModule instanceOf NethGui_Core_ModuleInterface
-            && method_exists($parentModule, 'onDialogSave')) {
-            $values = array();
-
-            foreach($this->dbSchema as $fieldDescriptor) {
-                $values[$fieldDescriptor[0]] = $this->parameters[$fieldDescriptor[0]];
-            }
-            
-            if ( ! empty($values)) {
-                $key = array_shift($values);
-                $parentModule->onDialogSave($key, $values);
-            }
+        if(!$this->parameters['enabled']) {
+            return;
         }
-    }
 
-    public function loadValues($action, $key, $values)
-    {
-        // set the "primary key": the unique identifier
-        $this->parameters[$this->dbSchema[0][0]] = $key;
-        foreach ($values as $name => $value) {
-            $this->parameters[$name] = $value;
+        foreach ($this->dbSchema as $fieldDescriptor) {
+            $values[$fieldDescriptor[0]] = $this->parameters[$fieldDescriptor[0]];
         }
-        $this->parameters['action'] = $action;
-    }
 
-    public function prepareView(NethGui_Core_ViewInterface $view, $mode)
-    {
-        parent::prepareView($view, $mode);
-        $view->setTemplate($this->dialogTemplate);
+        $this->getDialogDataProvider()->setDialogData($values);
     }
 
 }

@@ -1,5 +1,5 @@
 
-<table border="1" class="<?php echo get_class($module); ?>">
+<table class="table-controller <?php echo get_class($module); ?>">
     <caption><?php echo get_class($module); ?></caption>
     <tr>
         <?php
@@ -22,15 +22,6 @@
 <?php endforeach; ?>
 
 <?php
-
-/*
- * On POST, action is UPDATE if page is in UPDATE state, otherwise action is CREATE.
- */
-if($parameters['action'] == 'update') {
-    echo form_hidden($name['action'], 'update');
-} else {
-    echo form_hidden($name['action'], 'create');
-}
-   
+echo form_hidden($name['action'], $parameters['action']);
 ?>
        

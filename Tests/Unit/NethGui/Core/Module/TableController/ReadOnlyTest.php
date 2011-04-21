@@ -43,8 +43,6 @@ class NethGui_Core_Module_TableReadOnlyTest extends ModuleTestCase
         $this->expectedView = array(
             array('action', 'read'),
             array('key', NULL),
-            array('page', 0),
-            array('size', 20),
             array('rows', array(
                     array('192.168.1.0', '255.255.255.0', '192.168.1.254', NULL),
                     array('192.168.2.0', '255.255.255.0', NULL, 'yes'),

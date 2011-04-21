@@ -1,8 +1,6 @@
 
-<a href="<?php echo $view['update'] ?>">
-    <?php echo T('update') ?>
+<?php foreach($view as $action => $value): ?>
+<a href="<?php echo $value ?>">
+    <?php echo T($action) ?>
 </a>
-
-<a href="<?php echo $view['delete'] ?>">
-    <?php echo T('delete') ?>
-</a>
+<?php endforeach; ?>

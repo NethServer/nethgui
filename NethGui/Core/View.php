@@ -242,7 +242,7 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
         $parameters = array();
         $path = $this->getModulePath();
 
-        foreach (func_get_args () as $arg) {
+        foreach (func_get_args() as $arg) {
             if (is_string($arg)) {
                 $path[] = $arg;
             } elseif (is_array($arg)) {
