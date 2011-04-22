@@ -141,13 +141,13 @@ class NethGui_Core_TableAdapter implements NethGui_Core_AdapterInterface, ArrayA
             throw new InvalidArgumentException('Value must be an array!');
         }
 
-        $this->data->offsetSet($offset, $value);
-
         if (isset($this[$offset])) {
             $this->changes[] = array('setProp', $offset, $value);
         } else {
             $this->changes[] = array('setKey', $offset, $this->type, $value);
         }
+
+        $this->data->offsetSet($offset, $value);
     }
 
     public function offsetUnset($offset)

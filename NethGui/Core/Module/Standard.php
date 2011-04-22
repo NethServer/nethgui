@@ -248,6 +248,7 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
                 return $validator->ipV4Address();
 
             case self::VALID_IP_OR_EMPTY:
+            case self::VALID_IPv4_OR_EMPTY:
                 return $validator->orValidator($this->getValidator()->ipV4Address(),$this->getValidator()->isEmpty());
 
           

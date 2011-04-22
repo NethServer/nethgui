@@ -78,6 +78,7 @@ class NethGui_Core_Module_TableController extends NethGui_Core_Module_Controller
 
         $actionObjects = array(0 => FALSE); // set the read action object placeholder.
         $tableActions = array();
+        $columnActions = array();
 
         foreach ($this->actions as $actionArguments) {
 
@@ -85,6 +86,8 @@ class NethGui_Core_Module_TableController extends NethGui_Core_Module_Controller
 
             if ($isTableAction === TRUE) {
                 $tableActions[] = $actionName;
+            } else {
+                $columnActions[] = $actionName;
             }
 
             if ($actionArguments instanceof NethGui_Core_Module_Action) {
@@ -95,7 +98,7 @@ class NethGui_Core_Module_TableController extends NethGui_Core_Module_Controller
         }
 
         // add the read case
-        $actionObjects[0] = new NethGui_Core_Module_TableRead('read', $this->tableAdapter, $this->columns, $tableActions);
+        $actionObjects[0] = new NethGui_Core_Module_TableRead('read', $this->tableAdapter, $this->columns, $tableActions, $columnActions);
 
         foreach ($actionObjects as $actionObject) {
             $this->addChild($actionObject);

@@ -52,7 +52,20 @@ class NethGui_Core_Module_TableModify extends NethGui_Core_Module_Action
             $this->performAction = TRUE;
         } else {
             $arguments = $this->getArguments();
-            $this->parameters[$this->key] = isset($arguments[0]) ? $arguments[0] : NULL;
+            $key = isset($arguments[0]) ? $arguments[0] : NULL;
+            $this->parameters[$this->key] = $key;
+
+            if ( ! is_null($key)) {
+                foreach ($this->parameterSchema as $parameterDeclaration) {
+                    $parameterName = $parameterDeclaration[0];
+                    if ($parameterName == $this->key) {
+                        continue;
+                    } elseif (isset($this->tableAdapter[$arguments[0]])) {
+                        $values = $this->tableAdapter[$arguments[0]];
+                        $this->parameters[$parameterName] = $values[$parameterName];
+                    }
+                }
+            }
         }
     }
 
@@ -69,11 +82,13 @@ class NethGui_Core_Module_TableModify extends NethGui_Core_Module_Action
 
                 $values = $this->parameters->getArrayCopy();
 
+                $key = $this->parameters[$this->key];
+
                 if (isset($values[$this->key])) {
                     unset($values[$this->key]);
                 }
 
-                $this->tableAdapter[$this->parameters[$this->key]] = $values;
+                $this->tableAdapter[$key] = $values;
             } else {
                 throw new NethGui_Exception_HttpStatusClientError('Not found', 404);
             }

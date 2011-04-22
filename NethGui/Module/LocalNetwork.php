@@ -18,14 +18,14 @@ class NethGui_Module_LocalNetwork extends NethGui_Core_Module_TableController im
     public function __construct()
     {
         $columns = array(
-            'network', 
+            'network',
             'Mask',
             'Router',
             'SystemLocalNetwork',
             'Actions'
         );
 
-        $actions = array(            
+        $actions = array(
             array('create', 'NethGui_View_LocalNetwork_CreateUpdate', TRUE),
             array('update', 'NethGui_View_LocalNetwork_CreateUpdate', NULL),
             array('delete', 'NethGui_Core_View_TableDelete', NULL),
@@ -34,12 +34,11 @@ class NethGui_Module_LocalNetwork extends NethGui_Core_Module_TableController im
         $parameterSchema = array(
             array('network', self::VALID_IPv4),
             array('Mask', self::VALID_IPv4),
-            array('Router', self::VALID_IPv4),
+            array('Router', self::VALID_IPv4_OR_EMPTY),
         );
-       
+
         parent::__construct('LocalNetwork', 'networks', 'network', $parameterSchema, $columns, $actions);
         $this->viewTemplate = 'NethGui_Core_View_TableController';
     }
-
 }
 

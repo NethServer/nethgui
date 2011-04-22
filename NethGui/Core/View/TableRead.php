@@ -15,4 +15,4 @@
     </tr>
     <?php endforeach ?></tbody>
 </table>
-<ul class="actions"><?php foreach ($view['actions'] as $tableAction): ?><li><?php echo anchor($view->buildUrl('../' . $tableAction), $tableAction) ?></li><?php endforeach; ?></ul>
+<ul class="actions"><?php foreach ($view['tableActions'] as $tableAction): ?><li><?php echo anchor($view->buildUrl('../' . $tableAction), $tableAction) ?></li><?php endforeach; ?></ul>

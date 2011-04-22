@@ -26,7 +26,12 @@ class NethGui_Core_Module_TableRead extends NethGui_Core_Module_Action
      * A list of actions that apply on the whole table
      * @var array
      */
-    private $actions;
+    private $tableActions;
+    /**
+     * Actions on columns
+     * @var array
+     */
+    private $columnActions;
 
     /**
      *
@@ -36,20 +41,21 @@ class NethGui_Core_Module_TableRead extends NethGui_Core_Module_Action
      * @param array $actions A list of actions that apply on the whole table
      * @param array $viewTemplate Optional
      */
-    public function __construct($identifier, NethGui_Core_AdapterInterface $tableAdapter, $columns, $actions, $viewTemplate = NULL)
+    public function __construct($identifier, NethGui_Core_AdapterInterface $tableAdapter, $columns, $tableActions, $columnActions, $viewTemplate = NULL)
     {
         parent::__construct($identifier);
         $this->columns = $columns;
         $this->viewTemplate = $viewTemplate;
         $this->tableAdapter = $tableAdapter;
-        $this->actions = $actions;
+        $this->tableActions = $tableActions;
+        $this->columnActions = $columnActions;
     }
 
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
         if ($mode == self::VIEW_REFRESH) {
             $view['columns'] = $this->columns;
-            $view['actions'] = array_values($this->actions);
+            $view['tableActions'] = array_values($this->tableActions);
         }
         $view['rows'] = $this->prepareRows($view, $mode);
         parent::prepareView($view, $mode);
@@ -58,7 +64,7 @@ class NethGui_Core_Module_TableRead extends NethGui_Core_Module_Action
     private function prepareRows(NethGui_Core_ViewInterface $view, $mode)
     {
         $rows = array();
-               
+
         foreach ($this->tableAdapter as $key => $values) {
             $row = array();
 
@@ -66,7 +72,7 @@ class NethGui_Core_Module_TableRead extends NethGui_Core_Module_Action
             $values[$this->columns[0]] = $key;
 
             foreach ($this->columns as $columnIndex => $column) {
-                $row[] = $this->prepareColumnValue($view, $mode, $columnIndex, $column, $values);
+                $row[] = $this->prepareColumn($view, $mode, $columnIndex, $column, $values);
             }
 
             $rows[] = $row;
@@ -75,9 +81,9 @@ class NethGui_Core_Module_TableRead extends NethGui_Core_Module_Action
         return $rows;
     }
 
-    private function prepareColumnValue(NethGui_Core_ViewInterface $view, $mode, $columnIndex, $column, $values)
+    private function prepareColumn(NethGui_Core_ViewInterface $view, $mode, $columnIndex, $column, $values)
     {
-        $methodName = 'prepareColumn' . ucfirst($column);
+        $methodName = 'prepareViewForColumn' . ucfirst($column);
 
         if (method_exists($this, $methodName)) {
             $columnValue = call_user_func(array($this, $methodName), $view, $mode, $values);
@@ -90,19 +96,31 @@ class NethGui_Core_Module_TableRead extends NethGui_Core_Module_Action
         return $columnValue;
     }
 
-    public function prepareColumnActions(NethGui_Core_ViewInterface $view, $mode, $values)
+    public function prepareViewForColumnActions(NethGui_Core_ViewInterface $view, $mode, $values)
     {
         if ($mode == self::VIEW_REFRESH) {
             $columnView = $view->spawnView($this);
-            $columnView->setTemplate('NethGui_Core_View_TableActions');
+            $columnView->setTemplate(array($this, 'renderColumnActions'));
         } else {
             $columnView = array();
         }
 
-        $columnView['update'] = $view->buildUrl('..', 'update', $values['network']);
-        $columnView['delete'] = $view->buildUrl('..', 'delete', $values['network']);
+        $key = $values[$this->columns[0]];
+
+        foreach ($this->columnActions as $action) {
+            $columnView[$action] = $view->buildUrl('..', $action, $key);
+        }
 
         return $columnView;
+    }
+
+    public function renderColumnActions($state)
+    {
+        $output = '';
+        foreach($this->columnActions as $action) {
+            $output .= '<li>' . anchor($state['view'][$action], $action) . '</li>';
+        }
+        return '<ul>' . $output . '</ul>';
     }
 
 }
