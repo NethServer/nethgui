@@ -25,7 +25,7 @@
 </div>
 
 <div>
-    <?php echo form_submit($view['action'], $view['action']); ?>
+    <?php echo form_submit('submit', $module->getIdentifier()); ?>
     <?php echo anchor($view->buildUrl('..'), 'Cancel'); ?>
 
 </div>

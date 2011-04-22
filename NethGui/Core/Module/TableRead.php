@@ -31,12 +31,12 @@ class NethGui_Core_Module_TableRead extends NethGui_Core_Module_Action
     /**
      *
      * @param string $identifier Module identifier
-     * @param ArrayAccess $tableAdapter Data source
+     * @param NethGui_Core_AdapterInterface $tableAdapter Data source
      * @param array $columns The columns of the table
      * @param array $actions A list of actions that apply on the whole table
      * @param array $viewTemplate Optional
      */
-    public function __construct($identifier, $tableAdapter, $columns, $actions, $viewTemplate = NULL)
+    public function __construct($identifier, NethGui_Core_AdapterInterface $tableAdapter, $columns, $actions, $viewTemplate = NULL)
     {
         parent::__construct($identifier);
         $this->columns = $columns;

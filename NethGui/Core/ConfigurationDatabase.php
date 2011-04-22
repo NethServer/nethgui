@@ -180,7 +180,7 @@ class NethGui_Core_ConfigurationDatabase implements NethGui_Authorization_Policy
      * 
      * @param string $key Key to write
      * @param string $type Type of the key
-     * @param string $props Array of properties in the form  [PropName] => [PropValue]
+     * @param string $props Array of properties in the form [PropName] => [PropValue]
      * @access public
      * @return bool TRUE on success, FALSE otherwise
      *
