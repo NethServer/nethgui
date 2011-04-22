@@ -78,19 +78,19 @@ class NethGui_Core_TableAdapter implements NethGui_Core_AdapterInterface, ArrayA
             $this->lazyInitialization();
         }
 
-        if(!is_array($value) && !$value instanceof Traversable) {
+        if ( ! is_array($value) && ! $value instanceof Traversable) {
             throw new InvalidArgumentException('Value must be an array!');
         }
-        
-        foreach($value as $key => $props) {
+
+        foreach ($value as $key => $props) {
             $this[$key] = $props;
         }
     }
 
     public function save()
     {
-        if($this->isModified()) {
-            foreach($this->changes as $args) {
+        if ($this->isModified()) {
+            foreach ($this->changes as $args) {
                 $method = array_shift($args);
                 call_user_func_array(array($this->database, $method), $args);
             }
@@ -110,7 +110,7 @@ class NethGui_Core_TableAdapter implements NethGui_Core_AdapterInterface, ArrayA
 
     public function isModified()
     {
-        return $this->changes === NULL || count($this->changes) == 0;
+        return $this->changes instanceof ArrayObject && count($this->changes) > 0;
     }
 
     public function offsetExists($offset)
@@ -136,13 +136,18 @@ class NethGui_Core_TableAdapter implements NethGui_Core_AdapterInterface, ArrayA
         if ( ! isset($this->data)) {
             $this->lazyInitialization();
         }
-        
-        if(!is_array($value) && !$value instanceof Traversable) {
+
+        if ( ! is_array($value) && ! $value instanceof Traversable) {
             throw new InvalidArgumentException('Value must be an array!');
         }
 
         $this->data->offsetSet($offset, $value);
-        $this->changes[] = array('setKey', $this->type, $value);
+
+        if (isset($this[$offset])) {
+            $this->changes[] = array('setProp', $offset, $value);
+        } else {
+            $this->changes[] = array('setKey', $offset, $this->type, $value);
+        }
     }
 
     public function offsetUnset($offset)
@@ -152,6 +157,7 @@ class NethGui_Core_TableAdapter implements NethGui_Core_AdapterInterface, ArrayA
         }
 
         $this->data->offsetUnset($offset);
-        $this->changes[] = array('delKey', $offset);
+        $this->changes[] = array('deleteKey', $offset);
     }
+
 }

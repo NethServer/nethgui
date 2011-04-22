@@ -25,9 +25,25 @@ class NethGui_Core_Module_TableController extends NethGui_Core_Module_Controller
      * @var NethGui_Core_TableAdapter
      */
     private $tableAdapter;
+
+    /**
+     * @var string
+     */
     private $databaseName;
+
+    /**
+     * @var string
+     */
     private $keyType;
+
+    /**
+     * @var array
+     */
     private $parameterSchema;
+
+    /**
+     * @var array
+     */
     private $actions;
 
     /**
@@ -98,7 +114,7 @@ class NethGui_Core_Module_TableController extends NethGui_Core_Module_Controller
     {
         parent::process();
         if ($this->autosave === TRUE) {
-            //$this->tableAdapter->save();
+            $this->tableAdapter->save();
         }
     }
 

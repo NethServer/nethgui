@@ -43,6 +43,10 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Standard implem
     {
         $this->actions[$module->getIdentifier()] = $module;
         $module->setParent($this);
+        if ($this->isInitialized()) {
+            $module->initialize();
+        }
+        $module->setHostConfiguration($this->getHostConfiguration());
     }
 
     public function getChildren()
@@ -79,20 +83,20 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Standard implem
 
         reset($this->actions);
 
-        $this->arguments = $this->extractNumericKeys($request);
+        $numericArguments = $this->extractNumericKeys($request);
 
-        if (empty($this->arguments)) {
+        if (empty($numericArguments)) {
             // Default action is THE FIRST
             $currentActionIdentifier = key($this->actions);
         } else {
-            $currentActionIdentifier = $this->arguments[0];
+            $currentActionIdentifier = $numericArguments[0];
         }
 
         if ( ! isset($this->actions[$currentActionIdentifier])) {
             throw new NethGui_Exception_HttpStatusClientError('Not Found', 404);
         }
         $this->currentAction = $this->actions[$currentActionIdentifier];
-        $this->currentAction->bindArguments($currentActionIdentifier, array_slice($this->arguments, 1));
+        $this->currentAction->bindArguments($currentActionIdentifier, array_slice($numericArguments, 1));
         $this->currentAction->bind($request->getParameterAsInnerRequest($currentActionIdentifier));
     }
 
@@ -109,8 +113,8 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Standard implem
     }
 
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
-    {        
-        $innerView = $view->spawnView($this->currentAction);        
+    {
+        $innerView = $view->spawnView($this->currentAction);
         $view[$this->currentAction->getIdentifier()] = $innerView;
         parent::prepareView($view, $mode);
         $this->currentAction->prepareView($innerView, $mode);
@@ -140,7 +144,9 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Standard implem
      *
      * @return NethGui_Core_Module_Action
      */
-    protected function getCurrentAction() {
+    protected function getCurrentAction()
+    {
         return $this->currentAction;
     }
+
 }

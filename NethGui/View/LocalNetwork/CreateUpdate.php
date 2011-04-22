@@ -1,8 +1,9 @@
+<fieldset class="LocalNetwork">
 <div>
     <label for="<?php echo $id['network'] ?>"><?php echo T('Network address') ?></label>
     <input type="text"
            <?php if($view['action'] == 'update') { echo  'readonly="readonly"'; }; ?>
-           <?php if(!isset($parameters['network'])) { echo  'disabled="disabled"'; }; ?>
+           <?php if(!$view['enabled']) { echo  'disabled="disabled"'; }; ?>
            id="<?php echo $id['network'] ?>"
            name="<?php echo $name['network'] ?>"
            value="<?php echo isset($parameters['network']) ? $parameters['network'] : '' ?>">
@@ -23,7 +24,7 @@
            name="<?php echo $name['Router'] ?>"
            value="<?php echo $parameters['Router'] ?>">
 </div>
-
+</fieldset>
 <div>
     <?php echo form_submit('submit', $module->getIdentifier()); ?>
     <?php echo anchor($view->buildUrl('..'), 'Cancel'); ?>

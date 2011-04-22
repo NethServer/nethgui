@@ -21,11 +21,11 @@ class NethGui_Core_Module_TableModify extends NethGui_Core_Module_Action
     private $key;
     /**
      *
-     * @var ArrayAccess
+     * @var NethGui_Core_AdapterInterface
      */
     private $tableAdapter;
 
-    public function __construct($identifier, $tableAdapter, $parameterSchema, $viewTemplate = NULL)
+    public function __construct($identifier, NethGui_Core_AdapterInterface $tableAdapter, $parameterSchema, $viewTemplate = NULL)
     {
         parent::__construct($identifier);
         $this->viewTemplate = $viewTemplate;
@@ -52,7 +52,7 @@ class NethGui_Core_Module_TableModify extends NethGui_Core_Module_Action
             $this->performAction = TRUE;
         } else {
             $arguments = $this->getArguments();
-            $this->parameters[$this->key] = isset($arguments[0]) ? $arguments[0] : NULL;            
+            $this->parameters[$this->key] = isset($arguments[0]) ? $arguments[0] : NULL;
         }
     }
 
@@ -63,24 +63,27 @@ class NethGui_Core_Module_TableModify extends NethGui_Core_Module_Action
 
             $action = $this->getActionName();
 
-            $db = $this->getParent()->getDatabase();
-
             if ($action == 'delete') {
-                $success = $db->deleteKey($this->parameters[$this->key]);
-                //unset($db[$this->parameters['key']]);
-                //$success = $db->save();
-            } elseif ($action == 'create') {
-                throw new Exception('Not Implemented');
-            } elseif ($action == 'update') {
-                throw new Exception('Not Implemented');
+                unset($this->tableAdapter[$this->parameters[$this->key]]);
+            } elseif ($action == 'create' || $action == 'update') {
+
+                $values = $this->parameters->getArrayCopy();
+
+                if (isset($values[$this->key])) {
+                    unset($values[$this->key]);
+                }
+
+                $this->tableAdapter[$this->parameters[$this->key]] = $values;
             } else {
                 throw new NethGui_Exception_HttpStatusClientError('Not found', 404);
             }
-
-            if ( ! $success) {
-                throw new NethGui_Exception_Process(ucfirst($action) . ' on key ' . $key . ' failed!');
-            }
         }
+    }
+
+    public function prepareView(NethGui_Core_ViewInterface $view, $mode)
+    {
+        $view['key'] = $this->key;
+        parent::prepareView($view, $mode);
     }
 
 }

@@ -56,11 +56,11 @@ class NethGui_Core_Request implements NethGui_Core_RequestInterface
                     if (is_null($postData)) {
                         $postData = array();
                     }
-                    $data = array_merge($data, $postData);
+                    $data = array_merge_recursive($data, $postData);
                     $contentType = self::CONTENT_TYPE_JSON;
                 } else {
                     // Browser POST request.
-                    $data = array_merge($data, $_POST);
+                    $data = array_merge_recursive($data, $_POST);
                     $contentType = self::CONTENT_TYPE_HTML;
                 }
             }

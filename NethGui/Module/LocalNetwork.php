@@ -28,7 +28,7 @@ class NethGui_Module_LocalNetwork extends NethGui_Core_Module_TableController im
         $actions = array(            
             array('create', 'NethGui_View_LocalNetwork_CreateUpdate', TRUE),
             array('update', 'NethGui_View_LocalNetwork_CreateUpdate', NULL),
-            array('delete', NULL, NULL),
+            array('delete', 'NethGui_Core_View_TableDelete', NULL),
         );
 
         $parameterSchema = array(
