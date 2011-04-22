@@ -92,20 +92,25 @@ final class NethGui_Dispatcher
 
         foreach ($moduleActivationList as $moduleIdentifier) {
             $module = $this->topModuleDepot->findModule($moduleIdentifier);
-            $worldModule->addChild($module);
+            if ($module instanceof NethGui_Core_ModuleInterface) {
+                $worldModule->addChild($module);
+            }
         }
 
-        $worldModule->initialize();
-
-        $worldModule->bind($request);
-        $worldModule->validate($report);
-
         try {
-            $worldModule->process();
-        } catch (NethGui_Exception_Process $e) {
-            NethGui_Framework::logMessage($e->getMessage(), 'error');
-            $view['Exception'] = $e->getMessage();
-            $view['StackTrace'] = $e->getTrace();
+            $worldModule->initialize();
+            $worldModule->bind($request);
+            $worldModule->validate($report);
+
+            try {
+                $worldModule->process();
+            } catch (NethGui_Exception_Process $e) {
+                NethGui_Framework::logMessage($e->getMessage(), 'error');
+                $view['Exception'] = $e->getMessage();
+                $view['StackTrace'] = $e->getTrace();
+            }
+        } catch (NethGui_Exception_HttpStatusClientError $s) {
+            show_error('Status ' . $s->getCode(), $s->getCode(), $s->getMessage());
         }
 
         if ($request->getContentType() === NethGui_Core_RequestInterface::CONTENT_TYPE_HTML) {

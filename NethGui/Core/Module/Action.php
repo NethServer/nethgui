@@ -14,6 +14,7 @@
 class NethGui_Core_Module_Action extends NethGui_Core_Module_Standard {
 
     private $arguments = array();
+    private $actionName;
 
     /**
      * Assign arguments to action invocation.
@@ -22,7 +23,8 @@ class NethGui_Core_Module_Action extends NethGui_Core_Module_Standard {
      *
      * @param array $arguments An ordered array of arguments to this Action
      */
-    public function bindArguments($arguments) {
+    public function bindArguments($actionName, $arguments) {
+        $this->actionName = $actionName;
         $this->arguments = $arguments;
     }
 
@@ -34,5 +36,16 @@ class NethGui_Core_Module_Action extends NethGui_Core_Module_Standard {
      */
     public function getArguments() {
         return $this->arguments;
+    }
+
+    public function getActionName() {
+        return $this->actionName;
+    }
+
+    public function prepareView(NethGui_Core_ViewInterface $view, $mode)
+    {
+        $view['enabled'] = TRUE;
+        $view['action'] = $this->actionName;
+        parent::prepareView($view, $mode);
     }
 }

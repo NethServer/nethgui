@@ -31,7 +31,13 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Standard implem
      *
      * @var NethGui_Core_Module_Action
      */
-    protected $currentAction;
+    private $currentAction;
+
+    public function __construct($identifier = NULL)
+    {
+        parent::__construct($identifier);
+        $this->viewTemplate = array($this, 'renderCurrentView');
+    }
 
     public function addChild(NethGui_Core_ModuleInterface $module)
     {
@@ -85,9 +91,8 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Standard implem
         if ( ! isset($this->actions[$currentActionIdentifier])) {
             throw new NethGui_Exception_HttpStatusClientError('Not Found', 404);
         }
-
         $this->currentAction = $this->actions[$currentActionIdentifier];
-        $this->currentAction->bindArguments(array_slice($this->arguments, 1));
+        $this->currentAction->bindArguments($currentActionIdentifier, array_slice($this->arguments, 1));
         $this->currentAction->bind($request->getParameterAsInnerRequest($currentActionIdentifier));
     }
 
@@ -104,8 +109,8 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Standard implem
     }
 
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
-    {
-        $innerView = $view->spawnView($this->currentAction);
+    {        
+        $innerView = $view->spawnView($this->currentAction);        
         $view[$this->currentAction->getIdentifier()] = $innerView;
         parent::prepareView($view, $mode);
         $this->currentAction->prepareView($innerView, $mode);
@@ -126,4 +131,16 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Standard implem
         return array_values($arguments);
     }
 
+    public function renderCurrentView($state)
+    {
+        return $state['view'][$this->currentAction->getIdentifier()]->render();
+    }
+
+    /**
+     *
+     * @return NethGui_Core_Module_Action
+     */
+    protected function getCurrentAction() {
+        return $this->currentAction;
+    }
 }

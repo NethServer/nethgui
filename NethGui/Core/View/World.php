@@ -23,7 +23,7 @@
                 </div>
             </div>
             <div id="footer">
-                Powered by <a href="<?php echo site_url('../doc') ?>">NethGuiFramework</a> &ndash; Copyright 2011 &copy; Nethesis S.r.l
+                Powered by <a href="/Documentation">NethGuiFramework</a> &ndash; Copyright 2011 &copy; Nethesis S.r.l
             </div>
         </div>
         <pre><?php echo '$request' ?></pre>

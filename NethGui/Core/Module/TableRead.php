@@ -1,47 +1,71 @@
 <?php
 /**
  * @package Core
- * @subpackage Table
+ * @subpackage Module
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
 /**
  * @package Core
- * @subpackage Table
+ * @subpackage Module
  */
-class NethGui_Core_Table_ActionRead extends NethGui_Core_Module_Action
+class NethGui_Core_Module_TableRead extends NethGui_Core_Module_Action
 {
 
-    public function initialize()
+    /**
+     *
+     * @var ArrayAccess
+     */
+    private $tableAdapter;
+    /**
+     *
+     * @param array $columns
+     */
+    private $columns;
+    /**
+     * A list of actions that apply on the whole table
+     * @var array
+     */
+    private $actions;
+
+    /**
+     *
+     * @param string $identifier Module identifier
+     * @param ArrayAccess $tableAdapter Data source
+     * @param array $columns The columns of the table
+     * @param array $actions A list of actions that apply on the whole table
+     * @param array $viewTemplate Optional
+     */
+    public function __construct($identifier, $tableAdapter, $columns, $actions, $viewTemplate = NULL)
     {
-        parent::initialize();
-        $this->declareParameter('rows');
-        $this->declareParameter('columns');
-        $this->viewTemplate = 'NethGui_Core_View_ActionRead';
+        parent::__construct($identifier);
+        $this->columns = $columns;
+        $this->viewTemplate = $viewTemplate;
+        $this->tableAdapter = $tableAdapter;
+        $this->actions = $actions;
     }
 
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
-        $this->parameters['rows'] = $this->prepareRows($view, $mode);
-        $this->parameters['columns'] = $this->getParent()->getTableColumns();
+        if ($mode == self::VIEW_REFRESH) {
+            $view['columns'] = $this->columns;
+            $view['actions'] = array_values($this->actions);
+        }
+        $view['rows'] = $this->prepareRows($view, $mode);
         parent::prepareView($view, $mode);
     }
 
     private function prepareRows(NethGui_Core_ViewInterface $view, $mode)
     {
         $rows = array();
-
-        $columns = $this->getParent()->getTableColumns();
-        $keyType = $this->getParent()->getKeyType();
-        $db = $this->getParent()->getDatabase();
-
-        foreach ($db->getAll($keyType) as $key => $values) {
+               
+        foreach ($this->tableAdapter as $key => $values) {
             $row = array();
 
             // adds the key to the values:
-            $values[$columns[0]] = $key;
+            $values[$this->columns[0]] = $key;
 
-            foreach ($columns as $columnIndex => $column) {
+            foreach ($this->columns as $columnIndex => $column) {
                 $row[] = $this->prepareColumnValue($view, $mode, $columnIndex, $column, $values);
             }
 
