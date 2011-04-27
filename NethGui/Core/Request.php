@@ -10,6 +10,8 @@
  */
 class NethGui_Core_Request implements NethGui_Core_RequestInterface
 {
+    const CONTENT_TYPE_JSON = 1;
+    const CONTENT_TYPE_HTML = 2;
 
     /**
      * @var array
@@ -20,47 +22,57 @@ class NethGui_Core_Request implements NethGui_Core_RequestInterface
      */
     private $user;
     /**
-     * @see NethGui_Core_RequestInterface
-     * @var int
-     */
-    private $contentType;
-    /**
      * @var bool
      */
     private $submitted;
+    /**
+     * @see NethGui_Core_RequestInterface::getArguments()
+     * @var array
+     */
+    private $arguments;
+    private $attributes;
 
     /**
-     * Creates a new NethGui_Core_Request object from current web request.
+     * Creates a new NethGui_Core_Request object from current HTTP request.
      * @param string $defaultModuleIdentifier
      * @param array $parameters 
      * @return NethGui_Core_Request
      */
-    static public function getWebRequestInstance($defaultModuleIdentifier, $parameters = array())
+    static public function getHttpRequest($arguments)
     {
         static $instance;
 
         if ( ! isset($instance)) {
-            $data = array($defaultModuleIdentifier => $parameters);
+            
+            if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
+                && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') {
+                $isXmlHttpRequest = TRUE;
+            } else {
+                $isXmlHttpRequest = FALSE;
+            }
 
             if ($_SERVER['REQUEST_METHOD'] == 'GET') {
                 $submitted = FALSE;
                 $contentType = self::CONTENT_TYPE_HTML;
+                $data = array();
+                
             } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $submitted = TRUE;
 
-                if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
-                    && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'
-                    && $_SERVER['CONTENT_TYPE'] == 'application/json; charset=UTF-8') {
-                    // Ajax POST request.
-                    $postData = json_decode($GLOBALS['HTTP_RAW_POST_DATA'], true);
-                    if (is_null($postData)) {
-                        $postData = array();
+                if ($_SERVER['CONTENT_TYPE'] == 'application/json; charset=UTF-8') {
+
+                    // Json Format POST request.
+                    $data = json_decode($GLOBALS['HTTP_RAW_POST_DATA'], true);
+
+                    if (is_null($data)) {
+                        $data = array();
                     }
-                    $data = array_merge_recursive($data, $postData);
+                    
                     $contentType = self::CONTENT_TYPE_JSON;
+
                 } else {
-                    // Browser POST request.
-                    $data = array_merge_recursive($data, $_POST);
+                    // Standard  POST request.
+                    $data = $_POST;
                     $contentType = self::CONTENT_TYPE_HTML;
                 }
             }
@@ -68,7 +80,12 @@ class NethGui_Core_Request implements NethGui_Core_RequestInterface
             // TODO: retrieve user state from Session
             $user = new NethGui_Core_AlwaysAuthenticatedUser();
 
-            $instance = new self($user, $data, $submitted, $contentType);
+            $instance = new self($user, $data, $submitted, $arguments);
+
+            $instance->attributes = array(
+                'XML_HTTP_REQUEST' => $isXmlHttpRequest,
+                'CONTENT_TYPE' => $contentType,
+            );
 
             /*
              * Clear global variables
@@ -80,7 +97,7 @@ class NethGui_Core_Request implements NethGui_Core_RequestInterface
         return $instance;
     }
 
-    private function __construct(NethGui_Core_UserInterface $user, $data, $submitted, $contentType)
+    private function __construct(NethGui_Core_UserInterface $user, $data, $submitted, $arguments)
     {
         if (is_null($data)) {
             $data = array();
@@ -91,17 +108,7 @@ class NethGui_Core_Request implements NethGui_Core_RequestInterface
         $this->user = $user;
         $this->data = $data;
         $this->submitted = (bool) $submitted;
-        $this->contentType = $contentType;
-    }
-
-    /**
-     * Returns the content type requested by the client
-     * @see NethGui_Core_RequestInterface
-     * @return int The content type code corresponding to HTML or JSON HTTP content-type
-     */
-    public function getContentType()
-    {
-        return $this->contentType;
+        $this->arguments = $arguments;
     }
 
     public function hasParameter($parameterName)
@@ -132,14 +139,38 @@ class NethGui_Core_Request implements NethGui_Core_RequestInterface
         return $this->data[$parameterName];
     }
 
-    public function getParameterAsInnerRequest($parameterName)
+    public function getParameterAsInnerRequest($parameterName, $arguments = array())
     {
-        return new self($this->user, $this->getParameter($parameterName), $this->submitted, $this->contentType);
+        return new self($this->user, $this->getParameter($parameterName), $this->submitted, $arguments);
     }
 
     public function getUser()
     {
         return $this->user;
+    }
+
+    public function getArguments()
+    {
+        return $this->arguments;
+    }
+
+    public function getAttribute($name)
+    {
+        if ( ! isset($this->attributes[$name])) {
+            return NULL;
+        }
+
+        return $this->attributes[$name];
+    }
+
+    public function getContentType()
+    {
+        return $this->getAttribute('CONTENT_TYPE');
+    }
+
+    public function isXmlHttpRequest()
+    {
+        return $this->getAttribute('XML_HTTP_REQUEST');
     }
 
 }

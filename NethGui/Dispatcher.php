@@ -6,7 +6,7 @@
 /**
  * @package NethGui
  */
-final class NethGui_Dispatcher
+class NethGui_Dispatcher
 {
 
     /**
@@ -27,20 +27,20 @@ final class NethGui_Dispatcher
     /**
      * Forwards control to Modules and creates output views.
      *
-     * @param string $method
-     * @param array $parameters
+     * @param string $currentModuleIdentifier
+     * @param array $arguments
      */
-    public function dispatch($method, $parameters = array())
+    public function dispatch($currentModuleIdentifier, $arguments = array())
     {
-        if ($method == 'index') {
-            $method = 'Security';
+        // Replace "index" request with a (temporary) default module value
+        if ($currentModuleIdentifier == 'index') {
+            // TODO: get this value from configuration:
+            $currentModuleIdentifier = 'Security';
         }
 
+        array_unshift($arguments, $currentModuleIdentifier);
 
-        $request = NethGui_Core_Request::getWebRequestInstance(
-                $method,
-                $parameters
-        );
+        $request = NethGui_Core_Request::getHttpRequest($arguments);
 
         $user = $request->getUser();
 
@@ -64,7 +64,7 @@ final class NethGui_Dispatcher
         /*
          * Find current module
          */
-        $this->currentModule = $this->topModuleDepot->findModule($method);
+        $this->currentModule = $this->topModuleDepot->findModule($currentModuleIdentifier);
 
 
         if (is_null($this->currentModule)
@@ -73,24 +73,29 @@ final class NethGui_Dispatcher
             show_404();
         }
 
-
-
         $worldModule = new NethGui_Core_Module_World($this->currentModule);
 
         $report = new NethGui_Core_ValidationReport();
 
         $view = new NethGui_Core_View($worldModule);
 
-        if ($request->getContentType() === NethGui_Core_RequestInterface::CONTENT_TYPE_HTML) {
+        // Add menu and breadcrumb decorations if we are building a full HTML view.
+        if (!$request->isXmlHttpRequest()) {
             $worldModule->addChild(new NethGui_Core_Module_Menu($this->topModuleDepot->getModules()));
             $worldModule->addChild(new NethGui_Core_Module_BreadCrumb($this->topModuleDepot, $this->currentModule));
         }
 
         $worldModule->addChild(new NethGui_Core_Module_ValidationReport($report));
 
-        $moduleActivationList = $request->getParameters();
+        if ($request->isSubmitted()) {
+            // Multiple modules can be called in the same request.
+            $moduleWakeupList = $request->getParameters();
+        } else {
+            // The default module is the given in the web request.
+            $moduleWakeupList = array($currentModuleIdentifier);
+        }
 
-        foreach ($moduleActivationList as $moduleIdentifier) {
+        foreach ($moduleWakeupList as $moduleIdentifier) {
             $module = $this->topModuleDepot->findModule($moduleIdentifier);
             if ($module instanceof NethGui_Core_ModuleInterface) {
                 $worldModule->addChild($module);
@@ -113,11 +118,11 @@ final class NethGui_Dispatcher
             show_error('Status ' . $s->getCode(), $s->getCode(), $s->getMessage());
         }
 
-        if ($request->getContentType() === NethGui_Core_RequestInterface::CONTENT_TYPE_HTML) {
+        if ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_HTML) {
             header("Content-Type: text/html; charset=UTF-8");
             $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_REFRESH);
             echo $view->render();
-        } elseif ($request->getContentType() === NethGui_Core_RequestInterface::CONTENT_TYPE_JSON) {
+        } elseif ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_JSON) {
             header("Content-Type: application/json; charset=UTF-8");
             $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_UPDATE);
             echo json_encode($view->getArrayCopy());
