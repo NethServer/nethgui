@@ -1,2 +1,17 @@
-<fieldset><?php echo T('Confirm deletion of "%KEY%"?', array('%KEY%' => isset($parameters[$view['key']]) ? $parameters[$view['key']] : '%KEY%')); ?></fieldset>
-<div><?php echo form_hidden($name[$view['key']], $parameters[$view['key']]) . form_submit('delete', T('Delete')) . anchor($view->buildUrl('..'), T('Cancel')); ?></div>
+<fieldset><?php echo T('Confirm deletion of "%s"?', array('%s' => isset($parameters[$view['__key']]) ? $parameters[$view['__key']] : '%s')); ?></fieldset>
+<div><?php 
+
+    echo form_hidden($name[$view['__key']], $parameters[$view['__key']]);
+    
+    $submitConf = array('name' => $module->getIdentifier());
+
+    if ($view['__action'] == 'index') {
+        $submitConf['disabled'] = 'disabled';
+    }
+
+    echo form_submit($submitConf, T($module->getIdentifier()));
+    
+    echo anchor($view->buildUrl('..'), T('Cancel'));
+
+
+?></div>

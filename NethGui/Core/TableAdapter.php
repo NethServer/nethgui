@@ -156,7 +156,7 @@ class NethGui_Core_TableAdapter implements NethGui_Core_AdapterInterface, ArrayA
             $this->lazyInitialization();
         }
 
-        $this->data->offsetUnset($offset);
+        unset($this->data[$offset]);
         $this->changes[] = array('deleteKey', $offset);
     }
 

@@ -90,7 +90,7 @@ class NethGui_Core_Module_TableController extends NethGui_Core_Module_Controller
                 $columnActions[] = $actionName;
             }
 
-            if ($actionArguments instanceof NethGui_Core_Module_Action) {
+            if ($actionArguments instanceof NethGui_Core_Module_Standard) {
                 $actionObjects[] = $actionArguments;
             } else {
                 $actionObjects[] = new NethGui_Core_Module_TableModify($actionName, $this->tableAdapter, $this->parameterSchema, $viewTemplate);
@@ -100,6 +100,7 @@ class NethGui_Core_Module_TableController extends NethGui_Core_Module_Controller
         // add the read case
         $actionObjects[0] = new NethGui_Core_Module_TableRead('read', $this->tableAdapter, $this->columns, $tableActions, $columnActions);
 
+        // Finally add all the actions
         foreach ($actionObjects as $actionObject) {
             $this->addChild($actionObject);
         }
@@ -115,16 +116,11 @@ class NethGui_Core_Module_TableController extends NethGui_Core_Module_Controller
 
     public function process()
     {
-        parent::process();
+        $exitCode = parent::process();
         if ($this->autosave === TRUE) {
             $this->tableAdapter->save();
         }
-    }
-
-    public function prepareView(NethGui_Core_ViewInterface $view, $mode)
-    {
-        $view['action'] = $this->getCurrentAction()->getIdentifier();
-        parent::prepareView($view, $mode);
+        return $exitCode;
     }
 
 }

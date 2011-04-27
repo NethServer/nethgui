@@ -1,3 +1,3 @@
-<form class="table-controller" method="post" action="<?php echo $view->buildUrl($view['action']) ?>">
-    <?php echo $view[$view['action']]->render(); ?>    
+<form class="table-controller" method="post" action="<?php echo $view->buildUrl($view['arguments']) ?>">
+    <?php echo $view['currentAction']->render(); ?>
 </form>  

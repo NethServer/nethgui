@@ -6,10 +6,12 @@
  */
 
 /**
+ *
+ *
  * @package Core
  * @subpackage Module
  */
-class NethGui_Core_Module_TableModify extends NethGui_Core_Module_Action
+class NethGui_Core_Module_TableModify extends NethGui_Core_Module_Standard
 {
 
     private $parameterSchema;
@@ -27,10 +29,15 @@ class NethGui_Core_Module_TableModify extends NethGui_Core_Module_Action
 
     public function __construct($identifier, NethGui_Core_AdapterInterface $tableAdapter, $parameterSchema, $viewTemplate = NULL)
     {
+        if ( ! in_array($identifier, array('create', 'delete', 'update'))) {
+            throw new InvalidArgumentException('Module identifier must be one of `create`, `delete`, `update` values.');
+        }
+
         parent::__construct($identifier);
         $this->viewTemplate = $viewTemplate;
         $this->tableAdapter = $tableAdapter;
         $this->parameterSchema = $parameterSchema;
+        $this->key = $this->parameterSchema[0][0];
     }
 
     public function initialize()
@@ -38,10 +45,6 @@ class NethGui_Core_Module_TableModify extends NethGui_Core_Module_Action
         parent::initialize();
         foreach ($this->parameterSchema as $args) {
             call_user_func_array(array($this, 'declareParameter'), $args);
-        }
-
-        if ( ! isset($this->key)) {
-            $this->key = $this->parameterSchema[0][0];
         }
     }
 
@@ -51,7 +54,7 @@ class NethGui_Core_Module_TableModify extends NethGui_Core_Module_Action
         if ($request->isSubmitted()) {
             $this->performAction = TRUE;
         } else {
-            $arguments = $this->getArguments();
+            $arguments = $request->getArguments();
             $key = isset($arguments[0]) ? $arguments[0] : NULL;
             $this->parameters[$this->key] = $key;
 
@@ -71,13 +74,26 @@ class NethGui_Core_Module_TableModify extends NethGui_Core_Module_Action
 
     public function process()
     {
-        parent::process();
+        $exitCode = parent::process();
         if ($this->performAction) {
 
-            $action = $this->getActionName();
+            $action = $this->getIdentifier();
 
             if ($action == 'delete') {
-                unset($this->tableAdapter[$this->parameters[$this->key]]);
+
+                $key = $this->parameters[$this->key];
+
+                if (isset($this->tableAdapter[$key])) {
+                    unset($this->tableAdapter[$key]);
+                } else {
+                    throw new NethGui_Exception_Process('Cannot delete `' . $key . '`');
+                }
+
+                // TODO: add feedback message
+
+                // Redirect to parent controller module by SEE OTHER status
+                $exitCode = array(303, $this->buildUrl('..'));
+
             } elseif ($action == 'create' || $action == 'update') {
 
                 $values = $this->parameters->getArrayCopy();
@@ -89,15 +105,29 @@ class NethGui_Core_Module_TableModify extends NethGui_Core_Module_Action
                 }
 
                 $this->tableAdapter[$key] = $values;
+
+                // TODO: add feedback message
+
+                if($action == 'create') {
+                    $exitCode = array(201, $this->buildUrl('..'));
+                } else {
+                    $exitCode = array(303, $this->buildUrl('..'));
+                }
+
             } else {
                 throw new NethGui_Exception_HttpStatusClientError('Not found', 404);
             }
+
+            
         }
+
+        return $exitCode;
     }
 
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
-        $view['key'] = $this->key;
+        $view['__key'] = $this->key;
+        $view['__action'] = $this->getIdentifier();
         parent::prepareView($view, $mode);
     }
 

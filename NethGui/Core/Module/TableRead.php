@@ -9,7 +9,7 @@
  * @package Core
  * @subpackage Module
  */
-class NethGui_Core_Module_TableRead extends NethGui_Core_Module_Action
+class NethGui_Core_Module_TableRead extends NethGui_Core_Module_Standard
 {
 
     /**
