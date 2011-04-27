@@ -25,6 +25,7 @@
  */
 class NethGui_Core_View implements NethGui_Core_ViewInterface
 {
+
     /**
      * Reference to associated module
      * @var NethGui_Core_ModuleInterface
@@ -36,7 +37,6 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
      * @var array
      */
     private $modulePath;
-
     /**
      * Holds view state
      * @var array
@@ -49,13 +49,16 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
     private $template;
 
 
-    public function __construct(NethGui_Core_ModuleInterface $module)
+    public function __construct($module = NULL)
     {
-        $this->module = $module;
+        if ($module instanceof NethGui_Core_ModuleInterface) {
+            $this->module = $module;
+            $this->template = str_replace('_Module_', '_View_', get_class($module));
+        }
+
         $this->data = array();
 
         // XXX: trying to guess view name
-        $this->template = str_replace('_Module_', '_View_', get_class($module));
     }
 
     private function getFullName($parameterName)
@@ -84,7 +87,7 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
             $watchdog = 0;
             $module = $this->module;
 
-            while ( ! (is_null($module) || $module instanceof NethGui_Core_Module_World)) {
+            while ( ! (is_null($module))) {
                 if ( ++ $watchdog > 20) {
                     throw new Exception("Too many nested modules or cyclic module structure.");
                 }
@@ -242,7 +245,7 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
         $parameters = array();
         $path = $this->getModulePath();
 
-        foreach (func_get_args() as $arg) {
+        foreach (func_get_args () as $arg) {
             if (is_string($arg)) {
                 $path[] = $arg;
             } elseif (is_array($arg)) {
@@ -252,6 +255,5 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
 
         return NethGui_Framework::getInstance()->buildUrl($path, $parameters);
     }
-
 
 }
