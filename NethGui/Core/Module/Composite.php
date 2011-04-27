@@ -48,9 +48,6 @@ abstract class NethGui_Core_Module_Composite extends NethGui_Core_Module_Standar
             if ($this->isInitialized() && ! $childModule->isInitialized()) {
                 $childModule->initialize();
             }
-            if ($childModule instanceof NethGui_Core_RequestHandlerInterface) {
-                $this->setRequestHandler($childModule->getIdentifier(), $childModule);
-            }
         }
     }
 

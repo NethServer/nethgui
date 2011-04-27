@@ -12,7 +12,7 @@
  *
  * @package Core
  */
-interface NethGui_Core_ModuleInterface extends NethGui_Core_RequestHandlerInterface, NethGui_Core_LanguageCatalogProvider
+interface NethGui_Core_ModuleInterface 
 {
     /**
      * To require a full view refresh
