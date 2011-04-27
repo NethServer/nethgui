@@ -90,7 +90,6 @@ class NethGui_Core_Module_TableModify extends NethGui_Core_Module_Standard
                 }
 
                 // TODO: add feedback message
-
                 // Redirect to parent controller module by SEE OTHER status
                 $exitCode = array(303, $this->buildUrl('..'));
 
@@ -108,17 +107,12 @@ class NethGui_Core_Module_TableModify extends NethGui_Core_Module_Standard
 
                 // TODO: add feedback message
 
-                if($action == 'create') {
-                    $exitCode = array(201, $this->buildUrl('..'));
-                } else {
-                    $exitCode = array(303, $this->buildUrl('..'));
-                }
-
+                // Redirect to parent controller module by SEE OTHER status
+                $exitCode = array(303, $this->buildUrl('..'));
+                
             } else {
                 throw new NethGui_Exception_HttpStatusClientError('Not found', 404);
             }
-
-            
         }
 
         return $exitCode;

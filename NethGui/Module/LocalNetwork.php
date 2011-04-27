@@ -40,5 +40,22 @@ class NethGui_Module_LocalNetwork extends NethGui_Core_Module_TableController im
         parent::__construct('LocalNetwork', 'networks', 'network', $parameterSchema, $columns, $actions);
         $this->viewTemplate = 'NethGui_Core_View_TableController';
     }
+
+    /**
+     *
+     * @param NethGui_Core_Module_TableRead $action
+     * @param NethGui_Core_ViewInterface $view
+     * @param int $mode
+     * @param array $values
+     * @return string|NethGui_Core_ViewInterface
+     */
+     public function prepareViewForColumnActions(NethGui_Core_Module_TableRead $action, NethGui_Core_ViewInterface $view, $mode, $values) {
+
+         if(isset($values['SystemLocalNetwork']) &&  $values['SystemLocalNetwork'] == 'yes') {
+            return '';
+         }
+
+         return $action->prepareViewForColumnActions($view, $mode, $values);
+     }
 }
 

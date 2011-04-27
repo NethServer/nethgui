@@ -85,10 +85,10 @@ class NethGui_Core_Module_TableRead extends NethGui_Core_Module_Standard
     {
         $methodName = 'prepareViewForColumn' . ucfirst($column);
 
-        if (method_exists($this, $methodName)) {
+        if (method_exists($this->getParent(), $methodName)) {
+            $columnValue = call_user_func(array($this->getParent(), $methodName), $this, $view, $mode, $values);
+        } elseif (method_exists($this, $methodName)) {
             $columnValue = call_user_func(array($this, $methodName), $view, $mode, $values);
-        } elseif (method_exists($this->getParent(), $methodName)) {
-            $columnValue = call_user_func(array($this->getParent(), $methodName), $view, $mode, $values);
         } else {
             $columnValue = isset($values[$column]) ? $values[$column] : NULL;
         }
@@ -105,8 +105,8 @@ class NethGui_Core_Module_TableRead extends NethGui_Core_Module_Standard
             $columnView = array();
         }
 
+        // Buil an URL with key as argument for each known column action.
         $key = $values[$this->columns[0]];
-
         foreach ($this->columnActions as $action) {
             $columnView[$action] = $view->buildUrl('..', $action, $key);
         }
@@ -117,7 +117,7 @@ class NethGui_Core_Module_TableRead extends NethGui_Core_Module_Standard
     public function renderColumnActions($state)
     {
         $output = '';
-        foreach($this->columnActions as $action) {
+        foreach ($this->columnActions as $action) {
             $output .= '<li>' . anchor($state['view'][$action], $action) . '</li>';
         }
         return '<ul>' . $output . '</ul>';
