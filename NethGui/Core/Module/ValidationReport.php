@@ -14,7 +14,7 @@
  * @package Core
  * @subpackage Module
  */
-class NethGui_Core_Module_ValidationReport extends NethGui_Core_Module_Standard
+class NethGui_Core_Module_ValidationReport extends NethGui_Core_Module_Abstract
 {
 
     /**
@@ -29,20 +29,18 @@ class NethGui_Core_Module_ValidationReport extends NethGui_Core_Module_Standard
         $this->report = $report;
     }
 
-    public function initialize()
+    public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
-        parent::initialize();
-        $this->declareParameter('errors');
-    }
+        parent::prepareView($view, $mode);
 
-    public function process()
-    {
-        parent::process();
-        $this->parameters['errors'] = new ArrayObject();
-        foreach ($this->report->getErrors() as $error) {
+        $errors = $this->report->getErrors();
+
+        $view['errors'] = new ArrayObject();
+
+        foreach ($errors as $error) {
             list($fieldId, $message, $module) = $error;
 
-            $this->parameters['errors'][] = array($module->getIdentifier() . '.' . $fieldId, $message);
+            $view['errors'][] = array($module->getIdentifier() . '.' . $fieldId, $message);
         }
     }
 

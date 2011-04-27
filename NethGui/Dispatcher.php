@@ -6,7 +6,7 @@
 /**
  * @package NethGui
  */
-final class NethGui_Dispatcher
+class NethGui_Dispatcher
 {
 
     /**
@@ -19,28 +19,22 @@ final class NethGui_Dispatcher
      * @var HostConfigurationInterface
      */
     private $hostConfiguration;
-    /**
-     * @var NethGui_Core_ModuleInterface
-     */
-    private $currentModule;
 
     /**
      * Forwards control to Modules and creates output views.
      *
-     * @param string $method
-     * @param array $parameters
+     * @param string $currentModuleIdentifier
+     * @param array $arguments
      */
-    public function dispatch($method, $parameters = array())
+    public function dispatch($currentModuleIdentifier, $arguments = array())
     {
-        if ($method == 'index') {
-            $method = 'Security';
+        // Replace "index" request with a (temporary) default module value
+        if ($currentModuleIdentifier == 'index') {
+            // TODO: get this value from configuration:
+            $currentModuleIdentifier = 'Security';
         }
 
-
-        $request = NethGui_Core_Request::getWebRequestInstance(
-                $method,
-                $parameters
-        );
+        $request = NethGui_Core_Request::getHttpRequest($arguments);
 
         $user = $request->getUser();
 
@@ -61,62 +55,90 @@ final class NethGui_Dispatcher
         $this->hostConfiguration->setPolicyDecisionPoint($pdp);
         $this->topModuleDepot->setPolicyDecisionPoint($pdp);
 
-        /*
-         * Find current module
-         */
-        $this->currentModule = $this->topModuleDepot->findModule($method);
+        if ($request->isSubmitted()) {
+            // Multiple modules can be called in the same request.
+            $moduleWakeupList = $request->getParameters();
 
-
-        if (is_null($this->currentModule)
-            OR ! $this->currentModule instanceof NethGui_Core_TopModuleInterface
-        ) {
-            show_404();
+            // Ensure the current module is in the list:
+            if ( ! in_array($currentModuleIdentifier, $moduleWakeupList)) {
+                array_unshift($currentModuleIdentifier, $moduleWakeupList);
+            }
+        } else {
+            // The default module is the given in the web request.
+            $moduleWakeupList = array($currentModuleIdentifier);
         }
-
-
-
-        $worldModule = new NethGui_Core_Module_World($this->currentModule);
 
         $report = new NethGui_Core_ValidationReport();
 
+        // The World module is a non-processing container.
+        $worldModule = new NethGui_Core_Module_World();
         $view = new NethGui_Core_View($worldModule);
 
-        if ($request->getContentType() === NethGui_Core_RequestInterface::CONTENT_TYPE_HTML) {
-            $worldModule->addChild(new NethGui_Core_Module_Menu($this->topModuleDepot->getModules()));
-            $worldModule->addChild(new NethGui_Core_Module_BreadCrumb($this->topModuleDepot, $this->currentModule));
-        }
+        $processExitCode = NULL;
 
-        $worldModule->addChild(new NethGui_Core_Module_ValidationReport($report));
-
-        $moduleActivationList = $request->getParameters();
-
-        foreach ($moduleActivationList as $moduleIdentifier) {
+        foreach ($moduleWakeupList as $moduleIdentifier) {
             $module = $this->topModuleDepot->findModule($moduleIdentifier);
-            $worldModule->addChild($module);
+
+            if ($module instanceof NethGui_Core_ModuleInterface) {
+                $worldModule->addModule($module);
+
+                // Module initialization
+                $module->initialize();
+            }
+
+
+            if ( ! $module instanceof NethGui_Core_RequestHandlerInterface) {
+                continue;
+            }
+
+            // Pass request parameters to the handler 
+            $module->bind(
+                $request->getParameterAsInnerRequest(
+                    $moduleIdentifier,
+                    ($moduleIdentifier === $currentModuleIdentifier) ? $request->getArguments() : array()
+                )
+            );
+
+            // Validate request
+            $module->validate($report);
+
+            // Stop here if we have validation errors
+            if (count($report->getErrors()) > 0) {
+                continue;
+            }
+
+            // Process the request
+            $moduleExitCode = $module->process();
+
+            // Only the first non-NULL module exit code is considered as
+            // the process exit code:
+            if (is_null($processExitCode)) {
+                $processExitCode = $moduleExitCode;
+            }
         }
 
-        $worldModule->initialize();
-
-        $worldModule->bind($request);
-        $worldModule->validate($report);
-
-        try {
-            $worldModule->process();
-        } catch (NethGui_Exception_Process $e) {
-            NethGui_Framework::logMessage($e->getMessage(), 'error');
-            $view['Exception'] = $e->getMessage();
-            $view['StackTrace'] = $e->getTrace();
+        // Add menu and breadcrumb decorations if we are building a full HTML view.
+        if ( ! $request->isXmlHttpRequest()) {
+            $worldModule->addModule(new NethGui_Core_Module_Menu($this->topModuleDepot->getModules()));
+            $worldModule->addModule(new NethGui_Core_Module_BreadCrumb($this->topModuleDepot, $currentModuleIdentifier));
         }
 
-        if ($request->getContentType() === NethGui_Core_RequestInterface::CONTENT_TYPE_HTML) {
+        $worldModule->addModule(new NethGui_Core_Module_ValidationReport($report));
+
+        if (is_integer($processExitCode)) {
+            set_status_header($processExitCode);
+        } elseif (is_array($processExitCode)) {
+            redirect($processExitCode[1], 'location', $processExitCode[0]);
+        }
+
+        if ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_HTML) {
             header("Content-Type: text/html; charset=UTF-8");
             $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_REFRESH);
-            echo $view->render();
-        } elseif ($request->getContentType() === NethGui_Core_RequestInterface::CONTENT_TYPE_JSON) {
+            echo $view;
+        } elseif ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_JSON) {
             header("Content-Type: application/json; charset=UTF-8");
             $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_UPDATE);
             echo json_encode($view->getArrayCopy());
         }
     }
-
 }

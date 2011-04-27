@@ -155,7 +155,7 @@ class NethGui_Core_TopModuleDepot implements NethGui_Core_ModuleSetInterface, Ne
     }
 
     /**
-     * @return ModuleInterface
+     * @return NethGui_Core_ModuleInterface
      */
     public function findModule($moduleIdentifier)
     {

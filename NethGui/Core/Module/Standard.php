@@ -12,51 +12,35 @@
  * @package Core
  * @subpackage Module
  */
-abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterface
+abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract implements NethGui_Core_RequestHandlerInterface, NethGui_Core_LanguageCatalogProvider
 {
     /**
      * A valid service status is a 'disabled' or 'enabled' string.
      */
     const VALID_SERVICESTATUS = 100;
 
-     /**
+    /**
      * A valid IPv4 address like '192.168.1.1' 
      */
     const VALID_IPv4 = 200;
-     
-     /**
+
+    /**
      * A valid IPv4 address like '192.168.1.1' ore empty
      */
     const VALID_IPv4_OR_EMPTY = 201;
 
-     /**
+    /**
      * Alias for VALID_IPv4 
      */
     const VALID_IP = 202;
 
-     /**
+    /**
      * Alias for VALID_IPv4_OR_EMPTY
      */
     const VALID_IP_OR_EMPTY = 203;
 
 
-    /**
-     * @var string
-     */
-    private $identifier;
-    /**
-     *
-     * @var ModuleInterface;
-     */
-    private $parent;
-    /*
-     * @var bool
-     */
-    private $initialized = FALSE;
-    /**
-     * @var HostConfigurationInterface
-     */
-    private $hostConfiguration;
+
     /**
      * @var NethGui_Core_ParameterSet
      */
@@ -76,100 +60,27 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
      */
     private $immutables;
     /**
-     * @todo remove $request member.
-     * @deprecated
-     * @var NethGui_Core_RequestInterface
-     */
-    protected $request;
-    /**
      * Validator configuration. Holds declared parameters.
      * @var array
      */
     private $validators = array();
     /**
-     * @deprecated
-     * @todo remove $requestHandlers member.
-     * @see NethGui_Core_RequestHandlerInterface
-     * @var array
-     */
-    private $requestHandlers = array();
-    /**
-     * This array holds the names of parameters submitted in Request.
+     * This array holds the names of parameters passed by Request during bind().
      * Only those parameters will be validated.
+     *
      * @var array
      */
-    private $submittedParameters = array();
+    private $parameterValidationList = array();
 
     /**
      * @param string $identifier
      */
     public function __construct($identifier = NULL)
     {
+        parent::__construct($identifier);
         $this->parameters = new NethGui_Core_ParameterSet();
         $this->immutables = new ArrayObject();
-
-        if (isset($identifier)) {
-            $this->identifier = $identifier;
-        } else {
-            $this->identifier = array_pop(explode('_', get_class($this)));
-        }
-    }
-
-    public function setHostConfiguration(NethGui_Core_HostConfigurationInterface $hostConfiguration)
-    {
-        $this->hostConfiguration = $hostConfiguration;
-    }
-
-    /**
-     * @return NethGui_Core_HostConfigurationInterface
-     */
-    protected function getHostConfiguration()
-    {
-        return $this->hostConfiguration;
-    }
-
-    /**
-     *  Overriding methods can read current state from model.
-     */
-    public function initialize()
-    {
-        if ($this->initialized === FALSE) {
-            $this->initialized = TRUE;
-        } else {
-            throw new Exception("Double Module initialization is forbidden.");
-        }
-
         $this->autosave = TRUE;
-    }
-
-    public function isInitialized()
-    {
-        return $this->initialized;
-    }
-
-    public function getIdentifier()
-    {
-        return $this->identifier;
-    }
-
-    public function getTitle()
-    {
-        return array_pop(explode('_', $this->getIdentifier()));
-    }
-
-    public function getDescription()
-    {
-        return $this->getTitle();
-    }
-
-    public function setParent(NethGui_Core_ModuleInterface $parentModule)
-    {
-        $this->parent = $parentModule;
-    }
-
-    public function getParent()
-    {
-        return $this->parent;
     }
 
     /**
@@ -177,6 +88,10 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
      *
      * A parameter is validated through $validationRule and optionally linked to
      * one or more database values through an $adapter.
+     *
+     * If the parameter is using an adapter keep in mind that the
+     * Host Configuration link is available after initialization only: don't
+     * call in class constructor in this case!
      *
      * @see NethGui_Core_HostConfigurationInterface::getIdentityAdapter()
      * @see NethGui_Core_HostConfigurationInterface::getMapAdapter()
@@ -191,7 +106,7 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
         if (is_string($validator) && $validator[0] == '/') {
             $validator = $this->getValidator()->regexp($validator);
         } elseif ($validator === FALSE) {
-            $validator = $this->getValidator()->forceResult(TRUE);
+            $validator = $this->getValidator()->forceResult(FALSE);
         } elseif (is_integer($validator)) {
             $validator = $this->createValidatorFromInteger($validator);
         }
@@ -235,9 +150,8 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
                 return $validator->ipV4Address();
 
             case self::VALID_IP_OR_EMPTY:
-                return $validator->orValidator($this->getValidator()->ipV4Address(),$this->getValidator()->isEmpty());
-
-          
+            case self::VALID_IPv4_OR_EMPTY:
+                return $validator->orValidator($this->getValidator()->ipV4Address(), $this->getValidator()->isEmpty());
         }
 
         throw new InvalidArgumentException('Unknown standard validator code: ' . $ruleCode);
@@ -316,7 +230,16 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
             throw new Exception('Immutable `' . $immutableName . '` is already declared.');
         }
 
+        if (is_object($immutableValue)) {
+            $immutableValue = clone $immutableValue;
+        }
+
         $this->immutables[$immutableName] = $immutableValue;
+    }
+
+    protected function getImmutableValue($immutableName)
+    {
+        return $this->immutables[$immutableName];
     }
 
     public function bind(NethGui_Core_RequestInterface $request)
@@ -324,7 +247,7 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
         foreach ($this->parameters as $parameterName => $parameterValue) {
             if ($request->hasParameter($parameterName)) {
                 $this->parameters[$parameterName] = $request->getParameter($parameterName);
-                $this->submittedParameters[] = $parameterName;
+                $this->parameterValidationList[] = $parameterName;
             } elseif ($request->isSubmitted()
                 && isset($this->submitDefaults[$parameterName])) {
                 $this->parameters[$parameterName] = $this->submitDefaults[$parameterName];
@@ -334,7 +257,7 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
 
     public function validate(NethGui_Core_ValidationReportInterface $report)
     {
-        foreach ($this->submittedParameters as $parameter) {
+        foreach ($this->parameterValidationList as $parameter) {
             if ( ! isset($this->validators[$parameter])) {
                 throw new NethGui_Exception_Validation("Unknown parameter " . $parameter);
             }
@@ -360,25 +283,28 @@ abstract class NethGui_Core_Module_Standard implements NethGui_Core_ModuleInterf
 
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
+        parent::prepareView($view, $mode);
         $view->copyFrom($this->parameters);
         if ($mode == self::VIEW_REFRESH) {
             $view->copyFrom($this->immutables);
         }
     }
 
-    /**
-     * @todo This method and the member variable seems to be needless...
-     * @param string $identifier
-     * @param NethGui_Core_RequestHandlerInterface $handler
-     */
-    protected function setRequestHandler($identifier, NethGui_Core_RequestHandlerInterface $handler)
-    {
-        $this->requestHandlers[$identifier] = $handler;
-    }
-
     public function getLanguageCatalog()
     {
         return get_class($this);
+    }
+
+    /**
+     * Forwards url building to a temporary view object.
+     * @internal
+     * @return string
+     */
+    protected function buildUrl()
+    {
+        $tempView = new NethGui_Core_View($this);
+        $arguments = func_get_args();
+        return call_user_func_array(array($tempView, 'buildUrl'), $arguments);
     }
 
 }

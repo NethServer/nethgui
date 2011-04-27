@@ -12,226 +12,115 @@
  * @package Core
  * @subpackage Module
  */
-class NethGui_Core_Module_TableController extends NethGui_Core_Module_Composite
+class NethGui_Core_Module_TableController extends NethGui_Core_Module_Controller
 {
 
-    /**
-     *
-     * @var string
-     */
-    private $database;
-    /**
-     *
-     * @var string
-     */
-    private $type;
-    /**
-     * @var bool;
-     */
-    private $readonly;
     /**
      *
      * @param array $columns
      */
     private $columns;
+    /**
+     *
+     * @var NethGui_Core_TableAdapter
+     */
+    private $tableAdapter;
+
+    /**
+     * @var string
+     */
+    private $databaseName;
+
+    /**
+     * @var string
+     */
+    private $keyType;
+
+    /**
+     * @var array
+     */
+    private $parameterSchema;
+
+    /**
+     * @var array
+     */
+    private $actions;
 
     /**
      *
      * @param string $identifier
      * @param string $database
      * @param string $type
+     * @param NethGui_Core_Validator|int $keyValidator
      * @param array $columns
-     * @param NethGui_Core_Module_TableDialog|array
+     * @param array $actions
      */
-    public function __construct($identifier, $database, $type, $columns, $dialog = NULL, $events = array())
+    public function __construct($identifier, $database, $type, $parameterSchema, $columns, $actions)
     {
         parent::__construct($identifier);
-        $this->autosave = FALSE; // disable auto saving of parameters in process()
-        $this->database = $database;
-        $this->type = $type;
-        $this->columns = array_values($columns);
-        $this->events = $events;
+        $this->viewTemplate = NULL; // use default
 
-        if (is_array($dialog)) {
-            $dialog = $this->createDialogFromArray($dialog);
-        }
-
-        if ($dialog instanceof NethGui_Core_Module_TableDialog) {
-            $this->addChild($dialog);
-            $this->readonly = FALSE;
-        } else {
-            $this->readonly = TRUE;
-        }
+        $this->databaseName = $database;
+        $this->keyType = $type;
+        $this->columns = $columns;
+        $this->parameterSchema = $parameterSchema;
+        $this->actions = $actions;
     }
 
     public function initialize()
     {
         parent::initialize();
+        $this->tableAdapter = new NethGui_Core_TableAdapter($this->getHostConfiguration()->getDatabase($this->databaseName), $this->keyType);
 
-        if ($this->readonly) {
-            $actionValidator = $this->getValidator()->memberOf('read');
-        } else {
-            $actionValidator = $this->getValidator()->memberOf('read', 'create', 'update', 'delete');
+
+        // set the default action
+        $this->addChild(new NethGui_Core_Module_ActionIndex('index'));
+
+        $actionObjects = array(0 => FALSE); // set the read action object placeholder.
+        $tableActions = array();
+        $columnActions = array();
+
+        foreach ($this->actions as $actionArguments) {
+
+            list($actionName, $viewTemplate, $isTableAction) = $actionArguments;
+
+            if ($isTableAction === TRUE) {
+                $tableActions[] = $actionName;
+            } else {
+                $columnActions[] = $actionName;
+            }
+
+            if ($actionArguments instanceof NethGui_Core_Module_Standard) {
+                $actionObjects[] = $actionArguments;
+            } else {
+                $actionObjects[] = new NethGui_Core_Module_TableModify($actionName, $this->tableAdapter, $this->parameterSchema, $viewTemplate);
+            }
         }
 
-        $this->declareParameter('action', $actionValidator, NULL, 'read');
+        // add the read case
+        $actionObjects[0] = new NethGui_Core_Module_TableRead('read', $this->tableAdapter, $this->columns, $tableActions, $columnActions);
 
-        $this->declareParameter('key', FALSE, NULL, NULL);
-
-        $this->declareParameter('page', FALSE, NULL, 1);
-
-        $this->declareParameter('size', $this->getValidator()->memberOf(10, 20, 50, 100), NULL, 20);
-
-        $this->declareParameter('rows', FALSE, NULL, NULL);
-
-        $this->declareImmutable('columns', $this->columns);
-    }
-
-    /**
-     * @todo Do implementation!
-     * @param array $dialogArguments
-     * @return NethGui_Core_Module_TableDialog
-     */
-    private function createDialogFromArray($dialogArguments)
-    {
-        throw new Exception('not implemented!');
+        // Finally add all the actions
+        foreach ($actionObjects as $actionObject) {
+            $this->addChild($actionObject);
+        }
     }
 
     public function bind(NethGui_Core_RequestInterface $request)
     {
         parent::bind($request);
-
         if ( ! $request->isSubmitted()) {
-            if ($request->hasParameter('0')) {
-                $this->parameters['action'] = $request->getParameter('0');
-            } else {
-                $this->parameters['action'] = 'read';
-            }
-            if ($request->hasParameter('1')) {
-                $this->parameters['key'] = $request->getParameter('1');
-            } else {
-                $this->parameters['key'] = NULL;
-            }
-        }
-
-        $this->parameters['size'] = 20;
-        $this->parameters['page'] = 0;
-
-        if ($this->parameters['action'] == 'update') {
-            $this->loadDialogValues($this->parameters['key']);
-        }
-    }
-
-    private function prepareRows($view, $mode)
-    {
-        $rows = array();
-
-        foreach ($this->getHostConfiguration()->getDatabase($this->database)->getAll($this->type) as $key => $values) {
-            $row = array();
-
-            // adds the key to the values:
-            $values[$this->columns[0]] = $key;
-
-            foreach ($this->columns as $columnIndex => $column) {
-                $row[] = $this->prepareColumnValue($view, $mode, $columnIndex, $column, $values);
-            }
-
-            $rows[] = $row;
-        }
-
-        return $rows;
-    }
-
-    private function prepareColumnValue($view, $mode, $columnIndex, $column, $values)
-    {
-
-        $methodName = 'prepareColumn' . ucfirst($column);
-
-        if (method_exists($this, $methodName)) {
-            $columnValue = call_user_func(array($this, $methodName), $view, $mode, $values);
-        } else {
-            $columnValue = isset($values[$column]) ? $values[$column] : NULL;
-        }
-
-        return $columnValue;
-    }
-
-    private function loadDialogValues($key)
-    {
-        $dialog = array_shift($this->getChildren());
-        if ( ! $dialog instanceof NethGui_Core_Module_TableDialog
-            || is_null($key)) {
-            return;
-        }
-        $db = $this->getHostConfiguration()->getDatabase($this->database);
-        $values = $db->getKey($key);
-        $dialog->loadValues($this->parameters['action'], $key, $values);
-    }
-
-    /**
-     *
-     * @param string $key
-     * @param array $values
-     */
-    public function onDialogSave($key, $values)
-    {
-        $db = $this->getHostConfiguration()->getDatabase($this->database);
-
-        $success = FALSE;
-
-        switch ($this->parameters['action']) {
-            case 'update':
-                $success = $db->setProp($key, $values);
-                break;
-
-            case 'create':
-                // XXX: check if a key exists by querying its type.
-                if ($db->getType($key) === '') {
-                    $success = $db->setKey($key, $this->type, $values);
-                } else {
-                    throw new NethGui_Exception_Process('Key already exists');
-                }
-                break;
-
-            default:
-                $success = FALSE;
-        }
-
-        if ($success) {
-            // TODO: trigger events ?
+            $this->autosave = FALSE;
         }
     }
 
     public function process()
     {
-        parent::process();
-
-        if ($this->parameters['action'] == 'delete') {
-            $db = $this->getHostConfiguration()->getDatabase($this->database);
-
-            $success = $db->deleteKey($this->parameters['key']);
+        $exitCode = parent::process();
+        if ($this->autosave === TRUE) {
+            $this->tableAdapter->save();
         }
-    }
-
-    public function prepareView(NethGui_Core_ViewInterface $view, $mode)
-    {
-        $this->parameters['rows'] = $this->prepareRows($view, $mode);
-        parent::prepareView($view, $mode);
-    }
-
-    public function prepareColumnActions(NethGui_Core_ViewInterface $view, $mode, $values)
-    {
-        if ($mode == self::VIEW_REFRESH) {
-            $columnView = $view->spawnView($this);
-            $columnView->setTemplate('NethGui_Core_View_TableActions');
-        } else {
-            $columnView = array();
-        }
-
-        $columnView['update'] = $view->buildUrl('update', $values['network']);
-        $columnView['delete'] = $view->buildUrl('delete', $values['network']);
-
-        return $columnView;
+        return $exitCode;
     }
 
 }

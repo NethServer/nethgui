@@ -65,6 +65,7 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
             }
         } elseif (is_callback($key)) {
             // TODO
+            throw new Exception('Not implemented');
         }
 
         return $adapter;

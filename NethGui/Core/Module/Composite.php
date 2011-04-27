@@ -29,7 +29,7 @@ abstract class NethGui_Core_Module_Composite extends NethGui_Core_Module_Standar
                 $child->initialize();
             }
         }
-    }
+     }
 
     /**
      * Adds a child to Composite, initializing it, if current Composite is
@@ -47,9 +47,6 @@ abstract class NethGui_Core_Module_Composite extends NethGui_Core_Module_Standar
             }
             if ($this->isInitialized() && ! $childModule->isInitialized()) {
                 $childModule->initialize();
-            }
-            if ($childModule instanceof NethGui_Core_RequestHandlerInterface) {
-                $this->setRequestHandler($childModule->getIdentifier(), $childModule);
             }
         }
     }
@@ -83,10 +80,14 @@ abstract class NethGui_Core_Module_Composite extends NethGui_Core_Module_Standar
 
     public function process()
     {
-        parent::process();
+        $processExitCode = parent::process();
         foreach ($this->getChildren() as $childModule) {
-            $childModule->process();
+            $childExitCode = $childModule->process();
+            if(is_null($processExitCode)) {
+                $processExitCode = $childExitCode;
+            }
         }
+        return $processExitCode;
     }
 
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)

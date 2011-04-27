@@ -17,13 +17,13 @@
                         <pre style="background: yellow" id="validationReport"><?php foreach($view['ValidationReport']['errors'] as $error) {
                             echo $error[1] . " ({$error[0]})\n";
                         } ?></pre>
-                        <div id="moduleContent"><?php echo $view[$view['currentModule']]->render() ?></div>
+                        <div id="moduleContent"><?php echo $view['currentModule']->render() ?></div>
                     </div>
                     <div class="col2"><div id="moduleMenu"><?php echo $view['Menu']->render() ?></div></div>
                 </div>
             </div>
             <div id="footer">
-                Powered by <a href="<?php echo site_url('../doc') ?>">NethGuiFramework</a> &ndash; Copyright 2011 &copy; Nethesis S.r.l
+                Powered by <a href="/Documentation">NethGuiFramework</a> &ndash; Copyright 2011 &copy; Nethesis S.r.l
             </div>
         </div>
         <pre><?php echo '$request' ?></pre>

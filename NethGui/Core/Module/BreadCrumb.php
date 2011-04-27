@@ -8,7 +8,9 @@
  * @package Core
  * @subpackage Module
  */
-final class NethGui_Core_Module_BreadCrumb extends NethGui_Core_Module_Standard {
+class NethGui_Core_Module_BreadCrumb extends NethGui_Core_Module_Abstract
+{
+
     /**
      *
      * @var NethGui_Core_ModuleInterface
@@ -19,11 +21,12 @@ final class NethGui_Core_Module_BreadCrumb extends NethGui_Core_Module_Standard 
      */
     private $moduleSet;
 
-    public function __construct(NethGui_Core_ModuleSetInterface $moduleSet, NethGui_Core_ModuleInterface $currentModule)
+    public function __construct(NethGui_Core_ModuleSetInterface $moduleSet, $currentModuleIdentifier)
     {
         parent::__construct();
-        $this->currentModule = $currentModule;
         $this->moduleSet = $moduleSet;
+        $this->viewTemplate = array($this, 'renderBreadcrumbMenu');
+        $this->currentModule = $this->moduleSet->findModule($currentModuleIdentifier);
     }
 
     public function renderBreadcrumbMenu($viewState)
@@ -49,9 +52,4 @@ final class NethGui_Core_Module_BreadCrumb extends NethGui_Core_Module_Standard 
         return implode(' &gt; ', $rootLine);
     }
 
-    public function prepareView(NethGui_Core_ViewInterface $view, $mode)
-    {        
-        parent::prepareView($view, $mode);
-        $view->setTemplate(array($this, 'renderBreadcrumbMenu'));
-    }
 }

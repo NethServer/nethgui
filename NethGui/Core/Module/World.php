@@ -14,29 +14,13 @@
  * @package Core
  * @subpackage Module
  */
-final class NethGui_Core_Module_World extends NethGui_Core_Module_Composite
+class NethGui_Core_Module_World extends NethGui_Core_Module_Abstract
 {
 
-    /**
-     *
-     * @var NethGui_Core_ModuleInterface
-     */
-    private $currentModule;
-    /**
-     * @var NethGui_Core_ValidationReport
-     */
-    private $validationReport;
+    private $modules = array();
 
-    public function __construct(NethGui_Core_ModuleInterface $currentModule)
+    public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
-        parent::__construct('');
-        $this->currentModule = $currentModule;
-    }
-
-    public function initialize()
-    {
-        parent::initialize();
-        $this->addChild($this->currentModule);
         $immutables = array(
             'cssMain' => base_url() . 'css/main.css',
             'js' => array(
@@ -44,36 +28,27 @@ final class NethGui_Core_Module_World extends NethGui_Core_Module_Composite
                 'ui' => base_url() . 'js/jquery-ui-1.8.10.custom.min.js',
                 'test' => base_url() . 'js/nethgui.js',
             ),
-            'currentModule' => $this->currentModule->getIdentifier(),
         );
 
         foreach ($immutables as $immutableName => $immutableValue) {
-            $this->declareImmutable($immutableName, $immutableValue);
+            $view[$immutableName] = $immutableValue;
         }
-    }
 
-    public function validate(NethGui_Core_ValidationReportInterface $report)
-    {
-        parent::validate($report);
-        $this->validationReport = $report;
-    }
+        parent::prepareView($view, $mode);
 
-    /**
-     * Override default implementation, skipping non-core child modules if we have
-     * validation errors.
-     */
-    public function process()
-    {
-        $hasValidationErrors = count($this->validationReport->getErrors()) > 0;
+        foreach ($this->modules as $module) {
+            $view[$module->getIdentifier()] = $view->spawnView($module);
+            $module->prepareView($view[$module->getIdentifier()], $mode);
 
-        foreach ($this->getChildren() as $child) {
-            // XXX: skip process() call on non-core modules
-            if ($hasValidationErrors
-                && substr(get_class($child), 0, 20) != 'NethGui_Core_Module_') {
-                continue;
+            if(!isset($view['currentModule'])) {
+                $view['currentModule'] = $view[$module->getIdentifier()];
             }
-
-            $child->process();
         }
     }
+
+    public function addModule(NethGui_Core_ModuleInterface $module)
+    {
+        $this->modules[] = $module;
+    }
+
 }

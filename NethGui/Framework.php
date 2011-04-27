@@ -140,17 +140,31 @@ final class NethGui_Framework
      */
     public function buildUrl($path, $parameters)
     {
-        if(is_string($path)) {
-            $path = explode('/', $path);
+        if(is_array($path)) {
+            $path = implode('/', $path);
         }
-
         
+        $path = explode('/', $path);
+
         array_unshift($path, $this->getControllerName());
 
+        $path = array_reverse($path);
+
+        $segments = array();
+
+        while (list($index, $slice) = each($path)) {
+            if ($slice == '..') {
+                next($path);
+                continue;
+            }
+
+            array_unshift($segments, $slice);
+        }
+
         if ( ! empty($parameters)) {
-            $url = site_url($path) . '?' . http_build_query($parameters);
+            $url = site_url($segments) . '?' . http_build_query($parameters);
         } else {
-            $url = site_url($path);
+            $url = site_url($segments);
         }
         return $url;
     }
