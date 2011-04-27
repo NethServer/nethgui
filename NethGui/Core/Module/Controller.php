@@ -8,8 +8,9 @@
 /**
  * Handles action invocations.
  *
- * A Controller is composed of Actions. It provides basic request routing and response handling to associated Actions.
- * Only an Action is actually executed. The actual Action is determined by the first URL segment.
+ * A Controller is composed of Action Modules. It provides basic request routing
+ * and response handling to associated Actions. Only one Action is actually
+ * executed. The actual Action is determined by the first URL segment.
  *
  * @see NethGui_Core_Module_Composite
  * @package Core
@@ -22,16 +23,18 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Standard implem
      * @var array
      */
     private $actions = array();
-    /**
-     *
-     * @var array
-     */
-    private $arguments;
+
     /**
      *
      * @var NethGui_Core_Module_Action
      */
     private $currentAction;
+
+    /**
+     *
+     * @var array
+     */
+    protected $arguments;
 
     public function __construct($identifier = NULL)
     {
@@ -83,21 +86,21 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Standard implem
 
         reset($this->actions);
 
-        $numericArguments = $this->extractNumericKeys($request);
+        $this->arguments = $request->getArguments();
 
-        if (empty($numericArguments)) {
+        if (empty($this->arguments) || !isset($this->arguments[0])) {
             // Default action is THE FIRST
             $currentActionIdentifier = key($this->actions);
         } else {
-            $currentActionIdentifier = $numericArguments[0];
+            // The action name is the second argument:
+            $currentActionIdentifier = $this->arguments[0];
         }
 
         if ( ! isset($this->actions[$currentActionIdentifier])) {
             throw new NethGui_Exception_HttpStatusClientError('Not Found', 404);
         }
-        $this->currentAction = $this->actions[$currentActionIdentifier];
-        $this->currentAction->bindArguments($currentActionIdentifier, array_slice($numericArguments, 1));
-        $this->currentAction->bind($request->getParameterAsInnerRequest($currentActionIdentifier));
+        $this->currentAction = $this->actions[$currentActionIdentifier];                
+        $this->currentAction->bind($request->getParameterAsInnerRequest($currentActionIdentifier,  array_slice($this->arguments, 1)));
     }
 
     public function validate(NethGui_Core_ValidationReportInterface $report)
@@ -109,44 +112,31 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Standard implem
     public function process()
     {
         parent::process();
-        $this->currentAction->process();
+        return $this->currentAction->process();
     }
 
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
         $innerView = $view->spawnView($this->currentAction);
-        $view[$this->currentAction->getIdentifier()] = $innerView;
+        $view['currentAction'] = $innerView;
+        $view['arguments'] = implode('/', $this->arguments);
         parent::prepareView($view, $mode);
         $this->currentAction->prepareView($innerView, $mode);
     }
 
-    private function extractNumericKeys(NethGui_Core_RequestInterface $request)
-    {
-        $arguments = array();
-
-        foreach ($request->getParameters() as $parameterName) {
-            if (is_numeric($parameterName)) {
-                $arguments[intval($parameterName)] = $request->getParameter($parameterName);
-            }
-        }
-
-        ksort($arguments);
-
-        return array_values($arguments);
-    }
-
+    /**
+     * Render callback.
+     *
+     * This is the view template callback function that forwards the
+     * render message to the current action.
+     *
+     * @internal Actually called by the framework.
+     * @param array $state The view state
+     * @return string
+     */
     public function renderCurrentView($state)
     {
         return $state['view'][$this->currentAction->getIdentifier()]->render();
-    }
-
-    /**
-     *
-     * @return NethGui_Core_Module_Action
-     */
-    protected function getCurrentAction()
-    {
-        return $this->currentAction;
     }
 
 }

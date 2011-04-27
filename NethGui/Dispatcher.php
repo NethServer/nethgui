@@ -74,41 +74,46 @@ class NethGui_Dispatcher
         $worldModule = new NethGui_Core_Module_World();
         $view = new NethGui_Core_View($worldModule);
 
+        $processExitCode = NULL;
+
         foreach ($moduleWakeupList as $moduleIdentifier) {
             $module = $this->topModuleDepot->findModule($moduleIdentifier);
-            if ($module instanceof NethGui_Core_ModuleInterface) {
 
+            if ($module instanceof NethGui_Core_ModuleInterface) {
                 $worldModule->addModule($module);
 
-                try {
-                    $module->initialize();
-                    $module->bind(
-                        $request->getParameterAsInnerRequest(
-                            $moduleIdentifier,
-                            ($moduleIdentifier === $currentModuleIdentifier) ? $request->getArguments() : array()
-                        )
-                    );
+                // Module initialization
+                $module->initialize();
+            }
 
-                    $module->validate($report);
-                    
-                    if(count($report->getErrors()) > 0) {
-                        continue;
-                    }
 
-                    try {
-                        $module->process();
-                    } catch (NethGui_Exception_Process $e) {
-                        NethGui_Framework::logMessage($e->getMessage(), 'error');
-                        $view['Exception'] = $e->getMessage();
-                        $view['StackTrace'] = $e->getTrace();
-                        throw new NethGui_Exception_HttpStatusClientError($e->getMessage(), 500, $e);
-                    }
-                } catch (NethGui_Exception_HttpStatusClientError $s) {
-                    show_error('Status ' . $s->getCode(), $s->getCode(), $s->getMessage());
-                }
-                
-            } else {
-                show_404();
+            if ( ! $module instanceof NethGui_Core_RequestHandlerInterface) {
+                continue;
+            }
+
+            // Pass request parameters to the handler 
+            $module->bind(
+                $request->getParameterAsInnerRequest(
+                    $moduleIdentifier,
+                    ($moduleIdentifier === $currentModuleIdentifier) ? $request->getArguments() : array()
+                )
+            );
+
+            // Validate request
+            $module->validate($report);
+
+            // Stop here if we have validation errors
+            if (count($report->getErrors()) > 0) {
+                continue;
+            }
+
+            // Process the request
+            $moduleExitCode = $module->process();
+
+            // Only the first non-NULL module exit code is considered as
+            // the process exit code:
+            if (is_null($processExitCode)) {
+                $processExitCode = $moduleExitCode;
             }
         }
 
@@ -119,6 +124,12 @@ class NethGui_Dispatcher
         }
 
         $worldModule->addModule(new NethGui_Core_Module_ValidationReport($report));
+
+        if (is_integer($processExitCode)) {
+            set_status_header($processExitCode);
+        } elseif (is_array($processExitCode)) {
+            redirect($processExitCode[1], 'location', $processExitCode[0]);
+        }
 
         if ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_HTML) {
             header("Content-Type: text/html; charset=UTF-8");

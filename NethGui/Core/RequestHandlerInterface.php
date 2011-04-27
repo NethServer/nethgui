@@ -22,8 +22,14 @@ interface NethGui_Core_RequestHandlerInterface {
     public function validate(NethGui_Core_ValidationReportInterface $report);
 
     /**
-     * Performs object logics
-     * @return void
+     * Performs object logics.
+     *
+     * The return value directs further actions. If it returns an integer, the
+     * HTTP status code is forced to that value. If it returns an array, the
+     * first value is considered the HTTP status code, and the second
+     * an HTTP Location.
+     *
+     * @return void|int|array
      */
     public function process();
     
