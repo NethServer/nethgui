@@ -33,9 +33,9 @@ class NethGui_Module_RemoteAccess_Ftp extends NethGui_Core_Module_Standard
         );
 
         $this->declareImmutable('serviceStatusOptions', array(
-            'anyNetwork' => 'Consenti accesso da qualsiasi rete', // TODO: use translator function
-            'localNetwork' => 'Consenti accesso da reti locali',
-            'disabled' => 'Disabilitato'
+            'anyNetwork' => 'Allow access from any network',
+            'localNetwork' => 'Allow access from local network',
+            'disabled' => 'Disabled'
             )
         );
     }
