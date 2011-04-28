@@ -134,7 +134,7 @@ class NethGui_Dispatcher
         if ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_HTML) {
             header("Content-Type: text/html; charset=UTF-8");
             $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_REFRESH);
-            echo $view;
+            echo $view->render();
         } elseif ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_JSON) {
             header("Content-Type: application/json; charset=UTF-8");
             $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_UPDATE);

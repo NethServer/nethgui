@@ -94,7 +94,9 @@ class NethGui_Core_TopModuleDepot implements NethGui_Core_ModuleSetInterface, Ne
 
         $module->setHostConfiguration($this->hostConfiguration);
 
-        log_message('debug', "Created `" . $module->getIdentifier() . "`, as `{$className}` instance.");
+        if(ENVIRONMENT == 'development') {
+            NethGui_Framework::getInstance()->logMessage("Created `" . $module->getIdentifier() . "`, as `{$className}` instance.", 'debug');
+        }
 
         return $module;
     }

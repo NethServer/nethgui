@@ -19,13 +19,14 @@ final class NethGui_Framework
      * @var CI_Controller
      */
     private $controller;
-    private $languageCode;
+    private $languageCode = 'en';
     /**
      * This is a stack of catalog names. Current catalog is the last element
      * of the array.
      * @var array
      */
-    private $languageCatalog;
+    private $languageCatalogStack;
+    private $catalogs = array();
 
     /**
      * Returns framework singleton instance.
@@ -38,7 +39,6 @@ final class NethGui_Framework
 
         if ( ! isset($instance)) {
             $instance = new self($codeIgniterController);
-            $instance->languageCatalog = array('default');
         }
 
         return $instance;
@@ -51,6 +51,7 @@ final class NethGui_Framework
 
         $this->controller = $codeIgniterController;
         $this->dispatcher = new NethGui_Dispatcher($codeIgniterController);
+        $this->languageCatalogStack = array(get_class());
     }
 
     /**
@@ -88,18 +89,18 @@ final class NethGui_Framework
         $absoluteViewPath = realpath(APPPATH . 'views/' . $ciViewPath . '.php');
 
         if ( ! $absoluteViewPath) {
-            log_message('error', "Unable to load `{$viewName}`.");
+            $this->logMessage("Unable to load `{$viewName}`.", 'warning');
             return '';
         }
 
         if ( ! is_null($languageCatalog)) {
-            $this->languageCatalog[] = $languageCatalog;
+            $this->languageCatalogStack[] = $languageCatalog;
         }
 
         $viewOutput = $this->controller->load->view($ciViewPath, $viewState, true);
 
         if ( ! is_null($languageCatalog)) {
-            array_pop($this->languageCatalog);
+            array_pop($this->languageCatalogStack);
         }
 
         return $viewOutput;
@@ -140,10 +141,10 @@ final class NethGui_Framework
      */
     public function buildUrl($path, $parameters)
     {
-        if(is_array($path)) {
+        if (is_array($path)) {
             $path = implode('/', $path);
         }
-        
+
         $path = explode('/', $path);
 
         array_unshift($path, $this->getControllerName());
@@ -185,26 +186,85 @@ final class NethGui_Framework
      */
     public function translate($string, $args, $languageCode = NULL, $languageCatalog = NULL)
     {
-        if ( ! isset($languageCatalog)) {
-            $languageCatalog = end($this->languageCatalog);
-        }
         if ( ! isset($languageCode)) {
             $languageCode = $this->languageCode;
         }
 
-        if (empty($languageCatalog)
-            || empty($languageCode)
-        ) {
+        if (empty($languageCode)) {
             $translation = $string;
         } else {
-            // TODO pick translated string from language string catalog.
-            $translation = $string;
+            // TODO (feature115) pick translated string from
+            // language string catalog.
+            $translation = $this->lookupTranslation($string, $languageCode, $languageCatalog);
         }
 
         /**
-         * Applies args to string
+         * Apply args to string
          */
         return strtr($translation, $args);
+    }
+
+    private function lookupTranslation($key, $languageCode, $languageCatalog)
+    {
+        $languageCatalogs = $this->languageCatalogStack;
+
+        if ( ! is_null($languageCatalog)) {
+            $languageCatalogs[] = $languageCatalog;
+        }
+
+        $languageCatalog = end($languageCatalogs);
+
+        $translation = NULL;
+
+        do {
+
+            // If catalog is missing load it
+            if ( ! isset($this->catalogs[$languageCode][$languageCatalog])) {
+                $this->loadLanguageCatalog($languageCode, $languageCatalog);
+            }
+
+            // If key exists break
+            if (isset($this->catalogs[$languageCode][$languageCatalog][$key])) {
+                $translation = $this->catalogs[$languageCode][$languageCatalog][$key];
+                break;
+            }
+
+            // If key is missing lookup in previous catalog
+            $languageCatalog = prev($languageCatalogs);
+        } while ($languageCatalog);
+
+        if ($translation === NULL) {
+            // By default prepare an identity-translation
+            $translation = $key;
+            if (ENVIRONMENT == 'development') {
+                $this->logMessage("Missing `$languageCode` translation for `$key`. Catalogs: " . implode(', ', $languageCatalogs), 'debug');
+            }
+        }
+
+        return $translation;
+    }
+
+    private function loadLanguageCatalog($languageCode, $languageCatalog)
+    {
+        $L = array();
+
+        if (preg_match('/[a-z][a-z]/', $languageCode) == 0) {
+            throw new InvalidArgumentException('Language code must be a valid ISO 639-1 language code');
+        }
+
+        if (preg_match('/[a-z_A-Z0-9]+/', $languageCatalog) == 0) {
+            throw new InvalidArgumentException("Language catalog name can contain only alphanumeric or `_` characters. It was `$languageCatalog`.");
+        }
+
+        $filePath = dirname(__FILE__) . '/Language/' . $languageCode . '/' . $languageCatalog . '.php';
+
+        @include($filePath);
+
+        if (ENVIRONMENT == 'development' && ! empty($L)) {
+            $this->logMessage('Loaded catalog ' . $filePath);
+        }
+
+        $this->catalogs[$languageCode][$languageCatalog] = &$L;
     }
 
     /**
@@ -232,7 +292,7 @@ final class NethGui_Framework
             return;
         }
         $classPath = str_replace("_", "/", $className) . '.php';
-        require_once($classPath);
+        require($classPath);
     }
 
     /**
