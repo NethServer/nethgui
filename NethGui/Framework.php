@@ -19,7 +19,7 @@ final class NethGui_Framework
      * @var CI_Controller
      */
     private $controller;
-    private $languageCode = 'en';
+    private $languageCode = 'it';
     /**
      * This is a stack of catalog names. Current catalog is the last element
      * of the array.
