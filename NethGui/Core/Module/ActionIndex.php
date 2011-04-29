@@ -40,8 +40,7 @@ class NethGui_Core_Module_ActionIndex extends NethGui_Core_Module_Standard
             }
 
             // Prepare a sub view for $action
-            $innerView = $view->spawnView($action);
-            $view[$action->getIdentifier()] = $innerView;            
+            $innerView = $view->spawnView($action, TRUE);
             $action->prepareView($innerView, $mode);
             $innerView['__action'] = 'index';
         }

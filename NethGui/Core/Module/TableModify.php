@@ -90,7 +90,7 @@ class NethGui_Core_Module_TableModify extends NethGui_Core_Module_Standard
                 }
 
                 // TODO: add feedback message
-                // Redirect to parent controller module by SEE OTHER status
+                // Redirect to parent controller module by SEE OTHER status (303)
                 $exitCode = array(303, $this->buildUrl('..'));
 
             } elseif ($action == 'create' || $action == 'update') {
@@ -107,7 +107,7 @@ class NethGui_Core_Module_TableModify extends NethGui_Core_Module_Standard
 
                 // TODO: add feedback message
 
-                // Redirect to parent controller module by SEE OTHER status
+                // Redirect to parent controller module by SEE OTHER status (303)
                 $exitCode = array(303, $this->buildUrl('..'));
                 
             } else {

@@ -42,58 +42,63 @@ class NethGui_Core_Request implements NethGui_Core_RequestInterface
     {
         static $instance;
 
-        if ( ! isset($instance)) {
-            
-            if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
-                && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') {
-                $isXmlHttpRequest = TRUE;
-            } else {
-                $isXmlHttpRequest = FALSE;
-            }
-
-            if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-                $submitted = FALSE;
-                $contentType = self::CONTENT_TYPE_HTML;
-                $data = array();
-                
-            } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                $submitted = TRUE;
-
-                if ($_SERVER['CONTENT_TYPE'] == 'application/json; charset=UTF-8') {
-
-                    // Json Format POST request.
-                    $data = json_decode($GLOBALS['HTTP_RAW_POST_DATA'], true);
-
-                    if (is_null($data)) {
-                        $data = array();
-                    }
-                    
-                    $contentType = self::CONTENT_TYPE_JSON;
-
-                } else {
-                    // Standard  POST request.
-                    $data = $_POST;
-                    $contentType = self::CONTENT_TYPE_HTML;
-                }
-            }
-
-            // TODO: retrieve user state from Session
-            $user = new NethGui_Core_AlwaysAuthenticatedUser();
-
-            $instance = new self($user, $data, $submitted, $arguments);
-
-            $instance->attributes = array(
-                'XML_HTTP_REQUEST' => $isXmlHttpRequest,
-                'CONTENT_TYPE' => $contentType,
-            );
-
-            /*
-             * Clear global variables
-             */
-            $_POST = array();
-            $_GET = array();
+        if (isset($instance)) {
+            return $instance;
         }
 
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
+            && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') {
+            $isXmlHttpRequest = TRUE;
+        } else {
+            $isXmlHttpRequest = FALSE;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+            $submitted = FALSE;
+            $contentType = self::CONTENT_TYPE_HTML;
+            $data = array();
+        } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $submitted = TRUE;
+
+            if ($_SERVER['CONTENT_TYPE'] == 'application/json; charset=UTF-8') {
+                // Decode RAW request
+                $data = json_decode($GLOBALS['HTTP_RAW_POST_DATA'], true);
+
+                if (is_null($data)) {
+                    throw new NethGui_Exception_HttpStatusClientError('Bad Request', 400);
+                }
+            } else {
+                // Use PHP global:
+                $data = $_POST;
+            }
+        }
+
+        $httpAccept = trim(array_shift(explode(',', $_SERVER['HTTP_ACCEPT'])));
+
+        if ($httpAccept == 'application/json')
+            $contentType = self::CONTENT_TYPE_JSON;
+        else {
+            // Standard  POST request.
+            $contentType = self::CONTENT_TYPE_HTML;
+        }
+
+
+        // TODO: retrieve user state from Session
+        $user = new NethGui_Core_AlwaysAuthenticatedUser();
+
+        $instance = new self($user, $data, $submitted, $arguments);
+
+        $instance->attributes = array(
+            'XML_HTTP_REQUEST' => $isXmlHttpRequest,
+            'CONTENT_TYPE' => $contentType,
+        );
+
+        /*
+         * Clear global variables
+         */
+        $_POST = array();
+        $_GET = array();
+        
         return $instance;
     }
 

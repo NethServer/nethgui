@@ -72,8 +72,9 @@ class NethGui_Dispatcher
 
         // The World module is a non-processing container.
         $worldModule = new NethGui_Core_Module_World();
-        $view = new NethGui_Core_View($worldModule);
 
+        $view = new NethGui_Core_View($worldModule);
+        
         $processExitCode = NULL;
 
         foreach ($moduleWakeupList as $moduleIdentifier) {
@@ -117,28 +118,28 @@ class NethGui_Dispatcher
             }
         }
 
-        // Add menu and breadcrumb decorations if we are building a full HTML view.
-        if ( ! $request->isXmlHttpRequest()) {
-            $worldModule->addModule(new NethGui_Core_Module_Menu($this->topModuleDepot->getModules()));
-            $worldModule->addModule(new NethGui_Core_Module_BreadCrumb($this->topModuleDepot, $currentModuleIdentifier));
+        if (is_integer($processExitCode)) {
+            set_status_header($processExitCode);
         }
 
         $worldModule->addModule(new NethGui_Core_Module_ValidationReport($report));
 
-        if (is_integer($processExitCode)) {
-            set_status_header($processExitCode);
-        } elseif (is_array($processExitCode)) {
-            redirect($processExitCode[1], 'location', $processExitCode[0]);
-        }
-
         if ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_HTML) {
-            header("Content-Type: text/html; charset=UTF-8");
-            $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_REFRESH);
-            echo $view->render();
+            if (is_array($processExitCode)) {
+                redirect($processExitCode[1], 'location', $processExitCode[0]);
+            } else {
+                $worldModule->addModule(new NethGui_Core_Module_Menu($this->topModuleDepot->getModules()));
+                $worldModule->addModule(new NethGui_Core_Module_BreadCrumb($this->topModuleDepot, $currentModuleIdentifier));
+
+                header("Content-Type: text/html; charset=UTF-8");
+                $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_REFRESH);
+                echo $view->render();
+            }
         } elseif ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_JSON) {
             header("Content-Type: application/json; charset=UTF-8");
             $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_UPDATE);
             echo json_encode($view->getArrayCopy());
         }
     }
+
 }

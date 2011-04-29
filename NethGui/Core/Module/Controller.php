@@ -23,13 +23,11 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Standard implem
      * @var array
      */
     private $actions = array();
-
     /**
      *
      * @var NethGui_Core_Module_Action
      */
     private $currentAction;
-
     /**
      *
      * @var array
@@ -88,7 +86,7 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Standard implem
 
         $this->arguments = $request->getArguments();
 
-        if (empty($this->arguments) || !isset($this->arguments[0])) {
+        if (empty($this->arguments) || ! isset($this->arguments[0])) {
             // Default action is THE FIRST
             $currentActionIdentifier = key($this->actions);
         } else {
@@ -99,8 +97,8 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Standard implem
         if ( ! isset($this->actions[$currentActionIdentifier])) {
             throw new NethGui_Exception_HttpStatusClientError('Not Found', 404);
         }
-        $this->currentAction = $this->actions[$currentActionIdentifier];                
-        $this->currentAction->bind($request->getParameterAsInnerRequest($currentActionIdentifier,  array_slice($this->arguments, 1)));
+        $this->currentAction = $this->actions[$currentActionIdentifier];
+        $this->currentAction->bind($request->getParameterAsInnerRequest($currentActionIdentifier, array_slice($this->arguments, 1)));
     }
 
     public function validate(NethGui_Core_ValidationReportInterface $report)
@@ -117,10 +115,13 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Standard implem
 
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
-        $innerView = $view->spawnView($this->currentAction);
-        $view['currentAction'] = $innerView;
-        $view['arguments'] = implode('/', $this->arguments);
-        parent::prepareView($view, $mode);
+        $innerView = $view->spawnView($this->currentAction, TRUE);
+        
+        if ($mode == self::VIEW_REFRESH) {
+            $view['__action'] = $this->currentAction->getIdentifier();
+            $view['__arguments'] = implode('/', $this->arguments);
+        }
+        parent::prepareView($view, $mode);        
         $this->currentAction->prepareView($innerView, $mode);
     }
 

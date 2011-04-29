@@ -94,8 +94,7 @@ abstract class NethGui_Core_Module_Composite extends NethGui_Core_Module_Standar
     {
         parent::prepareView($view, $mode);
         foreach ($this->getChildren() as $childModule) {
-            $innerView = $view->spawnView($childModule);
-            $view[$childModule->getIdentifier()] = $innerView;
+            $innerView = $view->spawnView($childModule, TRUE);
             $childModule->prepareView($innerView, $mode);
         }
     }
