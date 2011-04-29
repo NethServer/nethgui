@@ -114,7 +114,7 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
     public function spawnView(NethGui_Core_ModuleInterface $module, $register = FALSE)
     {
         $spawnedView = new self($module);
-        if($register) {
+        if ($register) {
             $this[$module->getIdentifier()] = $spawnedView;
         }
         return $spawnedView;

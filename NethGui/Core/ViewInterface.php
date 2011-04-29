@@ -57,6 +57,7 @@ interface NethGui_Core_ViewInterface extends ArrayAccess, IteratorAggregate
      * @return string an URL to the current Module
      */
     public function buildUrl();
+    
 }
 
 ?>

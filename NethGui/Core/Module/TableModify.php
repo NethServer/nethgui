@@ -92,7 +92,6 @@ class NethGui_Core_Module_TableModify extends NethGui_Core_Module_Standard
                 // TODO: add feedback message
                 // Redirect to parent controller module by SEE OTHER status (303)
                 $exitCode = array(303, $this->buildUrl('..'));
-
             } elseif ($action == 'create' || $action == 'update') {
 
                 $values = $this->parameters->getArrayCopy();
@@ -106,10 +105,8 @@ class NethGui_Core_Module_TableModify extends NethGui_Core_Module_Standard
                 $this->tableAdapter[$key] = $values;
 
                 // TODO: add feedback message
-
                 // Redirect to parent controller module by SEE OTHER status (303)
                 $exitCode = array(303, $this->buildUrl('..'));
-                
             } else {
                 throw new NethGui_Exception_HttpStatusClientError('Not found', 404);
             }
@@ -120,8 +117,10 @@ class NethGui_Core_Module_TableModify extends NethGui_Core_Module_Standard
 
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
-        $view['__key'] = $this->key;
-        $view['__action'] = $this->getIdentifier();
+        if ($mode == self::VIEW_REFRESH) {
+            $view['__key'] = $this->key;
+            $view['__action'] = $this->getIdentifier();
+        }
         parent::prepareView($view, $mode);
     }
 

@@ -55,7 +55,6 @@ class NethGui_Core_Request implements NethGui_Core_RequestInterface
 
         if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             $submitted = FALSE;
-            $contentType = self::CONTENT_TYPE_HTML;
             $data = array();
         } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $submitted = TRUE;
@@ -73,6 +72,7 @@ class NethGui_Core_Request implements NethGui_Core_RequestInterface
             }
         }
 
+        // XXX: This is a non-compliant HTTP Accept-header parsing:
         $httpAccept = trim(array_shift(explode(',', $_SERVER['HTTP_ACCEPT'])));
 
         if ($httpAccept == 'application/json')
