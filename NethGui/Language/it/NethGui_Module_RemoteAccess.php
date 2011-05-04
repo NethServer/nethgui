@@ -5,7 +5,7 @@
  */
 
 $L['PPTP Settings'] = 'Configurazione PPTP';
-$L['Number of PPTP clients'] = 'Numero di client PPTP';
+$L['client_label'] = 'Numero di client PPTP';
 $L['Remote management'] = 'Gestione remota';
 $L['Network address'] = 'Indirizzo di rete';
 $L['Network mask'] = 'Maschera di rete';

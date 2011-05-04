@@ -77,27 +77,33 @@ final class NethGui_Framework
      * If specified, this function sets the default language catalog used
      * by T() translation function.
      * 
-     * @param string $viewName Full view name. Follows class naming convention.
+     * @param string|callable $view Full view name that follows class naming convention or function callback
      * @param array $viewState Array of view parameters.
      * @param string $languageCatalog Name of language strings catalog.
      * @return string
      */
     public function renderView($viewName, $viewState, $languageCatalog = NULL)
     {
-        $ciViewPath = '../../' . str_replace('_', '/', $viewName);
-
-        $absoluteViewPath = realpath(APPPATH . 'views/' . $ciViewPath . '.php');
-
-        if ( ! $absoluteViewPath) {
-            $this->logMessage("Unable to load `{$viewName}`.", 'warning');
-            return '';
-        }
-
         if ( ! is_null($languageCatalog)) {
             $this->languageCatalogStack[] = $languageCatalog;
         }
 
-        $viewOutput = $this->controller->load->view($ciViewPath, $viewState, true);
+        if (is_callable($viewName)) {
+            // Callback
+            $viewOutput = (string) call_user_func_array($viewName, $viewState);
+        } else {
+            $ciViewPath = '../../' . str_replace('_', '/', $viewName);
+
+            $absoluteViewPath = realpath(APPPATH . 'views/' . $ciViewPath . '.php');
+
+            if ( ! $absoluteViewPath) {
+                $this->logMessage("Unable to load `{$viewName}`.", 'warning');
+                return '';
+            }
+
+            // PHP view
+            $viewOutput = (string) $this->controller->load->view($ciViewPath, $viewState, true);
+        }
 
         if ( ! is_null($languageCatalog)) {
             array_pop($this->languageCatalogStack);

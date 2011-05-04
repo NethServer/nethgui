@@ -1,17 +1,23 @@
-<fieldset><?php echo T('Confirm deletion of "%s"?', array('%s' => isset($parameters[$view['__key']]) ? $parameters[$view['__key']] : '%s')); ?></fieldset>
-<div><?php 
+<?php
+$message = T('Confirm deletion of "%s"?',
+        array('%s' => isset($view[$view['__key']]) ? $view[$view['__key']] : '%s')
+);
 
-    echo form_hidden($name[$view['__key']], $parameters[$view['__key']]);
-    
-    $submitConf = array('name' => $module->getIdentifier());
+$flags = NethGui_Renderer_Abstract::DIALOG_MODAL;
 
-    if ($view['__action'] == 'index') {
-        $submitConf['disabled'] = 'disabled';
-    }
+if ($view['__action'] == 'index') {
+    $flags |= NethGui_Renderer_Abstract::STATE_DISABLED;
+}
 
-    echo form_submit($submitConf, T($module->getIdentifier()));
-    
-    echo anchor($view->buildUrl('..'), T('Cancel'));
+$dialog = $view->dialog('ConfirmDeletion', $message, $flags);
 
+$dialog->hidden($view['__key'], $view[$view['__key']]);
 
-?></div>
+$dialog
+    ->button('Submit', NethGui_Renderer_Xhtml::BUTTON_SUBMIT)
+    ->button('Cancel', NethGui_Renderer_Xhtml::BUTTON_CANCEL)
+;
+
+echo $dialog;
+
+?>

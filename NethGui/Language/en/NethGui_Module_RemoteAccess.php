@@ -5,7 +5,7 @@
  */
 
 $L['PPTP Settings'] = 'PPTP Settings';
-$L['Number of PPTP clients'] = 'Number of PPTP clients';
+$L['client_label'] = 'Number of PPTP clients';
 $L['Remote management'] = 'Remote management';
 $L['Network address'] = 'Network address';
 $L['Network mask'] = 'Network mask';

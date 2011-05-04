@@ -17,6 +17,22 @@ abstract class NethGui_Core_Module_Composite extends NethGui_Core_Module_Standar
 
     private $children = array();
 
+    const TEMPLATE_LIST = 0;
+    const TEMPLATE_FORM = 1;
+    const TEMPLATE_TABS = 2;
+
+    public function __construct($identifier = NULL, $template = self::TEMPLATE_FORM)
+    {
+        parent::__construct($identifier);
+        if($template == self::TEMPLATE_FORM) {
+            $this->viewTemplate = array($this, 'renderForm');
+        } elseif($template == self::TEMPLATE_TABS) {
+            $this->viewTemplate = array($this, 'renderTabs');
+        } else {
+            $this->viewTemplate = array($this, 'renderList');
+        }
+    }
+
     /**
      * Propagates initialize() message to children.
      */
@@ -28,7 +44,7 @@ abstract class NethGui_Core_Module_Composite extends NethGui_Core_Module_Standar
             if ( ! $child->isInitialized()) {
                 $child->initialize();
             }
-        }
+        }        
      }
 
     /**
@@ -107,5 +123,25 @@ abstract class NethGui_Core_Module_Composite extends NethGui_Core_Module_Standar
         }
     }
 
+    public function renderList(NethGui_Renderer_Abstract $view) {
+        return 'TODO List';
+    }
+
+    public function renderForm(NethGui_Renderer_Abstract $view) {
+        $form = $view->form($this->getIdentifier());
+        
+        foreach($this->getChildren() as $child) {
+          $form->inset($child->getIdentifier());
+        }
+
+        $form->button('Submit', NethGui_Renderer_Abstract::BUTTON_SUBMIT);
+        $form->button('Cancel', NethGui_Renderer_Abstract::BUTTON_CANCEL, '');
+           
+        return $view;
+    }
+
+    public function renderTabs(NethGui_Renderer_Abstract $view) {
+        return 'TODO Tabs';
+    }
 }
 

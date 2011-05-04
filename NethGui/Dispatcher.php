@@ -126,7 +126,8 @@ class NethGui_Dispatcher
 
         if ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_HTML) {
             if (is_array($processExitCode)) {
-                redirect($processExitCode[1], 'location', $processExitCode[0]);
+                // XXX: complete redirect protocol
+                redirect($processExitCode[1][0], 'location', $processExitCode[0]);
             } else {
                 $worldModule->addModule(new NethGui_Core_Module_Menu($this->topModuleDepot->getModules()));
                 $worldModule->addModule(new NethGui_Core_Module_BreadCrumb($this->topModuleDepot, $currentModuleIdentifier));

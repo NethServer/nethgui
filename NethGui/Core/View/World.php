@@ -2,9 +2,9 @@
 <html>
     <head>
         <title>NethGui</title>
-        <link rel="stylesheet" type="text/css" href="<?php echo $parameters['cssMain']; ?>" />
-        <?php foreach ($parameters['js'] as $scriptPath): ?>
-            <script type="text/javascript" src="<?php echo $scriptPath ?>" ></script>
+        <link rel="stylesheet" type="text/css" href="<?php echo htmlspecialchars($view['cssMain']); ?>" />
+        <?php foreach ($view['js'] as $scriptPath): ?>
+        <script type="text/javascript" src="<?php echo htmlspecialchars($scriptPath) ?>" ></script>
         <?php endforeach ?>
     </head>
     <body>
@@ -25,7 +25,6 @@
             <div id="footer">
                 Powered by <a href="/Documentation">NethGuiFramework</a> &ndash; Copyright 2011 &copy; Nethesis S.r.l
             </div>
-        </div>
-        <pre><?php echo '$request' ?></pre>
+        </div>        
     </body>
 </html>

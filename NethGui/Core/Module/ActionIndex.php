@@ -51,20 +51,20 @@ class NethGui_Core_Module_ActionIndex extends NethGui_Core_Module_Standard
      *
      * It concatenates all the child views of the parent controller.
      *
-     * @param array $state The view state
+     * @param NethGui_Renderer_Abstract $view
      * @return string The rendered views.
      */
-    public function renderActions($state)
+    public function renderActions(NethGui_Renderer_Abstract $view)
     {
         $output = '';
         foreach ($this->getParent()->getChildren() as $action) {
             $actionIdentifier = $action->getIdentifier();
 
-            if ( ! isset($state['view'][$actionIdentifier])) {
+            if ( ! isset($view[$actionIdentifier])) {
                 continue;
             }
 
-            $output .= $state['view'][$actionIdentifier]->render();
+            $output .= $view[$actionIdentifier]->render();
         }
         return $output;
     }

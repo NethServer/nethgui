@@ -55,7 +55,7 @@ final class NethGui_Core_Module_Menu extends NethGui_Core_Module_Standard
         return '<ul>' . $output . '</ul>';
     }
 
-    public function renderModuleMenu($viewState)
+    public function renderModuleMenu($view)
     {
         return $this->iteratorToHtml($this->menuIterator);
     }

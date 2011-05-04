@@ -39,8 +39,6 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
      */
     const VALID_IP_OR_EMPTY = 203;
 
-
-
     /**
      * @var NethGui_Core_ParameterSet
      */
@@ -293,18 +291,6 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
     public function getLanguageCatalog()
     {
         return get_class($this);
-    }
-
-    /**
-     * Forwards url building to a temporary view object.
-     * @internal
-     * @return string
-     */
-    protected function buildUrl()
-    {
-        $tempView = new NethGui_Core_View($this);
-        $arguments = func_get_args();
-        return call_user_func_array(array($tempView, 'buildUrl'), $arguments);
     }
 
 }

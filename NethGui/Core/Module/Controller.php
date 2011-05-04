@@ -34,12 +34,6 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Standard implem
      */
     protected $arguments;
 
-    public function __construct($identifier = NULL)
-    {
-        parent::__construct($identifier);
-        $this->viewTemplate = array($this, 'renderCurrentView');
-    }
-
     public function addChild(NethGui_Core_ModuleInterface $module)
     {
         $this->actions[$module->getIdentifier()] = $module;
@@ -116,12 +110,13 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Standard implem
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
         $innerView = $view->spawnView($this->currentAction, TRUE);
-        
+
         if ($mode == self::VIEW_REFRESH) {
             $view['__action'] = $this->currentAction->getIdentifier();
             $view['__arguments'] = implode('/', $this->arguments);
         }
-        parent::prepareView($view, $mode);        
+        parent::prepareView($view, $mode);
+        $view->setTemplate(array($this, 'renderCurrentView'));
         $this->currentAction->prepareView($innerView, $mode);
     }
 
@@ -132,12 +127,16 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Standard implem
      * render message to the current action.
      *
      * @internal Actually called by the framework.
-     * @param array $state The view state
+     * @param NethGui_Renderer_Abstract $view The view
      * @return string
      */
-    public function renderCurrentView($state)
+    public function renderCurrentView(NethGui_Renderer_Abstract $view)
     {
-        return $state['view'][$this->currentAction->getIdentifier()]->render();
+        $action = $this->currentAction->getIdentifier();
+        return $view
+            ->form($action)
+            ->inset($action)
+        ;
     }
 
 }

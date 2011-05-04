@@ -105,20 +105,20 @@ class NethGui_Core_Module_TableRead extends NethGui_Core_Module_Standard
             $columnView = array();
         }
 
-        // Buil an URL with key as argument for each known column action.
+        // Add action arguments to columnView
         $key = $values[$this->columns[0]];
         foreach ($this->columnActions as $action) {
-            $columnView[$action] = $view->buildUrl('..', $action, $key);
+            $columnView[$action] = array('../' . $action, $key);
         }
 
         return $columnView;
     }
 
-    public function renderColumnActions($state)
+    public function renderColumnActions(NethGui_Renderer_Abstract $view)
     {
         $output = '';
         foreach ($this->columnActions as $action) {
-            $output .= '<li>' . anchor($state['view'][$action], $action) . '</li>';
+            $output .= '<li>' . $view->button($action, NethGui_Renderer_Abstract::BUTTON_LINK, $view[$action]) . '</li>';
         }
         return '<ul>' . $output . '</ul>';
     }

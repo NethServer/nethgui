@@ -1,5 +1,5 @@
-<table class="table-read <?php echo get_class($module); ?>">
-    <caption><?php echo get_class($module); ?></caption>
+<table class="table-read <?php echo get_class($view->getModule()); ?>">
+    <caption><?php echo get_class($view->getModule()); ?></caption>
     <thead><tr>
         <?php
             foreach ($view['columns'] as $columnName) {

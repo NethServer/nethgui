@@ -29,7 +29,7 @@ class NethGui_Core_Module_BreadCrumb extends NethGui_Core_Module_Abstract
         $this->currentModule = $this->moduleSet->findModule($currentModuleIdentifier);
     }
 
-    public function renderBreadcrumbMenu($viewState)
+    public function renderBreadcrumbMenu($view)
     {
         $module = $this->currentModule;
         $framework = NethGui_Framework::getInstance();
