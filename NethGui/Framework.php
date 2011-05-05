@@ -274,12 +274,20 @@ final class NethGui_Framework
     }
 
     /**
-     * 
+     * Set the current language code
      * @param string $code ISO 639-1 language code (2 characters).
      */
     public function setLanguageCode($code)
     {
         $this->languageCode = strtolower(substr($code, 0, 2));
+    }
+
+    /**
+     * Get the current language code
+     * @return string ISO 639-1 language code (2 characters).
+     */
+    public function getLanguageCode() {
+        return $this->languageCode;
     }
 
     /**

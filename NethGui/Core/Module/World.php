@@ -23,6 +23,7 @@ class NethGui_Core_Module_World extends NethGui_Core_Module_Abstract
     {
         if ($mode == self::VIEW_REFRESH) {
             $immutables = array(
+                'lang' => NethGui_Framework::getInstance()->getLanguageCode(),
                 'cssMain' => base_url() . 'css/main.css',
                 'js' => array(
                     'base' => base_url() . 'js/jquery-1.5.1.min.js',
