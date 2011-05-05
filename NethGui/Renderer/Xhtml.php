@@ -453,6 +453,10 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
             $className .= 'embedded'; // default dialog class
         }
 
+        if ($flags & self::STATE_DISABLED) {
+            $className .= ' disabled';
+        }
+
         $dialog = $this->createNewInstance($flags);
         $this->pushContent($dialog);
         $dialog->setWrapTag('div', $identifier, $className);
