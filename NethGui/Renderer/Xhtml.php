@@ -16,6 +16,10 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
      * @var array
      */
     private $modulePath;
+    /**
+     * @see setWrapTag()
+     * @var string
+     */
     private $wrapTag;
 
     protected function getFullName($name)
@@ -55,10 +59,8 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 
     /**
      * Gets the array of the current module identifier plus all identifiers of
-     * the ancestor modules.
+     * the ancestor modules.     
      *
-     * public function getModulePath();
-     * XXX: test
      * @return array
      */
     protected function getModulePath()
@@ -82,7 +84,8 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
     }
 
     /**
-     *
+     * Push an opening tag
+     * 
      * @param string $tag The tag name (DIV, P, FORM...)
      * @param array $attributes The HTML attributes (id, name, for...)
      * @param string $content Raw content string
@@ -94,16 +97,35 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         $this->pushContent(sprintf('<%s%s>', $tag, $attributeString));
     }
 
+    /**
+     * Push a self-closing tag
+     *
+     * @see openTag()
+     * @param string $tag
+     * @param array $attributes
+     */
     private function selfClosingTag($tag, $attributes)
     {
         $this->pushContent(sprintf('<%s%s/>', strtolower($tag), $this->prepareXhtmlAttributes($attributes)));
     }
 
+    /**
+     * Push a close tag
+     *
+     * @param string $tag Tag to be closed.
+     */
     private function closeTag($tag)
     {
         $this->pushContent(sprintf('</%s>', strtolower($tag)));
     }
 
+    /**
+     * Push a LABEL tag for given control id
+     *
+     * @see http://www.w3.org/TR/html401/interact/forms.html#h-17.9.1
+     * @param string $name
+     * @param string $id
+     */
     private function label($name, $id)
     {
         $this->openTag('label', array('for' => $id));
@@ -111,6 +133,12 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         $this->closeTag('label');
     }
 
+    /**
+     * Convert an hash to a string of HTML tag attributes.
+     *
+     * @param array $attributes
+     * @return string
+     */
     private function prepareXhtmlAttributes($attributes)
     {
         $content = '';
@@ -122,6 +150,16 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         return ' ' . trim($content);
     }
 
+    /**
+     * The given tag wraps the renderer output, if not empty.
+     *
+     * @see flushContent()
+     * @see contentTag()
+     * @param string $tag
+     * @param string $name
+     * @param string $cssClass
+     * @param array $attributes
+     */
     private function setWrapTag($tag, $name, $cssClass = '', $attributes = array())
     {
 
@@ -136,6 +174,15 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         $this->wrapTag = array($tag, $attributes);
     }
 
+    /**
+     * Returns the string representing the object state, resetting it to empty.
+     *
+     * After this method has been invoked, the object is resetted to its initial
+     * state, as if it's newly created.
+     *
+     * @see setWrapTag()
+     * @return string
+     */
     protected function flushContent()
     {
         $content = parent::flushContent();
@@ -151,6 +198,16 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         return $content;
     }
 
+    /**
+     *
+     * @see controlTag()
+     * @param string $tag The XHTML tag of the control.
+     * @param string $name The name of the view parameter that holds the data
+     * @param string $label The label text
+     * @param integer $flags Flags bitmask {STATE_CHECKED, STATE_DISABLED, LABEL_*}
+     * @param string $cssClass The `class` attribute value
+     * @param array $attributes  Generic attributes array See {@link openTag()}
+     */
     private function labeledControlTag($tag, $name, $label, $flags, $cssClass = '', $attributes = array())
     {
 
@@ -172,6 +229,15 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         $this->closeTag('div');
     }
 
+    /**
+     * Push an HTML tag for parameter $name.
+     * 
+     * @param string $tag The XHTML tag of the control.
+     * @param string $name The name of the view parameter that holds the data
+     * @param integer $flags Flags bitmask {STATE_CHECKED, STATE_DISABLED}
+     * @param string $cssClass The `class` attribute value
+     * @param array $attributes Generic attributes array See {@link openTag()}
+     */
     private function controlTag($tag, $name, $flags, $cssClass = '', $attributes = array())
     {
         $tag = strtolower($tag);
