@@ -21,8 +21,33 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
      * @var string
      */
     private $wrapTag;
+    private $content = array();
+    private $flags = 0;
 
-    protected function getFullName($name)
+    public function __clone()
+    {
+        $this->content = array();
+        $this->wrapTag = NULL;
+    }
+
+    public function render()
+    {
+        return $this->flushContent();
+    }
+
+    /**
+     * Pushes a string or an object into the internal content buffer.
+     * 
+     * @param string|object $content A string or an object implementing __toString() magic method.
+     * @return mixed The pushed string or object
+     */
+    private function pushContent($content)
+    {
+        $this->content[] = $content;
+        return $content;
+    }
+
+    private function getFullName($name)
     {
         $path = $this->getModulePath();
         $path[] = $name;
@@ -31,7 +56,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         return $prefix . '[' . implode('][', $path) . ']';
     }
 
-    protected function getFullId($name)
+    private function getFullId($name)
     {
         return implode('_', $this->getModulePath()) . '_' . $name;
     }
@@ -84,53 +109,42 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
     }
 
     /**
-     * Push an opening tag
+     * Get an XHTML opening tag string
      * 
      * @param string $tag The tag name (DIV, P, FORM...)
      * @param array $attributes The HTML attributes (id, name, for...)
      * @param string $content Raw content string
+     * @return string
      */
     private function openTag($tag, $attributes = array())
     {
         $tag = strtolower($tag);
         $attributeString = $this->prepareXhtmlAttributes($attributes);
-        $this->pushContent(sprintf('<%s%s>', $tag, $attributeString));
+        return sprintf('<%s%s>', $tag, $attributeString);
     }
 
     /**
-     * Push a self-closing tag
+     * Get an XHTML self-closing tag string
      *
      * @see openTag()
      * @param string $tag
      * @param array $attributes
+     * @return string
      */
     private function selfClosingTag($tag, $attributes)
     {
-        $this->pushContent(sprintf('<%s%s/>', strtolower($tag), $this->prepareXhtmlAttributes($attributes)));
+        return sprintf('<%s%s/>', strtolower($tag), $this->prepareXhtmlAttributes($attributes));
     }
 
     /**
-     * Push a close tag
+     * Get an XHTML closing tag string
      *
      * @param string $tag Tag to be closed.
+     * @return string
      */
     private function closeTag($tag)
     {
-        $this->pushContent(sprintf('</%s>', strtolower($tag)));
-    }
-
-    /**
-     * Push a LABEL tag for given control id
-     *
-     * @see http://www.w3.org/TR/html401/interact/forms.html#h-17.9.1
-     * @param string $name
-     * @param string $id
-     */
-    private function label($name, $id)
-    {
-        $this->openTag('label', array('for' => $id));
-        $this->pushContent(htmlspecialchars(T($name . '_label')));
-        $this->closeTag('label');
+        return sprintf('</%s>', strtolower($tag));
     }
 
     /**
@@ -151,7 +165,21 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
     }
 
     /**
-     * The given tag wraps the renderer output, if not empty.
+     * Push a LABEL tag for given control id
+     *
+     * @see http://www.w3.org/TR/html401/interact/forms.html#h-17.9.1
+     * @param string $name
+     * @param string $id
+     */
+    private function label($name, $id)
+    {
+        $this->pushContent($this->openTag('label', array('for' => $id)));
+        $this->pushContent(htmlspecialchars(T($name . '_label')));
+        $this->pushContent($this->closeTag('label'));
+    }
+
+    /**
+     * The given tag will wrap the renderer output, if not empty.
      *
      * @see flushContent()
      * @see contentTag()
@@ -183,16 +211,18 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
      * @see setWrapTag()
      * @return string
      */
-    protected function flushContent()
+    private function flushContent()
     {
-        $content = parent::flushContent();
+        $content = implode('', $this->content);
+        $this->content = array();
 
         if (strlen($content) > 0 && is_array($this->wrapTag)) {
-            $this->openTag($this->wrapTag[0], $this->wrapTag[1]);
-            $this->pushContent($content);
-            $this->closeTag($this->wrapTag[0]);
+            $content =
+                $this->pushContent($this->openTag($this->wrapTag[0], $this->wrapTag[1])) .
+                $content .
+                $this->pushContent($this->closeTag($this->wrapTag[0]));
+
             $this->wrapTag = NULL;
-            $content = parent::flushContent();
         }
 
         return $content;
@@ -210,7 +240,6 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
      */
     private function labeledControlTag($tag, $name, $label, $flags, $cssClass = '', $attributes = array())
     {
-
         if (isset($attributes['id'])) {
             $controlId = $attributes['id'];
         } else {
@@ -218,15 +247,15 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
             $attributes['id'] = $controlId;
         }
 
-        $this->openTag('div', array('class' => 'labeled-control'));
-        if ($flags & (self::LABEL_ABOVE | self::LABEL_LEFT)) {
-            $this->label($label, $controlId);
+        $this->pushContent($this->openTag('div', array('class' => 'labeled-control')));
+        if ($flags & self::LABEL_RIGHT) {
             $this->controlTag($tag, $name, $flags, $cssClass, $attributes);
+            $this->label($label, $controlId);
         } else {
-            $this->controlTag($tag, $name, $flags, $cssClass, $attributes);
             $this->label($label, $controlId);
+            $this->controlTag($tag, $name, $flags, $cssClass, $attributes);
         }
-        $this->closeTag('div');
+        $this->pushContent($this->closeTag('div'));
     }
 
     /**
@@ -240,6 +269,9 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
      */
     private function controlTag($tag, $name, $flags, $cssClass = '', $attributes = array())
     {
+        // Add default instance flags:
+        $flags |= $this->flags;
+
         $tag = strtolower($tag);
 
         if ( ! isset($attributes['id'])) {
@@ -268,16 +300,29 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
             $attributes['class'] = $cssClass;
         }
 
-        $this->selfClosingTag($tag, $attributes);
+        $this->pushContent($this->selfClosingTag($tag, $attributes));
     }
 
     //
     // Controls
     //
 
+    public function append($text, $hsc = TRUE)
+    {
+        if($hsc) {
+            $text = htmlspecialchars($text);
+        }
+        $this->pushContent($text);
+        return $this;
+    }
+
     public function inset($offset)
     {
-        $this->pushContent($this->view[$offset]);
+        $value = $this->view[$offset];
+        if(!$value instanceof NethGui_Core_ViewInterface) {
+            $value = htmlspecialchars($value);
+        }
+        $this->pushContent($value);
         return $this;
     }
 
@@ -305,9 +350,9 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
             $url = call_user_func_array(array($this, 'buildUrl'), $value);
             $attributes['href'] = $url;
 
-            $this->openTag('a', $attributes);
+            $this->pushContent($this->openTag('a', $attributes));
             $this->pushContent(htmlspecialchars(T($name)));
-            $this->closeTag('a');
+            $this->pushContent($this->closeTag('a'));
         } else {
 
             if ($flags & self::BUTTON_SUBMIT) {
@@ -325,9 +370,13 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         return $this;
     }
 
-    public function hidden($name, $value, $flags = 0)
+    public function hidden($name, $flags = 0)
     {
-        $this->controlTag('input', $name, $flags, '', array('type' => 'hidden'));
+        $attributes = array(
+            'type' => 'hidden',
+            'value' => $this->view[$name],
+        );
+        $this->controlTag('input', $name, $flags, '', $attributes);
         return $this;
     }
 
@@ -380,71 +429,77 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
     // Containers (CLONED)
     //
 
-    public function dialog($name, $message = '', $flags = 0)
+    public function dialog($identifier, $flags = 0)
     {
         $className = 'dialog ';
 
         if ($flags & self::DIALOG_EMBEDDED) {
             $className .= 'embedded';
+
+            // unset the EMBEDDED flag:
+            $flags ^= self::DIALOG_EMBEDDED;
         } elseif ($flags & self::DIALOG_MODAL) {
             $className .= 'modal';
+
+            // unset the MODAL flag:
+            $flags ^= self::DIALOG_MODAL;
         } else {
             $className .= 'embedded'; // default dialog class
         }
 
-        $dialog = $this->pushContent(clone $this);
-
-        $dialog->setWrapTag('div', $name, $className);
-
-        if (strlen($message) > 0) {
-            $dialog->openTag('span', array('class' => 'message'));
-            $dialog->pushContent(htmlspecialchars($message));
-            $dialog->closeTag('span');
-        }
-
+        $dialog = $this->createNewInstance($flags);
+        $this->pushContent($dialog);
+        $dialog->setWrapTag('div', $identifier, $className);
         return $dialog;
     }
 
-    public function form($name, $action = NULL)
+    public function form($action, $flags = 0)
     {
-        $form = $this->pushContent(clone $this);
-
-        if (is_null($action)) {
-            $action = array($name);
-        }
+        $form = $this->createNewInstance($flags);
+        $this->pushContent($form);
 
         $attributes = array(
             'method' => 'post',
-            'action' => call_user_func_array(array($this, 'buildUrl'), $action)
+            'action' => $form->buildUrl($action)
         );
 
-        $form->setWrapTag('form', $name, 'apply-changes', $attributes);
+        $form->setWrapTag('form', $action, 'apply-changes', $attributes);
 
         return $form;
     }
 
-    public function tabs($name, $pages = NULL)
+    public function tabs($name, $pages = NULL, $flags = 0)
     {
-        $tabs = $this->pushContent(clone $this);
-
-
-        $this->setWrapTag('div', $name, 'tabs');
+        $tabs = $this->createNewInstance($flags);
+        $this->pushContent($tabs);
+        $tabs->setWrapTag('div', $name, 'tabs');
 
         if (is_array($pages)) {
             foreach ($pages as $page) {
-                $this->inset($page);
+                $tabs->inset($page);
             }
         }
 
-        return $this;
+        return $tabs;
     }
 
     public function fieldsetSwitch($name, $value, $flags = 0)
     {
         $this->radioButton($name, $value, $flags);
-        $fieldset = $this->pushContent(clone $this);
+        $fieldset = $this->createNewInstance($flags);
+        $this->pushContent($fieldset);
         $fieldset->setWrapTag('fieldset', array('class' => 'fieldset-switch'));
         return $fieldset;
+    }
+
+    /**
+     * @return NethGui_Renderer_Xhtml
+     */
+    private function createNewInstance($flags = 0)
+    {
+        $instance = clone $this;
+        $instance->flags = $flags;
+        return $instance;
     }
 
 }

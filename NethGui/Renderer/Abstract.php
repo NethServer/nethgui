@@ -6,7 +6,15 @@
 
 /**
  * A decorator that enhances a View with rendering capabilities
- * and forbids changes.
+ * and forbids changes to the view data.
+ *
+ * Rendering methods calls can be chained, as they return a Renderer instance:
+ * - Invoking a "container" method returns a new Renderer instance,
+ *   representing the container itself.
+ * - Invoking a "control" method returns the same Renderer instance.
+ *
+ * Invoking the render() method, or casting the object to a string resets the
+ * object to the initial (empty string) state.
  *
  * @see http://en.wikipedia.org/wiki/Decorator_pattern
  * @package Renderer
@@ -35,7 +43,6 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
      * @var NethGui_Core_ViewInterface
      */
     protected $view;
-    private $content = array();
 
     public function __construct(NethGui_Core_ViewInterface $view)
     {
@@ -44,29 +51,7 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
 
     public function __toString()
     {
-        return $this->flushContent();
-    }
-
-    protected function pushContent($content)
-    {
-        $this->content[] = $content;
-        return $content;
-    }
-
-    protected function flushContent()
-    {
-        $v = implode('', $this->content);
-        $this->content = array();
-        return $v;
-    }
-
-    protected function hasContent() {
-        return !empty($this->content);
-    }
-
-    public function __clone()
-    {
-        $this->content = array();
+        return $this->render();
     }
 
     public function copyFrom($data)
@@ -104,9 +89,12 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
         throw new NethGui_Exception_View('Cannot unset a view value');
     }
 
+    /**
+     * Must override this method:
+     */
     public function render()
     {
-        throw new NethGui_Exception_View('Cannot render a renderer object');
+        throw new NethGui_Exception_View('Cannot render an abstract renderer object');
     }
 
     public function setTemplate($template)
@@ -120,45 +108,97 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
     }
 
     /**
-     * Renders the View member
-     * @return NethGui_Renderer_Abstract
+     * Concatenate an arbitrary text string.
+     * @param string $text
+     * @param boolean $hsc Optional - Apply htmlspecialchars() to $text
+     * @return NethGui_Renderer_Abstract Same object
+     */
+    abstract public function append($text, $hsc = TRUE);
+
+    /**
+     * Concatenate the View member $offset
+     * @return NethGui_Renderer_Abstract Same object
      */
     abstract public function inset($offset);
 
+    /**
+     * Concatenate a text input control
+     * @param string $name The view member name
+     * @param integer $flags Optional {STATE_DISABLED}
+     * @return NethGui_Renderer_Abstract Same object
+     */
     abstract public function textInput($name, $flags = 0);
 
-    abstract public function hidden($name, $value, $flags = 0);
+    /**
+     * Concatenate an hidden control
+     * @param string $name The view member name
+     * @param integer $flags Optional {STATE_DISABLED}
+     * @return NethGui_Renderer_Abstract Same object
+     */
+    abstract public function hidden($name, $flags = 0);
 
+    /**
+     * Concatenate a radio button control
+     * @param string $name The view member name
+     * @param string $value The value assigned to the control, when selected.
+     * @param integer $flags Optional {STATE_DISABLED, STATE_CHECKED}
+     * @return NethGui_Renderer_Abstract Same object
+     */
     abstract public function radioButton($name, $value, $flags = 0);
 
+    /**
+     * Concatenate a checkbox control
+     * @param string $name The view member name
+     * @param string $value The value assigned to the control, when selected.
+     * @param integer $flags Optional {STATE_DISABLED, STATE_CHECKED}
+     * @return NethGui_Renderer_Abstract Same object
+     */
     abstract public function checkBox($name, $value, $flags = 0);
 
+    /**
+     * Concatenate a button control
+     * @param string $name The view member name
+     * @param integer $flags Optional - {DIALOG_*, STATE_ENABLED}
+     * @param string|array $value Optional - Action to execute for LINK and CANCEL button types.
+     * @return NethGui_Renderer_Abstract Same object
+     */
     abstract public function button($name, $flags = 0, $value = NULL);
 
     /**
      * Renders a dialog box container.
      *
-     * @param string $name The identifier of the control
+     * @param string $identifier The identifier of the dialog
      * @param int $flags Render flags: {DIALOG_MODAL, DIALOG_EMBEDDED, STATE_DISABLED}
-     * @return NethGui_Renderer_Abstract
+     * @return NethGui_Renderer_Abstract A new object instance
      */
-    abstract public function dialog($name, $message = '', $flags = 0);
+    abstract public function dialog($identifier, $flags = 0);
 
     /**
      * Renders a tab container.
      *
      * @param string $name The identifier of the control
      * @param array $pages Optional - The identifier list of the pages. NULL includes all the sub-views of the current object.
+     * @param integer $flags {STATE_DISABLED}
+     * @return NethGui_Renderer_Abstract A new object instance
      */
-    abstract public function tabs($name, $pages = NULL);
+    abstract public function tabs($name, $pages = NULL, $flags = 0);
 
     /**
      * Renders a simple form container.
+     * @param string $action The form action name.
+     * @param integer $flags {STATE_DISABLED}
+     * @return NethGui_Renderer_Abstract A new object instance
      */
-    abstract public function form($name, $action = NULL);
+    abstract public function form($action, $flags = 0);
 
     /**
-     * Renders a selectable fieldset container
+     * Renders a selectable fieldset container.
+     *
+     * @see checkbox()
+     * @param string $name
+     * @param string $value
+     * @param integer $flags
+     * @return NethGui_Renderer_Abstract A new object instance
      */
     abstract public function fieldsetSwitch($name, $value, $flags = 0);
 }

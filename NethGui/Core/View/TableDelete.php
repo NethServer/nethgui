@@ -9,15 +9,12 @@ if ($view['__action'] == 'index') {
     $flags |= NethGui_Renderer_Abstract::STATE_DISABLED;
 }
 
-$dialog = $view->dialog('ConfirmDeletion', $message, $flags);
-
-$dialog->hidden($view['__key'], $view[$view['__key']]);
-
-$dialog
-    ->button('Submit', NethGui_Renderer_Xhtml::BUTTON_SUBMIT)
-    ->button('Cancel', NethGui_Renderer_Xhtml::BUTTON_CANCEL)
+// Render a dialog
+echo $view->dialog('ConfirmDeletion', $flags) // Create a MODAL dialog (see $flags)
+        ->append($message) // Add the dialog text (see $message)
+        ->hidden($view['__key']) // Put the key value into an hidden control
+        ->button('Submit', NethGui_Renderer_Xhtml::BUTTON_SUBMIT) // Add SUBMIT button
+        ->button('Cancel', NethGui_Renderer_Xhtml::BUTTON_CANCEL) // Add CANCEL button
 ;
-
-echo $dialog;
 
 ?>

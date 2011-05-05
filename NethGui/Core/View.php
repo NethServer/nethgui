@@ -115,10 +115,10 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
             $languageCatalog = $this->module->getLanguageCatalog();
         } else {
             $languageCatalog = NULL;
-        }
+        }        
 
         $state = array(
-            'view' => new NethGui_Renderer_Xhtml($this)
+            'view' => new NethGui_Renderer_Xhtml($this),
         );
 
         return NethGui_Framework::getInstance()->renderView($this->template, $state, $languageCatalog);
