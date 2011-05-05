@@ -309,7 +309,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 
     public function append($text, $hsc = TRUE)
     {
-        if($hsc) {
+        if ($hsc) {
             $text = htmlspecialchars($text);
         }
         $this->pushContent($text);
@@ -319,7 +319,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
     public function inset($offset)
     {
         $value = $this->view[$offset];
-        if(!$value instanceof NethGui_Core_ViewInterface) {
+        if ( ! $value instanceof NethGui_Core_ViewInterface) {
             $value = htmlspecialchars($value);
         }
         $this->pushContent($value);
@@ -331,10 +331,16 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 
         $attributes = array();
 
+        $buttonLabel = $name . '_label';
+
         if ($flags & (self::BUTTON_LINK | self::BUTTON_CANCEL)) {
 
             if (is_null($value)) {
-                $value = '..';
+                if ($flags & self::BUTTON_LINK) {
+                    $value = $name;
+                } else {
+                    $value = '..';
+                }
             }
 
             if ($flags & self::BUTTON_CANCEL) {
@@ -351,13 +357,13 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
             $attributes['href'] = $url;
 
             $this->pushContent($this->openTag('a', $attributes));
-            $this->pushContent(htmlspecialchars(T($name)));
+            $this->append(T($buttonLabel));
             $this->pushContent($this->closeTag('a'));
         } else {
 
             if ($flags & self::BUTTON_SUBMIT) {
                 $attributes['type'] = 'submit';
-                $attributes['value'] = T($name);
+                $attributes['value'] = T($buttonLabel);
             } elseif ($flags & self::BUTTON_RESET) {
                 $attributes['type'] = 'reset';
             } elseif ($flags & self::BUTTON_CUSTOM) {

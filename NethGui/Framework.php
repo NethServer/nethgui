@@ -131,8 +131,15 @@ final class NethGui_Framework
             $html = '<span class="moduleTitle current" title="' . htmlspecialchars($module->getDescription()) . '">' . htmlspecialchars($module->getTitle()) . '</span>';
         } else {
             $ciControllerClassName = $this->getControllerName();
+
+            $moduleTitle = $module->getTitle();
+            if ($module instanceof NethGui_Core_LanguageCatalogProvider) {
+                $catalog = $module->getLanguageCatalog();
+                $moduleTitle = T($moduleTitle, array(), NULL, $catalog);
+            }
+
             $html = anchor($ciControllerClassName . '/' . $module->getIdentifier(),
-                    htmlspecialchars($module->getTitle()),
+                    htmlspecialchars($moduleTitle),
                     array('class' => 'moduleTitle', 'title' => htmlspecialchars($module->getDescription())
                     )
             );
@@ -286,7 +293,8 @@ final class NethGui_Framework
      * Get the current language code
      * @return string ISO 639-1 language code (2 characters).
      */
-    public function getLanguageCode() {
+    public function getLanguageCode()
+    {
         return $this->languageCode;
     }
 

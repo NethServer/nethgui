@@ -1,6 +1,6 @@
 <?php
 $message = T('Confirm deletion of "%s"?',
-        array('%s' => isset($view[$view['__key']]) ? $view[$view['__key']] : '%s')
+        array('%s' => empty($view[$view['__key']]) ? '%s' : $view[$view['__key']])
 );
 
 $flags = NethGui_Renderer_Abstract::DIALOG_MODAL;
