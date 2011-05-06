@@ -1,12 +1,12 @@
 <?php
 /**
- * @package Core
+ * @package Adapter
  */
 
 /**
- * @package Core
+ * @package Adapter
  */
-interface NethGui_Core_AdapterAggregationInterface {
+interface NethGui_Adapter_AdapterAggregationInterface {
 
     /**
      * @param NethGui_Core_AdapterInterface $adapter

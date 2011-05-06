@@ -1,15 +1,15 @@
 <?php
 /**
- * @package Core
+ * @package Adapter
  */
 
 
 /**
  * Scalar adapter maps a scalar value to a key or prop value through a Serializer.
  *
- * @package Core
+ * @package Adapter
  */
-class NethGui_Core_ScalarAdapter implements NethGui_Core_AdapterInterface
+class NethGui_Adapter_ScalarAdapter implements NethGui_Core_AdapterInterface
 {
 
     protected $modified;

@@ -1,6 +1,6 @@
 <?php
 /**
- * @package Core
+ * @package Adapter
  */
 
 /**
@@ -8,9 +8,9 @@
  * through a simplified interface.
  * 
  * @see NethGui_Core_AdapterAggregationInterface
- * @package Core
+ * @package Adapter
  */
-interface NethGui_Core_AdapterInterface
+interface NethGui_Adapter_AdapterInterface
 {
 
     /**

@@ -1,15 +1,15 @@
 <?php
 /**
- * @package Core
+ * @package Adapter
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
 /**
  * Table adapter provide an array like access to all database keys of a given type
  *
- * @package Core
+ * @package Adapter
  */
-class NethGui_Core_TableAdapter implements NethGui_Core_AdapterInterface, ArrayAccess, IteratorAggregate, Countable
+class NethGui_Adapter_TableAdapter implements NethGui_Core_AdapterInterface, ArrayAccess, IteratorAggregate, Countable
 {
 
     /**
