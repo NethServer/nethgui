@@ -17,17 +17,17 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
      */
     private $modulePath;
     /**
-     * @see setWrapTag()
+     * @see addWrapTag()
      * @var string
      */
-    private $wrapTag;
+    private $wrapTag = array();
     private $content = array();
     private $flags = 0;
 
     public function __clone()
     {
         $this->content = array();
-        $this->wrapTag = NULL;
+        $this->wrapTag = array();
     }
 
     public function render()
@@ -150,8 +150,10 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
     /**
      * Convert an hash to a string of HTML tag attributes.
      *
-     * htmlspecialchars is applied to all attribute values.
+     * - htmlspecialchars() is applied to all attribute values.
+     * - A FALSE value ensures the attribute is not set.
      *
+     * @see htmlspecialchars()
      * @param array $attributes
      * @return string
      */
@@ -160,6 +162,9 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         $content = '';
 
         foreach ($attributes as $name => $value) {
+            if($value === FALSE) {
+                continue;
+            }
             $content .= $name . '="' . htmlspecialchars($value) . '" ';
         }
 
@@ -185,23 +190,23 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
      *
      * @see flushContent()
      * @see contentTag()
-     * @param string $tag
-     * @param string $name
-     * @param string $cssClass
-     * @param array $attributes
+     * @param string $tag The XHTML tag name
+     * @param string $localId The local module identifier of the wrap
+     * @param string $cssClass Optional - The XHTML class attribute value
+     * @param array $attributes Optional - Other XHTML attributes
      */
-    private function setWrapTag($tag, $name, $cssClass = '', $attributes = array())
+    private function addWrapTag($tag, $localId, $cssClass = '', $attributes = array())
     {
 
         if ( ! isset($attributes['id'])) {
-            $attributes['id'] = $this->getFullId($name);
+            $attributes['id'] = $this->getFullId($localId);
         }
 
         if ( ! isset($attributes['class'])) {
             $attributes['class'] = $cssClass;
         }
 
-        $this->wrapTag = array($tag, $attributes);
+        $this->wrapTag[] = array($tag, $attributes);
     }
 
     /**
@@ -210,24 +215,35 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
      * After this method has been invoked, the object is resetted to its initial
      * state, as if it's newly created.
      *
-     * @see setWrapTag()
+     * @see addWrapTag()
      * @return string
      */
     private function flushContent()
     {
+        $preWrap = '';
+        $postWrap = '';
+
+        // Implode all the content (converting each part into a String).
         $content = implode('', $this->content);
+
+        // Reset content chain.
         $this->content = array();
 
-        if (strlen($content) > 0 && is_array($this->wrapTag)) {
-            $content =
-                $this->pushContent($this->openTag($this->wrapTag[0], $this->wrapTag[1])) .
-                $content .
-                $this->pushContent($this->closeTag($this->wrapTag[0]));
+        // Apply wrap only if we have content:
+        if (strlen($content)) {
 
-            $this->wrapTag = NULL;
+            // Concatenate PRE and POST wrap parts:
+            foreach ($this->wrapTag as $tag) {
+                $preWrap = $preWrap . $this->openTag($tag[0], $tag[1]);
+                $postWrap = $this->closeTag($tag[0]) . $postWrap;
+            }
         }
 
-        return $content;
+        // Reset the wrap stack:
+        $this->wrapTag = array();
+
+        // Return wrapped content:
+        return $preWrap . $content . $postWrap;
     }
 
     /**
@@ -382,7 +398,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
     {
         $attributes = array(
             'type' => 'hidden',
-            'value' => $this->view[$name],
+            'value' => strval($this->view[$name]),
         );
         $this->controlTag('input', $name, $flags, '', $attributes);
         return $this;
@@ -392,7 +408,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
     {
         $attributes = array(
             'type' => 'radio',
-            'value' => $value,
+            'value' => strval($value),
             'id' => $this->getFullId($name . '_' . $value)
         );
 
@@ -409,7 +425,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
     {
         $attributes = array(
             'type' => 'checkbox',
-            'value' => $value,
+            'value' => strval($value),
         );
 
         if ($value === $this->view[$name]) {
@@ -424,7 +440,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
     public function textInput($name, $flags = 0)
     {
         $attributes = array(
-            'value' => $this->view[$name],
+            'value' => strval($this->view[$name]),
             'type' => 'text',
         );
 
@@ -461,7 +477,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 
         $dialog = $this->createNewInstance($flags);
         $this->pushContent($dialog);
-        $dialog->setWrapTag('div', $identifier, $className);
+        $dialog->addWrapTag('div', $identifier, $className);
         return $dialog;
     }
 
@@ -472,11 +488,13 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 
         $attributes = array(
             'method' => 'post',
-            'action' => $form->buildUrl($action)
+            'action' => $form->buildUrl($action),
+            'id' => FALSE, // This ensures ID attribute is not emitted. See prepareXhtmlAttributes().
         );
 
-        $form->setWrapTag('form', $action, 'apply-changes', $attributes);
-       
+        $form->addWrapTag('form', $action, 'apply-changes', $attributes);
+        $form->addWrapTag('div', $action);
+
         return $form;
     }
 
@@ -484,7 +502,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
     {
         $tabs = $this->createNewInstance($flags);
         $this->pushContent($tabs);
-        $tabs->setWrapTag('div', $name, 'tabs');
+        $tabs->addWrapTag('div', $name, 'tabs');
 
         if (is_array($pages)) {
             foreach ($pages as $page) {
@@ -497,11 +515,11 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 
     public function fieldsetSwitch($name, $value, $flags = 0)
     {
-        $this->pushContent($this->openTag('div', array('class'=>'fieldset-switch')));
+        $this->pushContent($this->openTag('div', array('class' => 'fieldset-switch')));
         $this->radioButton($name, $value, $flags);
         $fieldset = $this->createNewInstance($flags);
         $this->pushContent($fieldset);
-        $fieldset->setWrapTag('fieldset', $name . '_' . $value . '_fieldset', '');
+        $fieldset->addWrapTag('fieldset', $name . '_' . $value . '_fieldset', '');
         $this->pushContent($this->closeTag('div'));
         return $fieldset;
     }
