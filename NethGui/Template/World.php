@@ -14,19 +14,11 @@
             <div id="header">NethGui</div>
             <div class="colmask leftmenu">
                 <div class="colleft">
-                    <div class="col1">
-                        <div id="breadcrumbMenu"><?php echo $view['BreadCrumb']->render() ?></div>
-                        <pre style="background: yellow" id="validationReport"><?php foreach($view['ValidationReport']['errors'] as $error) {
-                            echo $error[1] . " ({$error[0]})\n";
-                        } ?></pre>
-                        <div id="moduleContent"><?php echo $view[$view['__currentModuleIdentifier']]->render() ?></div>
-                    </div>
-                    <div class="col2"><div id="moduleMenu"><?php echo $view['Menu']->render() ?></div></div>
+                    <div class="col1"><?php echo $view['BreadCrumb'] . $view['NotificationArea'] ?><div id="CurrentModule"><?php echo $view['CurrentModule'] ?></div></div>
+                    <div class="col2 moduleMenu"><?php echo $view['Menu'] ?></div>
                 </div>
             </div>
-            <div id="footer">
-                Powered by <a href="/Documentation">NethGuiFramework</a> &ndash; Copyright 2011 &copy; Nethesis S.r.l
-            </div>
-        </div>        
+            <div id="footer">Powered by <a href="/Documentation">NethGuiFramework</a> &ndash; Copyright 2011 &copy; Nethesis S.r.l</div>
+        </div>
     </body>
 </html>

@@ -27,8 +27,10 @@ class NethGui_Module_BreadCrumb extends NethGui_Core_Module_Abstract
         $this->currentModule = $this->moduleSet->findModule($currentModuleIdentifier);
     }
 
-    public function renderBreadcrumbMenu($view)
+    public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
+        parent::prepareView($view, $mode);
+
         $module = $this->currentModule;
         $framework = NethGui_Framework::getInstance();
 
@@ -46,8 +48,18 @@ class NethGui_Module_BreadCrumb extends NethGui_Core_Module_Abstract
 
         $rootLine = array_reverse($rootLine);
 
-        // TODO: wrap into LI tag.
-        return implode(' &gt; ', $rootLine);
+        $view['rootLine'] = $rootLine;
+    }
+
+    public function renderBreadcrumbMenu(NethGui_Renderer_Abstract $view)
+    {
+        $content = implode('</li><li>', $view['rootLine']);
+
+        if ( ! empty($content)) {
+            $content = '<ul id="BreadCrumb"><li>' . $content . '</li></ul>';
+        }
+
+        return $content;
     }
 
 }

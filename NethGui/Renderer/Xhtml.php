@@ -58,7 +58,12 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 
     private function getFullId($name)
     {
-        return implode('_', $this->getModulePath()) . '_' . $name;
+        $prefix = implode('_', $this->getModulePath());
+
+        if (empty($name)) {
+            return $prefix;
+        }
+        return $prefix . '_' . $name;
     }
 
     /**
@@ -162,7 +167,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         $content = '';
 
         foreach ($attributes as $name => $value) {
-            if($value === FALSE) {
+            if ($value === FALSE) {
                 continue;
             }
             $content .= $name . '="' . htmlspecialchars($value) . '" ';
@@ -202,7 +207,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
             $attributes['id'] = $this->getFullId($localId);
         }
 
-        if ( ! isset($attributes['class'])) {
+        if ( ! isset($attributes['class']) && ! empty($cssClass)) {
             $attributes['class'] = $cssClass;
         }
 
@@ -512,6 +517,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 
         if (is_array($pages)) {
             foreach ($pages as $page) {
+                // TODO: wrap the page inside a DIV tag
                 $tabs->inset($page);
             }
         }
@@ -528,6 +534,15 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         $fieldset->addWrapTag('fieldset', $name . '_' . $value . '_fieldset', '');
         $this->pushContent($this->closeTag('div'));
         return $fieldset;
+    }
+
+    public function panel($identifier = 'panel', $flags = 0)
+    {
+        $panel = $this->createNewInstance($flags);
+        $this->pushContent($panel);
+        $panel->addWrapTag('div', $identifier, 'panel');
+
+        return $panel;
     }
 
     /**

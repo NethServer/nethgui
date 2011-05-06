@@ -40,9 +40,9 @@ class NethGui_Module_World extends NethGui_Core_Module_Abstract
         foreach ($this->modules as $module) {
             $innerView = $view->spawnView($module, TRUE);
             $module->prepareView($innerView, $mode);
-            // Consider the first module as CURRENT
-            if ( ! isset($view['__currentModuleIdentifier']) && $mode == self::VIEW_REFRESH) {
-                $view['__currentModuleIdentifier'] = $module->getIdentifier();
+            // Consider the first module as CURRENT.
+            if ( ! isset($view['CurrentModule']) && $mode == self::VIEW_REFRESH) {
+                $view['CurrentModule'] = $innerView;
             }
         }
     }

@@ -179,7 +179,7 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
      * @param string $name The identifier of the control
      * @param array $pages Optional - The identifier list of the pages. NULL includes all the sub-views of the current object.
      * @param integer $flags {STATE_DISABLED}
-     * @return NethGui_Renderer_Abstract A new object instance
+     * @return NethGui_Renderer_Abstract A new object instance, representing the tab list.
      */
     abstract public function tabs($name, $pages = NULL, $flags = 0);
 
@@ -198,7 +198,16 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
      * @param string $name
      * @param string $value
      * @param integer $flags
-     * @return NethGui_Renderer_Abstract A new object instance
+     * @return NethGui_Renderer_Abstract A new object instance, representing the fieldset surface
      */
     abstract public function fieldsetSwitch($name, $value, $flags = 0);
+
+    /**
+     * Renders a panel container
+     *
+     * @param string $identifier
+     * @param integer $flags
+     * @return NethGui_Renderer_Abstract A new object instance, representing the panel surface
+     */
+    abstract public function panel($identifier = NULL, $flags = 0);
 }

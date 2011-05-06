@@ -361,7 +361,7 @@ final class NethGui_Framework
             $moduleWakeupList = array($currentModuleIdentifier);
         }
 
-        $report = new NethGui_Core_ValidationReport();
+        $report = new NethGui_Module_NotificationArea();
 
         // The World module is a non-processing container.
         $worldModule = new NethGui_Module_World();
@@ -397,7 +397,7 @@ final class NethGui_Framework
             $module->validate($report);
 
             // Stop here if we have validation errors
-            if (count($report->getErrors()) > 0) {
+            if ($report->hasValidationErrors()) {
                 continue;
             }
 
@@ -415,7 +415,7 @@ final class NethGui_Framework
             set_status_header($processExitCode);
         }
 
-        $worldModule->addModule(new NethGui_Module_ValidationReport($report));
+        $worldModule->addModule($report);
 
         if ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_HTML) {
             if (is_array($processExitCode)) {
