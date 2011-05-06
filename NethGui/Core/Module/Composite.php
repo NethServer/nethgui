@@ -128,14 +128,14 @@ abstract class NethGui_Core_Module_Composite extends NethGui_Core_Module_Standar
     }
 
     public function renderForm(NethGui_Renderer_Abstract $view) {
-        $form = $view->form($this->getIdentifier());
+        $form = $view->form();
         
         foreach($this->getChildren() as $child) {
           $form->inset($child->getIdentifier());
         }
 
         $form->button('Submit', NethGui_Renderer_Abstract::BUTTON_SUBMIT);
-        $form->button('Cancel', NethGui_Renderer_Abstract::BUTTON_CANCEL, '');
+        $form->button('Reset', NethGui_Renderer_Abstract::BUTTON_RESET);
            
         return $view;
     }

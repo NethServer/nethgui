@@ -185,11 +185,11 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
 
     /**
      * Renders a simple form container.
-     * @param string $action The form action name.
-     * @param integer $flags {STATE_DISABLED}
+     * @param string $action Optional - The form action name.
+     * @param integer $flags Optional - {STATE_DISABLED}
      * @return NethGui_Renderer_Abstract A new object instance
      */
-    abstract public function form($action, $flags = 0);
+    abstract public function form($action = '', $flags = 0);
 
     /**
      * Renders a selectable fieldset container.

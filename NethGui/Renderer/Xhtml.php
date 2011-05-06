@@ -349,6 +349,8 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 
         $attributes = array();
 
+        $cssClass = 'button';
+
         $buttonLabel = $name . '_label';
 
         if ($flags & (self::BUTTON_LINK | self::BUTTON_CANCEL)) {
@@ -362,9 +364,9 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
             }
 
             if ($flags & self::BUTTON_CANCEL) {
-                $cssClass = 'button cancel';
+                $cssClass .= ' cancel';
             } else {
-                $cssClass = 'button link';
+                $cssClass .= ' link';
             }
 
             if ( ! is_array($value)) {
@@ -373,6 +375,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 
             $url = call_user_func_array(array($this, 'buildUrl'), $value);
             $attributes['href'] = $url;
+            $attributes['class'] = $cssClass;
 
             $this->pushContent($this->openTag('a', $attributes));
             $this->append(T($buttonLabel));
@@ -381,14 +384,17 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 
             if ($flags & self::BUTTON_SUBMIT) {
                 $attributes['type'] = 'submit';
+                $cssClass .= ' submit';
                 $attributes['value'] = T($buttonLabel);
             } elseif ($flags & self::BUTTON_RESET) {
                 $attributes['type'] = 'reset';
+                $cssClass .= ' reset';
             } elseif ($flags & self::BUTTON_CUSTOM) {
                 $attributes['type'] = 'button';
+                $cssClass .= ' custom';
             }
 
-            $this->controlTag('input', $name, $flags, 'button', $attributes);
+            $this->controlTag('input', $name, $flags, $cssClass, $attributes);
         }
 
         return $this;
@@ -481,7 +487,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         return $dialog;
     }
 
-    public function form($action, $flags = 0)
+    public function form($action = '', $flags = 0)
     {
         $form = $this->createNewInstance($flags);
         $this->pushContent($form);
