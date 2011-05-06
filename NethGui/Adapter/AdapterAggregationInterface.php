@@ -9,10 +9,10 @@
 interface NethGui_Adapter_AdapterAggregationInterface {
 
     /**
-     * @param NethGui_Core_AdapterInterface $adapter
+     * @param NethGui_Adapter_AdapterInterface $adapter
      * @param string $key
      */
-    public function register(NethGui_Core_AdapterInterface $adapter, $key);
+    public function register(NethGui_Adapter_AdapterInterface $adapter, $key);
     
     /**
      * Saves aggregated values into database,

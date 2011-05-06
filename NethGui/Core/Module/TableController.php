@@ -22,7 +22,7 @@ class NethGui_Core_Module_TableController extends NethGui_Core_Module_Controller
     private $columns;
     /**
      *
-     * @var NethGui_Core_TableAdapter
+     * @var NethGui_Adapter_TableAdapter
      */
     private $tableAdapter;
 
@@ -70,7 +70,7 @@ class NethGui_Core_Module_TableController extends NethGui_Core_Module_Controller
     public function initialize()
     {
         parent::initialize();
-        $this->tableAdapter = new NethGui_Core_TableAdapter($this->getHostConfiguration()->getDatabase($this->databaseName), $this->keyType);
+        $this->tableAdapter = new NethGui_Adapter_TableAdapter($this->getHostConfiguration()->getDatabase($this->databaseName), $this->keyType);
 
 
         // set the default action

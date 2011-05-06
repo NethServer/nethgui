@@ -59,9 +59,9 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
             $serializer = $this->getSerializer($database, $key, $prop);
 
             if (is_null($separator)) {
-                $adapter = new NethGui_Core_ScalarAdapter($serializer);
+                $adapter = new NethGui_Adapter_ScalarAdapter($serializer);
             } else {
-                $adapter = new NethGui_Core_ArrayAdapter($separator, $serializer);
+                $adapter = new NethGui_Adapter_ArrayAdapter($separator, $serializer);
             }
         } elseif (is_callback($key)) {
             // TODO
@@ -81,7 +81,7 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
             $serializers[] = call_user_func_array(array($this, 'getSerializer'), $serializerSpec);
         }
 
-        $adapter = new NethGui_Core_MultipleAdapter($readCallback, $writeCallback, $serializers);
+        $adapter = new NethGui_Adapter_MultipleAdapter($readCallback, $writeCallback, $serializers);
 
         return $adapter;
     }

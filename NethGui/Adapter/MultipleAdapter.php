@@ -9,7 +9,7 @@
  *
  * @package Adapter
  */
-class NethGui_Adapter_MultipleAdapter implements NethGui_Core_AdapterInterface
+class NethGui_Adapter_MultipleAdapter implements NethGui_Adapter_AdapterInterface
 {
 
     private $innerAdapters = array();
@@ -46,7 +46,7 @@ class NethGui_Adapter_MultipleAdapter implements NethGui_Core_AdapterInterface
                 throw new NethGui_Exception_Adapter('Invalid serializer instance. A serializer must implement NethGui_Core_SerializerInterface.');
             }
 
-            $this->innerAdapters[] = new NethGui_Core_ScalarAdapter($serializer);
+            $this->innerAdapters[] = new NethGui_Adapter_ScalarAdapter($serializer);
         }
     }
 

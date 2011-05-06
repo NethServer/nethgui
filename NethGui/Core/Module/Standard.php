@@ -96,7 +96,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
      *
      * @param string $parameterName The name of the parameter
      * @param string $validator Optional - A regular expression catching the correct value format
-     * @param NethGui_Core_AdapterInterface|array $adapter Optional - An adapter instance or an array of arguments to create it
+     * @param NethGui_Adapter_AdapterInterface|array $adapter Optional - An adapter instance or an array of arguments to create it
      * @param mixed $onSubmitDefaultValue Optional - Value to assign if parameter is missing when binding a submitted request
      */
     protected function declareParameter($parameterName, $validator = FALSE, $adapter = NULL, $onSubmitDefaultValue = NULL)
@@ -116,7 +116,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
             throw new NethGui_Exception_Validation("Invalid validator value for parameter `" . $parameter . '` in module `' . get_class($this) . '`.');
         }
 
-        if ($adapter instanceof NethGui_Core_AdapterInterface) {
+        if ($adapter instanceof NethGui_Adapter_AdapterInterface) {
             $this->parameters->register($adapter, $parameterName);
         } elseif (is_array($adapter)) {
             $this->parameters->register($this->getAdapterForParameter($parameterName, $adapter), $parameterName);
@@ -166,7 +166,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
     /**
      * Helps in creation of complex adapters.
      * @param array $args
-     * @return NethGui_Core_AdapterInterface
+     * @return NethGui_Adapter_AdapterInterface
      */
     private function getAdapterForParameter($parameterName, $args)
     {

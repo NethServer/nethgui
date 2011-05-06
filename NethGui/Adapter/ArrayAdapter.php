@@ -10,7 +10,7 @@
  *
  * @package Adapter
  */
-class NethGui_Adapter_ArrayAdapter implements NethGui_Core_AdapterInterface, ArrayAccess, IteratorAggregate, Countable
+class NethGui_Adapter_ArrayAdapter implements NethGui_Adapter_AdapterInterface, ArrayAccess, IteratorAggregate, Countable
 {
 
     /**

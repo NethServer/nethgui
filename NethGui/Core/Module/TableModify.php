@@ -23,11 +23,11 @@ class NethGui_Core_Module_TableModify extends NethGui_Core_Module_Standard
     private $key;
     /**
      *
-     * @var NethGui_Core_AdapterInterface
+     * @var NethGui_Adapter_AdapterInterface
      */
     private $tableAdapter;
 
-    public function __construct($identifier, NethGui_Core_AdapterInterface $tableAdapter, $parameterSchema, $viewTemplate = NULL)
+    public function __construct($identifier, NethGui_Adapter_AdapterInterface $tableAdapter, $parameterSchema, $viewTemplate = NULL)
     {
         if ( ! in_array($identifier, array('create', 'delete', 'update'))) {
             throw new InvalidArgumentException('Module identifier must be one of `create`, `delete`, `update` values.');

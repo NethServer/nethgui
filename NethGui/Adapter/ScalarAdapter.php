@@ -9,7 +9,7 @@
  *
  * @package Adapter
  */
-class NethGui_Adapter_ScalarAdapter implements NethGui_Core_AdapterInterface
+class NethGui_Adapter_ScalarAdapter implements NethGui_Adapter_AdapterInterface
 {
 
     protected $modified;

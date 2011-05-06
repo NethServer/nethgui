@@ -10,7 +10,7 @@
  *
  * @package Core
  */
-class NethGui_Core_ParameterSet implements NethGui_Core_AdapterAggregationInterface, ArrayAccess, Iterator, Countable
+class NethGui_Core_ParameterSet implements NethGui_Adapter_AdapterAggregationInterface, ArrayAccess, Iterator, Countable
 {
 
     private $data = array();
@@ -37,7 +37,7 @@ class NethGui_Core_ParameterSet implements NethGui_Core_AdapterAggregationInterf
             return NULL;
         }
 
-        if ($this->data[$offset] instanceof NethGui_Core_AdapterInterface) {
+        if ($this->data[$offset] instanceof NethGui_Adapter_AdapterInterface) {
             $value = $this->data[$offset]->get();
         } else {
             $value = $this->data[$offset];
@@ -48,7 +48,7 @@ class NethGui_Core_ParameterSet implements NethGui_Core_AdapterAggregationInterf
 
     public function offsetSet($offset, $value)
     {
-        if (isset($this->data[$offset]) && $this->data[$offset] instanceof NethGui_Core_AdapterInterface) {
+        if (isset($this->data[$offset]) && $this->data[$offset] instanceof NethGui_Adapter_AdapterInterface) {
             $this->data[$offset]->set($value);
         } else {
             $this->data[$offset] = $value;
@@ -57,7 +57,7 @@ class NethGui_Core_ParameterSet implements NethGui_Core_AdapterAggregationInterf
 
     public function offsetUnset($offset)
     {
-        if ($this->data[$offset] instanceof NethGui_Core_AdapterInterface) {
+        if ($this->data[$offset] instanceof NethGui_Adapter_AdapterInterface) {
             $this->data[$offset]->delete();
         }
         unset($this->data[$offset]);
@@ -72,15 +72,15 @@ class NethGui_Core_ParameterSet implements NethGui_Core_AdapterAggregationInterf
     public function save()
     {
         foreach ($this->data as $value) {
-            if ($value instanceof NethGui_Core_AdapterInterface) {
+            if ($value instanceof NethGui_Adapter_AdapterInterface) {
                 $value->save();
-            } elseif ($value instanceof NethGui_Core_AdapterAggregationInterface) {
+            } elseif ($value instanceof NethGui_Adapter_AdapterAggregationInterface) {
                 $value->save();
             }
         }
     }
 
-    public function register(NethGui_Core_AdapterInterface $adapter, $key)
+    public function register(NethGui_Adapter_AdapterInterface $adapter, $key)
     {
         $this->data[$key] = $adapter;
     }
