@@ -288,6 +288,10 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
         }
     }
 
+    /**
+     * @param string $languageCode
+     * @return string
+     */
     public function getLanguageCatalog()
     {
         return get_class($this);

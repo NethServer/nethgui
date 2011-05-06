@@ -54,11 +54,11 @@ class NethGui_Core_TopModuleDepot implements NethGui_Core_ModuleSetInterface, Ne
     private function createTopModules()
     {
         // TODO: set a configuration parameter for modules directory
-        $directoryIterator = new DirectoryIterator(dirname(__FILE__) . '/../Module');
+        $directoryIterator = new DirectoryIterator(dirname(__FILE__) . '/../../NethService/Module/');
         foreach ($directoryIterator as $element) {
             if (substr($element->getFilename(), -4) == '.php') {
 
-                $className = 'NethGui_Module_' . substr($element->getFileName(), 0, -4);
+                $className = 'NethService_Module_' . substr($element->getFileName(), 0, -4);
 
                 $classReflector = new ReflectionClass($className);
 

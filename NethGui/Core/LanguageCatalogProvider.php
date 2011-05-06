@@ -14,7 +14,7 @@
 interface NethGui_Core_LanguageCatalogProvider {
     /**
      * The name of the language catalog where to search the translated strings
-     * @return string
+     * @return string The absolute path of the PHP file
      */
     public function getLanguageCatalog();
 }

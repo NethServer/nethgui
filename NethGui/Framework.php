@@ -44,7 +44,7 @@ final class NethGui_Framework
         spl_autoload_register(get_class($this) . '::autoloader');
         ini_set('include_path', ini_get('include_path') . ':' . realpath(dirname(__FILE__) . '/..'));
 
-        $this->controller = $codeIgniterController;       
+        $this->controller = $codeIgniterController;
         $this->languageCatalogStack = array(get_class());
     }
 
@@ -178,7 +178,7 @@ final class NethGui_Framework
      *
      * @param string $string The string to be translated
      * @param array $args Values substituted in output string.
-     * @param string $languageCode The language to translate the string into.
+     * @param string $languageCode The language code
      * @param string $languageCatalog The catalog where to search the translation
      * @return string
      */
@@ -254,7 +254,9 @@ final class NethGui_Framework
             throw new InvalidArgumentException("Language catalog name can contain only alphanumeric or `_` characters. It was `$languageCatalog`.");
         }
 
-        $filePath = dirname(__FILE__) . '/Language/' . $languageCode . '/' . $languageCatalog . '.php';
+        $prefix = array_shift(explode('_', $languageCatalog));
+
+        $filePath = dirname(__FILE__) . '/../' . $prefix . '/Language/' . $languageCode . '/' . $languageCatalog . '.php';
 
         @include($filePath);
 
@@ -311,7 +313,6 @@ final class NethGui_Framework
     {
         log_message($level, $message);
     }
-
 
     /**
      * Forwards control to Modules and creates output views.

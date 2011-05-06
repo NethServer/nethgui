@@ -48,7 +48,7 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
         if ($module instanceof NethGui_Core_ModuleInterface) {
             $this->module = $module;
             // XXX: trying to guess view name
-            $this->template = str_replace('_Module_', '_View_', get_class($module));
+            $this->template = str_replace('_Module_', '_Template_', get_class($module));
         }
 
         $this->data = array();
