@@ -24,7 +24,7 @@ final class NethGui_Core_Module_Menu extends NethGui_Core_Module_Standard
     }
 
     /**
-     *
+     * TODO
      * @param RecursiveIterator $rootModule
      * @return string
      */

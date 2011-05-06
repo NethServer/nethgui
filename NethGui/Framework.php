@@ -10,11 +10,6 @@ final class NethGui_Framework
 {
 
     /**
-     * Pointer to current dispatcher.
-     * @var NethGui_Dispatcher
-     */
-    private $dispatcher;
-    /**
      * Underlying Code Igniter framework controller.
      * @var CI_Controller
      */
@@ -49,18 +44,8 @@ final class NethGui_Framework
         spl_autoload_register(get_class($this) . '::autoloader');
         ini_set('include_path', ini_get('include_path') . ':' . realpath(dirname(__FILE__) . '/..'));
 
-        $this->controller = $codeIgniterController;
-        $this->dispatcher = new NethGui_Dispatcher($codeIgniterController);
+        $this->controller = $codeIgniterController;       
         $this->languageCatalogStack = array(get_class());
-    }
-
-    /**
-     *
-     * @return NethGui_Dispatcher
-     */
-    public function getDispatcher()
-    {
-        return $this->dispatcher;
     }
 
     /**
@@ -325,6 +310,129 @@ final class NethGui_Framework
     public static function logMessage($message, $level = 'error')
     {
         log_message($level, $message);
+    }
+
+
+    /**
+     * Forwards control to Modules and creates output views.
+     *
+     * @param string $currentModuleIdentifier
+     * @param array $arguments
+     */
+    public function dispatch($currentModuleIdentifier, $arguments = array())
+    {
+        // Replace "index" request with a (temporary) default module value
+        if ($currentModuleIdentifier == 'index') {
+            redirect('dispatcher/Security');
+        }
+
+        $request = NethGui_Core_Request::getHttpRequest($arguments);
+
+        $user = $request->getUser();
+
+        /*
+         * Create models.
+         *
+         * TODO: get hostConfiguration and topModuleDepot class names
+         * from NethGui_Framework.
+         */
+        $hostConfiguration = new NethGui_Core_HostConfiguration($user);
+        $topModuleDepot = new NethGui_Core_TopModuleDepot($hostConfiguration, $user);
+
+        /*
+         * TODO: enforce some security policy on Models
+         */
+        $pdp = new NethGui_Authorization_PermissivePolicyDecisionPoint();
+
+        $hostConfiguration->setPolicyDecisionPoint($pdp);
+        $topModuleDepot->setPolicyDecisionPoint($pdp);
+
+        if ($request->isSubmitted()) {
+            // Multiple modules can be called in the same request.
+            $moduleWakeupList = $request->getParameters();
+
+            // Ensure the current module is in the list:
+            if ( ! in_array($currentModuleIdentifier, $moduleWakeupList)) {
+                array_unshift($currentModuleIdentifier, $moduleWakeupList);
+            }
+        } else {
+            // The default module is the given in the web request.
+            $moduleWakeupList = array($currentModuleIdentifier);
+        }
+
+        $report = new NethGui_Core_ValidationReport();
+
+        // The World module is a non-processing container.
+        $worldModule = new NethGui_Core_Module_World();
+
+        $view = new NethGui_Core_View($worldModule);
+
+        $processExitCode = NULL;
+
+        foreach ($moduleWakeupList as $moduleIdentifier) {
+            $module = $topModuleDepot->findModule($moduleIdentifier);
+
+            if ($module instanceof NethGui_Core_ModuleInterface) {
+                $worldModule->addModule($module);
+
+                // Module initialization
+                $module->initialize();
+            }
+
+
+            if ( ! $module instanceof NethGui_Core_RequestHandlerInterface) {
+                continue;
+            }
+
+            // Pass request parameters to the handler
+            $module->bind(
+                $request->getParameterAsInnerRequest(
+                    $moduleIdentifier,
+                    ($moduleIdentifier === $currentModuleIdentifier) ? $request->getArguments() : array()
+                )
+            );
+
+            // Validate request
+            $module->validate($report);
+
+            // Stop here if we have validation errors
+            if (count($report->getErrors()) > 0) {
+                continue;
+            }
+
+            // Process the request
+            $moduleExitCode = $module->process();
+
+            // Only the first non-NULL module exit code is considered as
+            // the process exit code:
+            if (is_null($processExitCode)) {
+                $processExitCode = $moduleExitCode;
+            }
+        }
+
+        if (is_integer($processExitCode)) {
+            set_status_header($processExitCode);
+        }
+
+        $worldModule->addModule(new NethGui_Core_Module_ValidationReport($report));
+
+        if ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_HTML) {
+            if (is_array($processExitCode)) {
+                // XXX: complete redirect protocol
+                redirect($processExitCode[1][0], 'location', $processExitCode[0]);
+            } else {
+                $worldModule->addModule(new NethGui_Core_Module_Menu($topModuleDepot->getModules()));
+                $worldModule->addModule(new NethGui_Core_Module_BreadCrumb($topModuleDepot, $currentModuleIdentifier));
+
+                header("Content-Type: text/html; charset=UTF-8");
+                $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_REFRESH);
+                echo $view->render();
+            }
+        } elseif ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_JSON) {
+            header("Content-Type: application/json; charset=UTF-8");
+            $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_UPDATE);
+            echo json_encode($view->getArrayCopy());
+        }
     }
 
 }
