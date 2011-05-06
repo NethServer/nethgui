@@ -1,14 +1,14 @@
 <?php
 /**
- * @package Core
+ * @package Serializer
  */
 
 /**
- * @todo Describe class
+ * Transfer a value to/from a database Key.
  *
- * @package Core
+ * @package Serializer
  */
-class NethGui_Core_KeySerializer implements NethGui_Core_SerializerInterface
+class NethGui_Serializer_KeySerializer implements NethGui_Serializer_SerializerInterface
 {
 
     private $key;

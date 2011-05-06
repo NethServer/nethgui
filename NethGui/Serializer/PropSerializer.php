@@ -1,12 +1,14 @@
 <?php
 /**
- * @package Core
+ * @package Serializer
  */
 
 /**
- * @package Core
+ * Transfers a value to/from a database Prop.
+ *
+ * @package Serializer
  */
-class NethGui_Core_PropSerializer implements NethGui_Core_SerializerInterface
+class NethGui_Serializer_PropSerializer implements NethGui_Serializer_SerializerInterface
 {
     private $key;
     private $prop;

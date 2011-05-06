@@ -16,11 +16,11 @@ class NethGui_Adapter_ScalarAdapter implements NethGui_Adapter_AdapterInterface
     protected $value;
     /**
      *
-     * @var NethGui_Core_SerializerInterface
+     * @var NethGui_Serializer_SerializerInterface
      */
     private $serializer;
 
-    public function __construct(NethGui_Core_SerializerInterface $serializer)
+    public function __construct(NethGui_Serializer_SerializerInterface $serializer)
     {
         $this->serializer = $serializer;
     }

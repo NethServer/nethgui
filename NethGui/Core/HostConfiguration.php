@@ -91,14 +91,14 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
      * @param string $database
      * @param string $key
      * @param string $prop
-     * @return NethGui_Core_SerializerInterface
+     * @return NethGui_Serializer_SerializerInterface
      */
     private function getSerializer($database, $key, $prop = NULL)
     {
         if (is_null($prop)) {
-            $serializer = new NethGui_Core_KeySerializer($this->getDatabase($database), $key);
+            $serializer = new NethGui_Serializer_KeySerializer($this->getDatabase($database), $key);
         } else {
-            $serializer = new NethGui_Core_PropSerializer($this->getDatabase($database), $key, $prop);
+            $serializer = new NethGui_Serializer_PropSerializer($this->getDatabase($database), $key, $prop);
         }
 
         return $serializer;

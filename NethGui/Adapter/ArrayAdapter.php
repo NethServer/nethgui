@@ -31,11 +31,11 @@ class NethGui_Adapter_ArrayAdapter implements NethGui_Adapter_AdapterInterface, 
     private $data;
     /**
      *
-     * @var NethGui_Core_SerializerInterface
+     * @var NethGui_Serializer_SerializerInterface
      */
     private $serializer;
 
-    public function __construct($separator, NethGui_Core_SerializerInterface $serializer)
+    public function __construct($separator, NethGui_Serializer_SerializerInterface $serializer)
     {
         $this->separator = $separator;
         $this->serializer = $serializer;
