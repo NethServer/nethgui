@@ -24,5 +24,5 @@ ${PDEPEND_OUTPUT}:
 	  --summary-xml=Metrics/summary.xml  \
 	  --jdepend-chart=Metrics/jdepend.svg  \
 	  --overview-pyramid=Metrics/pyramid.svg  \
-	  --ignore=../NethGui/Language/,../NethGui/Module/,../NethGui/View/ \
+	  --ignore=../NethGui/Language/ \
 	  ../NethGui/

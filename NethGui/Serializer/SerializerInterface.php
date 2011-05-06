@@ -4,7 +4,7 @@
  */
 
 /**
- * A Serializer object transfers data to/from a database Key or Prop.
+ * A Serializer object transfers a value to/from the configuration database.
  *
  * @package Serializer
  */
