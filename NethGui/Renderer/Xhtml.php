@@ -150,6 +150,8 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
     /**
      * Convert an hash to a string of HTML tag attributes.
      *
+     * htmlspecialchars is applied to all attribute values.
+     *
      * @param array $attributes
      * @return string
      */
@@ -391,7 +393,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         $attributes = array(
             'type' => 'radio',
             'value' => $value,
-            'id' => $this->getFullId($name . '_' . htmlspecialchars($value))
+            'id' => $this->getFullId($name . '_' . $value)
         );
 
         if ($value === $this->view[$name]) {
@@ -474,7 +476,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         );
 
         $form->setWrapTag('form', $action, 'apply-changes', $attributes);
-
+       
         return $form;
     }
 
@@ -495,10 +497,12 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 
     public function fieldsetSwitch($name, $value, $flags = 0)
     {
+        $this->pushContent($this->openTag('div', array('class'=>'fieldset-switch')));
         $this->radioButton($name, $value, $flags);
         $fieldset = $this->createNewInstance($flags);
         $this->pushContent($fieldset);
-        $fieldset->setWrapTag('fieldset', array('class' => 'fieldset-switch'));
+        $fieldset->setWrapTag('fieldset', $name . '_' . $value . '_fieldset', '');
+        $this->pushContent($this->closeTag('div'));
         return $fieldset;
     }
 
