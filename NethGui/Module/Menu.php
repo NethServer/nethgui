@@ -1,14 +1,12 @@
 <?php
 /**
- * @package Core
- * @subpackage Module
+ * @package Module
  */
 
 /**
- * @package Core
- * @subpackage Module
+ * @package Module
  */
-final class NethGui_Core_Module_Menu extends NethGui_Core_Module_Standard
+class NethGui_Module_Menu extends NethGui_Core_Module_Standard
 {
 
     /**

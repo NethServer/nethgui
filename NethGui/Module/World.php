@@ -2,8 +2,7 @@
 /**
  * NethGui
  *
- * @package Core
- * @subpackage Module
+ * @package Module
  */
 
 /**
@@ -11,10 +10,9 @@
  *
  * This is the root of the modules composition.
  *
- * @package Core
- * @subpackage Module
+ * @package Module
  */
-class NethGui_Core_Module_World extends NethGui_Core_Module_Abstract
+class NethGui_Module_World extends NethGui_Core_Module_Abstract
 {
 
     private $modules = array();

@@ -1,14 +1,12 @@
 <?php
 /**
- * @package Core
- * @subpackage Module
+ * @package Module
  */
 
 /**
- * @package Core
- * @subpackage Module
+ * @package Module
  */
-class NethGui_Core_Module_BreadCrumb extends NethGui_Core_Module_Abstract
+class NethGui_Module_BreadCrumb extends NethGui_Core_Module_Abstract
 {
 
     /**

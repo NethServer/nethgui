@@ -364,7 +364,7 @@ final class NethGui_Framework
         $report = new NethGui_Core_ValidationReport();
 
         // The World module is a non-processing container.
-        $worldModule = new NethGui_Core_Module_World();
+        $worldModule = new NethGui_Module_World();
 
         $view = new NethGui_Core_View($worldModule);
 
@@ -415,15 +415,15 @@ final class NethGui_Framework
             set_status_header($processExitCode);
         }
 
-        $worldModule->addModule(new NethGui_Core_Module_ValidationReport($report));
+        $worldModule->addModule(new NethGui_Module_ValidationReport($report));
 
         if ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_HTML) {
             if (is_array($processExitCode)) {
                 // XXX: complete redirect protocol
                 redirect($processExitCode[1][0], 'location', $processExitCode[0]);
             } else {
-                $worldModule->addModule(new NethGui_Core_Module_Menu($topModuleDepot->getModules()));
-                $worldModule->addModule(new NethGui_Core_Module_BreadCrumb($topModuleDepot, $currentModuleIdentifier));
+                $worldModule->addModule(new NethGui_Module_Menu($topModuleDepot->getModules()));
+                $worldModule->addModule(new NethGui_Module_BreadCrumb($topModuleDepot, $currentModuleIdentifier));
 
                 header("Content-Type: text/html; charset=UTF-8");
                 $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_REFRESH);
