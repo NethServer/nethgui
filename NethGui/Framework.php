@@ -110,10 +110,8 @@ final class NethGui_Framework
             return '';
         }
 
-        $currentModule = FALSE;
-
-        if ($module === $currentModule) {
-            $html = '<span class="moduleTitle current" title="' . htmlspecialchars($module->getDescription()) . '">' . htmlspecialchars($module->getTitle()) . '</span>';
+        if (!$module instanceof NethGui_Core_RequestHandlerInterface) {
+            $html = '<span class="moduleTitle" title="' . htmlspecialchars($module->getDescription()) . '">' . htmlspecialchars($module->getTitle()) . '</span>';
         } else {
             $ciControllerClassName = $this->getControllerName();
 
@@ -125,7 +123,7 @@ final class NethGui_Framework
 
             $html = anchor($ciControllerClassName . '/' . $module->getIdentifier(),
                     htmlspecialchars($moduleTitle),
-                    array('class' => 'moduleTitle', 'title' => htmlspecialchars($module->getDescription())
+                    array('class' => 'moduleTitle ' .$module->getIdentifier(), 'title' => htmlspecialchars($module->getDescription())
                     )
             );
         }

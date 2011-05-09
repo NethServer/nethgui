@@ -39,7 +39,7 @@ class NethGui_Module_Menu extends NethGui_Core_Module_Standard
         $menuIterator->rewind();
 
         while ($menuIterator->valid()) {
-            $output .= '<li><div class="moduleTitle">' . $framework->renderModuleAnchor($menuIterator->current()) . '</div>';
+            $output .= '<li>' . $framework->renderModuleAnchor($menuIterator->current());
 
             if ($menuIterator->hasChildren()) {
                 $output .= $this->iteratorToHtml($menuIterator->getChildren(), $level + 1);
