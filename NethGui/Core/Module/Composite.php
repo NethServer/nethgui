@@ -141,7 +141,18 @@ abstract class NethGui_Core_Module_Composite extends NethGui_Core_Module_Standar
     }
 
     public function renderTabs(NethGui_Renderer_Abstract $view) {
-        return 'TODO Tabs';
+        $pages = array();
+
+        foreach($this->getChildren() as $child) {
+            $pages[] = $child->getIdentifier();
+        }
+
+        $tabs =  $view->form()->tabs($this->getIdentifier(), $pages);
+
+        $tabs->button('Submit', NethGui_Renderer_Abstract::BUTTON_SUBMIT);
+        $tabs->button('Reset', NethGui_Renderer_Abstract::BUTTON_RESET);
+
+        return $view;
     }
 }
 

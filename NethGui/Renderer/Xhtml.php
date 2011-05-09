@@ -427,6 +427,8 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
             $flags |= self::STATE_CHECKED;
         }
 
+        $flags = $this->applyDefaultLabelAlignment($flags, self::LABEL_RIGHT);
+
         $this->labeledControlTag('input', $name, $name . '_' . $value, $flags, '', $attributes);
 
         return $this;
@@ -439,9 +441,11 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
             'value' => strval($value),
         );
 
-        if ($value === $this->view[$name]) {
+        if ($value == $this->view[$name]) {
             $flags |= self::STATE_CHECKED;
         }
+
+        $flags = $this->applyDefaultLabelAlignment($flags, self::LABEL_RIGHT);
 
         $this->labeledControlTag('input', $name, $name, $flags, '', $attributes);
 
@@ -454,6 +458,8 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
             'value' => strval($this->view[$name]),
             'type' => 'text',
         );
+
+        $flags = $this->applyDefaultLabelAlignment($flags, self::LABEL_LEFT);
 
         $this->labeledControlTag('input', $name, $name, $flags, '', $attributes);
 
@@ -516,10 +522,20 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         $tabs->addWrapTag('div', $name, 'tabs');
 
         if (is_array($pages)) {
+            $tabs->pushContent($this->openTag('ul'));
             foreach ($pages as $page) {
-                // TODO: wrap the page inside a DIV tag
-                $tabs->inset($page);
+
+                $tabs->pushContent($this->openTag('li'));
+                $tabs->pushContent($this->openTag('a', array('href'=>'#' . $tabs->getFullId($page))));
+                $tabs->pushContent(T($page . '_Title'));
+                $tabs->pushContent($this->closeTag('a'));
+                $tabs->pushContent($this->closeTag('li'));
             }
+            $tabs->pushContent($this->closeTag('ul'));
+        }
+
+        foreach ($pages as $page) {
+            $tabs->panel($page)->inset($page);
         }
 
         return $tabs;
@@ -553,6 +569,11 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         $instance = clone $this;
         $instance->flags = $flags;
         return $instance;
+    }
+
+    private function applyDefaultLabelAlignment($flags, $default)
+    {
+        return (self::LABEL_ABOVE | self::LABEL_LEFT | self::LABEL_RIGHT) & $flags ? $flags : $flags | $default;
     }
 
 }
