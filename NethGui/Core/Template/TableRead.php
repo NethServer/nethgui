@@ -1,4 +1,5 @@
-<table class="table-read <?php echo get_class($view->getModule()); ?>">
+<div id="<?echo $view->getFullId()?>" class="crud-read">
+<table>
     <caption><?php echo T(get_class($view->getModule()->getParent()) . '_caption'); ?></caption>
     <thead><tr>
         <?php
@@ -16,7 +17,6 @@
     <?php endforeach ?></tbody>
 </table>
 <ul class="actions">
-
     <?php
         if ($view['__action'] == 'index') {
             $flags = NethGui_Renderer_Abstract::STATE_DISABLED;
@@ -32,3 +32,4 @@
     <li><?php echo $view->button($tableAction, $flags, '../' . $tableAction) ?></li>
     <?php endforeach; ?>
 </ul>
+</div>

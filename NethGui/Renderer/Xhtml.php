@@ -56,7 +56,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         return $prefix . '[' . implode('][', $path) . ']';
     }
 
-    private function getFullId($name)
+    public function getFullId($name = NULL)
     {
         $prefix = implode('_', $this->getModulePath());
 
@@ -503,7 +503,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
             'id' => FALSE, // This ensures ID attribute is not emitted. See prepareXhtmlAttributes().
         );
 
-        $form->addWrapTag('form', $action, 'apply-changes', $attributes);
+        $form->addWrapTag('form', $action, '', $attributes);
         $form->addWrapTag('div', $action);
 
         return $form;
