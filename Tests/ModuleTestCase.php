@@ -228,7 +228,7 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
      */
     protected function provideValidationReport()
     {
-        $reportMock = $this->getMockBuilder('NethGui_Core_ValidationReport')
+        $reportMock = $this->getMockBuilder('NethGui_Module_NotificationArea')
                 ->getMock();
 
         $reportMock->expects($this->never())
@@ -236,6 +236,10 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
             ->withAnyParameters();
 
         return $reportMock;
+    }
+    
+    protected function provideNotificationCarrier() {
+        return $this->getMock('NethGui_Module_NotificationArea');
     }
 
     protected function setUp()
@@ -254,7 +258,7 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
         $this->object->initialize();
         $this->object->bind($this->provideRequest());
         $this->object->validate($this->provideValidationReport());
-        $this->object->process();
+        $this->object->process($this->provideNotificationCarrier());
         $this->object->prepareView($this->provideView(), $viewMode);
     }
 

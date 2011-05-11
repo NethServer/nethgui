@@ -8,7 +8,7 @@
  * @package Tests
  * @subpackage Unit
  */
-class NethGui_Module_RemoteAccess_RemoteManagementTest extends ModuleTestCase
+class NethService_Module_RemoteAccess_RemoteManagementTest extends ModuleTestCase
 {
 
     protected function setUp()

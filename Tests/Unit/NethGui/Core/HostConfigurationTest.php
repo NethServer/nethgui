@@ -62,7 +62,7 @@ class NethGui_Core_HostConfigurationTest extends PHPUnit_Framework_TestCase
                     array('testdb', 'testkey3', 'testpropB'),
                 )
         );
-        $this->assertInstanceOf('NethGui_Core_AdapterInterface', $adapter);
+        $this->assertInstanceOf('NethGui_Adapter_AdapterInterface', $adapter);
     }
 
     public function readCallback($key1, $propA, $propB)
@@ -77,7 +77,7 @@ class NethGui_Core_HostConfigurationTest extends PHPUnit_Framework_TestCase
 
     public function testGetIdentityAdapter()
     {
-        $this->assertInstanceOf('NethGui_Core_AdapterInterface', $this->object->getIdentityAdapter('testdb', 'testkey'));
+        $this->assertInstanceOf('NethGui_Adapter_AdapterInterface', $this->object->getIdentityAdapter('testdb', 'testkey'));
         $this->assertInstanceOf('ArrayAccess', $this->object->getIdentityAdapter('testdb', 'testkey', NULL, ','));
     }
 

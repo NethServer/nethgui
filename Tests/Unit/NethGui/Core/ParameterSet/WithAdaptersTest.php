@@ -22,11 +22,11 @@ class NethGui_Core_ParameterSetWithAdaptersTest extends PHPUnit_Framework_TestCa
     {
         $this->object = new NethGui_Core_ParameterSet;
 
-        $this->arrayAdapter = $this->getMockBuilder('NethGui_Core_ArrayAdapter')
+        $this->arrayAdapter = $this->getMockBuilder('NethGui_Adapter_ArrayAdapter')
                 ->disableOriginalConstructor()
                 ->getMock();
 
-        $this->scalarAdapter = $this->getMockBuilder('NethGui_Core_ScalarAdapter')
+        $this->scalarAdapter = $this->getMockBuilder('NethGui_Adapter_ScalarAdapter')
                 ->disableOriginalConstructor()
                 ->getMock();
 

@@ -25,7 +25,7 @@ class NethGui_Core_KeySerializerTest extends PHPUnit_Framework_TestCase
                 ->disableOriginalConstructor()
                 ->getMock();
 
-        $this->object = new NethGui_Core_KeySerializer($this->database, 'TestKey');
+        $this->object = new NethGui_Serializer_KeySerializer($this->database, 'TestKey');
     }
 
     public function testRead()

@@ -10,7 +10,7 @@
  * @package Tests
  * @subpackage Unit
  */
-class NethGui_Core_ScalarAdapterTest extends PHPUnit_Framework_TestCase
+class NethGui_Adapter_ScalarAdapterTest extends PHPUnit_Framework_TestCase
 {
 
     /**
@@ -26,7 +26,7 @@ class NethGui_Core_ScalarAdapterTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->serializer = $this->getMockBuilder('NethGui_Core_KeySerializer')
+        $this->serializer = $this->getMockBuilder('NethGui_Serializer_KeySerializer')
                 ->disableOriginalConstructor()
                 ->getMock();
 
@@ -35,7 +35,7 @@ class NethGui_Core_ScalarAdapterTest extends PHPUnit_Framework_TestCase
             ->withAnyParameters()
             ->will($this->returnValue('ORIGINAL'));
 
-        $this->fixture = new NethGui_Core_ScalarAdapter($this->serializer);
+        $this->fixture = new NethGui_Adapter_ScalarAdapter($this->serializer);
     }
 
     public function testGet()

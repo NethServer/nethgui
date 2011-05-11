@@ -14,22 +14,22 @@ class NethGui_Core_ArrayAdapterTest extends PHPUnit_Framework_TestCase
 {
 
     /**
-     * @var NethGui_Core_ArrayAdapter
+     * @var NethGui_Adapter_ArrayAdapter
      */
     protected $fixture;
     /**
      *
-     * @var NethGui_Core_SerializerInterface
+     * @var NethGui_Serializer_SerializerInterface
      */
     private $serializer;
 
     protected function setUp()
     {
-        $this->serializer = $this->getMockBuilder('NethGui_Core_KeySerializer')
+        $this->serializer = $this->getMockBuilder('NethGui_Serializer_KeySerializer')
                 ->disableOriginalConstructor()
                 ->getMock();
 
-        $this->fixture = new NethGui_Core_ArrayAdapter(',', $this->serializer);
+        $this->fixture = new NethGui_Adapter_ArrayAdapter(',', $this->serializer);
     }
 
     public function testGetCsv()

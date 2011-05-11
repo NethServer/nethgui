@@ -8,7 +8,7 @@
  * @package Tests
  * @subpackage Unit
  */
-class NethGui_Module_RemoteAccess_FtpTest extends ModuleTestCase
+class NethService_Module_RemoteAccess_FtpTest extends ModuleTestCase
 {
 
     /**

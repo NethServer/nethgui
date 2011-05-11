@@ -11,7 +11,7 @@
  * @package Tests
  * @subpackage Unit
  */
-class NethGui_Core_PropSerializerTest extends PHPUnit_Framework_TestCase
+class NethGui_Serializer_PropSerializerTest extends PHPUnit_Framework_TestCase
 {
 
     /**
@@ -25,7 +25,7 @@ class NethGui_Core_PropSerializerTest extends PHPUnit_Framework_TestCase
                 ->disableOriginalConstructor()
                 ->getMock();
 
-        $this->object = new NethGui_Core_PropSerializer($this->database, 'TestKey', 'TestProp');
+        $this->object = new NethGui_Serializer_PropSerializer($this->database, 'TestKey', 'TestProp');
     }
 
     public function testRead()
