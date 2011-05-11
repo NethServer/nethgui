@@ -14,7 +14,7 @@ class NethService_Module_RemoteAccess_RemoteManagementTest extends ModuleTestCas
     protected function setUp()
     {
         parent::setUp();
-        $this->object = new NethGui_Module_RemoteAccess_RemoteManagement();
+        $this->object = new NethService_Module_RemoteAccess_RemoteManagement();
     }
 
     public function testNoInput()

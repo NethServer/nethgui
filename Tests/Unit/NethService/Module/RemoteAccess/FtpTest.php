@@ -12,14 +12,14 @@ class NethService_Module_RemoteAccess_FtpTest extends ModuleTestCase
 {
 
     /**
-     * @var NethGui_Module_RemoteAccess_Ftp
+     * @var NethService_Module_RemoteAccess_Ftp
      */
     protected $object;
 
     protected function setUp()
     {
         parent::setUp();
-        $this->object = new NethGui_Module_RemoteAccess_Ftp();
+        $this->object = new NethService_Module_RemoteAccess_Ftp();
     }
 
     public function testNoParamsDisabledService()
