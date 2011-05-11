@@ -61,7 +61,10 @@ class NethGui_Module_Menu extends NethGui_Core_Module_Standard
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
-        $view->setTemplate(array($this, 'renderModuleMenu'));
+
+        if ($mode === self::VIEW_REFRESH) {
+            $view->setTemplate(array($this, 'renderModuleMenu'));
+        }
     }
 
 }

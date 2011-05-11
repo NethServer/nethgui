@@ -19,7 +19,9 @@ class NethGui_Module_World extends NethGui_Core_Module_Abstract
 
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
-        if ($mode == self::VIEW_REFRESH) {
+        parent::prepareView($view, $mode);
+        
+        if ($mode === self::VIEW_REFRESH) {
             $immutables = array(
                 'lang' => NethGui_Framework::getInstance()->getLanguageCode(),
                 'cssMain' => base_url() . 'css/main.css',
@@ -35,13 +37,11 @@ class NethGui_Module_World extends NethGui_Core_Module_Abstract
             }
         }
 
-        parent::prepareView($view, $mode);
-
         foreach ($this->modules as $module) {
             $innerView = $view->spawnView($module, TRUE);
             $module->prepareView($innerView, $mode);
             // Consider the first module as CURRENT.
-            if ( ! isset($view['CurrentModule']) && $mode == self::VIEW_REFRESH) {
+            if ( ! isset($view['CurrentModule']) && $mode === self::VIEW_REFRESH) {
                 $view['CurrentModule'] = $innerView;
             }
         }

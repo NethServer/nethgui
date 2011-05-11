@@ -75,7 +75,7 @@ interface NethGui_Core_ModuleInterface
      * @param NethGui_Core_ViewInterface $view The view to put the data into
      * @param integer $mode One of VIEW_UPDATE or VIEW_REFRESH values
      * @see NethGui_Core_ModuleInterface::VIEW_REFRESH
-     * @see NethGui_Core_ModuleInterface::VIEW UPDATE
+     * @see NethGui_Core_ModuleInterface::VIEW_UPDATE
      * @see NethGui_Core_ViewInterface
      */
     public function prepareView(NethGui_Core_ViewInterface $view, $mode);

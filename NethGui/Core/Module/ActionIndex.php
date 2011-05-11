@@ -22,7 +22,7 @@ class NethGui_Core_Module_ActionIndex extends NethGui_Core_Module_Standard
         parent::prepareView($view, $mode);
 
         // Output is generated in VIEW_REFRESH mode only.
-        if ($mode === self::VIEW_UPDATE) {
+        if ($mode !== self::VIEW_REFRESH) {
             return;
         }
 

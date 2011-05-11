@@ -69,6 +69,12 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
      * @var array
      */
     private $parameterValidationList = array();
+    /**
+     * This array holds the names of parameters with validation errors.
+     * @see prepareView()
+     * @var array
+     */
+    private $invalidParameters = array();
 
     /**
      * @param string $identifier
@@ -189,9 +195,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
 
             if (is_array($args)) {
                 $adapterObject = $this->getHostConfiguration()->getMapAdapter(
-                        array($this, $readerCallback),
-                        array($this, $writerCallback),
-                        $args
+                        array($this, $readerCallback), array($this, $writerCallback), $args
                 );
             }
         } elseif (isset($args[0], $args[1])) {
@@ -265,6 +269,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
             $isValid = $validator->evaluate($this->parameters[$parameter]);
             if ($isValid !== TRUE) {
                 $report->addValidationError($this, $parameter, $validator->getMessage());
+                $this->invalidParameters[] = $parameter;
             }
         }
     }
@@ -272,7 +277,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
     /**
      * Do nothing
      */
-    public function process()
+    public function process(NethGui_Core_NotificationCarrierInterface $carrier)
     {
         if ($this->autosave === TRUE) {
             $this->parameters->save();
@@ -283,8 +288,9 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
     {
         parent::prepareView($view, $mode);
         $view->copyFrom($this->parameters);
-        if ($mode == self::VIEW_REFRESH) {
+        if ($mode === self::VIEW_REFRESH) {
             $view->copyFrom($this->immutables);
+            $view['__invalidParameters'] = $this->invalidParameters;
         }
     }
 

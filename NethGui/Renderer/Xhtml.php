@@ -76,7 +76,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         $parameters = array();
         $path = $this->getModulePath();
 
-        foreach (func_get_args () as $arg) {
+        foreach (func_get_args() as $arg) {
             if (is_string($arg)) {
                 $path[] = $arg;
             } elseif (is_array($arg)) {
@@ -311,17 +311,21 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
             }
         }
 
-        if (in_array($tag, array('input', 'button', 'textarea', 'select', 'optgroup', 'option'))
-            && ($flags & self::STATE_DISABLED)) {
-            $attributes['disabled'] = 'disabled';
+        if (in_array($tag, array('input', 'button', 'textarea', 'select', 'optgroup', 'option'))) {
+            if ($flags & self::STATE_DISABLED) {
+                $attributes['disabled'] = 'disabled';
+            }
+
+            if ($flags & self::STATE_VALIDATION_ERROR) {
+                $cssClass .= ' validation-error';
+            }
         }
-
-
-        $cssClass = trim($cssClass);
 
         if ( ! empty($cssClass)) {
-            $attributes['class'] = $cssClass;
+            $attributes['class'] = $cssClass . (isset($attributes['class']) ? ' ' . $attributes['class'] : '');
         }
+
+        $cssClass = trim($cssClass);
 
         $this->pushContent($this->selfClosingTag($tag, $attributes));
     }
@@ -461,6 +465,11 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 
         $flags = $this->applyDefaultLabelAlignment($flags, self::LABEL_LEFT);
 
+        // Check if $name is in the list of invalid parameters.
+        if (isset($this->view['__invalidParameters']) && in_array($name, $this->view['__invalidParameters'])) {
+            $flags |= self::STATE_VALIDATION_ERROR;
+        }
+
         $this->labeledControlTag('input', $name, $name, $flags, '', $attributes);
 
         return $this;
@@ -522,11 +531,11 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         $tabs->addWrapTag('div', $name, 'tabs');
 
         if (is_array($pages)) {
-            $tabs->pushContent($this->openTag('ul'));
+            $tabs->pushContent($this->openTag('ul', array('class'=>'tabs-list')));
             foreach ($pages as $page) {
 
                 $tabs->pushContent($this->openTag('li'));
-                $tabs->pushContent($this->openTag('a', array('href'=>'#' . $tabs->getFullId($page))));
+                $tabs->pushContent($this->openTag('a', array('href' => '#' . $tabs->getFullId($page))));
                 $tabs->pushContent(T($page . '_Title'));
                 $tabs->pushContent($this->closeTag('a'));
                 $tabs->pushContent($this->closeTag('li'));

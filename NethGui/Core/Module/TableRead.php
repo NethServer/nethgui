@@ -53,12 +53,12 @@ class NethGui_Core_Module_TableRead extends NethGui_Core_Module_Standard
 
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
+        parent::prepareView($view, $mode);
         if ($mode == self::VIEW_REFRESH) {
             $view['columns'] = $this->columns;
             $view['tableActions'] = array_values($this->tableActions);
         }
-        $view['rows'] = $this->prepareRows($view, $mode);
-        parent::prepareView($view, $mode);
+        $view['rows'] = $this->prepareRows($view, $mode);        
     }
 
     private function prepareRows(NethGui_Core_ViewInterface $view, $mode)

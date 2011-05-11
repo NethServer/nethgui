@@ -72,9 +72,9 @@ class NethGui_Core_Module_TableModify extends NethGui_Core_Module_Standard
         }
     }
 
-    public function process()
+    public function process(NethGui_Core_NotificationCarrierInterface $carrier)
     {
-        $exitCode = parent::process();
+        parent::process($carrier);
         if ($this->performAction) {
 
             $action = $this->getIdentifier();
@@ -90,8 +90,9 @@ class NethGui_Core_Module_TableModify extends NethGui_Core_Module_Standard
                 }
 
                 // TODO: add feedback message
-                // Redirect to parent controller module by SEE OTHER status (303)
-                $exitCode = array(303, array('..'));
+                // Redirect to parent controller module              
+                $carrier->addRedirectOrder($this->getParent());
+                
             } elseif ($action == 'create' || $action == 'update') {
 
                 $values = $this->parameters->getArrayCopy();
@@ -105,23 +106,22 @@ class NethGui_Core_Module_TableModify extends NethGui_Core_Module_Standard
                 $this->tableAdapter[$key] = $values;
 
                 // TODO: add feedback message
-                // Redirect to parent controller module by SEE OTHER status (303)
-                $exitCode = array(303, array('..'));
+                // Redirect to parent controller module
+                $carrier->addRedirectOrder($this->getParent());
+                
             } else {
                 throw new NethGui_Exception_HttpStatusClientError('Not found', 404);
             }
         }
-
-        return $exitCode;
     }
 
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
+        parent::prepareView($view, $mode);
         if ($mode == self::VIEW_REFRESH) {
             $view['__key'] = $this->key;
             $view['__action'] = $this->getIdentifier();
-        }
-        parent::prepareView($view, $mode);
+        } 
     }
 
 }

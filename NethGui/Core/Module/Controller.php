@@ -101,22 +101,23 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Standard implem
         $this->currentAction->validate($report);
     }
 
-    public function process()
+    public function process(NethGui_Core_NotificationCarrierInterface $carrier)
     {
-        parent::process();
-        return $this->currentAction->process();
+        parent::process($carrier);
+        $this->currentAction->process($carrier);
     }
 
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
-        $innerView = $view->spawnView($this->currentAction, TRUE);
+        parent::prepareView($view, $mode);
+        $view->setTemplate(array($this, 'renderCurrentView'));
 
         if ($mode == self::VIEW_REFRESH) {
             $view['__action'] = $this->currentAction->getIdentifier();
             $view['__arguments'] = implode('/', $this->arguments);
-        }
-        parent::prepareView($view, $mode);
-        $view->setTemplate(array($this, 'renderCurrentView'));
+        }        
+               
+        $innerView = $view->spawnView($this->currentAction, TRUE);
         $this->currentAction->prepareView($innerView, $mode);
     }
 

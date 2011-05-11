@@ -114,13 +114,12 @@ class NethGui_Core_Module_TableController extends NethGui_Core_Module_Controller
         }
     }
 
-    public function process()
+    public function process(NethGui_Core_NotificationCarrierInterface $carrier)
     {
-        $exitCode = parent::process();
+        parent::process($carrier);
         if ($this->autosave === TRUE) {
             $this->tableAdapter->save();
-        }
-        return $exitCode;
+        }        
     }
 
 }

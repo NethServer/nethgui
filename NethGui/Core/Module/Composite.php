@@ -24,9 +24,9 @@ abstract class NethGui_Core_Module_Composite extends NethGui_Core_Module_Standar
     public function __construct($identifier = NULL, $template = self::TEMPLATE_FORM)
     {
         parent::__construct($identifier);
-        if($template == self::TEMPLATE_FORM) {
+        if ($template == self::TEMPLATE_FORM) {
             $this->viewTemplate = array($this, 'renderForm');
-        } elseif($template == self::TEMPLATE_TABS) {
+        } elseif ($template == self::TEMPLATE_TABS) {
             $this->viewTemplate = array($this, 'renderTabs');
         } else {
             $this->viewTemplate = array($this, 'renderList');
@@ -44,8 +44,8 @@ abstract class NethGui_Core_Module_Composite extends NethGui_Core_Module_Standar
             if ( ! $child->isInitialized()) {
                 $child->initialize();
             }
-        }        
-     }
+        }
+    }
 
     /**
      * Adds a child to Composite, initializing it, if current Composite is
@@ -94,16 +94,12 @@ abstract class NethGui_Core_Module_Composite extends NethGui_Core_Module_Standar
         }
     }
 
-    public function process()
+    public function process(NethGui_Core_NotificationCarrierInterface $carrier)
     {
-        $processExitCode = parent::process();
+        parent::process($carrier);
         foreach ($this->getChildren() as $childModule) {
-            $childExitCode = $childModule->process();
-            if(is_null($processExitCode)) {
-                $processExitCode = $childExitCode;
-            }
+            $childModule->process($carrier);
         }
-        return $processExitCode;
     }
 
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
@@ -123,36 +119,43 @@ abstract class NethGui_Core_Module_Composite extends NethGui_Core_Module_Standar
         }
     }
 
-    public function renderList(NethGui_Renderer_Abstract $view) {
-        return 'TODO List';
+    public function renderList(NethGui_Renderer_Abstract $view)
+    {
+        foreach ($this->getChildren() as $child) {
+            $view->inset($child->getIdentifier());
+        }
+        return $view;
     }
 
-    public function renderForm(NethGui_Renderer_Abstract $view) {
+    public function renderForm(NethGui_Renderer_Abstract $view)
+    {
         $form = $view->form();
-        
-        foreach($this->getChildren() as $child) {
-          $form->inset($child->getIdentifier());
+
+        foreach ($this->getChildren() as $child) {
+            $form->inset($child->getIdentifier());
         }
 
         $form->button('Submit', NethGui_Renderer_Abstract::BUTTON_SUBMIT);
         $form->button('Reset', NethGui_Renderer_Abstract::BUTTON_RESET);
-           
+
         return $view;
     }
 
-    public function renderTabs(NethGui_Renderer_Abstract $view) {
+    public function renderTabs(NethGui_Renderer_Abstract $view)
+    {
         $pages = array();
 
-        foreach($this->getChildren() as $child) {
+        foreach ($this->getChildren() as $child) {
             $pages[] = $child->getIdentifier();
         }
 
-        $tabs =  $view->form()->tabs($this->getIdentifier(), $pages);
+        $tabs = $view->form()->tabs($this->getIdentifier(), $pages);
 
         $tabs->button('Submit', NethGui_Renderer_Abstract::BUTTON_SUBMIT);
         $tabs->button('Reset', NethGui_Renderer_Abstract::BUTTON_RESET);
 
         return $view;
     }
+
 }
 

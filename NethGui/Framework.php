@@ -110,7 +110,7 @@ final class NethGui_Framework
             return '';
         }
 
-        if (!$module instanceof NethGui_Core_RequestHandlerInterface) {
+        if ( ! $module instanceof NethGui_Core_RequestHandlerInterface) {
             $html = '<span class="moduleTitle" title="' . htmlspecialchars($module->getDescription()) . '">' . htmlspecialchars($module->getTitle()) . '</span>';
         } else {
             $ciControllerClassName = $this->getControllerName();
@@ -121,10 +121,8 @@ final class NethGui_Framework
                 $moduleTitle = T($moduleTitle, array(), NULL, $catalog);
             }
 
-            $html = anchor($ciControllerClassName . '/' . $module->getIdentifier(),
-                    htmlspecialchars($moduleTitle),
-                    array('class' => 'moduleTitle ' .$module->getIdentifier(), 'title' => htmlspecialchars($module->getDescription())
-                    )
+            $html = anchor($ciControllerClassName . '/' . $module->getIdentifier(), htmlspecialchars($moduleTitle), array('class' => 'moduleTitle ' . $module->getIdentifier(), 'title' => htmlspecialchars($module->getDescription())
+                )
             );
         }
 
@@ -177,7 +175,7 @@ final class NethGui_Framework
      * @param string $string The string to be translated
      * @param array $args Values substituted in output string.
      * @param string $languageCode The language code
-     * @param string $languageCatalog The catalog where to search the translation
+     * @param string $languageCatalog The catalog where to search for the translation
      * @return string
      */
     public function translate($string, $args, $languageCode = NULL, $languageCatalog = NULL)
@@ -359,7 +357,7 @@ final class NethGui_Framework
             $moduleWakeupList = array($currentModuleIdentifier);
         }
 
-        $report = new NethGui_Module_NotificationArea();
+        $notificationCarrier = new NethGui_Module_NotificationArea();
 
         // The World module is a non-processing container.
         $worldModule = new NethGui_Module_World();
@@ -386,47 +384,29 @@ final class NethGui_Framework
             // Pass request parameters to the handler
             $module->bind(
                 $request->getParameterAsInnerRequest(
-                    $moduleIdentifier,
-                    ($moduleIdentifier === $currentModuleIdentifier) ? $request->getArguments() : array()
+                    $moduleIdentifier, ($moduleIdentifier === $currentModuleIdentifier) ? $request->getArguments() : array()
                 )
             );
 
             // Validate request
-            $module->validate($report);
+            $module->validate($notificationCarrier);
 
-            // Stop here if we have validation errors
-            if ($report->hasValidationErrors()) {
+            // Skip next steps, if $module has added some validation errors:
+            if ($notificationCarrier->hasValidationErrors()) {
                 continue;
             }
 
-            // Process the request
-            $moduleExitCode = $module->process();
-
-            // Only the first non-NULL module exit code is considered as
-            // the process exit code:
-            if (is_null($processExitCode)) {
-                $processExitCode = $moduleExitCode;
-            }
+            $module->process($notificationCarrier);
         }
 
-        if (is_integer($processExitCode)) {
-            set_status_header($processExitCode);
-        }
-
-        $worldModule->addModule($report);
+        $worldModule->addModule($notificationCarrier);
 
         if ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_HTML) {
-            if (is_array($processExitCode)) {
-                // XXX: complete redirect protocol
-                redirect($processExitCode[1][0], 'location', $processExitCode[0]);
-            } else {
-                $worldModule->addModule(new NethGui_Module_Menu($topModuleDepot->getModules()));
-                $worldModule->addModule(new NethGui_Module_BreadCrumb($topModuleDepot, $currentModuleIdentifier));
-
-                header("Content-Type: text/html; charset=UTF-8");
-                $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_REFRESH);
-                echo $view->render();
-            }
+            $worldModule->addModule(new NethGui_Module_Menu($topModuleDepot->getModules()));
+            $worldModule->addModule(new NethGui_Module_BreadCrumb($topModuleDepot, $currentModuleIdentifier));
+            header("Content-Type: text/html; charset=UTF-8");
+            $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_REFRESH);
+            echo $view->render();
         } elseif ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_JSON) {
             header("Content-Type: application/json; charset=UTF-8");
             $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_UPDATE);

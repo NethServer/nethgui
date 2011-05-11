@@ -36,7 +36,7 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
     const BUTTON_CUSTOM = 0x400;
 
     const DIALOG_MODAL = 0x800;
-    const DIALOG_EMBEDDED = 0x1000;
+    const DIALOG_EMBEDDED = 0x1000;      
 
     /**
      *

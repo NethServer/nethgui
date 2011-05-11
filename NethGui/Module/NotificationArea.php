@@ -6,26 +6,54 @@
  */
 
 /**
- * Displays messages to the User.
+ * Carries notification messages to the User.
  *
  * @package Module
  */
-class NethGui_Module_NotificationArea extends NethGui_Core_Module_Abstract implements NethGui_Core_ValidationReportInterface
+class NethGui_Module_NotificationArea extends NethGui_Core_Module_Abstract implements NethGui_Core_ValidationReportInterface, NethGui_Core_NotificationCarrierInterface
 {
 
     private $errors = array();
+    private $dialogs = array(array(), array(), array());
+    private $redirectOrders = array();
 
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
-        $view->setTemplate(array($this, 'render'));
 
         $view['validationErrors'] = new ArrayObject();
 
         foreach ($this->errors as $error) {
-            list($fieldId, $message, $module) = $error;
+            list($fieldName, $message, $module) = $error;
 
-            $view['validationErrors'][] = array($module->getIdentifier() . '.' . $fieldId, $message);
+            $renderer = new NethGui_Renderer_Xhtml($view->spawnView($module));
+            $controlId = $renderer->getFullId($fieldName);
+
+            $view['validationErrors'][] = array($controlId, T($fieldName . '_label'), T($message));
+        }
+
+        $view['notifications'] = new ArrayObject();
+
+        foreach ($this->dialogs as $type => $dialogTypeList) {
+            foreach ($dialogTypeList as $subscriber) {
+                
+                list($module, $template) = $subscriber;
+                
+                $innerView = $view->spawnView($module, FALSE);
+                $innerView['__type'] = $type;
+                $innerView['__message'] = T("dialog_${type}_message_" . $module->getIdentifier());
+                $view['notifications'][] = $innerView;
+
+                if (is_null($template)) {
+                    $innerView->setTemplate('NethGui_Template_NotificationMessage');
+                } else {
+                    $innerView->setTemplate($template);
+                }
+
+                if (method_exists($module, 'prepareDialogView')) {
+                    $module->prepareDialogView($innerView, $type);
+                } 
+            }
         }
     }
 
@@ -39,22 +67,23 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Abstract imple
         return count($this->errors) > 0;
     }
 
-    public function render(NethGui_Renderer_Abstract $view)
+    public function showDialog(NethGui_Core_ModuleInterface $module, $template = NULL, $type = self::NOTIFY_SUCCESS)
     {
-        $area = $view->panel('');
+        $this->dialogs[intval($type)][] = array($module, $template);
+    }
 
-        if ( count($view['validationErrors']) > 0) {
-            $panel = $area->panel('errors')
-                ->append('<ul>', FALSE);
+    public function addRedirectOrder(NethGui_Core_ModuleInterface $module, $path = array())
+    {
+        $this->redirectOrders[] = array($module, $path);
+    }
 
-            foreach ($view['validationErrors'] as $error) {
-                $panel->append('<li>' . htmlspecialchars(implode(' MUST BE ', $error)) . '</li>', FALSE);
-            }
-
-            $panel->append('</ul>', FALSE);
+    public function getRedirectOrder()
+    {
+        if (isset($this->redirectOrders[0])) {
+            return $this->redirectOrders[0];
         }
 
-        return $view;
+        return NULL;
     }
 
 }

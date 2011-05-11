@@ -31,6 +31,6 @@ interface NethGui_Core_RequestHandlerInterface {
      *
      * @return void|int|array
      */
-    public function process();
+    public function process(NethGui_Core_NotificationCarrierInterface $carrier);
     
 }

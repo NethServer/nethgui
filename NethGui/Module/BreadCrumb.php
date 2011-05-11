@@ -31,6 +31,13 @@ class NethGui_Module_BreadCrumb extends NethGui_Core_Module_Abstract
     {
         parent::prepareView($view, $mode);
 
+        if ($mode === self::VIEW_REFRESH) {
+            $view['rootLine'] = $this->prepareRootline();
+        }
+    }
+
+    private function prepareRootline()
+    {
         $module = $this->currentModule;
         $framework = NethGui_Framework::getInstance();
 
@@ -48,7 +55,7 @@ class NethGui_Module_BreadCrumb extends NethGui_Core_Module_Abstract
 
         $rootLine = array_reverse($rootLine);
 
-        $view['rootLine'] = $rootLine;
+        return $rootLine;
     }
 
     public function renderBreadcrumbMenu(NethGui_Renderer_Abstract $view)
