@@ -44,6 +44,9 @@ class NethGui_Core_TopModuleDepot implements NethGui_Core_ModuleSetInterface, Ne
         $this->hostConfiguration = $hostConfiguration;
         $this->user = $user;
         $this->createTopModules();
+        // XXX: add Notification module here?
+        $notificationModule = $this->createModule('NethGui_Module_Notification');
+        $this->registerModule($notificationModule);        
     }
 
     /**

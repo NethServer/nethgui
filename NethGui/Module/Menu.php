@@ -39,6 +39,12 @@ class NethGui_Module_Menu extends NethGui_Core_Module_Standard
         $menuIterator->rewind();
 
         while ($menuIterator->valid()) {
+
+            if ($menuIterator->current() instanceof NethGui_Module_Notification) {
+                $menuIterator->next();
+                continue;
+            }
+
             $output .= '<li>' . $framework->renderModuleAnchor($menuIterator->current());
 
             if ($menuIterator->hasChildren()) {

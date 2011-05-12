@@ -39,6 +39,12 @@ class NethGui_Module_BreadCrumb extends NethGui_Core_Module_Abstract
     private function prepareRootline()
     {
         $module = $this->currentModule;
+        
+        // XXX: skip breadcrumbs if in Notification
+        if($module instanceof NethGui_Module_Notification) {
+            return array();
+        }
+        
         $framework = NethGui_Framework::getInstance();
 
         $rootLine = array();

@@ -50,4 +50,8 @@ final class NethGui_Core_AlwaysAuthenticatedUser implements NethGui_Core_UserInt
         return isset($this->credentials[$credentialName]);
     }
 
+    public function notify($dialog)
+    {
+        //TODO;
+    }
 }
