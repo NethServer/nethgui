@@ -73,7 +73,7 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Standard implem
 
         // If we have no action defined there is nothing to do here.
         if (empty($this->actions)) {
-            return;
+            throw new NethGui_Exception_HttpStatusClientError('Not Found', 404);
         }
 
         reset($this->actions);
