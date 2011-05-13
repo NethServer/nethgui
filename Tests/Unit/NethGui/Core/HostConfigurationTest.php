@@ -48,7 +48,7 @@ class NethGui_Core_HostConfigurationTest extends PHPUnit_Framework_TestCase
     public function testSignalEvent()
     {
         $this->assertEquals(false, $this->object->signalEvent("not-exist-event"));
-        $this->assertEquals(true, $this->object->signalEvent("remoteaccess-update"));
+        $this->assertEquals(true, $this->object->signalEvent("nethgui-test"));
     }
 
     public function testGetMapAdapter()
