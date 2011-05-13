@@ -36,7 +36,10 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
     const BUTTON_CUSTOM = 0x400;
 
     const DIALOG_MODAL = 0x800;
-    const DIALOG_EMBEDDED = 0x1000;      
+    const DIALOG_EMBEDDED = 0x1000;  
+    const DIALOG_SUCCESS = 0x2000;
+    const DIALOG_WARNING = 0x4000;
+    const DIALOG_ERROR = 0x8000;
 
     /**
      *
@@ -61,7 +64,7 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
 
     public function getIterator()
     {
-        return $this->view->getIterator($data);
+        return $this->view->getIterator();
     }
 
     public function getModule()
@@ -168,7 +171,7 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
      * Renders a dialog box container.
      *
      * @param string $identifier The identifier of the dialog
-     * @param int $flags Render flags: {DIALOG_MODAL, DIALOG_EMBEDDED, STATE_DISABLED}
+     * @param int $flags Render flags: {DIALOG_MODAL, DIALOG_EMBEDDED, STATE_DISABLED, DIALOG_SUCCESS, DIALOG_WARNING, DIALOG_ERROR}
      * @return NethGui_Renderer_Abstract A new object instance
      */
     abstract public function dialog($identifier, $flags = 0);

@@ -409,11 +409,11 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         return $this;
     }
 
-    public function hidden($name, $flags = 0)
+    public function hidden($name, $flags = 0, $forceValue = NULL)
     {
         $attributes = array(
             'type' => 'hidden',
-            'value' => strval($this->view[$name]),
+            'value' => is_null($forceValue) ? strval($this->view[$name]) : strval($forceValue),
         );
         $this->controlTag('input', $name, $flags, '', $attributes);
         return $this;
@@ -481,20 +481,26 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 
     public function dialog($identifier, $flags = 0)
     {
-        $className = 'dialog ';
+        $className = 'dialog';
+
+        if ($flags & self::DIALOG_SUCCESS) {
+            $className .= ' success';
+        } elseif ($flags & self::DIALOG_WARNING) {
+            $className .= ' warning';
+        } elseif ($flags & self::DIALOG_ERROR) {
+            $className .= ' error';
+        }
 
         if ($flags & self::DIALOG_EMBEDDED) {
-            $className .= 'embedded';
-
+            $className .= ' embedded';
             // unset the EMBEDDED flag:
             $flags ^= self::DIALOG_EMBEDDED;
         } elseif ($flags & self::DIALOG_MODAL) {
-            $className .= 'modal';
-
+            $className .= ' modal';
             // unset the MODAL flag:
             $flags ^= self::DIALOG_MODAL;
         } else {
-            $className .= 'embedded'; // default dialog class
+            $className .= ' embedded'; // default dialog class
         }
 
         if ($flags & self::STATE_DISABLED) {
@@ -507,7 +513,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         return $dialog;
     }
 
-    public function form($action = '', $flags = 0)
+    public function form($action = '', $flags = 0, $id = NULL)
     {
         $form = $this->createNewInstance($flags);
         $this->pushContent($form);
@@ -519,7 +525,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         );
 
         $form->addWrapTag('form', $action, '', $attributes);
-        $form->addWrapTag('div', $action);
+        $form->addWrapTag('div', is_null($id) ? $action : $id);
 
         return $form;
     }
@@ -531,7 +537,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         $tabs->addWrapTag('div', $name, 'tabs');
 
         if (is_array($pages)) {
-            $tabs->pushContent($this->openTag('ul', array('class'=>'tabs-list')));
+            $tabs->pushContent($this->openTag('ul', array('class' => 'tabs-list')));
             foreach ($pages as $page) {
 
                 $tabs->pushContent($this->openTag('li'));
