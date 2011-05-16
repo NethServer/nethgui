@@ -50,7 +50,11 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
     private function getFullName($name)
     {
         $path = $this->getModulePath();
-        $path[] = $name;
+        if (is_array($name)) {
+            $path = array_merge($path, $name);
+        } else {
+            $path[] = $name;
+        }
         $prefix = array_shift($path);
 
         return $prefix . '[' . implode('][', $path) . ']';
@@ -302,7 +306,9 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         }
 
         if ($tag == 'input') {
-            $attributes['name'] = $this->getFullName($name);
+            if ( ! isset($attributes['name'])) {
+                $attributes['name'] = $this->getFullName($name);
+            }
 
             $isCheckable = isset($attributes['type']) && ($attributes['type'] == 'checkbox' || $attributes['type'] == 'radio');
 
@@ -395,6 +401,8 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
                 $attributes['type'] = 'submit';
                 $cssClass .= ' submit';
                 $attributes['value'] = T($buttonLabel);
+                $attributes['id'] = FALSE;
+                $attributes['name'] = FALSE;
             } elseif ($flags & self::BUTTON_RESET) {
                 $attributes['type'] = 'reset';
                 $cssClass .= ' reset';
@@ -411,12 +419,38 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 
     public function hidden($name, $flags = 0, $forceValue = NULL)
     {
-        $attributes = array(
-            'type' => 'hidden',
-            'value' => is_null($forceValue) ? strval($this->view[$name]) : strval($forceValue),
-        );
-        $this->controlTag('input', $name, $flags, '', $attributes);
+        $value = $this->view[$name];
+
+        if ( ! is_null($forceValue)) {
+            $value = $forceValue;
+        }
+
+        if ( ! is_array($value)) {
+            $value = array($name => $value);
+        }
+
+        $this->hiddenArrayRecursive($value, $flags);
+
         return $this;
+    }
+
+    private function hiddenArrayRecursive($valueArray, $flags, $path = array())
+    {
+        foreach ($valueArray as $name => $value) {
+            $namePath = $path;
+            $namePath[] = $name;
+
+            if (is_array($value)) {
+                $this->hiddenArrayRecursive($value, $flags, $namePath);
+            } else {
+                $attributes = array(
+                    'type' => 'hidden',
+                    'value' => $value,
+                    'id' => FALSE,
+                );
+                $this->controlTag('input', $namePath, $flags, '', $attributes);
+            }
+        }
     }
 
     public function radioButton($name, $value, $flags = 0)

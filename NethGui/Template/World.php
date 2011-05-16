@@ -19,6 +19,6 @@
                 </div>
             </div>
             <div id="footer">Powered by <a href="/Documentation">NethGuiFramework</a> &ndash; Copyright 2011 &copy; Nethesis S.r.l</div>
-        </div>
+        </div>        
     </body>
 </html>

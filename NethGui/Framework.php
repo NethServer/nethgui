@@ -400,6 +400,8 @@ class NethGui_Framework
 
             $module->process($notificationManager);
         }
+        
+        $worldModule->addModule($notificationManager);
 
         if ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_HTML) {
             $worldModule->addModule(new NethGui_Module_Menu($topModuleDepot->getModules()));

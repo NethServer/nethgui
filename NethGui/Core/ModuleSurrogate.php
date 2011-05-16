@@ -5,6 +5,11 @@
  */
 
 /**
+ * A Module surrogate is employed to store module informations into the User session,
+ * during DialogBox serialization.
+ * 
+ * @see NethGui_Core_DialogBox
+ * @internal
  * @package Core
  */
 class NethGui_Core_ModuleSurrogate implements NethGui_Core_ModuleInterface, Serializable

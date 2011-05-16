@@ -16,13 +16,13 @@ foreach($view['dialogs'] as $dialogData) :
     $dialogClass = 'dialog';
 
     switch ($dialogData['type']) {
-        case NethGui_Core_NotificationCarrierInterface::NOTIFY_SUCCESS:
+        case NethGui_Core_DialogBox::NOTIFY_SUCCESS:
             $dialogClass .= ' embedded success';
             break;
-        case NethGui_Core_NotificationCarrierInterface::NOTIFY_WARNING:
+        case NethGui_Core_DialogBox::NOTIFY_WARNING:
             $dialogClass .= ' embedded warning';
             break;
-        case NethGui_Core_NotificationCarrierInterface::NOTIFY_ERROR:
+        case NethGui_Core_DialogBox::NOTIFY_ERROR:
             $dialogClass .= ' modal error';
             break;
     }

@@ -69,8 +69,10 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
     public function spawnView(NethGui_Core_ModuleInterface $module, $register = FALSE)
     {
         $spawnedView = new self($module);
-        if ($register) {
+        if ($register === TRUE) {
             $this[$module->getIdentifier()] = $spawnedView;
+        } elseif(is_string($register)) {
+            $this[$register] = $spawnedView;
         }
         return $spawnedView;
     }
@@ -111,11 +113,11 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
      */
     public function render()
     {
-        if ($this->module instanceof NethGui_Core_LanguageCatalogProvider) {
-            $languageCatalog = $this->module->getLanguageCatalog();
+        if ($this->getModule() instanceof NethGui_Core_LanguageCatalogProvider) {
+            $languageCatalog = $this->getModule()->getLanguageCatalog();
         } else {
             $languageCatalog = NULL;
-        }        
+        }
 
         $state = array(
             'view' => new NethGui_Renderer_Xhtml($this),
@@ -153,17 +155,31 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
             if ($value instanceof NethGui_Core_View) {
                 $data[$offset] = $this->getArrayCopy($value, $depth + 1);
             } elseif ($value instanceof ArrayObject) {
-                $data[$offset] = $value->getArrayCopy();
-            } elseif (is_string($value)
-                && $this->module instanceof NethGui_Core_LanguageCatalogProvider) {
-                $languageCatalog = $this->module->getLanguageCatalog();
-                $data[$offset] = T($value, array(), NULL, $languageCatalog);
+                $data[$offset] = array();
+                foreach ($value->getArrayCopy() as $item) {
+                    if($item instanceof NethGui_Core_View) {
+                        $data[$offset][] = $this->getArrayCopy($item, $depth +1);
+                    } else {
+                        $data[$offset][] = $this->translateString($value);
+                    }
+                }
+            } elseif (is_string($value)) {
+                $data[$offset] = $this->translateString($value);
             } else {
                 $data[$offset] = $value;
             }
         }
 
         return $data;
+    }
+
+    private function translateString($value)
+    {
+        if ( ! $this->getModule() instanceof NethGui_Core_LanguageCatalogProvider) {
+            return $value;
+        }
+        $languageCatalog = $this->getModule()->getLanguageCatalog();
+        return T($value, array(), NULL, $languageCatalog);
     }
 
     public function getModule()

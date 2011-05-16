@@ -5,67 +5,71 @@
  */
 
 /**
+ * A Dialog Box object shows a message to the User.
+ * 
+ * One or more buttons can be given to perform some action. 
+ * 
+ * A Dialog Box can be transient or persistent. Both types are shown to the User
+ * until they are dismissed. A transient dialog box disappears after a UI update.
+ * Persistent ones disappear after the User clicks on a button.
+ * 
+ * 
+ * 
  * @package Core
  */
 class NethGui_Core_DialogBox implements Serializable
 {
+    const NOTIFY_SUCCESS = 0;
+    const NOTIFY_WARNING = 1;
+    const NOTIFY_ERROR = 2;
+
 
     private $message;
     private $type;
     private $actions;
     private $module;
+    private $id;
 
-    public function __construct(NethGui_Core_ModuleSurrogate $module, $message, $actions = array(), $type = NethGui_Core_NotificationCarrierInterface::NOTIFY_SUCCESS)
+    public function __construct(NethGui_Core_ModuleInterface $module, $message, $actions = array(), $type = self::NOTIFY_SUCCESS)
     {
+        if ( ! $module instanceof NethGui_Core_ModuleSurrogate) {
+            $module = new NethGui_Core_ModuleSurrogate($module);
+        }
+
         $this->module = $module;
-        $this->actions = $actions;
-        $this->message =$message;
+        $this->actions = $this->sanitizeActions($actions);
+        $this->message = $message;
         $this->type = $type;
     }
-       
-    public function getActionViews(NethGui_Core_ModuleInterface $notificationModule)
-    {
-        $views = array();
+
+    private function sanitizeActions($actions) {
+        $sanitizedActions = array();
         
-        foreach($this->actions as $action) {
-            $view = new NethGui_Core_View($this->module);
+        foreach($actions as $action) {
+            if(is_string($action)) {
+                $action = array($action, '', array());
+            }
             
-            $view['name'] = $action[0];
-            $view['location'] = $action[1];            
-            $view['data'] = $action[2];
+            if(!isset($action[1])) {
+                $action[1] = '';
+            }
             
-            $view->setTemplate(array($this, 'renderDialog'));
+            if(!isset($action[2])) {
+                $action[2] = array();
+            }
             
-            $notificationView = $view->spawnView($notificationModule, TRUE);            
-            $notificationView['dismissDialog'] = $this->getId();
-            $notificationView->setTemplate(array($this, 'renderNotification'));
-            
-            
-            $views[] = $view;
+            $sanitizedActions[] = $action;
         }
-       
-        return $views;
+        
+        return $sanitizedActions;
     }
-        
-    public function renderDialog(NethGui_Renderer_Abstract $view)
-    {
-        $form = $view->form($view['location'], 0, 'NotificationDialog_Action_' . $view['name']);
 
-        $form->button($view['name'], NethGui_Renderer_Abstract::BUTTON_SUBMIT);
-        $form->hidden($view['name'], 0, '1');
-
-        foreach ($view['data'] as $parameterName => $parameterValue) {
-            $form->hidden($parameterName, 0, $parameterValue);
-        }
-        
-        $form->inset('NotificationArea');
-        
-        return $view;
-    }    
+    public function getModule() {
+        return $this->module;
+    }
     
-    public function renderNotification(NethGui_Renderer_Abstract $view) {
-        $view->hidden('dismissDialog');
-        return $view;
+    public function getActions() {        
+        return $this->actions;
     }
 
     public function getMessage()
@@ -82,24 +86,25 @@ class NethGui_Core_DialogBox implements Serializable
     {
         return empty($this->actions);
     }
-    
-    public function getId() {
-        return substr(md5($this->serialize()), 0, 6);
+
+    public function getId()
+    {
+        if (is_null($this->id)) {
+            $this->id = substr(md5(microtime() . $this->serialize()), 0, 6);
+        }
+
+        return $this->id;
     }
 
     public function serialize()
     {
-        return serialize(array($this->message, $this->actions, $this->type, $this->module));
+        return serialize(array($this->message, $this->actions, $this->type, $this->module, $this->id));
     }
 
     public function unserialize($serialized)
     {
         $args = unserialize($serialized);
-        
-        $this->message = $args[0];
-        $this->actions = $args[1];
-        $this->type = $args[2];
-        $this->module = $args[3];
+        list($this->message, $this->actions, $this->type, $this->module, $this->id) = $args;
     }
 
 }

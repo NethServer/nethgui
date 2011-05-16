@@ -47,7 +47,8 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard imple
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
-
+        
+        // Transfer validation errors to view
         $view['validationErrors'] = new ArrayObject();
 
         foreach ($this->errors as $error) {
@@ -59,21 +60,58 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard imple
             $view['validationErrors'][] = array($controlId, T($fieldName . '_label'), T($message));
         }
 
+        
+        // Transfer dialog data to view
         $view['dialogs'] = new ArrayObject();
-
-        foreach ($this->user->getDialogBoxes() as $dialogId => $dialog) {
-                       
+                              
+        foreach ($this->user->getDialogBoxes() as $dialogId => $dialog) {                                         
             $dialogData = array(
                 'dialogId' => $dialogId,
                 'message' => $dialog->getMessage(),
-                'actions' => $dialog->getActionViews($this),
+                'actions' => $this->makeActionViewsForDialog($dialog),
                 'type' => $dialog->getType(),
             );
 
             $view['dialogs'][] = $dialogData;
         }
     }
+    
+    private function makeActionViewsForDialog($dialog)
+    {
+        $views = array();
 
+        foreach ($dialog->getActions() as $action) {
+            $view = new NethGui_Core_View($dialog->getModule());
+            $view['name'] = $action[0];
+            $view['location'] = $action[1];
+            $view['data'] = $action[2];
+            
+            $dismissView = $view->spawnView($this, 'dismissView');
+            $dismissView['dismissDialog'] = $dialog->getId();
+            $dismissView->setTemplate(array($this, 'renderDismissNotification'));               
+                        
+            $view->setTemplate(array($this, 'renderDialog'));
+            $views[] = $view;
+        }
+
+        return $views;
+    }
+
+    public function renderDialog(NethGui_Renderer_Abstract $view)
+    {
+        $form = $view->form($view['location'], 0, 'NotificationDialog_Action_' . $view['name']);
+        $form->inset('dismissView');       
+        $form->hidden($view['name'], 0, '1');
+        $form->hidden('data');       
+        $form->button($view['name'], NethGui_Renderer_Abstract::BUTTON_SUBMIT);
+        return $view;
+    }    
+    
+    public function renderDismissNotification(NethGui_Renderer_Abstract $view) {
+        $view->hidden('dismissDialog');
+        return $view;
+    }
+    
     public function addValidationError(NethGui_Core_ModuleInterface $module, $fieldId, $message)
     {
         $this->errors[] = array($fieldId, $message, $module);
@@ -84,35 +122,12 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard imple
         return count($this->errors) > 0;
     }
 
-    public function showDialog(NethGui_Core_ModuleInterface $module, $message, $actions = array(), $type = self::NOTIFY_SUCCESS)
+    public function showDialog(NethGui_Core_ModuleInterface $module, $message, $actions = array(), $type = NethGui_Core_DialogBox::NOTIFY_SUCCESS)
     {
-        $surrogate = new NethGui_Core_ModuleSurrogate($module);
-        $dialog = new NethGui_Core_DialogBox($surrogate, $message, $this->sanitizeActions($actions), $type);
+        $dialog = new NethGui_Core_DialogBox($module, $message, $actions, $type);
         $this->user->showDialogBox($dialog);
     }
     
-    private function sanitizeActions($actions) {
-        $sanitizedActions = array();
-        
-        foreach($actions as $action) {
-            if(is_string($action)) {
-                $action = array($action, '', array());
-            }
-            
-            if(!isset($action[1])) {
-                $action[1] = '';
-            }
-            
-            if(!isset($action[2])) {
-                $action[2] = array();
-            }
-            
-            $sanitizedActions[] = $action;
-        }
-        
-        return $sanitizedActions;
-    }
-
     public function addRedirectOrder(NethGui_Core_ModuleInterface $module, $path = array())
     {
         $this->redirectOrders[] = array($module, $path);
