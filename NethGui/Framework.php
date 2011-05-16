@@ -6,7 +6,7 @@
 /**
  * @package NethGui
  */
-final class NethGui_Framework
+class NethGui_Framework
 {
 
     /**
@@ -350,14 +350,16 @@ final class NethGui_Framework
 
             // Ensure the current module is in the list:
             if ( ! in_array($currentModuleIdentifier, $moduleWakeupList)) {
-                array_unshift($currentModuleIdentifier, $moduleWakeupList);
+                array_unshift($moduleWakeupList, $currentModuleIdentifier);
             }
         } else {
             // The default module is the given in the web request.
             $moduleWakeupList = array($currentModuleIdentifier);
         }
 
-        $notificationCarrier = new NethGui_Module_NotificationArea();
+        $notificationManager = new NethGui_Module_NotificationArea($user);
+        
+        $topModuleDepot->registerModule($notificationManager);
 
         // The World module is a non-processing container.
         $worldModule = new NethGui_Module_World();
@@ -389,17 +391,15 @@ final class NethGui_Framework
             );
 
             // Validate request
-            $module->validate($notificationCarrier);
+            $module->validate($notificationManager);
 
             // Skip next steps, if $module has added some validation errors:
-            if ($notificationCarrier->hasValidationErrors()) {
+            if ($notificationManager->hasValidationErrors()) {
                 continue;
             }
 
-            $module->process($notificationCarrier);
+            $module->process($notificationManager);
         }
-
-        $worldModule->addModule($notificationCarrier);
 
         if ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_HTML) {
             $worldModule->addModule(new NethGui_Module_Menu($topModuleDepot->getModules()));
@@ -412,6 +412,9 @@ final class NethGui_Framework
             $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_UPDATE);
             echo json_encode($view->getArrayCopy());
         }
+        
+        // Control reaches this point only if no redirect occurred.
+        $notificationManager->dismissTransientDialogBoxes();
     }
 
 }

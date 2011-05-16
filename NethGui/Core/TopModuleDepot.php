@@ -109,7 +109,7 @@ class NethGui_Core_TopModuleDepot implements NethGui_Core_ModuleSetInterface, Ne
      * shares the same Policy Decision Point.
      * @param NethGui_Core_ModuleInterface $module The module to be attached to this set.
      */
-    private function registerModule(NethGui_Core_ModuleInterface $module)
+    public function registerModule(NethGui_Core_ModuleInterface $module)
     {
         if (isset($this->modules[$module->getIdentifier()])) {
             throw new Exception("Module id `" . $module->getIdentifier() . "` is already registered.");

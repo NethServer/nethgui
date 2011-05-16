@@ -7,15 +7,42 @@
 
 /**
  * Carries notification messages to the User.
+ * 
+ * Keeps persistent messages into User session.
  *
  * @package Module
  */
-class NethGui_Module_NotificationArea extends NethGui_Core_Module_Abstract implements NethGui_Core_ValidationReportInterface, NethGui_Core_NotificationCarrierInterface
+class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard implements NethGui_Core_ValidationReportInterface, NethGui_Core_NotificationCarrierInterface
 {
 
-    private $errors = array();
-    private $dialogs = array(array(), array(), array());
+    private $errors = array();   
     private $redirectOrders = array();
+    /**
+     *
+     * @var NethGui_Core_UserInterface;
+     */
+    private $user;
+
+    public function __construct(NethGui_Core_UserInterface $user)
+    {
+        parent::__construct(NULL);
+        $this->user = $user;
+    }
+
+    public function initialize()
+    {
+        parent::initialize();
+        $this->declareParameter('dismissDialog', '/^[a-zA-Z0-9]+$/');
+    }
+
+    public function process(NethGui_Core_NotificationCarrierInterface $carrier)
+    {
+        parent::process($carrier);
+
+        if ($this->parameters['dismissDialog'] != '') {
+            $this->user->dismissDialogBox($this->parameters['dismissDialog']);
+        }
+    }
 
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
@@ -32,28 +59,18 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Abstract imple
             $view['validationErrors'][] = array($controlId, T($fieldName . '_label'), T($message));
         }
 
-        $view['notifications'] = new ArrayObject();
+        $view['dialogs'] = new ArrayObject();
 
-        foreach ($this->dialogs as $type => $dialogTypeList) {
-            foreach ($dialogTypeList as $subscriber) {
-                
-                list($module, $template) = $subscriber;
-                
-                $innerView = $view->spawnView($module, FALSE);
-                $innerView['__type'] = $type;
-                $innerView['__message'] = T("dialog_${type}_message_" . $module->getIdentifier());
-                $view['notifications'][] = $innerView;
+        foreach ($this->user->getDialogBoxes() as $dialogId => $dialog) {
+                       
+            $dialogData = array(
+                'dialogId' => $dialogId,
+                'message' => $dialog->getMessage(),
+                'actions' => $dialog->getActionViews($this),
+                'type' => $dialog->getType(),
+            );
 
-                if (is_null($template)) {
-                    $innerView->setTemplate('NethGui_Template_NotificationMessage');
-                } else {
-                    $innerView->setTemplate($template);
-                }
-
-                if (method_exists($module, 'prepareDialogView')) {
-                    $module->prepareDialogView($innerView, $type);
-                } 
-            }
+            $view['dialogs'][] = $dialogData;
         }
     }
 
@@ -67,9 +84,33 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Abstract imple
         return count($this->errors) > 0;
     }
 
-    public function showDialog(NethGui_Core_ModuleInterface $module, $template = NULL, $type = self::NOTIFY_SUCCESS)
+    public function showDialog(NethGui_Core_ModuleInterface $module, $message, $actions = array(), $type = self::NOTIFY_SUCCESS)
     {
-        $this->dialogs[intval($type)][] = array($module, $template);
+        $surrogate = new NethGui_Core_ModuleSurrogate($module);
+        $dialog = new NethGui_Core_DialogBox($surrogate, $message, $this->sanitizeActions($actions), $type);
+        $this->user->showDialogBox($dialog);
+    }
+    
+    private function sanitizeActions($actions) {
+        $sanitizedActions = array();
+        
+        foreach($actions as $action) {
+            if(is_string($action)) {
+                $action = array($action, '', array());
+            }
+            
+            if(!isset($action[1])) {
+                $action[1] = '';
+            }
+            
+            if(!isset($action[2])) {
+                $action[2] = array();
+            }
+            
+            $sanitizedActions[] = $action;
+        }
+        
+        return $sanitizedActions;
     }
 
     public function addRedirectOrder(NethGui_Core_ModuleInterface $module, $path = array())
@@ -84,6 +125,15 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Abstract imple
         }
 
         return NULL;
+    }
+
+    public function dismissTransientDialogBoxes()
+    {
+        foreach ($this->user->getDialogBoxes() as $dialog) {
+            if ($dialog->isTransient()) {
+                $this->user->dismissDialogBox($dialog->getId());
+            }
+        }
     }
 
 }

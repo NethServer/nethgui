@@ -1,1 +1,0 @@
-<div><?php echo sprintf("(%d) ", $view['__level']) . 'Message from ' .  $view->getModule()->getIdentifier() . '...' ; ?></div>
