@@ -358,7 +358,7 @@ class NethGui_Framework
         }
 
         $notificationManager = new NethGui_Module_NotificationArea($user);
-        
+
         $topModuleDepot->registerModule($notificationManager);
 
         // The World module is a non-processing container.
@@ -400,10 +400,14 @@ class NethGui_Framework
 
             $module->process($notificationManager);
         }
-        
+
         $worldModule->addModule($notificationManager);
 
         if ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_HTML) {
+            $redirect = $notificationManager->getRedirectOrder();
+            if ( ! is_null($redirect)) {
+                redirect($redirect);
+            }
             $worldModule->addModule(new NethGui_Module_Menu($topModuleDepot->getModules()));
             $worldModule->addModule(new NethGui_Module_BreadCrumb($topModuleDepot, $currentModuleIdentifier));
             header("Content-Type: text/html; charset=UTF-8");
@@ -414,7 +418,7 @@ class NethGui_Framework
             $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_UPDATE);
             echo json_encode($view->getArrayCopy());
         }
-        
+
         // Control reaches this point only if no redirect occurred.
         $notificationManager->dismissTransientDialogBoxes();
     }
