@@ -84,6 +84,11 @@ class NethGui_Core_ParameterSetEmptyTest extends PHPUnit_Framework_TestCase
         $this->assertFalse(isset($this->object[$offset]));
     }
 
+    public function testSave()
+    {
+        $this->assertEquals(0, $this->object->save());
+    }
+
 }
 
 ?>

@@ -23,12 +23,12 @@ class NethGui_Core_ParameterSetWithAdaptersTest extends PHPUnit_Framework_TestCa
         $this->object = new NethGui_Core_ParameterSet;
 
         $this->arrayAdapter = $this->getMockBuilder('NethGui_Adapter_ArrayAdapter')
-                ->disableOriginalConstructor()
-                ->getMock();
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $this->scalarAdapter = $this->getMockBuilder('NethGui_Adapter_ScalarAdapter')
-                ->disableOriginalConstructor()
-                ->getMock();
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $this->object->register($this->arrayAdapter, 'arrayAdapter');
         $this->object->register($this->scalarAdapter, 'scalarAdapter');
@@ -71,7 +71,7 @@ class NethGui_Core_ParameterSetWithAdaptersTest extends PHPUnit_Framework_TestCa
         $this->object['arrayAdapter'][1] = 'NEW';
     }
 
-    public function testSave()
+    public function testSaveClean()
     {
         $this->arrayAdapter->expects($this->once())
             ->method('save');
@@ -82,7 +82,27 @@ class NethGui_Core_ParameterSetWithAdaptersTest extends PHPUnit_Framework_TestCa
         $this->object['inner']->expects($this->once())
             ->method('save');
 
-        $this->object->save();
+        $this->assertEquals(0, $this->object->save());
+    }
+
+    public function testSaveDirty()
+    {
+        $this->arrayAdapter->expects($this->once())
+            ->method('save')
+            ->will($this->returnValue(1))
+        ;
+
+        $this->scalarAdapter->expects($this->once())
+            ->method('save')
+            ->will($this->returnValue(1))
+        ;
+
+        $this->object['inner']->expects($this->once())
+            ->method('save')
+            ->will($this->returnValue(3))
+        ;
+
+        $this->assertEquals(5, $this->object->save());
     }
 
 }

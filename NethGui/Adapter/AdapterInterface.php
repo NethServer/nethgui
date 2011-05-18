@@ -35,7 +35,8 @@ interface NethGui_Adapter_AdapterInterface
     public function isModified();
 
     /**
-     * @return void
+     * The number of values saved
+     * @return integer
      */
     public function save();
 }

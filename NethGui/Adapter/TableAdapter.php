@@ -89,14 +89,21 @@ class NethGui_Adapter_TableAdapter implements NethGui_Adapter_AdapterInterface, 
 
     public function save()
     {
-        if ($this->isModified()) {
-            foreach ($this->changes as $args) {
-                $method = array_shift($args);
-                call_user_func_array(array($this->database, $method), $args);
-            }
-
-            $this->changes = new ArrayObject();
+        if ( ! $this->isModified()) {
+            return 0;
         }
+
+        $saveCount = 0;
+        
+        foreach ($this->changes as $args) {
+            $method = array_shift($args);
+            call_user_func_array(array($this->database, $method), $args);
+            $saveCount ++;
+        }
+
+        $this->changes = new ArrayObject();
+        
+        return $saveCount;
     }
 
     public function getIterator()

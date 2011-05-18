@@ -71,7 +71,7 @@ class NethGui_Adapter_ScalarAdapterTest extends PHPUnit_Framework_TestCase
             ->method('write')
             ->withAnyParameters();
 
-        $changedFixture->save();
+        $this->assertEquals(1, $changedFixture->save());
     }
 
     /**
@@ -84,7 +84,7 @@ class NethGui_Adapter_ScalarAdapterTest extends PHPUnit_Framework_TestCase
             ->method('write')
             ->withAnyParameters();
 
-        $unchangedFixture->save();
+        $this->assertEquals(0,$unchangedFixture->save());
     }
 
     public function testSaveUninitialized()
@@ -93,7 +93,7 @@ class NethGui_Adapter_ScalarAdapterTest extends PHPUnit_Framework_TestCase
             ->method('write')
             ->withAnyParameters();
 
-        $this->fixture->save();
+        $this->assertEquals(0,$this->fixture->save());
     }
 
     public function testDelete()

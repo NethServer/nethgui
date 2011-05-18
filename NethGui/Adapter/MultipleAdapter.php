@@ -84,7 +84,7 @@ class NethGui_Adapter_MultipleAdapter implements NethGui_Adapter_AdapterInterfac
     public function save()
     {
         if ( ! $this->isModified()) {
-            return;
+            return 0;
         }
 
         $values = call_user_func($this->writerCallback, $this->value);
@@ -97,6 +97,7 @@ class NethGui_Adapter_MultipleAdapter implements NethGui_Adapter_AdapterInterfac
             $index++;
         }
         
+        return $index;
     }
 
     private function lazyInitialization()

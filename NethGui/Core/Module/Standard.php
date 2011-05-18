@@ -124,11 +124,11 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
         }
 
         if ($adapter instanceof NethGui_Adapter_AdapterInterface) {
-            $this->parameters->register($adapter, $parameterName);
+            $this->parameters[$parameterName] = $adapter;
         } elseif (is_array($adapter)) {
-            $this->parameters->register($this->getAdapterForParameter($parameterName, $adapter), $parameterName);
+            $this->parameters[$parameterName] = $this->getAdapterForParameter($parameterName, $adapter);
         } else {
-            $this->parameters->offsetSet($parameterName, NULL);
+            $this->parameters[$parameterName] = NULL;
         }
 
         if ( ! is_null($onSubmitDefaultValue)) {

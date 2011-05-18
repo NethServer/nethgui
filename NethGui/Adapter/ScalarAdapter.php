@@ -60,11 +60,13 @@ class NethGui_Adapter_ScalarAdapter implements NethGui_Adapter_AdapterInterface
     public function save()
     {
         if ( ! $this->isModified()) {
-            return;
+            return 0;
         }
 
         $this->serializer->write($this->value);
         $this->modified = FALSE;
+        
+        return 1;
     }
 
     public function __toString()

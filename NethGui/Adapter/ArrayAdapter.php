@@ -100,7 +100,7 @@ class NethGui_Adapter_ArrayAdapter implements NethGui_Adapter_AdapterInterface, 
     public function save()
     {
         if ( ! $this->isModified()) {
-            return;
+            return 0;
         }
 
         if (is_object($this->data)) {
@@ -112,6 +112,8 @@ class NethGui_Adapter_ArrayAdapter implements NethGui_Adapter_AdapterInterface, 
         $this->serializer->write($value);
 
         $this->modified = FALSE;
+        
+        return 1;
     }
 
     public function count()

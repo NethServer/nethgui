@@ -126,7 +126,7 @@ class NethGui_Adapter_MultipleAdapterTest extends PHPUnit_Framework_TestCase
         $this->returnValues('disabled', '');
         $this->object->set('100');
         $this->expectWrites('enabled', '100');
-        $this->object->save();
+        $this->assertEquals(2, $this->object->save());
     }
 
     public function testSaveUnchanged()
@@ -141,7 +141,7 @@ class NethGui_Adapter_MultipleAdapterTest extends PHPUnit_Framework_TestCase
         $this->serializers[1]->expects($this->never())
             ->method('write');
 
-        $this->object->save();
+        $this->assertEquals(0, $this->object->save());
     }
 
     public function testSaveNull()
@@ -149,7 +149,7 @@ class NethGui_Adapter_MultipleAdapterTest extends PHPUnit_Framework_TestCase
         $this->returnValues('enabled', '99');
         $this->object->delete();
         $this->expectWrites('disabled', NULL);
-        $this->object->save();
+        $this->assertEquals(2, $this->object->save());
     }
 
 }

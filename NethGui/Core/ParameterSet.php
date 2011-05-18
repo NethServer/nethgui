@@ -6,7 +6,14 @@
  */
 
 /**
- * TODO: describe class
+ * Holds primitive and adapter-embedded values.
+ * 
+ * It propagates the save() message to all the members of the set.  
+ * Inside a ParameterSet you can store:
+ *
+ * - Primitive values
+ * - Adapter objects
+ * - Other objects implementing AdapterAggregationInterface
  *
  * @package Core
  */
@@ -71,13 +78,17 @@ class NethGui_Core_ParameterSet implements NethGui_Adapter_AdapterAggregationInt
      */
     public function save()
     {
+        $saveCounter = 0;
+        
         foreach ($this->data as $value) {
             if ($value instanceof NethGui_Adapter_AdapterInterface) {
-                $value->save();
+                $saveCounter += $value->save();
             } elseif ($value instanceof NethGui_Adapter_AdapterAggregationInterface) {
-                $value->save();
+                $saveCounter += $value->save();
             }
         }
+        
+        return $saveCounter;
     }
 
     public function register(NethGui_Adapter_AdapterInterface $adapter, $key)

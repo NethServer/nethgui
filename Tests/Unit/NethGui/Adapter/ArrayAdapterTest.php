@@ -124,7 +124,7 @@ class NethGui_Core_ArrayAdapterTest extends PHPUnit_Framework_TestCase
             ->with('UNO,TWO,THREE');
 
         $this->fixture[0] = 'UNO';
-        $this->fixture->save();
+        $this->assertEquals(1, $this->fixture->save());
     }
 
     public function testSaveDeleted()
@@ -139,7 +139,7 @@ class NethGui_Core_ArrayAdapterTest extends PHPUnit_Framework_TestCase
             ->method('write')
             ->with(NULL);
 
-        $this->fixture->save();
+        $this->assertEquals(1, $this->fixture->save());
     }
 
     public function testSaveNotModified()
@@ -153,7 +153,7 @@ class NethGui_Core_ArrayAdapterTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals('ONE', $this->fixture[0]);
 
-        $this->fixture->save();
+        $this->assertEquals(0, $this->fixture->save());
     }
 
     public function testSaveUninitialized()
@@ -164,7 +164,7 @@ class NethGui_Core_ArrayAdapterTest extends PHPUnit_Framework_TestCase
         $this->serializer->expects($this->never())
             ->method('write');
 
-        $this->fixture->save();
+        $this->assertEquals(0, $this->fixture->save());
     }
 
     public function testCountFull()
