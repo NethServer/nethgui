@@ -53,9 +53,7 @@ class NethGui_Core_Module_TableController extends NethGui_Core_Module_Controller
      */
     public function __construct($identifier, $database, $type, $parameterSchema, $columns, $actions)
     {
-        parent::__construct($identifier);
-        $this->viewTemplate = NULL; // use default
-
+        parent::__construct($identifier);        
         $this->databaseName = $database;
         $this->keyType = $type;
         $this->columns = $columns;
@@ -67,10 +65,6 @@ class NethGui_Core_Module_TableController extends NethGui_Core_Module_Controller
     {
         parent::initialize();
         $tableAdapter = new NethGui_Adapter_TableAdapter($this->getHostConfiguration()->getDatabase($this->databaseName), $this->keyType);
-
-
-        // set the default action
-        $this->addChild(new NethGui_Core_Module_ActionIndex('index'));
 
         $actionObjects = array(0 => FALSE); // set the read action object placeholder.
         $tableActions = array();

@@ -352,7 +352,9 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
     public function inset($offset)
     {
         $value = $this->view[$offset];
-        if ( ! $value instanceof NethGui_Core_ViewInterface) {
+        if ($value instanceof NethGui_Core_ViewInterface) {
+            // pass
+        } else {
             $value = htmlspecialchars($value);
         }
         $this->pushContent($value);
@@ -616,7 +618,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
     private function createNewInstance($flags = 0)
     {
         $instance = clone $this;
-        $instance->flags = $flags;
+        $instance->flags |= $flags;
         return $instance;
     }
 

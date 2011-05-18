@@ -11,105 +11,127 @@
  * A Controller is composed of modules representing actions. 
  * It determines the "current" action to be executed by looking at the 
  * request arguments.
+ * 
+ * A Controller renders its parts embedded in a FORM container.
  *
  * @see NethGui_Core_Module_Composite
  * @package Core
  * @subpackage Module
  */
-class NethGui_Core_Module_Controller extends NethGui_Core_Module_Abstract implements NethGui_Core_ModuleCompositeInterface, NethGui_Core_RequestHandlerInterface
+class NethGui_Core_Module_Controller extends NethGui_Core_Module_Composite implements NethGui_Core_RequestHandlerInterface
 {
 
     /**
-     * @var array
-     */
-    private $actions = array();
-    /**
-     *
+     * The action where to forward method calls
      * @var NethGui_Core_Module_Action
      */
     private $currentAction;
 
-
-    public function addChild(NethGui_Core_ModuleInterface $module)
-    {
-        $this->actions[$module->getIdentifier()] = $module;
-        $module->setParent($this);
-        if ($this->isInitialized()) {
-            $module->initialize();
-        }
-        $module->setHostConfiguration($this->getHostConfiguration());
-    }
-
-    public function getChildren()
-    {
-        return array_values($this->actions);
-    }
-
-    public function initialize()
-    {
-        parent::initialize();
-        foreach ($this->getChildren() as $action) {
-            if ( ! $action->isInitialized()) {
-                $action->initialize();
-            }
-        }
-    }
-
-    public function setHostConfiguration(NethGui_Core_HostConfigurationInterface $hostConfiguration)
-    {
-        parent::setHostConfiguration($hostConfiguration);
-        foreach ($this->getChildren() as $action) {
-            $action->setHostConfiguration($hostConfiguration);
-        }
-    }
-
+    /**
+     * Overrides Composite bind() method, defining what is the current action
+     * and forwarding the call to it.
+     *
+     * @param NethGui_Core_RequestInterface $request 
+     */
     public function bind(NethGui_Core_RequestInterface $request)
     {
-        // If we have no action defined there is nothing to do here.
-        if (empty($this->actions)) {
-            throw new NethGui_Exception_HttpStatusClientError('Not Found', 404);
-        }
-
-        reset($this->actions);
-
         $arguments = $request->getArguments();
 
-        if (empty($arguments) || ! isset($arguments[0])) {
-            // Default action is THE FIRST
-            $currentActionIdentifier = key($this->actions);
-        } else {
-            // The action name is the first argument:
-            $currentActionIdentifier = $arguments[0];
-        }
+        if ( ! empty($arguments) && isset($arguments[0])) {
+            // We can identify the current action
+            $this->currentAction = $this->getAction($arguments[0]);
+            if (is_null($this->currentAction)) {
+                // a NULL action at this point results in a "not found" condition:
+                throw new NethGui_Exception_HttpStatusClientError('Not Found', 404);
+            }
 
-        if ( ! isset($this->actions[$currentActionIdentifier])) {
-            throw new NethGui_Exception_HttpStatusClientError('Not Found', 404);
+            $this->currentAction->bind($request->getParameterAsInnerRequest($arguments[0], array_slice($arguments, 1)));
         }
-        $this->currentAction = $this->actions[$currentActionIdentifier];
-        $this->currentAction->bind($request->getParameterAsInnerRequest($currentActionIdentifier, array_slice($arguments, 1)));
     }
 
+    /**
+     * Returns the child with $identifier, or the first child, if $identifier is NULL.
+     * 
+     * If the child is not found it returns NULL.
+     * 
+     * @param string $identifier 
+     * @return NethGui_Core_ModuleInterface
+     */
+    private function getAction($identifier = NULL)
+    {
+        foreach ($this->getChildren() as $child) {
+            if ($child->getIdentifier() == $identifier || is_null($identifier))
+            {
+                return $child;
+            }
+        }
+        return NULL;
+    }
+
+    /**
+     * Implements validate() method, forwarding the call to current action only.
+     * @param NethGui_Core_ValidationReportInterface $report
+     * @return type 
+     */
     public function validate(NethGui_Core_ValidationReportInterface $report)
     {
+        if (is_null($this->currentAction)) {
+            return;
+        }
+
         $this->currentAction->validate($report);
     }
 
+    /**
+     * Implements process() method, forwarding the call to current 
+     * action only
+     * @param NethGui_Core_NotificationCarrierInterface $carrier
+     * @return type 
+     */
     public function process(NethGui_Core_NotificationCarrierInterface $carrier)
     {
+        if (is_null($this->currentAction)) {
+            return;
+        }
+
         $this->currentAction->process($carrier);
     }
 
+    /**
+     * Implements prepareView() to display all actions in a disabled 
+     * state (index) if current action is not defined, or to display the 
+     * current action.
+     * 
+     * @param NethGui_Core_ViewInterface $view
+     * @param type $mode 
+     */
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
-        $view->setTemplate(array($this, 'renderCurrentView'));
+        
+        if (is_null($this->currentAction)) {
+            foreach ($this->getChildren() as $childModule) {
+                $innerView = $view->spawnView($childModule, TRUE);
+                $childModule->prepareView($innerView, $mode);
+                // override action name:
+                $innerView['__action'] = 'index';                
+            }
+            $view->setTemplate(array($this, 'renderController'));
+        } else {
+            $view->setTemplate(array($this, 'renderCurrentView'));
+            $innerView = $view->spawnView($this->currentAction, TRUE);
+            $innerView['__action'] = $this->currentAction->getIdentifier();
+            $this->currentAction->prepareView($innerView, $mode);
+        }
+    }
 
-        if ($mode == self::VIEW_REFRESH) {
-            $view['__action'] = $this->currentAction->getIdentifier();
-        }        
-               
-        $innerView = $view->spawnView($this->currentAction, TRUE);
-        $this->currentAction->prepareView($innerView, $mode);
+    public function renderController(NethGui_Renderer_Abstract $view)
+    {
+        $form = $view->form('', NethGui_Renderer_Abstract::STATE_DISABLED);
+        foreach ($this->getChildren() as $child) {
+            $form->inset($child->getIdentifier());
+        }
+        return $view;
     }
 
     /**
