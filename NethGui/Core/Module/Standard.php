@@ -18,7 +18,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
     /**
      * A valid service status is a 'disabled' or 'enabled' string.
      */
-    const VALID_SERVICESTATUS = 100;
+    const VALID_SERVICESTATUS = 100;         
 
     /**
      * A valid IPv4 address like '192.168.1.1' 
@@ -41,9 +41,14 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
     const VALID_IP_OR_EMPTY = 203;
 
     /**
+     * This collection holds the parameter values as primitive datatype or adapter objects.
      * @var NethGui_Core_ParameterSet
      */
     protected $parameters;
+    /**
+     * @var array
+     */
+    private $requiredEvents = array();
     /**
      * 
      * @var array
@@ -120,7 +125,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
         if ($validator instanceof NethGui_Core_ValidatorInterface) {
             $this->validators[$parameterName] = $validator;
         } else {
-            throw new NethGui_Exception_Validation("Invalid validator value for parameter `" . $parameter . '` in module `' . get_class($this) . '`.');
+            throw new NethGui_Exception_Validation("Invalid validator value for parameter `" . $parameterName . '` in module `' . get_class($this) . '`.');
         }
 
         if ($adapter instanceof NethGui_Adapter_AdapterInterface) {
@@ -133,6 +138,18 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
 
         if ( ! is_null($onSubmitDefaultValue)) {
             $this->submitDefaults[$parameterName] = $onSubmitDefaultValue;
+        }
+    }
+
+    /**
+     * Signal the given event after at least one successful database write operation occurred.
+     * @param string $eventName 
+     */
+    protected function requireEvent($eventName)
+    {
+        if (is_string($eventName) && ! in_array($eventName, $this->requiredEvents))
+        {
+            $this->requiredEvents[] = $eventName;
         }
     }
 
@@ -281,7 +298,12 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
     public function process(NethGui_Core_NotificationCarrierInterface $carrier)
     {
         if ($this->autosave === TRUE) {
-            $this->parameters->save();
+            $changes = $this->parameters->save();
+            if ($changes > 0) {
+                foreach ($this->requiredEvents as $eventName) {
+                    $this->getHostConfiguration()->signalEventAsync($eventName);
+                }
+            }
         }
     }
 
@@ -294,8 +316,6 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
             $view['__invalidParameters'] = $this->invalidParameters;
         }
     }
-
-
 
 }
 

@@ -57,8 +57,8 @@ class NethGui_Adapter_TableAdapter implements NethGui_Adapter_AdapterInterface, 
         if ( ! isset($this->data)) {
             $this->lazyInitialization();
         }
-
-        foreach (array_keys($this->data)as $key) {
+                      
+        foreach (array_keys($this->data->getArrayCopy()) as $key) {
             unset($this[$key]);
         }
     }
@@ -94,7 +94,7 @@ class NethGui_Adapter_TableAdapter implements NethGui_Adapter_AdapterInterface, 
         }
 
         $saveCount = 0;
-        
+
         foreach ($this->changes as $args) {
             $method = array_shift($args);
             call_user_func_array(array($this->database, $method), $args);
@@ -102,7 +102,7 @@ class NethGui_Adapter_TableAdapter implements NethGui_Adapter_AdapterInterface, 
         }
 
         $this->changes = new ArrayObject();
-        
+
         return $saveCount;
     }
 

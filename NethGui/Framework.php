@@ -403,6 +403,15 @@ class NethGui_Framework
 
         $worldModule->addModule($notificationManager);
 
+        // Raise asynchronous events
+        $eventStatus = $hostConfiguration->raiseAsyncEvents();
+        if ($eventStatus === TRUE)
+        {
+            // If at least one event occurred, show a successful dialog box:
+            $notificationManager->showDialog($worldModule, 'All changes has been saved');
+        }
+        
+        
         if ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_HTML) {
             $redirect = $notificationManager->getRedirectOrder();
             if ( ! is_null($redirect)) {

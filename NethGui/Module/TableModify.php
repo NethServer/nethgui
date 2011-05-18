@@ -25,8 +25,13 @@ class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
      * @var NethGui_Adapter_AdapterInterface
      */
     private $tableAdapter;
+    /**
+     *
+     * @var array
+     */
+    private $requiredEvents;
 
-    public function __construct($identifier, NethGui_Adapter_AdapterInterface $tableAdapter, $parameterSchema, $viewTemplate = NULL)
+    public function __construct($identifier, NethGui_Adapter_AdapterInterface $tableAdapter, $parameterSchema, $requireEvents, $viewTemplate = NULL)
     {
         if ( ! in_array($identifier, array('create', 'delete', 'update'))) {
             throw new InvalidArgumentException('Module identifier must be one of `create`, `delete`, `update` values.');
@@ -37,6 +42,11 @@ class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
         $this->tableAdapter = $tableAdapter;
         $this->parameterSchema = $parameterSchema;
         $this->key = $this->parameterSchema[0][0];
+
+        $this->requiredEvents = array();
+        foreach ($requireEvents as $eventName) {
+            $this->requiredEvents[] = $eventName;
+        }
     }
 
     public function initialize()
@@ -107,8 +117,13 @@ class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
             } else {
                 throw new NethGui_Exception_HttpStatusClientError('Not found', 404);
             }
-
-            $this->tableAdapter->save();
+            
+            $changes = $this->tableAdapter->save();
+            if($changes > 0) {
+                foreach($this->requiredEvents as $eventName) {
+                    $this->getHostConfiguration()->signalEventAsync($eventName);
+                }
+            }
         }
     }
 

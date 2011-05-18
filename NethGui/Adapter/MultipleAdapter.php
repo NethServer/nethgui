@@ -91,13 +91,15 @@ class NethGui_Adapter_MultipleAdapter implements NethGui_Adapter_AdapterInterfac
         
         $index = 0;
         
+        $changes = 0;
+        
         foreach($values as $value) {
             $this->innerAdapters[$index]->set($value);
-            $this->innerAdapters[$index]->save();
+            $changes += $this->innerAdapters[$index]->save();
             $index++;
         }
         
-        return $index;
+        return $changes;
     }
 
     private function lazyInitialization()

@@ -75,6 +75,8 @@ class NethGui_Core_ParameterSet implements NethGui_Adapter_AdapterAggregationInt
      * forwarding the call to Adapters and Sets.
      *
      * This is an helper function.
+     * @see NethGui_Adapter_AdapterAggregationInterface::save()
+     * @return integer The number of saved parameters. A zero value indicates that nothing has been saved.
      */
     public function save()
     {

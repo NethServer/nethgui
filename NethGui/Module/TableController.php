@@ -20,23 +20,18 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
      * @param array $columns
      */
     private $columns;
-
-
     /**
      * @var string
      */
     private $databaseName;
-
     /**
      * @var string
      */
     private $keyType;
-
     /**
      * @var array
      */
     private $parameterSchema;
-
     /**
      * @var array
      */
@@ -52,7 +47,7 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
      */
     public function __construct($identifier, $database, $type, $parameterSchema, $columns, $actions)
     {
-        parent::__construct($identifier);        
+        parent::__construct($identifier);
         $this->databaseName = $database;
         $this->keyType = $type;
         $this->columns = $columns;
@@ -71,18 +66,22 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
 
         foreach ($this->actions as $actionArguments) {
 
-            list($actionName, $viewTemplate, $isTableAction) = $actionArguments;
+            list($actionName, $requireEvents, $viewTemplate, $isTableAction) = $actionArguments;
 
             if ($isTableAction === TRUE) {
                 $tableActions[] = $actionName;
             } else {
                 $columnActions[] = $actionName;
             }
+            
+            if(is_string($requireEvents)) {
+                $requireEvents = array($requireEvents);
+            }
 
             if ($actionArguments instanceof NethGui_Core_Module_Standard) {
                 $actionObjects[] = $actionArguments;
             } else {
-                $actionObjects[] = new NethGui_Module_TableModify($actionName, $tableAdapter, $this->parameterSchema, $viewTemplate);
+                $actionObjects[] = new NethGui_Module_TableModify($actionName, $tableAdapter, $this->parameterSchema, $requireEvents, $viewTemplate);
             }
         }
 

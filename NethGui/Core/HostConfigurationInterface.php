@@ -67,5 +67,15 @@ interface NethGui_Core_HostConfigurationInterface
      * @return boolean true on success, false otherwise
      */
     public function signalEvent($event, &$output=array());
+    
+    
+    /**
+     * Ask the host configuration to signal the given event lately, after all database 
+     * write operations occurred.
+     * 
+     * @param string $event
+     * @param callback $callback
+     */
+    public function signalEventAsync($event, $callback = NULL);
 }
 
