@@ -2,17 +2,17 @@
 /**
  * NethGui
  *
- * @package Core
- * @subpackage Module
+ * @package Module
  */
 
 /**
- * TODO: describe class
+ * A Controller that handles a generic table CRUD scenario
  *
- * @package Core
- * @subpackage Module
+ * @see NethGui_Module_TableModify
+ * @see NethGui_Module_TableRead
+ * @package Module
  */
-class NethGui_Core_Module_TableController extends NethGui_Core_Module_Controller
+class NethGui_Module_TableController extends NethGui_Core_Module_Controller
 {
 
     /**
@@ -43,7 +43,6 @@ class NethGui_Core_Module_TableController extends NethGui_Core_Module_Controller
     private $actions;
 
     /**
-     *
      * @param string $identifier
      * @param string $database
      * @param string $type
@@ -83,12 +82,12 @@ class NethGui_Core_Module_TableController extends NethGui_Core_Module_Controller
             if ($actionArguments instanceof NethGui_Core_Module_Standard) {
                 $actionObjects[] = $actionArguments;
             } else {
-                $actionObjects[] = new NethGui_Core_Module_TableModify($actionName, $tableAdapter, $this->parameterSchema, $viewTemplate);
+                $actionObjects[] = new NethGui_Module_TableModify($actionName, $tableAdapter, $this->parameterSchema, $viewTemplate);
             }
         }
 
         // add the read case
-        $actionObjects[0] = new NethGui_Core_Module_TableRead('read', $tableAdapter, $this->columns, $tableActions, $columnActions);
+        $actionObjects[0] = new NethGui_Module_TableRead('read', $tableAdapter, $this->columns, $tableActions, $columnActions);
 
         // Finally add all the actions
         foreach ($actionObjects as $actionObject) {

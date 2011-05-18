@@ -1,14 +1,12 @@
 <?php
 /**
- * NethGui
- *
  * @package Module
  */
 
 /**
  * World module.
  *
- * This is the root of the modules composition.
+ * Puts modules into the World View for rendering.
  *
  * @package Module
  */

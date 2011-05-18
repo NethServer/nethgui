@@ -1,18 +1,17 @@
 <?php
 /**
- * @package Core
- * @subpackage Module
+ * @package Module
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
 /**
  * Treats the table read case.
  * 
- * @see NethGui_Core_Module_TableModify
- * @package Core
- * @subpackage Module
+ * @see NethGui_Module_TableModify
+ * @see NethGui_Module_TableController
+ * @package Module
  */
-class NethGui_Core_Module_TableRead extends NethGui_Core_Module_Standard
+class NethGui_Module_TableRead extends NethGui_Core_Module_Standard
 {
 
     /**

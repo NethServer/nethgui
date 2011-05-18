@@ -1,18 +1,16 @@
 <?php
 /**
- * @package Core
- * @subpackage Module
+ * @package Module
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
 /**
  * Processes a table modification actions: create, update, delete
  *
- * @see NethGui_Core_Module_TableRead
- * @package Core
- * @subpackage Module
+ * @see NethGui_Module_TableRead
+ * @package Module
  */
-class NethGui_Core_Module_TableModify extends NethGui_Core_Module_Standard
+class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
 {
 
     private $parameterSchema;
@@ -92,7 +90,6 @@ class NethGui_Core_Module_TableModify extends NethGui_Core_Module_Standard
 
                 // Redirect to parent controller module              
                 $carrier->addRedirectOrder($this->getParent());
-                
             } elseif ($action == 'create' || $action == 'update') {
 
                 $values = $this->parameters->getArrayCopy();
@@ -107,11 +104,10 @@ class NethGui_Core_Module_TableModify extends NethGui_Core_Module_Standard
 
                 // Redirect to parent controller module
                 $carrier->addRedirectOrder($this->getParent());
-                
             } else {
                 throw new NethGui_Exception_HttpStatusClientError('Not found', 404);
             }
-            
+
             $this->tableAdapter->save();
         }
     }
@@ -122,7 +118,7 @@ class NethGui_Core_Module_TableModify extends NethGui_Core_Module_Standard
         if ($mode == self::VIEW_REFRESH) {
             $view['__key'] = $this->key;
             $view['__action'] = $this->getIdentifier();
-        } 
+        }
     }
 
 }

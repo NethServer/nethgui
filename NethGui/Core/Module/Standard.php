@@ -7,7 +7,8 @@
  */
 
 /**
- * TODO: describe class
+ * A Standard Module connects the Configuration Database and the View layer,
+ * performing data validation and processing.
  *
  * @package Core
  * @subpackage Module
