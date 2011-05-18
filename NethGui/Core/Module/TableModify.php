@@ -6,8 +6,9 @@
  */
 
 /**
+ * Processes a table modification actions: create, update, delete
  *
- *
+ * @see NethGui_Core_Module_TableRead
  * @package Core
  * @subpackage Module
  */
@@ -89,7 +90,6 @@ class NethGui_Core_Module_TableModify extends NethGui_Core_Module_Standard
                     throw new NethGui_Exception_Process('Cannot delete `' . $key . '`');
                 }
 
-                // TODO: add feedback message
                 // Redirect to parent controller module              
                 $carrier->addRedirectOrder($this->getParent());
                 
@@ -105,13 +105,14 @@ class NethGui_Core_Module_TableModify extends NethGui_Core_Module_Standard
 
                 $this->tableAdapter[$key] = $values;
 
-                // TODO: add feedback message
                 // Redirect to parent controller module
                 $carrier->addRedirectOrder($this->getParent());
                 
             } else {
                 throw new NethGui_Exception_HttpStatusClientError('Not found', 404);
             }
+            
+            $this->tableAdapter->save();
         }
     }
 

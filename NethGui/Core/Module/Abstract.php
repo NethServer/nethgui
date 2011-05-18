@@ -8,7 +8,7 @@
  * @package Core
  * @subpackage Module
  */
-abstract class NethGui_Core_Module_Abstract implements NethGui_Core_ModuleInterface
+abstract class NethGui_Core_Module_Abstract implements NethGui_Core_ModuleInterface, NethGui_Core_LanguageCatalogProvider
 {
 
     /**
@@ -108,5 +108,13 @@ abstract class NethGui_Core_Module_Abstract implements NethGui_Core_ModuleInterf
             $view->setTemplate($this->viewTemplate);
         }
     }
-
+    
+    /**
+     * @param string $languageCode
+     * @return string
+     */
+    public function getLanguageCatalog()
+    {
+        return get_class($this);
+    }
 }

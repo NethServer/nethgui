@@ -6,6 +6,9 @@
  */
 
 /**
+ * Treats the table read case.
+ * 
+ * @see NethGui_Core_Module_TableModify
  * @package Core
  * @subpackage Module
  */

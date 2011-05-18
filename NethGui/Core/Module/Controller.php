@@ -6,17 +6,17 @@
  */
 
 /**
- * Handles action invocations.
+ * A composition of modules, where only one member receives the request handling calls.
  *
- * A Controller is composed of Action Modules. It provides basic request routing
- * and response handling to associated Actions. Only one Action is actually
- * executed. The actual Action is determined by the first URL segment.
+ * A Controller is composed of modules representing actions. 
+ * It determines the "current" action to be executed by looking at the 
+ * request arguments.
  *
  * @see NethGui_Core_Module_Composite
  * @package Core
  * @subpackage Module
  */
-class NethGui_Core_Module_Controller extends NethGui_Core_Module_Standard implements NethGui_Core_ModuleCompositeInterface
+class NethGui_Core_Module_Controller extends NethGui_Core_Module_Abstract implements NethGui_Core_ModuleCompositeInterface, NethGui_Core_RequestHandlerInterface
 {
 
     /**
@@ -28,11 +28,7 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Standard implem
      * @var NethGui_Core_Module_Action
      */
     private $currentAction;
-    /**
-     *
-     * @var array
-     */
-    protected $arguments;
+
 
     public function addChild(NethGui_Core_ModuleInterface $module)
     {
@@ -69,8 +65,6 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Standard implem
 
     public function bind(NethGui_Core_RequestInterface $request)
     {
-        parent::bind($request);
-
         // If we have no action defined there is nothing to do here.
         if (empty($this->actions)) {
             throw new NethGui_Exception_HttpStatusClientError('Not Found', 404);
@@ -78,32 +72,30 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Standard implem
 
         reset($this->actions);
 
-        $this->arguments = $request->getArguments();
+        $arguments = $request->getArguments();
 
-        if (empty($this->arguments) || ! isset($this->arguments[0])) {
+        if (empty($arguments) || ! isset($arguments[0])) {
             // Default action is THE FIRST
             $currentActionIdentifier = key($this->actions);
         } else {
-            // The action name is the second argument:
-            $currentActionIdentifier = $this->arguments[0];
+            // The action name is the first argument:
+            $currentActionIdentifier = $arguments[0];
         }
 
         if ( ! isset($this->actions[$currentActionIdentifier])) {
             throw new NethGui_Exception_HttpStatusClientError('Not Found', 404);
         }
         $this->currentAction = $this->actions[$currentActionIdentifier];
-        $this->currentAction->bind($request->getParameterAsInnerRequest($currentActionIdentifier, array_slice($this->arguments, 1)));
+        $this->currentAction->bind($request->getParameterAsInnerRequest($currentActionIdentifier, array_slice($arguments, 1)));
     }
 
     public function validate(NethGui_Core_ValidationReportInterface $report)
     {
-        parent::validate($report);
         $this->currentAction->validate($report);
     }
 
     public function process(NethGui_Core_NotificationCarrierInterface $carrier)
     {
-        parent::process($carrier);
         $this->currentAction->process($carrier);
     }
 
@@ -114,7 +106,6 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Standard implem
 
         if ($mode == self::VIEW_REFRESH) {
             $view['__action'] = $this->currentAction->getIdentifier();
-            $view['__arguments'] = implode('/', $this->arguments);
         }        
                
         $innerView = $view->spawnView($this->currentAction, TRUE);

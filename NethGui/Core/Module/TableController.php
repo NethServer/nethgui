@@ -20,11 +20,7 @@ class NethGui_Core_Module_TableController extends NethGui_Core_Module_Controller
      * @param array $columns
      */
     private $columns;
-    /**
-     *
-     * @var NethGui_Adapter_TableAdapter
-     */
-    private $tableAdapter;
+
 
     /**
      * @var string
@@ -70,7 +66,7 @@ class NethGui_Core_Module_TableController extends NethGui_Core_Module_Controller
     public function initialize()
     {
         parent::initialize();
-        $this->tableAdapter = new NethGui_Adapter_TableAdapter($this->getHostConfiguration()->getDatabase($this->databaseName), $this->keyType);
+        $tableAdapter = new NethGui_Adapter_TableAdapter($this->getHostConfiguration()->getDatabase($this->databaseName), $this->keyType);
 
 
         // set the default action
@@ -93,33 +89,17 @@ class NethGui_Core_Module_TableController extends NethGui_Core_Module_Controller
             if ($actionArguments instanceof NethGui_Core_Module_Standard) {
                 $actionObjects[] = $actionArguments;
             } else {
-                $actionObjects[] = new NethGui_Core_Module_TableModify($actionName, $this->tableAdapter, $this->parameterSchema, $viewTemplate);
+                $actionObjects[] = new NethGui_Core_Module_TableModify($actionName, $tableAdapter, $this->parameterSchema, $viewTemplate);
             }
         }
 
         // add the read case
-        $actionObjects[0] = new NethGui_Core_Module_TableRead('read', $this->tableAdapter, $this->columns, $tableActions, $columnActions);
+        $actionObjects[0] = new NethGui_Core_Module_TableRead('read', $tableAdapter, $this->columns, $tableActions, $columnActions);
 
         // Finally add all the actions
         foreach ($actionObjects as $actionObject) {
             $this->addChild($actionObject);
         }
-    }
-
-    public function bind(NethGui_Core_RequestInterface $request)
-    {
-        parent::bind($request);
-        if ( ! $request->isSubmitted()) {
-            $this->autosave = FALSE;
-        }
-    }
-
-    public function process(NethGui_Core_NotificationCarrierInterface $carrier)
-    {
-        parent::process($carrier);
-        if ($this->autosave === TRUE) {
-            $this->tableAdapter->save();
-        }        
     }
 
 }

@@ -12,7 +12,7 @@
  * @package Core
  * @subpackage Module
  */
-abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract implements NethGui_Core_RequestHandlerInterface, NethGui_Core_LanguageCatalogProvider
+abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract implements NethGui_Core_RequestHandlerInterface
 {
     /**
      * A valid service status is a 'disabled' or 'enabled' string.
@@ -294,14 +294,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
         }
     }
 
-    /**
-     * @param string $languageCode
-     * @return string
-     */
-    public function getLanguageCatalog()
-    {
-        return get_class($this);
-    }
+
 
 }
 
