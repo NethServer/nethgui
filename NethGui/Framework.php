@@ -345,18 +345,16 @@ class NethGui_Framework
         $topModuleDepot->setPolicyDecisionPoint($pdp);
 
         if ($request->isSubmitted()) {
-            // Multiple modules can be called in the same request.
-            $moduleWakeupList = $request->getParameters();
-
-            // Ensure the current module is in the list:
-            if ( ! in_array($currentModuleIdentifier, $moduleWakeupList)) {
-                array_unshift($moduleWakeupList, $currentModuleIdentifier);
-            }
-        } else {
-            // The default module is the given in the web request.
-            $moduleWakeupList = array($currentModuleIdentifier);
+            // Multiple modules can be called in the same POST request.
+            $moduleWakeupList = $request->getParameters();          
+        } else {           
+            $moduleWakeupList = array();
         }
-
+        
+        // Ensure the current module is the first of the list (as required by World Module):
+        array_unshift($moduleWakeupList, $currentModuleIdentifier);
+        $moduleWakeupList = array_unique($moduleWakeupList);
+        
         $notificationManager = new NethGui_Module_NotificationArea($user);
 
         $topModuleDepot->registerModule($notificationManager);
@@ -408,7 +406,7 @@ class NethGui_Framework
         if ($eventStatus === TRUE)
         {
             // If at least one event occurred, show a successful dialog box:
-            $notificationManager->showDialog($worldModule, 'All changes has been saved');
+            $notificationManager->showDialog($worldModule, 'All changes have been saved');
         }
         
         
