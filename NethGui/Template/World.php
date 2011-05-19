@@ -14,7 +14,7 @@
             <div id="header">NethGui</div>
             <div class="colmask leftmenu">
                 <div class="colleft">
-                    <div class="col1"><?php echo $view['BreadCrumb'] . $view['NotificationArea'] ?><div id="CurrentModule"><?php echo $view['CurrentModule'] ?></div></div>
+                    <div class="col1"><?php echo $view['NotificationArea'] ?><div id="CurrentModule"><?php echo $view['CurrentModule'] ?></div></div>
                     <div class="col2 moduleMenu"><?php echo $view['Menu'] ?></div>
                 </div>
             </div>

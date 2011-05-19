@@ -416,7 +416,6 @@ class NethGui_Framework
                 redirect($redirect);
             }
             $worldModule->addModule(new NethGui_Module_Menu($topModuleDepot->getModules()));
-            $worldModule->addModule(new NethGui_Module_BreadCrumb($topModuleDepot, $currentModuleIdentifier));
             header("Content-Type: text/html; charset=UTF-8");
             $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_REFRESH);
             echo $view->render();
