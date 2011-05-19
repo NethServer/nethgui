@@ -47,17 +47,33 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         return $content;
     }
 
+    /**
+     * Convert the given argument to an xhtml name attribute value
+     *
+     * @param string|array $name
+     * @return string
+     */
     private function getFullName($name)
     {
         $path = $this->getModulePath();
-        if (is_array($name)) {
-            $path = array_merge($path, $name);
-        } else {
-            $path[] = $name;
-        }
-        $prefix = array_shift($path);
 
-        return $prefix . '[' . implode('][', $path) . ']';
+        $nameSegments = $path;
+
+        if (is_string($name)) {
+            $name = explode('/', $name);
+        }
+
+        foreach ($name as $part) {
+            if ($part == '..') {
+                array_pop($nameSegments);
+            } elseif($part != '') {
+                $nameSegments[] = $part;
+            }
+        }
+
+        $prefix = array_shift($nameSegments);
+
+        return $prefix . '[' . implode('][', $nameSegments) . ']';
     }
 
     public function getFullId($name = NULL)
@@ -487,6 +503,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 
         $flags = $this->applyDefaultLabelAlignment($flags, self::LABEL_RIGHT);
 
+        $this->hidden($name, $flags, '');
         $this->labeledControlTag('input', $name, $name, $flags, '', $attributes);
 
         return $this;
