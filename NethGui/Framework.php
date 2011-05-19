@@ -406,7 +406,7 @@ class NethGui_Framework
         if ($eventStatus === TRUE)
         {
             // If at least one event occurred, show a successful dialog box:
-            $notificationManager->showDialog($worldModule, 'All changes have been saved');
+            $user->showDialogBox($worldModule, 'All changes have been saved');
         }
         
         

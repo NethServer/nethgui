@@ -74,14 +74,19 @@ class NethGui_Core_AlwaysAuthenticatedUser implements NethGui_Core_UserInterface
         return isset($this->credentials[$credentialName]);
     }
 
-    public function showDialogBox(NethGui_Core_DialogBox $dialog)
-    {       
-        $this->dialogs[$dialog->getId()] = $dialog;
+    public function showDialogBox(NethGui_Core_ModuleInterface $module, $message, $actions = array(), $type = NethGui_Core_DialogBox::NOTIFY_SUCCESS)
+    {
+        $dialog = new NethGui_Core_DialogBox($module, $message, $actions, $type);
+
+        if ( ! array_key_exists($dialog->getId(), $this->dialogs))
+        {
+            $this->dialogs[$dialog->getId()] = $dialog;
+        }
     }
 
     public function dismissDialogBox($dialogId)
     {
-        if(array_key_exists($dialogId, $this->dialogs)) {
+        if (array_key_exists($dialogId, $this->dialogs)) {
             unset($this->dialogs[$dialogId]);
         }
     }

@@ -41,12 +41,12 @@ interface NethGui_Core_UserInterface
     public function hasCredential($credentialName);
     
     /**
-     * Store $dialog in current user session, waiting for the user answer.
+     * Add a new Dialog Box in current user session, waiting for the user answer.
      * The answer is handled through NotificationArea module, which is responsible
      * for the dialog dismission.
      * The dialogs that don't expect an answer are dismissed after being shown.
      */
-    public function showDialogBox(NethGui_Core_DialogBox $dialog);
+    public function showDialogBox(NethGui_Core_ModuleInterface $module, $message, $actions = array(), $type = NethGui_Core_DialogBox::NOTIFY_SUCCESS);
     
     public function getDialogBoxes();
     

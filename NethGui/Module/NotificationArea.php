@@ -122,12 +122,6 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard imple
         return count($this->errors) > 0;
     }
 
-    public function showDialog(NethGui_Core_ModuleInterface $module, $message, $actions = array(), $type = NethGui_Core_DialogBox::NOTIFY_SUCCESS)
-    {
-        $dialog = new NethGui_Core_DialogBox($module, $message, $actions, $type);
-        $this->user->showDialogBox($dialog);
-    }
-
     public function addRedirectOrder(NethGui_Core_ModuleInterface $module, $path = array())
     {
         $this->redirectOrders[] = array($module, $path);

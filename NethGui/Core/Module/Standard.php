@@ -81,6 +81,13 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
      * @var array
      */
     private $invalidParameters = array();
+    
+    /**
+     *
+     * @var NethGui_Core_UserInterface
+     */
+    private $user;
+    
 
     /**
      * @param string $identifier
@@ -264,6 +271,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
 
     public function bind(NethGui_Core_RequestInterface $request)
     {
+        $this->user = $request->getUser();
         foreach ($this->parameters as $parameterName => $parameterValue) {
             if ($request->hasParameter($parameterName)) {
                 $this->parameters[$parameterName] = $request->getParameter($parameterName);
@@ -317,5 +325,11 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
         }
     }
 
+    /**
+     * @return NethGui_Core_UserInterface
+     */
+    protected function getUser() {
+        return $this->user;    
+    }
 }
 

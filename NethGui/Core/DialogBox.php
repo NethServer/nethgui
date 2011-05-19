@@ -90,7 +90,8 @@ class NethGui_Core_DialogBox implements Serializable
     public function getId()
     {
         if (is_null($this->id)) {
-            $this->id = substr(md5(microtime() . $this->serialize()), 0, 6);
+            // $this->id = substr(md5(microtime() . $this->serialize()), 0, 6);
+            $this->id = substr(md5($this->serialize()), 0, 6);
         }
 
         return $this->id;
