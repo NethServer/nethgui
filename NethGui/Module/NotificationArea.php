@@ -100,8 +100,7 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard imple
     public function renderDialog(NethGui_Renderer_Abstract $view)
     {
         $form = $view->form($view['location'], 0, 'NotificationDialog_Action_' . $view['name']);
-        $form->inset('dismissView');
-        $form->hidden($view['name'], 0, '1');
+        $form->inset('dismissView');        
         $form->hidden('data');
         $form->button($view['name'], NethGui_Renderer_Abstract::BUTTON_SUBMIT);
         return $view;
