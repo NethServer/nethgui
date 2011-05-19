@@ -102,6 +102,8 @@ class NethGui_Adapter_TableAdapter implements NethGui_Adapter_AdapterInterface, 
         }
 
         $this->changes = new ArrayObject();
+        
+        $this->modified = FALSE;
 
         return $saveCount;
     }

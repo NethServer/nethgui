@@ -99,6 +99,8 @@ class NethGui_Adapter_MultipleAdapter implements NethGui_Adapter_AdapterInterfac
             $index++;
         }
         
+        $this->modified = FALSE;
+        
         return $changes;
     }
 
