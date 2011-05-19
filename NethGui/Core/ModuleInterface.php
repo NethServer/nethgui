@@ -12,7 +12,7 @@
  *
  * @package Core
  */
-interface NethGui_Core_ModuleInterface 
+interface NethGui_Core_ModuleInterface
 {
     /**
      * To require a full view refresh
@@ -58,7 +58,6 @@ interface NethGui_Core_ModuleInterface
      */
     public function getDescription();
 
-
     /**
      * After initialization a module...
      */
@@ -70,18 +69,16 @@ interface NethGui_Core_ModuleInterface
      */
     public function isInitialized();
 
-
     /**
      * Prepare view layer data, putting it into $view.
      *
      * @param NethGui_Core_ViewInterface $view The view to put the data into
      * @param integer $mode One of VIEW_UPDATE or VIEW_REFRESH values
      * @see NethGui_Core_ModuleInterface::VIEW_REFRESH
-     * @see NethGui_Core_ModuleInterface::VIEW UPDATE
+     * @see NethGui_Core_ModuleInterface::VIEW_UPDATE
      * @see NethGui_Core_ViewInterface
      */
     public function prepareView(NethGui_Core_ViewInterface $view, $mode);
- 
 }
 
 /**

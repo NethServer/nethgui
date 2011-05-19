@@ -31,13 +31,13 @@ interface NethGui_Core_HostConfigurationInterface
      * is enhanced with an ArrayAccess interface, and the value is stored
      * imploding its elements on that $separator.
      *
-     * @see NethGui_Core_AdapterAggregationInterface
+     * @see NethGui_Adapter_AdapterAggregationInterface
      * @see getMapAdapter()
      * @param string $database Database name
      * @param string $key Key connected to the adapter.
      * @param string $prop Optional - Set to a prop name to connect a prop instead of a key.
      * @param string $separator Optional - Specify a single character string to obtain an ArrayAccess and Countable interface.
-     * @return NethGui_Core_AdapterInterface
+     * @return NethGui_Adapter_AdapterInterface
      */
     public function getIdentityAdapter($database, $key, $prop = NULL, $separator = NULL);
 
@@ -48,12 +48,12 @@ interface NethGui_Core_HostConfigurationInterface
      * function. Values are specified through $args parameter.
      *
      * @see getIdentityAdapter()
-     * @see NethGui_Core_AdapterAggregationInterface
+     * @see NethGui_Adapter_AdapterAggregationInterface
      * @param callback $readCallback If $args has N elements $readCallback must accept N parameters and return a value.
      * @param callback $writeCallback If $args has N elements $writeCallback must accept a parameter and return an array of N elements.
      * @param array $args An array of arrays in the form ($database, $key, $prop). $prop is optional.
      *
-     * @return NethGui_Core_AdapterInterface
+     * @return NethGui_Adapter_AdapterInterface
      */
     public function getMapAdapter($readCallback, $writeCallback, $args);
 
@@ -67,5 +67,15 @@ interface NethGui_Core_HostConfigurationInterface
      * @return boolean true on success, false otherwise
      */
     public function signalEvent($event, &$output=array());
+    
+    
+    /**
+     * Ask the host configuration to signal the given event lately, after all database 
+     * write operations occurred.
+     * 
+     * @param string $event
+     * @param callback $callback
+     */
+    public function signalEventAsync($event, $callback = NULL);
 }
 

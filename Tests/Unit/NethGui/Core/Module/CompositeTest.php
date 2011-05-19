@@ -31,14 +31,15 @@ class NethGui_Core_Module_CompositeTest extends PHPUnit_Framework_TestCase
      */
     protected function tearDown()
     {
-
+        
     }
 
     public function testAddChildInitialized()
     {
         $this->object->initialize();
 
-        $mockModule1 = $this->getMockForAbstractClass("NethGui_Core_Module_Standard", array(), 'Module_M1');
+        $mockModule1 = $this->getMockBuilder('NethGui_Core_Module_Standard')
+            ->getMock();
 
         $mockModule1->expects($this->once())
             ->method('isInitialized')
@@ -51,29 +52,13 @@ class NethGui_Core_Module_CompositeTest extends PHPUnit_Framework_TestCase
             ->method('setParent');
 
         $this->object->addChild($mockModule1);
-
-
-
-//        $mockModule2 = $this->getMockForAbstractClass("NethGui_Core_Module_Standard", array(), 'Module_M2');
-//
-//        $mockModule2->expects($this->never())
-//            ->method('initialize');
-//
-//        $mockModule2->expects($this->once())
-//            ->method('isInitialized')
-//            ->will($this->returnValue(TRUE));
-//
-//        $mockModule2->expects($this->once())
-//            ->method('setParent');
-//
-//        $this->object->addChild($mockModule2);
-
-        
     }
 
     public function testInitialize()
     {
-        
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
     }
 
     /**
@@ -144,6 +129,9 @@ class NethGui_Core_Module_CompositeTest extends PHPUnit_Framework_TestCase
 
 }
 
-class ConcreteCompositeModule1 extends NethGui_Core_Module_Composite {}
+class ConcreteCompositeModule1 extends NethGui_Core_Module_Composite
+{
+    
+}
 
 ?>

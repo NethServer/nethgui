@@ -6,122 +6,132 @@
  */
 
 /**
- * Handles action invocations.
+ * A composition of modules, where only one member receives the request handling calls.
  *
- * A Controller is composed of Action Modules. It provides basic request routing
- * and response handling to associated Actions. Only one Action is actually
- * executed. The actual Action is determined by the first URL segment.
+ * A Controller is composed of modules representing actions. 
+ * It determines the "current" action to be executed by looking at the 
+ * request arguments.
+ * 
+ * A Controller renders its parts embedded in a FORM container.
  *
  * @see NethGui_Core_Module_Composite
  * @package Core
  * @subpackage Module
  */
-class NethGui_Core_Module_Controller extends NethGui_Core_Module_Standard implements NethGui_Core_ModuleCompositeInterface
+class NethGui_Core_Module_Controller extends NethGui_Core_Module_Composite implements NethGui_Core_RequestHandlerInterface
 {
 
     /**
-     * @var array
-     */
-    private $actions = array();
-
-    /**
-     *
+     * The action where to forward method calls
      * @var NethGui_Core_Module_Action
      */
     private $currentAction;
 
     /**
+     * Overrides Composite bind() method, defining what is the current action
+     * and forwarding the call to it.
      *
-     * @var array
+     * @param NethGui_Core_RequestInterface $request 
      */
-    protected $arguments;
-
-    public function __construct($identifier = NULL)
-    {
-        parent::__construct($identifier);
-        $this->viewTemplate = array($this, 'renderCurrentView');
-    }
-
-    public function addChild(NethGui_Core_ModuleInterface $module)
-    {
-        $this->actions[$module->getIdentifier()] = $module;
-        $module->setParent($this);
-        if ($this->isInitialized()) {
-            $module->initialize();
-        }
-        $module->setHostConfiguration($this->getHostConfiguration());
-    }
-
-    public function getChildren()
-    {
-        return array_values($this->actions);
-    }
-
-    public function initialize()
-    {
-        parent::initialize();
-        foreach ($this->getChildren() as $action) {
-            if ( ! $action->isInitialized()) {
-                $action->initialize();
-            }
-        }
-    }
-
-    public function setHostConfiguration(NethGui_Core_HostConfigurationInterface $hostConfiguration)
-    {
-        parent::setHostConfiguration($hostConfiguration);
-        foreach ($this->getChildren() as $action) {
-            $action->setHostConfiguration($hostConfiguration);
-        }
-    }
-
     public function bind(NethGui_Core_RequestInterface $request)
     {
-        parent::bind($request);
+        $arguments = $request->getArguments();
 
-        // If we have no action defined there is nothing to do here.
-        if (empty($this->actions)) {
+        if ( ! empty($arguments) && isset($arguments[0])) {
+            // We can identify the current action
+            $this->currentAction = $this->getAction($arguments[0]);
+            if (is_null($this->currentAction)) {
+                // a NULL action at this point results in a "not found" condition:
+                throw new NethGui_Exception_HttpStatusClientError('Not Found', 404);
+            }
+
+            $this->currentAction->bind($request->getParameterAsInnerRequest($arguments[0], array_slice($arguments, 1)));
+        }
+    }
+
+    /**
+     * Returns the child with $identifier, or the first child, if $identifier is NULL.
+     * 
+     * If the child is not found it returns NULL.
+     * 
+     * @param string $identifier 
+     * @return NethGui_Core_ModuleInterface
+     */
+    private function getAction($identifier = NULL)
+    {
+        foreach ($this->getChildren() as $child) {
+            if ($child->getIdentifier() == $identifier || is_null($identifier))
+            {
+                return $child;
+            }
+        }
+        return NULL;
+    }
+
+    /**
+     * Implements validate() method, forwarding the call to current action only.
+     * @param NethGui_Core_ValidationReportInterface $report
+     * @return type 
+     */
+    public function validate(NethGui_Core_ValidationReportInterface $report)
+    {
+        if (is_null($this->currentAction)) {
             return;
         }
 
-        reset($this->actions);
-
-        $this->arguments = $request->getArguments();
-
-        if (empty($this->arguments) || !isset($this->arguments[0])) {
-            // Default action is THE FIRST
-            $currentActionIdentifier = key($this->actions);
-        } else {
-            // The action name is the second argument:
-            $currentActionIdentifier = $this->arguments[0];
-        }
-
-        if ( ! isset($this->actions[$currentActionIdentifier])) {
-            throw new NethGui_Exception_HttpStatusClientError('Not Found', 404);
-        }
-        $this->currentAction = $this->actions[$currentActionIdentifier];                
-        $this->currentAction->bind($request->getParameterAsInnerRequest($currentActionIdentifier,  array_slice($this->arguments, 1)));
-    }
-
-    public function validate(NethGui_Core_ValidationReportInterface $report)
-    {
-        parent::validate($report);
         $this->currentAction->validate($report);
     }
 
-    public function process()
+    /**
+     * Implements process() method, forwarding the call to current 
+     * action only
+     * @param NethGui_Core_NotificationCarrierInterface $carrier
+     * @return type 
+     */
+    public function process(NethGui_Core_NotificationCarrierInterface $carrier)
     {
-        parent::process();
-        return $this->currentAction->process();
+        if (is_null($this->currentAction)) {
+            return;
+        }
+
+        $this->currentAction->process($carrier);
     }
 
+    /**
+     * Implements prepareView() to display all actions in a disabled 
+     * state (index) if current action is not defined, or to display the 
+     * current action.
+     * 
+     * @param NethGui_Core_ViewInterface $view
+     * @param type $mode 
+     */
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
-        $innerView = $view->spawnView($this->currentAction);
-        $view['currentAction'] = $innerView;
-        $view['arguments'] = implode('/', $this->arguments);
         parent::prepareView($view, $mode);
-        $this->currentAction->prepareView($innerView, $mode);
+        
+        if (is_null($this->currentAction)) {
+            foreach ($this->getChildren() as $childModule) {
+                $innerView = $view->spawnView($childModule, TRUE);
+                $childModule->prepareView($innerView, $mode);
+                // override action name:
+                $innerView['__action'] = 'index';                
+            }
+            $view->setTemplate(array($this, 'renderController'));
+        } else {
+            $view->setTemplate(array($this, 'renderCurrentView'));
+            $innerView = $view->spawnView($this->currentAction, TRUE);
+            $innerView['__action'] = $this->currentAction->getIdentifier();
+            $this->currentAction->prepareView($innerView, $mode);
+        }
+    }
+
+    public function renderController(NethGui_Renderer_Abstract $view)
+    {
+        $form = $view->form('', NethGui_Renderer_Abstract::STATE_DISABLED);
+        foreach ($this->getChildren() as $child) {
+            $form->inset($child->getIdentifier());
+        }
+        return $view;
     }
 
     /**
@@ -131,12 +141,16 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Standard implem
      * render message to the current action.
      *
      * @internal Actually called by the framework.
-     * @param array $state The view state
+     * @param NethGui_Renderer_Abstract $view The view
      * @return string
      */
-    public function renderCurrentView($state)
+    public function renderCurrentView(NethGui_Renderer_Abstract $view)
     {
-        return $state['view'][$this->currentAction->getIdentifier()]->render();
+        $action = $this->currentAction->getIdentifier();
+        return $view
+            ->form($action)
+            ->inset($action)
+        ;
     }
 
 }

@@ -8,7 +8,7 @@
  * @package Core
  * @subpackage Module
  */
-abstract class NethGui_Core_Module_Abstract implements NethGui_Core_ModuleInterface
+abstract class NethGui_Core_Module_Abstract implements NethGui_Core_ModuleInterface, NethGui_Core_LanguageCatalogProvider
 {
 
     /**
@@ -28,6 +28,7 @@ abstract class NethGui_Core_Module_Abstract implements NethGui_Core_ModuleInterf
      * @var HostConfigurationInterface
      */
     private $hostConfiguration;
+    
     /**
      * Template applied to view, if different from NULL
      *
@@ -83,12 +84,12 @@ abstract class NethGui_Core_Module_Abstract implements NethGui_Core_ModuleInterf
 
     public function getTitle()
     {
-        return array_pop(explode('_', $this->getIdentifier()));
+        return array_pop(explode('_', $this->getIdentifier())) . '_Title';
     }
 
     public function getDescription()
     {
-        return $this->getTitle();
+        return $this->getTitle() . '_Description';
     }
 
     public function setParent(NethGui_Core_ModuleInterface $parentModule)
@@ -100,12 +101,20 @@ abstract class NethGui_Core_Module_Abstract implements NethGui_Core_ModuleInterf
     {
         return $this->parent;
     }
-    
+
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
         if (is_string($this->viewTemplate) || is_callable($this->viewTemplate)) {
             $view->setTemplate($this->viewTemplate);
         }
     }
-
+    
+    /**
+     * @param string $languageCode
+     * @return string
+     */
+    public function getLanguageCatalog()
+    {
+        return get_class($this);
+    }
 }

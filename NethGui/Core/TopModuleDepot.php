@@ -44,6 +44,9 @@ class NethGui_Core_TopModuleDepot implements NethGui_Core_ModuleSetInterface, Ne
         $this->hostConfiguration = $hostConfiguration;
         $this->user = $user;
         $this->createTopModules();
+        // XXX: add Notification module here?
+        $notificationModule = $this->createModule('NethGui_Module_Notification');
+        $this->registerModule($notificationModule);        
     }
 
     /**
@@ -54,11 +57,11 @@ class NethGui_Core_TopModuleDepot implements NethGui_Core_ModuleSetInterface, Ne
     private function createTopModules()
     {
         // TODO: set a configuration parameter for modules directory
-        $directoryIterator = new DirectoryIterator(dirname(__FILE__) . '/../Module');
+        $directoryIterator = new DirectoryIterator(dirname(__FILE__) . '/../../NethService/Module/');
         foreach ($directoryIterator as $element) {
             if (substr($element->getFilename(), -4) == '.php') {
 
-                $className = 'NethGui_Module_' . substr($element->getFileName(), 0, -4);
+                $className = 'NethService_Module_' . substr($element->getFileName(), 0, -4);
 
                 $classReflector = new ReflectionClass($className);
 
@@ -94,7 +97,9 @@ class NethGui_Core_TopModuleDepot implements NethGui_Core_ModuleSetInterface, Ne
 
         $module->setHostConfiguration($this->hostConfiguration);
 
-        log_message('debug', "Created `" . $module->getIdentifier() . "`, as `{$className}` instance.");
+        if(ENVIRONMENT == 'development') {
+            NethGui_Framework::getInstance()->logMessage("Created `" . $module->getIdentifier() . "`, as `{$className}` instance.", 'debug');
+        }
 
         return $module;
     }
@@ -104,7 +109,7 @@ class NethGui_Core_TopModuleDepot implements NethGui_Core_ModuleSetInterface, Ne
      * shares the same Policy Decision Point.
      * @param NethGui_Core_ModuleInterface $module The module to be attached to this set.
      */
-    private function registerModule(NethGui_Core_ModuleInterface $module)
+    public function registerModule(NethGui_Core_ModuleInterface $module)
     {
         if (isset($this->modules[$module->getIdentifier()])) {
             throw new Exception("Module id `" . $module->getIdentifier() . "` is already registered.");

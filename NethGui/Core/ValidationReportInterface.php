@@ -11,10 +11,18 @@
  */
 interface NethGui_Core_ValidationReportInterface
 {
-    public function addError(NethGui_Core_ModuleInterface $module, $fieldId, $message);
+    /**
+     * @param NethGui_Core_ModuleInterface $module
+     * @param string $parameterName
+     * @param string $message
+     */
+    public function addValidationError(NethGui_Core_ModuleInterface $module, $parameterName, $message);
 
     /**
-     * @return array
+     * Check if a validation error has been added.
+     * @return boolean
      */
-    public function getErrors();
+    public function hasValidationErrors();
 }
+
+

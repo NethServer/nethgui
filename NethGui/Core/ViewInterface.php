@@ -38,9 +38,10 @@ interface NethGui_Core_ViewInterface extends ArrayAccess, IteratorAggregate
     /**
      * Create a new view object associated to $module
      * @param NethGui_Core_ModuleInterface $module The associated $module
+     * @param boolean Optional If TRUE the returned view is added to the current object with key equal to the module identifier
      * @return NethGui_Core_ViewInterface The new view object, of the same type of the actual.
      */
-    public function spawnView(NethGui_Core_ModuleInterface $module);
+    public function spawnView(NethGui_Core_ModuleInterface $module, $register = FALSE);
 
     /**
      * Renders a string representation of the view, performing string translations
@@ -51,11 +52,11 @@ interface NethGui_Core_ViewInterface extends ArrayAccess, IteratorAggregate
     public function render();
 
     /**
-     * 
-     *
-     * @return string an URL to the current Module
+     * The module associated to this view.
+     * @return NethGui_Core_ModuleInterface
      */
-    public function buildUrl();
+    public function getModule();
+    
 }
 
 ?>

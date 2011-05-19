@@ -1,0 +1,8 @@
+pdepend output in this directory
+
+See http://pdepend.org/
+
+Sample invocation:
+
+ $ pdepend --summary-xml=Documentation/Metrics/summary.xml  --jdepend-chart=Documentation/Metrics/jdepend.svg  --overview-pyramid=Documentation/Metrics/pyramid.svg NethGui/
+

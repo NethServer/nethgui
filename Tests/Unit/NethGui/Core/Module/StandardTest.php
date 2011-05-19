@@ -38,8 +38,8 @@ class NethGui_Core_Module_StandardTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($this->object->getParent(), NULL);
 
         $mockModule = $this->getMockBuilder('NethGui_Core_Module_Composite')
-                ->disableOriginalConstructor()
-                ->getMock();
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $this->object->setParent($mockModule);
         $this->assertEquals($this->object->getParent(), $mockModule);
@@ -48,8 +48,8 @@ class NethGui_Core_Module_StandardTest extends PHPUnit_Framework_TestCase
     public function testPrepareView1()
     {
         $viewMock = $this->getMockBuilder('NethGui_Core_View')
-                ->disableOriginalConstructor()
-                ->getMock();
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $viewMock->expects($this->once())
             ->method('copyFrom')
@@ -61,13 +61,13 @@ class NethGui_Core_Module_StandardTest extends PHPUnit_Framework_TestCase
     public function testPrepareView2()
     {
         $viewMock = $this->getMockBuilder('NethGui_Core_View')
-                ->disableOriginalConstructor()
-                ->getMock();
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $viewMock->expects($this->exactly(2))
             ->method('copyFrom')
             ->with($this->anything());
-        -
+        
             $this->object->prepareView($viewMock, NethGui_Core_Module_Standard::VIEW_REFRESH);
     }
 
@@ -78,13 +78,16 @@ class NethGui_Core_Module_StandardTest extends PHPUnit_Framework_TestCase
 
 }
 
-class ConcreteStandardModule1 extends NethGui_Core_Module_Standard {
+class ConcreteStandardModule1 extends NethGui_Core_Module_Standard
+{
+
     public function initialize()
     {
         parent::initialize();
         $this->declareParameter('a');
         $this->declareParameter('b');
     }
+
 }
 
 ?>

@@ -25,6 +25,8 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
      * @var NethGui_Core_UserInterface
      */
     private $user;
+    
+    private $asyncEvents;
 
     /**
      * We must specify who acts on host configuration.
@@ -33,6 +35,7 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
     public function __construct(NethGui_Core_UserInterface $user)
     {
         $this->user = $user;
+        $this->asyncEvents = array();
     }
 
     /**
@@ -59,9 +62,9 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
             $serializer = $this->getSerializer($database, $key, $prop);
 
             if (is_null($separator)) {
-                $adapter = new NethGui_Core_ScalarAdapter($serializer);
+                $adapter = new NethGui_Adapter_ScalarAdapter($serializer);
             } else {
-                $adapter = new NethGui_Core_ArrayAdapter($separator, $serializer);
+                $adapter = new NethGui_Adapter_ArrayAdapter($separator, $serializer);
             }
         } elseif (is_callback($key)) {
             // TODO
@@ -81,7 +84,7 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
             $serializers[] = call_user_func_array(array($this, 'getSerializer'), $serializerSpec);
         }
 
-        $adapter = new NethGui_Core_MultipleAdapter($readCallback, $writeCallback, $serializers);
+        $adapter = new NethGui_Adapter_MultipleAdapter($readCallback, $writeCallback, $serializers);
 
         return $adapter;
     }
@@ -91,14 +94,14 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
      * @param string $database
      * @param string $key
      * @param string $prop
-     * @return NethGui_Core_SerializerInterface
+     * @return NethGui_Serializer_SerializerInterface
      */
     private function getSerializer($database, $key, $prop = NULL)
     {
         if (is_null($prop)) {
-            $serializer = new NethGui_Core_KeySerializer($this->getDatabase($database), $key);
+            $serializer = new NethGui_Serializer_KeySerializer($this->getDatabase($database), $key);
         } else {
-            $serializer = new NethGui_Core_PropSerializer($this->getDatabase($database), $key, $prop);
+            $serializer = new NethGui_Serializer_PropSerializer($this->getDatabase($database), $key, $prop);
         }
 
         return $serializer;
@@ -118,6 +121,41 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
     {
         exec('/usr/bin/sudo /sbin/e-smith/signal-event' . ' ' . escapeshellarg($event), $output, $ret);
         return ($ret == 0);
+    }
+
+    public function signalEventAsync($event, $callback = NULL)
+    {
+        if ( ! isset($this->asyncEvents[$event])) {
+            $this->asyncEvents[$event] = array();
+        }
+        if (is_callable($callback)) {
+            $this->asyncEvents[$event][] = $callback;
+        }
+    }
+    
+    /**
+     * Raises all asynchronous events, invoking the given callback functions.
+     * @return boolean|NULL
+     */
+    public function raiseAsyncEvents() {
+        if(empty($this->asyncEvents)) {
+            return NULL;
+        }
+        
+        $eventNames = array_keys($this->asyncEvents);
+        foreach($eventNames as $eventName) {
+            $exitStatus = $this->signalEvent($eventName);
+            
+            $callbacks = $this->asyncEvents[$eventName];
+            foreach($callbacks as $callback) {
+                call_user_func($callback, $exitStatus);
+            }
+            
+            if($exitStatus === FALSE) {
+                return FALSE;
+            }
+        }
+        return TRUE;
     }
 
     public function getPolicyDecisionPoint()

@@ -6,15 +6,21 @@
  */
 
 /**
- * TODO: describe class
+ * Holds primitive and adapter-embedded values.
+ * 
+ * It propagates the save() message to all the members of the set.  
+ * Inside a ParameterSet you can store:
+ *
+ * - Primitive values
+ * - Adapter objects
+ * - Other objects implementing AdapterAggregationInterface
  *
  * @package Core
  */
-class NethGui_Core_ParameterSet implements NethGui_Core_AdapterAggregationInterface, ArrayAccess, Iterator, Countable
+class NethGui_Core_ParameterSet implements NethGui_Adapter_AdapterAggregationInterface, ArrayAccess, Iterator, Countable
 {
 
     private $data = array();
-       
 
     /**
      * The number of members of this set.
@@ -32,12 +38,12 @@ class NethGui_Core_ParameterSet implements NethGui_Core_AdapterAggregationInterf
 
     public function offsetGet($offset)
     {
-        if(!$this->offsetExists($offset)) {
+        if ( ! $this->offsetExists($offset)) {
             trigger_error('Undefined offset `' . $offset . '`', E_USER_NOTICE);
             return NULL;
         }
 
-        if ($this->data[$offset] instanceof NethGui_Core_AdapterInterface) {
+        if ($this->data[$offset] instanceof NethGui_Adapter_AdapterInterface) {
             $value = $this->data[$offset]->get();
         } else {
             $value = $this->data[$offset];
@@ -48,7 +54,7 @@ class NethGui_Core_ParameterSet implements NethGui_Core_AdapterAggregationInterf
 
     public function offsetSet($offset, $value)
     {
-        if (isset($this->data[$offset]) && $this->data[$offset] instanceof NethGui_Core_AdapterInterface) {
+        if (isset($this->data[$offset]) && $this->data[$offset] instanceof NethGui_Adapter_AdapterInterface) {
             $this->data[$offset]->set($value);
         } else {
             $this->data[$offset] = $value;
@@ -57,7 +63,7 @@ class NethGui_Core_ParameterSet implements NethGui_Core_AdapterAggregationInterf
 
     public function offsetUnset($offset)
     {
-        if ($this->data[$offset] instanceof NethGui_Core_AdapterInterface) {
+        if ($this->data[$offset] instanceof NethGui_Adapter_AdapterInterface) {
             $this->data[$offset]->delete();
         }
         unset($this->data[$offset]);
@@ -68,24 +74,54 @@ class NethGui_Core_ParameterSet implements NethGui_Core_AdapterAggregationInterf
      * forwarding the call to Adapters and Sets.
      *
      * This is an helper function.
+     * @see NethGui_Adapter_AdapterAggregationInterface::save()
+     * @return integer The number of saved parameters. A zero value indicates that nothing has been saved.
      */
     public function save()
     {
+        $saveCounter = 0;
+
         foreach ($this->data as $value) {
-            if ($value instanceof NethGui_Core_AdapterInterface) {
-                $value->save();
-            } elseif ($value instanceof NethGui_Core_AdapterAggregationInterface) {
-                $value->save();
+            if ($value instanceof NethGui_Adapter_AdapterInterface) {
+                $saveCounter += $value->save();
+            } elseif ($value instanceof NethGui_Adapter_AdapterAggregationInterface) {
+                $saveCounter += $value->save();
             }
         }
+
+        return $saveCounter;
     }
 
-    public function register(NethGui_Core_AdapterInterface $adapter, $key)
+    public function register(NethGui_Adapter_AdapterInterface $adapter, $key)
     {
         $this->data[$key] = $adapter;
     }
 
-    
+    public function isModified($key = NULL)
+    {
+        if (is_null($key)) {
+            $keys = array_keys($this->data);
+        } else {
+            $keys = array($key);
+        }
+
+        foreach ($keys as $key) {
+            $value = $this->data[$key];
+            
+            if ($value instanceof NethGui_Adapter_AdapterInterface) {
+                $modified = $value->isModified();
+            } elseif ($value instanceof NethGui_Adapter_AdapterAggregationInterface) {
+                $modified = $value->isModified(NULL);
+            }
+
+            if ($modified === TRUE) {
+                return TRUE;
+            }
+        }
+
+        return FALSE;      
+    }
+
     public function current()
     {
         return $this->offsetGet(key($this->data));
@@ -115,15 +151,15 @@ class NethGui_Core_ParameterSet implements NethGui_Core_AdapterAggregationInterf
      * Converts the current instance to an array in the form key => value.
      * @return array
      */
-    public function getArrayCopy() {
+    public function getArrayCopy()
+    {
         $a = array();
 
-        foreach($this as $key => $value){
+        foreach ($this as $key => $value) {
             $a[$key] = $value;
         }
 
         return $a;
     }
-
 
 }

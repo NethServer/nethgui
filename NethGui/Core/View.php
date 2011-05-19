@@ -32,12 +32,6 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
      */
     private $module;
     /**
-     * Module path caches the identifier of all ancestors from the root to the
-     * associated module.
-     * @var array
-     */
-    private $modulePath;
-    /**
      * Holds view state
      * @var array
      */
@@ -53,50 +47,11 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
     {
         if ($module instanceof NethGui_Core_ModuleInterface) {
             $this->module = $module;
-            $this->template = str_replace('_Module_', '_View_', get_class($module));
+            // XXX: trying to guess view name
+            $this->template = str_replace('_Module_', '_Template_', get_class($module));
         }
 
         $this->data = array();
-
-        // XXX: trying to guess view name
-    }
-
-    private function getFullName($parameterName)
-    {
-        $path = $this->getModulePath();
-        $path[] = $parameterName;
-        $prefix = array_shift($path);
-
-        return $prefix . '[' . implode('][', $path) . ']';
-    }
-
-    private function getFullId($widgetId)
-    {
-        return implode('_', $this->getModulePath()) . '_' . $widgetId;
-    }
-
-    /**
-     * Return the array of parent module identifiers.
-     * @return array
-     */
-    private function getModulePath()
-    {
-        if ( ! isset($this->modulePath)) {
-            $this->modulePath = array();
-
-            $watchdog = 0;
-            $module = $this->module;
-
-            while ( ! (is_null($module))) {
-                if ( ++ $watchdog > 20) {
-                    throw new Exception("Too many nested modules or cyclic module structure.");
-                }
-                array_unshift($this->modulePath, $module->getIdentifier());
-                $module = $module->getParent();
-            }
-        }
-
-        return $this->modulePath;
     }
 
     public function copyFrom($data)
@@ -111,9 +66,15 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
         $this->template = $template;
     }
 
-    public function spawnView(NethGui_Core_ModuleInterface $module)
+    public function spawnView(NethGui_Core_ModuleInterface $module, $register = FALSE)
     {
-        return new self($module);
+        $spawnedView = new self($module);
+        if ($register === TRUE) {
+            $this[$module->getIdentifier()] = $spawnedView;
+        } elseif(is_string($register)) {
+            $this[$register] = $spawnedView;
+        }
+        return $spawnedView;
     }
 
     public function getIterator()
@@ -152,45 +113,17 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
      */
     public function render()
     {
-        $state = array();
-
-        $state['view'] = $this;
-        $state['id'] = array();
-        $state['name'] = array();
-        $state['parameters'] = array();
-        $state['module'] = $this->module;
-        $state['framework'] = NethGui_Framework::getInstance();
-
-        // Add a reference to forward current view state into inner views.
-        $state['self'] = &$state;
-
-        // Put all view data into id, name, parameter helper arrays.
-        foreach ($this->data as $parameterName => $parameterValue) {
-            $state['id'][$parameterName] = htmlspecialchars($this->getFullId($parameterName));
-            $state['name'][$parameterName] = htmlspecialchars($this->getFullName($parameterName));
-
-            if (is_string($parameterValue)) {
-                $state['parameters'][$parameterName] = htmlspecialchars($parameterValue);
-            } else {
-                $state['parameters'][$parameterName] = $parameterValue;
-            }
-        }
-
-        if ($this->module instanceof NethGui_Core_LanguageCatalogProvider) {
-            $languageCatalog = $this->module->getLanguageCatalog();
+        if ($this->getModule() instanceof NethGui_Core_LanguageCatalogProvider) {
+            $languageCatalog = $this->getModule()->getLanguageCatalog();
         } else {
             $languageCatalog = NULL;
         }
 
-        if (is_string($this->template)) {
-            $viewString = NethGui_Framework::getInstance()->renderView($this->template, $state, $languageCatalog);
-        } elseif (is_callable($this->template)) {
-            $viewString = call_user_func($this->template, $state);
-        } elseif (is_null($this->template)) {
-            $viewString = '';
-        }
+        $state = array(
+            'view' => new NethGui_Renderer_Xhtml($this),
+        );
 
-        return $viewString;
+        return NethGui_Framework::getInstance()->renderView($this->template, $state, $languageCatalog);
     }
 
     /**
@@ -203,7 +136,7 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
     }
 
     /**
-     * Returns an array representation of this view and all its aggregates.
+     * Returns a recursive array representation of this view and its descendants.
      * @return array
      */
     public function getArrayCopy(NethGui_Core_View $view = NULL, $depth = 0)
@@ -222,11 +155,16 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
             if ($value instanceof NethGui_Core_View) {
                 $data[$offset] = $this->getArrayCopy($value, $depth + 1);
             } elseif ($value instanceof ArrayObject) {
-                $data[$offset] = $value->getArrayCopy();
-            } elseif (is_string($value)
-                && $this->module instanceof NethGui_Core_LanguageCatalogProvider) {
-                $languageCatalog = $this->module->getLanguageCatalog();
-                $data[$offset] = T($value, array(), NULL, $languageCatalog);
+                $data[$offset] = array();
+                foreach ($value->getArrayCopy() as $item) {
+                    if($item instanceof NethGui_Core_View) {
+                        $data[$offset][] = $this->getArrayCopy($item, $depth +1);
+                    } else {
+                        $data[$offset][] = $this->translateString($value);
+                    }
+                }
+            } elseif (is_string($value)) {
+                $data[$offset] = $this->translateString($value);
             } else {
                 $data[$offset] = $value;
             }
@@ -235,25 +173,18 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
         return $data;
     }
 
-    /**
-     *
-     * @param array|string $_ Arguments for URL
-     * @return string the URL
-     */
-    public function buildUrl()
+    private function translateString($value)
     {
-        $parameters = array();
-        $path = $this->getModulePath();
-
-        foreach (func_get_args () as $arg) {
-            if (is_string($arg)) {
-                $path[] = $arg;
-            } elseif (is_array($arg)) {
-                $parameters = array_merge($parameters, $arg);
-            }
+        if ( ! $this->getModule() instanceof NethGui_Core_LanguageCatalogProvider) {
+            return $value;
         }
+        $languageCatalog = $this->getModule()->getLanguageCatalog();
+        return T($value, array(), NULL, $languageCatalog);
+    }
 
-        return NethGui_Framework::getInstance()->buildUrl($path, $parameters);
+    public function getModule()
+    {
+        return $this->module;
     }
 
 }

@@ -6,26 +6,22 @@
 /**
  * @package NethGui
  */
-final class NethGui_Framework
+class NethGui_Framework
 {
 
-    /**
-     * Pointer to current dispatcher.
-     * @var NethGui_Dispatcher
-     */
-    private $dispatcher;
     /**
      * Underlying Code Igniter framework controller.
      * @var CI_Controller
      */
     private $controller;
-    private $languageCode;
+    private $languageCode = 'it';
     /**
      * This is a stack of catalog names. Current catalog is the last element
      * of the array.
      * @var array
      */
-    private $languageCatalog;
+    private $languageCatalogStack;
+    private $catalogs = array();
 
     /**
      * Returns framework singleton instance.
@@ -38,7 +34,6 @@ final class NethGui_Framework
 
         if ( ! isset($instance)) {
             $instance = new self($codeIgniterController);
-            $instance->languageCatalog = array('default');
         }
 
         return $instance;
@@ -50,16 +45,7 @@ final class NethGui_Framework
         ini_set('include_path', ini_get('include_path') . ':' . realpath(dirname(__FILE__) . '/..'));
 
         $this->controller = $codeIgniterController;
-        $this->dispatcher = new NethGui_Dispatcher($codeIgniterController);
-    }
-
-    /**
-     *
-     * @return NethGui_Dispatcher
-     */
-    public function getDispatcher()
-    {
-        return $this->dispatcher;
+        $this->languageCatalogStack = array(get_class());
     }
 
     /**
@@ -76,30 +62,36 @@ final class NethGui_Framework
      * If specified, this function sets the default language catalog used
      * by T() translation function.
      * 
-     * @param string $viewName Full view name. Follows class naming convention.
+     * @param string|callable $view Full view name that follows class naming convention or function callback
      * @param array $viewState Array of view parameters.
      * @param string $languageCatalog Name of language strings catalog.
      * @return string
      */
     public function renderView($viewName, $viewState, $languageCatalog = NULL)
     {
-        $ciViewPath = '../../' . str_replace('_', '/', $viewName);
+        if ( ! is_null($languageCatalog)) {
+            $this->languageCatalogStack[] = $languageCatalog;
+        }
 
-        $absoluteViewPath = realpath(APPPATH . 'views/' . $ciViewPath . '.php');
+        if (is_callable($viewName)) {
+            // Callback
+            $viewOutput = (string) call_user_func_array($viewName, $viewState);
+        } else {
+            $ciViewPath = '../../' . str_replace('_', '/', $viewName);
 
-        if ( ! $absoluteViewPath) {
-            log_message('error', "Unable to load `{$viewName}`.");
-            return '';
+            $absoluteViewPath = realpath(APPPATH . 'views/' . $ciViewPath . '.php');
+
+            if ( ! $absoluteViewPath) {
+                $this->logMessage("Unable to load `{$viewName}`.", 'warning');
+                return '';
+            }
+
+            // PHP view
+            $viewOutput = (string) $this->controller->load->view($ciViewPath, $viewState, true);
         }
 
         if ( ! is_null($languageCatalog)) {
-            $this->languageCatalog[] = $languageCatalog;
-        }
-
-        $viewOutput = $this->controller->load->view($ciViewPath, $viewState, true);
-
-        if ( ! is_null($languageCatalog)) {
-            array_pop($this->languageCatalog);
+            array_pop($this->languageCatalogStack);
         }
 
         return $viewOutput;
@@ -118,16 +110,19 @@ final class NethGui_Framework
             return '';
         }
 
-        $currentModule = FALSE;
-
-        if ($module === $currentModule) {
-            $html = '<span class="moduleTitle current" title="' . htmlspecialchars($module->getDescription()) . '">' . htmlspecialchars($module->getTitle()) . '</span>';
+        if ( ! $module instanceof NethGui_Core_RequestHandlerInterface) {
+            $html = '<span class="moduleTitle" title="' . htmlspecialchars($module->getDescription()) . '">' . htmlspecialchars($module->getTitle()) . '</span>';
         } else {
             $ciControllerClassName = $this->getControllerName();
-            $html = anchor($ciControllerClassName . '/' . $module->getIdentifier(),
-                    htmlspecialchars($module->getTitle()),
-                    array('class' => 'moduleTitle', 'title' => htmlspecialchars($module->getDescription())
-                    )
+
+            $moduleTitle = $module->getTitle();
+            if ($module instanceof NethGui_Core_LanguageCatalogProvider) {
+                $catalog = $module->getLanguageCatalog();
+                $moduleTitle = T($moduleTitle, array(), NULL, $catalog);
+            }
+
+            $html = anchor($ciControllerClassName . '/' . $module->getIdentifier(), htmlspecialchars($moduleTitle), array('class' => 'moduleTitle ' . $module->getIdentifier(), 'title' => htmlspecialchars($module->getDescription())
+                )
             );
         }
 
@@ -140,10 +135,10 @@ final class NethGui_Framework
      */
     public function buildUrl($path, $parameters)
     {
-        if(is_array($path)) {
+        if (is_array($path)) {
             $path = implode('/', $path);
         }
-        
+
         $path = explode('/', $path);
 
         array_unshift($path, $this->getControllerName());
@@ -179,41 +174,111 @@ final class NethGui_Framework
      *
      * @param string $string The string to be translated
      * @param array $args Values substituted in output string.
-     * @param string $languageCode The language to translate the string into.
-     * @param string $languageCatalog The catalog where to search the translation
+     * @param string $languageCode The language code
+     * @param string $languageCatalog The catalog where to search for the translation
      * @return string
      */
     public function translate($string, $args, $languageCode = NULL, $languageCatalog = NULL)
     {
-        if ( ! isset($languageCatalog)) {
-            $languageCatalog = end($this->languageCatalog);
-        }
         if ( ! isset($languageCode)) {
             $languageCode = $this->languageCode;
         }
 
-        if (empty($languageCatalog)
-            || empty($languageCode)
-        ) {
+        if (empty($languageCode)) {
             $translation = $string;
         } else {
-            // TODO pick translated string from language string catalog.
-            $translation = $string;
+            // TODO (feature115) pick translated string from
+            // language string catalog.
+            $translation = $this->lookupTranslation($string, $languageCode, $languageCatalog);
         }
 
         /**
-         * Applies args to string
+         * Apply args to string
          */
         return strtr($translation, $args);
     }
 
+    private function lookupTranslation($key, $languageCode, $languageCatalog)
+    {
+        $languageCatalogs = $this->languageCatalogStack;
+
+        if ( ! is_null($languageCatalog)) {
+            $languageCatalogs[] = $languageCatalog;
+        }
+
+        $languageCatalog = end($languageCatalogs);
+
+        $translation = NULL;
+
+        do {
+
+            // If catalog is missing load it
+            if ( ! isset($this->catalogs[$languageCode][$languageCatalog])) {
+                $this->loadLanguageCatalog($languageCode, $languageCatalog);
+            }
+
+            // If key exists break
+            if (isset($this->catalogs[$languageCode][$languageCatalog][$key])) {
+                $translation = $this->catalogs[$languageCode][$languageCatalog][$key];
+                break;
+            }
+
+            // If key is missing lookup in previous catalog
+            $languageCatalog = prev($languageCatalogs);
+        } while ($languageCatalog);
+
+        if ($translation === NULL) {
+            // By default prepare an identity-translation
+            $translation = $key;
+            if (ENVIRONMENT == 'development') {
+                $this->logMessage("Missing `$languageCode` translation for `$key`. Catalogs: " . implode(', ', $languageCatalogs), 'debug');
+            }
+        }
+
+        return $translation;
+    }
+
+    private function loadLanguageCatalog($languageCode, $languageCatalog)
+    {
+        $L = array();
+
+        if (preg_match('/[a-z][a-z]/', $languageCode) == 0) {
+            throw new InvalidArgumentException('Language code must be a valid ISO 639-1 language code');
+        }
+
+        if (preg_match('/[a-z_A-Z0-9]+/', $languageCatalog) == 0) {
+            throw new InvalidArgumentException("Language catalog name can contain only alphanumeric or `_` characters. It was `$languageCatalog`.");
+        }
+
+        $prefix = array_shift(explode('_', $languageCatalog));
+
+        $filePath = dirname(__FILE__) . '/../' . $prefix . '/Language/' . $languageCode . '/' . $languageCatalog . '.php';
+
+        @include($filePath);
+
+        if (ENVIRONMENT == 'development' && ! empty($L)) {
+            $this->logMessage('Loaded catalog ' . $filePath);
+        }
+
+        $this->catalogs[$languageCode][$languageCatalog] = &$L;
+    }
+
     /**
-     * 
+     * Set the current language code
      * @param string $code ISO 639-1 language code (2 characters).
      */
     public function setLanguageCode($code)
     {
         $this->languageCode = strtolower(substr($code, 0, 2));
+    }
+
+    /**
+     * Get the current language code
+     * @return string ISO 639-1 language code (2 characters).
+     */
+    public function getLanguageCode()
+    {
+        return $this->languageCode;
     }
 
     /**
@@ -232,7 +297,7 @@ final class NethGui_Framework
             return;
         }
         $classPath = str_replace("_", "/", $className) . '.php';
-        require_once($classPath);
+        require($classPath);
     }
 
     /**
@@ -243,6 +308,126 @@ final class NethGui_Framework
     public static function logMessage($message, $level = 'error')
     {
         log_message($level, $message);
+    }
+
+    /**
+     * Forwards control to Modules and creates output views.
+     *
+     * @param string $currentModuleIdentifier
+     * @param array $arguments
+     */
+    public function dispatch($currentModuleIdentifier, $arguments = array())
+    {
+        // Replace "index" request with a (temporary) default module value
+        if ($currentModuleIdentifier == 'index') {
+            redirect('dispatcher/Security');
+        }
+
+        $request = NethGui_Core_Request::getHttpRequest($arguments);
+
+        $user = $request->getUser();
+
+        /*
+         * Create models.
+         *
+         * TODO: get hostConfiguration and topModuleDepot class names
+         * from NethGui_Framework.
+         */
+        $hostConfiguration = new NethGui_Core_HostConfiguration($user);
+        $topModuleDepot = new NethGui_Core_TopModuleDepot($hostConfiguration, $user);
+
+        /*
+         * TODO: enforce some security policy on Models
+         */
+        $pdp = new NethGui_Authorization_PermissivePolicyDecisionPoint();
+
+        $hostConfiguration->setPolicyDecisionPoint($pdp);
+        $topModuleDepot->setPolicyDecisionPoint($pdp);
+
+        if ($request->isSubmitted()) {
+            // Multiple modules can be called in the same POST request.
+            $moduleWakeupList = $request->getParameters();          
+        } else {           
+            $moduleWakeupList = array();
+        }
+        
+        // Ensure the current module is the first of the list (as required by World Module):
+        array_unshift($moduleWakeupList, $currentModuleIdentifier);
+        $moduleWakeupList = array_unique($moduleWakeupList);
+        
+        $notificationManager = new NethGui_Module_NotificationArea($user);
+
+        $topModuleDepot->registerModule($notificationManager);
+
+        // The World module is a non-processing container.
+        $worldModule = new NethGui_Module_World();
+
+        $view = new NethGui_Core_View($worldModule);
+
+        $processExitCode = NULL;
+
+        foreach ($moduleWakeupList as $moduleIdentifier) {
+            $module = $topModuleDepot->findModule($moduleIdentifier);
+
+            if ($module instanceof NethGui_Core_ModuleInterface) {
+                $worldModule->addModule($module);
+
+                // Module initialization
+                $module->initialize();
+            }
+
+
+            if ( ! $module instanceof NethGui_Core_RequestHandlerInterface) {
+                continue;
+            }
+
+            // Pass request parameters to the handler
+            $module->bind(
+                $request->getParameterAsInnerRequest(
+                    $moduleIdentifier, ($moduleIdentifier === $currentModuleIdentifier) ? $request->getArguments() : array()
+                )
+            );
+
+            // Validate request
+            $module->validate($notificationManager);
+
+            // Skip next steps, if $module has added some validation errors:
+            if ($notificationManager->hasValidationErrors()) {
+                continue;
+            }
+
+            $module->process($notificationManager);
+        }
+
+        $worldModule->addModule($notificationManager);
+
+        // Raise asynchronous events
+        $eventStatus = $hostConfiguration->raiseAsyncEvents();
+        if ($eventStatus === TRUE)
+        {
+            // If at least one event occurred, show a successful dialog box:
+            $notificationManager->showDialog($worldModule, 'All changes have been saved');
+        }
+        
+        
+        if ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_HTML) {
+            $redirect = $notificationManager->getRedirectOrder();
+            if ( ! is_null($redirect)) {
+                redirect($redirect);
+            }
+            $worldModule->addModule(new NethGui_Module_Menu($topModuleDepot->getModules()));
+            $worldModule->addModule(new NethGui_Module_BreadCrumb($topModuleDepot, $currentModuleIdentifier));
+            header("Content-Type: text/html; charset=UTF-8");
+            $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_REFRESH);
+            echo $view->render();
+        } elseif ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_JSON) {
+            header("Content-Type: application/json; charset=UTF-8");
+            $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_UPDATE);
+            echo json_encode($view->getArrayCopy());
+        }
+
+        // Control reaches this point only if no redirect occurred.
+        $notificationManager->dismissTransientDialogBoxes();
     }
 
 }

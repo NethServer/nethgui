@@ -7,12 +7,17 @@
  */
 
 /**
- * TODO: describe class
+ * A composition of modules forwards request handling to its parts.
+ * 
+ * Inheriting classes must define the composition behaviour.
+ * 
  *
+ * @see NethGui_Core_Module_Controller
+ * @see NethGui_Core_Module_List
  * @package Core
  * @subpackage Module
  */
-abstract class NethGui_Core_Module_Composite extends NethGui_Core_Module_Standard implements NethGui_Core_ModuleCompositeInterface
+abstract class NethGui_Core_Module_Composite extends NethGui_Core_Module_Abstract implements NethGui_Core_ModuleCompositeInterface
 {
 
     private $children = array();
@@ -29,7 +34,7 @@ abstract class NethGui_Core_Module_Composite extends NethGui_Core_Module_Standar
                 $child->initialize();
             }
         }
-     }
+    }
 
     /**
      * Adds a child to Composite, initializing it, if current Composite is
@@ -62,43 +67,6 @@ abstract class NethGui_Core_Module_Composite extends NethGui_Core_Module_Standar
         return array_values($this->children);
     }
 
-    public function bind(NethGui_Core_RequestInterface $request)
-    {
-        parent::bind($request);
-        foreach ($this->getChildren() as $module) {
-            $module->bind($request->getParameterAsInnerRequest($module->getIdentifier()));
-        }
-    }
-
-    public function validate(NethGui_Core_ValidationReportInterface $report)
-    {
-        parent::validate($report);
-        foreach ($this->getChildren() as $module) {
-            $module->validate($report);
-        }
-    }
-
-    public function process()
-    {
-        $processExitCode = parent::process();
-        foreach ($this->getChildren() as $childModule) {
-            $childExitCode = $childModule->process();
-            if(is_null($processExitCode)) {
-                $processExitCode = $childExitCode;
-            }
-        }
-        return $processExitCode;
-    }
-
-    public function prepareView(NethGui_Core_ViewInterface $view, $mode)
-    {
-        parent::prepareView($view, $mode);
-        foreach ($this->getChildren() as $childModule) {
-            $innerView = $view->spawnView($childModule);
-            $view[$childModule->getIdentifier()] = $innerView;
-            $childModule->prepareView($innerView, $mode);
-        }
-    }
 
     public function setHostConfiguration(NethGui_Core_HostConfigurationInterface $hostConfiguration)
     {
@@ -107,6 +75,8 @@ abstract class NethGui_Core_Module_Composite extends NethGui_Core_Module_Standar
             $childModule->setHostConfiguration($hostConfiguration);
         }
     }
+
+
 
 }
 

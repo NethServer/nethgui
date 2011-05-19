@@ -156,16 +156,23 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
                 $notFlag = TRUE;
                 continue;
             } elseif (is_array($expression) && is_callable($expression[1])) {
+                // $expression is an array of three elements
+                // 1. the original method name, as a string
+                // 2. a callable
+                // 3. an optional array of arguments
                 $args = array();
                 if (isset($expression[2]) && is_array($expression[2])) {
                     $args = $expression[2];
                 } else {
                     $args = array();
                 }
+                
+                $messageParts = array_merge(array($expression[0]), $args);
+                
                 array_unshift($args, $value);
                 $isValid = call_user_func_array($expression[1], $args);
                 if (($isValid XOR $notFlag) === FALSE) {
-                    $this->failureReason = $expression[0];
+                    $this->failureReason = implode(' ', $messageParts);
                     return FALSE;
                 }
             } elseif ($expression instanceof NethGui_Core_ValidatorInterface) {

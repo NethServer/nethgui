@@ -7,17 +7,18 @@
  */
 
 /**
- * TODO: describe class
+ * A Standard Module connects the Configuration Database and the View layer,
+ * performing data validation and processing.
  *
  * @package Core
  * @subpackage Module
  */
-abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract implements NethGui_Core_RequestHandlerInterface, NethGui_Core_LanguageCatalogProvider
+abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract implements NethGui_Core_RequestHandlerInterface
 {
     /**
      * A valid service status is a 'disabled' or 'enabled' string.
      */
-    const VALID_SERVICESTATUS = 100;
+    const VALID_SERVICESTATUS = 100;         
 
     /**
      * A valid IPv4 address like '192.168.1.1' 
@@ -39,12 +40,15 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
      */
     const VALID_IP_OR_EMPTY = 203;
 
-
-
     /**
+     * This collection holds the parameter values as primitive datatype or adapter objects.
      * @var NethGui_Core_ParameterSet
      */
     protected $parameters;
+    /**
+     * @var array
+     */
+    private $requiredEvents = array();
     /**
      * 
      * @var array
@@ -71,6 +75,12 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
      * @var array
      */
     private $parameterValidationList = array();
+    /**
+     * This array holds the names of parameters with validation errors.
+     * @see prepareView()
+     * @var array
+     */
+    private $invalidParameters = array();
 
     /**
      * @param string $identifier
@@ -98,7 +108,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
      *
      * @param string $parameterName The name of the parameter
      * @param string $validator Optional - A regular expression catching the correct value format
-     * @param NethGui_Core_AdapterInterface|array $adapter Optional - An adapter instance or an array of arguments to create it
+     * @param NethGui_Adapter_AdapterInterface|array $adapter Optional - An adapter instance or an array of arguments to create it
      * @param mixed $onSubmitDefaultValue Optional - Value to assign if parameter is missing when binding a submitted request
      */
     protected function declareParameter($parameterName, $validator = FALSE, $adapter = NULL, $onSubmitDefaultValue = NULL)
@@ -115,19 +125,31 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
         if ($validator instanceof NethGui_Core_ValidatorInterface) {
             $this->validators[$parameterName] = $validator;
         } else {
-            throw new NethGui_Exception_Validation("Invalid validator value for parameter `" . $parameter . '` in module `' . get_class($this) . '`.');
+            throw new NethGui_Exception_Validation("Invalid validator value for parameter `" . $parameterName . '` in module `' . get_class($this) . '`.');
         }
 
-        if ($adapter instanceof NethGui_Core_AdapterInterface) {
-            $this->parameters->register($adapter, $parameterName);
+        if ($adapter instanceof NethGui_Adapter_AdapterInterface) {
+            $this->parameters[$parameterName] = $adapter;
         } elseif (is_array($adapter)) {
-            $this->parameters->register($this->getAdapterForParameter($parameterName, $adapter), $parameterName);
+            $this->parameters[$parameterName] = $this->getAdapterForParameter($parameterName, $adapter);
         } else {
-            $this->parameters->offsetSet($parameterName, NULL);
+            $this->parameters[$parameterName] = NULL;
         }
 
         if ( ! is_null($onSubmitDefaultValue)) {
             $this->submitDefaults[$parameterName] = $onSubmitDefaultValue;
+        }
+    }
+
+    /**
+     * Signal the given event after at least one successful database write operation occurred.
+     * @param string $eventName 
+     */
+    protected function requireEvent($eventName)
+    {
+        if (is_string($eventName) && ! in_array($eventName, $this->requiredEvents))
+        {
+            $this->requiredEvents[] = $eventName;
         }
     }
 
@@ -168,7 +190,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
     /**
      * Helps in creation of complex adapters.
      * @param array $args
-     * @return NethGui_Core_AdapterInterface
+     * @return NethGui_Adapter_AdapterInterface
      */
     private function getAdapterForParameter($parameterName, $args)
     {
@@ -191,9 +213,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
 
             if (is_array($args)) {
                 $adapterObject = $this->getHostConfiguration()->getMapAdapter(
-                        array($this, $readerCallback),
-                        array($this, $writerCallback),
-                        $args
+                        array($this, $readerCallback), array($this, $writerCallback), $args
                 );
             }
         } elseif (isset($args[0], $args[1])) {
@@ -266,7 +286,8 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
 
             $isValid = $validator->evaluate($this->parameters[$parameter]);
             if ($isValid !== TRUE) {
-                $report->addError($this, $parameter, $validator->getMessage());
+                $report->addValidationError($this, $parameter, $validator->getMessage());
+                $this->invalidParameters[] = $parameter;
             }
         }
     }
@@ -274,10 +295,15 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
     /**
      * Do nothing
      */
-    public function process()
+    public function process(NethGui_Core_NotificationCarrierInterface $carrier)
     {
         if ($this->autosave === TRUE) {
-            $this->parameters->save();
+            $changes = $this->parameters->save();
+            if ($changes > 0) {
+                foreach ($this->requiredEvents as $eventName) {
+                    $this->getHostConfiguration()->signalEventAsync($eventName);
+                }
+            }
         }
     }
 
@@ -285,26 +311,10 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
     {
         parent::prepareView($view, $mode);
         $view->copyFrom($this->parameters);
-        if ($mode == self::VIEW_REFRESH) {
+        if ($mode === self::VIEW_REFRESH) {
             $view->copyFrom($this->immutables);
+            $view['__invalidParameters'] = $this->invalidParameters;
         }
-    }
-
-    public function getLanguageCatalog()
-    {
-        return get_class($this);
-    }
-
-    /**
-     * Forwards url building to a temporary view object.
-     * @internal
-     * @return string
-     */
-    protected function buildUrl()
-    {
-        $tempView = new NethGui_Core_View($this);
-        $arguments = func_get_args();
-        return call_user_func_array(array($tempView, 'buildUrl'), $arguments);
     }
 
 }
