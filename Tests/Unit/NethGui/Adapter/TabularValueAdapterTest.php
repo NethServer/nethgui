@@ -52,15 +52,15 @@ class NethGui_Adapter_TabularValueAdapterTest extends PHPUnit_Framework_TestCase
     public function testGet()
     {
         $compareMatrix = array(
-            array('1A', '1B', '1C'),
-            array('2A', '2B', '2C'),
-            array('3A', '3B', '3C'),
+            '1A' => array('1B', '1C'),
+            '2A' => array('2B', '2C'),
+            '3A' => array('3B', '3C'),
         );
 
-        $i = 0;
+        
 
-        foreach ($this->object as $row) {
-            $this->assertEquals($row, $compareMatrix[$i ++]);
+        foreach ($this->object as $key => $row) {
+            $this->assertEquals($row, $compareMatrix[$key]);
         }
     }
 
@@ -82,11 +82,11 @@ class NethGui_Adapter_TabularValueAdapterTest extends PHPUnit_Framework_TestCase
 
     public function testSaveModified()
     {
-        $this->object[2] = array('0', '0', '0');
+        $this->object['3A'] = array('0', '0');
 
         $this->serializer->expects($this->once())
             ->method('write')
-            ->with($this->equalTo('1A/1B/1C,2A/2B/2C,0/0/0'));
+            ->with($this->equalTo('1A/1B/1C,2A/2B/2C,3A/0/0'));
 
         $this->object->save();
     }
@@ -119,19 +119,19 @@ class NethGui_Adapter_TabularValueAdapterTest extends PHPUnit_Framework_TestCase
 
     public function testOffsetExists()
     {           
-        $this->assertTrue($this->object->offsetExists(0));
-        $this->assertTrue($this->object->offsetExists(1));
-        $this->assertTrue($this->object->offsetExists(2));
-        $this->assertFalse($this->object->offsetExists(3));
+        $this->assertTrue($this->object->offsetExists('1A'));
+        $this->assertTrue($this->object->offsetExists('2A'));
+        $this->assertTrue($this->object->offsetExists('3A'));
+        $this->assertFalse($this->object->offsetExists('XX'));
         $this->assertFalse($this->object->offsetExists(-1));
         $this->assertFalse($this->object->offsetExists(''));        
     }
 
     public function testOffsetGet()
     {
-       $this->assertTrue(is_array($this->object->offsetGet(0)));
-       $this->assertTrue(is_array($this->object->offsetGet(1)));
-       $this->assertTrue(is_array($this->object->offsetGet(2)));      
+       $this->assertTrue(is_array($this->object->offsetGet('1A')));
+       $this->assertTrue(is_array($this->object->offsetGet('2A')));
+       $this->assertTrue(is_array($this->object->offsetGet('3A')));      
     }
 
     /**
@@ -139,8 +139,8 @@ class NethGui_Adapter_TabularValueAdapterTest extends PHPUnit_Framework_TestCase
      */
     public function testOffsetSet()
     {
-        $this->object->offsetSet(2, array('0', '0', '0'));
-        $this->assertEquals(array('0', '0', '0'), $this->object[2]);
+        $this->object->offsetSet('1A', array('0', '0', '0'));
+        $this->assertEquals(array('0', '0', '0'), $this->object['1A']);
     }
 
     /**
@@ -148,9 +148,9 @@ class NethGui_Adapter_TabularValueAdapterTest extends PHPUnit_Framework_TestCase
      */
     public function testOffsetUnset()
     {
-        $this->object->offsetUnset(2);
+        $this->object->offsetUnset('1A');
         $this->assertEquals(2, $this->object->count());
-        $this->assertFalse($this->object->offsetExists(2));
+        $this->assertFalse($this->object->offsetExists('1A'));
     }
 
 }
