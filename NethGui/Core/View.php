@@ -47,12 +47,6 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
      * @var array
      */
     private $modulePath;
-    /**
-     * Caches the language catalogs of the whole module path.
-     * @var array
-     */
-    private $languageCatalogList;
-
 
     public function __construct($module = NULL)
     {
@@ -124,12 +118,17 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
      */
     public function render()
     {
+        $languageCatalog = NULL;
+        if ($this->getModule() instanceof NethGui_Core_LanguageCatalogProvider) {
+            $languageCatalog = $this->getModule()->getLanguageCatalog();
+        }
+
         $state = array(
             // Decorate the view object with a Renderer interface:
             'view' => new NethGui_Renderer_Xhtml($this),
         );
 
-        return NethGui_Framework::getInstance()->renderView($this->template, $state, $this->getLanguageCatalogList());
+        return NethGui_Framework::getInstance()->renderView($this->template, $state, $languageCatalog);
     }
 
     /**
@@ -182,26 +181,6 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
     public function translate($value, $args = array())
     {
         return NethGui_Framework::getInstance()->translate($value, array(), NULL, NULL);
-    }
-
-    protected function getLanguageCatalogList()
-    {
-        if ( ! isset($this->languageCatalogList)) {
-            $this->languageCatalogList = array();
-
-            $module = $this->getModule();
-
-            do {
-
-                if ($module instanceof NethGui_Core_LanguageCatalogProvider) {
-                    $this->languageCatalogList[] = $module->getLanguageCatalog();
-                }
-
-                $module = $module->getParent();
-            } while ( ! is_null($module));
-        }
-        
-        return $this->languageCatalogList;
     }
 
     public function getModule()

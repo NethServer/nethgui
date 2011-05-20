@@ -20,17 +20,12 @@ class NethGui_Core_ModuleSurrogate implements NethGui_Core_ModuleInterface, Neth
     public function __construct(NethGui_Core_ModuleInterface $originalModule)
     {
         $this->info = array();
-        
+
         $this->info['getIdentifier'] = $originalModule->getIdentifier();
         $this->info['getTitle'] = $originalModule->getTitle();
         $this->info['getDescription'] = $originalModule->getDescription();
-        
-        if($originalModule instanceof NethGui_Core_LanguageCatalogProvider) {
-            $this->info['getLanguageCatalog'] = $originalModule->getLanguageCatalog();
-        } else {
-            $this->info['getLanguageCatalog'];
-        }
-              
+        $this->info['getLanguageCatalog'] = $this->extractLanguageCatalogList($originalModule);
+
         $parent = $originalModule->getParent();
         if ($parent instanceof NethGui_Core_ModuleInterface) {
             $this->info['getParent'] = new self($parent);
@@ -58,10 +53,31 @@ class NethGui_Core_ModuleSurrogate implements NethGui_Core_ModuleInterface, Neth
     {
         return $this->info['getTitle'];
     }
-    
+
     public function getLanguageCatalog()
     {
         return $this->info['getLanguageCatalog'];
+    }
+
+    private function extractLanguageCatalogList(NethGui_Core_ModuleInterface $module)
+    {
+        $languageCatalogList = array();
+        
+        do {
+            if ($module instanceof NethGui_Core_LanguageCatalogProvider
+                && ! $module instanceof self) {
+                $catalog = $module->getLanguageCatalog();
+                if (is_array($catalog)) {
+                    $languageCatalogList = array_merge($languageCatalogList, $catalog);
+                } else {
+                    $languageCatalogList[] = $catalog;
+                }
+            }
+
+            $module = $module->getParent();
+        } while ( ! is_null($module));
+
+        return $languageCatalogList;
     }
 
     public function initialize()
