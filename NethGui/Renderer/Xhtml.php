@@ -66,7 +66,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         foreach ($name as $part) {
             if ($part == '..') {
                 array_pop($nameSegments);
-            } elseif($part != '') {
+            } elseif ($part != '') {
                 $nameSegments[] = $part;
             }
         }
@@ -290,7 +290,18 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
             $attributes['id'] = $controlId;
         }
 
-        $this->pushContent($this->openTag('div', array('class' => 'labeled-control')));
+        $wrapperClass = 'labeled-control';
+
+        if ($flags & self::LABEL_RIGHT) {
+            $wrapperClass .= ' label-right';
+        } elseif ($flags & self::LABEL_ABOVE) {
+            $wrapperClass .= ' label-above';
+        } else {
+            $wrapperClass .= ' label-left';
+        }
+
+        $this->pushContent($this->openTag('div', array('class' => $wrapperClass)));
+
         if ($flags & self::LABEL_RIGHT) {
             $this->controlTag($tag, $name, $flags, $cssClass, $attributes);
             $this->label($label, $controlId);

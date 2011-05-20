@@ -5,9 +5,6 @@
     <head>
         <title>NethService</title>
         <link rel="stylesheet" type="text/css" href="<?php echo htmlspecialchars($view['cssMain']); ?>" />
-        <?php foreach ($view['js'] as $scriptPath): ?>
-        <script type="text/javascript" src="<?php echo htmlspecialchars($scriptPath) ?>" ></script>
-        <?php endforeach ?>
     </head>
     <body>
         <div id="allWrapper">
@@ -20,5 +17,6 @@
             </div>
             <div id="footer">Built on <a href="/Documentation">NethGui</a> &ndash; Copyright 2011 &copy; Nethesis S.r.l</div>
         </div>        
+        <?php foreach ($view['js'] as $scriptPath): ?><script type="text/javascript" src="<?php echo htmlspecialchars($scriptPath) ?>" ></script><?php endforeach; ?>        
     </body>
 </html>
