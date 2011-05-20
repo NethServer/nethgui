@@ -19,7 +19,7 @@ switch ($view['type']) {
 ?>" id="Dialog_<?php 
     echo $view['dialogId']
 ?>"><span class="message"><?php
-    echo htmlspecialchars(T($view['message']));
+    echo T($view['message']);
 ?></span><?php
 
 if(count($view['actions']) > 0):

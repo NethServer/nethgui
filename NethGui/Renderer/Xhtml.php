@@ -11,12 +11,6 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 {
 
     /**
-     * Module path caches the identifier of all ancestors from the root to the
-     * associated module.
-     * @var array
-     */
-    private $modulePath;
-    /**
      * @see addWrapTag()
      * @var string
      */
@@ -107,30 +101,14 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         return NethGui_Framework::getInstance()->buildUrl($path, $parameters);
     }
 
-    /**
-     * Gets the array of the current module identifier plus all identifiers of
-     * the ancestor modules.     
-     *
-     * @return array
-     */
-    protected function getModulePath()
+    public function getModulePath()
     {
-        if ( ! isset($this->modulePath)) {
-            $this->modulePath = array();
-
-            $watchdog = 0;
-            $module = $this->view->getModule();
-
-            while ( ! (is_null($module))) {
-                if ( ++ $watchdog > 20) {
-                    throw new Exception("Too many nested modules or cyclic module structure.");
-                }
-                array_unshift($this->modulePath, $module->getIdentifier());
-                $module = $module->getParent();
-            }
-        }
-
-        return $this->modulePath;
+        return $this->view->getModulePath();
+    }
+    
+    public function translate($message, $args = array())
+    {
+        return $this->view->translate($message, $args);
     }
 
     /**
@@ -206,7 +184,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
     private function label($name, $id)
     {
         $this->pushContent($this->openTag('label', array('for' => $id)));
-        $this->pushContent(htmlspecialchars(T($name . '_label')));
+        $this->pushContent(htmlspecialchars($this->translate($name . '_label')));
         $this->pushContent($this->closeTag('label'));
     }
 
@@ -422,14 +400,14 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
             $attributes['class'] = $cssClass;
 
             $this->pushContent($this->openTag('a', $attributes));
-            $this->append(T($buttonLabel));
+            $this->append($this->translate($buttonLabel));
             $this->pushContent($this->closeTag('a'));
         } else {
 
             if ($flags & self::BUTTON_SUBMIT) {
                 $attributes['type'] = 'submit';
                 $cssClass .= ' submit';
-                $attributes['value'] = T($buttonLabel);
+                $attributes['value'] = $this->translate($buttonLabel);
                 $attributes['id'] = FALSE;
                 $attributes['name'] = FALSE;
             } elseif ($flags & self::BUTTON_RESET) {
@@ -606,7 +584,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 
                 $tabs->pushContent($this->openTag('li'));
                 $tabs->pushContent($this->openTag('a', array('href' => '#' . $tabs->getFullId($page))));
-                $tabs->pushContent(T($page . '_Title'));
+                $tabs->pushContent(htmlspecialchars($this->translate($page . '_Title')));
                 $tabs->pushContent($this->closeTag('a'));
                 $tabs->pushContent($this->closeTag('li'));
             }

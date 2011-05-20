@@ -14,3 +14,6 @@ $L['Cancel_label'] = 'Annulla';
 $L['update_label'] = 'Modifica';
 $L['delete_label'] = 'Elimina';
 $L['create_label'] = 'Crea nuovo';
+
+$L['Ignore_label'] = 'Ignora';
+$L['All changes have been saved'] = 'Tutte le modifiche sono state salvate';

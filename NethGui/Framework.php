@@ -39,7 +39,7 @@ class NethGui_Framework
         return $instance;
     }
 
-    private function __construct(CI_Controller $codeIgniterController)
+    private function __construct($codeIgniterController)
     {
         spl_autoload_register(get_class($this) . '::autoloader');
         ini_set('include_path', ini_get('include_path') . ':' . realpath(dirname(__FILE__) . '/..'));
@@ -64,12 +64,16 @@ class NethGui_Framework
      * 
      * @param string|callable $view Full view name that follows class naming convention or function callback
      * @param array $viewState Array of view parameters.
-     * @param string $languageCatalog Name of language strings catalog.
+     * @param string|array $languageCatalog Name of language strings catalog.
      * @return string
      */
     public function renderView($viewName, $viewState, $languageCatalog = NULL)
     {
-        if ( ! is_null($languageCatalog)) {
+        if ( ! is_null($languageCatalog) && !empty($languageCatalog)) {
+            if(is_array($languageCatalog)) {
+                $languageCatalog = array_reverse($languageCatalog);
+            }
+            
             $this->languageCatalogStack[] = $languageCatalog;
         }
 
@@ -90,7 +94,7 @@ class NethGui_Framework
             $viewOutput = (string) $this->controller->load->view($ciViewPath, $viewState, true);
         }
 
-        if ( ! is_null($languageCatalog)) {
+        if ( ! is_null($languageCatalog) && !empty($languageCatalog)) {
             array_pop($this->languageCatalogStack);
         }
 
@@ -118,7 +122,7 @@ class NethGui_Framework
             $moduleTitle = $module->getTitle();
             if ($module instanceof NethGui_Core_LanguageCatalogProvider) {
                 $catalog = $module->getLanguageCatalog();
-                $moduleTitle = T($moduleTitle, array(), NULL, $catalog);
+                $moduleTitle = $this->translate($moduleTitle, array(), NULL, $catalog);
             }
 
             $html = anchor($ciControllerClassName . '/' . $module->getIdentifier(), htmlspecialchars($moduleTitle), array('class' => 'moduleTitle ' . $module->getIdentifier(), 'title' => htmlspecialchars($module->getDescription())
@@ -175,10 +179,10 @@ class NethGui_Framework
      * @param string $string The string to be translated
      * @param array $args Values substituted in output string.
      * @param string $languageCode The language code
-     * @param string $languageCatalog The catalog where to search for the translation
+     * @param string|array $catalog The catalog or the catalog list where to search for the translation
      * @return string
      */
-    public function translate($string, $args, $languageCode = NULL, $languageCatalog = NULL)
+    public function translate($string, $args, $languageCode = NULL, $catalog = NULL)
     {
         if ( ! isset($languageCode)) {
             $languageCode = $this->languageCode;
@@ -187,9 +191,16 @@ class NethGui_Framework
         if (empty($languageCode)) {
             $translation = $string;
         } else {
-            // TODO (feature115) pick translated string from
-            // language string catalog.
-            $translation = $this->lookupTranslation($string, $languageCode, $languageCatalog);
+
+            if (is_array($catalog)) {
+                $catalog = array_reverse($catalog);
+            } elseif ( ! empty($catalog)) {
+                $catalog = array($catalog);
+            } else {
+                $catalog = array();
+            }
+
+            $translation = $this->lookupTranslation($string, $languageCode, $catalog);
         }
 
         /**
@@ -198,34 +209,44 @@ class NethGui_Framework
         return strtr($translation, $args);
     }
 
-    private function lookupTranslation($key, $languageCode, $languageCatalog)
+    /**
+     * @param string $key The string to be translated
+     * @param string $languageCode The language code of the translated string
+     * @param array $catalogStack The catalog stack where to start the search
+     * @return string The translated string 
+     */
+    private function lookupTranslation($key, $languageCode, $catalogStack)
     {
         $languageCatalogs = $this->languageCatalogStack;
 
-        if ( ! is_null($languageCatalog)) {
-            $languageCatalogs[] = $languageCatalog;
-        }
-
-        $languageCatalog = end($languageCatalogs);
+        if (!empty($catalogStack)) {
+            $languageCatalogs[] = $catalogStack;
+        } 
 
         $translation = NULL;
 
-        do {
-
+        while (($catalog = array_pop($languageCatalogs)) !== NULL) {
+                        
+            if(is_array($catalog)) {                
+                // push nested catalog stack elements
+                $languageCatalogs = array_merge($languageCatalogs, $catalog);
+                continue;
+            }
+            
             // If catalog is missing load it
-            if ( ! isset($this->catalogs[$languageCode][$languageCatalog])) {
-                $this->loadLanguageCatalog($languageCode, $languageCatalog);
+            if ( ! isset($this->catalogs[$languageCode][$catalog])) {
+                $this->loadLanguageCatalog($languageCode, $catalog);
             }
 
             // If key exists break
-            if (isset($this->catalogs[$languageCode][$languageCatalog][$key])) {
-                $translation = $this->catalogs[$languageCode][$languageCatalog][$key];
+            if (isset($this->catalogs[$languageCode][$catalog][$key])) {
+                $translation = $this->catalogs[$languageCode][$catalog][$key];
                 break;
             }
 
             // If key is missing lookup in previous catalog
-            $languageCatalog = prev($languageCatalogs);
-        } while ($languageCatalog);
+            $catalog = prev($languageCatalogs);
+        } 
 
         if ($translation === NULL) {
             // By default prepare an identity-translation
@@ -346,15 +367,15 @@ class NethGui_Framework
 
         if ($request->isSubmitted()) {
             // Multiple modules can be called in the same POST request.
-            $moduleWakeupList = $request->getParameters();          
-        } else {           
+            $moduleWakeupList = $request->getParameters();
+        } else {
             $moduleWakeupList = array();
         }
-        
+
         // Ensure the current module is the first of the list (as required by World Module):
         array_unshift($moduleWakeupList, $currentModuleIdentifier);
         $moduleWakeupList = array_unique($moduleWakeupList);
-        
+
         $notificationManager = new NethGui_Module_NotificationArea($user);
 
         $topModuleDepot->registerModule($notificationManager);
@@ -408,8 +429,8 @@ class NethGui_Framework
             // If at least one event occurred, show a successful dialog box:
             $user->showDialogBox($worldModule, 'All changes have been saved');
         }
-        
-        
+
+
         if ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_HTML) {
             $redirect = $notificationManager->getRedirectOrder();
             if ( ! is_null($redirect)) {
@@ -437,9 +458,16 @@ class NethGui_Framework
  */
 if ( ! function_exists('T')) {
 
-    function T($string, $args = array(), $language = NULL, $catalog = NULL)
+    function T($string, $args = array(), $language = NULL, $catalog = NULL, $hsc = TRUE)
     {
-        return NethGui_Framework::getInstance()->translate($string, $args, $language, $catalog);
+
+        $t = NethGui_Framework::getInstance()->translate($string, $args, $language, $catalog);
+
+        if ($hsc) {
+            $t = htmlspecialchars($t);
+        }
+
+        return $t;
     }
 
 }

@@ -57,6 +57,22 @@ interface NethGui_Core_ViewInterface extends ArrayAccess, IteratorAggregate
      */
     public function getModule();
     
+    /**
+     * Gets the array of the current module identifier plus all identifiers of
+     * the ancestor modules, starting from the root.   
+     *
+     * @return array
+     */
+    public function getModulePath();
+    
+    /**
+     * A (shortcut) method to translate a message in the current language.
+     * 
+     * @see NethGui_Framework::translate()
+     */
+    public function translate($message, $args = array());
+    
+      
 }
 
 ?>

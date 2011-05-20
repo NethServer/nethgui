@@ -41,6 +41,17 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
      * @var string
      */
     private $template;
+    /**
+     * Caches the identifier of all ancestors from the root to the
+     * associated $module.
+     * @var array
+     */
+    private $modulePath;
+    /**
+     * Caches the language catalogs of the whole module path.
+     * @var array
+     */
+    private $languageCatalogList;
 
 
     public function __construct($module = NULL)
@@ -71,7 +82,7 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
         $spawnedView = new self($module);
         if ($register === TRUE) {
             $this[$module->getIdentifier()] = $spawnedView;
-        } elseif(is_string($register)) {
+        } elseif (is_string($register)) {
             $this[$register] = $spawnedView;
         }
         return $spawnedView;
@@ -113,17 +124,12 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
      */
     public function render()
     {
-        if ($this->getModule() instanceof NethGui_Core_LanguageCatalogProvider) {
-            $languageCatalog = $this->getModule()->getLanguageCatalog();
-        } else {
-            $languageCatalog = NULL;
-        }
-
         $state = array(
+            // Decorate the view object with a Renderer interface:
             'view' => new NethGui_Renderer_Xhtml($this),
         );
 
-        return NethGui_Framework::getInstance()->renderView($this->template, $state, $languageCatalog);
+        return NethGui_Framework::getInstance()->renderView($this->template, $state, $this->getLanguageCatalogList());
     }
 
     /**
@@ -157,14 +163,14 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
             } elseif ($value instanceof ArrayObject) {
                 $data[$offset] = array();
                 foreach ($value->getArrayCopy() as $item) {
-                    if($item instanceof NethGui_Core_View) {
-                        $data[$offset][] = $this->getArrayCopy($item, $depth +1);
+                    if ($item instanceof NethGui_Core_View) {
+                        $data[$offset][] = $this->getArrayCopy($item, $depth + 1);
                     } else {
-                        $data[$offset][] = $this->translateString($value);
+                        $data[$offset][] = $this->translate($value);
                     }
                 }
             } elseif (is_string($value)) {
-                $data[$offset] = $this->translateString($value);
+                $data[$offset] = $this->translate($value);
             } else {
                 $data[$offset] = $value;
             }
@@ -173,18 +179,54 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
         return $data;
     }
 
-    private function translateString($value)
+    public function translate($value, $args = array())
     {
-        if ( ! $this->getModule() instanceof NethGui_Core_LanguageCatalogProvider) {
-            return $value;
+        return NethGui_Framework::getInstance()->translate($value, array(), NULL, NULL);
+    }
+
+    protected function getLanguageCatalogList()
+    {
+        if ( ! isset($this->languageCatalogList)) {
+            $this->languageCatalogList = array();
+
+            $module = $this->getModule();
+
+            do {
+
+                if ($module instanceof NethGui_Core_LanguageCatalogProvider) {
+                    $this->languageCatalogList[] = $module->getLanguageCatalog();
+                }
+
+                $module = $module->getParent();
+            } while ( ! is_null($module));
         }
-        $languageCatalog = $this->getModule()->getLanguageCatalog();
-        return T($value, array(), NULL, $languageCatalog);
+        
+        return $this->languageCatalogList;
     }
 
     public function getModule()
     {
         return $this->module;
+    }
+
+    public function getModulePath()
+    {
+        if ( ! isset($this->modulePath)) {
+            $this->modulePath = array();
+
+            $watchdog = 0;
+            $module = $this->getModule();
+
+            while ( ! (is_null($module))) {
+                if ( ++ $watchdog > 20) {
+                    throw new Exception("Too many nested modules or cyclic module structure.");
+                }
+                array_unshift($this->modulePath, $module->getIdentifier());
+                $module = $module->getParent();
+            }
+        }
+
+        return $this->modulePath;
     }
 
 }

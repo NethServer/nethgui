@@ -12,7 +12,7 @@
  * @internal
  * @package Core
  */
-class NethGui_Core_ModuleSurrogate implements NethGui_Core_ModuleInterface, Serializable
+class NethGui_Core_ModuleSurrogate implements NethGui_Core_ModuleInterface, NethGui_Core_LanguageCatalogProvider, Serializable
 {
 
     private $info;
@@ -20,12 +20,17 @@ class NethGui_Core_ModuleSurrogate implements NethGui_Core_ModuleInterface, Seri
     public function __construct(NethGui_Core_ModuleInterface $originalModule)
     {
         $this->info = array();
-
-
+        
         $this->info['getIdentifier'] = $originalModule->getIdentifier();
         $this->info['getTitle'] = $originalModule->getTitle();
         $this->info['getDescription'] = $originalModule->getDescription();
-
+        
+        if($originalModule instanceof NethGui_Core_LanguageCatalogProvider) {
+            $this->info['getLanguageCatalog'] = $originalModule->getLanguageCatalog();
+        } else {
+            $this->info['getLanguageCatalog'];
+        }
+              
         $parent = $originalModule->getParent();
         if ($parent instanceof NethGui_Core_ModuleInterface) {
             $this->info['getParent'] = new self($parent);
@@ -52,6 +57,11 @@ class NethGui_Core_ModuleSurrogate implements NethGui_Core_ModuleInterface, Seri
     public function getTitle()
     {
         return $this->info['getTitle'];
+    }
+    
+    public function getLanguageCatalog()
+    {
+        return $this->info['getLanguageCatalog'];
     }
 
     public function initialize()

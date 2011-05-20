@@ -11,40 +11,10 @@ if ($view->getModule()->hasValidationErrors()):
 
 endif;
 
-foreach($view['dialogs'] as $dialogData) :
+foreach($view['dialogs'] as $dialogView) :
 
-    $dialogClass = 'dialog';
-
-    switch ($dialogData['type']) {
-        case NethGui_Core_DialogBox::NOTIFY_SUCCESS:
-            $dialogClass .= ' embedded success';
-            break;
-        case NethGui_Core_DialogBox::NOTIFY_WARNING:
-            $dialogClass .= ' embedded warning';
-            break;
-        case NethGui_Core_DialogBox::NOTIFY_ERROR:
-            $dialogClass .= ' modal error';
-            break;
-    }
-
-    ?><div class="<?php 
-        echo $dialogClass 
-    ?>" id="Dialog_<?php 
-        echo $dialogData['dialogId']
-    ?>"><span class="message"><?php
-        echo $dialogData['message']
-    ?></span><?php
-
-    if(count($dialogData['actions']) > 0):
-        ?><ul class="actions"><?php
-        foreach ($dialogData['actions'] as $action) :
-            ?><li><?php echo $action ?></li><?php
-        endforeach;
-        ?></ul><?php
-    endif;
+    echo $dialogView;
     
-    ?></div><?php
-
 endforeach;
     
 ?></div>
