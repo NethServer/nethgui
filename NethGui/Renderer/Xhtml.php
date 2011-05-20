@@ -91,10 +91,10 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         $path = $this->getModulePath();
 
         foreach (func_get_args() as $arg) {
-            if (is_string($arg)) {
-                $path[] = $arg;
-            } elseif (is_array($arg)) {
+            if (is_array($arg)) {
                 $parameters = array_merge($parameters, $arg);
+            } else {
+                $path[] = strval($arg);
             }
         }
 
@@ -105,7 +105,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
     {
         return $this->view->getModulePath();
     }
-    
+
     public function translate($message, $args = array())
     {
         return $this->view->translate($message, $args);

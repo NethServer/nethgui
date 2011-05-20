@@ -88,6 +88,17 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
 
         return $adapter;
     }
+    
+    public function getTableAdapter($database, $typeOrKey, $filterOrProp = NULL, $separators = NULL)
+    {
+        if(is_null($separators)) {
+            return new NethGui_Adapter_TableAdapter($this->getDatabase($database), $typeOrKey);
+        }
+        
+        $innerAdapter = $this->getIdentityAdapter($database, $typeOrKey, $filterOrProp, $separators[0]);
+        
+        return new NethGui_Adapter_TabularValueAdapter($innerAdapter, $separators[1]);
+    }
 
     /**
      *

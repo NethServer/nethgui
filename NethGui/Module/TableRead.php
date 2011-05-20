@@ -70,11 +70,9 @@ class NethGui_Module_TableRead extends NethGui_Core_Module_Standard
         foreach ($this->tableAdapter as $key => $values) {
             $row = array();
 
-            // adds the key to the values:
-            $values[$this->columns[0]] = $key;
 
             foreach ($this->columns as $columnIndex => $column) {
-                $row[] = $this->prepareColumn($view, $mode, $columnIndex, $column, $values);
+                $row[] = $this->prepareColumn($view, $mode, $columnIndex, $column, $key, $values);
             }
 
             $rows[] = $row;
@@ -83,14 +81,14 @@ class NethGui_Module_TableRead extends NethGui_Core_Module_Standard
         return $rows;
     }
 
-    private function prepareColumn(NethGui_Core_ViewInterface $view, $mode, $columnIndex, $column, $values)
+    private function prepareColumn(NethGui_Core_ViewInterface $view, $mode, $columnIndex, $column, $key, $values)
     {
         $methodName = 'prepareViewForColumn' . ucfirst($column);
 
         if (method_exists($this->getParent(), $methodName)) {
-            $columnValue = call_user_func(array($this->getParent(), $methodName), $this, $view, $mode, $values);
+            $columnValue = call_user_func(array($this->getParent(), $methodName), $this, $view, $mode, $key, $values);
         } elseif (method_exists($this, $methodName)) {
-            $columnValue = call_user_func(array($this, $methodName), $view, $mode, $values);
+            $columnValue = call_user_func(array($this, $methodName), $view, $mode, $key, $values);
         } else {
             $columnValue = isset($values[$column]) ? $values[$column] : NULL;
         }
@@ -98,7 +96,20 @@ class NethGui_Module_TableRead extends NethGui_Core_Module_Standard
         return $columnValue;
     }
 
-    public function prepareViewForColumnActions(NethGui_Core_ViewInterface $view, $mode, $values)
+    public function prepareViewForColumnKey(NethGui_Core_ViewInterface $view, $mode, $key, $values)
+    {
+        return strval($key);
+    }
+    
+    /**
+     *
+     * @param NethGui_Core_ViewInterface $view
+     * @param int $mode
+     * @param string $key The data row key
+     * @param array $values The data row values
+     * @return NethGui_Core_ViewInterface 
+     */
+    public function prepareViewForColumnActions(NethGui_Core_ViewInterface $view, $mode, $key, $values)
     {
         if ($mode == self::VIEW_REFRESH) {
             $columnView = $view->spawnView($this);
@@ -107,8 +118,6 @@ class NethGui_Module_TableRead extends NethGui_Core_Module_Standard
             $columnView = array();
         }
 
-        // Add action arguments to columnView
-        $key = $values[$this->columns[0]];
         foreach ($this->columnActions as $action) {
             $columnView[$action] = array('../' . $action, $key);
         }
