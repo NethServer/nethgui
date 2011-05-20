@@ -41,7 +41,9 @@ class NethGui_Adapter_TabularValueAdapter implements NethGui_Adapter_AdapterInte
         $this->data = new ArrayObject();
 
         foreach ($this->innerAdapter as $rawRow) {
-            $this->data[] = explode($this->columnSeparator, $rawRow);
+            $row = explode($this->columnSeparator, $rawRow);            
+            $key = array_shift($row);            
+            $this->data[$key] = $row;
         }
 
         $this->modified = FALSE;
@@ -87,11 +89,11 @@ class NethGui_Adapter_TabularValueAdapter implements NethGui_Adapter_AdapterInte
             throw new InvalidArgumentException('Value must be an array!');
         }
 
-        foreach ($value as $row) {
+        foreach ($value as $key => $row) {
             if ( ! is_array($row)) {
                 throw new InvalidArgumentException('Value must be composed of arrays!');
             }
-            $this[] = $row;
+            $this[$key] = $row;
         }
     }
 
@@ -103,8 +105,8 @@ class NethGui_Adapter_TabularValueAdapter implements NethGui_Adapter_AdapterInte
 
         $value = array();
         
-        foreach($this->data as $row) {
-            $value[] = implode($this->columnSeparator, $row);
+        foreach($this->data as $key => $row) {
+            $value[] = implode($this->columnSeparator, array_merge(array($key), $row));
         }
         
         $this->innerAdapter->set($value);
