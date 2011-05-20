@@ -62,22 +62,39 @@ class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
         parent::bind($request);
         if ($request->isSubmitted()) {
             $this->performAction = TRUE;
-        } else {
-            $arguments = $request->getArguments();
-            $key = isset($arguments[0]) ? $arguments[0] : NULL;
-            $this->parameters[$this->key] = $key;
+            return; // All values are in $request parameters. We can exit here.
+        }
 
-            if ( ! is_null($key)) {
-                foreach ($this->parameterSchema as $parameterDeclaration) {
-                    $parameterName = $parameterDeclaration[0];
-                    if ($parameterName == $this->key) {
-                        continue;
-                    } elseif (isset($this->tableAdapter[$arguments[0]])) {
-                        $values = $this->tableAdapter[$arguments[0]];
-                        $this->parameters[$parameterName] = $values[$parameterName];
-                    }
-                }
+        // We have to fetch the parameter values from the data source.
+
+        $arguments = $request->getArguments();
+        $keyValue = isset($arguments[0]) ? $arguments[0] : NULL;
+
+        if (is_null($keyValue)) {
+            return; // Nothing to do: the key is not set.
+        }
+
+        // Bind the key value to key parameter
+        $this->parameters[$this->key] = $keyValue;
+
+        if ( ! $this->tableAdapter->offsetExists($keyValue)) {
+            return; // Nothing to do: the data we are missing the data row
+        }
+
+        $values = array_values($this->tableAdapter[$keyValue]);
+
+        $parameterIndex = 0;
+
+        // Bind other values following the order defined into parameterSchema                 
+        foreach ($this->parameterSchema as $parameterDeclaration) {
+            $parameterName = $parameterDeclaration[0];
+
+            if ($parameterName == $this->key) {
+                continue; // Skip the key, we have it already.
             }
+
+            // Bind the n-th value to $parameterName.
+            $this->parameters[$parameterName] = $values[$parameterIndex ++];
         }
     }
 
@@ -117,10 +134,10 @@ class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
             } else {
                 throw new NethGui_Exception_HttpStatusClientError('Not found', 404);
             }
-            
+
             $changes = $this->tableAdapter->save();
-            if($changes > 0) {
-                foreach($this->requiredEvents as $eventName) {
+            if ($changes > 0) {
+                foreach ($this->requiredEvents as $eventName) {
                     $this->getHostConfiguration()->signalEventAsync($eventName);
                 }
             }

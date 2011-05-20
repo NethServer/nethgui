@@ -21,13 +21,10 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
      */
     private $columns;
     /**
-     * @var string
+     *
+     * @var array
      */
-    private $databaseName;
-    /**
-     * @var string
-     */
-    private $keyType;
+    private $tableAdapterArguments;
     /**
      * @var array
      */
@@ -39,17 +36,15 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
 
     /**
      * @param string $identifier
-     * @param string $database
-     * @param string $type
+     * @param array $tableAdapterArguments     
      * @param NethGui_Core_Validator|int $keyValidator
      * @param array $columns
      * @param array $actions
      */
-    public function __construct($identifier, $database, $type, $parameterSchema, $columns, $actions)
+    public function __construct($identifier, $tableAdapterArguments, $parameterSchema, $columns, $actions)
     {
         parent::__construct($identifier);
-        $this->databaseName = $database;
-        $this->keyType = $type;
+        $this->tableAdapterArguments = $tableAdapterArguments;
         $this->columns = $columns;
         $this->parameterSchema = $parameterSchema;
         $this->actions = $actions;
@@ -57,9 +52,10 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
 
     public function initialize()
     {
-        parent::initialize();
-        $tableAdapter = new NethGui_Adapter_TableAdapter($this->getHostConfiguration()->getDatabase($this->databaseName), $this->keyType);
+        parent::initialize();        
 
+        $tableAdapter = call_user_func_array(array($this->getHostConfiguration(), 'getTableAdapter'), $this->tableAdapterArguments);
+        
         $actionObjects = array(0 => FALSE); // set the read action object placeholder.
         $tableActions = array();
         $columnActions = array();
@@ -73,8 +69,8 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
             } else {
                 $columnActions[] = $actionName;
             }
-            
-            if(is_string($requireEvents)) {
+
+            if (is_string($requireEvents)) {
                 $requireEvents = array($requireEvents);
             }
 

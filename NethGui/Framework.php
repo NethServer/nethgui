@@ -377,11 +377,13 @@ class NethGui_Framework
         $moduleWakeupList = array_unique($moduleWakeupList);
 
         $notificationManager = new NethGui_Module_NotificationArea($user);
+        $notificationManager->setHostConfiguration($hostConfiguration);
 
         $topModuleDepot->registerModule($notificationManager);
 
         // The World module is a non-processing container.
         $worldModule = new NethGui_Module_World();
+        $worldModule->setHostConfiguration($hostConfiguration);
 
         $view = new NethGui_Core_View($worldModule);
 
@@ -439,7 +441,7 @@ class NethGui_Framework
             $worldModule->addModule(new NethGui_Module_Menu($topModuleDepot->getModules()));
             header("Content-Type: text/html; charset=UTF-8");
             $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_REFRESH);
-            echo $view->render();
+            echo $view->render();            
         } elseif ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_JSON) {
             header("Content-Type: application/json; charset=UTF-8");
             $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_UPDATE);
