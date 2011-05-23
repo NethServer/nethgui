@@ -303,7 +303,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
     /**
      * Do nothing
      */
-    public function process(NethGui_Core_NotificationCarrierInterface $carrier)
+    public function process()
     {
         if ($this->autosave === TRUE) {
             $changes = $this->parameters->save();

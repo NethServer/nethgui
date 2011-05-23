@@ -17,7 +17,8 @@ class NethGui_Core_AlwaysAuthenticatedUser implements NethGui_Core_UserInterface
 
     private $credentials;
     private $dialogs;
-
+    private $redirect;
+    
     public function __construct()
     {
         session_name('NethGui');
@@ -94,6 +95,30 @@ class NethGui_Core_AlwaysAuthenticatedUser implements NethGui_Core_UserInterface
     public function getDialogBoxes()
     {
         return $this->dialogs;
+    }
+
+    public function setRedirect(NethGui_Core_ModuleInterface $module, $path = array())
+    {
+        if ( ! isset($this->redirect))
+        {
+            $this->redirect = array($module, $path);
+        }
+    }
+
+    public function getRedirect()
+    {
+        if ( ! isset($this->redirect)) {
+            return NULL;
+        }
+
+        list($module, $path) = $this->redirect;
+
+        do {
+            array_unshift($path, $module->getIdentifier());
+            $module = $module->getParent();
+        } while ( ! is_null($module));
+
+        return NethGui_Framework::getInstance()->buildUrl($path, array());
     }
 
 }

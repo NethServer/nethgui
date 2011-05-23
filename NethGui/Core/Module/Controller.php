@@ -100,13 +100,13 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Composite imple
      * @param NethGui_Core_NotificationCarrierInterface $carrier
      * @return type 
      */
-    public function process(NethGui_Core_NotificationCarrierInterface $carrier)
+    public function process()
     {
         if (is_null($this->currentAction)) {
             return;
         }
 
-        $this->currentAction->process($carrier);
+        $this->currentAction->process();
     }
 
     /**

@@ -59,10 +59,10 @@ class NethGui_Core_Module_List extends NethGui_Core_Module_Composite implements 
         }
     }
 
-    public function process(NethGui_Core_NotificationCarrierInterface $carrier)
+    public function process()
     {
         foreach ($this->getChildren() as $childModule) {
-            $childModule->process($carrier);
+            $childModule->process();
         }
     }
 
