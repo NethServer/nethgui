@@ -39,17 +39,16 @@ class NethGui_Core_Module_List extends NethGui_Core_Module_Composite implements 
 
     public function bind(NethGui_Core_RequestInterface $request)
     {
-        $arguments = $request->getArguments();        
-        $submodule = array_shift($arguments);        
+        $arguments = $request->getArguments();
+        $submodule = array_shift($arguments);
         foreach ($this->getChildren() as $module) {
-            
-            if($submodule == $module->getIdentifier()) {
+
+            if ($submodule == $module->getIdentifier()) {
                 // Forward arguments to submodule:
                 $module->bind($request->getParameterAsInnerRequest($submodule, $arguments));
             } else {
-                $module->bind($request->getParameterAsInnerRequest($module->getIdentifier()));                
+                $module->bind($request->getParameterAsInnerRequest($module->getIdentifier()));
             }
-            
         }
     }
 
@@ -74,8 +73,8 @@ class NethGui_Core_Module_List extends NethGui_Core_Module_Composite implements 
             $innerView = $view->spawnView($childModule, TRUE);
             $childModule->prepareView($innerView, $mode);
         }
-    }    
-    
+    }
+
     public function renderList(NethGui_Renderer_Abstract $view)
     {
         foreach ($this->getChildren() as $child) {
@@ -86,8 +85,13 @@ class NethGui_Core_Module_List extends NethGui_Core_Module_Composite implements 
 
     public function renderForm(NethGui_Renderer_Abstract $view)
     {
-        $form = $view->form();
-
+        // Only a root module emits FORM tag:
+        if (is_null($this->getParent())) {
+            $form = $view->form();
+        } else {
+            $form = $view;
+        }
+        
         foreach ($this->getChildren() as $child) {
             $form->inset($child->getIdentifier());
         }
@@ -106,12 +110,19 @@ class NethGui_Core_Module_List extends NethGui_Core_Module_Composite implements 
             $pages[] = $child->getIdentifier();
         }
 
-        $tabs = $view->form()->tabs($this->getIdentifier(), $pages);
+        // Only a root module emits FORM tag:
+        if (is_null($this->getParent())) {
+            $form = $view->form();
+        } else {
+            $form = $view;
+        }
+
+        $tabs = $form->tabs($this->getIdentifier(), $pages);
 
         $tabs->button('Submit', NethGui_Renderer_Abstract::BUTTON_SUBMIT);
         $tabs->button('Reset', NethGui_Renderer_Abstract::BUTTON_RESET);
 
         return $view;
-    }    
-    
+    }
+
 }

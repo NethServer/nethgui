@@ -38,15 +38,22 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Composite imple
         $arguments = $request->getArguments();
 
         if ( ! empty($arguments) && isset($arguments[0])) {
-            // We can identify the current action
-            $this->currentAction = $this->getAction($arguments[0]);
-            if (is_null($this->currentAction)) {
+            // We can identify the current action from request arguments
+            $actionId = $arguments[0];
+            if ( ! $this->hasAction($actionId)) {
                 // a NULL action at this point results in a "not found" condition:
                 throw new NethGui_Exception_HttpStatusClientError('Not Found', 404);
             }
-
-            $this->currentAction->bind($request->getParameterAsInnerRequest($arguments[0], array_slice($arguments, 1)));
+        } elseif ($request->isSubmitted() && $request->hasParameter('__action')) {
+            // We don't have request arguments, but if request is submitted
+            // we can check the `__action` parameter.
+            $actionId = $request->getParameter('__action');
+        } else {
+            return; // don't bind the request to any action.
         }
+
+        $this->currentAction = $this->getAction($actionId);
+        $this->currentAction->bind($request->getParameterAsInnerRequest($actionId, array_slice($arguments, 1)));
     }
 
     /**
@@ -66,6 +73,11 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Composite imple
             }
         }
         return NULL;
+    }
+
+    private function hasAction($identifier)
+    {
+        return is_object($this->getAction($identifier));
     }
 
     /**
@@ -108,29 +120,38 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Composite imple
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
-        
+
         if (is_null($this->currentAction)) {
             foreach ($this->getChildren() as $childModule) {
                 $innerView = $view->spawnView($childModule, TRUE);
                 $childModule->prepareView($innerView, $mode);
                 // override action name:
-                $innerView['__action'] = 'index';                
+                $innerView['__action'] = 'index';
             }
-            $view->setTemplate(array($this, 'renderController'));
+            $view->setTemplate(array($this, 'renderDisabledActions'));
         } else {
-            $view->setTemplate(array($this, 'renderCurrentView'));
+            $view->setTemplate(array($this, 'renderCurrentAction'));
             $innerView = $view->spawnView($this->currentAction, TRUE);
             $innerView['__action'] = $this->currentAction->getIdentifier();
+            $view['__action'] = $this->currentAction->getIdentifier();
             $this->currentAction->prepareView($innerView, $mode);
         }
     }
 
-    public function renderController(NethGui_Renderer_Abstract $view)
+    public function renderDisabledActions(NethGui_Renderer_Abstract $view)
     {
-        $form = $view->form('', NethGui_Renderer_Abstract::STATE_DISABLED);
+
+        // Only a root module emits FORM tag:
+        if (is_null($this->getParent())) {
+            $form = $view->form('', NethGui_Renderer_Abstract::STATE_DISABLED);
+        } else {
+            $form = $view;
+        }
+
         foreach ($this->getChildren() as $child) {
             $form->inset($child->getIdentifier());
         }
+
         return $view;
     }
 
@@ -144,11 +165,19 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Composite imple
      * @param NethGui_Renderer_Abstract $view The view
      * @return string
      */
-    public function renderCurrentView(NethGui_Renderer_Abstract $view)
+    public function renderCurrentAction(NethGui_Renderer_Abstract $view)
     {
         $action = $this->currentAction->getIdentifier();
-        return $view
-            ->form($action)
+
+        // Only a root module emits FORM tag:
+        if (is_null($this->getParent())) {
+            $form = $view->form($action);
+        } else {
+            $form = $view;
+        }
+
+        return $form
+            ->hidden('__action')
             ->inset($action)
         ;
     }
