@@ -39,7 +39,17 @@ class NethGui_Adapter_TableAdapter implements NethGui_Adapter_AdapterInterface, 
 
     private function lazyInitialization()
     {
-        $this->data = new ArrayObject($this->database->getAll($this->type, $this->filter));
+        $this->data = new ArrayObject();
+        
+        $rawData =$this->database->getAll($this->type, $this->filter);
+        
+        if(is_array($rawData)) {
+            // skip the first column, where getAll() returns the key type.
+            foreach($rawData as $key => $row) {
+                $this->data[$key] = array_slice($row, 1);
+            }
+        }
+                
         $this->changes = new ArrayObject();
     }
 

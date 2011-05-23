@@ -80,7 +80,7 @@ class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
         if ( ! $this->tableAdapter->offsetExists($keyValue)) {
             return; // Nothing to do: the data we are missing the data row
         }
-
+        
         $values = array_values($this->tableAdapter[$keyValue]);
 
         $parameterIndex = 0;
