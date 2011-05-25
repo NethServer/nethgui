@@ -152,11 +152,11 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
      * Signal the given event after at least one successful database write operation occurred.
      * @param string $eventName 
      */
-    protected function requireEvent($eventName)
+    protected function requireEvent($eventName, $eventArgs = array())
     {
-        if (is_string($eventName) && ! in_array($eventName, $this->requiredEvents))
+        if (is_string($eventName))
         {
-            $this->requiredEvents[] = $eventName;
+            $this->requiredEvents[] = array($eventName, $eventArgs);
         }
     }
 
@@ -308,8 +308,8 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
         if ($this->autosave === TRUE) {
             $changes = $this->parameters->save();
             if ($changes > 0) {
-                foreach ($this->requiredEvents as $eventName) {
-                    $this->getHostConfiguration()->signalEventAsync($eventName);
+                foreach ($this->requiredEvents as $eventCall) {                    
+                    $this->getHostConfiguration()->signalEventAsync($eventCall[0], $eventCall[1], NULL);
                 }
             }
         }
