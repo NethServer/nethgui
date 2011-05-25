@@ -23,7 +23,7 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Composite imple
 
     /**
      * The action where to forward method calls
-     * @var NethGui_Core_Module_Action
+     * @var NethGui_Core_Module_Interface
      */
     protected $currentAction;
 

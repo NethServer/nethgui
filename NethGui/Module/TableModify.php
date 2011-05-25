@@ -25,11 +25,7 @@ class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
      * @var NethGui_Adapter_AdapterInterface
      */
     private $tableAdapter;
-    /**
-     *
-     * @var array
-     */
-    private $requiredEvents;
+
 
     public function __construct($identifier, NethGui_Adapter_AdapterInterface $tableAdapter, $parameterSchema, $requireEvents, $viewTemplate = NULL)
     {
