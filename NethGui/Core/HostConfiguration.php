@@ -25,7 +25,6 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
      * @var NethGui_Core_UserInterface
      */
     private $user;
-    
     private $asyncEvents;
 
     /**
@@ -88,15 +87,15 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
 
         return $adapter;
     }
-    
+
     public function getTableAdapter($database, $typeOrKey, $filterOrProp = NULL, $separators = NULL)
     {
-        if(is_null($separators)) {
+        if (is_null($separators)) {
             return new NethGui_Adapter_TableAdapter($this->getDatabase($database), $typeOrKey);
         }
-        
+
         $innerAdapter = $this->getIdentityAdapter($database, $typeOrKey, $filterOrProp, $separators[0]);
-        
+
         return new NethGui_Adapter_TabularValueAdapter($innerAdapter, $separators[1]);
     }
 
@@ -128,41 +127,51 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
      * @access public
      * @return boolean true on success, false otherwise
      */
-    public function signalEvent($event, &$output=array())
+    public function signalEvent($event, $argv = array(), &$output=array())
     {
-        exec('/usr/bin/sudo /sbin/e-smith/signal-event' . ' ' . escapeshellarg($event), $output, $ret);
+        array_unshift($argv, $event);
+        exec('/usr/bin/sudo /sbin/e-smith/signal-event ' . implode(' ', array_map('escapeshellarg', $argv)), $output, $ret);
         return ($ret == 0);
     }
 
-    public function signalEventAsync($event, $callback = NULL)
+    public function signalEventAsync($event, $argv = array(), $callback = NULL)
     {
-        if ( ! isset($this->asyncEvents[$event])) {
-            $this->asyncEvents[$event] = array();
+        $eventId = md5(serialize(array($event, $argv)));
+
+        if ( ! isset($this->asyncEvents[$eventId])) {
+            $this->asyncEvents[$eventId] = array(
+                'name' => $event,
+                'args' => $argv,
+                'cbks' => array(),
+            );
         }
+
         if (is_callable($callback)) {
-            $this->asyncEvents[$event][] = $callback;
+            $this->asyncEvents[$eventId]['cbks'][] = $callback;
         }
     }
-    
+
     /**
      * Raises all asynchronous events, invoking the given callback functions.
      * @return boolean|NULL
      */
-    public function raiseAsyncEvents() {
-        if(empty($this->asyncEvents)) {
+    public function raiseAsyncEvents()
+    {
+        if (empty($this->asyncEvents)) {
             return NULL;
         }
-        
-        $eventNames = array_keys($this->asyncEvents);
-        foreach($eventNames as $eventName) {
-            $exitStatus = $this->signalEvent($eventName);
-            
-            $callbacks = $this->asyncEvents[$eventName];
-            foreach($callbacks as $callback) {
-                call_user_func($callback, $exitStatus);
+
+
+        foreach ($this->asyncEvents as $eventData) {
+            $output = array();
+
+            $exitStatus = $this->signalEvent($eventData['name'], $eventData['args'], $output);
+
+            foreach ($eventData['cbks'] as $callback) {
+                call_user_func($callback, $output, $exitStatus);
             }
-            
-            if($exitStatus === FALSE) {
+
+            if ($exitStatus === FALSE) {
                 return FALSE;
             }
         }

@@ -57,7 +57,6 @@ interface NethGui_Core_HostConfigurationInterface
      */
     public function getMapAdapter($readCallback, $writeCallback, $args);
 
-
     /**
      * Get a table adapter
      * 
@@ -71,25 +70,26 @@ interface NethGui_Core_HostConfigurationInterface
      * @return NethGui_Adapter_AdapterInterface An adapter with array and countable interfaces.
      */
     public function getTableAdapter($database, $typeOrKey, $filterOrProp = NULL, $separators = NULL);
-    
+
     /**
      * Signal an event and return the status
      *
      * @param string $event Event name
+     * @param array $argv Optional event arguments
      * @param array &$output Optional output array. If the output argument is present, then the specified array will be filled with every line of output from the event.
      * @access public
      * @return boolean true on success, false otherwise
      */
-    public function signalEvent($event, &$output=array());
-    
-    
+    public function signalEvent($event, $argv = array(), &$output=array());
+
     /**
      * Ask the host configuration to signal the given event lately, after all database 
      * write operations occurred.
      * 
      * @param string $event
+     * @param array $argv Optional event arguments
      * @param callback $callback
      */
-    public function signalEventAsync($event, $callback = NULL);
+    public function signalEventAsync($event, $argv = array(), $callback = NULL);
 }
 
