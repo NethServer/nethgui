@@ -91,7 +91,7 @@ class NethGui_Core_Module_List extends NethGui_Core_Module_Composite implements 
         } else {
             $form = $view;
         }
-        
+
         foreach ($this->getChildren() as $child) {
             $form->inset($child->getIdentifier());
         }
@@ -123,6 +123,39 @@ class NethGui_Core_Module_List extends NethGui_Core_Module_Composite implements 
         $tabs->button('Reset', NethGui_Renderer_Abstract::BUTTON_RESET);
 
         return $view;
+    }
+
+    /**
+     * Instantiates the given classes, adding the created objects as children of
+     * this List module.
+     * 
+     * If the class name begins with `_` (underscore), the container class name
+     * is prepended.      
+     *
+     * @see addChild()
+     * @param type $classList 
+     * @return void
+     */
+    protected function loadChildren($classList)
+    {
+        foreach ($classList as $item) {
+            if(!is_string($item)) {
+                throw new InvalidArgumentException('$classList elements must be of type String');
+            }
+            
+            if ($item[0] == '_') {
+                $childModuleClass = get_class($this) . $item;
+            } else {
+                $childModuleClass = $item;
+            }
+
+            $childModule = new $childModuleClass();
+            if ( ! is_null($this->getHostConfiguration())) {
+                $childModule->setHostConfiguration($this->getHostConfiguration());
+            }
+            
+            $this->addChild($childModule);
+        }
     }
 
 }
