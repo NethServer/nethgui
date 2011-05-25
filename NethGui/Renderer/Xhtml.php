@@ -633,4 +633,22 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         return (self::LABEL_ABOVE | self::LABEL_LEFT | self::LABEL_RIGHT) & $flags ? $flags : $flags | $default;
     }
 
+    public function includeTemplate($template, $flags = 0)
+    {
+        $languageCatalog = NULL;
+        if ($this->getModule() instanceof NethGui_Core_LanguageCatalogProvider) {
+            $languageCatalog = $this->getModule()->getLanguageCatalog();
+        }
+       
+        $state = array(
+            'view' => $this->createNewInstance($flags),
+        );
+
+        $content = NethGui_Framework::getInstance()->renderView($template, $state, $languageCatalog);
+
+        $this->append($content, FALSE);
+
+        return $this;
+    }
+
 }

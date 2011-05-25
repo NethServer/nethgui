@@ -213,4 +213,14 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
      * @return NethGui_Renderer_Abstract A new object instance, representing the panel surface
      */
     abstract public function panel($identifier = NULL, $flags = 0);
+    
+    /**
+     * Embeds the $template output in the current content
+     *
+     * @link http://redmine.nethesis.it/issues/197
+     * @param string|callable $template See {@link NethGui_Core_ViewInterface::setTemplate()}
+     * @param $flags Optional
+     * @return NethGui_Renderer_Abstract Same object
+     */
+    abstract public function includeTemplate($template, $flags = 0);
 }
