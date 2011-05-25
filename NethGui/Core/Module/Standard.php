@@ -18,7 +18,12 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
     /**
      * A valid service status is a 'disabled' or 'enabled' string.
      */
-    const VALID_SERVICESTATUS = 100;         
+    const VALID_SERVICESTATUS = 100; 
+    
+    /**
+     * A valid *nix username token
+     */
+    const VALID_USERNAME = 101;
 
     /**
      * A valid IPv4 address like '192.168.1.1' 
@@ -173,6 +178,9 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
         switch ($ruleCode) {
             case self::VALID_SERVICESTATUS:
                 return $validator->memberOf('enabled', 'disabled');
+           
+            case self::VALID_USERNAME:
+                return $validator->username();
 
             case self::VALID_IP:
             case self::VALID_IPv4:
