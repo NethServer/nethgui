@@ -90,11 +90,10 @@ class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
         if ( ! $this->tableAdapter->offsetExists($keyValue)) {
             return; // Nothing to do: the data we are missing the data row
         }
-
-        $values = array_values($this->tableAdapter[$keyValue]);
-
-        $parameterIndex = 0;
-
+        
+        $values = $this->tableAdapter[$keyValue];
+            
+       
         // Bind other values following the order defined into parameterSchema                 
         foreach ($this->parameterSchema as $parameterDeclaration) {
             $parameterName = $parameterDeclaration[0];
@@ -104,7 +103,7 @@ class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
             }
 
             // Bind the n-th value to $parameterName.
-            $this->parameters[$parameterName] = $values[$parameterIndex ++];
+            $this->parameters[$parameterName] = $values[$parameterName];
         }
     }
 

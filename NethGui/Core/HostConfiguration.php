@@ -137,7 +137,7 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
 
     public function signalEventAsync($event, $argv = array(), $callback = NULL)
     {
-        $eventId = $this->calcEventId($eventName, $argv);
+        $eventId = $this->calcEventId($event, $argv);
 
         if ( ! isset($this->asyncEvents[$eventId])) {
             $this->asyncEvents[$eventId] = array(
