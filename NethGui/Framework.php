@@ -414,7 +414,7 @@ class NethGui_Framework
             // Validate request
             $module->validate($notificationManager);
 
-            // Skip next steps, if $module has added some validation errors:
+            // Skip process() step, if $module has added some validation errors:
             if ($notificationManager->hasValidationErrors()) {
                 continue;
             }

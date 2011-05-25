@@ -42,10 +42,20 @@ class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
         $this->tableAdapter = $tableAdapter;
         $this->parameterSchema = $parameterSchema;
         $this->key = $this->parameterSchema[0][0];
-
-        $this->requiredEvents = array();
-        foreach ($requireEvents as $eventName) {
-            $this->requiredEvents[] = $eventName;
+        $this->autosave = FALSE;
+        
+        foreach ($requireEvents as $eventData) {
+            if (is_string($eventData)) {
+                $this->requireEvent($eventData);
+            } elseif (is_array($eventData)) {
+                if(!isset($eventData[1])) {
+                    $eventData[1] = array();
+                }        
+                if(!isset($eventData[2])) {
+                    $eventData[2] = NULL;
+                }                    
+                $this->requireEvent($eventData[0], $eventData[1], $eventData[2]);
+            }
         }
     }
 
@@ -80,7 +90,7 @@ class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
         if ( ! $this->tableAdapter->offsetExists($keyValue)) {
             return; // Nothing to do: the data we are missing the data row
         }
-        
+
         $values = array_values($this->tableAdapter[$keyValue]);
 
         $parameterIndex = 0;
@@ -116,7 +126,7 @@ class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
                 }
 
                 // Redirect to parent controller module              
-                $this->getUser()->setRedirect($this->getParent());                
+                $this->getUser()->setRedirect($this->getParent());
             } elseif ($action == 'create' || $action == 'update') {
 
                 $values = $this->parameters->getArrayCopy();
@@ -137,19 +147,17 @@ class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
 
             $changes = $this->tableAdapter->save();
             if ($changes > 0) {
-                foreach ($this->requiredEvents as $eventName) {
-                    $this->getHostConfiguration()->signalEventAsync($eventName);
-                }
+                $this->signalAllEventsAsync();
             }
         }
     }
 
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
-        parent::prepareView($view, $mode);        
+        parent::prepareView($view, $mode);
         if ($mode == self::VIEW_REFRESH) {
             $view['__key'] = $this->key;
-        }        
+        }
     }
-    
+
 }
