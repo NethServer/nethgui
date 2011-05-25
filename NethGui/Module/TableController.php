@@ -32,53 +32,44 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
     /**
      * @var array
      */
-    private $actions;
+    private $columnActions, $tableActions;
 
     /**
      * @param string $identifier
      * @param array $tableAdapterArguments     
-     * @param NethGui_Core_Validator|int $keyValidator
+     * @param array $parameterSchema
      * @param array $columns
-     * @param array $actions
+     * @param array $columnActions
+     * @param array $tableActions
      */
-    public function __construct($identifier, $tableAdapterArguments, $parameterSchema, $columns, $actions)
+    public function __construct($identifier, $tableAdapterArguments, $parameterSchema, $columns, $columnActions, $tableActions)
     {
         parent::__construct($identifier);
         $this->tableAdapterArguments = $tableAdapterArguments;
         $this->columns = $columns;
         $this->parameterSchema = $parameterSchema;
-        $this->actions = $actions;
+        $this->columnActions = $columnActions;
+        $this->tableActions = $tableActions;
     }
 
     public function initialize()
     {
-        parent::initialize();        
+        parent::initialize();
 
         $tableAdapter = call_user_func_array(array($this->getHostConfiguration(), 'getTableAdapter'), $this->tableAdapterArguments);
-        
+
         $actionObjects = array(0 => FALSE); // set the read action object placeholder.
-        $tableActions = array();
-        $columnActions = array();
 
-        foreach ($this->actions as $actionArguments) {
+        foreach ($this->columnActions as $actionArguments) {
+            $actionObject = $this->createActionObject($actionArguments, $tableAdapter);
+            $columnActions[] = $actionObject->getIdentifier();
+            $actionObjects[] = $actionObject;
+        }
 
-            list($actionName, $requireEvents, $viewTemplate, $isTableAction) = $actionArguments;
-
-            if ($isTableAction === TRUE) {
-                $tableActions[] = $actionName;
-            } else {
-                $columnActions[] = $actionName;
-            }
-
-            if (is_string($requireEvents)) {
-                $requireEvents = array($requireEvents);
-            }
-
-            if ($actionArguments instanceof NethGui_Core_Module_Standard) {
-                $actionObjects[] = $actionArguments;
-            } else {
-                $actionObjects[] = new NethGui_Module_TableModify($actionName, $tableAdapter, $this->parameterSchema, $requireEvents, $viewTemplate);
-            }
+        foreach ($this->tableActions as $actionArguments) {
+            $actionObject = $this->createActionObject($actionArguments, $tableAdapter);
+            $tableActions[] = $actionObject->getIdentifier();
+            $actionObjects[] = $actionObject;
         }
 
         // add the read case
@@ -88,6 +79,66 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
         foreach ($actionObjects as $actionObject) {
             $this->addChild($actionObject);
         }
+    }
+
+    private function createActionObject($actionArguments, $tableAdapter)
+    {
+        $actionObject = NULL;
+
+        if ($actionArguments instanceof NethGui_Core_Module_Standard) {
+            $actionObject = $actionArguments;
+        } else {
+
+            list($actionName, $requireEvents, $viewTemplate) = $actionArguments;
+
+            if (is_string($requireEvents)) {
+                $requireEvents = array($requireEvents);
+            }
+
+            $actionObject = new NethGui_Module_TableModify($actionName, $tableAdapter, $this->parameterSchema, $requireEvents, $viewTemplate);
+        }
+
+        return $actionObject;
+    }
+
+    public function renderDisabledActions(NethGui_Renderer_Abstract $view)
+    {
+
+        // Only a root module emits FORM tag:
+        if (is_null($this->getParent())) {
+            $renderer = $view->form();
+        } else {
+            $renderer = $view;
+        }
+
+        foreach ($this->getChildren() as $index => $child) {
+            if ($index === 0) {
+                $renderer->inset($child->getIdentifier());
+            } else {
+                $renderer
+                    ->dialog($child->getIdentifier(), NethGui_Renderer_Abstract::DIALOG_EMBEDDED | NethGui_Renderer_Abstract::STATE_DISABLED)
+                    ->inset($child->getIdentifier())
+                ;
+            }
+        }
+
+        return $view;
+    }
+
+    public function prepareView(NethGui_Core_ViewInterface $view, $mode)
+    {
+        parent::prepareView($view, $mode);
+        if ( ! is_null($this->currentAction)) {
+            return;
+        }
+
+        // Handle a NULL current action:
+        foreach ($this->getChildren() as $childModule) {
+            $innerView = $view->spawnView($childModule, TRUE);
+            $childModule->prepareView($innerView, $mode);
+        }
+
+        $view->setTemplate(array($this, 'renderDisabledActions'));
     }
 
 }

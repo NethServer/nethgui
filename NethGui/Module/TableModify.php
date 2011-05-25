@@ -148,24 +148,8 @@ class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
     {
         parent::prepareView($view, $mode);        
         if ($mode == self::VIEW_REFRESH) {
-            $view->setTemplate(array($this, 'renderDialog'));                     
             $view['__key'] = $this->key;
-            $view['__action'] = $this->getIdentifier();
         }        
     }
     
-    /**
-     *
-     * @link http://redmine.nethesis.it/issues/197
-     * @see NethGui_Renderer_Abstract::includeTemplate()
-     * @param NethGui_Renderer_Abstract $view
-     * @return type 
-     */
-    public function renderDialog(NethGui_Renderer_Abstract $view) {
-        $dialog = $view->dialog($this->getIdentifier(), NethGui_Renderer_Abstract::DIALOG_EMBEDDED | ($view['__action'] == 'index' ? NethGui_Renderer_Abstract::STATE_DISABLED : 0 ));                       
-        return $dialog->includeTemplate($this->viewTemplate);
-    }
-    
-    
-
 }
