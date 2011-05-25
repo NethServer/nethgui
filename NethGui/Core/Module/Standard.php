@@ -18,12 +18,17 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
     /**
      * A valid service status is a 'disabled' or 'enabled' string.
      */
-    const VALID_SERVICESTATUS = 100; 
-    
+    const VALID_SERVICESTATUS = 100;
+
     /**
      * A valid *nix username token
      */
     const VALID_USERNAME = 101;
+
+    /**
+     * A not empty value
+     */
+    const VALID_NOTEMPTY = 102;
 
     /**
      * A valid IPv4 address like '192.168.1.1' 
@@ -86,13 +91,11 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
      * @var array
      */
     private $invalidParameters = array();
-    
     /**
      *
      * @var NethGui_Core_UserInterface
      */
     private $user;
-    
 
     /**
      * @param string $identifier
@@ -157,11 +160,18 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
      * Signal the given event after at least one successful database write operation occurred.
      * @param string $eventName 
      */
-    protected function requireEvent($eventName, $eventArgs = array())
+    protected function requireEvent($eventName, $eventArgs = array(), $eventCallback = NULL)
     {
         if (is_string($eventName))
         {
-            $this->requiredEvents[] = array($eventName, $eventArgs);
+            $this->requiredEvents[] = array($eventName, $eventArgs, $eventCallback);
+        }
+    }
+
+    protected function signalAllEventsAsync()
+    {
+        foreach ($this->requiredEvents as $eventCall) {
+            $this->getHostConfiguration()->signalEventAsync($eventCall[0], $eventCall[1], $eventCall[2]);
         }
     }
 
@@ -178,9 +188,12 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
         switch ($ruleCode) {
             case self::VALID_SERVICESTATUS:
                 return $validator->memberOf('enabled', 'disabled');
-           
+
             case self::VALID_USERNAME:
                 return $validator->username();
+
+            case self::VALID_NOTEMPTY:
+                return $validator->notEmpty();
 
             case self::VALID_IP:
             case self::VALID_IPv4:
@@ -316,9 +329,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
         if ($this->autosave === TRUE) {
             $changes = $this->parameters->save();
             if ($changes > 0) {
-                foreach ($this->requiredEvents as $eventCall) {                    
-                    $this->getHostConfiguration()->signalEventAsync($eventCall[0], $eventCall[1], NULL);
-                }
+                $this->signalAllEventsAsync();
             }
         }
     }
@@ -336,8 +347,10 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
     /**
      * @return NethGui_Core_UserInterface
      */
-    protected function getUser() {
-        return $this->user;    
+    protected function getUser()
+    {
+        return $this->user;
     }
+
 }
 
