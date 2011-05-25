@@ -133,6 +133,7 @@ class NethGui_Core_Module_List extends NethGui_Core_Module_Composite implements 
      * is prepended.      
      *
      * @see addChild()
+     * @link http://redmine.nethesis.it/issues/196
      * @param type $classList 
      * @return void
      */

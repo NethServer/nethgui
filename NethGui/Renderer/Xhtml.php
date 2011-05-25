@@ -18,10 +18,18 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
     private $content = array();
     private $flags = 0;
 
+    public function __construct(NethGui_Core_ViewInterface $view)
+    {
+        $this->inheritFlagsMask = 
+        parent::__construct($view);
+    }
+
     public function __clone()
     {
         $this->content = array();
         $this->wrapTag = array();
+        // Only some flags are cloned:
+        $this->flags &= self::LABEL_ABOVE | self::LABEL_LEFT | self::LABEL_RIGHT | self::STATE_DISABLED | self::STATE_READONLY;
     }
 
     public function render()
@@ -320,6 +328,9 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
             if ($flags & self::STATE_CHECKED && $isCheckable) {
                 $attributes['checked'] = 'checked';
             }
+            if ($flags & self::STATE_READONLY) {
+                $attributes['readonly'] = 'readonly';
+            }
         }
 
         if (in_array($tag, array('input', 'button', 'textarea', 'select', 'optgroup', 'option'))) {
@@ -357,12 +368,15 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
     public function inset($offset)
     {
         $value = $this->view[$offset];
+        
         if ($value instanceof NethGui_Core_ViewInterface) {
-            // pass
+            $insetRenderer = new self($value);            
+            $insetRenderer->includeTemplate($value->getTemplate(), $this->flags);
+            $this->append((String) $insetRenderer, FALSE);
         } else {
-            $value = htmlspecialchars($value);
+            $this->append((String) $value);
         }
-        $this->pushContent($value);
+
         return $this;
     }
 
@@ -639,7 +653,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         if ($this->getModule() instanceof NethGui_Core_LanguageCatalogProvider) {
             $languageCatalog = $this->getModule()->getLanguageCatalog();
         }
-       
+
         $state = array(
             'view' => $this->createNewInstance($flags),
         );

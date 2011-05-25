@@ -70,6 +70,11 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
     {
         $this->template = $template;
     }
+    
+    public function getTemplate()
+    {
+        return $this->template;
+    }
 
     public function spawnView(NethGui_Core_ModuleInterface $module, $register = FALSE)
     {
