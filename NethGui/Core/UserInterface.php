@@ -50,6 +50,10 @@ interface NethGui_Core_UserInterface
     
     public function getDialogBoxes();
     
-    public function dismissDialogBox($dialogId);    
+    public function dismissDialogBox($dialogId); 
+    
+    public function setRedirect(NethGui_Core_ModuleInterface $module, $path = array());
+    
+    public function getRedirect();
 }
 

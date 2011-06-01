@@ -414,7 +414,7 @@ class NethGui_Framework
             // Validate request
             $module->validate($notificationManager);
 
-            // Skip next steps, if $module has added some validation errors:
+            // Skip process() step, if $module has added some validation errors:
             if ($notificationManager->hasValidationErrors()) {
                 continue;
             }
@@ -434,7 +434,7 @@ class NethGui_Framework
 
 
         if ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_HTML) {
-            $redirect = $notificationManager->getRedirectOrder();
+            $redirect = $user->getRedirect();
             if ( ! is_null($redirect)) {
                 redirect($redirect);
             }

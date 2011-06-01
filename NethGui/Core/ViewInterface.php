@@ -28,6 +28,11 @@ interface NethGui_Core_ViewInterface extends ArrayAccess, IteratorAggregate
      * @param string|callback $template The template converting the view state to a string
      */
     public function setTemplate($template);
+    
+    /**
+     * @see setTemplate()
+     */
+    public function getTemplate();
 
     /**
      * Assign data to the View state.
@@ -70,8 +75,7 @@ interface NethGui_Core_ViewInterface extends ArrayAccess, IteratorAggregate
      * 
      * @see NethGui_Framework::translate()
      */
-    public function translate($message, $args = array());
-    
+    public function translate($message, $args = array());           
       
 }
 

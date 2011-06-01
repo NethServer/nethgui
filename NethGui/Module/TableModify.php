@@ -25,11 +25,7 @@ class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
      * @var NethGui_Adapter_AdapterInterface
      */
     private $tableAdapter;
-    /**
-     *
-     * @var array
-     */
-    private $requiredEvents;
+
 
     public function __construct($identifier, NethGui_Adapter_AdapterInterface $tableAdapter, $parameterSchema, $requireEvents, $viewTemplate = NULL)
     {
@@ -42,10 +38,20 @@ class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
         $this->tableAdapter = $tableAdapter;
         $this->parameterSchema = $parameterSchema;
         $this->key = $this->parameterSchema[0][0];
-
-        $this->requiredEvents = array();
-        foreach ($requireEvents as $eventName) {
-            $this->requiredEvents[] = $eventName;
+        $this->autosave = FALSE;
+        
+        foreach ($requireEvents as $eventData) {
+            if (is_string($eventData)) {
+                $this->requireEvent($eventData);
+            } elseif (is_array($eventData)) {
+                if(!isset($eventData[1])) {
+                    $eventData[1] = array();
+                }        
+                if(!isset($eventData[2])) {
+                    $eventData[2] = NULL;
+                }                    
+                $this->requireEvent($eventData[0], $eventData[1], $eventData[2]);
+            }
         }
     }
 
@@ -81,10 +87,9 @@ class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
             return; // Nothing to do: the data we are missing the data row
         }
         
-        $values = array_values($this->tableAdapter[$keyValue]);
-
-        $parameterIndex = 0;
-
+        $values = $this->tableAdapter[$keyValue];
+            
+       
         // Bind other values following the order defined into parameterSchema                 
         foreach ($this->parameterSchema as $parameterDeclaration) {
             $parameterName = $parameterDeclaration[0];
@@ -94,13 +99,13 @@ class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
             }
 
             // Bind the n-th value to $parameterName.
-            $this->parameters[$parameterName] = $values[$parameterIndex ++];
+            $this->parameters[$parameterName] = $values[$parameterName];
         }
     }
 
-    public function process(NethGui_Core_NotificationCarrierInterface $carrier)
+    public function process()
     {
-        parent::process($carrier);
+        parent::process();
         if ($this->performAction) {
 
             $action = $this->getIdentifier();
@@ -116,7 +121,7 @@ class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
                 }
 
                 // Redirect to parent controller module              
-                $carrier->addRedirectOrder($this->getParent());
+                $this->getUser()->setRedirect($this->getParent());
             } elseif ($action == 'create' || $action == 'update') {
 
                 $values = $this->parameters->getArrayCopy();
@@ -129,17 +134,15 @@ class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
 
                 $this->tableAdapter[$key] = $values;
 
-                // Redirect to parent controller module
-                $carrier->addRedirectOrder($this->getParent());
+                // Redirect to parent controller module                
+                $this->getUser()->setRedirect($this->getParent());
             } else {
                 throw new NethGui_Exception_HttpStatusClientError('Not found', 404);
             }
 
             $changes = $this->tableAdapter->save();
             if ($changes > 0) {
-                foreach ($this->requiredEvents as $eventName) {
-                    $this->getHostConfiguration()->signalEventAsync($eventName);
-                }
+                $this->signalAllEventsAsync();
             }
         }
     }
@@ -149,7 +152,6 @@ class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
         parent::prepareView($view, $mode);
         if ($mode == self::VIEW_REFRESH) {
             $view['__key'] = $this->key;
-            $view['__action'] = $this->getIdentifier();
         }
     }
 

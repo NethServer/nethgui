@@ -12,7 +12,7 @@
  *
  * @package Module
  */
-class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard implements NethGui_Core_ValidationReportInterface, NethGui_Core_NotificationCarrierInterface
+class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard implements NethGui_Core_ValidationReportInterface
 {
 
     private $errors = array();
@@ -35,9 +35,9 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard imple
         $this->declareParameter('dismissDialog', '/^[a-zA-Z0-9]+$/');
     }
 
-    public function process(NethGui_Core_NotificationCarrierInterface $carrier)
+    public function process()
     {
-        parent::process($carrier);
+        parent::process();
 
         if ($this->parameters['dismissDialog'] != '') {
             $this->user->dismissDialogBox($this->parameters['dismissDialog']);
@@ -121,27 +121,6 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard imple
     public function hasValidationErrors()
     {
         return count($this->errors) > 0;
-    }
-
-    public function addRedirectOrder(NethGui_Core_ModuleInterface $module, $path = array())
-    {
-        $this->redirectOrders[] = array($module, $path);
-    }
-
-    public function getRedirectOrder()
-    {
-        if ( ! isset($this->redirectOrders[0])) {
-            return NULL;
-        }
-
-        list($module, $path) = $this->redirectOrders[0];
-
-        do {
-            array_unshift($path, $module->getIdentifier());
-            $module = $module->getParent();
-        } while ( ! is_null($module));
-
-        return NethGui_Framework::getInstance()->buildUrl($path, array());
     }
 
     public function dismissTransientDialogBoxes()

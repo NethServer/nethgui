@@ -25,7 +25,6 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
      * @var NethGui_Core_UserInterface
      */
     private $user;
-    
     private $asyncEvents;
 
     /**
@@ -88,15 +87,15 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
 
         return $adapter;
     }
-    
+
     public function getTableAdapter($database, $typeOrKey, $filterOrProp = NULL, $separators = NULL)
     {
-        if(is_null($separators)) {
+        if (is_null($separators)) {
             return new NethGui_Adapter_TableAdapter($this->getDatabase($database), $typeOrKey);
         }
-        
+
         $innerAdapter = $this->getIdentityAdapter($database, $typeOrKey, $filterOrProp, $separators[0]);
-        
+
         return new NethGui_Adapter_TabularValueAdapter($innerAdapter, $separators[1]);
     }
 
@@ -124,45 +123,94 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
      * TODO: authorize user action on PDP.
      *
      * @param string $event Event name
+     * @param array $argv Optional arguments array.
      * @param array &$output Optional output array. If the output argument is present, then the specified array will be filled with every line of output from the event.
      * @access public
      * @return boolean true on success, false otherwise
      */
-    public function signalEvent($event, &$output=array())
+    public function signalEvent($event, $argv = array(), &$output=array())
     {
-        exec('/usr/bin/sudo /sbin/e-smith/signal-event' . ' ' . escapeshellarg($event), $output, $ret);
+        array_unshift($argv, $event);
+        exec('/usr/bin/sudo /sbin/e-smith/signal-event ' . implode(' ', array_map('escapeshellarg', $argv)), $output, $ret);
         return ($ret == 0);
     }
 
-    public function signalEventAsync($event, $callback = NULL)
+    public function signalEventAsync($event, $argv = array(), $callback = NULL)
     {
-        if ( ! isset($this->asyncEvents[$event])) {
-            $this->asyncEvents[$event] = array();
+        $eventId = $this->calcEventId($event, $argv);
+
+        if ( ! isset($this->asyncEvents[$eventId])) {
+            $this->asyncEvents[$eventId] = array(
+                'name' => $event,
+                'args' => $argv,
+                'cbks' => array(),
+            );
         }
+
         if (is_callable($callback)) {
-            $this->asyncEvents[$event][] = $callback;
+            $this->asyncEvents[$eventId]['cbks'][] = $callback;
         }
     }
     
     /**
+     * Translates a signal call arguments to a unique string identifier.
+     * 
+     * @param string $eventName
+     * @param array $args
+     * @return string 
+     */
+    private function calcEventId($eventName, $args) {
+        $idList = array($eventName);
+        
+        foreach($args as $arg) {
+            if(is_callable($arg)) {
+                $idList[] = is_object($arg[0]) ? get_class($arg[0]) : (String) $arg[0];
+                $idList[] = (String) $arg[1];
+            } else {
+                $idList[] = (String) $arg;
+            }
+        }
+        
+        return md5(implode('-', $idList));
+    }
+
+    /**
      * Raises all asynchronous events, invoking the given callback functions.
      * @return boolean|NULL
      */
-    public function raiseAsyncEvents() {
-        if(empty($this->asyncEvents)) {
+    public function raiseAsyncEvents()
+    {
+        if (empty($this->asyncEvents)) {
             return NULL;
         }
-        
-        $eventNames = array_keys($this->asyncEvents);
-        foreach($eventNames as $eventName) {
-            $exitStatus = $this->signalEvent($eventName);
+
+
+        foreach ($this->asyncEvents as $eventData) {
+            $output = array();
+
+            $args = array();
             
-            $callbacks = $this->asyncEvents[$eventName];
-            foreach($callbacks as $callback) {
-                call_user_func($callback, $exitStatus);
+            
+            foreach($eventData['args'] as $arg) {
+                if(is_callable($arg)) {
+                    // invoke argument value provider:
+                    $arg = call_user_func($arg, $eventData['name']);
+                }
+                
+                if($arg === NULL) {
+                    continue; // skip NULL values
+                }
+                
+                $args[] = (String) $arg;
             }
             
-            if($exitStatus === FALSE) {
+            $exitStatus = $this->signalEvent($eventData['name'], $args, $output);
+
+            foreach ($eventData['cbks'] as $callback) {
+                call_user_func($callback, $output, $exitStatus);
+            }
+
+            if ($exitStatus === FALSE) {
                 return FALSE;
             }
         }

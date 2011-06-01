@@ -12,7 +12,7 @@
  * It determines the "current" action to be executed by looking at the 
  * request arguments.
  * 
- * A Controller renders its parts embedded in a FORM container.
+ * A a top level Controller renders its parts embedded in a FORM container.
  *
  * @see NethGui_Core_Module_Composite
  * @package Core
@@ -23,9 +23,9 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Composite imple
 
     /**
      * The action where to forward method calls
-     * @var NethGui_Core_Module_Action
+     * @var NethGui_Core_Module_Interface
      */
-    private $currentAction;
+    protected $currentAction;
 
     /**
      * Overrides Composite bind() method, defining what is the current action
@@ -100,13 +100,13 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Composite imple
      * @param NethGui_Core_NotificationCarrierInterface $carrier
      * @return type 
      */
-    public function process(NethGui_Core_NotificationCarrierInterface $carrier)
+    public function process()
     {
         if (is_null($this->currentAction)) {
             return;
         }
 
-        $this->currentAction->process($carrier);
+        $this->currentAction->process();
     }
 
     /**
@@ -121,38 +121,15 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Composite imple
     {
         parent::prepareView($view, $mode);
 
-        if (is_null($this->currentAction)) {
-            foreach ($this->getChildren() as $childModule) {
-                $innerView = $view->spawnView($childModule, TRUE);
-                $childModule->prepareView($innerView, $mode);
-                // override action name:
-                $innerView['__action'] = 'index';
-            }
-            $view->setTemplate(array($this, 'renderDisabledActions'));
-        } else {
-            $view->setTemplate(array($this, 'renderCurrentAction'));
-            $innerView = $view->spawnView($this->currentAction, TRUE);
-            $innerView['__action'] = $this->currentAction->getIdentifier();
-            $view['__action'] = $this->currentAction->getIdentifier();
-            $this->currentAction->prepareView($innerView, $mode);
-        }
-    }
-
-    public function renderDisabledActions(NethGui_Renderer_Abstract $view)
-    {
-
-        // Only a root module emits FORM tag:
-        if (is_null($this->getParent())) {
-            $form = $view->form('', NethGui_Renderer_Abstract::STATE_DISABLED);
-        } else {
-            $form = $view;
+        if (is_null($this->currentAction)) {            
+            return;
         }
 
-        foreach ($this->getChildren() as $child) {
-            $form->inset($child->getIdentifier());
-        }
-
-        return $view;
+        $view->setTemplate(array($this, 'renderCurrentAction'));
+        $innerView = $view->spawnView($this->currentAction, TRUE);
+        //$innerView['__action'] = $this->currentAction->getIdentifier();
+        $view['__action'] = $this->currentAction->getIdentifier();
+        $this->currentAction->prepareView($innerView, $mode);
     }
 
     /**

@@ -28,6 +28,7 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
     const STATE_CHECKED = 0x08;
     const STATE_DISABLED = 0x10;
     const STATE_VALIDATION_ERROR = 0x20;
+    const STATE_READONLY = 0x10000;
 
     const BUTTON_SUBMIT = 0x40;
     const BUTTON_CANCEL = 0x80;
@@ -103,6 +104,11 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
     public function setTemplate($template)
     {
         throw new NethGui_Exception_View('Cannot change the view template');
+    }
+    
+    public function getTemplate()
+    {
+        return $this->view->getTemplate();
     }
 
     public function spawnView(NethGui_Core_ModuleInterface $module, $register = FALSE)
@@ -213,4 +219,14 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
      * @return NethGui_Renderer_Abstract A new object instance, representing the panel surface
      */
     abstract public function panel($identifier = NULL, $flags = 0);
+    
+    /**
+     * Embeds the $template output in the current content
+     *
+     * @link http://redmine.nethesis.it/issues/197
+     * @param string|callable $template See {@link NethGui_Core_ViewInterface::setTemplate()}
+     * @param $flags Optional
+     * @return NethGui_Renderer_Abstract Same object
+     */
+    abstract public function includeTemplate($template, $flags = 0);
 }

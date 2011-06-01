@@ -137,6 +137,11 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
         return $this;
     }
 
+    public function username()
+    {
+        return $this->addToChain(__FUNCTION__);
+    }
+
     public function getMessage()
     {
         return $this->failureReason;
@@ -166,9 +171,9 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
                 } else {
                     $args = array();
                 }
-                
+
                 $messageParts = array_merge(array($expression[0]), $args);
-                
+
                 array_unshift($args, $value);
                 $isValid = call_user_func_array($expression[1], $args);
                 if (($isValid XOR $notFlag) === FALSE) {
@@ -295,6 +300,15 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
         }
 
         return TRUE;
+    }
+    
+    /**
+     * Check if $value is a valid Linux username
+     * @param string $value 
+     */
+    private function evalUsername($value) 
+    {
+        return strlen($value) < 32 && $this->evalRegexp($value, '/^[a-z][-_a-z0-9]*$/');
     }
 
 }

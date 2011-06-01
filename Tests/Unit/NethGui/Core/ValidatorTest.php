@@ -65,16 +65,18 @@ class NethGui_Core_ValidatorTest extends PHPUnit_Framework_TestCase
      */
     public function testNotEmpty()
     {
-        $this->object->notEmpty();      
+        $this->object->notEmpty();
         $this->assertFalse($this->object->evaluate(''));
     }
 
-    public function testForceResultTrue() {
+    public function testForceResultTrue()
+    {
         $this->object->forceResult(TRUE)->notEmpty();
         $this->assertTrue($this->object->evaluate(''));
     }
 
-    public function testForceResultFalse() {
+    public function testForceResultFalse()
+    {
         $this->object->notEmpty()->forceResult(FALSE);
         $this->assertFalse($this->object->evaluate('x'));
     }
@@ -123,7 +125,27 @@ class NethGui_Core_ValidatorTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function testUsernameValid()
+    {
+        $this->object->username();
+        $this->assertTrue($this->object->evaluate('v123alid-user_name'));
+    }
 
+    public function testUsernameInvalid()
+    {
+        $this->object->username();
+
+        $invalidUsernames = array(
+            'invalidUserName', // no uppercase
+            '0invalidusername', // start with letter
+            'in.valid', // no symbols           
+            str_repeat('x', 32), // < 32 characters            
+        );
+
+        foreach ($invalidUsernames as $username) {
+            $this->assertFalse($this->object->evaluate($username));
+        }
+    }
 
 }
 
