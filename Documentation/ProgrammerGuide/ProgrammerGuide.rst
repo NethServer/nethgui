@@ -1,46 +1,137 @@
 =======================
-   NethGui Framework
+   NethGui framework
 =======================
 ------------------
- Programmer Guide
+ Programmer guide
 ------------------
 
 .. sectnum:: 
 
 
+This guide is addressed to the Programmer (You) who wants to build a
+web user interface for the administration of a GNU/Linux system.
+
+  |date|
+
+.. contents:: :depth: 3
+.. |date| date:: %Y-%m-%d %H:%M
 
 
-This guide is addressed to the Programmer (you) who wants to add new
-functions to NethGui.  It shows how to achieve this goal, implementing
-a Module using different techniques.
+Overview
+========
 
-Modules in NethGui constitute the functional part of the System.  The
-Programmer achieves the wished behaviour
+The NethGui framework helps with the building of a graphical user
+interface for the administration of a GNU/Linux system.
+
+Through that interface the user can change the system configuration --
+which is stored in the so-called *Host Configuration Database* -- and
+invoke the *events* that apply the configuration to the running
+operating system.
+
+On the other side, the interface is constituted of common graphical
+controls such as, buttons, checkboxes, radio buttons, text input
+fields and so on, that drive the configuration values.
+
+As the Programmer you have to concentrate your work on what the
+interface does more than how it looks. Indeed the framework is
+centered on the concept of Module: in an hypothetical
+*Model-View-Controller* architecture the Module plays the role of the
+*Controller*, the Host Configuration Database represent the *Model*
+and the View-Template-Renderer triad constitutes the *View* component.
+
+
+The Host Configuration Database
+===============================
+
+The Host Configuration Database is the component providing the storage
+of the operating system configuration and the methods to apply it to
+the running system.  Out of the boundaries of the NethGui framework,
+this is implemented by the SME Server Configuration Database described
+by the SME Server Developers Manual [SMEDEV]_.
+
+Normally you should not need to access directly to the Host
+Configuration Database: most of the value manipulation operations
+occur transparently through Adapters object. Also the events that
+apply the modified configuration to the operating system are signaled
+by the framework at the right moment and you should only declare what
+event you need to be signaled.
+
+However if you really need to gain a direct access to the Host
+Configuration Database have a glance to the `host configuration
+interface`_ operations.
+
+What we have to note down here is the **logical organization** of the
+values into the database.  More precisely, to talk in terms of the SME
+Server vocabulary, we have *multiple databases* where to store our
+data.  A database is structured as a two level hash: a _key_ can
+point to a simple value or an hash itself.  In the latter case we use
+the term _prop_ to indicate the second level hash key.
+
+To sum up a simple value can be identified
+
+* by its *database* and  *key* names,
+
+* or by its *database*, *key* and *prop* names.
+
+Moreover, in the second case a *type* identifier is assigned to the
+key containing the hash. Consider the following example::
+
+   Database1: { ... }
+   
+   Database2: {
+   
+      KeyX: "This is a simple string value"
+
+      KeyY <CityCoords>: {
+         Lat: 12.913
+         Long: 43.910
+         City: "Pesaro"
+      } 
+
+   }
+       
+This example show two databases: *Database1* and
+*Database2*. Database2 is composed of two keys: *KeyX* holding a
+simple string value and *KeyY* which is an hash itself.  The *type* of
+KeyY is *CityCoords* and holds three *props*: *Lat*, *Long* and
+*City*.
+   
+
+
+
+.. _`host configuration interface`: ../Api/Core/NethGui_Core_HostConfigurationInterface.html
+.. [SMEDEV] http://wiki.contribs.org/SME_Server:Documentation:Developers_Manual
+
+
+Modules
+=======
+
+Modules in NethGui constitute the functional part of your interface.  
+You achieve the wished behaviour
 
 * by mapping input data to proper values into Host Configuration
   Database (see `Parameters`_ and `Adapters`_), or by processing input data
   in some other way;
 
-* through Modules composition, breaking down the functionalities and
+* through the composition mechanism, breaking down the functionalities and
   delegating them to sub-Modules (see `Module Composition`_);
 
-The Framework is provided with a `basic testing class`_ to easily verify
-the Module behaviour.
+The framework is provided with a `basic testing class`_ to easily plan
+and/or verify the Module behaviour.
 
 A Module is associated to its View, which represents the user
 interface abstraction.  Such abstraction is translated into HTML code
-by providing a Template_ script or callback method (see `View layer`_ for
-details). A Module receives also an h`ost configuration database`_
+by providing a Template_ script or callback method (see `View layer`_
+for details). A Module receives also an `host configuration database`_
 object, to store and retrieve values and trigger events.
 
 
-.. _host configuration database: TODO
+.. _`host configuration database`: `The Host Configuration Database`_
 
-.. contents:: :depth: 2
 
 
 Module dissection
-=================
+-----------------
 
 A Module must implement a set of well-known operations defined by
 `NethGui_Core_ModuleInterface`_ and
@@ -50,8 +141,9 @@ those operations for free.  From now on, if not otherwise stated, we
 will refer to this class as the "basic class" or "basic
 implementation".
 
-The Framework calls these methods at some point during
-execution time in a fixed order:
+The framework calls those methods at some point during execution time
+following three phases. The basic class performs some common tasks
+during each phase.
 
 Initialization phase 
     When initialize_ is called, the Module is ready to use the
@@ -60,17 +152,17 @@ Initialization phase
     to the database through Adapters_ (see declareParameter_).
 
 Request handling phase 
-    1. bind_ receives the input parameters and can store their values in
-       the internal state of the Module. 
-    2. validate_ checks if parameter
-       values are correct and signals if an error occurs.  
+    1. bind_ receives the values from the user interface and store
+       their values in the internal state of the Module.
+    2. validate_ checks if the parameter
+       values are correct and signals if any error condition occurs.
     3. process_ persists necessary changes to the database.
 
 Rendering phase 
     prepareView_ transfers the module internal state and
     necessary database values to the view state.  Later on, the view is 
-    transformed into XHTML by Templates possibly through the intermediation
-    of Renderer objects.
+    transformed into XHTML by Templates, possibly through the 
+    intermediation of Renderer objects.
 
 
 .. _getHostConfiguration: ../Api/Core/Module/NethGui_Core_Module_Standard.html#getHostConfiguration
@@ -78,46 +170,50 @@ Rendering phase
 
 
 
+
 Parameters
-----------
+^^^^^^^^^^
 
 The basic implementation holds the module state into a collection of
-Parameters. Parameters are the subject of data exchanges between the
-host configuration database, the module, and the view layer.  To use a
-parameter you must declare it into the ``initialize()`` method::
+Parameters which are exchanged between the Host Configuration
+Database, the Module, and the View layer.
+
+You can receive a value coming from the View into a module Parameter
+simply by declaring it into the ``initialize()`` method::
 
    $this->declareParameter('myParameter');
 
-After a parameter is declared, you can assign to it a value. For
-instance, in process_ you can write::
+Indeed, the actual value coming from the View is stored into the
+parameter during by the basic ``bind()`` implementation.
+
+Once a parameter is declared, you can also assign a value to it. For
+instance, in process_ you can type::
 
    $this->parameters['myParameter'] = 'myValue';
 
-Later on, that value will be transferred to the view layer; if the
-User changes the value through the user interface and sends it back,
-you will get the new value, after bind_ is called. So before executing
-the previous assignment you can read the value::
+Later on, the string ``'myValue'`` will be transferred back to the
+View layer. if the User changes the value through the user interface
+and sends it back again, you will get the changed value.
 
-   $userInput = $this->parameters['myParameter'];
-
-   if($userInput == '') {
-      $this->parameters['myParameter'] = 'myValue';
-   }
+In the `View layer`_ section you will see how to render a UI control
+that changes the parameter value. In our example a text input field
+would fit well.
 
 
    
 Validators
-----------
+^^^^^^^^^^
 
-When a parameter is declared, you can ask the basic class to check its
-value against a validation rule.
+When a parameter is declared, you can ask the basic class to verify
+that the actual value respects a given validation rule.
 
-The second argument to ``declareParameter()`` method defines that rule. It can be of different types.
+The second argument to the ``declareParameter()`` method indicates
+this rule. It can be of different data types.
 
-*Integer*
-   Represents a pre-defined validation rule.  basic class defines a set
-   of constants. See `NethGui_Core_Module_Standard`_ documentation for
-   a complete list.
+*Integer* 
+   Represents a pre-defined validation rule.  The basic class
+   defines a set of constants. See `NethGui_Core_Module_Standard`_
+   documentation for a complete list.
 
 *String*
    Represents a PERL-compatible regular expression. See PHP
@@ -125,11 +221,11 @@ The second argument to ``declareParameter()`` method defines that rule. It can b
 
 *NethGui_Core_Validator* object
    Passing an object of `NethGui_Core_Validator`_ class is the most
-   expressive choice: you can specify arguments to validation rules
+   flexible choice: you can specify arguments to validation rules
    and also combine them as OR expressions.
 
-For instance to declare a ``myIpAddress`` parameter that must match a
-string representing a valid IPV4 address type::
+For instance, to declare a ``myIpAddress`` parameter that must match a
+string representing a valid IPV4 address, you may type::
 
    // 2nd argument is of type integer. Using a predefined constant.
    $this->declareParameter('myIpAddress1', self::VALID_IPV4_ADDRESS);
@@ -149,28 +245,104 @@ TODO
 .. _`Perl-Compatible Regular Expression`: http://www.php.net/manual/en/pcre.pattern.php
 
 Adapters
---------
+^^^^^^^^
 
 You have seen in the Parameters_ section how to declare a Parameter
-that holds a value. The value was tranferred to and from the view
+that holds a value. The value was tranferred to and from the View
 layer. In this section we will see how to store and retrieve the
-parameter value in the host configuration database through Adapters.
+parameter value in the Host Configuration Database through Adapters.
 
-All the magic is in the ``declareParameter()`` call. This time we
-consider its third argument. It can be of two types:
+All the magic that instantiates an Adapter for a Parameter is done in
+the ``declareParameter()`` call. We now consider its third
+argument that can be of the following types:
 
-Array 
+*Array*
    You can use an array to map the parameter value to one or more
    database values. See the examples below to see how to do that.
    This is a shortcut form that leaves the creation and
    initialization of the underlying Adapter object to the basic class.
 
-Nethgui_Core_AdapterInterface implementing object
-   You can also build and initialize the Adapter object explicitly or
-   obtain it by some other way.  See getAdapter_ method. 
+*Nethgui_Core_AdapterInterface* implementing object
+   You can also build and initialize the Adapter object by yourself or
+   obtain it by some other way.  See the `host configuration interface`_.
 
-TODO
 
+Most of the times you should need the Array argument to get an
+identity or a mapping adapter. We will see them in the two examples
+below.
+
+**Identity adapter**. Store the domain name in database ``configuration``, key
+``DomainName``::
+
+  $this->declareParameter(
+    'domain',                             // parameter name
+    self::VALID_DOMAIN_NAME,              // validator
+    array('configuration, 'DomainName')   // identity adapter arguments
+  );
+
+An Identity adapter maps a database value into a parameter.
+
+**Map adapter**. Control an FTP service status (enabled/disabled) through a single ``status`` parameter and two database values:
+
+1. *database*: ``configuration``, *key*: ``ftp``, *prop*: ``status``,
+
+2. *database*: ``configuration``, *key*: ``ftp``, *prop*: ``access``.
+
+::
+
+  $this->declareParameter(
+    'status',                                   // parameter name
+    self:VALID_SERVICE_STATUS,                  // validator
+    array(
+      array('configuration', 'ftp', 'status'),
+      array('configuration', 'ftp', 'access')
+    )                                           // mapping adapter arguments
+  );
+
+When declaring an adapter the basic implementation searches for two
+converter methods.  The method names must be prefixed with ``read`` or
+``write``, with the full parameter name with the first letter in upper
+case following.  So, in our example we must declare two methods for
+the ``status`` parameter in the module class::
+
+  /**
+   * The reader method expects two arguments, in the same order 
+   * used during the parameter declaration. The return value 
+   * is assigned to the parameter.
+   **/
+  public function readStatus($status, $access) 
+  { 
+     .
+     .
+     .
+
+     return $value;    
+  }
+
+  /**
+   * The writer method is the dual of the reader: it expects the actual 
+   * parameter value as its unique argument and must return an array
+   * of database values, in the same order used during the parameter 
+   * declaration
+   **/
+  public function writeStatus($value) 
+  {
+     .
+     .
+     .
+     return array($status, $access);
+  }
+
+
+.. note:: The converter methods are optional for the Identity adapter,
+          but **mandatory** for the Mapping adapter.
+
+The NethGui framework defines also a Table and an Array adapter that
+provide a PHP array interface to the database values.  Those are
+specific to the CRUD scenario implementation and are discussed in `The
+Table Controller`_ section.
+
+.. _`host configuration interface`: ../Api/Core/NethGui_Core_HostConfigurationInterface.html
 .. _bind:
 .. _validate:
 .. _process:
@@ -182,35 +354,114 @@ TODO
 
 
 Module composition
-==================
+------------------
 
-TODO; how to split a Module into sub-modules.
+A module can be composed of other modules. In this case the first
+plays the *parent* role while the seconds play the role of the
+*children*.
+
+The NethGui framework has two concrete types of composition: the List
+and the Controller.  The concept of *Composite* module is outlined in
+the `Composite abstract class`_.
+
+.. warning:: In a composite module, the parent module is fully
+             responsible of its children: creation, initialization and
+             all the operations defined by the framework must be
+             propagated from the parent to its children.  Core module
+             classes perform most of this work automatically, but you
+             must do it by hand in your own classes.  Keep it in mind.
+
+.. _`Composite abstract class`: ../Api/Core/Module/NethGui_Core_Module_Composite.html
+
+
+
+List composition
+^^^^^^^^^^^^^^^^
+
+In the List composition implementation the parent module forwards the
+messages it receives to **all** its children.
+
+Refer to the docblocks of `NethGui_Core_Module_List`_ for the details
+of each operation implementation.
+
+The helper method ``loadChildren()`` instantiates a list of classes
+adding each one as a child of the parent module.
+
+.. note:: The List composition also implements two important 
+          *user interface interactions*: the **tabs** and the **form**.  
+          See the List class constructor docblock for details.
+
+.. _`NethGui_Core_Module_List`: ../Api/Core/Module/NethGui_Core_Module_List.html
+
+
+
+Controller composition
+^^^^^^^^^^^^^^^^^^^^^^
+
+In the Controller composition implementation the parent module (the controller)
+forwards the messages it receives to the **current** child (the action).
+
+The current action is identified into the ``request`` object passed to
+the parent as the argument to the ``bind()`` operation.
+
+To find the current action identifier these rules apply:
+
+1. Read the first request *argument*;
+
+2. If the first argument is missing and the request has been submitted
+   by the User, read the builtin ``__action`` request parameter;
+
+3. Otherwise the current action is undefined and the controller does
+   nothing.
+
+A more concrete Controller composition is discussed in `The Table Controller`_ section.
+
 
 
 
 View layer
 ==========
 
-After the processing phase the Framework asks our Module to fill a
-View object with the output data. The Module receives a View object as
-first argument to prepareView_ method::
+The View layer displays the module parameters data on the User's
+screen according to a set of customizable Templates and pre-defined
+user interactions. As stated before, you do not have to care about the
+interface "look and feeling". The NethGui framework provides a set of
+ready-to-use controls that you employ to change the actual values of
+the module parameters.
+
+This is accomplished in two phases:
+
+1. transferring data into the view objects;
+
+2. serialize the view objects into an XHTML or JSON string.
+
+**Phase 1**. After the ``process()`` operation a Module receives a
+View object as first argument to prepareView_ method::
 
    public function prepareView(NethGui_Core_ViewInterface $view, $mode) 
    {
        parent::prepareView($view, $mode);
    }
 
-Basic implementation transfers all module parameters and invariants to
-the view object.
+Basic implementation automatically transfers all the module Parameters
+into the view object.
 
 A View object resembles a PHP array, where you can store data using
 keys and values; indeed a View implements ArrayAccess_ and
 IteratorAggregate_ interfaces.
 
-What about ``$mode`` argument? TODO: explain $mode argument.
+The ``mode`` parameter tells if we are performing a full view refresh
+or a partial update.  The first case corresponds to the generation of
+the XHTML document, that requires, for instance, all the possible
+OPTIONs elements of a SELECT tag.  The second case is typically
+associated to the generation of a JSON response, where only the actual
+parameters value must be transferred to the client: in the case of the
+SELECT tag we can transfer a ``value``-holding attribute only.
 
-Later on the view object is rendered, calling a Template_ or a
-`Callback method`_.
+**Phase 2**. The view object is transformed into a string, calling a
+`Template`_ script or a `Callback method`_.  In both situations you
+can call any method defined by the abstract Renderer class to generate
+the right XHTML code for each control.
 
 .. _ArrayAccess: http://php.net/manual/en/class.arrayaccess.php
 .. _IteratorAggregate: http://php.net/manual/en/class.iteratoraggregate.php
@@ -427,3 +678,10 @@ module must execute.
 .. _moduleParameters: ../Api/Tests/ModuleTestCase.html#$moduleParameters
 .. _our example: `Implementing a simple Module`_
 
+
+
+The Table Controller
+====================
+
+
+TODO; Implement a CRUD scenario with TableController.
