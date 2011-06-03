@@ -12,12 +12,16 @@ PDEPEND_OUTPUT=Metrics/pyramid.svg Metrics/jdepend.svg Metrics/summary.xml
 %.html: %.rst
 	${RST2HTML} $< $@
 
-.PHONY: clean all
+.PHONY: clean all api
 
-all: ${HTMLFILES} ${PDEPEND_OUTPUT}
+all: ${HTMLFILES} ${PDEPEND_OUTPUT} 
+
+api: 
+	phpdoc -dn NethGui -ti NethGui -d ../NethGui -i *Template* -t Api
 
 clean:
 	rm -f ${HTMLFILES} ${PDEPEND_OUTPUT}
+	rm -rf Api/*
 
 ${PDEPEND_OUTPUT}:
 	pdepend \

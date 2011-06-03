@@ -45,7 +45,7 @@ interface NethGui_Core_HostConfigurationInterface
      * Get a mapping Adapter.
      *
      * A Map Adapter maps database values through a "reader" and a "writer"
-     * function. Values are specified through $args parameter.
+     * converter method. Values are specified through $args parameter.
      *
      * @see getIdentityAdapter()
      * @see NethGui_Adapter_AdapterAggregationInterface
