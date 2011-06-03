@@ -7,6 +7,9 @@
 
 .. sectnum:: 
 
+
+
+
 This guide is addressed to the Programmer (you) who wants to add new
 functions to NethGui.  It shows how to achieve this goal, implementing
 a Module using different techniques.
@@ -26,12 +29,12 @@ the Module behaviour.
 
 A Module is associated to its View, which represents the user
 interface abstraction.  Such abstraction is translated into HTML code
-by providing a Template_ or a callback method (see `View layer`_ for
-details). A Module receives also an `host configuration database`_
+by providing a Template_ script or callback method (see `View layer`_ for
+details). A Module receives also an h`ost configuration database`_
 object, to store and retrieve values and trigger events.
 
 
-.. _host configuration database: 
+.. _host configuration database: TODO
 
 .. contents:: :depth: 2
 
@@ -39,12 +42,12 @@ object, to store and retrieve values and trigger events.
 Module dissection
 =================
 
-A Module must implement a set of well-known methods defined by
-`NethGui_Core_ModuleInterface`_.  
-
-Every module extending `NethGui_Core_Module_Standard`_ class inherits
-these implementations for free.  From now on, if not otherwise stated,
-we will refer to this class as the "basic class" or "basic
+A Module must implement a set of well-known operations defined by
+`NethGui_Core_ModuleInterface`_ and
+`NethGui_Core_RequestHandlerInterface`_.  Every module extending
+`NethGui_Core_Module_Standard`_ class inherits the implementations of
+those operations for free.  From now on, if not otherwise stated, we
+will refer to this class as the "basic class" or "basic
 implementation".
 
 The Framework calls these methods at some point during
@@ -57,27 +60,31 @@ Initialization phase
     to the database through Adapters_ (see declareParameter_).
 
 Request handling phase 
-    bind_ receives the input parameters and can store their values in
-    the internal state of the Module. validate_ checks if parameter
-    values are correct and signals if an error occurs.  process_
-    persists necessary changes to the database.
+    1. bind_ receives the input parameters and can store their values in
+       the internal state of the Module. 
+    2. validate_ checks if parameter
+       values are correct and signals if an error occurs.  
+    3. process_ persists necessary changes to the database.
 
 Rendering phase 
     prepareView_ transfers the module internal state and
-    necessary database values to the view state.
+    necessary database values to the view state.  Later on, the view is 
+    transformed into XHTML by Templates possibly through the intermediation
+    of Renderer objects.
 
 
-.. _getHostConfiguration: http://nethgui.nethesis.it/Documentation/Api/Core/Module/NethGui_Core_Module_Standard.html#getHostConfiguration
+.. _getHostConfiguration: ../Api/Core/Module/NethGui_Core_Module_Standard.html#getHostConfiguration
+.. _NethGui_Core_RequestHandlerInterface: ../Api/Core/NethGui_Core_RequestHandlerInterface.html
 
 
 
 Parameters
 ----------
 
-Parameters are the subject of data exchanges between the host
-configuration database and the view layer. The basic implementation
-executes all the data transfers so all you need to use a parameter is
-declare it into ``initialize()`` method::
+The basic implementation holds the module state into a collection of
+Parameters. Parameters are the subject of data exchanges between the
+host configuration database, the module, and the view layer.  To use a
+parameter you must declare it into the ``initialize()`` method::
 
    $this->declareParameter('myParameter');
 
@@ -167,10 +174,10 @@ TODO
 .. _bind:
 .. _validate:
 .. _process:
-.. _NethGui_Core_ModuleInterface: http://nethgui.nethesis.it/Documentation/Api/Core/NethGui_Core_ModuleInterface.html
+.. _NethGui_Core_ModuleInterface: ../Api/Core/NethGui_Core_ModuleInterface.html
 .. _getAdapter:
-.. _NethGui_Core_Module_Standard: http://nethgui.nethesis.it/Documentation/Api/Core/Module/NethGui_Core_Module_Standard.html
-.. _NethGui_Core_Module_Composite: http://nethgui.nethesis.it/Documentation/Api/Core/Module/NethGui_Core_Module_Composite.html
+.. _NethGui_Core_Module_Standard: ../Api/Core/Module/NethGui_Core_Module_Standard.html
+.. _NethGui_Core_Module_Composite: ../Api/Core/Module/NethGui_Core_Module_Composite.html
 
 
 
@@ -207,7 +214,7 @@ Later on the view object is rendered, calling a Template_ or a
 
 .. _ArrayAccess: http://php.net/manual/en/class.arrayaccess.php
 .. _IteratorAggregate: http://php.net/manual/en/class.iteratoraggregate.php
-.. _prepareView: http://nethgui.nethesis.it/Documentation/Api/Core/Module/NethGui_Core_Module_Standard.html#prepareView
+.. _prepareView: ../Api/Core/Module/NethGui_Core_Module_Standard.html#prepareView
 
 
 
@@ -321,10 +328,10 @@ PHP file, this time under ``NethGui/View/`` directory,
 
 .. _ModuleTestCase: 
 .. _basic testing class: http://nethgui.nethesis.it/docs/Tests/ModuleTestCase.html
-.. _NethGui_Core_Module_Standard: http://nethgui.nethesis.it/Documentation/Api/Core/Module/NethGui_Core_Module_Standard.html
-.. _NethGui_Core_Module_Composite: http://nethgui.nethesis.it/Documentation/Api/Core/Module/NethGui_Core_Module_Composite.html
-.. _initialize: http://nethgui.nethesis.it/Documentation/Api/Core/Module/NethGui_Core_Module_Standard.html#initialize
-.. _declareParameter: http://nethgui.nethesis.it/Documentation/Api/Core/Module/NethGui_Core_Module_Standard.html#declareParameter
+.. _NethGui_Core_Module_Standard: ../Api/Core/Module/NethGui_Core_Module_Standard.html
+.. _NethGui_Core_Module_Composite: ../Api/Core/Module/NethGui_Core_Module_Composite.html
+.. _initialize: ../Api/Core/Module/NethGui_Core_Module_Standard.html#initialize
+.. _declareParameter: ../Api/Core/Module/NethGui_Core_Module_Standard.html#declareParameter
 .. _regular expression: http://php.net/manual/en/function.preg-match.php
 
 
@@ -415,8 +422,8 @@ In expectedDb_ we specify the list of low level database calls the
 module must execute.
 
 .. _PHPUnit: http://www.phpunit.de/manual/3.5/en/index.html
-.. _expectedDb: http://nethgui.nethesis.it/Documentation/Api/Tests/ModuleTestCase.html#$expectedDb
-.. _expectedView: http://nethgui.nethesis.it/Documentation/Api/Tests/ModuleTestCase.html#$expectedView
-.. _moduleParameters: http://nethgui.nethesis.it/Documentation/Api/Tests/ModuleTestCase.html#$moduleParameters
+.. _expectedDb: ../Api/Tests/ModuleTestCase.html#$expectedDb
+.. _expectedView: ../Api/Tests/ModuleTestCase.html#$expectedView
+.. _moduleParameters: ../Api/Tests/ModuleTestCase.html#$moduleParameters
 .. _our example: `Implementing a simple Module`_
 
