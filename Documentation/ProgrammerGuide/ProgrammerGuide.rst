@@ -62,18 +62,18 @@ interface`_ operations.
 
 What we have to note down here is the **logical organization** of the
 values into the database.  More precisely, to talk in terms of the SME
-Server vocabulary, we have *multiple databases* where to store our
-data.  A database is structured as a two level hash: a _key_ can
+Server vocabulary, we have multiple `databases` where to store our
+data.  A database is structured as a two level hash: a `key` can
 point to a simple value or an hash itself.  In the latter case we use
-the term _prop_ to indicate the second level hash key.
+the term `prop` to indicate the second level hash key.
 
 To sum up a simple value can be identified
 
-* by its *database* and  *key* names,
+* by its `database` and  `key` names,
 
-* or by its *database*, *key* and *prop* names.
+* or by its `database`, `key` and `prop` names.
 
-Moreover, in the second case a *type* identifier is assigned to the
+Moreover, in the second case a `type` identifier is assigned to the
 key containing the hash. Consider the following example::
 
    Database1: { ... }
@@ -90,24 +90,25 @@ key containing the hash. Consider the following example::
 
    }
        
-This example show two databases: *Database1* and
-*Database2*. Database2 is composed of two keys: *KeyX* holding a
-simple string value and *KeyY* which is an hash itself.  The *type* of
-KeyY is *CityCoords* and holds three *props*: *Lat*, *Long* and
-*City*.
+This example show two databases: `Database1` and
+`Database2`. Database2 is composed of two keys: `KeyX` holding a
+simple string value and `KeyY` which is an hash itself.  The `type` of
+KeyY is `CityCoords` and holds three `props`: `Lat`, `Long` and
+`City`.
    
 
 
 
 .. _`host configuration interface`: ../Api/Core/NethGui_Core_HostConfigurationInterface.html
-.. [SMEDEV] http://wiki.contribs.org/SME_Server:Documentation:Developers_Manual
+.. [SMEDEV] `SME Server Developers Manual`__
+__ http://wiki.contribs.org/SME_Server:Documentation:Developers_Manual
 
 
 Modules
 =======
 
-Modules in NethGui constitute the functional part of your interface.  
-You achieve the wished behaviour
+Modules in NethGui constitute the functional part of your interface,
+where the *business rules* reside.  You achieve the wished behaviour
 
 * by mapping input data to proper values into Host Configuration
   Database (see `Parameters`_ and `Adapters`_), or by processing input data
@@ -117,17 +118,15 @@ You achieve the wished behaviour
   delegating them to sub-Modules (see `Module Composition`_);
 
 The framework is provided with a `basic testing class`_ to easily plan
-and/or verify the Module behaviour.
+and verify the Module behaviour.
 
 A Module is associated to its View, which represents the user
 interface abstraction.  Such abstraction is translated into HTML code
 by providing a Template_ script or callback method (see `View layer`_
-for details). A Module receives also an `host configuration database`_
+for details).  A Module receives also an `host configuration database`_
 object, to store and retrieve values and trigger events.
 
-
 .. _`host configuration database`: `The Host Configuration Database`_
-
 
 
 Module dissection
@@ -141,21 +140,21 @@ those operations for free.  From now on, if not otherwise stated, we
 will refer to this class as the "basic class" or "basic
 implementation".
 
-The framework calls those methods at some point during execution time
-following three phases. The basic class performs some common tasks
-during each phase.
+The framework calls those methods for you at some point during
+execution time respecting three phases.  The basic class performs some
+common tasks during each phase.
 
 Initialization phase 
     When initialize_ is called, the Module is ready to use the
-    database object (see getHostConfiguration_). You can declare here
+    database object (see getHostConfiguration_).  You can declare here
     what are the Parameters_ of the Module, and how they are connected
     to the database through Adapters_ (see declareParameter_).
 
 Request handling phase 
     1. bind_ receives the values from the user interface and store
        their values in the internal state of the Module.
-    2. validate_ checks if the parameter
-       values are correct and signals if any error condition occurs.
+    2. validate_ checks if the module internal state is correct
+       and signals if any error condition occurs.
     3. process_ persists necessary changes to the database.
 
 Rendering phase 
@@ -192,11 +191,11 @@ instance, in process_ you can type::
    $this->parameters['myParameter'] = 'myValue';
 
 Later on, the string ``'myValue'`` will be transferred back to the
-View layer. if the User changes the value through the user interface
+View layer.  If the User changes the value through the user interface
 and sends it back again, you will get the changed value.
 
 In the `View layer`_ section you will see how to render a UI control
-that changes the parameter value. In our example a text input field
+that changes the parameter value.  In our example a text input field
 would fit well.
 
 
@@ -211,68 +210,66 @@ The second argument to the ``declareParameter()`` method indicates
 this rule. It can be of different data types.
 
 *Integer* 
-   Represents a pre-defined validation rule.  The basic class
-   defines a set of constants. See `NethGui_Core_Module_Standard`_
+   Represents a pre-defined validation rule.  The basic class defines
+   a set of integer constants.  See `NethGui_Core_Module_Standard`_
    documentation for a complete list.
 
 *String*
-   Represents a PERL-compatible regular expression. See PHP
+   Represents a PERL-compatible regular expression.  See PHP
    `Perl-Compatible Regular Expression`_ syntax for details.
 
 *NethGui_Core_Validator* object
    Passing an object of `NethGui_Core_Validator`_ class is the most
    flexible choice: you can specify arguments to validation rules
-   and also combine them as OR expressions.
+   and also combine them as *OR* expressions.
 
 For instance, to declare a ``myIpAddress`` parameter that must match a
-string representing a valid IPV4 address, you may type::
+string representing a valid IPV4 address, you may type alternatively::
 
    // 2nd argument is of type integer. Using a predefined constant.
    $this->declareParameter('myIpAddress1', self::VALID_IPV4_ADDRESS);
 
    // 2nd argument is of type string, indicating a regular expression based validator.
-   // This is not as good as the integer constant in case 1.
+   // This is not as good as the integer constant in case 1: no integer range checks
    $this->declareParameter('myIpAddress2', '/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/');
 
    // 2nd argument is of type Validator. The integer constant of case 1 is
-   // shortcut that does exactly the same.
+   // a shortcut that does exactly the same.
    $this->declareParameter('myIpAddress3', $this->getValidator()->ipv4());
 
-TODO
 
-
-.. _`NethGui_Core_Validator`: TODO
+.. _`NethGui_Core_Validator`: ../Api/Core/NethGui_Core_Validator.html
 .. _`Perl-Compatible Regular Expression`: http://www.php.net/manual/en/pcre.pattern.php
 
 Adapters
 ^^^^^^^^
 
 You have seen in the Parameters_ section how to declare a Parameter
-that holds a value. The value was tranferred to and from the View
-layer. In this section we will see how to store and retrieve the
+that holds a value.  The value was tranferred to and from the View
+layer.  In this section we will see how to store and retrieve the
 parameter value in the Host Configuration Database through Adapters.
 
 All the magic that instantiates an Adapter for a Parameter is done in
-the ``declareParameter()`` call. We now consider its third
-argument that can be of the following types:
+the third argument to the ``declareParameter()`` method.  It can be of
+the following types:
 
 *Array*
    You can use an array to map the parameter value to one or more
-   database values. See the examples below to see how to do that.
+   database values.  See the examples below to see how to do that.
    This is a shortcut form that leaves the creation and
    initialization of the underlying Adapter object to the basic class.
 
 *Nethgui_Core_AdapterInterface* implementing object
    You can also build and initialize the Adapter object by yourself or
-   obtain it by some other way.  See the `host configuration interface`_.
-
+   obtain it by some other way.  See the `host configuration interface`_ 
+   for some hints.
 
 Most of the times you should need the Array argument to get an
-identity or a mapping adapter. We will see them in the two examples
+identity or a mapping adapter.  We will see the two forms in the examples
 below.
 
-**Identity adapter**. Store the domain name in database ``configuration``, key
-``DomainName``::
+**Identity adapter**.  Store the domain name in database
+`configuration`, key `DomainName`::
 
   $this->declareParameter(
     'domain',                             // parameter name
@@ -282,7 +279,8 @@ below.
 
 An Identity adapter maps a database value into a parameter.
 
-**Map adapter**. Control an FTP service status (enabled/disabled) through a single ``status`` parameter and two database values:
+**Map adapter**.  Control an FTP service status (enabled/disabled)
+through a single `status` parameter and two database values:
 
 1. *database*: ``configuration``, *key*: ``ftp``, *prop*: ``status``,
 
@@ -300,10 +298,10 @@ An Identity adapter maps a database value into a parameter.
   );
 
 When declaring an adapter the basic implementation searches for two
-converter methods.  The method names must be prefixed with ``read`` or
+*converter methods*.  The method names must be prefixed with ``read`` or
 ``write``, with the full parameter name with the first letter in upper
 case following.  So, in our example we must declare two methods for
-the ``status`` parameter in the module class::
+the ``status`` parameter in the module class, ``readStatus()`` and ``writeStatus()``::
 
   /**
    * The reader method expects two arguments, in the same order 
@@ -339,8 +337,8 @@ the ``status`` parameter in the module class::
 
 The NethGui framework defines also a Table and an Array adapter that
 provide a PHP array interface to the database values.  Those are
-specific to the CRUD scenario implementation and are discussed in `The
-Table Controller`_ section.
+closely related to the CRUD scenario implementation thus are discussed
+in `The Table Controller`_ section.
 
 .. _`host configuration interface`: ../Api/Core/NethGui_Core_HostConfigurationInterface.html
 .. _bind:
@@ -357,8 +355,7 @@ Module composition
 ------------------
 
 A module can be composed of other modules. In this case the first
-plays the *parent* role while the seconds play the role of the
-*children*.
+plays the *parent* role while the seconds play the *children* role.
 
 The NethGui framework has two concrete types of composition: the List
 and the Controller.  The concept of *Composite* module is outlined in
@@ -398,23 +395,26 @@ adding each one as a child of the parent module.
 Controller composition
 ^^^^^^^^^^^^^^^^^^^^^^
 
-In the Controller composition implementation the parent module (the controller)
-forwards the messages it receives to the **current** child (the action).
+In the Controller composition implementation the parent module (the
+controller) forwards the messages it receives to the **current** child
+(the action).
 
 The current action is identified into the ``request`` object passed to
 the parent as the argument to the ``bind()`` operation.
 
 To find the current action identifier these rules apply:
 
-1. Read the first request *argument*;
+1. Read the first request *argument* (this corresponds to the first
+   URL path segment after the module identifier);
 
 2. If the first argument is missing and the request has been submitted
-   by the User, read the builtin ``__action`` request parameter;
+   by the User, consider the builtin ``__action`` request parameter;
 
 3. Otherwise the current action is undefined and the controller does
    nothing.
 
-A more concrete Controller composition is discussed in `The Table Controller`_ section.
+A more concrete Controller composition is discussed in `The Table
+Controller`_ section.
 
 
 
@@ -425,17 +425,17 @@ View layer
 The View layer displays the module parameters data on the User's
 screen according to a set of customizable Templates and pre-defined
 user interactions. As stated before, you do not have to care about the
-interface "look and feeling". The NethGui framework provides a set of
-ready-to-use controls that you employ to change the actual values of
-the module parameters.
+interface "look and feeling": the NethGui framework provides a set of
+ready-to-use controls that you employ to build the user interface.
 
-This is accomplished in two phases:
+The rendering phase, as stated in `Module dissection`_, is
+accomplished in two steps.
 
 1. transferring data into the view objects;
 
 2. serialize the view objects into an XHTML or JSON string.
 
-**Phase 1**. After the ``process()`` operation a Module receives a
+**Step 1**. After the ``process()`` operation a Module receives a
 View object as first argument to prepareView_ method::
 
    public function prepareView(NethGui_Core_ViewInterface $view, $mode) 
@@ -446,9 +446,9 @@ View object as first argument to prepareView_ method::
 Basic implementation automatically transfers all the module Parameters
 into the view object.
 
-A View object resembles a PHP array, where you can store data using
-keys and values; indeed a View implements ArrayAccess_ and
-IteratorAggregate_ interfaces.
+.. tip:: A View object resembles a PHP array, where you can store
+         data using keys and values; indeed a View implements
+         ArrayAccess_ and IteratorAggregate_ interfaces.
 
 The ``mode`` parameter tells if we are performing a full view refresh
 or a partial update.  The first case corresponds to the generation of
@@ -458,8 +458,8 @@ associated to the generation of a JSON response, where only the actual
 parameters value must be transferred to the client: in the case of the
 SELECT tag we can transfer a ``value``-holding attribute only.
 
-**Phase 2**. The view object is transformed into a string, calling a
-`Template`_ script or a `Callback method`_.  In both situations you
+**Step 2**. The view object is transformed into a string, calling a
+`Template`_ script or callback method.  In both situations you
 can call any method defined by the abstract Renderer class to generate
 the right XHTML code for each control.
 
@@ -472,11 +472,25 @@ the right XHTML code for each control.
 Template
 --------
 
-The View layer guesses the PHP Template to 
+
+**A Template script** is a common PHP script.  Any string printed from
+it, or any unescaped HTML fragment will take part in the module string
+output.
+
+A Template script has a ``.php`` file name extension, while the file
+name is expected to be a slightly modified version of the associated
+module class name, where the ``_Module_`` substring is replaced with
+``_Template_``. Thus, if the module class is ``User_Module_Example``,
+defined in ``User/Module/Example.php`` the associated template script
+would be guessed into ``User/Template/Example.php``.
+
+.. tip:: You can explicitly declare the template associated with a
+         View object calling the ``setTemplate()`` method. See the
+         example below.
 
 ::
 
-   class NethGui_Module_MyModule extends NethGui_Core_Module_Standard 
+   class User_Module_MyModule extends NethGui_Core_Module_Standard 
    {
 
      .
@@ -487,28 +501,111 @@ The View layer guesses the PHP Template to
      {
          parent::prepareView($view, $mode);
   
-         // Use NethGui/View/AlternativeTemplate.php
-         // instead of NethGui/View/MyModule.php
-         $view->setTemplate("NethGui_View_AlternativeTemplate");
+         // Use User/Template/MyAlternativeTemplate.php
+         // instead of defalt User/Template/MyModule.php
+         $view->setTemplate("User_Template_MyAlternativeTemplate");
      }
 
      .
      .
      .
+
+A Template script receives a local variable: ``$view``. It is bound to
+a Renderer object, and you can use it to retrieve the View state and
+generate the control output. Supposing we have a `DomainName`
+parameter in the view state, in
+``User/Template/MyAlternativeTemplate.php`` we can write::
+
+  <p>Domain: <?php echo $view['DomainName'] ?></p>
+
      
+**A Template callback method** is a PHP callable function that returns
+a string, representing the Template output. We can call the
+``setTemplate()`` method with a PHP callable as argument, instead of a
+string, as we have seen in the Template script case. In this way, the
+callable function is invoked instead of the script::
+
+   class User_Module_MyModule extends NethGui_Core_Module_Standard 
+   {
+
+     .
+     .
+     .
+
+     public function prepareView(NethGui_Core_ViewInterface $view, $mode) 
+     {
+         parent::prepareView($view, $mode);
+  
+         // Use User/Template/MyAlternativeTemplate.php
+         // instead of defalt User/Template/MyModule.php
+         $view->setTemplate(array($this, "renderMyModule"));
+     }
+
+     // The callback function must be declared "public".
+     public function renderMyModule(NethGui_Renderer_Abstract $view) 
+     {
+        return "<p>Domain: " . $view['DomainName'] . "</p>";
+     }
+
+     .
+     .
+     .
 
 
-Callback method
----------------
+Renderer
+--------
 
-Describe how to configure a callback method for a View
+You may have noticed in the `Template`_ section that a Template, both
+script and callback method, receives a variable: ``$view``. 
 
+That variable holds a `NethGui_Renderer_Abstract`_ object, a
+"decorated" View object that forbids any change to the view state and
+provides a set of helper methods to draw the user interface.
+
+A Renderer initial state is like a clean surface; invoking the helper
+methods is like drawing on it; converting it to a string brings it
+back to its clean state.
+
+For instance to draw an input field bound to a ``ipAddress`` view
+value you can write::
+
+    /* PHP Template script */
+    echo $view->textInput('ipAddress');
+
+This produces the following XHTML code::
+
+    <!-- XHTML code -->
+    <div class="labeled-control label-left">
+      <label for="MyModule_ipAddress">ipAddress_label</label>
+      <input value="" type="text" id="MyModule_ipAddress" name="MyModule[ipAddress]" />
+    </div>
+
+Helper methods falls into two groups: 
+
+1. those that return the object itself;
+
+2. those that return a new Renderer object.
+
+The ``textInput()`` method belongs to the first group, returning the
+Renderer object itself, so we can chain another call::
+
+    /* PHP Template script */
+    echo $view->textInput('ipAddress')->textInput('ipMask');
+
+The second group of methods generate control containers: `form`, `dialog`, `tabs`, as outlined in [UI-CONTROLS]_ and [UI-INTERACTIONS]_.
+
+.. [UI-CONTROLS] `Basic UI Controls <../UserInterface/BasicUiControls.html>`_ *NethGui User Interface Design* 
+.. [UI-INTERACTIONS] `Interactions <../UserInterface/Interactions.html>`__ *NethGui User Interface Design* 
+
+
+.. _`NethGui_Renderer_Abstract`: ../Api/Renderer/NethGui_Renderer_Abstract.html
 
 Implementing a simple Module
 ============================
 
 In this section we will write a simple Module that controls the
-enabled/disabled state of an hypothetical *OnOffService*. 
+enabled/disabled state of an hypothetical *OnOffService* in project
+*GearUi*.
 
 The state of the service is defined in the Host Configuration
 Database, by the value of ``status`` property in key ``onoff`` of
@@ -519,13 +616,13 @@ Database, by the value of ``status`` property in key ``onoff`` of
 
 To implement a Module you should extend
 `NethGui_Core_Module_Standard`_ class. So we create a new PHP file
-under ``NethGui/Module/`` subdirectory: ``OnOffService.php``.
+under ``GearUi/Module/`` subdirectory: ``OnOffService.php``.
 
 In ``OnOffService.php`` we write::
 
    <?php
 
-   class NethGui_Module_OnOffService extends NethGui_Core_Module_Standard 
+   class GearUi_Module_OnOffService extends NethGui_Core_Module_Standard 
    {
 
       public function initialize()
@@ -552,15 +649,19 @@ Things to note down here are:
   implicitly in the class name, substituting underscores ``_`` with
   slashes ``/``.
 
-* We re-implement ``initialize()`` method to declare a Module parameter so we *must* call parent's initialize_.
+* We re-implement ``initialize()`` method to declare a Module
+  parameter so we *must* call parent's initialize_.
 
-In ``initialize()`` body we declare a parameter, calling declareParameter_:
+In ``initialize()`` body we declare a parameter, calling
+declareParameter_:
   
 - the parameter name is ``serviceStatus``;
     
-- the parameter value must match ``/^(enabled|disabled)$/`` `regular expression`_ to be considered valid;
+- the parameter value must match ``/^(enabled|disabled)$/`` `regular
+  expression`_ to be considered valid;
     
-- the parameter value, if valid, is written to prop ``status`` of key ``onoff`` in ``myconf`` database.
+- the parameter value, if valid, is written to prop ``status`` of key
+  ``onoff`` in ``myconf`` database.
 
 The OnOffModule class is now fully functional, as the basic class
 implementation provides transferring the parameter to/from database
@@ -570,12 +671,16 @@ Moreover the basic class transfers the parameter value to the `View
 layer`_, so that we can put it in HTML format through a Template.
 
 Of course, we have to write the Template first, so we create another
-PHP file, this time under ``NethGui/View/`` directory,
-``NethGui_View_OnOffService.php``::
+PHP file, this time under ``GearUi/Template/`` directory,
+``OnOffService.php``::
 
-   <h1>OnOffService</h1>
+   <!-- GearUi/Template/OnOffService.php contents --><?php 
+   echo $view
+          ->checkBox('serviceStatus', 'enabled')
+          ->checkBox('serviceStatus', 'disabled')
+   ;
+   ?>
    
-   TODO: complete the example after UI widget are defined. See issue #23.
 
 .. _ModuleTestCase: 
 .. _basic testing class: http://nethgui.nethesis.it/docs/Tests/ModuleTestCase.html
@@ -589,7 +694,8 @@ PHP file, this time under ``NethGui/View/`` directory,
 Module Testing
 ==============
 
-In `our example`_ we must test OnOffService in three scenarios:
+In the `previous section example`_ we
+must test OnOffService in three scenarios:
 
 1. The User turns the service ON.
 
@@ -601,20 +707,20 @@ We can check if OnOffService module is correct by writing a
 PHPUnit_ test case. NethGui comes with a basic class to be extended to
 build module tests upon it: ModuleTestCase_.
 
-As we are testing a module, we put our test case class under
-``Tests/Unit/NethGui/Module/`` directory; the class file name must be
-ending with ``Test.php``.
+As we are testing a module of the hypothetical *GearUi* project , we
+put our test case class under ``Tests/Unit/GearUi/Module/`` directory;
+the class file name must be ending with ``Test.php``.
 
 In ``OnOffServiceTest.php`` we write::
 
    <?php
 
-   class NethGui_Module_OnOffServiceTest extends ModuleTestCase 
+   class GearUi_Module_OnOffServiceTest extends ModuleTestCase 
    {
        protected function setUp() 
        {
            parent::setUp(); 
-           $this->object = new NethGui_Module_OnOffService();
+           $this->object = new GearUi_Module_OnOffService();
        }
 
        public function testTurnOn() 
@@ -676,12 +782,14 @@ module must execute.
 .. _expectedDb: ../Api/Tests/ModuleTestCase.html#$expectedDb
 .. _expectedView: ../Api/Tests/ModuleTestCase.html#$expectedView
 .. _moduleParameters: ../Api/Tests/ModuleTestCase.html#$moduleParameters
-.. _our example: `Implementing a simple Module`_
+.. _`previous section example`: `Implementing a simple Module`_
 
+Localization
+============
 
+TODO;
 
 The Table Controller
 ====================
-
 
 TODO; Implement a CRUD scenario with TableController.
