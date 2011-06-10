@@ -96,10 +96,16 @@ class NethGui_Core_Module_List extends NethGui_Core_Module_Composite implements 
             $form->inset($child->getIdentifier());
         }
 
-        $form->button('Submit', NethGui_Renderer_Abstract::BUTTON_SUBMIT);
-        $form->button('Reset', NethGui_Renderer_Abstract::BUTTON_RESET);
+        $form->includeTemplate(array($this, 'renderButtons'));
 
         return $view;
+    }
+
+    public function renderButtons(NethGui_Renderer_Abstract $view)
+    {
+        $submitButton = (string) $view->button('Submit', NethGui_Renderer_Abstract::BUTTON_SUBMIT);
+        $resetButton = (string) $view->button('Reset', NethGui_Renderer_Abstract::BUTTON_RESET);
+        return "<ul class=\"actions\"><li>${submitButton}</li><li>${resetButton}</li></ul>";
     }
 
     public function renderTabs(NethGui_Renderer_Abstract $view)
@@ -119,8 +125,8 @@ class NethGui_Core_Module_List extends NethGui_Core_Module_Composite implements 
 
         $tabs = $form->tabs($this->getIdentifier(), $pages);
 
-        $tabs->button('Submit', NethGui_Renderer_Abstract::BUTTON_SUBMIT);
-        $tabs->button('Reset', NethGui_Renderer_Abstract::BUTTON_RESET);
+        $tabs->includeTemplate(array($this, 'renderButtons'));
+
 
         return $view;
     }
@@ -140,10 +146,10 @@ class NethGui_Core_Module_List extends NethGui_Core_Module_Composite implements 
     protected function loadChildren($classList)
     {
         foreach ($classList as $item) {
-            if(!is_string($item)) {
+            if ( ! is_string($item)) {
                 throw new InvalidArgumentException('$classList elements must be of type String');
             }
-            
+
             if ($item[0] == '_') {
                 $childModuleClass = get_class($this) . $item;
             } else {
@@ -154,7 +160,7 @@ class NethGui_Core_Module_List extends NethGui_Core_Module_Composite implements 
             if ( ! is_null($this->getHostConfiguration())) {
                 $childModule->setHostConfiguration($this->getHostConfiguration());
             }
-            
+
             $this->addChild($childModule);
         }
     }
