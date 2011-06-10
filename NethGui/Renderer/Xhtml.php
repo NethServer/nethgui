@@ -20,8 +20,8 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 
     public function __construct(NethGui_Core_ViewInterface $view)
     {
-        $this->inheritFlagsMask = 
-        parent::__construct($view);
+        $this->inheritFlagsMask =
+            parent::__construct($view);
     }
 
     public function __clone()
@@ -314,23 +314,28 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 
         $tag = strtolower($tag);
 
+        $tagContent = '';
+
         if ( ! isset($attributes['id'])) {
             $attributes['id'] = $this->getFullId($name);
         }
 
-        if ($tag == 'input') {
-            if ( ! isset($attributes['name'])) {
-                $attributes['name'] = $this->getFullName($name);
-            }
 
-            $isCheckable = isset($attributes['type']) && ($attributes['type'] == 'checkbox' || $attributes['type'] == 'radio');
+        if ( ! isset($attributes['name'])) {
+            $attributes['name'] = $this->getFullName($name);
+        }
 
-            if ($flags & self::STATE_CHECKED && $isCheckable) {
-                $attributes['checked'] = 'checked';
-            }
-            if ($flags & self::STATE_READONLY) {
-                $attributes['readonly'] = 'readonly';
-            }
+        $isCheckable = ($tag == 'input') && isset($attributes['type']) && ($attributes['type'] == 'checkbox' || $attributes['type'] == 'radio');
+
+        if ($flags & self::STATE_CHECKED && $isCheckable) {
+            $attributes['checked'] = 'checked';
+        }
+        if ($flags & self::STATE_READONLY) {
+            $attributes['readonly'] = 'readonly';
+        }
+
+        if ($tag == 'button') {
+            $tagContent = $attributes['value'];
         }
 
         if (in_array($tag, array('input', 'button', 'textarea', 'select', 'optgroup', 'option'))) {
@@ -349,7 +354,13 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 
         $cssClass = trim($cssClass);
 
-        $this->pushContent($this->selfClosingTag($tag, $attributes));
+        if ($tagContent == '') {
+            $this->pushContent($this->selfClosingTag($tag, $attributes));
+        } else {
+            $this->pushContent($this->openTag($tag, $attributes));
+            $this->pushContent($tagContent);
+            $this->pushContent($this->closeTag($tag));
+        }
     }
 
     //
@@ -368,9 +379,9 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
     public function inset($offset)
     {
         $value = $this->view[$offset];
-        
+
         if ($value instanceof NethGui_Core_ViewInterface) {
-            $insetRenderer = new self($value);            
+            $insetRenderer = new self($value);
             $insetRenderer->includeTemplate($value->getTemplate(), $this->flags);
             $this->append((String) $insetRenderer, FALSE);
         } else {
@@ -420,8 +431,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 
             if ($flags & self::BUTTON_SUBMIT) {
                 $attributes['type'] = 'submit';
-                $cssClass .= ' submit';
-                $attributes['value'] = $this->translate($buttonLabel);
+                $cssClass .= ' submit';                
                 $attributes['id'] = FALSE;
                 $attributes['name'] = FALSE;
             } elseif ($flags & self::BUTTON_RESET) {
@@ -432,7 +442,9 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
                 $cssClass .= ' custom';
             }
 
-            $this->controlTag('input', $name, $flags, $cssClass, $attributes);
+            $attributes['value'] = $this->translate($buttonLabel);            
+            
+            $this->controlTag('button', $name, $flags, $cssClass, $attributes);
         }
 
         return $this;

@@ -17,3 +17,4 @@ $L['create_label'] = 'Crea nuovo';
 
 $L['Ignore_label'] = 'Ignora';
 $L['All changes have been saved'] = 'Tutte le modifiche sono state salvate';
+$L['Reset_label'] = 'Ripristina';

@@ -131,7 +131,7 @@ class NethGui_Module_TableRead extends NethGui_Core_Module_Standard
         foreach ($this->columnActions as $action) {
             $output .= '<li>' . $view->button($action, NethGui_Renderer_Abstract::BUTTON_LINK, $view[$action]) . '</li>';
         }
-        return '<ul>' . $output . '</ul>';
+        return '<ul class="actions">' . $output . '</ul>';
     }
 
 }
