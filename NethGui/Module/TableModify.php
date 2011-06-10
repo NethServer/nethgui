@@ -39,17 +39,17 @@ class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
         $this->parameterSchema = $parameterSchema;
         $this->key = $this->parameterSchema[0][0];
         $this->autosave = FALSE;
-        
+
         foreach ($requireEvents as $eventData) {
             if (is_string($eventData)) {
                 $this->requireEvent($eventData);
             } elseif (is_array($eventData)) {
-                if(!isset($eventData[1])) {
+                if ( ! isset($eventData[1])) {
                     $eventData[1] = array();
-                }        
-                if(!isset($eventData[2])) {
+                }
+                if ( ! isset($eventData[2])) {
                     $eventData[2] = NULL;
-                }                    
+                }
                 $this->requireEvent($eventData[0], $eventData[1], $eventData[2]);
             }
         }
@@ -84,12 +84,12 @@ class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
         $this->parameters[$this->key] = $keyValue;
 
         if ( ! $this->tableAdapter->offsetExists($keyValue)) {
-            return; // Nothing to do: the data we are missing the data row
+            return; // Nothing to do: the data row is missing
         }
-        
+
         $values = $this->tableAdapter[$keyValue];
-            
-       
+
+
         // Bind other values following the order defined into parameterSchema                 
         foreach ($this->parameterSchema as $parameterDeclaration) {
             $parameterName = $parameterDeclaration[0];
@@ -99,7 +99,9 @@ class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
             }
 
             // Bind the n-th value to $parameterName.
-            $this->parameters[$parameterName] = $values[$parameterName];
+            if (isset($values[$parameterName])) {
+                $this->parameters[$parameterName] = $values[$parameterName];
+            }
         }
     }
 
