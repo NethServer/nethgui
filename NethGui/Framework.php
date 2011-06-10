@@ -69,11 +69,11 @@ class NethGui_Framework
      */
     public function renderView($viewName, $viewState, $languageCatalog = NULL)
     {
-        if ( ! is_null($languageCatalog) && !empty($languageCatalog)) {
-            if(is_array($languageCatalog)) {
+        if ( ! is_null($languageCatalog) && ! empty($languageCatalog)) {
+            if (is_array($languageCatalog)) {
                 $languageCatalog = array_reverse($languageCatalog);
             }
-            
+
             $this->languageCatalogStack[] = $languageCatalog;
         }
 
@@ -94,7 +94,7 @@ class NethGui_Framework
             $viewOutput = (string) $this->controller->load->view($ciViewPath, $viewState, true);
         }
 
-        if ( ! is_null($languageCatalog) && !empty($languageCatalog)) {
+        if ( ! is_null($languageCatalog) && ! empty($languageCatalog)) {
             array_pop($this->languageCatalogStack);
         }
 
@@ -219,20 +219,20 @@ class NethGui_Framework
     {
         $languageCatalogs = $this->languageCatalogStack;
 
-        if (!empty($catalogStack)) {
+        if ( ! empty($catalogStack)) {
             $languageCatalogs[] = $catalogStack;
-        } 
+        }
 
         $translation = NULL;
 
         while (($catalog = array_pop($languageCatalogs)) !== NULL) {
-                        
-            if(is_array($catalog)) {                
+
+            if (is_array($catalog)) {
                 // push nested catalog stack elements
                 $languageCatalogs = array_merge($languageCatalogs, $catalog);
                 continue;
             }
-            
+
             // If catalog is missing load it
             if ( ! isset($this->catalogs[$languageCode][$catalog])) {
                 $this->loadLanguageCatalog($languageCode, $catalog);
@@ -246,7 +246,7 @@ class NethGui_Framework
 
             // If key is missing lookup in previous catalog
             $catalog = prev($languageCatalogs);
-        } 
+        }
 
         if ($translation === NULL) {
             // By default prepare an identity-translation
@@ -326,9 +326,18 @@ class NethGui_Framework
      * @param string $message
      * @param string $level
      */
-    public static function logMessage($message, $level = 'error')
+    public function logMessage($message, $level = 'error')
     {
         log_message($level, $message);
+    }
+
+    /**
+     * Sends a 303 status redirect to $url.
+     * @param type $url 
+     */
+    private function redirect($url)
+    {
+        redirect($url);
     }
 
     /**
@@ -339,9 +348,10 @@ class NethGui_Framework
      */
     public function dispatch($currentModuleIdentifier, $arguments = array())
     {
-        // Replace "index" request with a (temporary) default module value
+        // Replace "index" request with a  default module value
         if ($currentModuleIdentifier == 'index') {
-            redirect('dispatcher/Security');
+            // TODO read from configuration
+            $this->redirect('dispatcher/Security');
         }
 
         $request = NethGui_Core_Request::getHttpRequest($arguments);
@@ -436,12 +446,12 @@ class NethGui_Framework
         if ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_HTML) {
             $redirect = $user->getRedirect();
             if ( ! is_null($redirect)) {
-                redirect($redirect);
+                $this->redirect($redirect);
             }
             $worldModule->addModule(new NethGui_Module_Menu($topModuleDepot->getModules()));
             header("Content-Type: text/html; charset=UTF-8");
             $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_REFRESH);
-            echo $view->render();            
+            echo $view->render();
         } elseif ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_JSON) {
             header("Content-Type: application/json; charset=UTF-8");
             $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_UPDATE);

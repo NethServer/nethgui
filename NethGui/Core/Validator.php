@@ -213,7 +213,7 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
     {
         if (defined('ENVIRONMENT')
             && ENVIRONMENT == 'development') {
-            NethGui_Framework::logMessage($method . ' is not implemented - SKIPPING, as we are in development environment.', 'warning');
+            NethGui_Framework::getInstance()->logMessage($method . ' is not implemented - SKIPPING, as we are in development environment.', 'warning');
             return $this;
         }
 
