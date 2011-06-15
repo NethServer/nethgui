@@ -123,7 +123,7 @@ class NethGui_Core_Module_List extends NethGui_Core_Module_Composite implements 
             $form = $view;
         }
 
-        $tabs = $form->tabs($this->getIdentifier(), $pages);
+        $tabs = $form->tabs('Tabs', $pages);
 
         $tabs->includeTemplate(array($this, 'renderButtons'));
 
