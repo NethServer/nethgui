@@ -117,9 +117,9 @@ class NethGui_Module_TableRead extends NethGui_Core_Module_Standard
         } else {
             $columnView = array();
         }
-
-        foreach ($this->columnActions as $action) {
-            $columnView[$action] = array('../' . $action, $key);
+               
+        foreach ($this->columnActions as $action) {            
+            $columnView[$action] = array($action, $key);
         }
 
         return $columnView;
@@ -127,9 +127,21 @@ class NethGui_Module_TableRead extends NethGui_Core_Module_Standard
 
     public function renderColumnActions(NethGui_Renderer_Abstract $view)
     {
-        $output = '';
-        foreach ($this->columnActions as $action) {
-            $output .= '<li>' . $view->button($action, NethGui_Renderer_Abstract::BUTTON_LINK, $view[$action]) . '</li>';
+        $output = '';                       
+        
+        $fragmentPrefix = implode('_', array_slice($view->getModulePath(), 0, -1));
+                        
+        foreach ($this->columnActions as $action) {            
+            $actionSegments = $view[$action];    
+            
+            $fragment = '#' . $fragmentPrefix . '_' . $action;
+            
+            // Must go up one level (we are in `read` action...)
+            array_unshift($actionSegments, '..');
+            
+            $actionSegments[] = $fragment;
+            
+            $output .= '<li>' . $view->button($action, NethGui_Renderer_Abstract::BUTTON_LINK, $actionSegments) . '</li>';
         }
         return '<ul class="actions">' . $output . '</ul>';
     }
