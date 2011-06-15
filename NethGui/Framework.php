@@ -90,7 +90,7 @@ class NethGui_Framework
                 return '';
             }
 
-            // PHP view
+            // PHP script
             $viewOutput = (string) $this->controller->load->view($ciViewPath, $viewState, true);
         }
 
@@ -145,6 +145,8 @@ class NethGui_Framework
 
         $path = explode('/', $path);
 
+        // FIXME: the controller name must not be added
+        // if url-rewriting (or similar) is enabled
         array_unshift($path, $this->getControllerName());
 
         $path = array_reverse($path);
@@ -270,11 +272,9 @@ class NethGui_Framework
         if (preg_match('/[a-z_A-Z0-9]+/', $languageCatalog) == 0) {
             throw new InvalidArgumentException("Language catalog name can contain only alphanumeric or `_` characters. It was `$languageCatalog`.");
         }
-
+        
         $prefix = array_shift(explode('_', $languageCatalog));
-
         $filePath = dirname(__FILE__) . '/../' . $prefix . '/Language/' . $languageCode . '/' . $languageCatalog . '.php';
-
         @include($filePath);
 
         if (ENVIRONMENT == 'development' && ! empty($L)) {

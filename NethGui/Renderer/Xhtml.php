@@ -593,7 +593,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         );
 
         $form->addWrapTag('form', $action, '', $attributes);
-        $form->addWrapTag('div', is_null($id) ? $action : $id);
+        $form->addWrapTag('div', is_null($id) ? 'Form' : $id);
 
         return $form;
     }
