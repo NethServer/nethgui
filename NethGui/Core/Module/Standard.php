@@ -255,7 +255,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
             }
         } elseif (isset($args[0], $args[1])) {
             // Get an identity adapter:
-            $database = (string) $args[0];
+            $database = $args[0];
             $key = (string) $args[1];
             $prop = isset($args[2]) ? (string) $args[2] : NULL;
             $separator = isset($args[3]) ? (string) $args[3] : NULL;
@@ -302,7 +302,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
     public function bind(NethGui_Core_RequestInterface $request)
     {
         $this->user = $request->getUser();
-        foreach ($this->parameters as $parameterName => $parameterValue) {
+        foreach ($this->parameters->getKeys() as $parameterName) {
             if ($request->hasParameter($parameterName)) {
                 $this->parameters[$parameterName] = $request->getParameter($parameterName);
                 $this->parameterValidationList[] = $parameterName;

@@ -9,10 +9,21 @@
 interface NethGui_Adapter_AdapterAggregationInterface {
 
     /**
+     * Return the list of registered parameter names
+     * @return array
+     */
+    public function getKeys();
+    
+    /**
      * @param NethGui_Adapter_AdapterInterface $adapter
      * @param string $key
      */
     public function register(NethGui_Adapter_AdapterInterface $adapter, $key);
+    
+    /**
+     * @return NethGui_Adapter_AdapterInterface
+     */
+    public function query($key);
     
     /**
      * Check if a member is modified from its initial value.

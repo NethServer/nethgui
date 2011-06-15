@@ -55,8 +55,6 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
 
     public function getIdentityAdapter($database, $key, $prop = NULL, $separator = NULL)
     {
-        $db = $this->getDatabase($database);
-
         if (is_string($key)) {
             $serializer = $this->getSerializer($database, $key, $prop);
 
@@ -65,7 +63,7 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
             } else {
                 $adapter = new NethGui_Adapter_ArrayAdapter($separator, $serializer);
             }
-        } elseif (is_callback($key)) {
+        } elseif (is_callable($key)) {
             // TODO
             throw new Exception('Not implemented');
         }
@@ -110,7 +108,9 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
     {
         if (is_null($prop)) {
             $serializer = new NethGui_Serializer_KeySerializer($this->getDatabase($database), $key);
-        } else {
+        } elseif($database instanceof NethGui_Adapter_TableAdapter) {
+            $serializer = new NethGui_Serializer_TablePropSerializer($database, $key, $prop);
+        } elseif(is_string($database)) {
             $serializer = new NethGui_Serializer_PropSerializer($this->getDatabase($database), $key, $prop);
         }
 
@@ -151,7 +151,7 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
             $this->asyncEvents[$eventId]['cbks'][] = $callback;
         }
     }
-    
+
     /**
      * Translates a signal call arguments to a unique string identifier.
      * 
@@ -159,18 +159,19 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
      * @param array $args
      * @return string 
      */
-    private function calcEventId($eventName, $args) {
+    private function calcEventId($eventName, $args)
+    {
         $idList = array($eventName);
-        
-        foreach($args as $arg) {
-            if(is_callable($arg)) {
+
+        foreach ($args as $arg) {
+            if (is_callable($arg)) {
                 $idList[] = is_object($arg[0]) ? get_class($arg[0]) : (String) $arg[0];
                 $idList[] = (String) $arg[1];
             } else {
                 $idList[] = (String) $arg;
             }
         }
-        
+
         return md5(implode('-', $idList));
     }
 
@@ -189,21 +190,21 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
             $output = array();
 
             $args = array();
-            
-            
-            foreach($eventData['args'] as $arg) {
-                if(is_callable($arg)) {
+
+
+            foreach ($eventData['args'] as $arg) {
+                if (is_callable($arg)) {
                     // invoke argument value provider:
                     $arg = call_user_func($arg, $eventData['name']);
                 }
-                
-                if($arg === NULL) {
+
+                if ($arg === NULL) {
                     continue; // skip NULL values
                 }
-                
+
                 $args[] = (String) $arg;
             }
-            
+
             $exitStatus = $this->signalEvent($eventData['name'], $args, $output);
 
             foreach ($eventData['cbks'] as $callback) {

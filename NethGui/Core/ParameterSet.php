@@ -36,6 +36,11 @@ class NethGui_Core_ParameterSet implements NethGui_Adapter_AdapterAggregationInt
         return array_key_exists($offset, $this->data);
     }
 
+    public function getKeys()
+    {
+        return array_keys($this->data);
+    }
+
     public function offsetGet($offset)
     {
         if ( ! $this->offsetExists($offset)) {
@@ -97,6 +102,14 @@ class NethGui_Core_ParameterSet implements NethGui_Adapter_AdapterAggregationInt
         $this->data[$key] = $adapter;
     }
 
+    public function query($key)
+    {
+        if ( ! $this->data[$key] instanceof NethGui_Adapter_AdapterInterface) {
+            return NULL;
+        }
+        return $this->data[$key];
+    }
+
     public function isModified($key = NULL)
     {
         if (is_null($key)) {
@@ -107,7 +120,7 @@ class NethGui_Core_ParameterSet implements NethGui_Adapter_AdapterAggregationInt
 
         foreach ($keys as $key) {
             $value = $this->data[$key];
-            
+
             if ($value instanceof NethGui_Adapter_AdapterInterface) {
                 $modified = $value->isModified();
             } elseif ($value instanceof NethGui_Adapter_AdapterAggregationInterface) {
@@ -119,7 +132,7 @@ class NethGui_Core_ParameterSet implements NethGui_Adapter_AdapterAggregationInt
             }
         }
 
-        return FALSE;      
+        return FALSE;
     }
 
     public function current()
