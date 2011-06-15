@@ -29,6 +29,12 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
      * A not empty value
      */
     const VALID_NOTEMPTY = 102;
+    
+    
+    /**
+     * Accepts any value
+     */
+    const VALID_ANYTHING = 103;
 
     /**
      * A valid IPv4 address like '192.168.1.1' 
@@ -186,6 +192,9 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
         $validator = $this->getValidator();
 
         switch ($ruleCode) {
+            case self::VALID_ANYTHING:
+                return $validator->forceResult(TRUE);
+            
             case self::VALID_SERVICESTATUS:
                 return $validator->memberOf('enabled', 'disabled');
 
