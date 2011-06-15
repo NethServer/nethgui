@@ -108,7 +108,7 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
     {
         if (is_null($prop)) {
             $serializer = new NethGui_Serializer_KeySerializer($this->getDatabase($database), $key);
-        } elseif($database instanceof NethGui_Adapter_TableAdapter) {
+        } elseif($database instanceof ArrayAccess) {
             $serializer = new NethGui_Serializer_TablePropSerializer($database, $key, $prop);
         } elseif(is_string($database)) {
             $serializer = new NethGui_Serializer_PropSerializer($this->getDatabase($database), $key, $prop);

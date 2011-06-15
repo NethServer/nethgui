@@ -16,11 +16,11 @@ class NethGui_Serializer_TablePropSerializer implements NethGui_Serializer_Seria
     
     /**
      *
-     * @var NethGui_Adapter_TableAdapter
+     * @var ArrayAccess
      */
     private $tableAdapter;
  
-    public function __construct(NethGui_Adapter_TableAdapter $adapter, $key, $prop)
+    public function __construct(ArrayAccess $adapter, $key, $prop)
     {
         $this->tableAdapter = $adapter;
         $this->key = $key;
