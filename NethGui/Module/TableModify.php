@@ -59,6 +59,9 @@ class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
     {
         parent::initialize();
         foreach ($this->parameterSchema as $args) {
+            if(count($args) > 2 && is_string($args[2])) {
+                unset($args[2]);
+            }
             call_user_func_array(array($this, 'declareParameter'), $args);
         }
     }
@@ -89,19 +92,26 @@ class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
 
         $values = $this->tableAdapter[$keyValue];
 
-
         // Bind other values following the order defined into parameterSchema                 
         foreach ($this->parameterSchema as $parameterDeclaration) {
             $parameterName = $parameterDeclaration[0];
 
             if ($parameterName == $this->key) {
                 continue; // Skip the key, we have it already.
+            }           
+            
+            $adapter = $this->parameters->query($parameterName);
+            
+            if(is_null($adapter)) {
+                if(isset($parameterDeclaration[2])) {
+                    $separator = $parameterDeclaration[2];
+                } else {
+                    $separator = NULL;
+                }
+                $adapter = $this->getHostConfiguration()->getIdentityAdapter($this->tableAdapter, $keyValue, $parameterName, $separator);
             }
-
-            // Bind the n-th value to $parameterName.
-            if (isset($values[$parameterName])) {
-                $this->parameters[$parameterName] = $values[$parameterName];
-            }
+            
+            $this->parameters->register($adapter, $parameterName);                       
         }
     }
 
