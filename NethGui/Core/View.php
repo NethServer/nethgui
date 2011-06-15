@@ -70,7 +70,7 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
     {
         $this->template = $template;
     }
-    
+
     public function getTemplate()
     {
         return $this->template;
@@ -173,6 +173,8 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
                         $data[$offset][] = $this->translate($value);
                     }
                 }
+            } elseif ($value instanceof Traversable) {
+                $data[$offset] = $this->traversableToArray($value);
             } elseif (is_string($value)) {
                 $data[$offset] = $this->translate($value);
             } else {
@@ -181,6 +183,23 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
         }
 
         return $data;
+    }
+
+    /**
+     * Convert a Traversable object to a PHP array
+     * @param Traversable $value
+     * @return array
+     */
+    private function traversableToArray(Traversable $value)
+    {
+        $a = array();
+        foreach ($value as $k => $v) {
+            if($v instanceof Traversable) {
+                $v = $this->traversableToArray($v);
+            }
+            $a[$k] = $v;
+        }        
+        return $a;
     }
 
     public function translate($value, $args = array())
