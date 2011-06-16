@@ -39,6 +39,20 @@ Buttons (enabled & disabled)::
 
   [ Cancel ]  | Apply |  
 
+Basic Selector (multiple)::
+
+  [x] Label1 
+  [ ] Label2
+  [x] Label3 
+  [x] Label4 
+  [ ] Label5
+
+Basic Selector (single)::
+
+  ( ) Label1
+  ( ) Label2
+  (o) Label3
+
 
 
 Containers
