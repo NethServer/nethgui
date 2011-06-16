@@ -29,22 +29,22 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
      * A not empty value
      */
     const VALID_NOTEMPTY = 102;
-    
-    
+
+
     /**
      * Accepts any value
      */
     const VALID_ANYTHING = 103;
-    
+
     /**
      * Accept a value that represents a collection of any thing
      */
     const VALID_ANYTHING_COLLECTION = 104;
-    
+
     /**
      * Accept a value that represents a collection of any Unix usernames
      */
-    const VALID_USERNAME_COLLECTION = 105;    
+    const VALID_USERNAME_COLLECTION = 105;
 
     /**
      * A valid IPv4 address like '192.168.1.1' 
@@ -138,7 +138,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
      * @see NethGui_Core_HostConfigurationInterface::getMapAdapter()
      *
      * @param string $parameterName The name of the parameter
-     * @param string $validator Optional - A regular expression catching the correct value format
+     * @param mixed $validator Optional - A regular expression catching the correct value format OR An constant-integer corresponding to a predefined validator OR boolean FALSE for a readonly parameter
      * @param NethGui_Adapter_AdapterInterface|array $adapter Optional - An adapter instance or an array of arguments to create it
      * @param mixed $onSubmitDefaultValue Optional - Value to assign if parameter is missing when binding a submitted request
      */
@@ -204,13 +204,13 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
         switch ($ruleCode) {
             case self::VALID_ANYTHING:
                 return $validator->forceResult(TRUE);
-                
+
             case self::VALID_ANYTHING_COLLECTION:
                 return $validator->collectionValidator($this->getValidator()->forceResult(TRUE));
-                
+
             case self::VALID_USERNAME_COLLECTION:
                 return $validator->collectionValidator($this->getValidator()->username());
-            
+
             case self::VALID_SERVICESTATUS:
                 return $validator->memberOf('enabled', 'disabled');
 
@@ -269,6 +269,11 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
                         array($this, $readerCallback), array($this, $writerCallback), $args
                 );
             }
+        } elseif (is_callable($args)) {
+            /**
+             * Args is a callable: create a readonly callback adapter            
+             */
+            $adapterObject = new NethGui_Adapter_ScalarAdapter(new NethGui_Serializer_CallbackSerializer($args));
         } elseif (isset($args[0], $args[1])) {
             // Get an identity adapter:
             $database = $args[0];
