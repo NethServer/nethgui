@@ -33,6 +33,11 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
      * @var array
      */
     private $columnActions, $tableActions;
+    /**
+     * Holds the request object for the "current" action
+     * @var NethGui_Core_RequestInterface
+     */
+    private $currentActionRequest;
 
     /**
      * @param string $identifier
@@ -101,6 +106,32 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
         return $actionObject;
     }
 
+    public function bind(NethGui_Core_RequestInterface $request)
+    {
+        parent::bind($request);
+
+        if (is_null($this->currentAction)) {
+            return;
+        }
+
+        if ($request->hasParameter($this->currentAction->getIdentifier())) {
+            $this->currentActionRequest = $request->getParameterAsInnerRequest($this->currentAction->getIdentifier());
+        }
+    }
+
+    protected function getCurrentActionParameter($parameter)
+    {
+        if ( ! isset($this->currentActionRequest)) {
+            return NULL;
+        }
+        
+        if(!$this->currentActionRequest->hasParameter($parameter)) {
+            return NULL;
+        }
+        
+        return $this->currentActionRequest->getParameter($parameter);
+    }
+
     public function renderDisabledActions(NethGui_Renderer_Abstract $view)
     {
 
@@ -116,13 +147,13 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
                 $renderer->inset($child->getIdentifier());
             } else {
                 // FIXME: specify dialog style elsewhere...
-                if($child->getIdentifier() == 'delete') {
+                if ($child->getIdentifier() == 'delete') {
                     $dialogStyle = NethGui_Renderer_Abstract::DIALOG_MODAL;
                 } else {
                     $dialogStyle = NethGui_Renderer_Abstract::DIALOG_EMBEDDED;
                 }
-                
-                $renderer                
+
+                $renderer
                     ->dialog($child->getIdentifier(), $dialogStyle | NethGui_Renderer_Abstract::STATE_DISABLED)
                     ->inset($child->getIdentifier())
                 ;
