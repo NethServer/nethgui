@@ -115,8 +115,15 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
             if ($index === 0) {
                 $renderer->inset($child->getIdentifier());
             } else {
-                $renderer
-                    ->dialog($child->getIdentifier(), NethGui_Renderer_Abstract::DIALOG_EMBEDDED | NethGui_Renderer_Abstract::STATE_DISABLED)
+                // FIXME: specify dialog style elsewhere...
+                if($child->getIdentifier() == 'delete') {
+                    $dialogStyle = NethGui_Renderer_Abstract::DIALOG_MODAL;
+                } else {
+                    $dialogStyle = NethGui_Renderer_Abstract::DIALOG_EMBEDDED;
+                }
+                
+                $renderer                
+                    ->dialog($child->getIdentifier(), $dialogStyle | NethGui_Renderer_Abstract::STATE_DISABLED)
                     ->inset($child->getIdentifier())
                 ;
             }
