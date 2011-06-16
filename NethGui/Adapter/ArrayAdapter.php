@@ -51,7 +51,7 @@ class NethGui_Adapter_ArrayAdapter implements NethGui_Adapter_AdapterInterface, 
             return NULL;
         }
 
-        return $this;
+        return $this->data;
     }
 
     public function set($value)

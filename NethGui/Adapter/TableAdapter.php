@@ -79,7 +79,7 @@ class NethGui_Adapter_TableAdapter implements NethGui_Adapter_AdapterInterface, 
             $this->lazyInitialization();
         }
 
-        return $this;
+        return $this->data;
     }
 
     public function set($value)

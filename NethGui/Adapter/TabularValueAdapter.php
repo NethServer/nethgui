@@ -77,7 +77,7 @@ class NethGui_Adapter_TabularValueAdapter implements NethGui_Adapter_AdapterInte
             $this->lazyInitialization();
         }
 
-        return $this;
+        return $this->data;
     }
 
     public function set($value)
