@@ -431,7 +431,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 
             if ($flags & self::BUTTON_SUBMIT) {
                 $attributes['type'] = 'submit';
-                $cssClass .= ' submit';                
+                $cssClass .= ' submit';
                 $attributes['id'] = FALSE;
                 $attributes['name'] = FALSE;
             } elseif ($flags & self::BUTTON_RESET) {
@@ -442,8 +442,8 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
                 $cssClass .= ' custom';
             }
 
-            $attributes['value'] = $this->translate($buttonLabel);            
-            
+            $attributes['value'] = $this->translate($buttonLabel);
+
             $this->controlTag('button', $name, $flags, $cssClass, $attributes);
         }
 
@@ -673,6 +673,46 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         $content = NethGui_Framework::getInstance()->renderView($template, $state, $languageCatalog);
 
         $this->append($content, FALSE);
+
+        return $this;
+    }
+
+    public function selector($name, $choices = NULL, $flags = 0)
+    {
+        $value = $this->view[$name];       
+
+        $this->pushContent($this->openTag('fieldset', array('class' => 'selector')));
+        $this->pushContent($this->openTag('legend'));
+        $this->append($this->translate($name . '_label'));
+        $this->pushContent($this->closeTag('legend'));
+
+        if ($value instanceof Traversable) {
+            $value = iterator_to_array($value);
+            $flags |= self::SELECTOR_MULTIPLE;
+        } elseif (is_array($value)) {
+            $flags |= self::SELECTOR_MULTIPLE;
+        } else {
+            $flags |= self::SELECTOR_SINGLE;
+        }
+
+        $this->pushContent($this->openTag('pre'));
+        if ($flags & self::SELECTOR_MULTIPLE) {
+            $this->append(print_r($value, 1));
+        }
+
+        if (is_array($choices)) {
+            $this->append(print_r($choices, 1));
+        }
+        $this->pushContent($this->closeTag('pre'));
+        
+        
+        if ($flags & self::STATE_DISABLED) {
+            $this->append(' - disabled');
+        }
+        
+        
+
+        $this->pushContent($this->closeTag('fieldset'));
 
         return $this;
     }

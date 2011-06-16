@@ -41,6 +41,9 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
     const DIALOG_SUCCESS = 0x2000;
     const DIALOG_WARNING = 0x4000;
     const DIALOG_ERROR = 0x8000;
+    
+    const SELECTOR_SINGLE = 0x20000;
+    const SELECTOR_MULTIPLE = 0x40000;
 
     /**
      *
@@ -183,7 +186,7 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
     abstract public function dialog($identifier, $flags = 0);
 
     /**
-     * Renders a tab container.
+     * Renders a tabs container.
      *
      * @param string $name The identifier of the control
      * @param array $pages Optional - The identifier list of the pages. NULL includes all the sub-views of the current object.
@@ -229,4 +232,14 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
      * @return NethGui_Renderer_Abstract Same object
      */
     abstract public function includeTemplate($template, $flags = 0);
+    
+    /**
+     * Concatenate a selector control
+     * 
+     * @param string $name The view member name holding the selected value(s)
+     * @param array $choices A table-like array, where each row is a tuple <key, val1, .. , valN>
+     * @param integer $flags 
+     * @return NethGui_Renderer_Abstract Same object
+     */    
+    abstract public function selector($name, $choices = NULL, $flags = 0);
 }
