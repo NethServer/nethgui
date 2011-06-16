@@ -137,9 +137,24 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
         return $this;
     }
 
+    /**
+     * Check if the value is a valid Unix user name
+     * @return NethGui_Core_Validator
+     */
     public function username()
     {
         return $this->addToChain(__FUNCTION__);
+    }
+
+    /**
+     * Check if the value is collection of elements satisfying the given validator
+     * @param NethGui_Core_Validator $v Member validator
+     * @return NethGui_Core_Validator 
+     */
+    public function collectionValidator(NethGui_Core_Validator $v)
+    {
+        $this->chain[] = new NethGui_Core_CollectionValidator($v);
+        return $this;
     }
 
     public function getMessage()
@@ -172,7 +187,7 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
                     $args = array();
                 }
 
-                $messageParts = array_merge(array($expression[0]), $args);
+                $messageParts = array($expression[0], print_r($args, 1));
 
                 array_unshift($args, $value);
                 $isValid = call_user_func_array($expression[1], $args);
@@ -301,14 +316,71 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
 
         return TRUE;
     }
-    
+
     /**
      * Check if $value is a valid Linux username
      * @param string $value 
      */
-    private function evalUsername($value) 
+    private function evalUsername($value)
     {
         return strlen($value) < 32 && $this->evalRegexp($value, '/^[a-z][-_a-z0-9]*$/');
+    }
+
+}
+
+/**
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @internal
+ * @package Core
+ */
+class NethGui_Core_CollectionValidator implements NethGui_Core_ValidatorInterface
+{
+
+    /**
+     *
+     * @var NethGui_Core_ValidatorInterface
+     */
+    private $memberValidator;
+    private $failureReason;
+    /**
+     *
+     * @var Iterator
+     */
+    private $iterator;
+
+    public function __construct(NethGui_Core_ValidatorInterface $memberValidator)
+    {
+        $this->memberValidator = $memberValidator;
+    }
+
+    public function evaluate($iterableObject)
+    {
+        if (is_array($iterableObject)) {
+            $iterableObject = new ArrayObject($iterableObject);
+            $this->iterator = $iterableObject->getIterator();
+        } elseif ($iterableObject instanceof IteratorAggregate) {
+            $this->iterator = $iterableObject->getIterator();
+        } elseif ($iterableObject instanceof Iterator) {
+            $this->iterator = $iterableObject;
+        } else {
+            $this->failureReason = "Not a collection";
+            return FALSE;
+        }
+
+        foreach ($this->iterator as $e) {
+            if ($this->memberValidator->evaluate($e) === FALSE) {
+                $this->failureReason = '(' . $this->iterator->key() . ') ' . $this->memberValidator->getMessage();
+                return FALSE;
+            }
+        }
+
+
+        return TRUE;
+    }
+
+    public function getMessage()
+    {
+        return $this->failureReason;
     }
 
 }

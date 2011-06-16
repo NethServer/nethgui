@@ -35,6 +35,16 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
      * Accepts any value
      */
     const VALID_ANYTHING = 103;
+    
+    /**
+     * Accept a value that represents a collection of any thing
+     */
+    const VALID_ANYTHING_COLLECTION = 104;
+    
+    /**
+     * Accept a value that represents a collection of any Unix usernames
+     */
+    const VALID_USERNAME_COLLECTION = 105;    
 
     /**
      * A valid IPv4 address like '192.168.1.1' 
@@ -194,6 +204,12 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
         switch ($ruleCode) {
             case self::VALID_ANYTHING:
                 return $validator->forceResult(TRUE);
+                
+            case self::VALID_ANYTHING_COLLECTION:
+                return $validator->collectionValidator($this->getValidator()->forceResult(TRUE));
+                
+            case self::VALID_USERNAME_COLLECTION:
+                return $validator->collectionValidator($this->getValidator()->username());
             
             case self::VALID_SERVICESTATUS:
                 return $validator->memberOf('enabled', 'disabled');
