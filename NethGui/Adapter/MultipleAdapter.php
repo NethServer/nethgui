@@ -6,6 +6,13 @@
 /**
  * A Multiple adapter maps a scalar value to multiple keys or props through
  * a "reader" and a "writer" callback function.
+ * 
+ * The reader function is mandatory, the writer is optional. If you set NULL the writer
+ * callback you get a read-only adapter. All save() calls have no effects and returns
+ * int(0) changes.
+ * 
+ * If the adapter has an empty set of serializers the callback function will 
+ * still be called with no arguments.
  *
  * @package Adapter
  */
@@ -23,22 +30,13 @@ class NethGui_Adapter_MultipleAdapter implements NethGui_Adapter_AdapterInterfac
      * @param callback $writerCallback The writer PHP callback function: V -> (p1, ..., pN)
      * @param array $serializers An array of NethGui_Serializer_SerializerInterface objects
      */
-    public function __construct($readerCallback, $writerCallback, $serializers)
+    public function __construct($readerCallback, $writerCallback = NULL, $serializers = array())
     {
-        if (empty($serializers)) {
-            throw new NethGui_Exception_Adapter('Must provide one serializer, at least.');
-        }
-
         if ( ! is_callable($readerCallback)) {
-            throw new NethGui_Exception_Adapter('Must provide a Reader callback function');
+            throw new InvalidArgumentException('Must provide a Reader callback function');
         }
 
         $this->readerCallback = $readerCallback;
-
-        if ( ! is_callable($writerCallback)) {
-            throw new NethGui_Exception_Adapter('Must provide a Reader callback function');
-        }
-
         $this->writerCallback = $writerCallback;
 
         foreach ($serializers as $serializer) {
@@ -83,10 +81,14 @@ class NethGui_Adapter_MultipleAdapter implements NethGui_Adapter_AdapterInterfac
 
     public function save()
     {
+        if ( ! is_callable($this->writerCallback)) {
+            return 0;
+        }
+        
         if ( ! $this->isModified()) {
             return 0;
         }
-
+                
         $values = call_user_func($this->writerCallback, $this->value);
         
         $index = 0;

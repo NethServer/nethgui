@@ -242,7 +242,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
 
     /**
      * Helps in creation of complex adapters.
-     * @param array $args
+     * @param array|callable $args
      * @return NethGui_Adapter_AdapterInterface
      */
     private function getAdapterForParameter($parameterName, $args)
@@ -269,11 +269,6 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
                         array($this, $readerCallback), array($this, $writerCallback), $args
                 );
             }
-        } elseif (is_callable($args)) {
-            /**
-             * Args is a callable: create a readonly callback adapter            
-             */
-            $adapterObject = new NethGui_Adapter_ScalarAdapter(new NethGui_Serializer_CallbackSerializer($args));
         } elseif (isset($args[0], $args[1])) {
             // Get an identity adapter:
             $database = $args[0];
