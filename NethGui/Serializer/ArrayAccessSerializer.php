@@ -4,12 +4,12 @@
  */
 
 /**
- * Transfers a prop value to/from a table adapter
+ * Transfers a prop value to/from an object implementing ArrayAccess interface
  *
  * @package Serializer
  * @see NethGui_Module_Table_Modify
  */
-class NethGui_Serializer_TablePropSerializer implements NethGui_Serializer_SerializerInterface
+class NethGui_Serializer_ArrayAccessSerializer implements NethGui_Serializer_SerializerInterface
 {
     private $prop;
     private $key;
@@ -18,18 +18,18 @@ class NethGui_Serializer_TablePropSerializer implements NethGui_Serializer_Seria
      *
      * @var ArrayAccess
      */
-    private $tableAdapter;
+    private $table;
  
-    public function __construct(ArrayAccess $adapter, $key, $prop)
+    public function __construct(ArrayAccess $table, $key, $prop)
     {
-        $this->tableAdapter = $adapter;
+        $this->table = $table;
         $this->key = $key;
         $this->prop = $prop;
     }    
 
     public function read()
     {       
-        $record = $this->tableAdapter->offsetGet($this->key);
+        $record = $this->table->offsetGet($this->key);
         if(!isset($record[$this->prop])) {
             return NULL;        
         }
@@ -42,9 +42,9 @@ class NethGui_Serializer_TablePropSerializer implements NethGui_Serializer_Seria
             throw new NethGui_Exception_Serializer('The TablePropSerializer `key` is not missing.');
         }
         
-        $record = $this->tableAdapter->offsetGet($this->key);
+        $record = $this->table->offsetGet($this->key);
         $record[$this->prop] = $value;
-        $this->tableAdapter->offsetSet($this->key, $record);
+        $this->table->offsetSet($this->key, $record);
     }
 
 }
