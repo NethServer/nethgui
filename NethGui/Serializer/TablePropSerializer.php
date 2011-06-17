@@ -7,7 +7,7 @@
  * Transfers a prop value to/from a table adapter
  *
  * @package Serializer
- * @see NethGui_Module_TableModify
+ * @see NethGui_Module_Table_Modify
  */
 class NethGui_Serializer_TablePropSerializer implements NethGui_Serializer_SerializerInterface
 {

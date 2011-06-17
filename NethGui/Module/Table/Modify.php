@@ -1,16 +1,19 @@
 <?php
 /**
  * @package Module
+ * @subpackage Table
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
 /**
  * Processes a table modification actions: create, update, delete
  *
- * @see NethGui_Module_TableRead
+ * @see NethGui_Module_Table_Read
  * @package Module
+ * @subpackage Table
+ * 
  */
-class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
+class NethGui_Module_Table_Modify extends NethGui_Core_Module_Standard
 {
 
     private $parameterSchema;
@@ -59,7 +62,7 @@ class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
     {
         parent::initialize();
         foreach ($this->parameterSchema as $args) {
-            if(count($args) > 2 && is_string($args[2])) {
+            if (count($args) > 2 && is_string($args[2])) {
                 unset($args[2]);
             }
             call_user_func_array(array($this, 'declareParameter'), $args);
@@ -98,20 +101,20 @@ class NethGui_Module_TableModify extends NethGui_Core_Module_Standard
 
             if ($parameterName == $this->key) {
                 continue; // Skip the key, we have it already.
-            }           
-            
+            }
+
             $adapter = $this->parameters->query($parameterName);
-            
-            if(is_null($adapter)) {
-                if(isset($parameterDeclaration[2])) {
+
+            if (is_null($adapter)) {
+                if (isset($parameterDeclaration[2])) {
                     $separator = $parameterDeclaration[2];
                 } else {
                     $separator = NULL;
                 }
                 $adapter = $this->getHostConfiguration()->getIdentityAdapter($this->tableAdapter, $keyValue, $parameterName, $separator);
             }
-            
-            $this->parameters->register($adapter, $parameterName);                       
+
+            $this->parameters->register($adapter, $parameterName);
         }
     }
 

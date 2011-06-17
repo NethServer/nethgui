@@ -8,8 +8,8 @@
 /**
  * A Controller that handles a generic table CRUD scenario
  *
- * @see NethGui_Module_TableModify
- * @see NethGui_Module_TableRead
+ * @see NethGui_Module_Table_Modify
+ * @see NethGui_Module_Table_Read
  * @package Module
  */
 class NethGui_Module_TableController extends NethGui_Core_Module_Controller
@@ -78,7 +78,7 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
         }
 
         // add the read case
-        $actionObjects[0] = new NethGui_Module_TableRead('read', $tableAdapter, $this->columns, $tableActions, $columnActions);
+        $actionObjects[0] = new NethGui_Module_Table_Read('read', $tableAdapter, $this->columns, $tableActions, $columnActions);
 
         // Finally add all the actions
         foreach ($actionObjects as $actionObject) {
@@ -89,7 +89,7 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
     private function createActionObject($actionArguments, $tableAdapter)
     {
         $actionObject = NULL;
-
+               
         if ($actionArguments instanceof NethGui_Core_Module_Standard) {
             $actionObject = $actionArguments;
         } else {
@@ -100,7 +100,7 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
                 $requireEvents = array($requireEvents);
             }
 
-            $actionObject = new NethGui_Module_TableModify($actionName, $tableAdapter, $this->parameterSchema, $requireEvents, $viewTemplate);
+            $actionObject = new NethGui_Module_Table_Modify($actionName, $tableAdapter, $this->parameterSchema, $requireEvents, $viewTemplate);
         }
 
         return $actionObject;
