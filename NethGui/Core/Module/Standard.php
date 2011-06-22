@@ -76,11 +76,6 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
      */
     private $requiredEvents = array();
     /**
-     * 
-     * @var array
-     */
-    private $submitDefaults = array();
-    /**
      * Set to FALSE if you want to inhibit saving of parameters.
      * @var bool
      */
@@ -109,9 +104,9 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
     private $invalidParameters = array();
     /**
      *
-     * @var NethGui_Core_UserInterface
+     * @var NethGui_Core_RequestInterface
      */
-    private $user;
+    private $request;
 
     /**
      * @param string $identifier
@@ -127,10 +122,13 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
     /**
      * Declare a Module parameter.
      *
-     * A parameter is validated through $validationRule and optionally linked to
-     * one or more database values through an $adapter.
+     * - A parameter is validated through $validationRule. It obtains its value
+     *   from $valueProvider.
+     * - A value provider can be a callback function or an adapter object.
+     * - The callback function can return the parameter value or an adapter 
+     *   itself. 
      *
-     * If the parameter is using an adapter keep in mind that the
+     * NOTE: If you are using an adapter keep in mind that the
      * Host Configuration link is available after initialization only: don't
      * call in class constructor in this case!
      *
@@ -139,10 +137,9 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
      *
      * @param string $parameterName The name of the parameter
      * @param mixed $validator Optional - A regular expression catching the correct value format OR An constant-integer corresponding to a predefined validator OR boolean FALSE for a readonly parameter
-     * @param NethGui_Adapter_AdapterInterface|array $adapter Optional - An adapter instance or an array of arguments to create it
-     * @param mixed $onSubmitDefaultValue Optional - Value to assign if parameter is missing when binding a submitted request
+     * @param mixed $valueProvider Optional - A callback function, an adapter instance or an array of arguments to create an adapter
      */
-    protected function declareParameter($parameterName, $validator = FALSE, $adapter = NULL, $onSubmitDefaultValue = NULL)
+    protected function declareParameter($parameterName, $validator = FALSE, $valueProvider = NULL)
     {
         if (is_string($validator) && $validator[0] == '/') {
             $validator = $this->getValidator()->regexp($validator);
@@ -159,16 +156,17 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
             throw new NethGui_Exception_Validation("Invalid validator value for parameter `" . $parameterName . '` in module `' . get_class($this) . '`.');
         }
 
-        if ($adapter instanceof NethGui_Adapter_AdapterInterface) {
-            $this->parameters[$parameterName] = $adapter;
-        } elseif (is_array($adapter)) {
-            $this->parameters[$parameterName] = $this->getAdapterForParameter($parameterName, $adapter);
-        } else {
+        if (is_callable($valueProvider)) { 
+            // Create a read-only Map Adapter using $valueProvider as read-callback
+            $this->parameters->register($this->getHostConfiguration()->getMapAdapter($valueProvider, NULL, array()), $parameterName);
+        } elseif ($valueProvider instanceof NethGui_Adapter_AdapterInterface) {
+            $this->parameters->register($valueProvider, $parameterName);
+        } elseif (is_array($valueProvider)) {
+            $this->parameters[$parameterName] = $this->getAdapterForParameter($parameterName, $valueProvider);
+        } elseif (is_null($valueProvider)) {
             $this->parameters[$parameterName] = NULL;
-        }
-
-        if ( ! is_null($onSubmitDefaultValue)) {
-            $this->submitDefaults[$parameterName] = $onSubmitDefaultValue;
+        } else {
+            throw new InvalidArgumentException('Invalid `valueProvider` argument');
         }
     }
 
@@ -317,14 +315,11 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
 
     public function bind(NethGui_Core_RequestInterface $request)
     {
-        $this->user = $request->getUser();
+        $this->request = $request;
         foreach ($this->parameters->getKeys() as $parameterName) {
             if ($request->hasParameter($parameterName)) {
                 $this->parameters[$parameterName] = $request->getParameter($parameterName);
                 $this->parameterValidationList[] = $parameterName;
-            } elseif ($request->isSubmitted()
-                && isset($this->submitDefaults[$parameterName])) {
-                $this->parameters[$parameterName] = $this->submitDefaults[$parameterName];
             }
         }
     }
@@ -370,11 +365,12 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
     }
 
     /**
-     * @return NethGui_Core_UserInterface
+     *
+     * @return NethGui_Core_RequestInterface
      */
-    protected function getUser()
+    protected function getRequest()
     {
-        return $this->user;
+        return $this->request;
     }
 
 }

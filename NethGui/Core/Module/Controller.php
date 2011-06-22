@@ -26,6 +26,12 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Composite imple
      * @var NethGui_Core_Module_Interface
      */
     protected $currentAction;
+    
+    private $request;
+    
+    protected function getRequest() {
+        return $this->request;
+    }
 
     /**
      * Overrides Composite bind() method, defining what is the current action
@@ -35,6 +41,7 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Composite imple
      */
     public function bind(NethGui_Core_RequestInterface $request)
     {
+        $this->request = $request;
         $arguments = $request->getArguments();
 
         if ( ! empty($arguments) && isset($arguments[0])) {
@@ -46,7 +53,8 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Composite imple
             }
         } elseif ($request->isSubmitted() && $request->hasParameter('__action')) {
             // We don't have request arguments, but if request is submitted
-            // we can check the `__action` parameter.
+            // we can check the `__action` parameter that is automatically
+            // added by this class.
             $actionId = $request->getParameter('__action');
         } else {
             return; // don't bind the request to any action.
