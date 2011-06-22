@@ -6,7 +6,11 @@
  */
 
 /**
- * A Controller that handles a generic table CRUD scenario
+ * A Controller for handling a generic table CRUD scenario, and any other
+ * action defined on a table.
+ * 
+ * - Tracks the actions involving a row
+ * - Tracks the actions involving the whole table
  *
  * @see NethGui_Module_Table_Modify
  * @see NethGui_Module_Table_Read
@@ -15,11 +19,6 @@
 class NethGui_Module_TableController extends NethGui_Core_Module_Controller
 {
 
-    /**
-     *
-     * @param array $columns
-     */
-    private $columns;
     /**
      *
      * @var array
@@ -32,106 +31,148 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
     /**
      * @var array
      */
-    private $columnActions, $tableActions;
+    private $rowActions;
     /**
-     * Holds the request object for the "current" action
-     * @var NethGui_Core_RequestInterface
+     * @var array
      */
-    private $currentActionRequest;
+    private $tableActions;
 
     /**
      * @param string $identifier
      * @param array $tableAdapterArguments     
-     * @param array $parameterSchema
      * @param array $columns
-     * @param array $columnActions
+     * @param array $rowActions
      * @param array $tableActions
      */
-    public function __construct($identifier, $tableAdapterArguments, $parameterSchema, $columns, $columnActions, $tableActions)
+    public function __construct($identifier, $tableAdapterArguments, $columns, $rowActions, $tableActions)
     {
         parent::__construct($identifier);
-        $this->tableAdapterArguments = $tableAdapterArguments;
-        $this->columns = $columns;
-        $this->parameterSchema = $parameterSchema;
-        $this->columnActions = $columnActions;
-        $this->tableActions = $tableActions;
+        $this->tableAdapterArguments = $tableAdapterArguments;        
+
+        /*
+         *  Create and add the READ action, that displays the table.
+         *  Note that the Controller class states 
+         */
+        $this->addChild(new NethGui_Module_Table_Read('read', $columns));
+
+        foreach ($rowActions as $actionArguments) {
+            $actionObject = $this->createActionObject($actionArguments);
+            $this->addRowAction($actionObject);
+        }
+
+        foreach ($tableActions as $actionArguments) {
+            $actionObject = $this->createActionObject($actionArguments);
+            $this->addTableAction($actionObject);
+        }
     }
 
     public function initialize()
     {
-        parent::initialize();
-
+        /*
+         * Create the table adapter object and assign it to every children, if
+         * it has not been done before.
+         */
         $tableAdapter = call_user_func_array(array($this->getHostConfiguration(), 'getTableAdapter'), $this->tableAdapterArguments);
-
-        $actionObjects = array(0 => FALSE); // set the read action object placeholder.
-
-        foreach ($this->columnActions as $actionArguments) {
-            $actionObject = $this->createActionObject($actionArguments, $tableAdapter);
-            $columnActions[] = $actionObject->getIdentifier();
-            $actionObjects[] = $actionObject;
+        foreach ($this->getChildren() as $action) {
+            if ($action instanceof NethGui_Module_Table_Action
+                && ! $action->hasTableAdapter())
+            {
+                $action->setTableAdapter($tableAdapter);
+            }
         }
-
-        foreach ($this->tableActions as $actionArguments) {
-            $actionObject = $this->createActionObject($actionArguments, $tableAdapter);
-            $tableActions[] = $actionObject->getIdentifier();
-            $actionObjects[] = $actionObject;
-        }
-
-        // add the read case
-        $actionObjects[0] = new NethGui_Module_Table_Read('read', $tableAdapter, $this->columns, $tableActions, $columnActions);
-
-        // Finally add all the actions
-        foreach ($actionObjects as $actionObject) {
-            $this->addChild($actionObject);
-        }
+        
+        /**
+         * Calling the parent method at this point ensures that the table
+         * adapter has been set BEFORE the child initialization
+         */
+        parent::initialize();
     }
 
-    private function createActionObject($actionArguments, $tableAdapter)
+    /**
+     * A column action is executed in a row context (i.e. row updating, deletion...)
+     */
+    public function addRowAction(NethGui_Core_ModuleInterface $a)
+    {
+        $this->rowActions[] = $a;
+        $this->addChild($a);
+    }
+
+    /**
+     *
+     * @return array
+     */
+    public function getRowActions()
+    {
+        return $this->rowActions;
+    }
+
+    /**
+     * A table action involves the whole table (i.e. create a new row, 
+     * print the table...)
+     */
+    public function addTableAction(NethGui_Core_ModuleInterface $a)
+    {
+        $this->tableActions[] = $a;
+        $this->addChild($a);
+    }
+
+    /**
+     *
+     * @return array
+     */
+    public function getTableActions()
+    {
+        return $this->tableActions;
+    }
+
+    private function createActionObject($actionArguments, $tableAdapter = NULL)
     {
         $actionObject = NULL;
-               
-        if ($actionArguments instanceof NethGui_Core_Module_Standard) {
-            $actionObject = $actionArguments;
-        } else {
 
-            list($actionName, $requireEvents, $viewTemplate) = $actionArguments;
+        if (is_array($actionArguments)) {
+
+            list($actionName, $parameterSchema, $requireEvents, $viewTemplate) = $actionArguments;
 
             if (is_string($requireEvents)) {
                 $requireEvents = array($requireEvents);
             }
 
-            $actionObject = new NethGui_Module_Table_Modify($actionName, $tableAdapter, $this->parameterSchema, $requireEvents, $viewTemplate);
+            $actionObject = new NethGui_Module_Table_Modify($actionName, $parameterSchema, $requireEvents, $viewTemplate);
+        }
+
+        if ($actionArguments instanceof NethGui_Module_Table_Action) {
+            if ( ! is_null($tableAdapter))
+            {
+                $actionArguments->setTableAdapter($tableAdapter);
+            }
+            $actionObject = $actionArguments;
+        } elseif ($actionArguments instanceof NethGui_Core_Module_Standard) {
+            $actionObject = $actionArguments;
         }
 
         return $actionObject;
     }
 
-    public function bind(NethGui_Core_RequestInterface $request)
-    {
-        parent::bind($request);
-
-        if (is_null($this->currentAction)) {
-            return;
-        }
-
-        if ($request->hasParameter($this->currentAction->getIdentifier())) {
-            $this->currentActionRequest = $request->getParameterAsInnerRequest($this->currentAction->getIdentifier());
-        }
-    }
-
     protected function getCurrentActionParameter($parameter)
     {
-        if ( ! isset($this->currentActionRequest)) {
+        if ( ! isset($this->currentAction)) {
             return NULL;
         }
-        
-        if(!$this->currentActionRequest->hasParameter($parameter)) {
+
+        $currentActionRequest = $this->getRequest()->getParameterAsInnerRequest($this->currentAction->getIdentifier());
+
+        if ( ! $currentActionRequest->hasParameter($parameter)) {
             return NULL;
         }
-        
-        return $this->currentActionRequest->getParameter($parameter);
+
+        return $currentActionRequest->getParameter($parameter);
     }
 
+    /**
+     * This callback template is invoked if the current view is not defined.
+     * @param NethGui_Renderer_Abstract $view
+     * @return NethGui_Renderer_Abstract 
+     */
     public function renderDisabledActions(NethGui_Renderer_Abstract $view)
     {
 
@@ -143,11 +184,14 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
         }
 
         foreach ($this->getChildren() as $index => $child) {
+            // The FIRST child must ALWAYS be the "READ" action
             if ($index === 0) {
                 $renderer->inset($child->getIdentifier());
             } else {
-                // FIXME: specify dialog style elsewhere...
-                if ($child->getIdentifier() == 'delete') {
+
+                // Subsequent children are embedded into a DISABLED dialog frame.
+                if ($child instanceof NethGui_Module_Table_Action && $child->isModal())
+                {
                     $dialogStyle = NethGui_Renderer_Abstract::DIALOG_MODAL;
                 } else {
                     $dialogStyle = NethGui_Renderer_Abstract::DIALOG_EMBEDDED;
@@ -166,11 +210,16 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
-        if ( ! is_null($this->currentAction)) {
+
+        /*
+         * If the current action is defined we have nothing to do here.
+         */
+        if (is_object($this->currentAction)) {
             return;
         }
 
-        // Handle a NULL current action:
+        // Handle a NULL current action, rendering all the children in a
+        // "DISABLED" state.
         foreach ($this->getChildren() as $childModule) {
             $innerView = $view->spawnView($childModule, TRUE);
             $childModule->prepareView($innerView, $mode);
