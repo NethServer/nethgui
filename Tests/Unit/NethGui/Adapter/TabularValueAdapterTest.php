@@ -134,18 +134,12 @@ class NethGui_Adapter_TabularValueAdapterTest extends PHPUnit_Framework_TestCase
        $this->assertTrue(is_array($this->object->offsetGet('3A')));      
     }
 
-    /**
-     * @todo Implement testOffsetSet().
-     */
     public function testOffsetSet()
     {
         $this->object->offsetSet('1A', array('0', '0', '0'));
         $this->assertEquals(array('0', '0', '0'), $this->object['1A']);
     }
 
-    /**
-     * @todo Implement testOffsetUnset().
-     */
     public function testOffsetUnset()
     {
         $this->object->offsetUnset('1A');
