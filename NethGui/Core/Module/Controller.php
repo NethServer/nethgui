@@ -95,7 +95,7 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Composite imple
     /**
      * Implements validate() method, forwarding the call to current action only.
      * @param NethGui_Core_ValidationReportInterface $report
-     * @return type 
+     * @return void 
      */
     public function validate(NethGui_Core_ValidationReportInterface $report)
     {
@@ -109,8 +109,7 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Composite imple
     /**
      * Implements process() method, forwarding the call to current 
      * action only
-     * @param NethGui_Core_NotificationCarrierInterface $carrier
-     * @return type 
+     * @return void 
      */
     public function process()
     {
