@@ -171,6 +171,25 @@ class NethGui_Framework
     }
 
     /**
+     * Prepend the $module path to $path, resulting in a full URL
+     * @param NethGui_Core_ModuleInterface  $module
+     * @param array|string $path;
+     */
+    public function buildModuleUrl(NethGui_Core_ModuleInterface $module, $path)
+    {
+        if(is_string($path)) {
+            $path = array($path);
+        }
+        
+        do {
+            array_unshift($path, $module->getIdentifier());
+            $module = $module->getParent();
+        } while ( ! is_null($module));
+
+        return NethGui_Framework::getInstance()->buildUrl($path, array());
+    }
+
+    /**
      * Translate $string substituting $args
      *
      * Each key in array $args is searched and replaced in $string with
@@ -272,7 +291,7 @@ class NethGui_Framework
         if (preg_match('/[a-z_A-Z0-9]+/', $languageCatalog) == 0) {
             throw new InvalidArgumentException("Language catalog name can contain only alphanumeric or `_` characters. It was `$languageCatalog`.");
         }
-        
+
         $prefix = array_shift(explode('_', $languageCatalog));
         $filePath = dirname(__FILE__) . '/../' . $prefix . '/Language/' . $languageCode . '/' . $languageCatalog . '.php';
         @include($filePath);
@@ -448,7 +467,8 @@ class NethGui_Framework
         if ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_HTML) {
             $redirect = $user->getRedirect();
             if ( ! is_null($redirect)) {
-                $this->redirect($redirect);
+                list($module, $path) = $redirect;
+                $this->redirect($this->buildModuleUrl($module, $path));
             }
             $worldModule->addModule(new NethGui_Module_Menu($topModuleDepot->getModules()));
             header("Content-Type: text/html; charset=UTF-8");

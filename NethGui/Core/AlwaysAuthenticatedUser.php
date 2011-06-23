@@ -111,14 +111,7 @@ class NethGui_Core_AlwaysAuthenticatedUser implements NethGui_Core_UserInterface
             return NULL;
         }
 
-        list($module, $path) = $this->redirect;
-
-        do {
-            array_unshift($path, $module->getIdentifier());
-            $module = $module->getParent();
-        } while ( ! is_null($module));
-
-        return NethGui_Framework::getInstance()->buildUrl($path, array());
+        return $this->redirect;
     }
 
 }
