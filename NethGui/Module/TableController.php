@@ -27,10 +27,6 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
     /**
      * @var array
      */
-    private $parameterSchema;
-    /**
-     * @var array
-     */
     private $rowActions;
     /**
      * @var array
