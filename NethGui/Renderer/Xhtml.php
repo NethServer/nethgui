@@ -716,6 +716,8 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         $this->append($this->translate($name . '_label'));
         $this->pushContent($this->closeTag('legend'));
 
+        $this->hidden($name, $flags, '');
+        
         if ( ! (($flags | $this->flags) & self::STATE_DISABLED)) {
             $this->generateSelectorContent($name, $value, $choices, $flags);
         }
@@ -767,7 +769,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 
                 $this->controlTag('input', $choiceName, $choiceFlags, '', $attributes);
                 $this->pushContent($this->openTag('label', array('for' => $this->getFullId($choiceId))));
-                $this->append(sprintf('%s (%s)', $choice[1], $choice[0]));
+                $this->append(!empty($choice[1]) ? $choice[1] : $choice[0]);
                 $this->pushContent($this->closeTag('label'));
 
                 $this->pushContent($this->closeTag('li'));
