@@ -207,10 +207,12 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
     {
         parent::prepareView($view, $mode);
 
-        /*
-         * If the current action is defined we have nothing to do here.
-         */
         if (is_object($this->currentAction)) {
+            if($this->getRequest()->isSubmitted() && $this->hasAction('read')) {
+                $readAction = $this->getAction('read');
+                $innerView = $view->spawnView($readAction, TRUE);
+                $readAction->prepareView($innerView, $mode);                
+            }
             return;
         }
 

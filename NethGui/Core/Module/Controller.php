@@ -29,6 +29,10 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Composite imple
     
     private $request;
     
+    /**
+     *
+     * @return NethGui_Core_RequestInterface
+     */
     protected function getRequest() {
         return $this->request;
     }
@@ -72,7 +76,7 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Composite imple
      * @param string $identifier 
      * @return NethGui_Core_ModuleInterface
      */
-    private function getAction($identifier = NULL)
+    protected function getAction($identifier = NULL)
     {
         foreach ($this->getChildren() as $child) {
             if ($child->getIdentifier() == $identifier || is_null($identifier))
@@ -83,7 +87,7 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Composite imple
         return NULL;
     }
 
-    private function hasAction($identifier)
+    protected function hasAction($identifier)
     {
         return is_object($this->getAction($identifier));
     }
