@@ -69,9 +69,4 @@ class NethGui_Adapter_ScalarAdapter implements NethGui_Adapter_AdapterInterface
         return 1;
     }
 
-    public function __toString()
-    {
-        return strval($this->get());
-    }
-
 }

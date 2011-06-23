@@ -55,17 +55,13 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
 
     public function getIdentityAdapter($database, $key, $prop = NULL, $separator = NULL)
     {
-        if (is_string($key)) {
-            $serializer = $this->getSerializer($database, $key, $prop);
 
-            if (is_null($separator)) {
-                $adapter = new NethGui_Adapter_ScalarAdapter($serializer);
-            } else {
-                $adapter = new NethGui_Adapter_ArrayAdapter($separator, $serializer);
-            }
-        } elseif (is_callable($key)) {
-            // TODO
-            throw new Exception('Not implemented');
+        $serializer = $this->getSerializer($database, $key, $prop);
+
+        if (is_null($separator)) {
+            $adapter = new NethGui_Adapter_ScalarAdapter($serializer);
+        } else {
+            $adapter = new NethGui_Adapter_ArrayAdapter($separator, $serializer);
         }
 
         return $adapter;
@@ -106,12 +102,14 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
      */
     private function getSerializer($database, $key, $prop = NULL)
     {
-        if (is_null($prop)) {
-            $serializer = new NethGui_Serializer_KeySerializer($this->getDatabase($database), $key);
-        } elseif($database instanceof ArrayAccess) {
-            $serializer = new NethGui_Serializer_TablePropSerializer($database, $key, $prop);
-        } elseif(is_string($database)) {
-            $serializer = new NethGui_Serializer_PropSerializer($this->getDatabase($database), $key, $prop);
+        if ($database instanceof ArrayAccess) {
+            $serializer = new NethGui_Serializer_ArrayAccessSerializer($database, $key, $prop);
+        } elseif (is_string($database)) {
+            if (is_null($prop)) {
+                $serializer = new NethGui_Serializer_KeySerializer($this->getDatabase($database), $key);
+            } else {
+                $serializer = new NethGui_Serializer_PropSerializer($this->getDatabase($database), $key, $prop);
+            }
         }
 
         return $serializer;

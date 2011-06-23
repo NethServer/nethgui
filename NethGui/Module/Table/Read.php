@@ -1,40 +1,27 @@
 <?php
 /**
  * @package Module
+ * @subpackage Table
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
 /**
  * Treats the table read case.
  * 
- * @see NethGui_Module_TableModify
+ * @see NethGui_Module_Table_Modify
  * @see NethGui_Module_TableController
  * @package Module
+ * @subpackage Table 
  */
-class NethGui_Module_TableRead extends NethGui_Core_Module_Standard
+class NethGui_Module_Table_Read extends NethGui_Module_Table_Action
 {
-
-    /**
-     *
-     * @var ArrayAccess
-     */
-    private $tableAdapter;
+    
     /**
      *
      * @param array $columns
      */
     private $columns;
-    /**
-     * A list of actions that apply on the whole table
-     * @var array
-     */
-    private $tableActions;
-    /**
-     * Actions on columns
-     * @var array
-     */
-    private $columnActions;
-
+    
     /**
      *
      * @param string $identifier Module identifier
@@ -43,24 +30,25 @@ class NethGui_Module_TableRead extends NethGui_Core_Module_Standard
      * @param array $actions A list of actions that apply on the whole table
      * @param array $viewTemplate Optional
      */
-    public function __construct($identifier, NethGui_Adapter_AdapterInterface $tableAdapter, $columns, $tableActions, $columnActions, $viewTemplate = NULL)
+    public function __construct($identifier, $columns)
     {
-        parent::__construct($identifier);
+        parent::__construct($identifier, NULL);
         $this->columns = $columns;
-        $this->viewTemplate = $viewTemplate;
-        $this->tableAdapter = $tableAdapter;
-        $this->tableActions = $tableActions;
-        $this->columnActions = $columnActions;
     }
 
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
         if ($mode == self::VIEW_REFRESH) {
-            $view['columns'] = $this->columns;
-            $view['tableActions'] = array_values($this->tableActions);
+            $view['columns'] = $this->columns;                                               
+            $view['tableActions'] = array_map(array($this, 'getActionIdentifier'), $this->getParent()->getTableActions());
         }
         $view['rows'] = $this->prepareRows($view, $mode);        
+    }
+    
+    protected function getActionIdentifier(NethGui_Core_ModuleInterface $m) 
+    {
+        return $m->getIdentifier();
     }
 
     private function prepareRows(NethGui_Core_ViewInterface $view, $mode)
@@ -118,7 +106,7 @@ class NethGui_Module_TableRead extends NethGui_Core_Module_Standard
             $columnView = array();
         }
                
-        foreach ($this->columnActions as $action) {            
+        foreach (array_map(array($this, 'getActionIdentifier'), $this->getParent()->getRowActions()) as $action) {            
             $columnView[$action] = array($action, $key);
         }
 
@@ -131,7 +119,7 @@ class NethGui_Module_TableRead extends NethGui_Core_Module_Standard
         
         $fragmentPrefix = implode('_', array_slice($view->getModulePath(), 0, -1));
                         
-        foreach ($this->columnActions as $action) {            
+        foreach (array_map(array($this, 'getActionIdentifier'), $this->getParent()->getRowActions()) as $action) {            
             $actionSegments = $view[$action];    
             
             $fragment = '#' . $fragmentPrefix . '_' . $action;

@@ -1,6 +1,5 @@
 <div id="<?echo $view->getFullId()?>" class="crud-read">
 <table>
-    <caption><?php echo T(get_class($view->getModule()->getParent()) . '_caption'); ?></caption>
     <thead><tr>
         <?php
             foreach ($view['columns'] as $columnName) {

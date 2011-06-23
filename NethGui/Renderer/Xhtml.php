@@ -85,7 +85,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         if (empty($name)) {
             return $prefix;
         }
-        return $prefix . '_' . $name;
+        return $prefix . '_' . str_replace('/', '_', $name);
     }
 
     /**
@@ -331,7 +331,12 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
             $attributes['checked'] = 'checked';
         }
         if ($flags & self::STATE_READONLY) {
-            $attributes['readonly'] = 'readonly';
+            if ($isCheckable) {
+                // `readonly` attribute is not appliable to checkable controls
+                $attributes['disabled'] = 'disabled';
+            } else {
+                $attributes['readonly'] = 'readonly';
+            }
         }
 
         if ($tag == 'button') {
@@ -679,42 +684,97 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 
     public function selector($name, $choices = NULL, $flags = 0)
     {
-        $value = $this->view[$name];       
+        $value = $this->view[$name];
 
-        $this->pushContent($this->openTag('fieldset', array('class' => 'selector')));
+        $selectorModeIsDefined = (self::SELECTOR_MULTIPLE | self::SELECTOR_SINGLE) & $flags;
+
+        if ($value instanceof Traversable) {
+            $value = iterator_to_array($value);
+        } elseif (is_null($value) && $selectorModeIsDefined) {
+            if ($flags & self::SELECTOR_MULTIPLE) {
+                $value = Array();
+            } else {
+                $value = '';
+            }
+        }
+
+        if ( ! $selectorModeIsDefined) {
+            if (is_array($value)) {
+                $flags |= self::SELECTOR_MULTIPLE;
+            } else {
+                $flags |= self::SELECTOR_SINGLE;
+            }
+        }
+
+        $fieldsetAttributes = array(
+            'class' => 'selector',
+            'id' => $this->getFullId($name)
+        );
+
+        $this->pushContent($this->openTag('fieldset', $fieldsetAttributes));
         $this->pushContent($this->openTag('legend'));
         $this->append($this->translate($name . '_label'));
         $this->pushContent($this->closeTag('legend'));
 
-        if ($value instanceof Traversable) {
-            $value = iterator_to_array($value);
-            $flags |= self::SELECTOR_MULTIPLE;
-        } elseif (is_array($value)) {
-            $flags |= self::SELECTOR_MULTIPLE;
-        } else {
-            $flags |= self::SELECTOR_SINGLE;
+        if ( ! (($flags | $this->flags) & self::STATE_DISABLED)) {
+            $this->generateSelectorContent($name, $value, $choices, $flags);
         }
-
-        $this->pushContent($this->openTag('pre'));
-        if ($flags & self::SELECTOR_MULTIPLE) {
-            $this->append(print_r($value, 1));
-        }
-
-        if (is_array($choices)) {
-            $this->append(print_r($choices, 1));
-        }
-        $this->pushContent($this->closeTag('pre'));
-        
-        
-        if ($flags & self::STATE_DISABLED) {
-            $this->append(' - disabled');
-        }
-        
-        
 
         $this->pushContent($this->closeTag('fieldset'));
 
         return $this;
+    }
+
+    private function generateSelectorContent($name, $value, $choices, $flags)
+    {
+        if (is_array($choices) && count($choices) > 0) {
+
+            $this->pushContent($this->openTag('ul'));
+
+            foreach (array_values($choices) as $id => $choice) {
+
+                $this->pushContent($this->openTag('li'));
+
+
+                $choiceFlags = $flags;
+
+                if ($flags & self::SELECTOR_MULTIPLE) {
+                    $choiceName = $name . '/' . $id;
+                    $choiceId = $choiceName;
+
+                    if (in_array($choice[0], $value)) {
+                        $choiceFlags |= self::STATE_CHECKED;
+                    }
+
+                    $attributes = array(
+                        'type' => 'checkbox',
+                        'value' => $choice[0],
+                    );
+                } elseif ($flags & self::SELECTOR_SINGLE) {
+                    $choiceName = $name;
+                    $choiceId = $name . '/' . $id;
+
+                    if ($choice[0] == $value) {
+                        $choiceFlags |= self::STATE_CHECKED;
+                    }
+
+                    $attributes = array(
+                        'type' => 'radio',
+                        'value' => $choice[0],
+                        'id' => $this->getFullId($choiceId),
+                    );
+                }
+
+                $this->controlTag('input', $choiceName, $choiceFlags, '', $attributes);
+                $this->pushContent($this->openTag('label', array('for' => $this->getFullId($choiceId))));
+                $this->append(sprintf('%s (%s)', $choice[1], $choice[0]));
+                $this->pushContent($this->closeTag('label'));
+
+                $this->pushContent($this->closeTag('li'));
+            }
+
+            $this->pushContent($this->closeTag('ul'));
+        }
     }
 
 }

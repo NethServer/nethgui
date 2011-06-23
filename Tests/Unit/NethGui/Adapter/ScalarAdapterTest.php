@@ -104,11 +104,6 @@ class NethGui_Adapter_ScalarAdapterTest extends PHPUnit_Framework_TestCase
         $this->assertNull($this->fixture->get());
     }
 
-    public function testToString()
-    {
-        $this->assertEquals('ORIGINAL', (String) $this->fixture);
-    }
-
 }
 
 ?>
