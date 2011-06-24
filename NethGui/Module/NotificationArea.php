@@ -16,7 +16,7 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard imple
 {
 
     private $errors = array();
-    private $redirectOrders = array();
+    
     /**
      *
      * @var NethGui_Core_UserInterface;
