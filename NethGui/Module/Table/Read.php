@@ -39,11 +39,13 @@ class NethGui_Module_Table_Read extends NethGui_Module_Table_Action
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
+        $view['rows'] = $this->prepareRows($view, $mode); 
         if ($mode == self::VIEW_REFRESH) {
             $view['columns'] = $this->columns;                                               
             $view['tableActions'] = array_map(array($this, 'getActionIdentifier'), $this->getParent()->getTableActions());
+            $view['tableClass'] = count($view['rows']) > 10 ? 'large-dataTable' : 'small-dataTable';
         }
-        $view['rows'] = $this->prepareRows($view, $mode);        
+               
     }
     
     protected function getActionIdentifier(NethGui_Core_ModuleInterface $m) 

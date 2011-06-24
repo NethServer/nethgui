@@ -1,5 +1,5 @@
 <div id="<?echo $view->getFullId()?>" class="crud-read">
-<table>
+<table class="<?php echo $view['tableClass']?>">
     <thead><tr>
         <?php
             foreach ($view['columns'] as $columnName) {
