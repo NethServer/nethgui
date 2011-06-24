@@ -28,9 +28,17 @@ class NethGui_Module_Menu extends NethGui_Core_Module_Standard
      */
     private function iteratorToHtml(RecursiveIterator $menuIterator, $level = 0)
     {
-        if ($level > 4) {
+        if ($level === 0) {
+            $allWrap = '%s';
+            $itemWrap = '%s';
+        } elseif ($level > 4) {
             return '';
+        } else {
+            $allWrap = '<ul>%s</ul>';
+            $itemWrap = '<li>%s</li>';
         }
+
+
 
         $framework = NethGui_Framework::getInstance();
 
@@ -39,18 +47,18 @@ class NethGui_Module_Menu extends NethGui_Core_Module_Standard
         $menuIterator->rewind();
 
         while ($menuIterator->valid()) {
-            $output .= '<li>' . $framework->renderModuleAnchor($menuIterator->current());
+            $item = $framework->renderModuleAnchor($menuIterator->current());
 
             if ($menuIterator->hasChildren()) {
-                $output .= $this->iteratorToHtml($menuIterator->getChildren(), $level + 1);
+                $item .= $this->iteratorToHtml($menuIterator->getChildren(), $level + 1);
             }
 
-            $output .= '</li>';
+            $output .= sprintf($itemWrap, $item);
 
             $menuIterator->next();
         }
 
-        return '<ul>' . $output . '</ul>';
+        return sprintf($allWrap, $output);
     }
 
     public function renderModuleMenu($view)

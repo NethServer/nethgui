@@ -39,10 +39,16 @@ class NethGui_Core_TopModuleDepot implements NethGui_Core_ModuleSetInterface, Ne
      */
     private $hostConfiguration;
 
-    public function __construct(NethGui_Core_HostConfigurationInterface $hostConfiguration, NethGui_Core_UserInterface $user)
+    /*
+     * Absolute directory path where the module class files are located
+     */
+    private $applicationPath;
+    
+    public function __construct($applicationPath, NethGui_Core_HostConfigurationInterface $hostConfiguration, NethGui_Core_UserInterface $user)
     {
         $this->hostConfiguration = $hostConfiguration;
         $this->user = $user;
+        $this->applicationPath = realpath($applicationPath);
         $this->createTopModules();        
     }
 
@@ -52,13 +58,15 @@ class NethGui_Core_TopModuleDepot implements NethGui_Core_ModuleSetInterface, Ne
      * for each Module class.
      */
     private function createTopModules()
-    {
-        // TODO: set a configuration parameter for modules directory
-        $directoryIterator = new DirectoryIterator(dirname(__FILE__) . '/../../NethService/Module/');
+    {        
+        $appPrefix = basename($this->applicationPath);        
+        $modulePath = $this->applicationPath . '/Module';
+                
+        $directoryIterator = new DirectoryIterator($modulePath);
         foreach ($directoryIterator as $element) {
             if (substr($element->getFilename(), -4) == '.php') {
 
-                $className = 'NethService_Module_' . substr($element->getFileName(), 0, -4);
+                $className = $appPrefix . '_Module_' . substr($element->getFileName(), 0, -4);
 
                 $classReflector = new ReflectionClass($className);
 
