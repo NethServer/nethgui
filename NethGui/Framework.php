@@ -115,7 +115,7 @@ class NethGui_Framework
         }
 
         if ( ! $module instanceof NethGui_Core_RequestHandlerInterface) {
-            $html = '<span class="moduleTitle" title="' . htmlspecialchars($module->getDescription()) . '">' . htmlspecialchars($module->getTitle()) . '</span>';
+            $html = '<div class="moduleTitle" title="' . htmlspecialchars(T($module->getDescription())) . '"><a href="#">' . htmlspecialchars(T($module->getTitle())) . '</a></div>';
         } else {
             $ciControllerClassName = $this->getControllerName();
 
@@ -384,7 +384,10 @@ class NethGui_Framework
          * from NethGui_Framework.
          */
         $hostConfiguration = new NethGui_Core_HostConfiguration($user);
-        $topModuleDepot = new NethGui_Core_TopModuleDepot($hostConfiguration, $user);
+        // TODO: set a configuration parameter for the application path
+        $appPath = realpath(dirname(__FILE__) . '/../NethService');
+        $this->languageCatalogStack[] = basename($appPath);
+        $topModuleDepot = new NethGui_Core_TopModuleDepot($appPath, $hostConfiguration, $user);
 
         /*
          * TODO: enforce some security policy on Models

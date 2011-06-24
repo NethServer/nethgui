@@ -7,15 +7,14 @@
         <link rel="stylesheet" type="text/css" href="<?php echo htmlspecialchars($view['cssMain']); ?>" />
     </head>
     <body>
-        <div id="allWrapper">
-            <div id="header">NethService</div>
+        <div id="allWrapper">            
             <div class="colmask leftmenu">
                 <div class="colleft">
                     <div class="col1"><?php echo $view['NotificationArea'] ?><div id="<?php echo $view['CurrentModule']->getModule()->getIdentifier(); ?>" class="CurrentModule"><?php echo $view['CurrentModule'] ?></div></div>
-                    <div class="col2 moduleMenu"><?php echo $view['Menu'] ?></div>
+                    <div class="col2"><div id="product">NethService</div><div id="moduleMenu"><?php echo $view['Menu'] ?></div></div>
                 </div>
             </div>
-            <div id="footer">Built on <a href="/Documentation">NethGui</a> &ndash; Copyright 2011 &copy; Nethesis S.r.l</div>
+            
         </div>        
         <?php foreach ($view['js'] as $scriptPath): ?><script type="text/javascript" src="<?php echo htmlspecialchars($scriptPath) ?>" ></script><?php endforeach; ?>        
     </body>
