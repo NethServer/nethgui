@@ -177,10 +177,10 @@ class NethGui_Framework
      */
     public function buildModuleUrl(NethGui_Core_ModuleInterface $module, $path)
     {
-        if(is_string($path)) {
+        if (is_string($path)) {
             $path = array($path);
         }
-        
+
         do {
             array_unshift($path, $module->getIdentifier());
             $module = $module->getParent();
@@ -227,6 +227,10 @@ class NethGui_Framework
         /**
          * Apply args to string
          */
+        if(empty($args)) {
+            return $translation;
+        }
+        
         return strtr($translation, $args);
     }
 
@@ -480,8 +484,10 @@ class NethGui_Framework
         } elseif ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_JSON) {
             header("Content-Type: application/json; charset=UTF-8");
             $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_UPDATE);
-            echo json_encode($view->getArrayCopy());
+            echo $view->toJson();
         }
+
+        
 
         // Control reaches this point only if no redirect occurred.
         $notificationManager->dismissTransientDialogBoxes();

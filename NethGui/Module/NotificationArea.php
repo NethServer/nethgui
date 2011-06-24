@@ -69,7 +69,7 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard imple
                 array(
                     'dialogId' => $dialog->getId(),
                     'message' => $dialog->getMessage(),
-                    'actions' => $this->makeActionViewsForDialog($dialog),
+                    'actions' => $this->makeActionViewsForDialog($dialog, $mode),
                     'type' => $dialog->getType(),
             ));
             $dialogView->setTemplate('NethGui_Template_NotificationAreaDialogBox');
@@ -77,7 +77,7 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard imple
         }
     }
     
-    private function makeActionViewsForDialog($dialog)
+    private function makeActionViewsForDialog($dialog, $mode)
     {
         $views = new ArrayObject();
 
