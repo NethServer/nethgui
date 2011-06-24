@@ -56,8 +56,12 @@ class NethGui_Adapter_ArrayAdapter implements NethGui_Adapter_AdapterInterface, 
 
     public function set($value)
     {
-        if ( ! is_array($value) && ! is_null($value)) {
-            throw new NethGui_Exception_Adapter('Invalid data type. Expected `array` or `NULL`, was ' . gettype($value));
+        if(empty($value)) {
+            $value = array();
+        }
+        
+        if ( ! is_array($value) ) {
+            throw new NethGui_Exception_Adapter('Invalid data type. Expected `array` or `EMPTY`, was ' . gettype($value));
         }
 
         if (is_null($this->modified)) {

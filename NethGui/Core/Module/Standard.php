@@ -90,13 +90,6 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
      */
     private $validators = array();
     /**
-     * This array holds the names of parameters passed by Request during bind().
-     * Only those parameters will be validated.
-     *
-     * @var array
-     */
-    private $parameterValidationList = array();
-    /**
      * This array holds the names of parameters with validation errors.
      * @see prepareView()
      * @var array
@@ -156,7 +149,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
             throw new NethGui_Exception_Validation("Invalid validator value for parameter `" . $parameterName . '` in module `' . get_class($this) . '`.');
         }
 
-        if (is_callable($valueProvider)) { 
+        if (is_callable($valueProvider)) {
             // Create a read-only Map Adapter using $valueProvider as read-callback
             $this->parameters->register($this->getHostConfiguration()->getMapAdapter($valueProvider, NULL, array()), $parameterName);
         } elseif ($valueProvider instanceof NethGui_Adapter_AdapterInterface) {
@@ -252,21 +245,22 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
             && method_exists($this, $writerCallback);
 
         if ($hasCallbacks) {
+            if (empty($args)) {
+                $args = array();
+            }
             /*
              * Perhaps we have callbacks defined but only one serializer;
              * in this case wrap $args into an array.
              *
              * If first argument is a string, it contains the $database name.
              */
-            if (is_string($args[0])) {
+            if (is_array($args) && isset($args[0]) && is_string($args[0])) {
                 $args = array($args);
             }
 
-            if (is_array($args)) {
-                $adapterObject = $this->getHostConfiguration()->getMapAdapter(
-                        array($this, $readerCallback), array($this, $writerCallback), $args
-                );
-            }
+            $adapterObject = $this->getHostConfiguration()->getMapAdapter(
+                    array($this, $readerCallback), array($this, $writerCallback), $args
+            );
         } elseif (isset($args[0], $args[1])) {
             // Get an identity adapter:
             $database = $args[0];
@@ -319,24 +313,27 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
         foreach ($this->parameters->getKeys() as $parameterName) {
             if ($request->hasParameter($parameterName)) {
                 $this->parameters[$parameterName] = $request->getParameter($parameterName);
-                $this->parameterValidationList[] = $parameterName;
             }
         }
     }
 
     public function validate(NethGui_Core_ValidationReportInterface $report)
-    {
-        foreach ($this->parameterValidationList as $parameter) {
-            if ( ! isset($this->validators[$parameter])) {
-                throw new NethGui_Exception_Validation("Unknown parameter " . $parameter);
+    {        
+        foreach ($this->parameters->getKeys() as $parameterName) {
+            if ( ! $this->getRequest()->hasParameter($parameterName)) {
+                continue; // missing parameters are not validated
             }
 
-            $validator = $this->validators[$parameter];
+            if ( ! isset($this->validators[$parameterName])) {
+                throw new NethGui_Exception_Validation("Do not know how to validate `" . $parameterName . "`");
+            }
 
-            $isValid = $validator->evaluate($this->parameters[$parameter]);
+            $validator = $this->validators[$parameterName];
+
+            $isValid = $validator->evaluate($this->parameters[$parameterName]);
             if ($isValid !== TRUE) {
-                $report->addValidationError($this, $parameter, $validator->getMessage());
-                $this->invalidParameters[] = $parameter;
+                $report->addValidationError($this, $parameterName, $validator->getMessage());
+                $this->invalidParameters[] = $parameterName;
             }
         }
     }

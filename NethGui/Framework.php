@@ -440,6 +440,8 @@ class NethGui_Framework
         {
             // If at least one event occurred, show a successful dialog box:
             $user->showDialogBox($worldModule, 'All changes have been saved');
+        } elseif ($eventStatus === FALSE) {
+            $user->showDialogBox($worldModule, 'Some error occurred. Check the system log for details.', array(), NethGui_Core_DialogBox::NOTIFY_WARNING);
         }
 
 
