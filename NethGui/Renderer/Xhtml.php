@@ -349,7 +349,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
             }
 
             if ($flags & self::STATE_VALIDATION_ERROR) {
-                $cssClass .= ' validation-error';
+                $cssClass .= ' validation-error ui-state-error';
             }
         }
 
