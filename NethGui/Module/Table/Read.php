@@ -15,13 +15,13 @@
  */
 class NethGui_Module_Table_Read extends NethGui_Module_Table_Action
 {
-    
+
     /**
      *
      * @param array $columns
      */
     private $columns;
-    
+
     /**
      *
      * @param string $identifier Module identifier
@@ -39,16 +39,15 @@ class NethGui_Module_Table_Read extends NethGui_Module_Table_Action
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
-        $view['rows'] = $this->prepareRows($view, $mode); 
+        $view['rows'] = $this->prepareRows($view, $mode);
         if ($mode == self::VIEW_REFRESH) {
-            $view['columns'] = $this->columns;                                               
+            $view['columns'] = $this->columns;
             $view['tableActions'] = array_map(array($this, 'getActionIdentifier'), $this->getParent()->getTableActions());
             $view['tableClass'] = count($view['rows']) > 10 ? 'large-dataTable' : 'small-dataTable';
         }
-               
     }
-    
-    protected function getActionIdentifier(NethGui_Core_ModuleInterface $m) 
+
+    protected function getActionIdentifier(NethGui_Core_ModuleInterface $m)
     {
         return $m->getIdentifier();
     }
@@ -90,7 +89,7 @@ class NethGui_Module_Table_Read extends NethGui_Module_Table_Action
     {
         return strval($key);
     }
-    
+
     /**
      *
      * @param NethGui_Core_ViewInterface $view
@@ -107,9 +106,16 @@ class NethGui_Module_Table_Read extends NethGui_Module_Table_Action
         } else {
             $columnView = array();
         }
-               
-        foreach (array_map(array($this, 'getActionIdentifier'), $this->getParent()->getRowActions()) as $action) {            
-            $columnView[$action] = array($action, $key);
+
+        foreach (array_map(array($this, 'getActionIdentifier'), $this->getParent()->getRowActions()) as $action) {
+            if ($mode == self::VIEW_UPDATE) {               
+                // FIXME: using a module surrogate method where no surrogate is needed:
+                // refactor ModuleSurrogate, relocating the useful code elsewhere.
+                $s = new NethGui_Core_ModuleSurrogate($this);                               
+                $columnView[$action] = array(T($action . '_label', NULL, NULL, $s->getLanguageCatalog()), array($action, $key));
+            } else {
+                $columnView[$action] = $key;
+            }
         }
 
         return $columnView;
@@ -117,20 +123,13 @@ class NethGui_Module_Table_Read extends NethGui_Module_Table_Action
 
     public function renderColumnActions(NethGui_Renderer_Abstract $view)
     {
-        $output = '';                       
-        
+        $output = '';
+
         $fragmentPrefix = implode('_', array_slice($view->getModulePath(), 0, -1));
-                        
-        foreach (array_map(array($this, 'getActionIdentifier'), $this->getParent()->getRowActions()) as $action) {            
-            $actionSegments = $view[$action];    
-            
+
+        foreach (array_map(array($this, 'getActionIdentifier'), $this->getParent()->getRowActions()) as $action) {
             $fragment = '#' . $fragmentPrefix . '_' . $action;
-            
-            // Must go up one level (we are in `read` action...)
-            array_unshift($actionSegments, '..');
-            
-            $actionSegments[] = $fragment;
-            
+            $actionSegments = array('..', $action, $view[$action], $fragment);
             $output .= '<li>' . $view->button($action, NethGui_Renderer_Abstract::BUTTON_LINK, $actionSegments) . '</li>';
         }
         return '<ul class="actions">' . $output . '</ul>';

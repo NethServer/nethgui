@@ -1,16 +1,19 @@
 <?php
 
-$dialogClass = 'dialog';
+$dialogClass = 'notification-dialog';
 
 switch ($view['type']) {
     case NethGui_Core_DialogBox::NOTIFY_SUCCESS:
-        $dialogClass .= ' embedded success';
+        $dialogClass .= ' embedded success ui-state-highlight';
+        $icon = 'check';
         break;
     case NethGui_Core_DialogBox::NOTIFY_WARNING:
-        $dialogClass .= ' embedded warning';
+        $dialogClass .= ' embedded warning ui-state-error';
+        $icon = 'info';
         break;
     case NethGui_Core_DialogBox::NOTIFY_ERROR:
-        $dialogClass .= ' modal error';
+        $dialogClass .= ' modal error ui-state-error';
+        $icon = 'alert';
         break;
 }
 
@@ -18,9 +21,8 @@ switch ($view['type']) {
     echo $dialogClass 
 ?>" id="Dialog_<?php 
     echo $view['dialogId']
-?>"><span class="message"><?php
+?>"><span class='ui-icon ui-icon-<?php echo $icon ?>' style='float: left; margin-right: .3em;'></span><?php
     echo T($view['message']);
-?></span><?php
 
 if(count($view['actions']) > 0):
     ?><ul class="actions"><?php

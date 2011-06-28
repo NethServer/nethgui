@@ -53,13 +53,14 @@ class NethGui_Core_Request implements NethGui_Core_RequestInterface
             $isXmlHttpRequest = FALSE;
         }
 
-        if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-            $submitted = FALSE;
-            $data = array();
-        } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        
+        $submitted = FALSE;
+        $data = array();
+            
+        if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
             $submitted = TRUE;
 
-            if ($_SERVER['CONTENT_TYPE'] == 'application/json; charset=UTF-8') {
+            if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/json; charset=UTF-8') {
                 // Decode RAW request
                 $data = json_decode($GLOBALS['HTTP_RAW_POST_DATA'], true);
 

@@ -2,7 +2,7 @@
     
 if ($view->getModule()->hasValidationErrors()): 
 
-    ?><ul class="validation-errors"><?php 
+    ?><ul class="validation-errors modal ui-state-error"><?php 
         foreach ($view['validationErrors'] as $error) : 
 
            ?><li><a class="control-label" href="#<?php echo $error[0] ?>"><?php echo $error[1] ?></a><span class="message"><?php echo $error[2] ?></span></li><?php 

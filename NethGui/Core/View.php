@@ -136,6 +136,34 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
         return NethGui_Framework::getInstance()->renderView($this->template, $state, $languageCatalog);
     }
 
+    public function toJson()
+    {
+        $jsonString = '{';
+
+        $separator = '';
+
+        foreach ($this as $offset => $value) {
+            $jsonString .= $separator;
+            if (empty($separator)) {
+                $separator = ',';
+            }
+
+            $jsonString .= json_encode($offset) . ':';
+
+            if ($value instanceof NethGui_Core_View) {
+                $jsonString .= $value->toJson();
+            } elseif ($value instanceof Traversable) {
+                $jsonString .= json_encode($this->traversableToArray($value));
+            } else {
+                $jsonString .= json_encode($value);
+            }
+        }
+
+        $jsonString .= '}';
+
+        return $jsonString;
+    }
+
     /**
      * @see NethGui_Core_View::render()
      * @return string
@@ -143,46 +171,6 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
     public function __toString()
     {
         return $this->render();
-    }
-
-    /**
-     * Returns a recursive array representation of this view and its descendants.
-     * @return array
-     */
-    public function getArrayCopy(NethGui_Core_View $view = NULL, $depth = 0)
-    {
-        if ($depth > 10) {
-            return;
-        }
-
-        if (is_null($view)) {
-            $view = $this;
-        }
-
-        $data = array();
-
-        foreach ($view as $offset => $value) {
-            if ($value instanceof NethGui_Core_View) {
-                $data[$offset] = $this->getArrayCopy($value, $depth + 1);
-            } elseif ($value instanceof ArrayObject) {
-                $data[$offset] = array();
-                foreach ($value->getArrayCopy() as $item) {
-                    if ($item instanceof NethGui_Core_View) {
-                        $data[$offset][] = $this->getArrayCopy($item, $depth + 1);
-                    } else {
-                        $data[$offset][] = $this->translate($value);
-                    }
-                }
-            } elseif ($value instanceof Traversable) {
-                $data[$offset] = $this->traversableToArray($value);
-            } elseif (is_string($value)) {
-                $data[$offset] = $this->translate($value);
-            } else {
-                $data[$offset] = $value;
-            }
-        }
-
-        return $data;
     }
 
     /**
@@ -194,11 +182,11 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
     {
         $a = array();
         foreach ($value as $k => $v) {
-            if($v instanceof Traversable) {
+            if ($v instanceof Traversable) {
                 $v = $this->traversableToArray($v);
             }
             $a[$k] = $v;
-        }        
+        }
         return $a;
     }
 
