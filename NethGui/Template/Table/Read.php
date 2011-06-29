@@ -29,6 +29,6 @@
 
     <?php foreach ($view['tableActions'] as $tableAction): 
             $fragment = implode('_', array_slice($view->getModulePath(), 0, -1)) . '_' . $tableAction;
-    ?><li><?php echo $view->button($tableAction, $flags, '../' . $tableAction . '#' . $fragment) ?></li><?php endforeach; ?>
+    ?><li><?php echo $view->button($tableAction, $flags, '../' . $tableAction . '/#' . $fragment) ?></li><?php endforeach; ?>
 </ul>
 </div>
