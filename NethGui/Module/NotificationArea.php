@@ -16,7 +16,6 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard imple
 {
 
     private $errors = array();
-    
     /**
      *
      * @var NethGui_Core_UserInterface;
@@ -76,15 +75,22 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard imple
             $view['dialogs'][] = $dialogView;
         }
     }
-    
+
     private function makeActionViewsForDialog($dialog, $mode)
     {
-        $views = new ArrayObject();
+        $actionViews = new ArrayObject();
 
         foreach ($dialog->getActions() as $action) {
             $view = new NethGui_Core_View($dialog->getModule());
             $view['name'] = $action[0];
-            $view['location'] = $action[1];
+            if ($mode == self::VIEW_UPDATE) {
+                // Translate the `location` in a URL for FORM action attribute
+                $path = $view->getModulePath();
+                $path[] = $action[1];
+                $view['location'] = NethGui_Framework::getInstance()->buildUrl($path);
+            } else {
+                $view['location'] = $action[1];
+            }
             $view['data'] = $action[2];
 
             $dismissView = $view->spawnView($this, 'dismissView');
@@ -92,10 +98,10 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard imple
             $dismissView->setTemplate(array($this, 'renderDismissNotification'));
 
             $view->setTemplate(array($this, 'renderDialogAction'));
-            $views[] = $view;
+            $actionViews[] = $view;
         }
 
-        return $views;
+        return $actionViews;
     }
 
     public function renderDialogAction(NethGui_Renderer_Abstract $view)

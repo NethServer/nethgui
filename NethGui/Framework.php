@@ -137,7 +137,7 @@ class NethGui_Framework
      * @param string|array $path
      * @param array $parameters
      */
-    public function buildUrl($path, $parameters)
+    public function buildUrl($path, $parameters = array())
     {
         if (is_array($path)) {
             $path = implode('/', $path);
