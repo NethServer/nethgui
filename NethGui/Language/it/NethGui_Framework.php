@@ -10,6 +10,7 @@ $L['status_enabled_label'] = 'Abilitato';
 $L['Confirm deletion of "%s"?'] = 'Confermi l\'eliminazione di "%s"?';
 $L['Actions_label'] = 'Azioni';
 $L['Submit_label'] = 'Invia';
+$L['Apply_label'] = 'Applica';
 $L['Cancel_label'] = 'Annulla';
 $L['update_label'] = 'Modifica';
 $L['delete_label'] = 'Elimina';
