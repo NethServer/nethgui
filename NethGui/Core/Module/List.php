@@ -96,16 +96,7 @@ class NethGui_Core_Module_List extends NethGui_Core_Module_Composite implements 
             $form->inset($child->getIdentifier());
         }
 
-        $form->includeTemplate(array($this, 'renderButtons'));
-
         return $view;
-    }
-
-    public function renderButtons(NethGui_Renderer_Abstract $view)
-    {
-        $submitButton = (string) $view->button('Submit', NethGui_Renderer_Abstract::BUTTON_SUBMIT);
-        $resetButton = (string) $view->button('Reset', NethGui_Renderer_Abstract::BUTTON_RESET);
-        return "<ul class=\"actions\"><li>${submitButton}</li><li>${resetButton}</li></ul>";
     }
 
     public function renderTabs(NethGui_Renderer_Abstract $view)
@@ -124,10 +115,7 @@ class NethGui_Core_Module_List extends NethGui_Core_Module_Composite implements 
         }
 
         $tabs = $form->tabs('Tabs', $pages);
-
-        $tabs->includeTemplate(array($this, 'renderButtons'));
-
-
+        
         return $view;
     }
 
