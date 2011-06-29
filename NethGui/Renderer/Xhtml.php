@@ -779,4 +779,44 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         }
     }
 
+    public function buttonList($buttons, $flags = 0)
+    {
+        if(empty($buttons)) {
+            return $this;
+        }
+        
+        if(is_string($buttons)) {
+            $buttons = $this->view[$buttons];
+        }
+        
+        if($buttons instanceof Traversable) {
+            $buttons = iterator_to_array($buttons);
+        } 
+        
+        $this->pushContent($this->openTag('ul', array('class'=>'actions buttonList')));
+        
+        foreach($buttons as $argv)
+        {
+            $this->pushContent($this->openTag('li'));
+            
+            if(!isset($argv[1])) {
+                $argv[1] = 0;
+            }
+            
+            if(!isset($argv[2])) {
+                $argv[2] = NULL;
+            }
+                        
+            // merge the flags:
+            $argv[1] |= $flags;
+            
+            call_user_func_array(array($this, 'button'), $argv);
+            
+            $this->pushContent($this->closeTag('li'));
+        }
+               
+        $this->pushContent($this->closeTag('ul'));
+        
+        return $this;
+    }
 }

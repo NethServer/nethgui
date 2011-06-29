@@ -242,4 +242,14 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
      * @return NethGui_Renderer_Abstract Same object
      */    
     abstract public function selector($name, $choices = NULL, $flags = 0);
+    
+    /**
+     * Concatenate a list of buttons
+     * 
+     * The buttons are specified as arrays of arguments for the button() method.
+     * 
+     * @param array $buttons The array of array representing arguments for button() method
+     * @param integer $flags
+     */
+    abstract public function buttonList($buttons, $flags = 0);
 }
