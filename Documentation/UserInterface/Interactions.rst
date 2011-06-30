@@ -80,15 +80,22 @@ close it by clicking on the "X" button, or ignore it::
    +----------------------------------------+
 
 The **modal dialog box** is ovelayed on the screen and represents a
-mandatory decision point. Each decision closes the dialog and possibly
-causes a further action to occur::
+mandatory decision point. 
+
+- Each decision closes the dialog and possibly causes a further action
+  to occur.
+
+- The last button has the same effect of a click on the dialog
+  dismission button ``[X]``.
+
+::
 
    +----------------------------------------+
-   |                                     [X]|
-   | Warning: the specified ntp host is     |
-   |          unreachable!                  |
+   | Warning                             [X]|
    |                                        |
-   |             [ Ignore ] [ Disable ntp ] |
+   | The specified ntp host is unreachable! |
+   |                                        |
+   |             [ Disable NTP ] [ Ignore ] |
    +----------------------------------------+
 
 

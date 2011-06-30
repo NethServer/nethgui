@@ -19,7 +19,7 @@ switch ($view['type']) {
 
 ?><div class="<?php 
     echo $dialogClass 
-?>" id="Dialog_<?php 
+?>" id="<?php 
     echo $view['dialogId']
 ?>"><span class='ui-icon ui-icon-<?php echo $icon ?>' style='float: left; margin-right: .3em;'></span><span class="message"><?php
     echo T($view['message']); ?></span><?php 
