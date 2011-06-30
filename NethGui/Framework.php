@@ -249,6 +249,7 @@ class NethGui_Framework
         }
 
         $translation = NULL;
+        $attempts = array();
 
         while (($catalog = array_pop($languageCatalogs)) !== NULL) {
 
@@ -267,17 +268,16 @@ class NethGui_Framework
             if (isset($this->catalogs[$languageCode][$catalog][$key])) {
                 $translation = $this->catalogs[$languageCode][$catalog][$key];
                 break;
-            }
-
-            // If key is missing lookup in previous catalog
-            $catalog = prev($languageCatalogs);
+            } else {
+                $attempts[] = $catalog;
+            }                        
         }
 
         if ($translation === NULL) {
             // By default prepare an identity-translation
             $translation = $key;
             if (ENVIRONMENT == 'development') {
-                $this->logMessage("Missing `$languageCode` translation for `$key`. Catalogs: " . implode(', ', $languageCatalogs), 'debug');
+                $this->logMessage("Missing `$languageCode` translation for `$key`. Catalogs: " . implode(', ', $attempts), 'debug');
             }
         }
 
