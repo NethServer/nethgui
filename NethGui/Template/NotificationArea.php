@@ -1,20 +1,16 @@
-<div id="<?php echo $view->getFullId() ?>"><?php 
+<div id="NotificationArea"><?php 
     
 if ($view->getModule()->hasValidationErrors()): 
 
-    ?><ul class="validation-errors modal ui-state-error"><?php 
+    ?><ul class="validation-errors embedded ui-state-error"><?php 
         foreach ($view['validationErrors'] as $error) : 
 
-           ?><li><a class="control-label" href="#<?php echo $error[0] ?>"><?php echo $error[1] ?></a><span class="message"><?php echo $error[2] ?></span></li><?php 
+           ?><li><?php echo $error; ?></li><?php 
 
         endforeach ?></ul><?php 
 
 endif;
 
-foreach($view['dialogs'] as $dialogView) :
-
-    echo $dialogView;
-    
-endforeach;
+foreach($view['dialogs'] as $dialogView) { echo $dialogView; }
     
 ?></div>

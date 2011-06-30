@@ -17,12 +17,13 @@ interface NethGui_Core_ValidatorInterface {
     public function evaluate($value);
 
     /**
+     * Failure reason
+     * 
      * After an unsuccessful evaluate() call, validator object must return
-     * a string message explaining failure reason.
+     * an explanation of the problem.   
      * 
      * @see evaluate()
-     * @param string Optional - Evaluated parameter name
-     * @return string
+     * @return array An array arrays of two elements: a template string and an array of arguments, to invoke strtr().
      */
-    public function getMessage();
+    public function getFailureInfo();
 }

@@ -51,12 +51,14 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard imple
         $view['validationErrors'] = new ArrayObject();
 
         foreach ($this->errors as $error) {
-            list($fieldName, $message, $module) = $error;
+            list($fieldName, $errorInfo, $module) = $error;
 
-            $renderer = new NethGui_Renderer_Xhtml($view->spawnView($module));
-            $controlId = $renderer->getFullId($fieldName);
+            $errorView = $view->spawnView($module);
+            $errorView->setTemplate('NethGui_Template_ValidationError');
+            $errorView['errorInfo'] = $errorInfo;
+            $errorView['fieldName'] = $fieldName;
 
-            $view['validationErrors'][] = array($controlId, $renderer->translate($fieldName . '_label'), $renderer->translate($message));
+            $view['validationErrors'][] = $errorView;
         }
 
         // Transfer dialog data to view

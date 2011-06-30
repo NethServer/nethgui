@@ -332,7 +332,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
 
             $isValid = $validator->evaluate($this->parameters[$parameterName]);
             if ($isValid !== TRUE) {
-                $report->addValidationError($this, $parameterName, $validator->getMessage());
+                $report->addValidationError(new NethGui_Core_ModuleSurrogate($this), $parameterName, $validator->getFailureInfo());
                 $this->invalidParameters[] = $parameterName;
             }
         }

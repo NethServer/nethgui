@@ -1,4 +1,4 @@
-<div id="<?echo $view->getFullId()?>" class="crud-read <?php echo $view['tableClass']?>">
+<div id="<?echo $view['tableId'] ?>" class="crud-read <?php echo $view['tableClass']?>">
 <table>
     <thead><tr>
         <?php

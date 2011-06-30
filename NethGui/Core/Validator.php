@@ -12,7 +12,7 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
 {
 
     private $chain = array();
-    private $failureReason;
+    private $failureInfo;
 
     /**
      *
@@ -45,7 +45,9 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
             $set = $args;
         }
 
-        return $this->addToChain(__FUNCTION__, $set);
+        $messageTemplate = array('member of [${0}]', array('${0}' => implode(', ', $set)));
+        
+        return $this->addToChain(__FUNCTION__, $messageTemplate, $set);
     }
 
     /**
@@ -55,7 +57,8 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
      */
     public function regexp($e)
     {
-        return $this->addToChain(__FUNCTION__, $e);
+        $messageTemplate = array('regexp "${0}"', array('${0}' => $e));
+        return $this->addToChain(__FUNCTION__, $messageTemplate, $e);
     }
 
     /**
@@ -157,13 +160,15 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
         return $this;
     }
 
-    public function getMessage()
+    public function getFailureInfo()
     {
-        return $this->failureReason;
+        return $this->failureInfo;
     }
 
     public function evaluate($value)
     {
+        $this->failureInfo = array();
+        
         if (empty($this->chain)) {
             return FALSE;
         }
@@ -176,33 +181,36 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
                 $notFlag = TRUE;
                 continue;
             } elseif (is_array($expression) && is_callable($expression[1])) {
-                // $expression is an array of three elements
-                // 1. the original method name, as a string
-                // 2. a callable
-                // 3. an optional array of arguments
+                // $expression is an array of four elements
+                // 0. the original method name, as a string
+                // 1. a callable
+                // 2. an optional array of arguments
+                // 3. the error message template plus arguments
                 $args = array();
                 if (isset($expression[2]) && is_array($expression[2])) {
                     $args = $expression[2];
                 } else {
                     $args = array();
                 }
-
-                $messageParts = array($expression[0], print_r($args, 1));
-
+                
+                if(!isset($expression[3]) || !is_array($expression[3])) {
+                    $expression[3] = array($expression[0], array());
+                }
+               
                 array_unshift($args, $value);
                 $isValid = call_user_func_array($expression[1], $args);
                 if (($isValid XOR $notFlag) === FALSE) {
-                    $this->failureReason = implode(' ', $messageParts);
+                    $this->failureInfo = $expression[3];
                     return FALSE;
                 }
             } elseif ($expression instanceof NethGui_Core_ValidatorInterface) {
                 $isValid = $expression->evaluate($value);
                 if (($isValid XOR $notFlag) === FALSE) {
-                    $this->failureReason = $expression->getMessage();
+                    $this->failureInfo = $expression->getFailureInfo();
                     return FALSE;
                 }
             } elseif ($expression === FALSE) {
-                $this->failureReason = 'forceResult';
+                $this->failureInfo = 'forceResult';
                 return FALSE;
             } elseif ($expression === TRUE) {
                 break;
@@ -212,7 +220,7 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
             $notFlag = FALSE;
         }
 
-        $this->failureReason = FALSE;
+        $this->failureInfo = FALSE;
         return TRUE;
     }
 
@@ -237,6 +245,7 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
 
     /**
      * @param string the calling Method name
+     * @param string Optional the error message template applyed to sprintf()
      * @param mixed Optional - First argument to evaluation function
      * @param mixed Optional - Second argument to evaluation function
      * @param mixed Optional - ...
@@ -247,13 +256,15 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
         $args = func_get_args();
 
         $originalMethodName = array_shift($args);
+        $errorMessageTemplate = array_shift($args);
 
         $methodName = 'eval' . ucfirst($originalMethodName);
 
         $this->chain[] = array(
             $originalMethodName,
             array($this, $methodName),
-            $args
+            $args,
+            $errorMessageTemplate,
         );
 
         return $this;
@@ -341,7 +352,7 @@ class NethGui_Core_CollectionValidator implements NethGui_Core_ValidatorInterfac
      * @var NethGui_Core_ValidatorInterface
      */
     private $memberValidator;
-    private $failureReason;
+    private $failureInfo;
     /**
      *
      * @var Iterator
@@ -355,6 +366,8 @@ class NethGui_Core_CollectionValidator implements NethGui_Core_ValidatorInterfac
 
     public function evaluate($iterableObject)
     {
+        $this->failureInfo = array();
+        
         if (is_array($iterableObject)) {
             $iterableObject = new ArrayObject($iterableObject);
             $this->iterator = $iterableObject->getIterator();
@@ -363,13 +376,13 @@ class NethGui_Core_CollectionValidator implements NethGui_Core_ValidatorInterfac
         } elseif ($iterableObject instanceof Iterator) {
             $this->iterator = $iterableObject;
         } else {
-            $this->failureReason = "Not a collection";
+            $this->failureInfo[] = array("Not a collection", array());
             return FALSE;
         }
 
         foreach ($this->iterator as $e) {
             if ($this->memberValidator->evaluate($e) === FALSE) {
-                $this->failureReason = '(' . $this->iterator->key() . ') ' . $this->memberValidator->getMessage();
+                $this->failureInfo[] = $this->memberValidator->getFailureInfo();
                 return FALSE;
             }
         }
@@ -378,9 +391,9 @@ class NethGui_Core_CollectionValidator implements NethGui_Core_ValidatorInterfac
         return TRUE;
     }
 
-    public function getMessage()
+    public function getFailureInfo()
     {
-        return $this->failureReason;
+        return $this->failureInfo;
     }
 
 }
@@ -404,7 +417,7 @@ class NethGui_Core_OrValidator implements NethGui_Core_ValidatorInterface
      * @var NethGui_Core_ValidatorInterface
      */
     private $v2;
-    private $failureReason;
+    private $failureInfo;
 
     public function __construct(NethGui_Core_ValidatorInterface $v1, NethGui_Core_ValidatorInterface $v2)
     {
@@ -414,13 +427,15 @@ class NethGui_Core_OrValidator implements NethGui_Core_ValidatorInterface
 
     public function evaluate($value)
     {
+        $this->failureInfo = array();
         $e1 = $this->v1->evaluate($value);
 
         if ($e1 === FALSE) {
             $e2 = $this->v2->evaluate($value);
 
             if ($e2 === FALSE) {
-                $this->failureReason = $this->v2->getMessage() . " " . $this->v1->getMessage();
+                $this->failureInfo[] = $this->v1->getFailureInfo();
+                $this->failureInfo[] = $this->v2->getFailureInfo();                
                 return FALSE;
             }
             return TRUE;
@@ -429,9 +444,9 @@ class NethGui_Core_OrValidator implements NethGui_Core_ValidatorInterface
         return TRUE;
     }
 
-    public function getMessage()
+    public function getFailureInfo()
     {
-        return $this->failureReason;
+        return $this->failureInfo;
     }
 
 }

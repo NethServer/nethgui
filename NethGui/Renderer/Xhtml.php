@@ -78,13 +78,23 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         return $prefix . '[' . implode('][', $nameSegments) . ']';
     }
 
-    public function getFullId($name = NULL)
+    /**
+     * Return the XHTML ID attribute for control $name
+     * @param string|array $name
+     * @return string 
+     */
+    private function getFullId($name = NULL)
     {
         $prefix = implode('_', $this->getModulePath());
 
         if (empty($name)) {
             return $prefix;
         }
+
+        if (is_array($name)) {
+            $name = implode('_', $name);
+        }
+
         return $prefix . '_' . str_replace('/', '_', $name);
     }
 
@@ -302,7 +312,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
      * Push an HTML tag for parameter $name.
      * 
      * @param string $tag The XHTML tag of the control.
-     * @param string $name The name of the view parameter that holds the data
+     * @param string|array $name The name of the view parameter that holds the data
      * @param integer $flags Flags bitmask {STATE_CHECKED, STATE_DISABLED}
      * @param string $cssClass The `class` attribute value
      * @param array $attributes Generic attributes array See {@link openTag()}
@@ -484,7 +494,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
                 $attributes = array(
                     'type' => 'hidden',
                     'value' => $value,
-                    'id' => FALSE,
+                    'id' => FALSE, // disable ID attribute on hidden nodes
                 );
                 $this->controlTag('input', $namePath, $flags, '', $attributes);
             }
@@ -717,7 +727,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         $this->pushContent($this->closeTag('legend'));
 
         $this->hidden($name, $flags, '');
-        
+
         if ( ! (($flags | $this->flags) & self::STATE_DISABLED)) {
             $this->generateSelectorContent($name, $value, $choices, $flags);
         }
@@ -769,7 +779,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 
                 $this->controlTag('input', $choiceName, $choiceFlags, '', $attributes);
                 $this->pushContent($this->openTag('label', array('for' => $this->getFullId($choiceId))));
-                $this->append(!empty($choice[1]) ? $choice[1] : $choice[0]);
+                $this->append( ! empty($choice[1]) ? $choice[1] : $choice[0]);
                 $this->pushContent($this->closeTag('label'));
 
                 $this->pushContent($this->closeTag('li'));
@@ -781,42 +791,42 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 
     public function buttonList($buttons, $flags = 0)
     {
-        if(empty($buttons)) {
+        if (empty($buttons)) {
             return $this;
         }
-        
-        if(is_string($buttons)) {
+
+        if (is_string($buttons)) {
             $buttons = $this->view[$buttons];
         }
-        
-        if($buttons instanceof Traversable) {
+
+        if ($buttons instanceof Traversable) {
             $buttons = iterator_to_array($buttons);
-        } 
-        
-        $this->pushContent($this->openTag('ul', array('class'=>'actions buttonList')));
-        
-        foreach($buttons as $argv)
-        {
+        }
+
+        $this->pushContent($this->openTag('ul', array('class' => 'actions buttonList')));
+
+        foreach ($buttons as $argv) {
             $this->pushContent($this->openTag('li'));
-            
-            if(!isset($argv[1])) {
+
+            if ( ! isset($argv[1])) {
                 $argv[1] = 0;
             }
-            
-            if(!isset($argv[2])) {
+
+            if ( ! isset($argv[2])) {
                 $argv[2] = NULL;
             }
-                        
+
             // merge the flags:
             $argv[1] |= $flags;
-            
+
             call_user_func_array(array($this, 'button'), $argv);
-            
+
             $this->pushContent($this->closeTag('li'));
         }
-               
+
         $this->pushContent($this->closeTag('ul'));
-        
+
         return $this;
     }
+
 }

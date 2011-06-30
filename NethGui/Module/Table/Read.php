@@ -50,6 +50,7 @@ class NethGui_Module_Table_Read extends NethGui_Module_Table_Action
             }
 
             $view['tableClass'] = count($view['rows']) > 10 ? 'large-dataTable' : 'small-dataTable';
+            $view['tableId'] = implode('_', $view->getModulePath());
         }
     }
 
