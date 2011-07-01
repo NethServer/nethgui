@@ -47,6 +47,11 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
      * @var array
      */
     private $modulePath;
+    /**
+     * Caches the language catalogs associated to $module
+     * @var array
+     */
+    private $languageCatalogList;
 
     public function __construct($module = NULL)
     {
@@ -108,7 +113,11 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
 
     public function offsetSet($offset, $value)
     {
-        $this->data[$offset] = $value;
+        if (is_null($offset)) {
+            $this->data[] = $value;
+        } else {
+            $this->data[$offset] = $value;
+        }
     }
 
     public function offsetUnset($offset)
@@ -150,10 +159,12 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
 
             $jsonString .= json_encode($offset) . ':';
 
-            if ($value instanceof NethGui_Core_View) {
+            if ($value instanceof self) {
                 $jsonString .= $value->toJson();
             } elseif ($value instanceof Traversable) {
                 $jsonString .= json_encode($this->traversableToArray($value));
+//            } elseif (is_string($value)) {
+//                $jsonString .= json_encode(htmlspecialchars($value));
             } else {
                 $jsonString .= json_encode($value);
             }
@@ -184,15 +195,40 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
         foreach ($value as $k => $v) {
             if ($v instanceof Traversable) {
                 $v = $this->traversableToArray($v);
+//            } elseif (is_string($v)) {
+//                $v = htmlspecialchars($v);
             }
             $a[$k] = $v;
         }
         return $a;
     }
 
-    public function translate($value, $args = array())
+    private function extractLanguageCatalogList(NethGui_Core_ModuleInterface $module)
     {
-        return NethGui_Framework::getInstance()->translate($value, array(), NULL, NULL);
+        $languageCatalogList = array();
+
+        do {
+            if ($module instanceof NethGui_Core_LanguageCatalogProvider) {
+                $catalog = $module->getLanguageCatalog();
+                if (is_array($catalog)) {
+                    $languageCatalogList = array_merge($languageCatalogList, $catalog);
+                } else {
+                    $languageCatalogList[] = $catalog;
+                }
+            }
+
+            $module = $module->getParent();
+        } while ( ! is_null($module));
+
+        return $languageCatalogList;
+    }
+
+    public function translate($value, $args = array(), $hsc = TRUE)
+    {
+        if ( ! isset($this->languageCatalogList)) {
+            $this->languageCatalogList = $this->extractLanguageCatalogList($this->getModule());
+        }
+        return NethGui_Framework::getInstance()->translate($value, array(), NULL, $this->languageCatalogList);
     }
 
     public function getModule()
@@ -218,6 +254,25 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
         }
 
         return $this->modulePath;
+    }
+
+    public function getUniqueId($parts = NULL)
+    {
+        $prefix = implode('_', $this->getModulePath());
+
+        if (empty($parts)) {
+            return $prefix;
+        }
+
+        if (is_array($parts)) {
+            $suffix = implode('_', $parts);
+        } else {
+            $suffix = $parts;
+        }
+
+        $suffix = str_replace('/', '_', $suffix);
+
+        return $prefix . '_' . $suffix;
     }
 
 }

@@ -55,8 +55,9 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard imple
 
             $errorView = $view->spawnView($module);
             $errorView->setTemplate('NethGui_Template_ValidationError');
-            $errorView['errorInfo'] = $errorInfo;
+            $errorView['errorInfo'] = array($errorView->translate($errorInfo[0]), $errorInfo[1]);
             $errorView['fieldName'] = $fieldName;
+            $errorView['fieldId'] = $errorView->getUniqueId($fieldName);
 
             $view['validationErrors'][] = $errorView;
         }
