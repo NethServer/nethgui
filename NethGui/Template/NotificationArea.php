@@ -2,12 +2,14 @@
     
 if ($view->getModule()->hasValidationErrors()): 
 
-    ?><ul class="validation-errors embedded ui-state-error"><?php 
+    ?><div class="validation-errors embedded ui-state-error"><span class="message"><?php
+        echo count($view['validationErrors']) == 1 ? T('Incorrect value') : T('Incorrect values') 
+    ?></span><ul class="validation-error-list"><?php
         foreach ($view['validationErrors'] as $error) : 
 
            ?><li><?php echo $error; ?></li><?php 
 
-        endforeach ?></ul><?php 
+        endforeach ?></ul></div><?php
 
 endif;
 
