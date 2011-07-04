@@ -157,7 +157,7 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
         return $this->addToChain(__FUNCTION__, $template, $cmp);
     }
 
-    public function equal($cmp)
+    public function equalTo($cmp)
     {
         $template = array('equal to ${0}', array('${0}'=> $cmp));
         return $this->addToChain(__FUNCTION__, $template, $cmp);
@@ -400,7 +400,7 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
         return $value > $cmp;
     }
 
-    private function evalEqual($value, $cmp)
+    private function evalEqualTo($value, $cmp)
     {
         return $value == $cmp;
     }
