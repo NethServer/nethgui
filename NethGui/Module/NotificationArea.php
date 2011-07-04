@@ -73,7 +73,7 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard imple
             $dialogView->copyFrom(
                 array(
                     'dialogId' => $dialog->getId(),
-                    'message' => $dialog->getMessage(),
+                    'message' => $dialogView->translate($dialog->getMessage()),
                     'actions' => $this->makeActionViewsForDialog($dialog, $mode),
                     'type' => $dialog->getType(),
             ));

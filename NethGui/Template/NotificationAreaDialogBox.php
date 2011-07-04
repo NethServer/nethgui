@@ -22,7 +22,7 @@ switch ($view['type']) {
 ?>" id="<?php 
     echo $view['dialogId']
 ?>"><span class='ui-icon ui-icon-<?php echo $icon ?>' style='float: left; margin-right: .3em;'></span><span class="message"><?php
-    echo T($view['message']); ?></span><?php 
+    echo $view['message']; ?></span><?php 
 
 if(count($view['actions']) > 0):
     ?><ul class="actions"><?php
