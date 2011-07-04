@@ -63,12 +63,20 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard imple
             $view['validationErrors'][] = $errorView;
         }
 
-        $view['validationLabel'] = count($view['validationErrors']) == 1 ? $view->translate('Incorrect value') : $view->translate('Incorrect values');
+
+        if (count($this->errors) == 1) {
+            $view['validationLabel'] = $view->translate('Incorrect value');
+        } elseif (count($this->errors) > 1) {
+            $view['validationLabel'] = $view->translate('Incorrect values');
+        }
+
+
+        $dialogBoxList = $this->user->getDialogBoxes();
 
         // Transfer dialog data to view
         $view['dialogs'] = new ArrayObject();
 
-        foreach ($this->user->getDialogBoxes() as $dialog) {
+        foreach ($dialogBoxList as $dialog) {
             $dialogView = $view->spawnView($dialog->getModule());
             $dialogView->copyFrom(
                 array(
