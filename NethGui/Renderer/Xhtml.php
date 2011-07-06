@@ -834,5 +834,13 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 
         return $this;
     }
+    
+    public function header($text, $flags = 0)
+    {
+        $this->pushContent($this->openTag('div', array('class' => 'header')));
+        $this->append($text);
+        $this->pushContent($this->closeTag('div'));
 
+        return $this;
+    }
 }

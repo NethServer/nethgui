@@ -252,4 +252,9 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
      * @param integer $flags
      */
     abstract public function buttonList($buttons, $flags = 0);
+
+    /**
+     * Concatenate an header text
+     */
+    abstract public function header($text, $flags = 0);
 }

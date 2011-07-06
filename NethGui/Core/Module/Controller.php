@@ -138,7 +138,6 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Composite imple
 
         $view->setTemplate(array($this, 'renderCurrentAction'));
         $innerView = $view->spawnView($this->currentAction, TRUE);
-        //$innerView['__action'] = $this->currentAction->getIdentifier();
         $view['__action'] = $this->currentAction->getIdentifier();
         $this->currentAction->prepareView($innerView, $mode);
     }
@@ -147,7 +146,8 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Composite imple
      * Render callback.
      *
      * This is the view template callback function that forwards the
-     * render message to the current action.
+     * render message to the current action. It wraps the action view
+     * into a FORM tag, if necessary.
      *
      * @internal Actually called by the framework.
      * @param NethGui_Renderer_Abstract $view The view
