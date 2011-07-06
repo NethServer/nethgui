@@ -727,16 +727,16 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         $this->append($this->translate($name . '_label'));
         $this->pushContent($this->closeTag('legend'));
 
+        $this->pushContent($this->openTag('div', array('class' => 'choices', 'id' => $this->getUniqueId($dataSourceName))));
         $this->hidden($name, $flags, '');
 
-        if (($flags | $this->flags) & self::STATE_DISABLED
-            || count($choices) == 0) {
-            $this->pushContent($this->selfClosingTag('div', array('class'=>'choices', 'id' => $this->getUniqueId($dataSourceName))));
-        } else {
-            $this->pushContent($this->openTag('div', array('class'=>'choices', 'id' => $this->getUniqueId($dataSourceName))));
+        $selectorEnabled =  ! (($flags | $this->flags) & self::STATE_DISABLED);
+        
+        if ( $selectorEnabled && count($choices) > 0) {
             $this->generateSelectorContent($name, $value, $choices, $flags);
-            $this->pushContent($this->closeTag('div'));
         }
+
+        $this->pushContent($this->closeTag('div'));
 
         $this->pushContent($this->closeTag('fieldset'));
 
@@ -755,7 +755,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         $this->pushContent($this->openTag('ul'));
         foreach (array_values($choices) as $index => $choice) {
 
-            $this->pushContent($this->openTag('li', array('class'=>'labeled-control label-right')));
+            $this->pushContent($this->openTag('li', array('class' => 'labeled-control label-right')));
             $choiceFlags = $flags;
 
             if ($flags & self::SELECTOR_MULTIPLE) {
