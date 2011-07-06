@@ -531,7 +531,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
             'type' => 'text',
         );
 
-        $flags = $this->applyDefaultLabelAlignment($flags, self::LABEL_LEFT);
+        $flags = $this->applyDefaultLabelAlignment($flags, self::LABEL_ABOVE);
 
         // Check if $name is in the list of invalid parameters.
         if (isset($this->view['__invalidParameters']) && in_array($name, $this->view['__invalidParameters'])) {
