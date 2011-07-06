@@ -79,26 +79,6 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
     }
 
     /**
-     * Return the XHTML ID attribute for control $name
-     * @param string|array $name
-     * @return string 
-     */
-    private function getFullId($name = NULL)
-    {
-        $prefix = implode('_', $this->getModulePath());
-
-        if (empty($name)) {
-            return $prefix;
-        }
-
-        if (is_array($name)) {
-            $name = implode('_', $name);
-        }
-
-        return $prefix . '_' . str_replace('/', '_', $name);
-    }
-
-    /**
      *
      * @param array|string $_ Arguments for URL
      * @return string the URL
@@ -122,6 +102,11 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
     public function getModulePath()
     {
         return $this->view->getModulePath();
+    }
+
+    public function getUniqueId($parts = NULL)
+    {
+        return $this->view->getUniqueId($parts);
     }
 
     public function translate($message, $args = array())
@@ -220,7 +205,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
     {
 
         if ( ! isset($attributes['id'])) {
-            $attributes['id'] = $this->getFullId($localId);
+            $attributes['id'] = $this->getUniqueId($localId);
         }
 
         if ( ! isset($attributes['class']) && ! empty($cssClass)) {
@@ -282,7 +267,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         if (isset($attributes['id'])) {
             $controlId = $attributes['id'];
         } else {
-            $controlId = $this->getFullId($name);
+            $controlId = $this->getUniqueId($name);
             $attributes['id'] = $controlId;
         }
 
@@ -327,7 +312,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         $tagContent = '';
 
         if ( ! isset($attributes['id'])) {
-            $attributes['id'] = $this->getFullId($name);
+            $attributes['id'] = $this->getUniqueId($name);
         }
 
 
@@ -506,7 +491,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         $attributes = array(
             'type' => 'radio',
             'value' => strval($value),
-            'id' => $this->getFullId($name . '_' . $value)
+            'id' => $this->getUniqueId($name . '_' . $value)
         );
 
         if ($value === $this->view[$name]) {
@@ -624,7 +609,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
             foreach ($pages as $page) {
 
                 $tabs->pushContent($this->openTag('li'));
-                $tabs->pushContent($this->openTag('a', array('href' => '#' . $tabs->getFullId($page))));
+                $tabs->pushContent($this->openTag('a', array('href' => '#' . $tabs->getUniqueId($page))));
                 $tabs->pushContent(htmlspecialchars($this->translate($page . '_Title')));
                 $tabs->pushContent($this->closeTag('a'));
                 $tabs->pushContent($this->closeTag('li'));
@@ -718,7 +703,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 
         $fieldsetAttributes = array(
             'class' => 'selector',
-            'id' => $this->getFullId($name)
+            'id' => $this->getUniqueId($name)
         );
 
         $this->pushContent($this->openTag('fieldset', $fieldsetAttributes));
@@ -773,12 +758,12 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
                     $attributes = array(
                         'type' => 'radio',
                         'value' => $choice[0],
-                        'id' => $this->getFullId($choiceId),
+                        'id' => $this->getUniqueId($choiceId),
                     );
                 }
 
                 $this->controlTag('input', $choiceName, $choiceFlags, '', $attributes);
-                $this->pushContent($this->openTag('label', array('for' => $this->getFullId($choiceId))));
+                $this->pushContent($this->openTag('label', array('for' => $this->getUniqueId($choiceId))));
                 $this->append( ! empty($choice[1]) ? $choice[1] : $choice[0]);
                 $this->pushContent($this->closeTag('label'));
 

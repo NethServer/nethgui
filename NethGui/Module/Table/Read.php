@@ -42,15 +42,18 @@ class NethGui_Module_Table_Read extends NethGui_Module_Table_Action
         $view['rows'] = $this->prepareRows($view, $mode);
         if ($mode == self::VIEW_REFRESH) {
             $view['columns'] = $this->columns;
+
             $view['tableActions'] = new ArrayObject();
 
-            foreach (array_map(array($this, 'getActionIdentifier'), $this->getParent()->getTableActions()) as $tableAction) {
-                $fragment = implode('_', array_slice($view->getModulePath(), 0, -1)) . '_' . $tableAction;
-                $view['tableActions'][] = array($tableAction, NethGui_Renderer_Abstract::BUTTON_LINK, '../' . $tableAction . '/#' . $fragment);
+            foreach ($this->getParent()->getTableActions() as $tableAction) {
+                $tableActionView = $view->spawnView($tableAction);
+                $tableActionId = $tableAction->getIdentifier();
+                $args = array('..', $tableActionId,  '#' . $tableActionView->getUniqueId());
+                $view['tableActions'][] = array($tableActionId, NethGui_Renderer_Abstract::BUTTON_LINK, $args);
             }
 
             $view['tableClass'] = count($view['rows']) > 10 ? 'large-dataTable' : 'small-dataTable';
-            $view['tableId'] = implode('_', $view->getModulePath());
+            $view['tableId'] = $view->getUniqueId();
         }
     }
 
@@ -61,11 +64,10 @@ class NethGui_Module_Table_Read extends NethGui_Module_Table_Action
 
     private function prepareRows(NethGui_Core_ViewInterface $view, $mode)
     {
-        $rows = array();
+        $rows = new ArrayObject();
 
         foreach ($this->tableAdapter as $key => $values) {
-            $row = array();
-
+            $row = new ArrayObject();
 
             foreach ($this->columns as $columnIndex => $column) {
                 $row[] = $this->prepareColumn($view, $mode, $columnIndex, $column, $key, $values);
@@ -107,22 +109,13 @@ class NethGui_Module_Table_Read extends NethGui_Module_Table_Action
      */
     public function prepareViewForColumnActions(NethGui_Core_ViewInterface $view, $mode, $key, $values)
     {
-        if ($mode == self::VIEW_REFRESH) {
-            $columnView = $view->spawnView($this);
-            $columnView->setTemplate(array($this, 'renderColumnActions'));
-        } else {
-            $columnView = array();
-        }
+        $columnView = $view->spawnView($this);
+        $columnView->setTemplate(array($this, 'renderColumnActions'));
 
-        foreach (array_map(array($this, 'getActionIdentifier'), $this->getParent()->getRowActions()) as $action) {
-            if ($mode == self::VIEW_UPDATE) {
-                // FIXME: using a module surrogate method where no surrogate is needed:
-                // refactor ModuleSurrogate, relocating the useful code elsewhere.
-                $s = new NethGui_Core_ModuleSurrogate($this);
-                $columnView[$action] = array(T($action . '_label', NULL, NULL, $s->getLanguageCatalog()), array($action, $key));
-            } else {
-                $columnView[$action] = $key;
-            }
+        foreach ($this->getParent()->getRowActions() as $action) {
+            $actionView = $columnView->spawnView($action, TRUE);
+            $actionView[] = $actionView->translate($action->getIdentifier() . '_label');
+            $actionView[] = array($action->getIdentifier(), $key);
         }
 
         return $columnView;
@@ -130,12 +123,11 @@ class NethGui_Module_Table_Read extends NethGui_Module_Table_Action
 
     public function renderColumnActions(NethGui_Renderer_Abstract $view)
     {
-        $fragmentPrefix = implode('_', array_slice($view->getModulePath(), 0, -1));
         $buttons = array();
 
-        foreach (array_map(array($this, 'getActionIdentifier'), $this->getParent()->getRowActions()) as $action) {
-            $actionSegments = array('..', $action, $view[$action], '#' . $fragmentPrefix . '_' . $action);
-            $buttons[] = array($action, NethGui_Renderer_Abstract::BUTTON_LINK, $actionSegments);
+        foreach ($view as $action => $actionView) {
+            $args = array('..', $action, $actionView[1][1], '#' . $actionView->getUniqueId());
+            $buttons[] = array($action, NethGui_Renderer_Abstract::BUTTON_LINK, $args);
         }
 
         return $view->buttonList($buttons);

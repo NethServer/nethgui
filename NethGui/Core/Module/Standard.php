@@ -47,6 +47,11 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
     const VALID_USERNAME_COLLECTION = 105;
 
     /**
+     * Accept positive integer
+     */
+    const VALID_POSITIVE_INTEGER = 106;
+
+    /**
      * A valid IPv4 address like '192.168.1.1' 
      */
     const VALID_IPv4 = 200;
@@ -214,6 +219,9 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
             case self::VALID_IP:
             case self::VALID_IPv4:
                 return $validator->ipV4Address();
+
+            case self::VALID_POSITIVE_INTEGER:
+                return $validator->integer()->positive();
 
             case self::VALID_IP_OR_EMPTY:
             case self::VALID_IPv4_OR_EMPTY:

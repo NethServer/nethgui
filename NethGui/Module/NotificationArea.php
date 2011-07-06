@@ -55,11 +55,15 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard imple
 
             $errorView = $view->spawnView($module);
             $errorView->setTemplate('NethGui_Template_ValidationError');
-            $errorView['errorInfo'] = $errorInfo;
+            $errorView['errorInfo'] = array($errorView->translate($errorInfo[0]), $errorInfo[1]);
             $errorView['fieldName'] = $fieldName;
+            $errorView['fieldId'] = $errorView->getUniqueId($fieldName);
+            $errorView['fieldLabel'] = $errorView->translate($fieldName . '_label');
 
             $view['validationErrors'][] = $errorView;
         }
+
+        $view['validationLabel'] = count($view['validationErrors']) == 1 ? $view->translate('Incorrect value') : $view->translate('Incorrect values');
 
         // Transfer dialog data to view
         $view['dialogs'] = new ArrayObject();
@@ -69,7 +73,7 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard imple
             $dialogView->copyFrom(
                 array(
                     'dialogId' => $dialog->getId(),
-                    'message' => $dialog->getMessage(),
+                    'message' => $dialogView->translate($dialog->getMessage()),
                     'actions' => $this->makeActionViewsForDialog($dialog, $mode),
                     'type' => $dialog->getType(),
             ));

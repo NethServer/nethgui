@@ -46,7 +46,7 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
         }
 
         $messageTemplate = array('member of [${0}]', array('${0}' => implode(', ', $set)));
-        
+
         return $this->addToChain(__FUNCTION__, $messageTemplate, $set);
     }
 
@@ -130,6 +130,40 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
         return $this->notImplemented(__FUNCTION__);
     }
 
+    public function integer()
+    {
+        return $this->addToChain(__FUNCTION__);
+    }
+
+    public function positive()
+    {
+        return $this->addToChain(__FUNCTION__);
+    }
+
+    public function negative()
+    {
+        return $this->addToChain(__FUNCTION__);
+    }
+
+    public function lessThan($cmp)
+    {
+        $template = array('less than ${0}', array('${0}'=> $cmp));
+        return $this->addToChain(__FUNCTION__, $template, $cmp);
+    }
+
+    public function greatThan($cmp)
+    {
+        $template = array('great than ${0}', array('${0}'=> $cmp));
+        return $this->addToChain(__FUNCTION__, $template, $cmp);
+    }
+
+    public function equalTo($cmp)
+    {
+        $template = array('equal to ${0}', array('${0}'=> $cmp));
+        return $this->addToChain(__FUNCTION__, $template, $cmp);
+    }
+
+
     /**
      * Invert the evaluation result for the next rule.
      * @return NethGui_Core_Validator
@@ -168,7 +202,7 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
     public function evaluate($value)
     {
         $this->failureInfo = array();
-        
+
         if (empty($this->chain)) {
             return FALSE;
         }
@@ -192,11 +226,11 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
                 } else {
                     $args = array();
                 }
-                
-                if(!isset($expression[3]) || !is_array($expression[3])) {
+
+                if ( ! isset($expression[3]) || ! is_array($expression[3])) {
                     $expression[3] = array($expression[0], array());
                 }
-               
+
                 array_unshift($args, $value);
                 $isValid = call_user_func_array($expression[1], $args);
                 if (($isValid XOR $notFlag) === FALSE) {
@@ -337,6 +371,40 @@ class NethGui_Core_Validator implements NethGui_Core_ValidatorInterface
         return strlen($value) < 32 && $this->evalRegexp($value, '/^[a-z][-_a-z0-9]*$/');
     }
 
+    /**
+     * Check if $value is an integer
+     * @param string $value
+     */
+    private function evalInteger($value)
+    {
+        return is_numeric($value) && (string) $value == (string) intval($value);
+    }
+
+    private function evalPositive($value)
+    {
+        return $value > 0;
+    }
+
+    private function evalNegative($value)
+    {
+        return $value < 0;
+    }
+
+    private function evalLessThan($value, $cmp)
+    {
+        return $value < $cmp;
+    }
+
+    private function greaterThan($value, $cmp)
+    {
+        return $value > $cmp;
+    }
+
+    private function evalEqualTo($value, $cmp)
+    {
+        return $value == $cmp;
+    }
+
 }
 
 /**
@@ -367,7 +435,7 @@ class NethGui_Core_CollectionValidator implements NethGui_Core_ValidatorInterfac
     public function evaluate($iterableObject)
     {
         $this->failureInfo = array();
-        
+
         if (is_array($iterableObject)) {
             $iterableObject = new ArrayObject($iterableObject);
             $this->iterator = $iterableObject->getIterator();
@@ -435,7 +503,7 @@ class NethGui_Core_OrValidator implements NethGui_Core_ValidatorInterface
 
             if ($e2 === FALSE) {
                 $this->failureInfo[] = $this->v1->getFailureInfo();
-                $this->failureInfo[] = $this->v2->getFailureInfo();                
+                $this->failureInfo[] = $this->v2->getFailureInfo();
                 return FALSE;
             }
             return TRUE;

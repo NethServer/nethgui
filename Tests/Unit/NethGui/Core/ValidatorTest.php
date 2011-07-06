@@ -146,27 +146,75 @@ class NethGui_Core_ValidatorTest extends PHPUnit_Framework_TestCase
             $this->assertFalse($this->object->evaluate($username));
         }
     }
-    
+
     public function testCollectionValidatorNotEmptyMembers()
     {
         $v = new NethGui_Core_Validator();
-        
+
         // check members are not empty
         $v->notEmpty();
-        
+
         $this->object->collectionValidator($v);
-        
-        $o = new ArrayObject(array('a','b','c'));
-        
-        $this->assertTrue($this->object->evaluate(array('a','b','c')));
+
+        $o = new ArrayObject(array('a', 'b', 'c'));
+
+        $this->assertTrue($this->object->evaluate(array('a', 'b', 'c')));
         $this->assertTrue($this->object->evaluate($o));
         $this->assertTrue($this->object->evaluate(array())); // an empty collection always return TRUE!
         $this->assertTrue($this->object->evaluate($o->getIterator()));
-        $this->assertFalse($this->object->evaluate(array('a','','c')));
-        $this->assertFalse($this->object->evaluate(new ArrayObject(array('a','b',''))));        
+        $this->assertFalse($this->object->evaluate(array('a', '', 'c')));
+        $this->assertFalse($this->object->evaluate(new ArrayObject(array('a', 'b', ''))));
         $this->assertFalse($this->object->evaluate(2));
         $this->assertFalse($this->object->evaluate(TRUE));
         $this->assertFalse($this->object->evaluate(1.2));
+    }
+
+    /**
+     * @todo
+     */    
+    public function testInteger()
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @todo
+     */
+    public function testPositive()
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @todo
+     */
+    public function testNegative()
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @todo
+     */
+    public function testGreatThan()
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @todo
+     */
+    public function testLessThan()
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @todo
+     */
+    public function testEqualTo()
+    {
+        $this->markTestIncomplete();
     }
 
 }

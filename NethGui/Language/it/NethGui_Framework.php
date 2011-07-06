@@ -21,3 +21,11 @@ $L['All changes have been saved'] = 'Tutte le modifiche sono state salvate';
 $L['Reset_label'] = 'Ripristina';
 
 $L['regexp "${0}"'] = 'espressione regolare "${0}"';
+$L['Incorrect values'] = 'Valori errati';
+$L['Incorrect value'] = 'Valore errato';
+
+$L['positive'] = 'numero positivo';
+$L['integer'] = 'numero intero';
+$L['ipV4Address'] = 'indirizzo IPv4';
+$L['Incorrect value'] = 'Valore non corretto';
+$L['Incorrect values'] = 'Valori non corretti';
