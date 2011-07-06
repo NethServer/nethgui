@@ -237,7 +237,7 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
      * Concatenate a selector control
      * 
      * @param string $name The view member name holding the selected value(s)
-     * @param array $choices A table-like array, where each row is a tuple <key, val1, .. , valN>
+     * @param string|array $choices The view member name holding a table-like array or the array itself, where each row is a couple <key, label>
      * @param integer $flags 
      * @return NethGui_Renderer_Abstract Same object
      */    
