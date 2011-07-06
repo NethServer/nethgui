@@ -755,7 +755,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
         $this->pushContent($this->openTag('ul'));
         foreach (array_values($choices) as $index => $choice) {
 
-            $this->pushContent($this->openTag('li'));
+            $this->pushContent($this->openTag('li', array('class'=>'labeled-control label-right')));
             $choiceFlags = $flags;
 
             if ($flags & self::SELECTOR_MULTIPLE) {
