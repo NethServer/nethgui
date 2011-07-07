@@ -374,7 +374,7 @@ class NethGui_Framework
         // Replace "index" request with a  default module value
         if ($currentModuleIdentifier == 'index') {
             // TODO read from configuration
-            $this->redirect('dispatcher/Security');
+            $this->redirect('dispatcher/User');
         }
 
         $request = NethGui_Core_Request::getHttpRequest($arguments);

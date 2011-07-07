@@ -23,7 +23,7 @@ interface NethGui_Core_ValidatorInterface {
      * an explanation of the problem.   
      * 
      * @see evaluate()
-     * @return array An array arrays of two elements: a template string and an array of arguments, to invoke strtr().
+     * @return array An array of arrays of two elements: a template string and an array of arguments, to invoke strtr().
      */
     public function getFailureInfo();
 }
