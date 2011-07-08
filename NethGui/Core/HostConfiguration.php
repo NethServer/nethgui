@@ -25,7 +25,7 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
      * @var NethGui_Core_UserInterface
      */
     private $user;
-    private $asyncEvents;
+    private $eventQueue;
 
     /**
      * We must specify who acts on host configuration.
@@ -34,7 +34,7 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
     public function __construct(NethGui_Core_UserInterface $user)
     {
         $this->user = $user;
-        $this->asyncEvents = array();
+        $this->eventQueue = array();
     }
 
     /**
@@ -133,12 +133,13 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
         return ($ret == 0);
     }
 
-    public function signalEventAsync($event, $argv = array(), $callback = NULL)
+    public function signalEventFinally($event, $argv = array(), $callback = NULL)
     {
+        // Ensure that each event is called one time with the same set of arguments
         $eventId = $this->calcEventId($event, $argv);
 
-        if ( ! isset($this->asyncEvents[$eventId])) {
-            $this->asyncEvents[$eventId] = array(
+        if ( ! isset($this->eventQueue[$eventId])) {
+            $this->eventQueue[$eventId] = array(
                 'name' => $event,
                 'args' => $argv,
                 'cbks' => array(),
@@ -146,7 +147,7 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
         }
 
         if (is_callable($callback)) {
-            $this->asyncEvents[$eventId]['cbks'][] = $callback;
+            $this->eventQueue[$eventId]['cbks'][] = $callback;
         }
     }
 
@@ -177,14 +178,14 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
      * Raises all asynchronous events, invoking the given callback functions.
      * @return boolean|NULL
      */
-    public function raiseAsyncEvents()
+    public function signalFinalEvents()
     {
-        if (empty($this->asyncEvents)) {
+        if (empty($this->eventQueue)) {
             return NULL;
         }
 
 
-        foreach ($this->asyncEvents as $eventData) {
+        foreach ($this->eventQueue as $eventData) {
             $output = array();
 
             $args = array();
@@ -205,8 +206,8 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
 
             $exitStatus = $this->signalEvent($eventData['name'], $args, $output);
 
-            foreach ($eventData['cbks'] as $callback) {
-                call_user_func($callback, $output, $exitStatus);
+            foreach ($eventData['cbks'] as $outputCallback) {
+                call_user_func($outputCallback, $eventData['name'], $exitStatus, $output);
             }
 
             if ($exitStatus === FALSE) {

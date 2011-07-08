@@ -70,7 +70,7 @@ class NethGui_Module_Menu extends NethGui_Core_Module_Standard
     {
         parent::prepareView($view, $mode);
 
-        if ($mode === self::VIEW_REFRESH) {
+        if ($mode === self::VIEW_SERVER) {
             $view->setTemplate(array($this, 'renderModuleMenu'));
         }
     }

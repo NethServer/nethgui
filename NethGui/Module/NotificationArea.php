@@ -97,7 +97,7 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard imple
         foreach ($dialog->getActions() as $action) {
             $view = new NethGui_Core_View($dialog->getModule());
             $view['name'] = $action[0];
-            if ($mode == self::VIEW_UPDATE) {
+            if ($mode == self::VIEW_CLIENT) {
                 // Translate the `location` in a URL for FORM action attribute
                 $path = $view->getModulePath();
                 $path[] = $action[1];

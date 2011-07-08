@@ -40,7 +40,7 @@ class NethGui_Module_Table_Read extends NethGui_Module_Table_Action
     {
         parent::prepareView($view, $mode);
         $view['rows'] = $this->prepareRows($view, $mode);
-        if ($mode == self::VIEW_REFRESH) {
+        if ($mode == self::VIEW_SERVER) {
             $view['columns'] = $this->columns;
 
             $view['tableActions'] = new ArrayObject();

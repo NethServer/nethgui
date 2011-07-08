@@ -227,10 +227,10 @@ class NethGui_Framework
         /**
          * Apply args to string
          */
-        if(empty($args)) {
+        if (empty($args)) {
             return $translation;
         }
-        
+
         return strtr($translation, $args);
     }
 
@@ -270,7 +270,7 @@ class NethGui_Framework
                 break;
             } else {
                 $attempts[] = $catalog;
-            }                        
+            }
         }
 
         if ($translation === NULL) {
@@ -460,17 +460,13 @@ class NethGui_Framework
 
         $worldModule->addModule($notificationManager);
 
-        // Raise asynchronous events
-        $eventStatus = $hostConfiguration->raiseAsyncEvents();
-        if ($eventStatus === TRUE)
-        {
-            // If at least one event occurred, show a successful dialog box:
-            $user->showDialogBox($worldModule, 'All changes have been saved');
-        } elseif ($eventStatus === FALSE) {
-            $user->showDialogBox($worldModule, 'Some error occurred. Check the system log for details.', array(), NethGui_Core_DialogBox::NOTIFY_WARNING);
-        }
+        // Finally, signal "final" events
+        $hostConfiguration->signalFinalEvents();
 
 
+        /*
+         * Prepare the views and render into Xhtml or Json
+         */
         if ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_HTML) {
             $redirect = $user->getRedirect();
             if ( ! is_null($redirect)) {
@@ -479,15 +475,15 @@ class NethGui_Framework
             }
             $worldModule->addModule(new NethGui_Module_Menu($topModuleDepot->getModules()));
             header("Content-Type: text/html; charset=UTF-8");
-            $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_REFRESH);
+            $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_SERVER);
             echo $view->render();
         } elseif ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_JSON) {
             header("Content-Type: application/json; charset=UTF-8");
-            $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_UPDATE);
+            $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_CLIENT);
             echo $view->toJson();
         }
 
-        
+
 
         // Control reaches this point only if no redirect occurred.
         $notificationManager->dismissTransientDialogBoxes();

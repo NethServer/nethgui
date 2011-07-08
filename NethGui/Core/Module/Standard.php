@@ -170,7 +170,9 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
 
     /**
      * Signal the given event after at least one successful database write operation occurred.
-     * @param string $eventName 
+     * @param string $eventName
+     * @param array $eventArgs
+     * @param callable $eventCallback
      */
     protected function requireEvent($eventName, $eventArgs = array(), $eventCallback = NULL)
     {
@@ -180,10 +182,10 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
         }
     }
 
-    protected function signalAllEventsAsync()
+    protected function signalAllEventsFinally()
     {
         foreach ($this->requiredEvents as $eventCall) {
-            $this->getHostConfiguration()->signalEventAsync($eventCall[0], $eventCall[1], $eventCall[2]);
+            $this->getHostConfiguration()->signalEventFinally($eventCall[0], $eventCall[1], $eventCall[2]);
         }
     }
 
@@ -354,7 +356,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
         if ($this->autosave === TRUE) {
             $changes = $this->parameters->save();
             if ($changes > 0) {
-                $this->signalAllEventsAsync();
+                $this->signalAllEventsFinally();
             }
         }
     }
@@ -363,7 +365,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
     {
         parent::prepareView($view, $mode);
         $view->copyFrom($this->parameters);
-        if ($mode === self::VIEW_REFRESH) {
+        if ($mode === self::VIEW_SERVER) {
             $view->copyFrom($this->immutables);
             $view['__invalidParameters'] = $this->invalidParameters;
         }

@@ -55,7 +55,7 @@ class NethGui_Core_Module_StandardTest extends PHPUnit_Framework_TestCase
             ->method('copyFrom')
             ->with($this->anything());
         -
-            $this->object->prepareView($viewMock, NethGui_Core_Module_Standard::VIEW_UPDATE);
+            $this->object->prepareView($viewMock, NethGui_Core_Module_Standard::VIEW_CLIENT);
     }
 
     public function testPrepareView2()
@@ -68,7 +68,7 @@ class NethGui_Core_Module_StandardTest extends PHPUnit_Framework_TestCase
             ->method('copyFrom')
             ->with($this->anything());
         
-            $this->object->prepareView($viewMock, NethGui_Core_Module_Standard::VIEW_REFRESH);
+            $this->object->prepareView($viewMock, NethGui_Core_Module_Standard::VIEW_SERVER);
     }
 
     public function testGetLanguageCatalog()

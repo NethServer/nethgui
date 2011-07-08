@@ -15,13 +15,13 @@
 interface NethGui_Core_ModuleInterface
 {
     /**
-     * To require a full view refresh
+     * Prepare the server view
      */
-    const VIEW_REFRESH = 0;
+    const VIEW_SERVER = 0;
     /**
-     * To require a partial view update
+     * Prepare the client view
      */
-    const VIEW_UPDATE = 1;
+    const VIEW_CLIENT = 1;
 
     /**
      * Sets the host configuration Model.
@@ -73,9 +73,9 @@ interface NethGui_Core_ModuleInterface
      * Prepare view layer data, putting it into $view.
      *
      * @param NethGui_Core_ViewInterface $view The view to put the data into
-     * @param integer $mode One of VIEW_UPDATE or VIEW_REFRESH values
-     * @see NethGui_Core_ModuleInterface::VIEW_REFRESH
-     * @see NethGui_Core_ModuleInterface::VIEW_UPDATE
+     * @param integer $mode One of VIEW_CLIENT or VIEW_SERVER values
+     * @see NethGui_Core_ModuleInterface::VIEW_SERVER
+     * @see NethGui_Core_ModuleInterface::VIEW_CLIENT
      * @see NethGui_Core_ViewInterface
      */
     public function prepareView(NethGui_Core_ViewInterface $view, $mode);

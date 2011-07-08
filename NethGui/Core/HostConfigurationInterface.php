@@ -90,6 +90,6 @@ interface NethGui_Core_HostConfigurationInterface
      * @param array $argv Optional event arguments
      * @param callback $callback
      */
-    public function signalEventAsync($event, $argv = array(), $callback = NULL);
+    public function signalEventFinally($event, $argv = array(), $callback = NULL);
 }
 
