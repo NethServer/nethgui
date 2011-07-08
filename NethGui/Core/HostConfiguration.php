@@ -133,7 +133,7 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
         return ($ret == 0);
     }
 
-    public function signalEventFinally($event, $argv = array(), $callback = NULL)
+    public function signalEventFinally($event, $argv = array(), $observer = NULL)
     {
         // Ensure that each event is called one time with the same set of arguments
         $eventId = $this->calcEventId($event, $argv);
@@ -142,12 +142,12 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
             $this->eventQueue[$eventId] = array(
                 'name' => $event,
                 'args' => $argv,
-                'cbks' => array(),
+                'objs' => array(),
             );
         }
 
-        if (is_callable($callback)) {
-            $this->eventQueue[$eventId]['cbks'][] = $callback;
+        if ($observer instanceof NethGui_Core_EventObserverInterface) {
+            $this->eventQueue[$eventId]['objs'][] = $observer;
         }
     }
 
@@ -206,8 +206,11 @@ class NethGui_Core_HostConfiguration implements NethGui_Core_HostConfigurationIn
 
             $exitStatus = $this->signalEvent($eventData['name'], $args, $output);
 
-            foreach ($eventData['cbks'] as $outputCallback) {
-                call_user_func($outputCallback, $eventData['name'], $exitStatus, $output);
+            foreach ($eventData['objs'] as $observer) {
+                if ($observer instanceof NethGui_Core_EventObserverInterface)
+                {
+                    $observer->notifyEventCompletion($eventData['name'], $args, $exitStatus, $output);
+                }
             }
 
             if ($exitStatus === FALSE) {

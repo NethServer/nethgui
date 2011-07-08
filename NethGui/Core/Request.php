@@ -98,7 +98,6 @@ class NethGui_Core_Request implements NethGui_Core_RequestInterface
          * Clear global variables
          */
         $_POST = array();
-        $_GET = array();
         
         return $instance;
     }

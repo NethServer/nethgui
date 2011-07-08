@@ -20,3 +20,6 @@ $L['Ignore_label'] = 'Ignore';
 $L['All changes have been saved'] = 'All changes have been saved';
 
 $L['regexp "${0}"'] = 'regular expression \'${0}\'';
+
+$L['nethgui-test_success'] = 'NethGui test event processed successfully (${0})';
+$L['nethgui-test_failure'] = 'Error in NethGui test event processing (${0})';

@@ -45,6 +45,12 @@ interface NethGui_Core_UserInterface
      * The answer is handled through NotificationArea module, which is responsible
      * for the dialog dismission.
      * The dialogs that don't expect an answer are dismissed after being shown.
+     *
+     * @param NethGui_Core_ModuleInterface $module
+     * @param string $message
+     * @param array $actions
+     * @param integer $type
+     * @return void
      */
     public function showDialogBox(NethGui_Core_ModuleInterface $module, $message, $actions = array(), $type = NethGui_Core_DialogBox::NOTIFY_SUCCESS);
     
