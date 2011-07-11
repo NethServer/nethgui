@@ -269,7 +269,7 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
         $this->submittedRequest = TRUE;
     }
 
-    protected function runModuleTestProcedure($viewMode = NethGui_Core_ModuleInterface::VIEW_REFRESH)
+    protected function runModuleTestProcedure($viewMode = NethGui_Core_ModuleInterface::VIEW_SERVER)
     {
         $this->object->setHostConfiguration($this->provideHostConfiguration());
         $this->object->initialize();

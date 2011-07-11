@@ -47,7 +47,6 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
 
         /*
          *  Create and add the READ action, that displays the table.
-         *  Note that the Controller class states 
          */
         $this->addChild(new NethGui_Module_Table_Read('read', $columns));
 

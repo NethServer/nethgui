@@ -34,6 +34,7 @@ class NethGui_Module_Table_Modify extends NethGui_Module_Table_Action
         parent::__construct($identifier);
         $this->viewTemplate = $viewTemplate;
         $this->parameterSchema = $parameterSchema;
+        $this->autosave = FALSE;
 
         foreach ($requireEvents as $eventData) {
             if (is_string($eventData)) {
@@ -138,8 +139,6 @@ class NethGui_Module_Table_Modify extends NethGui_Module_Table_Action
 
         $action = $this->getIdentifier();
 
-
-
         if ($action == 'delete') {
             $key = $this->parameters[$this->key];
 
@@ -156,20 +155,23 @@ class NethGui_Module_Table_Modify extends NethGui_Module_Table_Action
             throw new NethGui_Exception_HttpStatusClientError('Not found', 404);
         }
 
-        // Redirect to parent controller module              
+        // Transfer all parameters values into tableAdapter (and DB):
+        $changes = $this->parameters->save();
 
-        $this->getRequest()->getUser()->setRedirect($this->getParent());
-
-        $changes = $this->tableAdapter->save();
+        // Transfer all tableAdapter values into DB
+        $changes += $this->tableAdapter->save();
         if ($changes > 0) {
-            $this->signalAllEventsAsync();
+            $this->signalAllEventsFinally();
         }
+
+        // Redirect to parent controller module
+        $this->getRequest()->getUser()->setRedirect($this->getParent());
     }
 
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
-        if ($mode == self::VIEW_REFRESH) {
+        if ($mode == self::VIEW_SERVER) {
             $view['__key'] = $this->key;
         }
     }

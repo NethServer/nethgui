@@ -19,9 +19,12 @@
  */
 class NethGui_Core_DialogBox implements Serializable
 {
-    const NOTIFY_SUCCESS = 0;
-    const NOTIFY_WARNING = 1;
-    const NOTIFY_ERROR = 2;
+    const NOTIFY_SUCCESS = 0x01;
+    const NOTIFY_WARNING = 0x02;
+    const NOTIFY_ERROR = 0x04;
+
+    const NOTIFY_MODAL = 0x10;
+    const NOTIFY_EMBEDDED = 0x20;
 
 
     private $message;
@@ -29,6 +32,7 @@ class NethGui_Core_DialogBox implements Serializable
     private $actions;
     private $module;
     private $id;
+    private $transient;
 
     public function __construct(NethGui_Core_ModuleInterface $module, $message, $actions = array(), $type = self::NOTIFY_SUCCESS)
     {
@@ -36,10 +40,15 @@ class NethGui_Core_DialogBox implements Serializable
             $module = new NethGui_Core_ModuleSurrogate($module);
         }
 
+        // Sanitize the $message parameter: must be a couple <string, params[]>
+        if(!is_array($message)) {
+            $message = array($message, array());
+        }
+
         $this->module = $module;
         $this->actions = $this->sanitizeActions($actions);
         $this->message = $message;
-        $this->type = $type;
+        $this->type = $type;        
     }
 
     private function sanitizeActions($actions) {
@@ -56,6 +65,11 @@ class NethGui_Core_DialogBox implements Serializable
             
             if(!isset($action[2])) {
                 $action[2] = array();
+            }
+
+            // An action with submit data causes the dialog to be persistent
+            if(!empty($action[2]) && is_null($this->transient)) {
+                $this->transient = FALSE;
             }
             
             $sanitizedActions[] = $action;
@@ -84,13 +98,12 @@ class NethGui_Core_DialogBox implements Serializable
 
     public function isTransient()
     {
-        return empty($this->actions);
+        return $this->transient !== FALSE;
     }
 
     public function getId()
     {
-        if (is_null($this->id)) {
-            // $this->id = substr(md5(microtime() . $this->serialize()), 0, 6);
+        if (is_null($this->id)) {            
             $this->id = 'dlg' . substr(md5($this->serialize()), 0, 6);
         }
 
@@ -99,13 +112,13 @@ class NethGui_Core_DialogBox implements Serializable
 
     public function serialize()
     {
-        return serialize(array($this->message, $this->actions, $this->type, $this->module, $this->id));
+        return serialize(array($this->message, $this->actions, $this->type, $this->module, $this->id, $this->transient));
     }
 
     public function unserialize($serialized)
     {
         $args = unserialize($serialized);
-        list($this->message, $this->actions, $this->type, $this->module, $this->id) = $args;
+        list($this->message, $this->actions, $this->type, $this->module, $this->id, $this->transient) = $args;
     }
 
 }

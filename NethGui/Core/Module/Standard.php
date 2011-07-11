@@ -13,7 +13,7 @@
  * @package Core
  * @subpackage Module
  */
-abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract implements NethGui_Core_RequestHandlerInterface
+abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract implements NethGui_Core_RequestHandlerInterface, NethGui_Core_EventObserverInterface
 {
     /**
      * A valid service status is a 'disabled' or 'enabled' string.
@@ -169,21 +169,67 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
     }
 
     /**
-     * Signal the given event after at least one successful database write operation occurred.
-     * @param string $eventName 
+     * The given $eventName is required to be signalled after any database change
+     * @param string $eventName
+     * @param array $eventArgs
+     * @param NethGui_Core_EventObserverInterface $observer Optional
      */
-    protected function requireEvent($eventName, $eventArgs = array(), $eventCallback = NULL)
+    protected function requireEvent($eventName, $eventArgs = array(), $observer = NULL)
     {
         if (is_string($eventName))
         {
-            $this->requiredEvents[] = array($eventName, $eventArgs, $eventCallback);
+            $this->requiredEvents[] = array($eventName, $eventArgs, is_null($observer) ? $this : $observer);
         }
     }
 
-    protected function signalAllEventsAsync()
+    public function notifyEventCompletion($eventName, $args, $exitStatus, $output)
+    {
+        $messageArgs = array('${0}' => $eventName);
+        $index = 1;
+        foreach ($args as $value) {
+            $messageArgs['${' . $index . '}'] = $value;
+            $index ++;
+        }
+
+        if ($exitStatus === FALSE) {
+            $type = NethGui_Core_DialogBox::NOTIFY_WARNING;
+            $messageTemplate = $eventName . '_failure';
+        } else {
+            $type = NethGui_Core_DialogBox::NOTIFY_SUCCESS;
+            $messageTemplate = $eventName . '_success';
+        }
+
+        $actions = $this->prepareDialogBoxActions($eventName, $args, $exitStatus, $output, $type);
+
+        $this->getRequest()->getUser()->showDialogBox($this, array($messageTemplate, $messageArgs), $actions, $type);
+    }
+
+    /**
+     * This method receives the same arguments given to notifyEventCompletion()
+     * and should return the action definitions to display a dialog box.
+     *
+     * @see NethGui_Core_EventObserverInterface::notifyEventCompletion
+     * @see NethGui_Core_DialogBox
+     * @param string $eventName
+     * @param array $args
+     * @param boolean $exitStatus
+     * @param array $output
+     * @param &integer $type Output parameter to change the dialog box type
+     * @return array
+     */
+    protected function prepareDialogBoxActions($eventName, $args, $exitStatus, $output, &$type)
+    {
+        return array();
+    }
+
+    /**
+     * Event signalling routine
+     * @see requireEvent
+     */
+    protected function signalAllEventsFinally()
     {
         foreach ($this->requiredEvents as $eventCall) {
-            $this->getHostConfiguration()->signalEventAsync($eventCall[0], $eventCall[1], $eventCall[2]);
+            $this->getHostConfiguration()->signalEventFinally($eventCall[0], $eventCall[1], $eventCall[2]);
         }
     }
 
@@ -326,7 +372,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
     }
 
     public function validate(NethGui_Core_ValidationReportInterface $report)
-    {        
+    {
         foreach ($this->parameters->getKeys() as $parameterName) {
             if ( ! $this->getRequest()->hasParameter($parameterName)) {
                 continue; // missing parameters are not validated
@@ -354,7 +400,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
         if ($this->autosave === TRUE) {
             $changes = $this->parameters->save();
             if ($changes > 0) {
-                $this->signalAllEventsAsync();
+                $this->signalAllEventsFinally();
             }
         }
     }
@@ -363,7 +409,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
     {
         parent::prepareView($view, $mode);
         $view->copyFrom($this->parameters);
-        if ($mode === self::VIEW_REFRESH) {
+        if ($mode === self::VIEW_SERVER) {
             $view->copyFrom($this->immutables);
             $view['__invalidParameters'] = $this->invalidParameters;
         }

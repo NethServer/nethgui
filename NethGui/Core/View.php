@@ -228,7 +228,7 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
         if ( ! isset($this->languageCatalogList)) {
             $this->languageCatalogList = $this->extractLanguageCatalogList($this->getModule());
         }
-        return NethGui_Framework::getInstance()->translate($value, array(), NULL, $this->languageCatalogList);
+        return NethGui_Framework::getInstance()->translate($value, $args, NULL, $this->languageCatalogList);
     }
 
     public function getModule()
