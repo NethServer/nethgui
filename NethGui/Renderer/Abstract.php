@@ -257,4 +257,5 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
      * Concatenate an header text
      */
     abstract public function header($text, $flags = 0);
+  
 }

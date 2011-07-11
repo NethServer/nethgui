@@ -107,27 +107,36 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard imple
 
         foreach ($dialog->getActions() as $action) {
             $view = new NethGui_Core_View($dialog->getModule());
+
             $view['name'] = $action[0];
-            $view['data'] = $action[2];
+
+            if ($dialog->isTransient()) {
+                $view['transient'] = TRUE;
+                $dismissData = array('/NotificationArea/dismissDialog' => $dialog->getId());
+                /*
+                 * Merge the action data with the dismiss dialog commands:
+                 * (note the starting `/` indicating an absolute path)
+                 */
+                $view['data'] = array_merge($action[2], $dismissData);
+            } else {
+                $view['data'] = $action[2];
+                $view['transient'] = FALSE;
+            }
 
             if ($mode == self::VIEW_CLIENT) {
                 // Translate the `location` in a URL for FORM action attribute
                 $path = $view->getModulePath();
                 $path[] = $action[1];
                 $view['location'] = NethGui_Framework::getInstance()->buildUrl($path);
+                $view['name'] = $view->translate($view['name'] . '_label');
             } else {
                 $view['location'] = $action[1];
-                if($dialog->isTransient()) {
+                if ($dialog->isTransient()) {
                     $view->setTemplate(array($this, 'renderDialogTransient'));
                 } else {
                     $view->setTemplate(array($this, 'renderDialogPersistent'));
                 }
             }
-
-            $dismissView = $view->spawnView($this, 'dismissView');
-            $dismissView['dismissDialog'] = $dialog->getId();
-            $dismissView->setTemplate(array($this, 'renderDismissNotification'));
-
 
             $actionViews[] = $view;
         }
@@ -147,11 +156,6 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard imple
         $form->hidden('data');
         $form->button($view['name'], NethGui_Renderer_Abstract::BUTTON_SUBMIT);
         return $view;
-    }
-
-    public function renderDismissNotification(NethGui_Renderer_Abstract $view)
-    {
-        return $view->hidden('dismissDialog');
     }
 
     public function addValidationError(NethGui_Core_ModuleInterface $module, $fieldId, $message)

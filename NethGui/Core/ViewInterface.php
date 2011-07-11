@@ -77,7 +77,16 @@ interface NethGui_Core_ViewInterface extends ArrayAccess, IteratorAggregate
      * @param string|array $parts
      * @return string
      */
-    public function getUniqueId($parts = NULL);
+    public function getUniqueId($parts = '');
+
+    /**
+     * Generate a control name for the given $parts. If no parts are given
+     * the name is generated from the module referenced by the view.
+     *
+     * @param string|array $parts
+     * @return string
+     */
+    public function getControlName($parts = '');
     
     /**
      * A (shortcut) method to translate a message in the current language.

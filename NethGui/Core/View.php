@@ -256,7 +256,7 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
         return $this->modulePath;
     }
 
-    public function getUniqueId($parts = NULL)
+    public function getUniqueId($parts = '')
     {
         $prefix = implode('_', $this->getModulePath());
 
@@ -273,6 +273,44 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
         $suffix = str_replace('/', '_', $suffix);
 
         return $prefix . '_' . $suffix;
+    }
+
+    public function getControlName($parts = '')
+    {
+        $nameSegments = $this->realPath($parts);
+        $prefix = array_shift($nameSegments); // the first segment is a special one
+        return $prefix . '[' . implode('][', $nameSegments) . ']';
+    }
+
+    private function realPath($name)
+    {
+        if (is_array($name)) {
+            // ensure the $name argument is a string in the form of ../segment1/../segment2/..
+            $name = implode('/', $name);
+        }
+
+        if (strlen($name) > 0 && $name[0] == '/') {
+            // if the first character is a / consider an absolute path
+            $nameSegments = array();
+        } else {
+            // else consider a path relative to the current module
+            $nameSegments = $this->getModulePath();
+        }
+
+        // split the path into its parts
+        $parts = explode('/', $name);
+
+        foreach ($parts as $part) {
+            if ($part == '') {
+                continue; // skip empty parts
+            } elseif ($part == '..') {
+                array_pop($nameSegments); // backreference
+            } else {
+                $nameSegments[] = $part; // add segment
+            }
+        }
+
+        return $nameSegments;
     }
 
 }

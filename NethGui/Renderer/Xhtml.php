@@ -50,35 +50,6 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
     }
 
     /**
-     * Convert the given argument to an xhtml name attribute value
-     *
-     * @param string|array $name
-     * @return string
-     */
-    private function getFullName($name)
-    {
-        $path = $this->getModulePath();
-
-        $nameSegments = $path;
-
-        if (is_string($name)) {
-            $name = explode('/', $name);
-        }
-
-        foreach ($name as $part) {
-            if ($part == '..') {
-                array_pop($nameSegments);
-            } elseif ($part != '') {
-                $nameSegments[] = $part;
-            }
-        }
-
-        $prefix = array_shift($nameSegments);
-
-        return $prefix . '[' . implode('][', $nameSegments) . ']';
-    }
-
-    /**
      *
      * @param array|string $_ Arguments for URL
      * @return string the URL
@@ -107,6 +78,11 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
     public function getUniqueId($parts = NULL)
     {
         return $this->view->getUniqueId($parts);
+    }
+
+    public function getControlName($parts = '')
+    {
+        return $this->view->getControlName($parts);
     }
 
     public function translate($message, $args = array())
@@ -317,7 +293,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
 
 
         if ( ! isset($attributes['name'])) {
-            $attributes['name'] = $this->getFullName($name);
+            $attributes['name'] = $this->getControlName($name);
         }
 
         $isCheckable = ($tag == 'input') && isset($attributes['type']) && ($attributes['type'] == 'checkbox' || $attributes['type'] == 'radio');
