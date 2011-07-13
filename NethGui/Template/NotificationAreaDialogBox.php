@@ -21,7 +21,7 @@ switch (intval($view['type']) & NethGui_Core_DialogBox::MASK_SEVERITY) {
     echo $dialogClass 
 ?>" id="<?php 
     echo $view['dialogId']
-?>"><span class='ui-icon ui-icon-<?php echo $icon ?>' style='float: left; margin-right: .3em;'></span><span class="message"><?php
+?>"><span class='notification-icon ui-icon ui-icon-<?php echo $icon ?>' style='float: left; margin-right: .3em;'></span><span class="message"><?php
     echo $view['message']; ?></span><?php 
 
 if(count($view['actions']) > 0):
