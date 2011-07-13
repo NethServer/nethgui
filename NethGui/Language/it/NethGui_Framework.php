@@ -32,3 +32,5 @@ $L['Incorrect values'] = 'Valori non corretti';
 
 $L['nethgui-test_success'] = 'Evento di test NethGui eseguito con successo (${0})';
 $L['nethgui-test_failure'] = 'Errore durante l\'evento di test NethGui (${0})';
+
+$L['Please wait...'] = 'Attendere prego...';
