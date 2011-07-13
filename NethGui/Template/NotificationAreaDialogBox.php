@@ -2,7 +2,7 @@
 
 $dialogClass = 'notification-dialog';
 
-switch ($view['type']) {
+switch (intval($view['type']) & NethGui_Core_DialogBox::MASK_SEVERITY) {
     case NethGui_Core_DialogBox::NOTIFY_SUCCESS:
         $dialogClass .= ' embedded success ui-state-highlight';
         $icon = 'check';

@@ -19,12 +19,15 @@
  */
 class NethGui_Core_DialogBox implements Serializable
 {
-    const NOTIFY_SUCCESS = 0x01;
-    const NOTIFY_WARNING = 0x02;
-    const NOTIFY_ERROR = 0x04;
+    const NOTIFY_SUCCESS = 0x0;
+    const NOTIFY_WARNING = 0x1;
+    const NOTIFY_ERROR = 0x2;
+    const MASK_SEVERITY = 0x3;
 
-    const NOTIFY_MODAL = 0x10;
-    const NOTIFY_EMBEDDED = 0x20;
+    const NOTIFY_EMBEDDED = 0x4;
+    const NOTIFY_MODAL = 0x8;
+    const MASK_BEHAVIOUR = 0xC;
+    
 
 
     private $message;

@@ -1,4 +1,4 @@
-<div id="NotificationArea"><?php 
+<div id="NotificationArea"><div class="notification-dialog LoadingMessage ui-state-highlight ui-corner-all" style="display: none"><span class="ui-icon ui-icon-transfer-e-w" style="float: left; margin-right: .3em;"></span><span class="message"><?php echo T('Please wait...'); ?></span></div><?php 
     
 if ($view->getModule()->hasValidationErrors()): 
 
