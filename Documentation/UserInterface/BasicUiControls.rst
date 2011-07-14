@@ -15,6 +15,13 @@ The idea is taken from `alexking.org`_
 Controls
 --------
 
+Plain text::
+
+  This is a paragraph.
+
+  This is another paragraph.
+
+
 Text input field (normal/focused)::
 
   [__________________] 
