@@ -81,7 +81,7 @@ class NethGui_Framework
             // Callback
             $viewOutput = (string) call_user_func_array($viewName, $viewState);
         } else {
-            $ciViewPath = '../../' . str_replace('_', '/', $viewName);
+            $ciViewPath = '../../../' . str_replace('_', '/', $viewName);
 
             $absoluteViewPath = realpath(APPPATH . 'views/' . $ciViewPath . '.php');
 

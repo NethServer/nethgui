@@ -24,7 +24,7 @@ class Dispatcher extends CI_Controller {
             exit;
         }
 
-        require_once(APPPATH . '../NethGui/Framework.php');
+        require_once(APPPATH . '../../NethGui/Framework.php');
 
         $NFW = NethGui_Framework::getInstance($this);
         $NFW->dispatch($method, $parameters);
