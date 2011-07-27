@@ -1,4 +1,5 @@
-CodeIgniter/logs/
+CodeIgniter/application/logs/
+CodeIgniter/system
 Documentation/Metrics/
 Documentation/CodeCoverage/
 Documentation/Api/
