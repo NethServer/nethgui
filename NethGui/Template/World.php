@@ -3,12 +3,12 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="<?php echo $view['lang'] ?>" xml:lang="<?php echo $view['lang'] ?>">
     <head>
-        <title>NethService</title>
+        <title>NethServer</title>
         <link rel="stylesheet" type="text/css" href="<?php echo htmlspecialchars($view['cssMain']); ?>" />
     </head>
     <body>
         <div id="allWrapper"> 
-            <div id="header"><div id="product">NethService</div><?php echo $view['NotificationArea'] ?></div>
+            <div id="header"><div id="product">NethServer</div><?php echo $view['NotificationArea'] ?></div>
             <div class="colmask leftmenu">
                 <div class="colleft">
                     <div class="col1"><div id="<?php echo $view['CurrentModule']->getModule()->getIdentifier(); ?>" class="CurrentModule"><?php echo $view['CurrentModule'] ?></div></div>

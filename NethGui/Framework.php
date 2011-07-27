@@ -389,7 +389,7 @@ class NethGui_Framework
          */
         $hostConfiguration = new NethGui_Core_HostConfiguration($user);
         // TODO: set a configuration parameter for the application path
-        $appPath = realpath(dirname(__FILE__) . '/../NethService');
+        $appPath = realpath(dirname(__FILE__) . '/../NethServer');
         $this->languageCatalogStack[] = basename($appPath);
         $topModuleDepot = new NethGui_Core_TopModuleDepot($appPath, $hostConfiguration, $user);
 
