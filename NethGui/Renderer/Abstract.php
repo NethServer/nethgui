@@ -37,11 +37,11 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
     const BUTTON_CUSTOM = 0x400;
 
     const DIALOG_MODAL = 0x800;
-    const DIALOG_EMBEDDED = 0x1000;  
+    const DIALOG_EMBEDDED = 0x1000;
     const DIALOG_SUCCESS = 0x2000;
     const DIALOG_WARNING = 0x4000;
     const DIALOG_ERROR = 0x8000;
-    
+
     const SELECTOR_SINGLE = 0x20000;
     const SELECTOR_MULTIPLE = 0x40000;
 
@@ -54,11 +54,6 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
     public function __construct(NethGui_Core_ViewInterface $view)
     {
         $this->view = $view;
-    }
-
-    public function __toString()
-    {
-        return $this->render();
     }
 
     public function copyFrom($data)
@@ -108,7 +103,7 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
     {
         throw new NethGui_Exception_View('Cannot change the view template');
     }
-    
+
     public function getTemplate()
     {
         return $this->view->getTemplate();
@@ -119,143 +114,142 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
         throw new NethGui_Exception_View('Cannot spawn a view now');
     }
 
-    /**
-     * Concatenate an arbitrary text string.
-     * @param string $text
-     * @param boolean $hsc Optional - Apply htmlspecialchars() to $text
-     * @return NethGui_Renderer_Abstract Same object
-     */
-    abstract public function append($text, $hsc = TRUE);
+    public function translate($message, $args = array())
+    {
+        return $this->view->translate($message, $args);
+    }
+
+    public function getModulePath()
+    {
+        return $this->view->getModulePath();
+    }
+
+    public function getUniqueId($parts = NULL)
+    {
+        return $this->view->getUniqueId($parts);
+    }
+
+    public function getControlName($parts = '')
+    {
+        return $this->view->getControlName($parts);
+    }
 
     /**
-     * Concatenate the View member $offset
-     * @return NethGui_Renderer_Abstract Same object
-     */
-    abstract public function inset($offset);
-
-    /**
-     * Concatenate a text input control
+     * Create a member inclusion
      * @param string $name The view member name
      * @param integer $flags Optional {STATE_DISABLED}
-     * @return NethGui_Renderer_Abstract Same object
+     * @return NethGui_Renderer_WidgetInterface
+     */
+    abstract public function inset($name, $flags = 0);
+
+    /**
+     * Create a text input control
+     * @param string $name The view member name
+     * @param integer $flags Optional {STATE_DISABLED}
+     * @return NethGui_Renderer_WidgetInterface
      */
     abstract public function textInput($name, $flags = 0);
 
     /**
-     * Concatenate an hidden control
+     * Create a text input control
      * @param string $name The view member name
      * @param integer $flags Optional {STATE_DISABLED}
-     * @return NethGui_Renderer_Abstract Same object
+     * @return NethGui_Renderer_WidgetInterface
+     */
+    abstract public function text($name, $flags = 0);
+
+    /**
+     * Create an hidden control
+     * @param string $name The view member name
+     * @param integer $flags Optional {STATE_DISABLED}
+     * @return NethGui_Renderer_WidgetInterface
      */
     abstract public function hidden($name, $flags = 0);
 
     /**
-     * Concatenate a radio button control
+     * Create a selector control
+     *
+     * @param string $name The view member name holding the selected value(s)
+     * @param integer $flags
+     * @return NethGui_Renderer_WidgetInterface
+     */
+    abstract public function selector($name, $flags = 0);
+
+    /**
+     * Create a button control
+     * @param string $name The view member name
+     * @param integer $flags Optional - {DIALOG_*, STATE_ENABLED}
+     * @return NethGui_Renderer_WidgetInterface
+     */
+    abstract public function button($name, $flags = 0);
+
+    /**
+     * Create a radio button control
      * @param string $name The view member name
      * @param string $value The value assigned to the control, when selected.
      * @param integer $flags Optional {STATE_DISABLED, STATE_CHECKED}
-     * @return NethGui_Renderer_Abstract Same object
+     * @return NethGui_Renderer_WidgetInterface
      */
     abstract public function radioButton($name, $value, $flags = 0);
 
     /**
-     * Concatenate a checkbox control
+     * Create a checkbox control
      * @param string $name The view member name
      * @param string $value The value assigned to the control, when selected.
      * @param integer $flags Optional {STATE_DISABLED, STATE_CHECKED}
-     * @return NethGui_Renderer_Abstract Same object
+     * @return NethGui_Renderer_WidgetInterface
      */
     abstract public function checkBox($name, $value, $flags = 0);
 
     /**
-     * Concatenate a button control
-     * @param string $name The view member name
-     * @param integer $flags Optional - {DIALOG_*, STATE_ENABLED}
-     * @param string|array $value Optional - Action to execute for LINK and CANCEL button types.
-     * @return NethGui_Renderer_Abstract Same object
-     */
-    abstract public function button($name, $flags = 0, $value = NULL);
-
-    /**
-     * Renders a dialog box container.
-     *
-     * @param string $identifier The identifier of the dialog
-     * @param int $flags Render flags: {DIALOG_MODAL, DIALOG_EMBEDDED, STATE_DISABLED, DIALOG_SUCCESS, DIALOG_WARNING, DIALOG_ERROR}
-     * @return NethGui_Renderer_Abstract A new object instance
-     */
-    abstract public function dialog($identifier, $flags = 0);
-
-    /**
-     * Renders a tabs container.
-     *
-     * @param string $name The identifier of the control
-     * @param array $pages Optional - The identifier list of the pages. NULL includes all the sub-views of the current object.
-     * @param integer $flags {STATE_DISABLED}
-     * @return NethGui_Renderer_Abstract A new object instance, representing the tab list.
-     */
-    abstract public function tabs($name, $pages = NULL, $flags = 0);
-
-    /**
-     * Renders a simple form container.
-     * @param string $action Optional - The form action name.
-     * @param integer $flags Optional - {STATE_DISABLED}
-     * @return NethGui_Renderer_Abstract A new object instance
-     */
-    abstract public function form($action = '', $flags = 0);
-
-    /**
-     * Renders a selectable fieldset container.
+     * Create a selectable fieldset container.
      *
      * @see checkbox()
      * @param string $name
      * @param string $value
      * @param integer $flags
-     * @return NethGui_Renderer_Abstract A new object instance, representing the fieldset surface
+     * @return NethGui_Renderer_WidgetInterface
      */
     abstract public function fieldsetSwitch($name, $value, $flags = 0);
 
     /**
-     * Renders a panel container
+     * Create a dialog box container.
      *
-     * @param string $identifier
+     * @param int $flags Render flags: {DIALOG_MODAL, DIALOG_EMBEDDED, STATE_DISABLED, DIALOG_SUCCESS, DIALOG_WARNING, DIALOG_ERROR}
+     * @return NethGui_Renderer_WidgetInterface
+     */
+    abstract public function dialog($flags = 0);
+
+    /**
+     * Create a tabs container.
+     *
+     * @param integer $flags {STATE_DISABLED}
+     * @return NethGui_Renderer_WidgetInterface
+     */
+    abstract public function tabs($flags = 0);
+
+    /**
+     * Create a simple form container.
+     * @param integer $flags Optional - {STATE_DISABLED}
+     * @return NethGui_Renderer_WidgetInterface
+     */
+    abstract public function form($flags = 0);
+
+    /**
+     * Create a panel container
+     *
      * @param integer $flags
-     * @return NethGui_Renderer_Abstract A new object instance, representing the panel surface
+     * @return NethGui_Renderer_WidgetInterface
      */
-    abstract public function panel($identifier = NULL, $flags = 0);
-    
+    abstract public function panel($flags = 0);
+
     /**
-     * Embeds the $template output in the current content
-     *
-     * @link http://redmine.nethesis.it/issues/197
-     * @param string|callable $template See {@link NethGui_Core_ViewInterface::setTemplate()}
-     * @param $flags Optional
-     * @return NethGui_Renderer_Abstract Same object
-     */
-    abstract public function includeTemplate($template, $flags = 0);
-    
-    /**
-     * Concatenate a selector control
-     * 
-     * @param string $name The view member name holding the selected value(s)
-     * @param string|array $choices The view member name holding a table-like array or the array itself, where each row is a couple <key, label>
-     * @param integer $flags 
-     * @return NethGui_Renderer_Abstract Same object
-     */    
-    abstract public function selector($name, $choices = NULL, $flags = 0);
-    
-    /**
-     * Concatenate a list of buttons
+     * Create a list of buttons
      * 
      * The buttons are specified as arrays of arguments for the button() method.
      * 
-     * @param array $buttons The array of array representing arguments for button() method
      * @param integer $flags
+     * @return NethGui_Renderer_WidgetInterface
      */
-    abstract public function buttonList($buttons, $flags = 0);
-
-    /**
-     * Concatenate an header text
-     */
-    abstract public function header($text, $flags = 0);
-  
+    abstract public function elementList($flags = 0);
 }
