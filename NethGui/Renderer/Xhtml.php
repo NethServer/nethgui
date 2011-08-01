@@ -13,7 +13,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Core_ReadonlyView implements NethGu
     {
         $className = 'NethGui_Widget_Xhtml_' . ucfirst($widgetName);
 
-        $o = new $className($this->view);
+        $o = new $className($this);
 
         foreach ($attributes as $aname => $avalue) {
             $o->setAttribute($aname, $avalue);

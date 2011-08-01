@@ -32,25 +32,4 @@ class NethGui_Widget_Xhtml_Form extends NethGui_Widget_Xhtml
         return $content;
     }
 
-    /**
-     *
-     * @param array|string $_ Arguments for URL
-     * @return string the URL
-     */
-    private function buildUrl()
-    {
-        $parameters = array();
-        $path = $this->view->getModulePath();
-
-        foreach (func_get_args() as $arg) {
-            if (is_array($arg)) {
-                $parameters = array_merge($parameters, $arg);
-            } else {
-                $path[] = strval($arg);
-            }
-        }
-
-        return NethGui_Framework::getInstance()->buildUrl($path, $parameters);
-    }
-
 }

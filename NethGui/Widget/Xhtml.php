@@ -186,15 +186,15 @@ abstract class NethGui_Widget_Xhtml implements NethGui_Renderer_WidgetInterface
         if (isset($attributes['id'])) {
             $controlId = $attributes['id'];
         } else {
-            $controlId = $this->getUniqueId($name);
+            $controlId = $this->view->getUniqueId($name);
             $attributes['id'] = $controlId;
         }
 
         $wrapperClass = 'labeled-control';
 
-        if ($flags & self::LABEL_RIGHT) {
+        if ($flags & NethGui_Renderer_Abstract::LABEL_RIGHT) {
             $wrapperClass .= ' label-right';
-        } elseif ($flags & self::LABEL_ABOVE) {
+        } elseif ($flags & NethGui_Renderer_Abstract::LABEL_ABOVE) {
             $wrapperClass .= ' label-above';
         } else {
             $wrapperClass .= ' label-left';
@@ -204,7 +204,7 @@ abstract class NethGui_Widget_Xhtml implements NethGui_Renderer_WidgetInterface
 
         $content .= $this->openTag('div', array('class' => $wrapperClass));
 
-        if ($flags & self::LABEL_RIGHT) {
+        if ($flags & NethGui_Renderer_Abstract::LABEL_RIGHT) {
             $content .= $this->controlTag($tag, $name, $flags, $cssClass, $attributes);
             $content .= $this->label($label, $controlId);
         } else {
@@ -229,27 +229,27 @@ abstract class NethGui_Widget_Xhtml implements NethGui_Renderer_WidgetInterface
     protected function controlTag($tag, $name, $flags, $cssClass = '', $attributes = array())
     {
         // Add default instance flags:
-        $flags |= $this->flags;
+        $flags |= intval($this->getAttribute('flags'));
 
         $tag = strtolower($tag);
 
         $tagContent = '';
 
         if ( ! isset($attributes['id'])) {
-            $attributes['id'] = $this->getUniqueId($name);
+            $attributes['id'] = $this->view->getUniqueId($name);
         }
 
 
         if ( ! isset($attributes['name'])) {
-            $attributes['name'] = $this->getControlName($name);
+            $attributes['name'] = $this->view->getControlName($name);
         }
 
         $isCheckable = ($tag == 'input') && isset($attributes['type']) && ($attributes['type'] == 'checkbox' || $attributes['type'] == 'radio');
 
-        if ($flags & self::STATE_CHECKED && $isCheckable) {
+        if ($flags & NethGui_Renderer_Abstract::STATE_CHECKED && $isCheckable) {
             $attributes['checked'] = 'checked';
         }
-        if ($flags & self::STATE_READONLY) {
+        if ($flags & NethGui_Renderer_Abstract::STATE_READONLY) {
             if ($isCheckable) {
                 // `readonly` attribute is not appliable to checkable controls
                 $attributes['disabled'] = 'disabled';
@@ -263,11 +263,11 @@ abstract class NethGui_Widget_Xhtml implements NethGui_Renderer_WidgetInterface
         }
 
         if (in_array($tag, array('input', 'button', 'textarea', 'select', 'optgroup', 'option'))) {
-            if ($flags & self::STATE_DISABLED) {
+            if ($flags & NethGui_Renderer_Abstract::STATE_DISABLED) {
                 $attributes['disabled'] = 'disabled';
             }
 
-            if ($flags & self::STATE_VALIDATION_ERROR) {
+            if ($flags & NethGui_Renderer_Abstract::STATE_VALIDATION_ERROR) {
                 $cssClass .= ' validation-error ui-state-error';
             }
         }
@@ -293,12 +293,33 @@ abstract class NethGui_Widget_Xhtml implements NethGui_Renderer_WidgetInterface
 
     protected function applyDefaultLabelAlignment($flags, $default)
     {
-        return (self::LABEL_ABOVE | self::LABEL_LEFT | self::LABEL_RIGHT) & $flags ? $flags : $flags | $default;
+        return (NethGui_Renderer_Abstract::LABEL_ABOVE | NethGui_Renderer_Abstract::LABEL_LEFT | NethGui_Renderer_Abstract::LABEL_RIGHT) & $flags ? $flags : $flags | $default;
     }
 
     protected function translate($message, $args = array())
     {
         return $this->view->translate($message, $args);
+    }
+
+    /**
+     *
+     * @param array|string $_ Arguments for URL
+     * @return string the URL
+     */
+    protected function buildUrl()
+    {
+        $parameters = array();
+        $path = $this->view->getModulePath();
+
+        foreach (func_get_args() as $arg) {
+            if (is_array($arg)) {
+                $parameters = array_merge($parameters, $arg);
+            } else {
+                $path[] = strval($arg);
+            }
+        }
+
+        return NethGui_Framework::getInstance()->buildUrl($path, $parameters);
     }
 
 }

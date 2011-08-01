@@ -15,6 +15,9 @@
 class NethGui_Widget_Xhtml_Text extends NethGui_Widget_Xhtml {
      public function render()
      {
-         return parent::render();
+         $name = $this->getAttribute('name');
+         $flags = $this->getAttribute('flags');
+
+         return $this->translate($name . '_label', array($name => $this->view[$name]));
      }
 }

@@ -20,10 +20,11 @@ class NethGui_Widget_Xhtml_Panel extends NethGui_Widget_Xhtml
     public function render()
     {        
         $content = '';
+        $cssClass = $this->getAttribute('class');
 
         $attributes = array(
-            'class' => 'panel', 
-            'id' => $this->view->getUniqueId('Panel_' . NethGui_Renderer_Abstract::getInstanceCounter()),
+            'class' => $cssClass ? $cssClass : 'panel',
+            'id' => $this->view->getUniqueId('Panel_' . self::getInstanceCounter()),
         );
 
         $content .= $this->openTag('div', $attributes);

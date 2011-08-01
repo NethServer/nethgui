@@ -38,7 +38,7 @@ class NethGui_Widget_Xhtml_Selector extends NethGui_Widget_Xhtml
             $choices = array();
         }
 
-        $selectorModeIsDefined = (NethGui_Renderer_Abstract::SELECTOR_MULTIPLE | self::SELECTOR_SINGLE) & $flags;
+        $selectorModeIsDefined = (NethGui_Renderer_Abstract::SELECTOR_MULTIPLE | NethGui_Renderer_Abstract::SELECTOR_SINGLE) & $flags;
 
         if ($value instanceof Traversable) {
             $value = iterator_to_array($value);
@@ -60,7 +60,7 @@ class NethGui_Widget_Xhtml_Selector extends NethGui_Widget_Xhtml
 
         $fieldsetAttributes = array(
             'class' => 'selector ' . is_array($value) ? 'multiple' : 'single',
-            'id' => $this->getUniqueId($name)
+            'id' => $this->view->getUniqueId($name)
         );
 
         $content .= $this->openTag('fieldset', $fieldsetAttributes);
@@ -70,7 +70,7 @@ class NethGui_Widget_Xhtml_Selector extends NethGui_Widget_Xhtml
 
         $choicesAttributes = array(
             'class' => 'choices',
-            'id' => $this->getUniqueId($dataSourceName)
+            'id' => $this->view->getUniqueId($dataSourceName)
         );
 
         $content .= $this->openTag('div', $choicesAttributes);

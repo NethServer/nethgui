@@ -50,7 +50,7 @@ class NethGui_Widget_Xhtml_Dialog extends NethGui_Widget_Xhtml
 
         $attributes = array(
             'class' => $className,
-            'id' => $identifier,
+            'id' => $this->view->getUniqueId($name),
         );
 
         $content .= $this->openTag('div', $attributes);

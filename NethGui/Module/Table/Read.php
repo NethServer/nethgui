@@ -123,14 +123,19 @@ class NethGui_Module_Table_Read extends NethGui_Module_Table_Action
 
     public function renderColumnActions(NethGui_Renderer_Abstract $view)
     {
-        $buttons = array();
+        $elementList = $view->elementList();
 
         foreach ($view as $action => $actionView) {
             $args = array('..', $action, $actionView[1][1], '#' . $actionView->getUniqueId());
-            $buttons[] = array($action, NethGui_Renderer_Abstract::BUTTON_LINK, $args);
+
+            $button = $view
+                ->button($action, NethGui_Renderer_Abstract::BUTTON_LINK)
+                ->setAttribute('value', $args);
+            
+            $elementList->insert($button);
         }
 
-        return $view->buttonList($buttons);
+        return $elementList;
     }
 
 }

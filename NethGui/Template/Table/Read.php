@@ -15,5 +15,21 @@
     </tr>
     <?php endforeach ?></tbody>
 </table>
-<?php echo $view->buttonList('tableActions', ($view['__action'] == 'index') ? NethGui_Renderer_Abstract::STATE_DISABLED : 0); ?>
+<?php
+    
+    $flags = ($view['__action'] == 'index') ? NethGui_Renderer_Abstract::STATE_DISABLED : 0;
+
+    $elementList = $view->elementList($flags);
+
+    foreach($view['tableActions'] as $buttonArgs) {
+        $button = $view
+            ->button($buttonArgs[0], $buttonArgs[1])
+            ->setAttribute('value', $buttonArgs[2])
+        ;
+        $elementList->insert($button);        
+    }
+    
+    echo $elementList;        
+
+?>
 </div>

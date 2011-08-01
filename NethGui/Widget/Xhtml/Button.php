@@ -26,7 +26,7 @@ class NethGui_Widget_Xhtml_Button extends NethGui_Widget_Xhtml
         $cssClass = 'button';
         $buttonLabel = $name . '_label';
         
-        if ($flags & (NethGui_Renderer_Abstract::BUTTON_LINK | self::BUTTON_CANCEL)) {
+        if ($flags & (NethGui_Renderer_Abstract::BUTTON_LINK | NethGui_Renderer_Abstract::BUTTON_CANCEL)) {
 
             if (is_null($value)) {
                 if ($flags & NethGui_Renderer_Abstract::BUTTON_LINK) {
@@ -45,9 +45,8 @@ class NethGui_Widget_Xhtml_Button extends NethGui_Widget_Xhtml
             if ( ! is_array($value)) {
                 $value = array($value);
             }
-
-            $url = call_user_func_array(array($this, 'buildUrl'), $value);
-            $attributes['href'] = $url;
+            
+            $attributes['href'] = $this->buildUrl($value);
             $attributes['class'] = $cssClass;
 
             $content .= $this->openTag('a', $attributes);

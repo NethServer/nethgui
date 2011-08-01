@@ -24,13 +24,8 @@ class NethGui_Widget_Xhtml_Inset extends NethGui_Widget_Xhtml
 
         $value = $this->view[$name];
 
-        if ($value instanceof NethGui_Core_ViewInterface) {
-            $insetRenderer = new self($value);
-            $insetRenderer->includeTemplate($value->getTemplate(), $flags);
-            $this->append((String) $insetRenderer, FALSE);
-
-            $content .= $insetRenderer->render();
-
+        if ($value instanceof NethGui_Core_ViewInterface) {            
+            $content .= $this->includeTemplate($value, $flags);
         } else {
             $content .= htmlspecialchars($value);
         }
@@ -38,19 +33,19 @@ class NethGui_Widget_Xhtml_Inset extends NethGui_Widget_Xhtml
         return $content;
     }
 
-    public function includeTemplate($template, $flags = 0)
+    private function includeTemplate(NethGui_Core_ViewInterface $view, $flags = 0)
     {
         $languageCatalog = NULL;
-        if ($this->view->getModule() instanceof NethGui_Core_LanguageCatalogProvider) {
-            $languageCatalog = $this->view->getModule()->getLanguageCatalog();
+        if ($view->getModule() instanceof NethGui_Core_LanguageCatalogProvider) {
+            $languageCatalog = $view->getModule()->getLanguageCatalog();
         }
 
         // FIXME: pass $flags
         $state = array(
-            'view' => $this->view,
+            'view' => new NethGui_Renderer_Xhtml($view),
         );
 
-        $content = NethGui_Framework::getInstance()->renderView($template, $state, $languageCatalog);
+        $content = NethGui_Framework::getInstance()->renderView($view->getTemplate(), $state, $languageCatalog);
 
         return $content;
     }
