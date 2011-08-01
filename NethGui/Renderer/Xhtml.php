@@ -7,17 +7,16 @@
 /**
  * @package Renderer
  */
-class NethGui_Renderer_Xhtml extends NethGui_Renderer_Abstract
+class NethGui_Renderer_Xhtml extends NethGui_Core_ReadonlyView implements NethGui_Renderer_Abstract
 {
-
     private function createWidget($widgetName, $attributes = array())
     {
         $className = 'NethGui_Widget_Xhtml_' . ucfirst($widgetName);
 
-        $o = new ${className}($this);
+        $o = new $className($this->view);
 
         foreach ($attributes as $aname => $avalue) {
-            $o->setAttribute($name, $value);
+            $o->setAttribute($aname, $avalue);
         }
 
         return $o;

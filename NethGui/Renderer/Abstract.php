@@ -19,7 +19,7 @@
  * @see http://en.wikipedia.org/wiki/Decorator_pattern
  * @package Renderer
  */
-abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
+interface NethGui_Renderer_Abstract
 {
     const LABEL_LEFT = 0x01;
     const LABEL_RIGHT = 0x02;
@@ -46,101 +46,12 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
     const SELECTOR_MULTIPLE = 0x40000;
 
     /**
-     *
-     * @var NethGui_Core_ViewInterface
-     */
-    protected $view;
-
-    public function __construct(NethGui_Core_ViewInterface $view)
-    {
-        $this->view = $view;
-    }
-
-    public function copyFrom($data)
-    {
-        throw new NethGui_Exception_View('Cannot change the view values');
-    }
-
-    public function getIterator()
-    {
-        return $this->view->getIterator();
-    }
-
-    public function getModule()
-    {
-        return $this->view->getModule();
-    }
-
-    public function offsetExists($offset)
-    {
-        return $this->view->offsetExists($offset);
-    }
-
-    public function offsetGet($offset)
-    {
-        return $this->view->offsetGet($offset);
-    }
-
-    public function offsetSet($offset, $value)
-    {
-        throw new NethGui_Exception_View('Cannot change the view value');
-    }
-
-    public function offsetUnset($offset)
-    {
-        throw new NethGui_Exception_View('Cannot unset a view value');
-    }
-
-    /**
-     * Must override this method:
-     */
-    public function render()
-    {
-        throw new NethGui_Exception_View('Cannot render an abstract renderer object');
-    }
-
-    public function setTemplate($template)
-    {
-        throw new NethGui_Exception_View('Cannot change the view template');
-    }
-
-    public function getTemplate()
-    {
-        return $this->view->getTemplate();
-    }
-
-    public function spawnView(NethGui_Core_ModuleInterface $module, $register = FALSE)
-    {
-        throw new NethGui_Exception_View('Cannot spawn a view now');
-    }
-
-    public function translate($message, $args = array())
-    {
-        return $this->view->translate($message, $args);
-    }
-
-    public function getModulePath()
-    {
-        return $this->view->getModulePath();
-    }
-
-    public function getUniqueId($parts = NULL)
-    {
-        return $this->view->getUniqueId($parts);
-    }
-
-    public function getControlName($parts = '')
-    {
-        return $this->view->getControlName($parts);
-    }
-
-    /**
      * Create a member inclusion
      * @param string $name The view member name
      * @param integer $flags Optional {STATE_DISABLED}
      * @return NethGui_Renderer_WidgetInterface
      */
-    abstract public function inset($name, $flags = 0);
+    public function inset($name, $flags = 0);
 
     /**
      * Create a text input control
@@ -148,7 +59,7 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
      * @param integer $flags Optional {STATE_DISABLED}
      * @return NethGui_Renderer_WidgetInterface
      */
-    abstract public function textInput($name, $flags = 0);
+    public function textInput($name, $flags = 0);
 
     /**
      * Create a text input control
@@ -156,7 +67,7 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
      * @param integer $flags Optional {STATE_DISABLED}
      * @return NethGui_Renderer_WidgetInterface
      */
-    abstract public function text($name, $flags = 0);
+    public function text($name, $flags = 0);
 
     /**
      * Create an hidden control
@@ -164,7 +75,7 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
      * @param integer $flags Optional {STATE_DISABLED}
      * @return NethGui_Renderer_WidgetInterface
      */
-    abstract public function hidden($name, $flags = 0);
+    public function hidden($name, $flags = 0);
 
     /**
      * Create a selector control
@@ -173,7 +84,7 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
      * @param integer $flags
      * @return NethGui_Renderer_WidgetInterface
      */
-    abstract public function selector($name, $flags = 0);
+    public function selector($name, $flags = 0);
 
     /**
      * Create a button control
@@ -181,7 +92,7 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
      * @param integer $flags Optional - {DIALOG_*, STATE_ENABLED}
      * @return NethGui_Renderer_WidgetInterface
      */
-    abstract public function button($name, $flags = 0);
+    public function button($name, $flags = 0);
 
     /**
      * Create a radio button control
@@ -190,7 +101,7 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
      * @param integer $flags Optional {STATE_DISABLED, STATE_CHECKED}
      * @return NethGui_Renderer_WidgetInterface
      */
-    abstract public function radioButton($name, $value, $flags = 0);
+    public function radioButton($name, $value, $flags = 0);
 
     /**
      * Create a checkbox control
@@ -199,7 +110,7 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
      * @param integer $flags Optional {STATE_DISABLED, STATE_CHECKED}
      * @return NethGui_Renderer_WidgetInterface
      */
-    abstract public function checkBox($name, $value, $flags = 0);
+    public function checkBox($name, $value, $flags = 0);
 
     /**
      * Create a selectable fieldset container.
@@ -210,7 +121,7 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
      * @param integer $flags
      * @return NethGui_Renderer_WidgetInterface
      */
-    abstract public function fieldsetSwitch($name, $value, $flags = 0);
+    public function fieldsetSwitch($name, $value, $flags = 0);
 
     /**
      * Create a dialog box container.
@@ -218,7 +129,7 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
      * @param int $flags Render flags: {DIALOG_MODAL, DIALOG_EMBEDDED, STATE_DISABLED, DIALOG_SUCCESS, DIALOG_WARNING, DIALOG_ERROR}
      * @return NethGui_Renderer_WidgetInterface
      */
-    abstract public function dialog($flags = 0);
+    public function dialog($flags = 0);
 
     /**
      * Create a tabs container.
@@ -226,14 +137,14 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
      * @param integer $flags {STATE_DISABLED}
      * @return NethGui_Renderer_WidgetInterface
      */
-    abstract public function tabs($flags = 0);
+    public function tabs($flags = 0);
 
     /**
      * Create a simple form container.
      * @param integer $flags Optional - {STATE_DISABLED}
      * @return NethGui_Renderer_WidgetInterface
      */
-    abstract public function form($flags = 0);
+    public function form($flags = 0);
 
     /**
      * Create a panel container
@@ -241,7 +152,7 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
      * @param integer $flags
      * @return NethGui_Renderer_WidgetInterface
      */
-    abstract public function panel($flags = 0);
+    public function panel($flags = 0);
 
     /**
      * Create a list of buttons
@@ -251,5 +162,5 @@ abstract class NethGui_Renderer_Abstract implements NethGui_Core_ViewInterface
      * @param integer $flags
      * @return NethGui_Renderer_WidgetInterface
      */
-    abstract public function elementList($flags = 0);
+    public function elementList($flags = 0);
 }
