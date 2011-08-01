@@ -17,9 +17,9 @@ class NethGui_Widget_Xhtml_ElementList extends NethGui_Widget_Xhtml
 
     public function render()
     {
-        $name = $this->getParameter('name');
-        $value = $this->getParameter('value');
-        $flags = $this->getParameter('flags');
+        $name = $this->getAttribute('name');
+        $value = $this->getAttribute('value');
+        $flags = $this->getAttribute('flags');
         $content = '';
 
         $content .= $this->openTag('ul', array('class' => 'actions buttonList'));

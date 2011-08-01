@@ -19,9 +19,9 @@ class NethGui_Widget_Xhtml_CheckBox extends NethGui_Widget_Xhtml
 
     public function render()
     {
-        $name = $this->getParameter('name');
-        $value = $this->getParameter('value');
-        $flags = $this->getParameter('flags');
+        $name = $this->getAttribute('name');
+        $value = $this->getAttribute('value');
+        $flags = $this->getAttribute('flags');
         $content = '';
 
         $attributes = array(
@@ -30,10 +30,10 @@ class NethGui_Widget_Xhtml_CheckBox extends NethGui_Widget_Xhtml
         );
 
         if ($value == $this->view[$name]) {
-            $flags |= self::STATE_CHECKED;
+            $flags |= NethGui_Renderer_Abstract::STATE_CHECKED;
         }
 
-        $flags = $this->applyDefaultLabelAlignment($flags, self::LABEL_RIGHT);
+        $flags = $this->applyDefaultLabelAlignment($flags, NethGui_Renderer_Abstract::LABEL_RIGHT);
 
 
         $hidden = new NethGui_Widget_Xhtml_Hidden($this->view);

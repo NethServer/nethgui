@@ -101,22 +101,20 @@ class NethGui_Core_Module_List extends NethGui_Core_Module_Composite implements 
 
     public function renderTabs(NethGui_Renderer_Abstract $view)
     {
-        $pages = array();
-
-        foreach ($this->getChildren() as $child) {
-            $pages[] = $child->getIdentifier();
-        }
-
         // Only a root module emits FORM tag:
         if (is_null($this->getParent())) {
-            $form = $view->form();
+            $widget = $view->form();
         } else {
-            $form = $view;
+            $widget = $view->panel();
         }
 
-        $tabs = $form->tabs('Tabs', $pages);
-        
-        return $view;
+        $tabs = $view->tabs();
+
+        foreach ($this->getChildren() as $child) {
+            $tabs->insert($view->inset($child->getIdentifier()));
+        }
+
+        return $widget->insert($tabs);
     }
 
     /**

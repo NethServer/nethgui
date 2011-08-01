@@ -17,9 +17,9 @@ class NethGui_Widget_Xhtml_Hidden extends NethGui_Widget_Xhtml
 
     public function render()
     {
-        $name = $this->getParameter('name');
-        $value = $this->getParameter('value');
-        $flags = $this->getParameter('flags');
+        $name = $this->getAttribute('name');
+        $value = $this->getAttribute('value');
+        $flags = $this->getAttribute('flags');
         $content ='';
 
         if (is_null($value)) {

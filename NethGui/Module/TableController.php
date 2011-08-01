@@ -166,22 +166,21 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
     /**
      * This callback template is invoked if the current view is not defined.
      * @param NethGui_Renderer_Abstract $view
-     * @return NethGui_Renderer_Abstract 
+     * @return NethGui_Renderer_WidgetInterface
      */
     public function renderDisabledActions(NethGui_Renderer_Abstract $view)
     {
-
         // Only a root module emits FORM tag:
         if (is_null($this->getParent())) {
             $renderer = $view->form();
         } else {
-            $renderer = $view;
+            $renderer = $view->panel();
         }
 
         foreach ($this->getChildren() as $index => $child) {
             // The FIRST child must ALWAYS be the "READ" action
             if ($index === 0) {
-                $renderer->inset($child->getIdentifier());
+                $renderer->insert($view->inset($child->getIdentifier()));
             } else {
 
                 // Subsequent children are embedded into a DISABLED dialog frame.
@@ -193,13 +192,13 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
                 }
 
                 $renderer
-                    ->dialog($child->getIdentifier(), $dialogStyle | NethGui_Renderer_Abstract::STATE_DISABLED)
-                    ->inset($child->getIdentifier())
+                    ->insert($view->dialog($child->getIdentifier(), $dialogStyle | NethGui_Renderer_Abstract::STATE_DISABLED))
+                    ->insert($view->inset($child->getIdentifier()))
                 ;
             }
         }
 
-        return $view;
+        return $renderer;
     }
 
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)

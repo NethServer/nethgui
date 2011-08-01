@@ -23,7 +23,7 @@ class NethGui_Widget_Xhtml_Panel extends NethGui_Widget_Xhtml
 
         $attributes = array(
             'class' => 'panel', 
-            'id' => $this->view->getUniqueId('Panel_' . self::getInstanceCounter()),
+            'id' => $this->view->getUniqueId('Panel_' . NethGui_Renderer_Abstract::getInstanceCounter()),
         );
 
         $content .= $this->openTag('div', $attributes);

@@ -17,19 +17,19 @@ class NethGui_Widget_Xhtml_Form extends NethGui_Widget_Xhtml
 
     public function render()
     {
-        $name = $this->getParameter('name');
-        $value = $this->getParameter('value');
-        $flags = $this->getParameter('flags');
-        $action = $this->getParameter('action');
+        $name = $this->getAttribute('name');
+        $value = $this->getAttribute('value');
+        $flags = $this->getAttribute('flags');
+        $action = $this->getAttribute('action');
         $content = '';
 
-        $content .= $this->openTag('form', array('method' => 'post', 'action' => $form->buildUrl($action)));
+        $content .= $this->openTag('form', array('method' => 'post', 'action' => $this->buildUrl($action)));
         $content .= $this->openTag('div', array('id' => $this->view->getUniqueId($name ? $name : 'Form')));
         $content .= $this->renderChildren();
         $content .= $this->closeTag('div');
         $content .= $this->closeTag('form');
 
-        return $form;
+        return $content;
     }
 
     /**
@@ -37,7 +37,7 @@ class NethGui_Widget_Xhtml_Form extends NethGui_Widget_Xhtml
      * @param array|string $_ Arguments for URL
      * @return string the URL
      */
-    public function buildUrl()
+    private function buildUrl()
     {
         $parameters = array();
         $path = $this->view->getModulePath();

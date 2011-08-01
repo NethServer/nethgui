@@ -17,26 +17,26 @@ class NethGui_Widget_Xhtml_Button extends NethGui_Widget_Xhtml
 
     public function render()
     {
-        $name = $this->getParameter('name');
-        $value = $this->getParameter('value');
-        $flags = $this->getParameter('flags');
+        $name = $this->getAttribute('name');
+        $value = $this->getAttribute('value');
+        $flags = $this->getAttribute('flags');
         $content ='';
 
         $attributes = array();
         $cssClass = 'button';
         $buttonLabel = $name . '_label';
         
-        if ($flags & (self::BUTTON_LINK | self::BUTTON_CANCEL)) {
+        if ($flags & (NethGui_Renderer_Abstract::BUTTON_LINK | self::BUTTON_CANCEL)) {
 
             if (is_null($value)) {
-                if ($flags & self::BUTTON_LINK) {
+                if ($flags & NethGui_Renderer_Abstract::BUTTON_LINK) {
                     $value = $name;
                 } else {
                     $value = '..';
                 }
             }
 
-            if ($flags & self::BUTTON_CANCEL) {
+            if ($flags & NethGui_Renderer_Abstract::BUTTON_CANCEL) {
                 $cssClass .= ' cancel';
             } else {
                 $cssClass .= ' link';
@@ -55,15 +55,15 @@ class NethGui_Widget_Xhtml_Button extends NethGui_Widget_Xhtml
             $content .= $this->closeTag('a');
         } else {
 
-            if ($flags & self::BUTTON_SUBMIT) {
+            if ($flags & NethGui_Renderer_Abstract::BUTTON_SUBMIT) {
                 $attributes['type'] = 'submit';
                 $cssClass .= ' submit';
                 $attributes['id'] = FALSE;
                 $attributes['name'] = FALSE;
-            } elseif ($flags & self::BUTTON_RESET) {
+            } elseif ($flags & NethGui_Renderer_Abstract::BUTTON_RESET) {
                 $attributes['type'] = 'reset';
                 $cssClass .= ' reset';
-            } elseif ($flags & self::BUTTON_CUSTOM) {
+            } elseif ($flags & NethGui_Renderer_Abstract::BUTTON_CUSTOM) {
                 $attributes['type'] = 'button';
                 $cssClass .= ' custom';
             }

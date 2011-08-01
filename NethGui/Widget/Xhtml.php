@@ -13,9 +13,6 @@ abstract class NethGui_Widget_Xhtml implements NethGui_Renderer_WidgetInterface
 {
 
     static private $instance = 0;
-
-
-
     private $children = array();
     private $attributes = array();
     /**
@@ -25,12 +22,16 @@ abstract class NethGui_Widget_Xhtml implements NethGui_Renderer_WidgetInterface
 
     public function getAttribute($name)
     {
+        if ( ! $this->hasAttribute($name)) {
+            return NULL;
+        }
         return $this->attributes[$name];
     }
 
     public function setAttribute($name, $value)
     {
-        return $this->attributes[$name] = $value;
+        $this->attributes[$name] = $value;
+        return $this;
     }
 
     protected function hasAttribute($name)
@@ -52,6 +53,7 @@ abstract class NethGui_Widget_Xhtml implements NethGui_Renderer_WidgetInterface
     public function insert(NethGui_Renderer_WidgetInterface $widget)
     {
         $this->children[] = $widget;
+        return $this;
     }
 
     public function render()

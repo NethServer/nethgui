@@ -17,9 +17,9 @@ class NethGui_Widget_Xhtml_Tabs extends NethGui_Widget_Xhtml
 
     public function render()
     {
-        $name = $this->getParameter('name');
-        $value = $this->getParameter('value');
-        $flags = $this->getParameter('flags');
+        $name = $this->getAttribute('name');
+        $value = $this->getAttribute('value');
+        $flags = $this->getAttribute('flags');
         $content = '';
 
         $content .= $this->openTag('div', array('class' => 'tabs', 'id' => $this->view->getUniqueId($name)));
@@ -28,9 +28,9 @@ class NethGui_Widget_Xhtml_Tabs extends NethGui_Widget_Xhtml
             $content .=$this->openTag('ul', array('class' => 'tabs-list'));
 
             foreach ($this->getChildren() as $child) {
-                $page = $child->getParameter('name');
+                $page = $child->getAttribute('name');
                 $content .= $this->openTag('li');
-                $content .= $this->openTag('a', array('href' => '#' . $tabs->getUniqueId($page)));
+                $content .= $this->openTag('a', array('href' => '#' . $this->view->getUniqueId($page)));
                 $content .= htmlspecialchars($this->translate($page . '_Title'));
                 $content .= $this->closeTag('a');
                 $content .= $this->closeTag('li');

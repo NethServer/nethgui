@@ -17,9 +17,9 @@ class NethGui_Widget_Xhtml_Selector extends NethGui_Widget_Xhtml
 
     public function render()
     {
-        $name = $this->getParameter('name');
-        $flags = $this->getParameter('flags');
-        $choices = $this->getParameter('choices');
+        $name = $this->getAttribute('name');
+        $flags = $this->getAttribute('flags');
+        $choices = $this->getAttribute('choices');
         $value = $this->view[$name];
         $content = '';
 
@@ -38,12 +38,12 @@ class NethGui_Widget_Xhtml_Selector extends NethGui_Widget_Xhtml
             $choices = array();
         }
 
-        $selectorModeIsDefined = (self::SELECTOR_MULTIPLE | self::SELECTOR_SINGLE) & $flags;
+        $selectorModeIsDefined = (NethGui_Renderer_Abstract::SELECTOR_MULTIPLE | self::SELECTOR_SINGLE) & $flags;
 
         if ($value instanceof Traversable) {
             $value = iterator_to_array($value);
         } elseif (is_null($value) && $selectorModeIsDefined) {
-            if ($flags & self::SELECTOR_MULTIPLE) {
+            if ($flags & NethGui_Renderer_Abstract::SELECTOR_MULTIPLE) {
                 $value = array();
             } else {
                 $value = '';
@@ -52,9 +52,9 @@ class NethGui_Widget_Xhtml_Selector extends NethGui_Widget_Xhtml
 
         if ( ! $selectorModeIsDefined) {
             if (is_array($value)) {
-                $flags |= self::SELECTOR_MULTIPLE;
+                $flags |= NethGui_Renderer_Abstract::SELECTOR_MULTIPLE;
             } else {
-                $flags |= self::SELECTOR_SINGLE;
+                $flags |= NethGui_Renderer_Abstract::SELECTOR_SINGLE;
             }
         }
 
@@ -84,7 +84,7 @@ class NethGui_Widget_Xhtml_Selector extends NethGui_Widget_Xhtml
 
         $content .= $hidden->render();
 
-        $selectorEnabled = ! ($flags & self::STATE_DISABLED);
+        $selectorEnabled = ! ($flags & NethGui_Renderer_Abstract::STATE_DISABLED);
 
         if ($selectorEnabled && count($choices) > 0) {
             $this->generateSelectorContent($name, $value, $choices, $flags);
@@ -113,24 +113,24 @@ class NethGui_Widget_Xhtml_Selector extends NethGui_Widget_Xhtml
             $content .= $this->openTag('li', array('class' => 'labeled-control label-right'));
             $choiceFlags = $flags;
 
-            if ($flags & self::SELECTOR_MULTIPLE) {
+            if ($flags & NethGui_Renderer_Abstract::SELECTOR_MULTIPLE) {
                 $choiceName = $name . '/' . $index;
                 $choiceId = $choiceName;
 
                 if (in_array($choice[0], $value)) {
-                    $choiceFlags |= self::STATE_CHECKED;
+                    $choiceFlags |= NethGui_Renderer_Abstract::STATE_CHECKED;
                 }
 
                 $attributes = array(
                     'type' => 'checkbox',
                     'value' => $choice[0],
                 );
-            } elseif ($flags & self::SELECTOR_SINGLE) {
+            } elseif ($flags & NethGui_Renderer_Abstract::SELECTOR_SINGLE) {
                 $choiceName = $name;
                 $choiceId = $name . '/' . $index;
 
                 if ($choice[0] == $value) {
-                    $choiceFlags |= self::STATE_CHECKED;
+                    $choiceFlags |= NethGui_Renderer_Abstract::STATE_CHECKED;
                 }
 
                 $attributes = array(

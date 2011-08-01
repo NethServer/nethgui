@@ -17,34 +17,34 @@ class NethGui_Widget_Xhtml_Dialog extends NethGui_Widget_Xhtml
 
     public function render()
     {
-        $name = $this->getParameter('name');
-        $value = $this->getParameter('value');
-        $flags = $this->getParameter('flags');
+        $name = $this->getAttribute('name');
+        $value = $this->getAttribute('value');
+        $flags = $this->getAttribute('flags');
         $content = '';
 
         $className = 'dialog';
 
-        if ($flags & self::DIALOG_SUCCESS) {
+        if ($flags & NethGui_Renderer_Abstract::DIALOG_SUCCESS) {
             $className .= ' success';
-        } elseif ($flags & self::DIALOG_WARNING) {
+        } elseif ($flags & NethGui_Renderer_Abstract::DIALOG_WARNING) {
             $className .= ' warning';
-        } elseif ($flags & self::DIALOG_ERROR) {
+        } elseif ($flags & NethGui_Renderer_Abstract::DIALOG_ERROR) {
             $className .= ' error';
         }
 
-        if ($flags & self::DIALOG_EMBEDDED) {
+        if ($flags & NethGui_Renderer_Abstract::DIALOG_EMBEDDED) {
             $className .= ' embedded';
             // unset the EMBEDDED flag:
-            $flags ^= self::DIALOG_EMBEDDED;
-        } elseif ($flags & self::DIALOG_MODAL) {
+            $flags ^= NethGui_Renderer_Abstract::DIALOG_EMBEDDED;
+        } elseif ($flags & NethGui_Renderer_Abstract::DIALOG_MODAL) {
             $className .= ' modal';
             // unset the MODAL flag:
-            $flags ^= self::DIALOG_MODAL;
+            $flags ^= NethGui_Renderer_Abstract::DIALOG_MODAL;
         } else {
             $className .= ' embedded'; // default dialog class
         }
 
-        if ($flags & self::STATE_DISABLED) {
+        if ($flags & NethGui_Renderer_Abstract::STATE_DISABLED) {
             $className .= ' disabled';
         }
 

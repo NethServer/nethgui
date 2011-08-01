@@ -17,16 +17,16 @@ class NethGui_Widget_Xhtml_Inset extends NethGui_Widget_Xhtml
 
     public function render()
     {
-        $name = $this->getParameter('name');
-        $value = $this->getParameter('value');
-        $flags = $this->getParameter('flags');
+        $name = $this->getAttribute('name');
+        $value = $this->getAttribute('value');
+        $flags = $this->getAttribute('flags');
         $content ='';
 
-        $value = $this->view[$offset];
+        $value = $this->view[$name];
 
         if ($value instanceof NethGui_Core_ViewInterface) {
             $insetRenderer = new self($value);
-            $insetRenderer->includeTemplate($value->getTemplate(), $this->flags);
+            $insetRenderer->includeTemplate($value->getTemplate(), $flags);
             $this->append((String) $insetRenderer, FALSE);
 
             $content .= $insetRenderer->render();
