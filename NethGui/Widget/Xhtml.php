@@ -239,7 +239,6 @@ abstract class NethGui_Widget_Xhtml implements NethGui_Renderer_WidgetInterface
             $attributes['id'] = $this->view->getUniqueId($name);
         }
 
-
         if ( ! isset($attributes['name'])) {
             $attributes['name'] = $this->view->getControlName($name);
         }
