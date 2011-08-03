@@ -27,7 +27,7 @@ class NethGui_Widget_Xhtml_Text extends NethGui_Widget_Xhtml
         $text = '';
 
         if ($flags & NethGui_Renderer_Abstract::STATE_DISABLED) {
-            $text = $this->translate($value);
+            $text = $this->view->translate($value);
             $cssClass .= ' disabled';
         } else {
 
@@ -45,7 +45,7 @@ class NethGui_Widget_Xhtml_Text extends NethGui_Widget_Xhtml
                 }
             }
 
-            $text = $this->translate($value, $args);
+            $text = $this->view->translate($value, $args);
         }
 
 

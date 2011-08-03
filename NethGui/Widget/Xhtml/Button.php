@@ -50,7 +50,7 @@ class NethGui_Widget_Xhtml_Button extends NethGui_Widget_Xhtml
             $attributes['class'] = $cssClass;
 
             $content .= $this->openTag('a', $attributes);
-            $content .= $this->translate($buttonLabel);
+            $content .= $this->view->translate($buttonLabel);
             $content .= $this->closeTag('a');
         } else {
 
@@ -67,7 +67,7 @@ class NethGui_Widget_Xhtml_Button extends NethGui_Widget_Xhtml
                 $cssClass .= ' custom';
             }
 
-            $attributes['value'] = $this->translate($buttonLabel);
+            $attributes['value'] = $this->view->translate($buttonLabel);
 
             $content .= $this->controlTag('button', $name, $flags, $cssClass, $attributes);
         }
@@ -76,3 +76,4 @@ class NethGui_Widget_Xhtml_Button extends NethGui_Widget_Xhtml
     }
 
 }
+

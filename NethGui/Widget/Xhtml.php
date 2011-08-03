@@ -165,7 +165,7 @@ abstract class NethGui_Widget_Xhtml implements NethGui_Renderer_WidgetInterface
     {
         $content = '';
         $content .= $this->openTag('label', array('for' => $id));
-        $content .= htmlspecialchars($this->translate($name . '_label'));
+        $content .= htmlspecialchars($this->view->translate($name . '_label'));
         $content .= $this->closeTag('label');
         return $content;
     }
@@ -293,14 +293,6 @@ abstract class NethGui_Widget_Xhtml implements NethGui_Renderer_WidgetInterface
     protected function applyDefaultLabelAlignment($flags, $default)
     {
         return (NethGui_Renderer_Abstract::LABEL_ABOVE | NethGui_Renderer_Abstract::LABEL_LEFT | NethGui_Renderer_Abstract::LABEL_RIGHT) & $flags ? $flags : $flags | $default;
-    }
-
-    /**
-     * @todo remove translate() method
-     */
-    protected function translate($message, $args = array())
-    {
-        return $this->view->translate($message, $args);
     }
 
     /**

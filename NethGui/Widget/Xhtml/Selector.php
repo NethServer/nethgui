@@ -65,7 +65,7 @@ class NethGui_Widget_Xhtml_Selector extends NethGui_Widget_Xhtml
 
         $content .= $this->openTag('fieldset', $fieldsetAttributes);
         $content .= $this->openTag('legend');
-        $content .= htmlspecialchars($this->translate($name . '_label'));
+        $content .= htmlspecialchars($this->view->translate($name . '_label'));
         $content .= $this->closeTag('legend');
 
         $choicesAttributes = array(

@@ -31,7 +31,7 @@ class NethGui_Widget_Xhtml_Tabs extends NethGui_Widget_Xhtml
                 $page = $child->getAttribute('name');
                 $content .= $this->openTag('li');
                 $content .= $this->openTag('a', array('href' => '#' . $this->view->getUniqueId($page)));
-                $content .= htmlspecialchars($this->translate($page . '_Title'));
+                $content .= htmlspecialchars($this->view->translate($page . '_Title'));
                 $content .= $this->closeTag('a');
                 $content .= $this->closeTag('li');
             }
