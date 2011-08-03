@@ -38,10 +38,9 @@ class NethGui_Widget_Xhtml_Inset extends NethGui_Widget_Xhtml
         if ($view->getModule() instanceof NethGui_Core_LanguageCatalogProvider) {
             $languageCatalog = $view->getModule()->getLanguageCatalog();
         }
-
-        // FIXME: pass $flags
+        
         $state = array(
-            'view' => new NethGui_Renderer_Xhtml($view),
+            'view' => new NethGui_Renderer_Xhtml($view, $flags),
         );
 
         $content = NethGui_Framework::getInstance()->renderView($view->getTemplate(), $state, $languageCatalog);
