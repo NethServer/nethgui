@@ -9,6 +9,7 @@
  */
 class NethGui_Renderer_Xhtml extends NethGui_Core_ReadonlyView implements NethGui_Renderer_Abstract
 {
+
     private function createWidget($widgetName, $attributes = array())
     {
         $className = 'NethGui_Widget_Xhtml_' . ucfirst($widgetName);
@@ -37,9 +38,9 @@ class NethGui_Renderer_Xhtml extends NethGui_Core_ReadonlyView implements NethGu
         return $this->createWidget(__FUNCTION__, array('name' => $name, 'value' => $value, 'flags' => $flags));
     }
 
-    public function dialog($flags = 0)
+    public function dialog($name, $flags = 0)
     {
-        return $this->createWidget(__FUNCTION__, array('flags' => $flags));
+        return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags));
     }
 
     public function fieldsetSwitch($name, $value, $flags = 0)

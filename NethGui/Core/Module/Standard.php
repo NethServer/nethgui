@@ -278,6 +278,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
     }
 
     /**
+     * @todo Rename to createValidator()
      * @return NethGui_Core_Validator
      */
     protected function getValidator()

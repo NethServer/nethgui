@@ -37,12 +37,22 @@ class NethGui_Widget_Xhtml_FieldsetSwitch extends NethGui_Widget_Xhtml
             'id' => $this->view->getUniqueId(array($name, $value, 'fieldset'))
         );
 
-        $content .= $this->openTag('fieldset', $attributes);
+        
         $content .= $this->renderChildren();
-        $content .= $this->closeTag('fieldset');
+        
         $content .= $this->closeTag('div');
         
         return $content;
+    }
+
+    public function insert(NethGui_Renderer_WidgetInterface $widget)
+    {
+        $fieldset = new NethGui_Widget_Xhtml_Fieldset($this->view);
+
+
+        parent::insert($fieldset->insert($widget));
+
+        return $this;
     }
 
 }

@@ -87,16 +87,16 @@ class NethGui_Core_Module_List extends NethGui_Core_Module_Composite implements 
     {
         // Only a root module emits FORM tag:
         if (is_null($this->getParent())) {
-            $form = $view->form();
+            $widget = $view->form();
         } else {
-            $form = $view;
+            $widget = $view->panel();
         }
 
         foreach ($this->getChildren() as $child) {
-            $form->inset($child->getIdentifier());
+            $widget->insert($view->inset($child->getIdentifier()));
         }
 
-        return $view;
+        return $widget;
     }
 
     public function renderTabs(NethGui_Renderer_Abstract $view)

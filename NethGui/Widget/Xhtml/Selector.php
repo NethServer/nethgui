@@ -59,7 +59,7 @@ class NethGui_Widget_Xhtml_Selector extends NethGui_Widget_Xhtml
         }
 
         $fieldsetAttributes = array(
-            'class' => 'selector ' . is_array($value) ? 'multiple' : 'single',
+            'class' => 'selector ' . (is_array($value) ? 'multiple' : 'single'),
             'id' => $this->view->getUniqueId($name)
         );
 

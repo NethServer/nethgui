@@ -12,16 +12,13 @@
  * @subpackage Xhtml
  * @internal
  */
-class NethGui_Widget_Xhtml_Dialog extends NethGui_Widget_Xhtml
+class NethGui_Widget_Xhtml_Dialog extends NethGui_Widget_Xhtml_Inset
 {
 
     public function render()
     {
-        $name = $this->getAttribute('name');
-        $value = $this->getAttribute('value');
         $flags = $this->getAttribute('flags');
         $content = '';
-
         $className = 'dialog';
 
         if ($flags & NethGui_Renderer_Abstract::DIALOG_SUCCESS) {
@@ -48,13 +45,19 @@ class NethGui_Widget_Xhtml_Dialog extends NethGui_Widget_Xhtml
             $className .= ' disabled';
         }
 
+        if ($this->hasAttribute('name')) {
+            $id = $this->view->getUniqueId($this->getAttribute('name'));
+        } else {
+            $id = FALSE;
+        }
+
         $attributes = array(
             'class' => $className,
-            'id' => $this->view->getUniqueId($name),
+            'id' => $id
         );
 
         $content .= $this->openTag('div', $attributes);
-        $content .= $this->renderChildren();
+        $content .= parent::render();
         $content .= $this->closeTag('div');
 
         return $content;

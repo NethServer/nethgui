@@ -161,12 +161,12 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Composite imple
         if (is_null($this->getParent())) {
             $form = $view->form($action);
         } else {
-            $form = $view;
+            $form = $view->panel();
         }
 
         return $form
-            ->hidden('__action')
-            ->inset($action)
+            ->insert($view->hidden('__action'))
+            ->insert($view->inset($action))
         ;
     }
 

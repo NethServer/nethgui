@@ -25,7 +25,7 @@ class NethGui_Widget_Xhtml_RadioButton extends NethGui_Widget_Xhtml
         $attributes = array(
             'type' => 'radio',
             'value' => strval($value),
-            'id' => $this->getUniqueId($name . '_' . $value . '_' . NethGui_Renderer_Abstract::getInstanceCounter())
+            'id' => $this->view->getUniqueId($name . '_' . $value . '_' . self::getInstanceCounter())
         );
 
         if ($value === $this->view[$name]) {

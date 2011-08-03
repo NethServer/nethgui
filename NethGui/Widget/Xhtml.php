@@ -20,23 +20,23 @@ abstract class NethGui_Widget_Xhtml implements NethGui_Renderer_WidgetInterface
      */
     protected $view;
 
-    public function getAttribute($name)
+    public function getAttribute($attribute)
     {
-        if ( ! $this->hasAttribute($name)) {
+        if ( ! $this->hasAttribute($attribute)) {
             return NULL;
         }
-        return $this->attributes[$name];
+        return $this->attributes[$attribute];
     }
 
-    public function setAttribute($name, $value)
+    public function setAttribute($attribute, $value)
     {
-        $this->attributes[$name] = $value;
+        $this->attributes[$attribute] = $value;
         return $this;
     }
 
-    protected function hasAttribute($name)
+    protected function hasAttribute($attribute)
     {
-        return array_key_exists($name, $this->attributes);
+        return array_key_exists($attribute, $this->attributes);
     }
 
     public function __construct(NethGui_Core_ViewInterface $view)
@@ -139,15 +139,15 @@ abstract class NethGui_Widget_Xhtml implements NethGui_Renderer_WidgetInterface
      * @param array $attributes
      * @return string
      */
-    protected function prepareXhtmlAttributes($attributes)
+    private function prepareXhtmlAttributes($attributes)
     {
         $content = '';
 
-        foreach ($attributes as $name => $value) {
+        foreach ($attributes as $attribute => $value) {
             if ($value === FALSE) {
                 continue;
             }
-            $content .= $name . '="' . htmlspecialchars($value) . '" ';
+            $content .= $attribute . '="' . htmlspecialchars($value) . '" ';
         }
 
         return ' ' . trim($content);
@@ -296,6 +296,9 @@ abstract class NethGui_Widget_Xhtml implements NethGui_Renderer_WidgetInterface
         return (NethGui_Renderer_Abstract::LABEL_ABOVE | NethGui_Renderer_Abstract::LABEL_LEFT | NethGui_Renderer_Abstract::LABEL_RIGHT) & $flags ? $flags : $flags | $default;
     }
 
+    /**
+     * @todo remove translate() method
+     */
     protected function translate($message, $args = array())
     {
         return $this->view->translate($message, $args);

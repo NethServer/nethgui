@@ -22,7 +22,7 @@ class NethGui_Widget_Xhtml_Tabs extends NethGui_Widget_Xhtml
         $flags = $this->getAttribute('flags');
         $content = '';
 
-        $content .= $this->openTag('div', array('class' => 'tabs', 'id' => $this->view->getUniqueId($name)));
+        $content .= $this->openTag('div', array('class' => 'tabs'));
 
         if ($this->hasChildren()) {
             $content .=$this->openTag('ul', array('class' => 'tabs-list'));
@@ -45,6 +45,19 @@ class NethGui_Widget_Xhtml_Tabs extends NethGui_Widget_Xhtml
         $content .= $this->closeTag('div');
 
         return $content;
+    }
+
+    public function insert(NethGui_Renderer_WidgetInterface $widget)
+    {
+        $panel = new NethGui_Widget_Xhtml_Panel($this->view);
+        parent::insert($panel);
+
+        $panel
+            ->setAttribute('name', $widget->getAttribute('name'))
+            ->setAttribute('class', 'panel')
+            ->insert($widget);
+       
+        return $this;
     }
 
 }

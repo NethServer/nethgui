@@ -129,7 +129,7 @@ interface NethGui_Renderer_Abstract
      * @param int $flags Render flags: {DIALOG_MODAL, DIALOG_EMBEDDED, STATE_DISABLED, DIALOG_SUCCESS, DIALOG_WARNING, DIALOG_ERROR}
      * @return NethGui_Renderer_WidgetInterface
      */
-    public function dialog($flags = 0);
+    public function dialog($name, $flags = 0);
 
     /**
      * Create a tabs container.

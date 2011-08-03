@@ -18,7 +18,6 @@ class NethGui_Widget_Xhtml_Inset extends NethGui_Widget_Xhtml
     public function render()
     {
         $name = $this->getAttribute('name');
-        $value = $this->getAttribute('value');
         $flags = $this->getAttribute('flags');
         $content ='';
 
@@ -27,7 +26,7 @@ class NethGui_Widget_Xhtml_Inset extends NethGui_Widget_Xhtml
         if ($value instanceof NethGui_Core_ViewInterface) {            
             $content .= $this->includeTemplate($value, $flags);
         } else {
-            $content .= htmlspecialchars($value);
+            $content .= $value; // add plain xhtml text
         }
 
         return $content;

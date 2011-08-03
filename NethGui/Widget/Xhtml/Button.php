@@ -46,7 +46,7 @@ class NethGui_Widget_Xhtml_Button extends NethGui_Widget_Xhtml
                 $value = array($value);
             }
             
-            $attributes['href'] = $this->buildUrl($value);
+            $attributes['href'] = call_user_func_array(array($this, 'buildUrl'), $value);
             $attributes['class'] = $cssClass;
 
             $content .= $this->openTag('a', $attributes);

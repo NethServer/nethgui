@@ -43,7 +43,7 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
     public function __construct($identifier, $tableAdapterArguments, $columns, $rowActions, $tableActions)
     {
         parent::__construct($identifier);
-        $this->tableAdapterArguments = $tableAdapterArguments;        
+        $this->tableAdapterArguments = $tableAdapterArguments;
 
         /*
          *  Create and add the READ action, that displays the table.
@@ -75,7 +75,7 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
                 $action->setTableAdapter($tableAdapter);
             }
         }
-        
+
         /**
          * Calling the parent method at this point ensures that the table
          * adapter has been set BEFORE the child initialization
@@ -191,10 +191,9 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
                     $dialogStyle = NethGui_Renderer_Abstract::DIALOG_EMBEDDED;
                 }
 
-                $renderer
-                    ->insert($view->dialog($child->getIdentifier(), $dialogStyle | NethGui_Renderer_Abstract::STATE_DISABLED))
-                    ->insert($view->inset($child->getIdentifier()))
-                ;
+                $renderer->insert(
+                    $view->dialog($child->getIdentifier(), $dialogStyle | NethGui_Renderer_Abstract::STATE_DISABLED)
+                );
             }
         }
 
@@ -206,10 +205,10 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
         parent::prepareView($view, $mode);
 
         if (is_object($this->currentAction)) {
-            if($this->getRequest()->isSubmitted() && $this->hasAction('read')) {
+            if ($this->getRequest()->isSubmitted() && $this->hasAction('read')) {
                 $readAction = $this->getAction('read');
                 $innerView = $view->spawnView($readAction, TRUE);
-                $readAction->prepareView($innerView, $mode);                
+                $readAction->prepareView($innerView, $mode);
             }
             return;
         }
