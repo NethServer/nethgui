@@ -15,11 +15,11 @@ The idea is taken from `alexking.org`_
 Controls
 --------
 
-Plain text::
+(Dynamic) plain text::
 
   This is a paragraph.
 
-  This is another paragraph.
+  This is another paragraph.  Your name is "E. Smith".
 
 
 Text input field (normal/focused)::

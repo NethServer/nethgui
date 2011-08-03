@@ -120,10 +120,21 @@ class NethGui_Renderer_Xhtml extends NethGui_Core_ReadonlyView implements NethGu
         return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags));
     }
 
-    public function text($name, $flags = 0)
+    public function text($name, $value, $flags = 0)
     {
         $flags |= $this->inheritFlags;
-        return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags));
+        return $this->createWidget(__FUNCTION__, array('name' => $name, 'value' => $value, 'flags' => $flags));
+    }
+
+    public function header($name, $value, $flags = 0)
+    {
+        $flags |= $this->inheritFlags;
+
+        $panel = $this->panel($flags)->setAttribute('class', 'header');
+        $text = $this->createWidget('text', array('name' => $name, 'value' => $value ? $value : '${0}', 'flags' => $flags));
+
+        $panel->insert($text);
+        return $panel;
     }
 
 }

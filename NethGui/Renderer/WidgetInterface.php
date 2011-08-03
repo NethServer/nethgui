@@ -7,6 +7,6 @@
 interface NethGui_Renderer_WidgetInterface {
     public function insert(NethGui_Renderer_WidgetInterface $widget);
     public function setAttribute($attribute, $value);
-    public function getAttribute($attribute);
+    public function getAttribute($attribute, $default = NULL);
     public function render();
 }

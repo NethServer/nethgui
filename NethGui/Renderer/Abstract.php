@@ -62,12 +62,17 @@ interface NethGui_Renderer_Abstract
     public function textInput($name, $flags = 0);
 
     /**
-     * Create a text input control
+     * Create a plain text control
      * @param string $name The view member name
      * @param integer $flags Optional {STATE_DISABLED}
      * @return NethGui_Renderer_WidgetInterface
      */
-    public function text($name, $flags = 0);
+    public function text($name, $value, $flags = 0);
+
+    /**
+     * Create a text header control
+     */
+    public function header($name, $value, $flags = 0);
 
     /**
      * Create an hidden control

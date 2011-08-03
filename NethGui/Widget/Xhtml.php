@@ -20,10 +20,10 @@ abstract class NethGui_Widget_Xhtml implements NethGui_Renderer_WidgetInterface
      */
     protected $view;
 
-    public function getAttribute($attribute)
+    public function getAttribute($attribute, $default = NULL)
     {
         if ( ! $this->hasAttribute($attribute)) {
-            return NULL;
+            return $default;
         }
         return $this->attributes[$attribute];
     }

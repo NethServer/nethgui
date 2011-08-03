@@ -19,28 +19,41 @@ class NethGui_Widget_Xhtml_Text extends NethGui_Widget_Xhtml
     {
         $name = $this->getAttribute('name');
         $flags = $this->getAttribute('flags');
+        $hsc = $this->getAttribute('escapeHtml', TRUE);
+        $tag = $this->getAttribute('tag', 'span');
+        $value = $this->getAttribute('value', '${0}');
+        $cssClass = 'text';
 
-        if ($this->hasAttribute('value')) {
-            $value = $this->getAttribute('value');
-        } else {
-            $value = $name . '_text';
-        }
+        $text = '';
 
-        if ($this->hasAttribute('args')) {
-            $args = array();
-            if ( ! is_array($this->getAttribute('args'))) {
-                throw new InvalidArgumentException('`args` attribute must be an array!');
-            }
-            $i = 0;
-            foreach ($this->getAttribute('args') as $arg) {
-                $args['${' . $i . '}'] = $arg;
-                $i ++;
-            }
+        if ($flags & NethGui_Renderer_Abstract::STATE_DISABLED) {
+            $text = $this->translate($value);
+            $cssClass .= ' disabled';
         } else {
+
             $args = array('${0}' => $this->view[$name]);
+
+            if ($this->hasAttribute('args')) {
+                $args = array();
+                if ( ! is_array($this->getAttribute('args'))) {
+                    throw new InvalidArgumentException('`args` attribute must be an array!');
+                }
+                $i = 1;
+                foreach ($this->getAttribute('args') as $arg) {
+                    $args['${' . $i . '}'] = $arg;
+                    $i ++;
+                }
+            }
+
+            $text = $this->translate($value, $args);
         }
 
-        return htmlspecialchars($this->translate($value, $args));
+
+        if ($hsc) {
+            $text = htmlspecialchars($text);
+        }
+
+        return $this->openTag($tag, array('class' => $cssClass, 'id' => $this->view->getUniqueId($name . '/' . self::getInstanceCounter()))) . $text . $this->closeTag($tag);
     }
 
 }
