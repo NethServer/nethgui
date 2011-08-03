@@ -19,7 +19,7 @@ class NethGui_Widget_Xhtml_Selector extends NethGui_Widget_Xhtml
     {
         $name = $this->getAttribute('name');
         $flags = $this->getAttribute('flags');
-        $choices = $this->getAttribute('choices');
+        $choices = $this->getAttribute('choices', $name . 'Datasource');
         $value = $this->view[$name];
         $content = '';
 
@@ -87,7 +87,7 @@ class NethGui_Widget_Xhtml_Selector extends NethGui_Widget_Xhtml
         $selectorEnabled = ! ($flags & NethGui_Renderer_Abstract::STATE_DISABLED);
 
         if ($selectorEnabled && count($choices) > 0) {
-            $this->generateSelectorContent($name, $value, $choices, $flags);
+            $content .= $this->generateSelectorContent($name, $value, $choices, $flags);
         }
 
         $content .= $this->closeTag('div');
@@ -106,12 +106,12 @@ class NethGui_Widget_Xhtml_Selector extends NethGui_Widget_Xhtml
     private function generateSelectorContent($name, $value, $choices, $flags)
     {
         $content = '';
-        
+
         $content .= $this->openTag('ul');
         foreach (array_values($choices) as $index => $choice) {
 
             $content .= $this->openTag('li', array('class' => 'labeled-control label-right'));
-            $choiceFlags = $flags;
+            $choiceFlags = $flags & ~NethGui_Renderer_Abstract::LABEL_RIGHT | NethGui_Renderer_Abstract::LABEL_RIGHT;
 
             if ($flags & NethGui_Renderer_Abstract::SELECTOR_MULTIPLE) {
                 $choiceName = $name . '/' . $index;
@@ -140,10 +140,9 @@ class NethGui_Widget_Xhtml_Selector extends NethGui_Widget_Xhtml
                 );
             }
 
-            $this->controlTag('input', $choiceName, $choiceFlags, '', $attributes);
-            $content .= $this->openTag('label', array('for' => $this->getUniqueId($choiceId)));
-            $this->append( ! empty($choice[1]) ? $choice[1] : $choice[0]);
-            $content .= $this->closeTag('label');
+            $choiceLabel = ( ! empty($choice[1]) ? $choice[1] : $choice[0]);
+
+            $content .= $this->labeledControlTag('input', $choiceName, $choiceLabel, $choiceFlags, '', $attributes);
 
             $content .= $this->closeTag('li');
         }
