@@ -63,7 +63,45 @@ class NethGui_Renderer_Xhtml extends NethGui_Core_ReadonlyView implements NethGu
     public function dialog($name, $flags = 0)
     {
         $flags |= $this->inheritFlags;
-        return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags));
+
+        $className = 'dialog';
+
+        if ($flags & NethGui_Renderer_Abstract::DIALOG_SUCCESS) {
+            $className .= ' success';
+        } elseif ($flags & NethGui_Renderer_Abstract::DIALOG_WARNING) {
+            $className .= ' warning';
+        } elseif ($flags & NethGui_Renderer_Abstract::DIALOG_ERROR) {
+            $className .= ' error';
+        }
+
+        if ($flags & NethGui_Renderer_Abstract::DIALOG_EMBEDDED) {
+            $className .= ' embedded';
+            // unset the EMBEDDED flag:
+            $flags ^= NethGui_Renderer_Abstract::DIALOG_EMBEDDED;
+        } elseif ($flags & NethGui_Renderer_Abstract::DIALOG_MODAL) {
+            $className .= ' modal';
+            // unset the MODAL flag:
+            $flags ^= NethGui_Renderer_Abstract::DIALOG_MODAL;
+        } else {
+            $className .= ' embedded'; // default dialog class
+        }
+
+        if ($flags & NethGui_Renderer_Abstract::STATE_DISABLED) {
+            $className .= ' disabled';
+        }
+
+        /*
+         * Create a panel wrapped around the inset
+         */
+
+        $panel = $this->panel($flags)
+            ->setAttribute('class', $className)
+            ->setAttribute('name', $name);
+        $inset = $this->createWidget('inset', array('name' => $name, 'flags' => $flags));
+
+        $panel->insert($inset);
+
+        return $panel;
     }
 
     public function fieldsetSwitch($name, $value, $flags = 0)
