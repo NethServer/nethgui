@@ -18,7 +18,7 @@ class NethGui_Widget_Xhtml_Button extends NethGui_Widget_Xhtml
     public function render()
     {
         $name = $this->getAttribute('name');
-        $value = $this->getAttribute('value');
+        $value = $this->getAttribute('value', $this->view[$name]);
         $flags = $this->getAttribute('flags');
         $content ='';
 

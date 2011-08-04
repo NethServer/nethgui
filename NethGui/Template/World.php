@@ -11,7 +11,7 @@
             <div id="header"><div id="product">NethServer</div><?php echo $view['NotificationArea'] ?></div>
             <div class="colmask leftmenu">
                 <div class="colleft">
-                    <div class="col1"><div id="<?php echo $view['CurrentModule']->getModule()->getIdentifier(); ?>" class="CurrentModule"><?php echo $view['CurrentModule'] ?></div></div>
+                    <div class="col1"><div class="CurrentModule"><?php echo $view['CurrentModule'] ?></div></div>
                     <div class="col2"><div id="moduleMenu"><?php echo $view['Menu'] ?></div></div>
                 </div>
             </div>

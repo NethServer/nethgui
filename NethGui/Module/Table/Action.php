@@ -6,7 +6,7 @@
  */
 
 /**
- * A table action receives a TableAdapter to modify a table
+ * A Table Action receives a TableAdapter to modify a table
  * It specifies the dialog rendering style.
  *
  * @package Module

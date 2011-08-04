@@ -172,16 +172,16 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard imple
     {
         if ($view['transient'] && count($view['data']) == 0) {
             // render as link
-            $view->button($view['name'], NethGui_Renderer_Abstract::BUTTON_LINK, $view['location']);
+            $widget = $view->button($view['name'], NethGui_Renderer_Abstract::BUTTON_LINK)->setAttribute('value', $view['location']);
         } else {
             // render as form
-            $form = $view->form($view['location'], 0, 'NotificationDialog_Action_' . $view['name']);
-            $form->inset('dismissView');
-            $form->hidden('data');
-            $form->button($view['name'], NethGui_Renderer_Abstract::BUTTON_SUBMIT);
+            $widget = $view->form($view['location'], 0, 'NotificationDialog_Action_' . $view['name'])
+                ->insert($view->inset('dismissView'))
+                ->insert($view->hidden('data'))
+                ->insert($view->button($view['name'], NethGui_Renderer_Abstract::BUTTON_SUBMIT));
         }
 
-        return $view;
+        return $widget;
     }
 
     public function addValidationError(NethGui_Core_ModuleInterface $module, $fieldId, $message)

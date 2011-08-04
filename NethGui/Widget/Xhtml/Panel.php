@@ -18,16 +18,16 @@ class NethGui_Widget_Xhtml_Panel extends NethGui_Widget_Xhtml
     public function render()
     {
         $content = '';
-        $cssClass = $this->getAttribute('class');
+        $cssClass = $this->getAttribute('class', 'panel');
 
         if ($this->hasAttribute('name')) {
             $id = $this->view->getUniqueId($this->getAttribute('name'));
         } else {
-            $id = FALSE; //$this->view->getUniqueId('Panel_' . self::getInstanceCounter());
+            $id = FALSE;
         }
 
         $attributes = array(
-            'class' => $cssClass ? $cssClass : 'panel',
+            'class' => $cssClass,
             'id' => $id
         );
 

@@ -168,19 +168,22 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
      * @param NethGui_Renderer_Abstract $view
      * @return NethGui_Renderer_WidgetInterface
      */
-    public function renderDisabledActions(NethGui_Renderer_Abstract $view)
+    public function renderDefault(NethGui_Renderer_Abstract $view)
     {
         // Only a root module emits FORM tag:
         if (is_null($this->getParent())) {
-            $renderer = $view->form();
+            $widget = $view->form();
         } else {
-            $renderer = $view->panel();
+            $widget = $view->panel();
         }
 
+        $widget->setAttribute('class', 'table-controller' . (isset($view['tableClass']) ? $view['tableClass'] : ''));
+
         foreach ($this->getChildren() as $index => $child) {
-            // The FIRST child must ALWAYS be the "READ" action
+            // The FIRST child must ALWAYS be the "READ" action (default)
             if ($index === 0) {
-                $renderer->insert($view->inset($child->getIdentifier()));
+                // insert the 'read' action
+                $widget->insert($view->inset($child->getIdentifier()));
             } else {
 
                 // Subsequent children are embedded into a DISABLED dialog frame.
@@ -191,36 +194,57 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
                     $dialogStyle = NethGui_Renderer_Abstract::DIALOG_EMBEDDED;
                 }
 
-                $renderer->insert(
+                $widget->insert(
                     $view->dialog($child->getIdentifier(), $dialogStyle | NethGui_Renderer_Abstract::STATE_DISABLED)
                 );
             }
         }
 
-        return $renderer;
+        /*
+         *  After the action dialogs insert the table-action buttons (elementList)
+         */
+        $flags = ($view['__action'] == 'index') ? NethGui_Renderer_Abstract::STATE_DISABLED : 0;
+
+        $elementList = $view->elementList($flags);
+
+        foreach ($this->getTableActions() as $tableAction) {
+            $action = $tableAction->getIdentifier();
+
+            $button = $view
+                ->button($action, NethGui_Renderer_Abstract::BUTTON_LINK)
+                ->setAttribute('value', array($action, '#' . $view->getUniqueId($action)));
+
+            $elementList->insert($button);
+        }
+
+        $widget->insert($view->panel()->setAttribute('class', 'table-actions')->insert($elementList));
+
+        return $widget;
     }
 
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
 
-        if (is_object($this->currentAction)) {
-            if ($this->getRequest()->isSubmitted() && $this->hasAction('read')) {
-                $readAction = $this->getAction('read');
-                $innerView = $view->spawnView($readAction, TRUE);
-                $readAction->prepareView($innerView, $mode);
+        if (is_object($this->currentAction)
+            && $this->getRequest()->isSubmitted()
+            && $this->hasAction('read')) {
+            // Load 'read' action when some other action has occurred,
+            // to refresh the tabular data.
+            $readAction = $this->getAction('read');
+            $innerView = $view->spawnView($readAction, TRUE);
+            $readAction->prepareView($innerView, $mode);
+        } elseif (is_null($this->currentAction)) {
+            // Handle a NULL current action, rendering all the children in a
+            // "DISABLED" state. This is the default controller state,
+            // where the table action buttons are displayed.
+            foreach ($this->getChildren() as $childModule) {
+                $innerView = $view->spawnView($childModule, TRUE);
+                $childModule->prepareView($innerView, $mode);
             }
-            return;
-        }
 
-        // Handle a NULL current action, rendering all the children in a
-        // "DISABLED" state.
-        foreach ($this->getChildren() as $childModule) {
-            $innerView = $view->spawnView($childModule, TRUE);
-            $childModule->prepareView($innerView, $mode);
+            $view->setTemplate(array($this, 'renderDefault'));
         }
-
-        $view->setTemplate(array($this, 'renderDisabledActions'));
     }
 
 }

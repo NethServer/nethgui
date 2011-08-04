@@ -12,21 +12,19 @@
  * @subpackage Xhtml
  * @internal
  */
-class NethGui_Widget_Xhtml_Form extends NethGui_Widget_Xhtml
+class NethGui_Widget_Xhtml_Form extends NethGui_Widget_Xhtml_Panel
 {
 
     public function render()
     {
-        $name = $this->getAttribute('name');
-        $value = $this->getAttribute('value');
-        $flags = $this->getAttribute('flags');
+        // Set empty string as default name to obtain an xhtml ID attribute
+        $this->setAttribute('name', $this->getAttribute('name', ''));
+        
         $action = $this->getAttribute('action');
-        $content = '';
 
+        $content = '';
         $content .= $this->openTag('form', array('method' => 'post', 'action' => $this->buildUrl($action)));
-        $content .= $this->openTag('div', array('id' => $this->view->getUniqueId($name ? $name : 'Form')));
-        $content .= $this->renderChildren();
-        $content .= $this->closeTag('div');
+        $content .= parent::render();
         $content .= $this->closeTag('form');
 
         return $content;

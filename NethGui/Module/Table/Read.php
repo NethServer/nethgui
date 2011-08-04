@@ -42,16 +42,6 @@ class NethGui_Module_Table_Read extends NethGui_Module_Table_Action
         $view['rows'] = $this->prepareRows($view, $mode);
         if ($mode == self::VIEW_SERVER) {
             $view['columns'] = $this->columns;
-
-            $view['tableActions'] = new ArrayObject();
-
-            foreach ($this->getParent()->getTableActions() as $tableAction) {
-                $tableActionView = $view->spawnView($tableAction);
-                $tableActionId = $tableAction->getIdentifier();
-                $args = array('..', $tableActionId,  '#' . $tableActionView->getUniqueId());
-                $view['tableActions'][] = array($tableActionId, NethGui_Renderer_Abstract::BUTTON_LINK, $args);
-            }
-
             $view['tableClass'] = count($view['rows']) > 10 ? 'large-dataTable' : 'small-dataTable';
             $view['tableId'] = $view->getUniqueId();
         }

@@ -1,5 +1,4 @@
-<div id="<?echo $view['tableId'] ?>" class="crud-read <?php echo $view['tableClass']?>">
-<table>
+<div class="table-read <?php echo $view['tableClass']?>" id="<?php echo $view->getUniqueId() ?>" ><table>
     <thead><tr>
         <?php
             foreach ($view['columns'] as $columnName) {
@@ -14,22 +13,4 @@
         <?php endforeach; ?>
     </tr>
     <?php endforeach ?></tbody>
-</table>
-<?php
-    
-    $flags = ($view['__action'] == 'index') ? NethGui_Renderer_Abstract::STATE_DISABLED : 0;
-
-    $elementList = $view->elementList($flags);
-
-    foreach($view['tableActions'] as $buttonArgs) {
-        $button = $view
-            ->button($buttonArgs[0], $buttonArgs[1])
-            ->setAttribute('value', $buttonArgs[2])
-        ;
-        $elementList->insert($button);        
-    }
-    
-    echo $elementList;        
-
-?>
-</div>
+</table></div>
