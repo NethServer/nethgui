@@ -48,10 +48,7 @@ class NethGui_Widget_Xhtml_FieldsetSwitch extends NethGui_Widget_Xhtml
     public function insert(NethGui_Renderer_WidgetInterface $widget)
     {
         $fieldset = new NethGui_Widget_Xhtml_Fieldset($this->view);
-
-
         parent::insert($fieldset->insert($widget));
-
         return $this;
     }
 
