@@ -177,7 +177,7 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
             $widget = $view->panel();
         }
 
-        $widget->setAttribute('class', 'table-controller' . (isset($view['tableClass']) ? $view['tableClass'] : ''));
+        $widget->setAttribute('class', 'table controller' . (isset($view['tableClass']) ? $view['tableClass'] : ''));
 
         foreach ($this->getChildren() as $index => $child) {
             // The FIRST child must ALWAYS be the "READ" action (default)

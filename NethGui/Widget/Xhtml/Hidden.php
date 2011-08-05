@@ -50,10 +50,10 @@ class NethGui_Widget_Xhtml_Hidden extends NethGui_Widget_Xhtml
                 $attributes = array(
                     'type' => 'hidden',
                     'value' => $value,
-                    'name' => $this->view->getControlName($namePath),
-                );
+                    'name' => $this->view->getControlName($namePath)
+                );                
 
-                $content .= $this->selfClosingTag('input', $attributes);
+                $content .= $this->controlTag('input', FALSE, $flags, '', $attributes);
             }
         }
 

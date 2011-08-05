@@ -16,14 +16,9 @@ class NethGui_Widget_Xhtml_Tabs extends NethGui_Widget_Xhtml
 {
 
     public function render()
-    {
-        $name = $this->getAttribute('name');
-        $value = $this->getAttribute('value');
-        $flags = $this->getAttribute('flags');
+    {                                       
         $content = '';
-
-        $content .= $this->openTag('div', array('class' => 'tabs'));
-
+      
         if ($this->hasChildren()) {
             $content .=$this->openTag('ul', array('class' => 'tabs-list'));
 
@@ -38,12 +33,9 @@ class NethGui_Widget_Xhtml_Tabs extends NethGui_Widget_Xhtml
 
             $content .=$this->closeTag('ul');
         }
-
-
+        
         $content .= $this->renderChildren();
-
-        $content .= $this->closeTag('div');
-
+       
         return $content;
     }
 
@@ -54,7 +46,7 @@ class NethGui_Widget_Xhtml_Tabs extends NethGui_Widget_Xhtml
 
         $panel
             ->setAttribute('name', $widget->getAttribute('name'))
-            ->setAttribute('class', 'panel')
+            ->setAttribute('class', 'tab-panel')
             ->insert($widget);
        
         return $this;

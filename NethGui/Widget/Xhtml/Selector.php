@@ -74,15 +74,8 @@ class NethGui_Widget_Xhtml_Selector extends NethGui_Widget_Xhtml
         );
 
         $content .= $this->openTag('div', $choicesAttributes);
-
-        $hidden = new NethGui_Widget_Xhtml_Hidden($this->view);
-        $hidden
-            ->setAttribute('name', $name)
-            ->setAttribute('flags', $flags)
-            ->setAttribute('value', '');
-        ;
-
-        $content .= $hidden->render();
+        
+        $content .= $this->controlTag('input', $name, $flags, '', array('type'=>'hidden'));
 
         $selectorEnabled = ! ($flags & NethGui_Renderer_Abstract::STATE_DISABLED);
 
