@@ -22,7 +22,7 @@ class NethGui_Widget_Xhtml_Text extends NethGui_Widget_Xhtml
         $hsc = $this->getAttribute('escapeHtml', TRUE);
         $tag = $this->getAttribute('tag', 'span');
         $value = $this->getAttribute('value', '${0}');
-        $cssClass = 'text ' . $this->getClientEventTarget();
+        $cssClass = 'Text ' . $this->getClientEventTarget();
 
         $text = '';
 

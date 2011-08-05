@@ -1,4 +1,4 @@
-<div class="table-read <?php echo $view['tableClass']?>" id="<?php echo $view->getUniqueId() ?>" ><table>
+<div class="table-read DataTable <?php echo $view['tableClass']?>" id="<?php echo $view->getUniqueId() ?>" ><table>
     <thead><tr>
         <?php
             foreach ($view['columns'] as $columnName) {
