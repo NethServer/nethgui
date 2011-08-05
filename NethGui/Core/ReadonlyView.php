@@ -82,6 +82,11 @@ class NethGui_Core_ReadonlyView implements NethGui_Core_ViewInterface
         return $this->view->getUniqueId($parts);
     }
 
+    public function getClientEventTarget($name)
+    {
+        return $this->view->getClientEventTarget($name);
+    }
+
     public function getControlName($parts = '')
     {
         return $this->view->getControlName($parts);

@@ -145,34 +145,32 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
         return NethGui_Framework::getInstance()->renderView($this->template, $state, $languageCatalog);
     }
 
-    public function toJson()
-    {
-        $jsonString = '{';
+    public function getClientEvents() {
+        $events = array();
 
-        $separator = '';
+        return $this->fillEvents($events);
+    }
 
-        foreach ($this as $offset => $value) {
-            $jsonString .= $separator;
-            if (empty($separator)) {
-                $separator = ',';
-            }
+    private function fillEvents(&$events) {
+        foreach($this as $offset => $value) {
 
-            $jsonString .= json_encode($offset) . ':';
+            $eventTarget = $this->getClientEventTarget($offset);
 
             if ($value instanceof self) {
-                $jsonString .= $value->toJson();
+                $value->fillEvents($events);
+                continue;
+                
             } elseif ($value instanceof Traversable) {
-                $jsonString .= json_encode($this->traversableToArray($value));
-//            } elseif (is_string($value)) {
-//                $jsonString .= json_encode(htmlspecialchars($value));
+                $eventData = $this->traversableToArray($value);
+
             } else {
-                $jsonString .= json_encode($value);
+                $eventData = $value;
             }
+
+            $events[] = array($eventTarget, $eventData);
         }
 
-        $jsonString .= '}';
-
-        return $jsonString;
+        return $events;
     }
 
     /**
@@ -273,6 +271,15 @@ class NethGui_Core_View implements NethGui_Core_ViewInterface
         $suffix = str_replace('/', '_', $suffix);
 
         return $prefix . '_' . $suffix;
+    }
+
+    public function getClientEventTarget($name)
+    {
+        if(ENVIRONMENT === 'development') {
+            return $this->getUniqueId($name);
+        }
+        
+        return substr(md5($this->getUniqueId($name)), 0, 8);
     }
 
     public function getControlName($parts = '')

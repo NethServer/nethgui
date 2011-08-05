@@ -480,7 +480,7 @@ class NethGui_Framework
         } elseif ($request->getContentType() === NethGui_Core_Request::CONTENT_TYPE_JSON) {
             header("Content-Type: application/json; charset=UTF-8");
             $worldModule->prepareView($view, NethGui_Core_ModuleInterface::VIEW_CLIENT);
-            echo $view->toJson();
+            echo json_encode($view->getClientEvents());
         }
 
 

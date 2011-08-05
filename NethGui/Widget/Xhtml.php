@@ -230,6 +230,7 @@ abstract class NethGui_Widget_Xhtml implements NethGui_Renderer_WidgetInterface
     {
         // Add default instance flags:
         $flags |= intval($this->getAttribute('flags'));
+        $cssClass .= ' ' . $this->getClientEventTarget();
 
         $tag = strtolower($tag);
 
@@ -314,6 +315,16 @@ abstract class NethGui_Widget_Xhtml implements NethGui_Renderer_WidgetInterface
         }
 
         return NethGui_Framework::getInstance()->buildUrl($path, $parameters);
+    }
+
+    protected function getClientEventTarget()
+    {
+        if ( ! $this->hasAttribute('name')) {
+            throw new NethGui_Exception_View('Missing `name` attribute');
+        }
+
+        return $this->view->getClientEventTarget($this->getAttribute('name'));
+        
     }
 
 }

@@ -80,6 +80,15 @@ interface NethGui_Core_ViewInterface extends ArrayAccess, IteratorAggregate
     public function getUniqueId($parts = '');
 
     /**
+     * Get the target control identifier for the given view member
+     * 
+     * @see #358
+     * @param string $name
+     * @return string
+     */
+    public function getClientEventTarget($name);
+
+    /**
      * Generate a control name for the given $parts. If no parts are given
      * the name is generated from the module referenced by the view.
      *
