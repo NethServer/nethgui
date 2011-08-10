@@ -463,6 +463,15 @@ class NethGui_Framework
         // Finally, signal "final" events
         $hostConfiguration->signalFinalEvents();
 
+        /**
+         * Validation error http status.
+         * See RFC2616, section 10.4 "Client Error 4xx"
+         */
+        if ($notificationManager->hasValidationErrors()) {
+            // FIXME: check if we are in FAST-CGI module:
+            // @see http://php.net/manual/en/function.header.php
+            header("HTTP/1.1 400 Bad Request");
+        }
 
         /*
          * Prepare the views and render into Xhtml or Json
