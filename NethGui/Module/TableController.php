@@ -85,6 +85,7 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
 
     /**
      * A column action is executed in a row context (i.e. row updating, deletion...)
+     * @see getRowActions()
      */
     public function addRowAction(NethGui_Core_ModuleInterface $a)
     {
@@ -93,7 +94,7 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
     }
 
     /**
-     *
+     * Actions for a single row of the table
      * @return array
      */
     public function getRowActions()
@@ -104,6 +105,7 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
     /**
      * A table action involves the whole table (i.e. create a new row, 
      * print the table...)
+     * @see getTableActions()
      */
     public function addTableAction(NethGui_Core_ModuleInterface $a)
     {
@@ -112,7 +114,7 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
     }
 
     /**
-     *
+     * Actions for the whole table
      * @return array
      */
     public function getTableActions()
@@ -200,12 +202,7 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
             }
         }
 
-        /*
-         *  After the action dialogs insert the table-action buttons (elementList)
-         */
-        $flags = ($view['__action'] == 'index') ? NethGui_Renderer_Abstract::STATE_DISABLED : 0;
-
-        $elementList = $view->elementList($flags);
+        $elementList = $view->elementList();
 
         foreach ($this->getTableActions() as $tableAction) {
             $action = $tableAction->getIdentifier();
