@@ -59,7 +59,7 @@ class NethGui_Widget_Xhtml_Selector extends NethGui_Widget_Xhtml
         }
 
         $fieldsetAttributes = array(
-            'class' => 'selector ' . (is_array($value) ? 'multiple' : 'single'),
+            'class' => 'selector ' . $this->getClientEventTarget() . ' ' . ((is_array($value) ? 'multiple' : 'single')),
             'id' => $this->view->getUniqueId($name)
         );
 
@@ -69,7 +69,7 @@ class NethGui_Widget_Xhtml_Selector extends NethGui_Widget_Xhtml
         $content .= $this->closeTag('legend');
 
         $choicesAttributes = array(
-            'class' => 'choices',
+            'class' => 'choices ' . $this->view->getClientEventTarget($dataSourceName),
             'id' => $this->view->getUniqueId($dataSourceName)
         );
 

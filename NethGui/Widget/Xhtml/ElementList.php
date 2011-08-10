@@ -20,9 +20,15 @@ class NethGui_Widget_Xhtml_ElementList extends NethGui_Widget_Xhtml
         $name = $this->getAttribute('name');
         $value = $this->getAttribute('value');
         $flags = $this->getAttribute('flags');
+        $classes = 'actions buttonList';
+
+        if ($flags & NethGui_Renderer_Abstract::STATE_DISABLED) {
+            $classes .= ' disabled';
+        }
+        
         $content = '';
 
-        $content .= $this->openTag('ul', array('class' => 'actions buttonList'));
+        $content .= $this->openTag('ul', array('class' => $classes));
         $content .= $this->renderChildren();
         $content .= $this->closeTag('ul');
 

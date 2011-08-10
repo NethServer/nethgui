@@ -20,6 +20,11 @@ class NethGui_Widget_Xhtml_Panel extends NethGui_Widget_Xhtml
         $content = '';
         $cssClass = $this->getAttribute('class', 'panel');
 
+        $flags = $this->getAttribute('flags');
+        if ($flags & NethGui_Renderer_Abstract::STATE_DISABLED) {
+            $cssClass .= ' disabled';
+        }
+
         if ($this->hasAttribute('name')) {
             $id = $this->view->getUniqueId($this->getAttribute('name'));
         } else {
