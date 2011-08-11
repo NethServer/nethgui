@@ -22,6 +22,31 @@ class NethGui_Widget_Xhtml_Selector extends NethGui_Widget_Xhtml
         $choices = $this->getAttribute('choices', $name . 'Datasource');
         $value = $this->view[$name];
         $content = '';
+        $cssClass = 'selector ' . ($flags & NethGui_Renderer_Abstract::SELECTOR_MULTIPLE ? 'multiple ' : '') . $this->getClientEventTarget();
+
+        if ($value instanceof Traversable) {
+            $value = iterator_to_array($value);
+        }
+
+        if (is_null($value)) {
+            if ($flags & NethGui_Renderer_Abstract::SELECTOR_MULTIPLE) {
+                $value = array();
+            } else {
+                $value = '';
+            }
+        }        
+
+        $fieldsetAttributes = array(
+            'class' => $cssClass,
+            'id' => $this->view->getUniqueId($name)
+        );
+
+        $content .= $this->openTag('fieldset', $fieldsetAttributes);
+        $content .= $this->openTag('legend');
+        $content .= htmlspecialchars($this->view->translate($name . '_label'));
+        $content .= $this->closeTag('legend');
+
+        // Render the choices list
 
         if (is_string($choices)) {
             // Get the choices from the view member
@@ -38,44 +63,14 @@ class NethGui_Widget_Xhtml_Selector extends NethGui_Widget_Xhtml
             $choices = array();
         }
 
-        $selectorModeIsDefined = (NethGui_Renderer_Abstract::SELECTOR_MULTIPLE | NethGui_Renderer_Abstract::SELECTOR_SINGLE) & $flags;
-
-        if ($value instanceof Traversable) {
-            $value = iterator_to_array($value);
-        } elseif (is_null($value) && $selectorModeIsDefined) {
-            if ($flags & NethGui_Renderer_Abstract::SELECTOR_MULTIPLE) {
-                $value = array();
-            } else {
-                $value = '';
-            }
-        }
-
-        if ( ! $selectorModeIsDefined) {
-            if (is_array($value)) {
-                $flags |= NethGui_Renderer_Abstract::SELECTOR_MULTIPLE;
-            } else {
-                $flags |= NethGui_Renderer_Abstract::SELECTOR_SINGLE;
-            }
-        }
-
-        $fieldsetAttributes = array(
-            'class' => 'selector ' . $this->getClientEventTarget() . ' ' . ((is_array($value) ? 'multiple' : 'single')),
-            'id' => $this->view->getUniqueId($name)
-        );
-
-        $content .= $this->openTag('fieldset', $fieldsetAttributes);
-        $content .= $this->openTag('legend');
-        $content .= htmlspecialchars($this->view->translate($name . '_label'));
-        $content .= $this->closeTag('legend');
-
         $choicesAttributes = array(
             'class' => 'choices ' . $this->view->getClientEventTarget($dataSourceName),
             'id' => $this->view->getUniqueId($dataSourceName)
         );
 
         $content .= $this->openTag('div', $choicesAttributes);
-        
-        $content .= $this->controlTag('input', $name, $flags, '', array('type'=>'hidden'));
+
+        $content .= $this->controlTag('input', $name, $flags, '', array('type' => 'hidden'));
 
         $selectorEnabled = ! ($flags & NethGui_Renderer_Abstract::STATE_DISABLED);
 
@@ -118,7 +113,7 @@ class NethGui_Widget_Xhtml_Selector extends NethGui_Widget_Xhtml
                     'type' => 'checkbox',
                     'value' => $choice[0],
                 );
-            } elseif ($flags & NethGui_Renderer_Abstract::SELECTOR_SINGLE) {
+            } else {
                 $choiceName = $name;
                 $choiceId = $name . '/' . $index;
 

@@ -16,6 +16,11 @@ class NethGui_Renderer_Xhtml extends NethGui_Core_ReadonlyView implements NethGu
      */
     private $inheritFlags = 0;
 
+    /**
+     *
+     * @param NethGui_Core_ViewInterface $view
+     * @param int $inheritFlags Default flags applied to all widgets created by this renderer
+     */
     public function __construct(NethGui_Core_ViewInterface $view, $inheritFlags = 0)
     {
         parent::__construct($view);
