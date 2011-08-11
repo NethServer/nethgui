@@ -37,7 +37,6 @@ interface NethGui_Renderer_Abstract
     const BUTTON_CUSTOM = 0x800;
 
     const DIALOG_MODAL = 0x1000;
-    const DIALOG_EMBEDDED = 0x2000;
     const DIALOG_SUCCESS = 0x4000;
     const DIALOG_WARNING = 0x8000;
     const DIALOG_ERROR = 0x10000;

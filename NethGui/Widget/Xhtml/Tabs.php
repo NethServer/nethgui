@@ -46,7 +46,7 @@ class NethGui_Widget_Xhtml_Tabs extends NethGui_Widget_Xhtml
 
         $panel
             ->setAttribute('name', $widget->getAttribute('name'))
-            ->setAttribute('class', 'tab-panel')
+            ->setAttribute('class', 'tab-panel ' . $this->getAttribute('tabClass'))
             ->insert($widget);
        
         return $this;

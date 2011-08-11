@@ -113,7 +113,7 @@ class NethGui_Module_Table_Read extends NethGui_Module_Table_Action
 
     public function renderColumnActions(NethGui_Renderer_Abstract $view)
     {
-        $elementList = $view->elementList();
+        $elementList = $view->elementList()->setAttribute('class', 'buttonList row-actions');
 
         foreach ($view as $action => $actionView) {
             $args = array('..', $action, $actionView[1][1], '#' . $actionView->getUniqueId());

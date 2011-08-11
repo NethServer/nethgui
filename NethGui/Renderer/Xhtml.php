@@ -79,16 +79,8 @@ class NethGui_Renderer_Xhtml extends NethGui_Core_ReadonlyView implements NethGu
             $className .= ' error';
         }
 
-        if ($flags & NethGui_Renderer_Abstract::DIALOG_EMBEDDED) {
-            $className .= ' embedded';
-            // unset the EMBEDDED flag:
-            $flags ^= NethGui_Renderer_Abstract::DIALOG_EMBEDDED;
-        } elseif ($flags & NethGui_Renderer_Abstract::DIALOG_MODAL) {
+        if ($flags & NethGui_Renderer_Abstract::DIALOG_MODAL) {
             $className .= ' modal';
-            // unset the MODAL flag:
-            $flags ^= NethGui_Renderer_Abstract::DIALOG_MODAL;
-        } else {
-            $className .= ' embedded'; // default dialog class
         }
 
         if ($flags & NethGui_Renderer_Abstract::STATE_DISABLED) {

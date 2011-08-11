@@ -24,10 +24,12 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
      * @var array
      */
     private $tableAdapterArguments;
+
     /**
      * @var array
      */
     private $rowActions;
+
     /**
      * @var array
      */
@@ -189,20 +191,20 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
             } else {
 
                 // Subsequent children are embedded into a DISABLED dialog frame.
+                $actionWidget = $view->panel(NethGui_Renderer_Abstract::STATE_DISABLED)->insert($view->inset($child->getIdentifier()));
+                
                 if ($child instanceof NethGui_Module_Table_Action && $child->isModal())
                 {
-                    $dialogStyle = NethGui_Renderer_Abstract::DIALOG_MODAL;
+                    $actionWidget->setAttribute('class', 'action dialog modal');
                 } else {
-                    $dialogStyle = NethGui_Renderer_Abstract::DIALOG_EMBEDDED;
+                    $actionWidget->setAttribute('class', 'action dialog embedded');
                 }
 
-                $widget->insert(
-                    $view->dialog($child->getIdentifier(), $dialogStyle | NethGui_Renderer_Abstract::STATE_DISABLED)
-                );
+                $widget->insert($actionWidget);
             }
         }
 
-        $elementList = $view->elementList();
+        $elementList = $view->elementList()->setAttribute('class', 'action table-actions buttonList');
 
         foreach ($this->getTableActions() as $tableAction) {
             $action = $tableAction->getIdentifier();
@@ -214,7 +216,7 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
             $elementList->insert($button);
         }
 
-        $widget->insert($view->panel()->setAttribute('class', 'table-actions')->insert($elementList));
+        $widget->insert($elementList);
 
         return $widget;
     }

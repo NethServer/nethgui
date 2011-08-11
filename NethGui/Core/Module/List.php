@@ -109,6 +109,7 @@ class NethGui_Core_Module_List extends NethGui_Core_Module_Composite implements 
     public function renderTabs(NethGui_Renderer_Abstract $view)
     {
         $tabs = $view->tabs();
+        $tabs->setAttribute('tabClass', 'action');
 
         // Only a root module emits FORM tag:
         if (is_null($this->getParent())) {
