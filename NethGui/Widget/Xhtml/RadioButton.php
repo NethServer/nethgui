@@ -34,7 +34,7 @@ class NethGui_Widget_Xhtml_RadioButton extends NethGui_Widget_Xhtml
 
         $flags = $this->applyDefaultLabelAlignment($flags, NethGui_Renderer_Abstract::LABEL_RIGHT);
 
-        $content .= $this->labeledControlTag('input', $name, $name . '_' . $value, $flags, '', $attributes);
+        $content .= $this->labeledControlTag('input', $name, $name . '_' . $value, $flags, 'RadioButton', $attributes);
 
 
         return $content;        

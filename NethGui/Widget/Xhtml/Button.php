@@ -23,7 +23,7 @@ class NethGui_Widget_Xhtml_Button extends NethGui_Widget_Xhtml
         $content ='';
 
         $attributes = array();
-        $cssClass = 'button';
+        $cssClass = 'Button';
         $buttonLabel = $name . '_label';
         
         if ($flags & (NethGui_Renderer_Abstract::BUTTON_LINK | NethGui_Renderer_Abstract::BUTTON_CANCEL)) {

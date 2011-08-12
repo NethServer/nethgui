@@ -181,30 +181,35 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
             $widget = $view->panel();
         }
 
-        $widget->setAttribute('class', 'table controller' . (isset($view['tableClass']) ? $view['tableClass'] : ''));
+        $widget->setAttribute('class', 'Component Table');
+
+        $tableRead = $view->panel()->setAttribute('class', 'Action TableRead');
+        $widget->insert($tableRead);
 
         foreach ($this->getChildren() as $index => $child) {
             // The FIRST child must ALWAYS be the "READ" action (default)
             if ($index === 0) {
                 // insert the 'read' action
-                $widget->insert($view->inset($child->getIdentifier()));
+                $tableRead->insert($view->inset($child->getIdentifier()));
             } else {
 
                 // Subsequent children are embedded into a DISABLED dialog frame.
                 $actionWidget = $view->panel(NethGui_Renderer_Abstract::STATE_DISABLED)->insert($view->inset($child->getIdentifier()));
-                
+
+                $actionWidget->setAttribute('name', $child->getIdentifier());
+
                 if ($child instanceof NethGui_Module_Table_Action && $child->isModal())
                 {
-                    $actionWidget->setAttribute('class', 'action dialog modal');
+                    $actionWidget->setAttribute('class', 'Dialog Action');
                 } else {
-                    $actionWidget->setAttribute('class', 'action dialog embedded');
+                    $actionWidget->setAttribute('class', 'Action');
                 }
 
                 $widget->insert($actionWidget);
             }
         }
 
-        $elementList = $view->elementList()->setAttribute('class', 'action table-actions buttonList');
+        $elementList = $view->elementList()->setAttribute('class', 'buttonList');
 
         foreach ($this->getTableActions() as $tableAction) {
             $action = $tableAction->getIdentifier();
@@ -216,7 +221,7 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
             $elementList->insert($button);
         }
 
-        $widget->insert($elementList);
+        $tableRead->insert($elementList);
 
         return $widget;
     }

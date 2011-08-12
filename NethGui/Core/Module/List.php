@@ -83,7 +83,7 @@ class NethGui_Core_Module_List extends NethGui_Core_Module_Composite implements 
             $widget->insert($view->inset($child->getIdentifier()));
         }
 
-        $widget->setAttribute('class', 'list controller');
+        $widget->setAttribute('class', 'Component List');
         
         return $widget;
     }
@@ -97,7 +97,7 @@ class NethGui_Core_Module_List extends NethGui_Core_Module_Composite implements 
             $widget = $view->panel();
         }
 
-        $widget->setAttribute('class', 'form controller');
+        $widget->setAttribute('class', 'Component Form');
 
         foreach ($this->getChildren() as $child) {
             $widget->insert($view->inset($child->getIdentifier()));
@@ -109,7 +109,7 @@ class NethGui_Core_Module_List extends NethGui_Core_Module_Composite implements 
     public function renderTabs(NethGui_Renderer_Abstract $view)
     {
         $tabs = $view->tabs();
-        $tabs->setAttribute('tabClass', 'action');
+        $tabs->setAttribute('tabClass', 'Action');
 
         // Only a root module emits FORM tag:
         if (is_null($this->getParent())) {
@@ -118,7 +118,7 @@ class NethGui_Core_Module_List extends NethGui_Core_Module_Composite implements 
             $widget = $tabs;
         }
 
-        $widget->setAttribute('class', 'tabs controller');
+        $widget->setAttribute('class', 'Tabs');
 
         foreach ($this->getChildren() as $child) {
             $tabs->insert($view->inset($child->getIdentifier()));

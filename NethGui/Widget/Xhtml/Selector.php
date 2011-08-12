@@ -22,7 +22,7 @@ class NethGui_Widget_Xhtml_Selector extends NethGui_Widget_Xhtml
         $choices = $this->getAttribute('choices', $name . 'Datasource');
         $value = $this->view[$name];
         $content = '';
-        $cssClass = 'selector ' . ($flags & NethGui_Renderer_Abstract::SELECTOR_MULTIPLE ? 'multiple ' : '') . $this->getClientEventTarget();
+        $cssClass = 'Selector ' . ($flags & NethGui_Renderer_Abstract::SELECTOR_MULTIPLE ? 'multiple ' : '') . $this->getClientEventTarget();
 
         if ($value instanceof Traversable) {
             $value = iterator_to_array($value);

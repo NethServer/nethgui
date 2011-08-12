@@ -12,7 +12,7 @@
             <div class="colmask leftmenu">
                 <div class="colleft">
                     <div class="col1"><div class="<?php echo $view['CurrentModule']->getModule()->getIdentifier(); ?> CurrentModule"><?php echo $view['CurrentModule'] ?></div></div>
-                    <div class="col2"><div id="moduleMenu"><?php echo $view['Menu'] ?></div></div>
+                    <div class="col2"><div id="moduleMenu" class="ModuleMenu"><?php echo $view['Menu'] ?></div></div>
                 </div>
             </div>
             
