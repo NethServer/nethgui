@@ -433,6 +433,8 @@ class NethGui_Framework
 
                 // Module initialization
                 $module->initialize();
+            } else {
+                show_404();
             }
 
 

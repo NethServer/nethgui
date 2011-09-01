@@ -181,7 +181,7 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
             $widget = $view->panel();
         }
 
-        $widget->setAttribute('class', 'Component Table');
+        $widget->setAttribute('class', 'Table');
 
         $tableRead = $view->panel()->setAttribute('class', 'TableAction TableRead raised');
         $widget->insert($tableRead);
