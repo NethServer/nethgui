@@ -27,33 +27,31 @@ class NethGui_Widget_Xhtml_Text extends NethGui_Widget_Xhtml
         $text = '';
 
         if ($flags & NethGui_Renderer_Abstract::STATE_DISABLED) {
-            $text = $this->view->translate($value);
             $cssClass .= ' disabled';
-        } else {
-
-            $args = array('${0}' => $this->view[$name]);
-
-            if ($this->hasAttribute('args')) {
-                $args = array();
-                if ( ! is_array($this->getAttribute('args'))) {
-                    throw new InvalidArgumentException('`args` attribute must be an array!');
-                }
-                $i = 1;
-                foreach ($this->getAttribute('args') as $arg) {
-                    $args['${' . $i . '}'] = $arg;
-                    $i ++;
-                }
-            }
-
-            $text = $this->view->translate($value, $args);
         }
 
+        $args = array('${0}' => $this->view->offsetExists($name) ? $this->view[$name] : '${0}');
+
+        if ($this->hasAttribute('args')) {
+            $args = array();
+            if ( ! is_array($this->getAttribute('args'))) {
+                throw new InvalidArgumentException('`args` attribute must be an array!');
+            }
+            $i = 1;
+            foreach ($this->getAttribute('args') as $arg) {
+                $args['${' . $i . '}'] = is_null($arg) ? ('${' . $i . '}') : $arg;
+                $i ++;
+            }
+        }
+
+        $text = $this->view->translate($value, $args);
 
         if ($hsc) {
             $text = htmlspecialchars($text);
         }
 
-        return $this->openTag($tag, array('class' => $cssClass, 'id' => $this->view->getUniqueId($name . '/' . self::getInstanceCounter()))) . $text . $this->closeTag($tag);
+        return $this->controlTag($tag, $name, $flags, $cssClass, array(), $text);
     }
 
 }
+

@@ -226,15 +226,12 @@ abstract class NethGui_Widget_Xhtml implements NethGui_Renderer_WidgetInterface
      * @param array $attributes Generic attributes array See {@link openTag()}
      * @return string
      */
-    protected function controlTag($tag, $name, $flags, $cssClass = '', $attributes = array())
+    protected function controlTag($tag, $name, $flags, $cssClass = '', $attributes = array(), $tagContent = '')
     {
         // Add default instance flags:
         $flags |= intval($this->getAttribute('flags'));
         $cssClass .= ' ' . $this->getClientEventTarget();
-
         $tag = strtolower($tag);
-
-        $tagContent = '';
 
         if ( ! isset($attributes['id'])) {
             $attributes['id'] = $this->view->getUniqueId($name);

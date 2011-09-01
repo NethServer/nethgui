@@ -15,7 +15,7 @@ The idea is taken from `alexking.org`_
 Controls
 --------
 
-(Dynamic) plain text::
+Text label::
 
   This is a paragraph.
 

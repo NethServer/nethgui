@@ -19,6 +19,7 @@ class NethGui_Module_Table_Modify extends NethGui_Module_Table_Action
     const FIELD = 11;
 
     private $parameterSchema;
+
     /**
      * This holds the name of the key parameter
      * @var string
@@ -73,6 +74,24 @@ class NethGui_Module_Table_Modify extends NethGui_Module_Table_Action
         return $keyValue;
     }
 
+    public function initialize()
+    {
+        parent::initialize();
+        foreach ($this->parameterSchema as $declarationIndex => $parameterDeclaration) {
+            $parameterName = array_shift($parameterDeclaration);
+            $validator = array_shift($parameterDeclaration);
+            $valueProvider = array_shift($parameterDeclaration);
+
+            $useTableAdapter = $this->hasTableAdapter()
+                && is_integer($valueProvider);
+
+            if ($useTableAdapter && $valueProvider === self::KEY) {
+                $this->key = $parameterName;
+                break;
+            }
+        }
+    }
+
     /**
      * We have to declare all the parmeters of parameterSchema here,
      * binding the actual key/row from tableAdapter.
@@ -91,8 +110,13 @@ class NethGui_Module_Table_Modify extends NethGui_Module_Table_Action
             $useTableAdapter = $this->hasTableAdapter()
                 && is_integer($valueProvider);
 
-            $isKeyDeclaration = ($useTableAdapter && $valueProvider === self::KEY)
-                || ($declarationIndex === 0 && $valueProvider === NULL);
+            $isKeyDeclaration = ($useTableAdapter && $valueProvider === self::KEY);
+
+            // Deprecated key declaration warning:
+            if ($declarationIndex === 0 && $valueProvider === NULL) {
+                $isKeyDeclaration = TRUE;
+                NethGui_Framework::getInstance()->logMessage('Deprecated key declaration form. See.. ', 'warning');
+            }
 
             $isFieldDeclaration = $useTableAdapter
                 && $valueProvider === self::FIELD
@@ -102,7 +126,6 @@ class NethGui_Module_Table_Modify extends NethGui_Module_Table_Action
             if ($isKeyDeclaration) {
                 $valueProvider = NULL;
                 $key = $this->getTheKey($request, $parameterName);
-                $this->key = $parameterName;
             } elseif ($isFieldDeclaration) {
 
                 $prop = array_shift($parameterDeclaration);
@@ -121,7 +144,6 @@ class NethGui_Module_Table_Modify extends NethGui_Module_Table_Action
 
             call_user_func_array(array($this, 'declareParameter'), $parameterDeclaration);
 
-            // set the parameter
             if ($isKeyDeclaration) {
                 $this->parameters[$parameterName] = $key;
             }

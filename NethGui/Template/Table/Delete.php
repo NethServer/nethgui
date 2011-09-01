@@ -1,11 +1,6 @@
-<div class="dialog-text"><?php
-$message = T('Confirm deletion of "%s"?',
-        array('%s' => empty($view[$view['__key']]) ? '%s' : $view[$view['__key']]), NULL, NULL, FALSE);
+<?php
 
-// Render the dialog content
-
-echo htmlspecialchars($message); // Add the dialog text (see $message)
-?></div><?php
+echo $view->text($view['__key'], 'Confirm deletion of `${0}`?');
 
 echo $view->hidden($view['__key']); // Put the key value into an hidden control
 
