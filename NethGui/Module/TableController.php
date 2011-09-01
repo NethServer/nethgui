@@ -183,7 +183,7 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
 
         $widget->setAttribute('class', 'Component Table');
 
-        $tableRead = $view->panel()->setAttribute('class', 'Action TableRead');
+        $tableRead = $view->panel()->setAttribute('class', 'TableAction TableRead raised');
         $widget->insert($tableRead);
 
         foreach ($this->getChildren() as $index => $child) {
@@ -200,9 +200,9 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
 
                 if ($child instanceof NethGui_Module_Table_Action && $child->isModal())
                 {
-                    $actionWidget->setAttribute('class', 'Dialog Action');
+                    $actionWidget->setAttribute('class', 'Dialog');
                 } else {
-                    $actionWidget->setAttribute('class', 'Action');
+                    $actionWidget->setAttribute('class', 'TableAction');
                 }
 
                 $widget->insert($actionWidget);
