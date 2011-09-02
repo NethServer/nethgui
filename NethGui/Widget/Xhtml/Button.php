@@ -20,12 +20,12 @@ class NethGui_Widget_Xhtml_Button extends NethGui_Widget_Xhtml
         $name = $this->getAttribute('name');
         $value = $this->getAttribute('value', $this->view[$name]);
         $flags = $this->getAttribute('flags');
-        $content ='';
+        $content = '';
 
         $attributes = array();
         $cssClass = 'Button';
         $buttonLabel = $name . '_label';
-        
+
         if ($flags & (NethGui_Renderer_Abstract::BUTTON_LINK | NethGui_Renderer_Abstract::BUTTON_CANCEL)) {
 
             if (is_null($value)) {
@@ -42,11 +42,7 @@ class NethGui_Widget_Xhtml_Button extends NethGui_Widget_Xhtml
                 $cssClass .= ' link';
             }
 
-            if ( ! is_array($value)) {
-                $value = array($value);
-            }
-            
-            $attributes['href'] = call_user_func_array(array($this, 'buildUrl'), $value);
+            $attributes['href'] = $this->prepareHrefAttribute($value);
             $attributes['class'] = $cssClass;
 
             $content .= $this->openTag('a', $attributes);
@@ -73,6 +69,19 @@ class NethGui_Widget_Xhtml_Button extends NethGui_Widget_Xhtml
         }
 
         return $content;
+    }
+
+    private function prepareHrefAttribute($value)
+    {
+        if(is_string($value) && preg_match('/https?/', parse_url($value, PHP_URL_SCHEME))) {
+            return $value;
+        }
+
+        if ( ! is_array($value)) {
+            $value = array($value);
+        }
+
+        return call_user_func_array(array($this, 'buildUrl'), $value);
     }
 
 }
