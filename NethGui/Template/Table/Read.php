@@ -1,8 +1,10 @@
 <div class="DataTable <?php echo $view['tableClass']?>" id="<?php echo $view->getUniqueId() ?>" ><table>
     <thead><tr>
         <?php
-            foreach ($view['columns'] as $columnName) {
-                echo '<th>' . T($columnName . '_label') . '</th>';
+            foreach ($view['columns'] as $columnInfo) {
+                echo isset($columnInfo['formatter']) ? '<th class="' . $columnInfo['formatter'] . '">' : '<th>';
+                echo  T($columnInfo['name'] . '_label');
+                echo '</th>';
             }
         ?>
     </tr></thead>

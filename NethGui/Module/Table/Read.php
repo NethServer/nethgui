@@ -33,7 +33,16 @@ class NethGui_Module_Table_Read extends NethGui_Module_Table_Action
     public function __construct($identifier, $columns)
     {
         parent::__construct($identifier, NULL);
-        $this->columns = $columns;
+        $this->columns = array();
+
+        foreach ($columns as $columnInfo) {
+            if (is_array($columnInfo)) {
+                $this->columns[] = $columnInfo;
+            } else {
+                // FIXME: setting here the default buttonList formatter for Actions column:
+                $this->columns[] = array('name' => strval($columnInfo), 'formatter' => ($columnInfo == 'Actions' ?  'buttonList' : NULL));
+            }
+        }
     }
 
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
@@ -42,7 +51,9 @@ class NethGui_Module_Table_Read extends NethGui_Module_Table_Action
         $view['rows'] = $this->prepareRows($view, $mode);
         if ($mode == self::VIEW_SERVER) {
             $view['columns'] = $this->columns;
-            $view['tableClass'] = count($view['rows']) > 10 ? 'large-dataTable' : 'small-dataTable';
+            // FIXME: implement pagination - on the client side:
+            $view['tableClass'] = count($view['rows']) > PHP_INT_MAX ? 'large-dataTable' : 'small-dataTable';
+            $view['tableClass'] .= ' ' . $view->getClientEventTarget('rows');
             $view['tableId'] = $view->getUniqueId();
         }
     }
@@ -59,8 +70,8 @@ class NethGui_Module_Table_Read extends NethGui_Module_Table_Action
         foreach ($this->tableAdapter as $key => $values) {
             $row = new ArrayObject();
 
-            foreach ($this->columns as $columnIndex => $column) {
-                $row[] = $this->prepareColumn($view, $mode, $columnIndex, $column, $key, $values);
+            foreach ($this->columns as $columnIndex => $columnInfo) {
+                $row[] = $this->prepareColumn($view, $mode, $columnIndex, $columnInfo['name'], $key, $values);
             }
 
             $rows[] = $row;
@@ -100,12 +111,12 @@ class NethGui_Module_Table_Read extends NethGui_Module_Table_Action
     public function prepareViewForColumnActions(NethGui_Core_ViewInterface $view, $mode, $key, $values)
     {
         $columnView = $view->spawnView($this);
-        $columnView->setTemplate(array($this, 'renderColumnActions'));
+        $columnView->setTemplate(array($this, 'renderColumnActions'));        
 
         foreach ($this->getParent()->getRowActions() as $action) {
             $actionView = $columnView->spawnView($action, TRUE);
             $actionView[] = $actionView->translate($action->getIdentifier() . '_label');
-            $actionView[] = array($action->getIdentifier(), $key);
+            $actionView[] = NethGui_Framework::getInstance()->buildModuleUrl($this, array('..', $action->getIdentifier(), $key, '#' . $actionView->getUniqueId()));
         }
 
         return $columnView;
@@ -113,16 +124,16 @@ class NethGui_Module_Table_Read extends NethGui_Module_Table_Action
 
     public function renderColumnActions(NethGui_Renderer_Abstract $view)
     {
-        $elementList = $view->elementList()->setAttribute('class', 'buttonList row-actions');
+        $elementList = $view->elementList()->setAttribute('class', 'buttonList');
 
         foreach ($view as $action => $actionView) {
-            $args = array('..', $action, $actionView[1][1], '#' . $actionView->getUniqueId());
+            if ($actionView instanceof NethGui_Core_ViewInterface) {
+                $button = $view
+                    ->button($action, NethGui_Renderer_Abstract::BUTTON_LINK)
+                    ->setAttribute('value', $actionView[1]);
 
-            $button = $view
-                ->button($action, NethGui_Renderer_Abstract::BUTTON_LINK)
-                ->setAttribute('value', $args);
-            
-            $elementList->insert($button);
+                $elementList->insert($button);
+            }
         }
 
         return $elementList;
