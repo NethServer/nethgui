@@ -154,7 +154,7 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Composite imple
      */
     public function renderCurrentAction(NethGui_Renderer_Abstract $view)
     {
-        return $this->renderFormWrap($view, $this->currentAction->getIdentifier());
+        return $this->wrapFormAroundChild($view, $this->currentAction->getIdentifier());
     }
 
 }
