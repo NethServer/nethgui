@@ -472,7 +472,7 @@ class NethGui_Framework
         if ($notificationManager->hasValidationErrors()) {
             // FIXME: check if we are in FAST-CGI module:
             // @see http://php.net/manual/en/function.header.php
-            header("HTTP/1.1 400 Bad Request");
+            header("HTTP/1.1 400 Request validation error");
         }
 
         /*
