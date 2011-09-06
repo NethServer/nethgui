@@ -19,11 +19,11 @@ class NethGui_Widget_Xhtml_Inset extends NethGui_Widget_Xhtml
     {
         $name = $this->getAttribute('name');
         $flags = $this->getAttribute('flags');
-        $content ='';
+        $content = '';
 
         $value = $this->view[$name];
 
-        if ($value instanceof NethGui_Core_ViewInterface) {            
+        if ($value instanceof NethGui_Core_ViewInterface) {
             $content .= $this->includeTemplate($value, $flags);
         } else {
             $content .= $value; // add plain xhtml text
@@ -38,7 +38,7 @@ class NethGui_Widget_Xhtml_Inset extends NethGui_Widget_Xhtml
         if ($view->getModule() instanceof NethGui_Core_LanguageCatalogProvider) {
             $languageCatalog = $view->getModule()->getLanguageCatalog();
         }
-        
+
         $state = array(
             'view' => new NethGui_Renderer_Xhtml($view, $flags),
         );

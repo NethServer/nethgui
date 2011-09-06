@@ -25,7 +25,7 @@ class NethGui_Widget_Xhtml_Panel extends NethGui_Widget_Xhtml
             $cssClass .= ' disabled';
         }
 
-        if ($this->hasAttribute('name')) {
+        if ($this->hasAttribute('name') && $this->getAttribute('name') !== FALSE) {
             $id = $this->view->getUniqueId($this->getAttribute('name'));
         } else {
             $id = FALSE;
