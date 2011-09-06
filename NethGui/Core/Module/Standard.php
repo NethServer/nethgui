@@ -431,7 +431,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
         return $this->request;
     }
 
-    public function hasInputForm() {
+    protected function hasInputForm() {
         return TRUE;
     }
 

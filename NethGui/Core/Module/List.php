@@ -77,7 +77,7 @@ class NethGui_Core_Module_List extends NethGui_Core_Module_Composite implements 
         $widget = $view->panel();
         foreach ($this->getChildren() as $child) {
             $widget->insert(
-                $this->renderFormWrap($view, $child->getIdentifier())
+                $this->wrapFormAroundChild($view, $child->getIdentifier())
             );
         }
         $widget->setAttribute('class', 'List');
@@ -91,7 +91,7 @@ class NethGui_Core_Module_List extends NethGui_Core_Module_Composite implements 
         $widget->setAttribute('class', 'Tabs');
         foreach ($this->getChildren() as $child) {
             $widget->insert(
-                $this->renderFormWrap($view, $child->getIdentifier())
+                $this->wrapFormAroundChild($view, $child->getIdentifier())
             );
         }
         return $widget;

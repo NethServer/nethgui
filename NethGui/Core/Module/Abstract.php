@@ -139,9 +139,9 @@ abstract class NethGui_Core_Module_Abstract implements NethGui_Core_ModuleInterf
      *
      * @param NethGui_Renderer_Abstract $view
      * @param type $childId
-     * @return NethGui_Renderer_WidgetInterface|string
+     * @return NethGui_Renderer_WidgetInterface
      */
-    protected function renderFormWrap(NethGui_Renderer_Abstract $view, $childId)
+    protected function wrapFormAroundChild(NethGui_Renderer_Abstract $view, $childId)
     {
         $module = $view[$childId]->getModule();
         $widget = $view->inset($childId);
