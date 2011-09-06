@@ -76,7 +76,17 @@ abstract class NethGui_Core_Module_Composite extends NethGui_Core_Module_Abstrac
         }
     }
 
-
-
+    protected function renderFormWrap(NethGui_Renderer_Abstract $view, $childId)
+    {
+        $module = $view[$childId]->getModule();
+        $widget = $view->inset($childId);
+        if ($module instanceof NethGui_Core_Module_Abstract) {
+            if ($module->hasInputForm()) {
+                $renderer = new NethGui_Renderer_Xhtml($view[$childId]);
+                $widget = $renderer->form()->insert($widget)->setAttribute('name', $widget->getAttribute('name'));
+            }
+        }
+        return $widget;
+    }
 }
 

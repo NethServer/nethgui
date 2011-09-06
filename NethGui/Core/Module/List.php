@@ -20,20 +20,17 @@
 class NethGui_Core_Module_List extends NethGui_Core_Module_Composite implements NethGui_Core_RequestHandlerInterface
 {
     const TEMPLATE_LIST = 1;
-    const TEMPLATE_FORM = 2;
-    const TEMPLATE_TABS = 3;
+    const TEMPLATE_TABS = 2;
 
     public function __construct($identifier = NULL, $template = self::TEMPLATE_LIST)
     {
         parent::__construct($identifier);
-        if ($template === self::TEMPLATE_FORM) {
-            $this->viewTemplate = array($this, 'renderForm');
-        } elseif ($template === self::TEMPLATE_TABS) {
-            $this->viewTemplate = array($this, 'renderTabs');
+        if ($template === self::TEMPLATE_TABS) {
+            $this->setViewTemplate(array($this, 'renderTabs'));
         } elseif ($template === self::TEMPLATE_LIST) {
-            $this->viewTemplate = array($this, 'renderList');
+            $this->setViewTemplate(array($this, 'renderList'));
         } else {
-            $this->viewTemplate = $template;
+            $this->setViewTemplate($template);
         }
     }
 
@@ -69,61 +66,34 @@ class NethGui_Core_Module_List extends NethGui_Core_Module_Composite implements 
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
-        foreach ($this->getChildren() as $childModule) {
-            $innerView = $view->spawnView($childModule, TRUE);
-            $childModule->prepareView($innerView, $mode);
+        foreach ($this->getChildren() as $child) {
+            $innerView = $view->spawnView($child, TRUE);
+            $child->prepareView($innerView, $mode);
         }
     }
 
     public function renderList(NethGui_Renderer_Abstract $view)
     {
         $widget = $view->panel();
-
         foreach ($this->getChildren() as $child) {
-            $widget->insert($view->inset($child->getIdentifier()));
+            $widget->insert(
+                $this->renderFormWrap($view, $child->getIdentifier())
+            );
         }
-
-        $widget->setAttribute('class', 'Component List');
-        
-        return $widget;
-    }
-
-    public function renderForm(NethGui_Renderer_Abstract $view)
-    {
-        // Only a root module emits FORM tag:
-        if (is_null($this->getParent())) {
-            $widget = $view->form();
-        } else {
-            $widget = $view->panel();
-        }
-
-        $widget->setAttribute('class', 'Component Form');
-
-        foreach ($this->getChildren() as $child) {
-            $widget->insert($view->inset($child->getIdentifier()));
-        }
-
+        $widget->setAttribute('class', 'List');
         return $widget;
     }
 
     public function renderTabs(NethGui_Renderer_Abstract $view)
     {
-        $tabs = $view->tabs();
-        $tabs->setAttribute('tabClass', 'Action');
-
-        // Only a root module emits FORM tag:
-        if (is_null($this->getParent())) {
-            $widget = $view->form()->insert($tabs);
-        } else {
-            $widget = $tabs;
-        }
-
+        $widget = $view->tabs();
+        $widget->setAttribute('tabClass', 'Action');
         $widget->setAttribute('class', 'Tabs');
-
         foreach ($this->getChildren() as $child) {
-            $tabs->insert($view->inset($child->getIdentifier()));
+            $widget->insert(
+                $this->renderFormWrap($view, $child->getIdentifier())
+            );
         }
-
         return $widget;
     }
 

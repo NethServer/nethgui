@@ -76,30 +76,36 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
      * @var NethGui_Core_ParameterSet
      */
     protected $parameters;
+
     /**
      * @var array
      */
     private $requiredEvents = array();
+
     /**
      * Set to FALSE if you want to inhibit saving of parameters.
      * @var bool
      */
     protected $autosave;
+
     /**
      * @var ArrayObject
      */
     private $immutables;
+
     /**
      * Validator configuration. Holds declared parameters.
      * @var array
      */
     private $validators = array();
+
     /**
      * This array holds the names of parameters with validation errors.
      * @see prepareView()
      * @var array
      */
     private $invalidParameters = array();
+
     /**
      *
      * @var NethGui_Core_RequestInterface
@@ -314,7 +320,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
             }
 
             $adapterObject = $this->getHostConfiguration()->getMapAdapter(
-                    array($this, $readerCallback), array($this, $writerCallback), $args
+                array($this, $readerCallback), array($this, $writerCallback), $args
             );
         } elseif (isset($args[0], $args[1])) {
             // Get an identity adapter:
@@ -423,6 +429,10 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
     protected function getRequest()
     {
         return $this->request;
+    }
+
+    public function hasInputForm() {
+        return TRUE;
     }
 
 }

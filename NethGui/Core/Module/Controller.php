@@ -26,14 +26,14 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Composite imple
      * @var NethGui_Core_Module_Interface
      */
     protected $currentAction;
-    
     private $request;
-    
+
     /**
      *
      * @return NethGui_Core_RequestInterface
      */
-    protected function getRequest() {
+    protected function getRequest()
+    {
         return $this->request;
     }
 
@@ -132,7 +132,7 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Composite imple
     {
         parent::prepareView($view, $mode);
 
-        if (is_null($this->currentAction)) {            
+        if (is_null($this->currentAction)) {
             return;
         }
 
@@ -146,8 +146,7 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Composite imple
      * Render callback.
      *
      * This is the view template callback function that forwards the
-     * render message to the current action. It wraps the action view
-     * into a FORM tag, if necessary.
+     * render message to the current action. 
      *
      * @internal Actually called by the framework.
      * @param NethGui_Renderer_Abstract $view The view
@@ -155,19 +154,7 @@ class NethGui_Core_Module_Controller extends NethGui_Core_Module_Composite imple
      */
     public function renderCurrentAction(NethGui_Renderer_Abstract $view)
     {
-        $action = $this->currentAction->getIdentifier();
-
-        // Only a root module emits FORM tag:
-        if (is_null($this->getParent())) {
-            $form = $view->form($action);
-        } else {
-            $form = $view->panel();
-        }
-
-        return $form
-            ->insert($view->hidden('__action'))
-            ->insert($view->inset($action))
-        ;
+        return $this->renderFormWrap($view, $this->currentAction->getIdentifier());
     }
 
 }

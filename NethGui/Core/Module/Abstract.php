@@ -35,7 +35,7 @@ abstract class NethGui_Core_Module_Abstract implements NethGui_Core_ModuleInterf
      * @see NethGui_Core_ViewInterface::setTemplate()
      * @var string|callable
      */
-    protected $viewTemplate;
+    private $viewTemplate;
 
     public function __construct($identifier = NULL)
     {
@@ -104,9 +104,18 @@ abstract class NethGui_Core_Module_Abstract implements NethGui_Core_ModuleInterf
 
     public function prepareView(NethGui_Core_ViewInterface $view, $mode)
     {
-        if (is_string($this->viewTemplate) || is_callable($this->viewTemplate)) {
-            $view->setTemplate($this->viewTemplate);
+        $template = $this->getViewTemplate();
+        if (!is_null($template)) {
+            $view->setTemplate($template);
         }
+    }
+
+    protected function setViewTemplate($template) {
+        $this->viewTemplate = $template;
+    }
+
+    protected function getViewTemplate() {
+        return $this->viewTemplate;
     }
     
     /**
@@ -117,4 +126,9 @@ abstract class NethGui_Core_Module_Abstract implements NethGui_Core_ModuleInterf
     {
         return get_class($this);
     }
+
+    public function hasInputForm() {
+        return FALSE;
+    }
+
 }
