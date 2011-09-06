@@ -174,13 +174,7 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
      */
     public function renderDefault(NethGui_Renderer_Abstract $view)
     {
-        // Only a root module emits FORM tag:
-        if (is_null($this->getParent())) {
-            $widget = $view->form();
-        } else {
-            $widget = $view->panel();
-        }
-
+        $widget = $view->panel();
         $widget->setAttribute('class', 'Table');
 
         $tableRead = $view->panel()->setAttribute('class', 'TableAction TableRead raised');
@@ -194,12 +188,13 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
             } else {
 
                 // Subsequent children are embedded into a DISABLED dialog frame.
-                $actionWidget = $view->panel(NethGui_Renderer_Abstract::STATE_DISABLED)->insert($view->inset($child->getIdentifier()));
+                $actionWidget = $view->panel(NethGui_Renderer_Abstract::STATE_DISABLED)->insert(
+                    $this->wrapFormAroundChild($view, $child->getIdentifier())
+               );
 
                 $actionWidget->setAttribute('name', $child->getIdentifier());
 
-                if ($child instanceof NethGui_Module_Table_Action && $child->isModal())
-                {
+                if ($child instanceof NethGui_Module_Table_Action && $child->isModal()) {
                     $actionWidget->setAttribute('class', 'Dialog');
                 } else {
                     $actionWidget->setAttribute('class', 'TableAction');
