@@ -158,7 +158,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Core_ReadonlyView implements NethGu
     public function text($name, $value, $flags = 0)
     {
         $flags |= $this->inheritFlags;
-        return $this->createWidget(__FUNCTION__, array('name' => $name, 'value' => $value, 'flags' => $flags));
+        return $this->createWidget(__FUNCTION__, array('name' => $name, 'value' => $value ? $value : '${0}', 'flags' => $flags));
     }
 
     public function header($name, $value, $flags = 0)

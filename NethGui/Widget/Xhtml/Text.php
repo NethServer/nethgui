@@ -50,7 +50,7 @@ class NethGui_Widget_Xhtml_Text extends NethGui_Widget_Xhtml
             $text = htmlspecialchars($text);
         }
 
-        return $this->controlTag($tag, $name, $flags, $cssClass, array(), $text);
+        return $this->controlTag($tag, $name, $flags, $cssClass, array('name' => FALSE), $text);
     }
 
 }
