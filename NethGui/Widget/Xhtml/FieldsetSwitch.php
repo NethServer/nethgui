@@ -32,7 +32,7 @@ class NethGui_Widget_Xhtml_FieldsetSwitch extends NethGui_Widget_Xhtml
         ;
 
         $content .= $chooser->render();
-        $content .= $this->openTag('fieldset');
+        $content .= $this->openTag('fieldset', array('class' => 'FieldsetSwitchPanel'));
         $content .= $this->renderChildren();        
         $content .= $this->closeTag('fieldset');
         $content .= $this->closeTag('div');
