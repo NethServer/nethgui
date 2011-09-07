@@ -1,6 +1,6 @@
 <?php
 
-echo $view->text($view['__key'])->setAttribute('template', 'Confirm deletion of `${0}`?');
+echo $view->textLabel($view['__key'])->setAttribute('template', 'Confirm deletion of `${0}`?');
 
 echo $view->hidden($view['__key']); // Put the key value into an hidden control
 

@@ -12,7 +12,7 @@
  * @subpackage Xhtml
  * @internal
  */
-class NethGui_Widget_Xhtml_Text extends NethGui_Widget_Xhtml
+class NethGui_Widget_Xhtml_TextLabel extends NethGui_Widget_Xhtml
 {
 
     public function render()
@@ -22,7 +22,7 @@ class NethGui_Widget_Xhtml_Text extends NethGui_Widget_Xhtml
         $hsc = $this->getAttribute('escapeHtml', TRUE);
         $tag = $this->getAttribute('tag', 'span');
         $template = $this->getAttribute('template', '${0}');
-        $cssClass = 'Text';
+        $cssClass = 'TextLabel';
         $text = '';
 
         if ($this->hasAttribute('class')) {

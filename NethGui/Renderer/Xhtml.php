@@ -155,7 +155,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Core_ReadonlyView implements NethGu
         return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags));
     }
 
-    public function text($name, $flags = 0)
+    public function textLabel($name, $flags = 0)
     {
         $flags |= $this->inheritFlags;
         return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags));
@@ -164,8 +164,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Core_ReadonlyView implements NethGu
     public function header($name, $flags = 0)
     {
         $flags |= $this->inheritFlags;
-        $text = $this->createWidget('text', array('name' => $name, 'flags' => $flags, 'class' => 'header', 'tag' => 'div'));
-        return $text;
+        return $this->createWidget('textLabel', array('name' => $name, 'flags' => $flags, 'class' => 'header', 'tag' => 'div'));
     }
 
 }
