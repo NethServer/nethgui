@@ -44,6 +44,7 @@ class NethGui_Widget_Xhtml_Button extends NethGui_Widget_Xhtml
 
             $attributes['href'] = $this->prepareHrefAttribute($value);
             $attributes['class'] = $cssClass;
+            $attributes['title'] = $this->getAttribute('title', FALSE);
 
             $content .= $this->openTag('a', $attributes);
             $content .= $this->view->translate($buttonLabel);

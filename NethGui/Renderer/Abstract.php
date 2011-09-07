@@ -65,12 +65,12 @@ interface NethGui_Renderer_Abstract
      * @param integer $flags Optional {STATE_DISABLED}
      * @return NethGui_Renderer_WidgetInterface
      */
-    public function text($name, $value, $flags = 0);
+    public function text($name, $flags = 0);
 
     /**
      * Create a text header control
      */
-    public function header($name, $value, $flags = 0);
+    public function header($name, $flags = 0);
 
     /**
      * Create an hidden control

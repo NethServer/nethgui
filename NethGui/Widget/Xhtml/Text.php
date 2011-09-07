@@ -21,10 +21,13 @@ class NethGui_Widget_Xhtml_Text extends NethGui_Widget_Xhtml
         $flags = $this->getAttribute('flags');
         $hsc = $this->getAttribute('escapeHtml', TRUE);
         $tag = $this->getAttribute('tag', 'span');
-        $value = $this->getAttribute('value', '${0}');
-        $cssClass = 'Text ' . $this->getClientEventTarget();
-
+        $template = $this->getAttribute('template', '${0}');
+        $cssClass = 'Text';
         $text = '';
+
+        if ($this->hasAttribute('class')) {
+            $cssClass .= ' ' . $this->getAttribute('class');
+        }
 
         if ($flags & NethGui_Renderer_Abstract::STATE_DISABLED) {
             $cssClass .= ' disabled';
@@ -44,13 +47,13 @@ class NethGui_Widget_Xhtml_Text extends NethGui_Widget_Xhtml
             }
         }
 
-        $text = $this->view->translate($value, $args);
+        $text = $this->view->translate($template, $args);
 
         if ($hsc) {
             $text = htmlspecialchars($text);
         }
 
-        return $this->controlTag($tag, $name, $flags, $cssClass, array('name' => FALSE), $text);
+        return $this->controlTag($tag, $name, $flags, $cssClass, array('name' => FALSE, 'id' => FALSE), $text);
     }
 
 }
