@@ -24,12 +24,8 @@ class NethGui_Core_DialogBox implements Serializable
     const NOTIFY_ERROR = 0x2;
     const MASK_SEVERITY = 0x3;
 
-    const NOTIFY_EMBEDDED = 0x4;
-    const NOTIFY_MODAL = 0x8;
-    const MASK_BEHAVIOUR = 0xC;
-    
-
-
+    const NOTIFY_MODAL = 0x4;
+   
     private $message;
     private $type;
     private $actions;
