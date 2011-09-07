@@ -12,7 +12,7 @@
  * @subpackage Xhtml
  * @internal
  */
-class NethGui_Widget_Xhtml_Fieldset extends NethGui_Widget_Xhtml_Text
+class NethGui_Widget_Xhtml_Fieldset extends NethGui_Widget_Xhtml_TextLabel
 {
 
     public function render()
