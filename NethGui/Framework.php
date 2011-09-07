@@ -139,6 +139,8 @@ class NethGui_Framework
      */
     public function buildUrl($path, $parameters = array())
     {
+        $fragment = '';
+
         if (is_array($path)) {
             $path = implode('/', $path);
         }
@@ -154,11 +156,16 @@ class NethGui_Framework
         $segments = array();
 
         while (list($index, $slice) = each($path)) {
-            if ($slice == '..') {
+            if ($slice == '.' || !$slice) {
+                continue;
+            } elseif ($slice == '..') {
                 next($path);
                 continue;
+            } elseif ($slice[0] == '#') {
+                $fragment = $slice;
+                continue;
             }
-
+            
             array_unshift($segments, $slice);
         }
 
@@ -167,7 +174,8 @@ class NethGui_Framework
         } else {
             $url = site_url($segments);
         }
-        return $url;
+
+        return $url . $fragment;
     }
 
     /**
