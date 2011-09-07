@@ -33,7 +33,7 @@ class NethGui_Module_Table_Modify extends NethGui_Module_Table_Action
         }
 
         parent::__construct($identifier);
-        $this->viewTemplate = $viewTemplate;
+        $this->setViewTemplate($viewTemplate);
         $this->parameterSchema = $parameterSchema;
         $this->autosave = FALSE;
 

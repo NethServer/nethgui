@@ -38,6 +38,6 @@ class NethGui_Module_Table_Action extends NethGui_Core_Module_Standard
     {
         return FALSE;
     }
-
+    
 }
 

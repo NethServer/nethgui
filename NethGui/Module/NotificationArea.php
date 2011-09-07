@@ -16,6 +16,7 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard imple
 {
 
     private $errors = array();
+
     /**
      *
      * @var NethGui_Core_UserInterface;
@@ -55,40 +56,23 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard imple
     {
         parent::prepareView($view, $mode);
 
-        // Transfer validation errors to view
-        $view['validationErrors'] = new ArrayObject();
+        $view['notifications'] =  new ArrayObject();
 
-        foreach ($this->errors as $error) {
-            list($fieldName, $errorInfo, $module) = $error;
-
-            $errorView = $view->spawnView($module);
-            $errorView->setTemplate('NethGui_Template_ValidationError');
-            $errorView['errorInfo'] = array($errorView->translate($errorInfo[0]), $errorInfo[1]);
-            $errorView['fieldName'] = $fieldName;
-            $errorView['fieldId'] = $errorView->getUniqueId($fieldName);
-            $errorView['fieldLabel'] = $errorView->translate($fieldName . '_label');
-
-            $view['validationErrors'][] = $errorView;
+        if ($this->hasValidationErrors()) {
+            $this->prepareValidationErrorNotification($view, $mode);
         }
 
+        $this->prepareDialogBoxesNotification($view, $mode);
+        
+    }
 
-        if (count($this->errors) == 1) {
-            $view['validationLabel'] = $view->translate('Incorrect value');
-        } elseif (count($this->errors) > 1) {
-            $view['validationLabel'] = $view->translate('Incorrect values');
-        }
-
-
-        $dialogBoxList = $this->user->getDialogBoxes();
-
-        // Transfer dialog data to view
-        $view['dialogs'] = new ArrayObject();
-
-        foreach ($dialogBoxList as $dialog) {
+    private function prepareDialogBoxesNotification(NethGui_Core_ViewInterface $view, $mode)
+    {
+        foreach ($this->user->getDialogBoxes() as $dialog) {
+            // Spawn a view associated to the $dialog original module:
             $dialogView = $view->spawnView($dialog->getModule());
-
+            $dialogView->setTemplate('NethGui_Template_NotificationAreaDialogBox');
             $message = $dialog->getMessage();
-
             $dialogView->copyFrom(
                 array(
                     'dialogId' => $dialog->getId(),
@@ -97,9 +81,44 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard imple
                     'transient' => $dialog->isTransient(),
                     'actions' => $this->makeActionViewsForDialog($dialog, $mode, $dialogView),
             ));
-            $dialogView->setTemplate('NethGui_Template_NotificationAreaDialogBox');
-            $view['dialogs'][] = $dialogView;
+            $view['notifications'][] = $dialogView;
         }
+    }
+
+    private function prepareValidationErrorNotification(NethGui_Core_ViewInterface $view, $mode)
+    {       
+        $validationView = $view->spawnView($this);
+        $validationView->setTemplate('NethGui_Template_ValidationError');
+
+        if (count($this->errors) == 1) {
+            $validationView['message'] = $view->translate('Incorrect value');
+        } elseif (count($this->errors) > 1) {
+            $validationView['message'] = $view->translate('Incorrect values');
+        }
+
+        $validationView['type'] = NethGui_Core_DialogBox::NOTIFY_ERROR;
+        $validationView['dialogId'] = 'dlgValidation';
+        $validationView['transient'] = TRUE;
+        $validationView['errors'] = new ArrayObject();
+
+        foreach ($this->errors as $index => $error) {
+            list($fieldName, $errorInfo, $module) = $error;
+            $eV = $validationView->spawnView($module);
+            $eV->setTemplate(array($this, 'renderValidationError'));
+            $eV['errorInfo'] = array($eV->translate($errorInfo[0]), $errorInfo[1]);
+            $eV['fieldName'] = $fieldName;
+            $eV['fieldId'] = $eV->getUniqueId($fieldName);
+            $eV['fieldLabel'] = $eV->translate($fieldName . '_label');
+            $validationView['errors'][] = $eV;
+        }
+
+        $view['notifications'][] = $validationView;
+    }
+
+    public function renderValidationError(NethGui_Renderer_Abstract $view) {
+        return $view->button($view['fieldName'], NethGui_Renderer_Abstract::BUTTON_LINK)
+            ->setAttribute('value', '#' . $view['fieldId'])
+            ->setAttribute('title', $view->translate($view['errorInfo'][0], $view['errorInfo'][1]));
     }
 
     private function makeActionViewsForDialog(NethGui_Core_DialogBox $dialog, $mode, NethGui_Core_ViewInterface $dialogView)
@@ -175,8 +194,9 @@ class NethGui_Module_NotificationArea extends NethGui_Core_Module_Standard imple
             $widget = $view->button($view['name'], NethGui_Renderer_Abstract::BUTTON_LINK)->setAttribute('value', $view['location']);
         } else {
             // render as form
-            $widget = $view->form($view['location'], 0, 'NotificationDialog_Action_' . $view['name'])
-                ->insert($view->inset('dismissView'))
+            $widget = $view->form()
+                ->setAttribute('action', $view['location'])
+                ->setAttribute('name', 'NotificationDialogAction_' . $view['name'])                
                 ->insert($view->hidden('data'))
                 ->insert($view->button($view['name'], NethGui_Renderer_Abstract::BUTTON_SUBMIT));
         }

@@ -1,1 +1,9 @@
-<a href="#" title="<?php echo T($view['errorInfo'][0], $view['errorInfo'][1]); ?>"><?php echo T($view['fieldLabel']); ?></a>
+<div id="dlgValidation" class="Notification warning ui-state-error">
+    <span class='NotificationIcon ui-icon ui-icon-info'></span><?php echo $view->text('message') ?>:
+    <?php
+    foreach ($view['errors'] as $errorView) {
+        echo ' ' . $errorView;
+    }
+    ?>
+
+</div>
