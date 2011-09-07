@@ -166,4 +166,7 @@ interface NethGui_Renderer_Abstract
      * @return NethGui_Renderer_WidgetInterface
      */
     public function elementList($flags = 0);
+
+
+    public function literal($data);
 }

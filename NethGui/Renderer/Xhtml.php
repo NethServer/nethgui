@@ -167,4 +167,9 @@ class NethGui_Renderer_Xhtml extends NethGui_Core_ReadonlyView implements NethGu
         return $this->createWidget('textLabel', array('name' => $name, 'flags' => $flags, 'class' => 'header', 'tag' => 'div'));
     }
 
+    public function literal($data)
+    {        
+        return $this->createWidget(__FUNCTION__, array('data' => $data));
+    }
+
 }
