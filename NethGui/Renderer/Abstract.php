@@ -60,12 +60,23 @@ interface NethGui_Renderer_Abstract
     public function textInput($name, $flags = 0);
 
     /**
-     * Create a plain text control
-     * @param string $name The view member name
+     * Create a text label.
+     *
+     * @param string $name The view member name to generate the label contents
      * @param integer $flags Optional {STATE_DISABLED}
      * @return NethGui_Renderer_WidgetInterface
      */
     public function textLabel($name, $flags = 0);
+
+    /**
+     * Create a fieldset container
+     *
+     * @see textLabel()
+     * @param string $name The view member for the LEGEND tag contents
+     * @param integer $flags
+     * @return NethGui_Renderer_WidgetInterface
+     */
+    public function fieldset($name, $flags = 0);
 
     /**
      * Create a text header control
@@ -158,9 +169,9 @@ interface NethGui_Renderer_Abstract
     public function panel($flags = 0);
 
     /**
-     * Create a list of buttons
+     * Create a list of elements
      * 
-     * The buttons are specified as arrays of arguments for the button() method.
+     * Add the actual elements invoking the insert() operation of the returned object.
      * 
      * @param integer $flags
      * @return NethGui_Renderer_WidgetInterface
@@ -168,5 +179,20 @@ interface NethGui_Renderer_Abstract
     public function elementList($flags = 0);
 
 
+    /**
+     * Create literal data - helper.
+     *
+     * @param string|object $data Can be a string or any object implementing toString() method.
+     * @return NethGui_Renderer_WidgetInterface
+     */
     public function literal($data);
+
+    /**
+     * Create a column container - helper.
+     *
+     * Add the actual columns through the insert() operation of the returned object
+     *
+     * @return NethGui_Renderer_WidgetInterface
+     */
+    public function columns();
 }

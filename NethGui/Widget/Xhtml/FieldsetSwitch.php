@@ -22,34 +22,22 @@ class NethGui_Widget_Xhtml_FieldsetSwitch extends NethGui_Widget_Xhtml
         $flags = $this->getAttribute('flags');
         $content = '';
 
-        $content .= $this->openTag('div', array('class' => 'fieldset-switch'));
+        $content .= $this->openTag('div', array('class' => 'FieldsetSwitch'));
 
-        $radioButton = new NethGui_Widget_Xhtml_RadioButton($this->view);
-        $radioButton
+        $chooser = new NethGui_Widget_Xhtml_RadioButton($this->view);
+        $chooser
             ->setAttribute('name', $name)
             ->setAttribute('value', $value)
             ->setAttribute('flags', $flags)
         ;
 
-        $content .= $radioButton->render();
-
-        $attributes = array(
-            'id' => $this->view->getUniqueId(array($name, $value, 'fieldset'))
-        );
-
-        
-        $content .= $this->renderChildren();
-        
+        $content .= $chooser->render();
+        $content .= $this->openTag('fieldset');
+        $content .= $this->renderChildren();        
+        $content .= $this->closeTag('fieldset');
         $content .= $this->closeTag('div');
         
         return $content;
-    }
-
-    public function insert(NethGui_Renderer_WidgetInterface $widget)
-    {
-        $fieldset = new NethGui_Widget_Xhtml_Fieldset($this->view);
-        parent::insert($fieldset->insert($widget));
-        return $this;
     }
 
 }

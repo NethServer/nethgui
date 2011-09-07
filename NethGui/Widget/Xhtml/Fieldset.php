@@ -17,6 +17,8 @@ class NethGui_Widget_Xhtml_Fieldset extends NethGui_Widget_Xhtml_TextLabel
 
     public function render()
     {
+        $this->setAttribute('tag', 'legend');
+
         if ($this->hasAttribute('name')) {
             $text = parent::render();
         } else {
@@ -27,9 +29,7 @@ class NethGui_Widget_Xhtml_Fieldset extends NethGui_Widget_Xhtml_TextLabel
         $content .= $this->opentag('fieldset');
 
         if ($text) {
-            $content .= $this->opentag('legend');
             $content .= $text;
-            $content .= $this->closetag('legend');
         }
 
         $content .= $this->renderChildren();
