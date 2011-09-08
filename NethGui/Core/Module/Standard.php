@@ -301,11 +301,8 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
     {
         $readerCallback = 'read' . ucfirst($parameterName);
         $writerCallback = 'write' . ucfirst($parameterName);
-
-        $hasCallbacks = method_exists($this, $readerCallback)
-            && method_exists($this, $writerCallback);
-
-        if ($hasCallbacks) {
+            
+        if (is_callable(array($this, $readerCallback))) { // NOTE: writer is optional, see MultipleAdapter
             if (empty($args)) {
                 $args = array();
             }
@@ -315,7 +312,7 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
              *
              * If first argument is a string, it contains the $database name.
              */
-            if (is_array($args) && isset($args[0]) && is_string($args[0])) {
+            if (is_array($args) && isset($args[0]) && (is_string($args[0]) || $args[0] instanceof ArrayAccess)) {
                 $args = array($args);
             }
 
