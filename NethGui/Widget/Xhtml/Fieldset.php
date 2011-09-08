@@ -19,7 +19,7 @@ class NethGui_Widget_Xhtml_Fieldset extends NethGui_Widget_Xhtml_TextLabel
     {
         $this->setAttribute('tag', 'legend');
 
-        if ($this->hasAttribute('name')) {
+        if ($this->hasAttribute('name') || $this->hasAttribute('template')) {
             $text = parent::render();
         } else {
             $text = '';

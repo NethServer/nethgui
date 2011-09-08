@@ -53,7 +53,15 @@ class NethGui_Widget_Xhtml_TextLabel extends NethGui_Widget_Xhtml
             $text = htmlspecialchars($text);
         }
 
-        return $this->controlTag($tag, $name, $flags, $cssClass, array('name' => FALSE, 'id' => FALSE), $text);
+        if($this->hasAttribute('name')) {
+            $content = $this->controlTag($tag, $name, $flags, $cssClass, array('name' => FALSE, 'id' => FALSE), $text);
+        } else {
+            $content = $this->openTag($tag, array('class' => $cssClass));
+            $content .= $text;
+            $content .= $this->closeTag($tag);
+        }
+
+        return $content;
     }
 
 }

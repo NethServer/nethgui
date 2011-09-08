@@ -42,6 +42,7 @@ interface NethGui_Renderer_Abstract
     const DIALOG_ERROR = 0x10000;
     
     const SELECTOR_MULTIPLE = 0x20000;
+    const SELECTOR_DROPDOWN = 0x40000;
 
     /**
      * Create a member inclusion
@@ -72,11 +73,11 @@ interface NethGui_Renderer_Abstract
      * Create a fieldset container
      *
      * @see textLabel()
-     * @param string $name The view member for the LEGEND tag contents
+     * @param string $name The view member for the LEGEND tag contents - optional
      * @param integer $flags
      * @return NethGui_Renderer_WidgetInterface
      */
-    public function fieldset($name, $flags = 0);
+    public function fieldset($name = NULL, $flags = 0);
 
     /**
      * Create a text header control

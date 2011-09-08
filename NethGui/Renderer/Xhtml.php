@@ -161,10 +161,14 @@ class NethGui_Renderer_Xhtml extends NethGui_Core_ReadonlyView implements NethGu
         return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags));
     }
 
-    public function fieldset($name, $flags = 0)
+    public function fieldset($name = NULL, $flags = 0)
     {
         $flags |= $this->inheritFlags;
-        return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags));
+        $widget = $this->createWidget(__FUNCTION__, array('flags' => $flags));
+        if ( ! is_null($name)) {
+            $widget->setAttribute('name', $name);
+        }
+        return $widget;
     }
 
     public function header($name, $flags = 0)
@@ -174,7 +178,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Core_ReadonlyView implements NethGu
     }
 
     public function literal($data)
-    {        
+    {
         return $this->createWidget(__FUNCTION__, array('data' => $data));
     }
 
