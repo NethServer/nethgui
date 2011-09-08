@@ -186,10 +186,11 @@ class NethGui_Module_TableController extends NethGui_Core_Module_Controller
                 // insert the 'read' action
                 $tableRead->insert($view->inset($child->getIdentifier()));
             } else {
-
+                $flags = NethGui_Renderer_Abstract::STATE_DISABLED;
+                
                 // Subsequent children are embedded into a DISABLED dialog frame.
-                $actionWidget = $view->panel(NethGui_Renderer_Abstract::STATE_DISABLED)->insert(
-                    $this->wrapFormAroundChild($view, $child->getIdentifier())
+                $actionWidget = $view->panel($flags)->insert(
+                    $this->wrapFormAroundChild($view, $child->getIdentifier(), $flags)
                );
 
                 $actionWidget->setAttribute('name', $child->getIdentifier());

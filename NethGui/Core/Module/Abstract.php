@@ -141,13 +141,14 @@ abstract class NethGui_Core_Module_Abstract implements NethGui_Core_ModuleInterf
      * @param type $childId
      * @return NethGui_Renderer_WidgetInterface
      */
-    protected function wrapFormAroundChild(NethGui_Renderer_Abstract $view, $childId)
+    protected function wrapFormAroundChild(NethGui_Renderer_Abstract $view, $childId, $flags = 0)
     {
         $module = $view[$childId]->getModule();
-        $widget = $view->inset($childId);
+        $widget = $view->inset($childId, $flags);
         if ($module instanceof NethGui_Core_Module_Abstract) {
             if ($module->hasInputForm()) {
-                $renderer = new NethGui_Renderer_Xhtml($view[$childId]);
+                // FIXME: read $flags from $view
+                $renderer = new NethGui_Renderer_Xhtml($view[$childId], $flags);
                 $widget = $renderer->form()->insert($widget)->setAttribute('name', $widget->getAttribute('name'));
             }
         }
