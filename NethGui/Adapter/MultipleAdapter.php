@@ -84,25 +84,26 @@ class NethGui_Adapter_MultipleAdapter implements NethGui_Adapter_AdapterInterfac
         if ( ! is_callable($this->writerCallback)) {
             return 0;
         }
-        
+
         if ( ! $this->isModified()) {
             return 0;
         }
-                
+
         $values = call_user_func($this->writerCallback, $this->value);
-        
+
         $index = 0;
-        
         $changes = 0;
-        
-        foreach($values as $value) {
-            $this->innerAdapters[$index]->set($value);
-            $changes += $this->innerAdapters[$index]->save();
-            $index++;
+
+        if (is_array($values)) {
+            foreach ($values as $value) {
+                $this->innerAdapters[$index]->set($value);
+                $changes += $this->innerAdapters[$index]->save();
+                $index ++;
+            }
         }
-        
+
         $this->modified = FALSE;
-        
+
         return $changes;
     }
 
