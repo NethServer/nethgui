@@ -341,11 +341,12 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
 
     /**
      * Immutable parameters cannot be changed after declaration.  The View
-     * associated to the Module receives immutable parameters only if
-     * REFRESHing.
+     * associated to the Module receives immutable parameters only in
+     * SERVER view.
      *
      * Enumerations and constants are examples of immutable parameters.
      *
+     * @deprecated
      * @see prepareView()
      * @param string $immutableName
      * @param mixed $immutableValue
@@ -363,6 +364,12 @@ abstract class NethGui_Core_Module_Standard extends NethGui_Core_Module_Abstract
         $this->immutables[$immutableName] = $immutableValue;
     }
 
+    /**
+     *
+     * @deprecated
+     * @param type $immutableName
+     * @return type
+     */
     protected function getImmutableValue($immutableName)
     {
         return $this->immutables[$immutableName];
