@@ -181,7 +181,7 @@ abstract class NethGui_Widget_Xhtml implements NethGui_Renderer_WidgetInterface
      * @param array $attributes  Generic attributes array See {@link openTag()}
      * @return string
      */
-    protected function labeledControlTag($tag, $name, $label, $flags, $cssClass = '', $attributes = array())
+    protected function labeledControlTag($tag, $name, $label, $flags, $cssClass = '', $attributes = array(), $tagContent = '')
     {
         if (isset($attributes['id'])) {
             $controlId = $attributes['id'];
@@ -205,11 +205,11 @@ abstract class NethGui_Widget_Xhtml implements NethGui_Renderer_WidgetInterface
         $content .= $this->openTag('div', array('class' => $wrapperClass));
 
         if ($flags & NethGui_Renderer_Abstract::LABEL_RIGHT) {
-            $content .= $this->controlTag($tag, $name, $flags, $cssClass, $attributes);
+            $content .= $this->controlTag($tag, $name, $flags, $cssClass, $attributes, $tagContent);
             $content .= $this->label($label, $controlId);
         } else {
             $content .= $this->label($label, $controlId);
-            $content .= $this->controlTag($tag, $name, $flags, $cssClass, $attributes);
+            $content .= $this->controlTag($tag, $name, $flags, $cssClass, $attributes, $tagContent);
         }
         $content .= $this->closeTag('div');
 

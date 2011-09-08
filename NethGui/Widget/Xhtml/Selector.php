@@ -21,8 +21,6 @@ class NethGui_Widget_Xhtml_Selector extends NethGui_Widget_Xhtml
         $flags = $this->getAttribute('flags');
         $choices = $this->getAttribute('choices', $name . 'Datasource');
         $value = $this->view[$name];
-        $content = '';
-        $cssClass = 'Selector ' . ($flags & NethGui_Renderer_Abstract::SELECTOR_MULTIPLE ? 'multiple ' : '') . $this->getClientEventTarget();
 
         if ($value instanceof Traversable) {
             $value = iterator_to_array($value);
@@ -34,19 +32,7 @@ class NethGui_Widget_Xhtml_Selector extends NethGui_Widget_Xhtml
             } else {
                 $value = '';
             }
-        }        
-
-        $fieldsetAttributes = array(
-            'class' => $cssClass,
-            'id' => $this->view->getUniqueId($name)
-        );
-
-        $content .= $this->openTag('fieldset', $fieldsetAttributes);
-        $content .= $this->openTag('legend');
-        $content .= htmlspecialchars($this->view->translate($name . '_label'));
-        $content .= $this->closeTag('legend');
-
-        // Render the choices list
+        }
 
         if (is_string($choices)) {
             // Get the choices from the view member
@@ -63,24 +49,58 @@ class NethGui_Widget_Xhtml_Selector extends NethGui_Widget_Xhtml
             $choices = array();
         }
 
+        if ($flags & NethGui_Renderer_Abstract::SELECTOR_DROPDOWN) {
+            return $this->renderDropdown($name, $value, $flags, $choices, $dataSourceName);
+        } else {
+            return $this->renderWidgetList($name, $value, $flags, $choices, $dataSourceName);
+        }
+    }
+
+    private function renderDropdown($name, $value, $flags, $choices, $dataSourceName)
+    {
+        $flags = $this->applyDefaultLabelAlignment($flags, NethGui_Renderer_Abstract::LABEL_ABOVE);
+        if ($flags & NethGui_Renderer_Abstract::STATE_DISABLED) {
+            $tagContent = '<option selected="selected" value=""/>';
+        } else {
+            $tagContent = $this->generateSelectorContentDropdown($name, $value, $choices, $flags);
+        }
+        $content = $this->labeledControlTag('select', $name, $name, $flags, 'Selector ' . $this->view->getClientEventTarget($dataSourceName), array(), $tagContent);
+        return $content;
+    }
+
+    private function renderWidgetList($name, $value, $flags, $choices, $dataSourceName)
+    {
+        $content = '';
+        $cssClass = 'Selector ' . ($flags & NethGui_Renderer_Abstract::SELECTOR_MULTIPLE ? 'multiple ' : '') . $this->getClientEventTarget();
+
+        $fieldsetAttributes = array(
+            'class' => $cssClass,
+            'id' => $this->view->getUniqueId($name)
+        );
+
+        $content .= $this->openTag('fieldset', $fieldsetAttributes);
+        $content .= $this->openTag('legend');
+        $content .= htmlspecialchars($this->view->translate($name . '_label'));
+        $content .= $this->closeTag('legend');
+
+        // Render the choices list
+
         $choicesAttributes = array(
             'class' => 'choices ' . $this->view->getClientEventTarget($dataSourceName),
             'id' => $this->view->getUniqueId($dataSourceName)
         );
 
-        $content .= $this->openTag('div', $choicesAttributes);
-
-        $content .= $this->controlTag('input', $name, $flags, '', array('type' => 'hidden'));
-
         $selectorEnabled = ! ($flags & NethGui_Renderer_Abstract::STATE_DISABLED);
 
+        $content .= $this->openTag('div', $choicesAttributes);
         if ($selectorEnabled && count($choices) > 0) {
-            $content .= $this->generateSelectorContent($name, $value, $choices, $flags);
+            if ($flags & NethGui_Renderer_Abstract::SELECTOR_MULTIPLE) {
+                $content .= $this->controlTag('input', $name, $flags, '', array('type' => 'hidden'));
+            }
+            $content .= $this->generateSelectorContentWidgetList($name, $value, $choices, $flags);
         }
-
         $content .= $this->closeTag('div');
         $content .= $this->closeTag('fieldset');
-
         return $content;
     }
 
@@ -91,7 +111,7 @@ class NethGui_Widget_Xhtml_Selector extends NethGui_Widget_Xhtml
      * @param array $choices
      * @param integer $flags
      */
-    private function generateSelectorContent($name, $value, $choices, $flags)
+    private function generateSelectorContentWidgetList($name, $value, $choices, $flags)
     {
         $content = '';
 
@@ -129,14 +149,31 @@ class NethGui_Widget_Xhtml_Selector extends NethGui_Widget_Xhtml
             }
 
             $choiceLabel = ( ! empty($choice[1]) ? $choice[1] : $choice[0]);
-
             $content .= $this->labeledControlTag('input', $choiceName, $choiceLabel, $choiceFlags, '', $attributes);
-
             $content .= $this->closeTag('li');
         }
         $content .= $this->closeTag('ul');
 
         return $content;
+    }
+
+    /**
+     * Dropdown list layout
+     * 
+     * @see redmine #348
+     */
+    private function generateSelectorContentDropdown($name, $value, $choices, $flags)
+    {
+        $tagContent = '';
+
+        foreach (array_values($choices) as $index => $choice) {
+            $choiceLabel = ( ! empty($choice[1]) ? $choice[1] : $choice[0]);
+            $tagContent .= $this->openTag('option', array('value' => $choice[0]));
+            $tagContent .= $choiceLabel;
+            $tagContent .= $this->closeTag('option');
+        }
+
+        return $tagContent;
     }
 
 }
