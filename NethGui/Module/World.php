@@ -24,10 +24,11 @@ class NethGui_Module_World extends NethGui_Core_Module_Abstract
                 'lang' => NethGui_Framework::getInstance()->getLanguageCode(),
                 'cssMain' => base_url() . 'css/main.css',
                 'js' => array(
-                    'base' => base_url() . 'js/jquery-1.5.1.min.js',
-                    'ui' => base_url() . 'js/jquery-ui-1.8.13.custom.min.js',
+                    'base' => base_url() . 'js/jquery-1.6.2.min.js',
+                    'ui' => base_url() . 'js/jquery-ui-1.8.16.custom.min.js',
                     'dataTables' => base_url() . 'js/jquery.dataTables.min.js',
                     'test' => base_url() . 'js/nethgui.js',
+                    /*'switcher' => 'http://jqueryui.com/themeroller/themeswitchertool/',*/ 
                 ),
             );
 
