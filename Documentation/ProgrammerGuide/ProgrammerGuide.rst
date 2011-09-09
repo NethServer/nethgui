@@ -161,7 +161,7 @@ Rendering phase
     prepareView_ transfers the module internal state and
     necessary database values to the view state.  Later on, the view is 
     transformed into XHTML by Templates, possibly through the 
-    intermediation of Renderer objects.
+    help of Renderer and Widget objects.
 
 
 .. _getHostConfiguration: ../Api/Core/Module/Nethgui_Core_Module_Standard.html#getHostConfiguration
@@ -562,43 +562,51 @@ That variable holds a `Nethgui_Renderer_Abstract`_ object, a
 "decorated" View object that forbids any change to the view state and
 provides a set of helper methods to draw the user interface.
 
-A Renderer initial state is like a clean surface; invoking the helper
-methods is like drawing on it; converting it to a string brings it
-back to its clean state.
-
-For instance to draw an input field bound to a ``ipAddress`` view
+For instance to put an input field bound to a ``ipAddress`` view
 value you can write::
 
-    /* PHP Template script */
+    /* PHP Template script */ 
     echo $view->textInput('ipAddress');
 
 This produces the following XHTML code::
 
     <!-- XHTML code -->
-    <div class="labeled-control label-left">
-      <label for="MyModule_ipAddress">ipAddress_label</label>
-      <input value="" type="text" id="MyModule_ipAddress" name="MyModule[ipAddress]" />
+    <div class="labeled-control label-above">
+         <label for="MyModule_ipAddress">Indirizzo di rete</label>
+         <input type="text" 
+                id="MyModule_ipAddress" 
+                name="MyModule[ipAddress]" 
+                class="TextInput MyModule_ipAddress" 
+                value="" />
     </div>
 
-Helper methods falls into two groups: 
+Method exist to draw any control or controls container as described in
+[UI-CONTROLS]_ and [UI-INTERACTIONS]_.
 
-1. those that return the object itself;
+The ``textInput()``, as other Renderer methods, returns an object
+implementing `Nethgui_Renderer_WidgetInterface`_ (a *Widget*). Widgets
+can be nested in a hierarchical way through the ``insert()``
+method. Of course ``insert()`` makes sense only on *container*
+widgets.
 
-2. those that return a new Renderer object.
-
-The ``textInput()`` method belongs to the first group, returning the
-Renderer object itself, so we can chain another call::
+::
 
     /* PHP Template script */
-    echo $view->textInput('ipAddress')->textInput('ipMask');
+    echo $view->panel()
+         ->insert($view->textInput('ipAddress'))
+         ->insert($view->textInput('ipMask'));
 
-The second group of methods generate control containers: `form`, `dialog`, `tabs`, as outlined in [UI-CONTROLS]_ and [UI-INTERACTIONS]_.
+The previous fragment generates a *panel* (an XHTML DIV tag)
+containing two input fields.  Note that ``insert()`` as other methods
+of the `Nethgui_Renderer_WidgetInterface`_ return the same object,
+allowing `method chaining`_.
+
 
 .. [UI-CONTROLS] `Basic UI Controls <../UserInterface/BasicUiControls.html>`_ *Nethgui User Interface Design* 
 .. [UI-INTERACTIONS] `Interactions <../UserInterface/Interactions.html>`__ *Nethgui User Interface Design* 
-
-
 .. _`Nethgui_Renderer_Abstract`: ../Api/Renderer/Nethgui_Renderer_Abstract.html
+.. _`Nethgui_Renderer_WidgetInterface`: ../Api/Renderer/Nethgui_Renderer_WidgetInterface.html
+.. _`method chaining`: http://en.wikipedia.org/wiki/Method_chaining
 
 Implementing a simple Module
 ============================

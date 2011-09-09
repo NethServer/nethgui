@@ -1,9 +1,17 @@
 <?php
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * @package Nethgui
+ * @subpackage Core
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @ignore
  */
 
+/**
+ * @package Nethgui
+ * @subpackage Core
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @ignore
+ */
 class Nethgui_Core_ReadonlyView implements Nethgui_Core_ViewInterface
 {
     /**

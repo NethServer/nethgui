@@ -4,6 +4,7 @@
  * @subpackage Xhtml
  * @author Davide Principi <davide.principi@nethesis.it>
  * @internal
+ * @ignore
  */
 
 /**
@@ -11,6 +12,7 @@
  * @package Widget
  * @subpackage Xhtml
  * @internal
+ * @ignore
  */
 class Nethgui_Widget_Xhtml_ElementList extends Nethgui_Widget_Xhtml
 {
