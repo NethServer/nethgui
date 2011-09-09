@@ -73,16 +73,19 @@ interface NethGui_Renderer_Abstract
      * Create a fieldset container
      *
      * @see textLabel()
-     * @param string $name The view member for the LEGEND tag contents - optional
-     * @param integer $flags
+     * @param string $name OPTIONAL - The view member passed as argument for the "template" attribute.
+     * @param integer $flags OPTIONAL - flags
      * @return NethGui_Renderer_WidgetInterface
      */
     public function fieldset($name = NULL, $flags = 0);
 
     /**
      * Create a text header control
+     *
+     * @see textLabel()
+     * @param string $name OPTIONAL - The view member passed as argument for the "template" attribute.
      */
-    public function header($name, $flags = 0);
+    public function header($name = NULL, $flags = 0);
 
     /**
      * Create an hidden control
