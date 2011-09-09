@@ -53,6 +53,14 @@ class NethGui_Widget_Xhtml_TextLabel extends NethGui_Widget_Xhtml
             $text = htmlspecialchars($text);
         }
 
+        if($this->hasAttribute('icon-before')) {
+            $text = $this->openTag('span', array('class'=>'ui-icon ' . $this->getAttribute('icon-before'))) . $this->closeTag('span') . $text;
+        }
+
+        if($this->hasAttribute('icon-after')) {
+            $text .= $this->openTag('span', array('class'=>'ui-icon ' . $this->getAttribute('icon-before'))) . $this->closeTag('span');
+        }        
+
         if($this->hasAttribute('name')) {
             $content = $this->controlTag($tag, $name, $flags, $cssClass, array('name' => FALSE, 'id' => FALSE), $text);
         } else {

@@ -115,7 +115,7 @@ abstract class NethGui_Widget_Xhtml implements NethGui_Renderer_WidgetInterface
      */
     protected function selfClosingTag($tag, $attributes)
     {
-        return sprintf('<%s%s/>', strtolower($tag), $this->prepareXhtmlAttributes($attributes));
+        return sprintf('<%s%s />', strtolower($tag), $this->prepareXhtmlAttributes($attributes));
     }
 
     /**

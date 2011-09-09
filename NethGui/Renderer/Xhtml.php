@@ -164,7 +164,7 @@ class NethGui_Renderer_Xhtml extends NethGui_Core_ReadonlyView implements NethGu
     public function fieldset($name = NULL, $flags = 0)
     {
         $flags |= $this->inheritFlags;
-        $widget = $this->createWidget(__FUNCTION__, array('flags' => $flags));
+        $widget = $this->createWidget(__FUNCTION__, array('flags' => $flags, 'icon-before' => 'ui-icon-triangle-1-s'));
         if ( ! is_null($name)) {
             $widget->setAttribute('name', $name);
         }
