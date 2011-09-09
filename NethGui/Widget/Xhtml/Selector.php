@@ -93,10 +93,9 @@ class NethGui_Widget_Xhtml_Selector extends NethGui_Widget_Xhtml
         $selectorEnabled = ! ($flags & NethGui_Renderer_Abstract::STATE_DISABLED);
 
         $content .= $this->openTag('div', $choicesAttributes);
+        // This hidden control holds the control name prefix:
+        $content .= $this->controlTag('input', $name, $flags, '', array('type' => 'hidden'));      
         if ($selectorEnabled && count($choices) > 0) {
-            if ($flags & NethGui_Renderer_Abstract::SELECTOR_MULTIPLE) {
-                $content .= $this->controlTag('input', $name, $flags, '', array('type' => 'hidden'));
-            }
             $content .= $this->generateSelectorContentWidgetList($name, $value, $choices, $flags);
         }
         $content .= $this->closeTag('div');
