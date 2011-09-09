@@ -2,12 +2,12 @@
 /**
  * @package Widget
  * @author Davide Principi <davide.principi@nethesis.it>
- * @internal
+ * @ignore
  */
 
 /**
- * @internal
  * Abstract Xhtml Widget class
+ * @ignore
  */
 abstract class Nethgui_Widget_Xhtml implements Nethgui_Renderer_WidgetInterface
 {
@@ -34,7 +34,7 @@ abstract class Nethgui_Widget_Xhtml implements Nethgui_Renderer_WidgetInterface
         return $this;
     }
 
-    protected function hasAttribute($attribute)
+    public function hasAttribute($attribute)
     {
         return array_key_exists($attribute, $this->attributes);
     }
