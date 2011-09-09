@@ -8,11 +8,11 @@
  * @package Tests
  * @subpackage Unit
  */
-class NethGui_Core_Module_StandardTest extends PHPUnit_Framework_TestCase
+class Nethgui_Core_Module_StandardTest extends PHPUnit_Framework_TestCase
 {
 
     /**
-     * @var NethGui_Core_Module_Standard
+     * @var Nethgui_Core_Module_Standard
      */
     protected $object;
 
@@ -37,7 +37,7 @@ class NethGui_Core_Module_StandardTest extends PHPUnit_Framework_TestCase
     {
         $this->assertEquals($this->object->getParent(), NULL);
 
-        $mockModule = $this->getMockBuilder('NethGui_Core_Module_Composite')
+        $mockModule = $this->getMockBuilder('Nethgui_Core_Module_Composite')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -47,7 +47,7 @@ class NethGui_Core_Module_StandardTest extends PHPUnit_Framework_TestCase
 
     public function testPrepareView1()
     {
-        $viewMock = $this->getMockBuilder('NethGui_Core_View')
+        $viewMock = $this->getMockBuilder('Nethgui_Core_View')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -55,12 +55,12 @@ class NethGui_Core_Module_StandardTest extends PHPUnit_Framework_TestCase
             ->method('copyFrom')
             ->with($this->anything());
         -
-            $this->object->prepareView($viewMock, NethGui_Core_Module_Standard::VIEW_CLIENT);
+            $this->object->prepareView($viewMock, Nethgui_Core_Module_Standard::VIEW_CLIENT);
     }
 
     public function testPrepareView2()
     {
-        $viewMock = $this->getMockBuilder('NethGui_Core_View')
+        $viewMock = $this->getMockBuilder('Nethgui_Core_View')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -68,7 +68,7 @@ class NethGui_Core_Module_StandardTest extends PHPUnit_Framework_TestCase
             ->method('copyFrom')
             ->with($this->anything());
         
-            $this->object->prepareView($viewMock, NethGui_Core_Module_Standard::VIEW_SERVER);
+            $this->object->prepareView($viewMock, Nethgui_Core_Module_Standard::VIEW_SERVER);
     }
 
     public function testGetLanguageCatalog()
@@ -78,7 +78,7 @@ class NethGui_Core_Module_StandardTest extends PHPUnit_Framework_TestCase
 
 }
 
-class ConcreteStandardModule1 extends NethGui_Core_Module_Standard
+class ConcreteStandardModule1 extends Nethgui_Core_Module_Standard
 {
 
     public function initialize()

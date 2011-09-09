@@ -8,11 +8,11 @@
  * @package Tests
  * @subpackage Unit
  */
-class NethGui_Core_Module_CompositeTest extends PHPUnit_Framework_TestCase
+class Nethgui_Core_Module_CompositeTest extends PHPUnit_Framework_TestCase
 {
 
     /**
-     * @var NethGui_Core_Module_Composite
+     * @var Nethgui_Core_Module_Composite
      */
     protected $object;
 
@@ -38,7 +38,7 @@ class NethGui_Core_Module_CompositeTest extends PHPUnit_Framework_TestCase
     {
         $this->object->initialize();
 
-        $mockModule1 = $this->getMockBuilder('NethGui_Core_Module_Standard')
+        $mockModule1 = $this->getMockBuilder('Nethgui_Core_Module_Standard')
             ->getMock();
 
         $mockModule1->expects($this->once())
@@ -129,7 +129,7 @@ class NethGui_Core_Module_CompositeTest extends PHPUnit_Framework_TestCase
 
 }
 
-class ConcreteCompositeModule1 extends NethGui_Core_Module_Composite
+class ConcreteCompositeModule1 extends Nethgui_Core_Module_Composite
 {
     
 }

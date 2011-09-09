@@ -99,7 +99,7 @@ KeyY is `CityCoords` and holds three `props`: `Lat`, `Long` and
 
 
 
-.. _`host configuration interface`: ../Api/Core/NethGui_Core_HostConfigurationInterface.html
+.. _`host configuration interface`: ../Api/Core/Nethgui_Core_HostConfigurationInterface.html
 .. [SMEDEV] `SME Server Developers Manual`__
 __ http://wiki.contribs.org/SME_Server:Documentation:Developers_Manual
 
@@ -133,9 +133,9 @@ Module dissection
 -----------------
 
 A Module must implement a set of well-known operations defined by
-`NethGui_Core_ModuleInterface`_ and
-`NethGui_Core_RequestHandlerInterface`_.  Every module extending
-`NethGui_Core_Module_Standard`_ class inherits the implementations of
+`Nethgui_Core_ModuleInterface`_ and
+`Nethgui_Core_RequestHandlerInterface`_.  Every module extending
+`Nethgui_Core_Module_Standard`_ class inherits the implementations of
 those operations for free.  From now on, if not otherwise stated, we
 will refer to this class as the "basic class" or "basic
 implementation".
@@ -164,8 +164,8 @@ Rendering phase
     intermediation of Renderer objects.
 
 
-.. _getHostConfiguration: ../Api/Core/Module/NethGui_Core_Module_Standard.html#getHostConfiguration
-.. _NethGui_Core_RequestHandlerInterface: ../Api/Core/NethGui_Core_RequestHandlerInterface.html
+.. _getHostConfiguration: ../Api/Core/Module/Nethgui_Core_Module_Standard.html#getHostConfiguration
+.. _Nethgui_Core_RequestHandlerInterface: ../Api/Core/Nethgui_Core_RequestHandlerInterface.html
 
 
 
@@ -211,15 +211,15 @@ this rule. It can be of different data types.
 
 *Integer* 
    Represents a pre-defined validation rule.  The basic class defines
-   a set of integer constants.  See `NethGui_Core_Module_Standard`_
+   a set of integer constants.  See `Nethgui_Core_Module_Standard`_
    documentation for a complete list.
 
 *String*
    Represents a PERL-compatible regular expression.  See PHP
    `Perl-Compatible Regular Expression`_ syntax for details.
 
-*NethGui_Core_Validator* object
-   Passing an object of `NethGui_Core_Validator`_ class is the most
+*Nethgui_Core_Validator* object
+   Passing an object of `Nethgui_Core_Validator`_ class is the most
    flexible choice: you can specify arguments to validation rules
    and also combine them as *OR* expressions.
 
@@ -238,7 +238,7 @@ string representing a valid IPV4 address, you may type alternatively::
    $this->declareParameter('myIpAddress3', $this->getValidator()->ipv4());
 
 
-.. _`NethGui_Core_Validator`: ../Api/Core/NethGui_Core_Validator.html
+.. _`Nethgui_Core_Validator`: ../Api/Core/Nethgui_Core_Validator.html
 .. _`Perl-Compatible Regular Expression`: http://www.php.net/manual/en/pcre.pattern.php
 
 Adapters
@@ -340,14 +340,14 @@ provide a PHP array interface to the database values.  Those are
 closely related to the CRUD scenario implementation thus are discussed
 in `The Table Controller`_ section.
 
-.. _`host configuration interface`: ../Api/Core/NethGui_Core_HostConfigurationInterface.html
+.. _`host configuration interface`: ../Api/Core/Nethgui_Core_HostConfigurationInterface.html
 .. _bind:
 .. _validate:
 .. _process:
-.. _NethGui_Core_ModuleInterface: ../Api/Core/NethGui_Core_ModuleInterface.html
+.. _Nethgui_Core_ModuleInterface: ../Api/Core/Nethgui_Core_ModuleInterface.html
 .. _getAdapter:
-.. _NethGui_Core_Module_Standard: ../Api/Core/Module/NethGui_Core_Module_Standard.html
-.. _NethGui_Core_Module_Composite: ../Api/Core/Module/NethGui_Core_Module_Composite.html
+.. _Nethgui_Core_Module_Standard: ../Api/Core/Module/Nethgui_Core_Module_Standard.html
+.. _Nethgui_Core_Module_Composite: ../Api/Core/Module/Nethgui_Core_Module_Composite.html
 
 
 
@@ -368,7 +368,7 @@ the `Composite abstract class`_.
              classes perform most of this work automatically, but you
              must do it by hand in your own classes.  Keep it in mind.
 
-.. _`Composite abstract class`: ../Api/Core/Module/NethGui_Core_Module_Composite.html
+.. _`Composite abstract class`: ../Api/Core/Module/Nethgui_Core_Module_Composite.html
 
 
 
@@ -378,7 +378,7 @@ List composition
 In the List composition implementation the parent module forwards the
 messages it receives to **all** its children.
 
-Refer to the docblocks of `NethGui_Core_Module_List`_ for the details
+Refer to the docblocks of `Nethgui_Core_Module_List`_ for the details
 of each operation implementation.
 
 The helper method ``loadChildren()`` instantiates a list of classes
@@ -388,7 +388,7 @@ adding each one as a child of the parent module.
           *user interface interactions*: the **tabs** and the **form**.  
           See the List class constructor docblock for details.
 
-.. _`NethGui_Core_Module_List`: ../Api/Core/Module/NethGui_Core_Module_List.html
+.. _`Nethgui_Core_Module_List`: ../Api/Core/Module/Nethgui_Core_Module_List.html
 
 
 
@@ -438,7 +438,7 @@ accomplished in two steps.
 **Step 1**. After the ``process()`` operation a Module receives a
 View object as first argument to prepareView_ method::
 
-   public function prepareView(NethGui_Core_ViewInterface $view, $mode) 
+   public function prepareView(Nethgui_Core_ViewInterface $view, $mode) 
    {
        parent::prepareView($view, $mode);
    }
@@ -465,7 +465,7 @@ the right XHTML code for each control.
 
 .. _ArrayAccess: http://php.net/manual/en/class.arrayaccess.php
 .. _IteratorAggregate: http://php.net/manual/en/class.iteratoraggregate.php
-.. _prepareView: ../Api/Core/Module/NethGui_Core_Module_Standard.html#prepareView
+.. _prepareView: ../Api/Core/Module/Nethgui_Core_Module_Standard.html#prepareView
 
 
 
@@ -490,14 +490,14 @@ would be guessed into ``User/Template/Example.php``.
 
 ::
 
-   class User_Module_MyModule extends NethGui_Core_Module_Standard 
+   class User_Module_MyModule extends Nethgui_Core_Module_Standard 
    {
 
      .
      .
      .
 
-     public function prepareView(NethGui_Core_ViewInterface $view, $mode) 
+     public function prepareView(Nethgui_Core_ViewInterface $view, $mode) 
      {
          parent::prepareView($view, $mode);
   
@@ -525,14 +525,14 @@ a string, representing the Template output. We can call the
 string, as we have seen in the Template script case. In this way, the
 callable function is invoked instead of the script::
 
-   class User_Module_MyModule extends NethGui_Core_Module_Standard 
+   class User_Module_MyModule extends Nethgui_Core_Module_Standard 
    {
 
      .
      .
      .
 
-     public function prepareView(NethGui_Core_ViewInterface $view, $mode) 
+     public function prepareView(Nethgui_Core_ViewInterface $view, $mode) 
      {
          parent::prepareView($view, $mode);
   
@@ -542,7 +542,7 @@ callable function is invoked instead of the script::
      }
 
      // The callback function must be declared "public".
-     public function renderMyModule(NethGui_Renderer_Abstract $view) 
+     public function renderMyModule(Nethgui_Renderer_Abstract $view) 
      {
         return "<p>Domain: " . $view['DomainName'] . "</p>";
      }
@@ -558,7 +558,7 @@ Renderer
 You may have noticed in the `Template`_ section that a Template, both
 script and callback method, receives a variable: ``$view``. 
 
-That variable holds a `NethGui_Renderer_Abstract`_ object, a
+That variable holds a `Nethgui_Renderer_Abstract`_ object, a
 "decorated" View object that forbids any change to the view state and
 provides a set of helper methods to draw the user interface.
 
@@ -598,7 +598,7 @@ The second group of methods generate control containers: `form`, `dialog`, `tabs
 .. [UI-INTERACTIONS] `Interactions <../UserInterface/Interactions.html>`__ *Nethgui User Interface Design* 
 
 
-.. _`NethGui_Renderer_Abstract`: ../Api/Renderer/NethGui_Renderer_Abstract.html
+.. _`Nethgui_Renderer_Abstract`: ../Api/Renderer/Nethgui_Renderer_Abstract.html
 
 Implementing a simple Module
 ============================
@@ -615,14 +615,14 @@ Database, by the value of ``status`` property in key ``onoff`` of
   # /sbin/e-smith/db myconf set onoff service status disabled
 
 To implement a Module you should extend
-`NethGui_Core_Module_Standard`_ class. So we create a new PHP file
+`Nethgui_Core_Module_Standard`_ class. So we create a new PHP file
 under ``GearUi/Module/`` subdirectory: ``OnOffService.php``.
 
 In ``OnOffService.php`` we write::
 
    <?php
 
-   class GearUi_Module_OnOffService extends NethGui_Core_Module_Standard 
+   class GearUi_Module_OnOffService extends Nethgui_Core_Module_Standard 
    {
 
       public function initialize()
@@ -645,7 +645,7 @@ In ``OnOffService.php`` we write::
 Things to note down here are:
 
 * No PHP ``require`` commands are needed to load
-  ``NethGui_Core_Module_Standard``, as the file path is given
+  ``Nethgui_Core_Module_Standard``, as the file path is given
   implicitly in the class name, substituting underscores ``_`` with
   slashes ``/``.
 
@@ -684,10 +684,10 @@ PHP file, this time under ``GearUi/Template/`` directory,
 
 .. _ModuleTestCase: 
 .. _basic testing class: http://nethgui.nethesis.it/docs/Tests/ModuleTestCase.html
-.. _NethGui_Core_Module_Standard: ../Api/Core/Module/NethGui_Core_Module_Standard.html
-.. _NethGui_Core_Module_Composite: ../Api/Core/Module/NethGui_Core_Module_Composite.html
-.. _initialize: ../Api/Core/Module/NethGui_Core_Module_Standard.html#initialize
-.. _declareParameter: ../Api/Core/Module/NethGui_Core_Module_Standard.html#declareParameter
+.. _Nethgui_Core_Module_Standard: ../Api/Core/Module/Nethgui_Core_Module_Standard.html
+.. _Nethgui_Core_Module_Composite: ../Api/Core/Module/Nethgui_Core_Module_Composite.html
+.. _initialize: ../Api/Core/Module/Nethgui_Core_Module_Standard.html#initialize
+.. _declareParameter: ../Api/Core/Module/Nethgui_Core_Module_Standard.html#declareParameter
 .. _regular expression: http://php.net/manual/en/function.preg-match.php
 
 

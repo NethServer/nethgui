@@ -27,7 +27,7 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
     const DB_GET_ALL = 'getAll';
 
     /**
-     * @var NethGui_Core_Module_Standard
+     * @var Nethgui_Core_Module_Standard
      */
     protected $object;
     /**
@@ -57,23 +57,23 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
      */
     protected $expectedEvents;
     /**
-     * Controls return value of NethGui_Core_Request::isSubmitted() mock
+     * Controls return value of Nethgui_Core_Request::isSubmitted() mock
      * @var bool
      */
     protected $submittedRequest;
     private $databaseMocks;
     /**
-     * The string is prefixed to values returned by NethGui_Core_View::buildUrl()
+     * The string is prefixed to values returned by Nethgui_Core_View::buildUrl()
      * @var string
      */
     protected $urlReturnPrefix = 'http://localhost/';
 
     /**
-     * @return NethGui_Core_HostConfigurationInterface
+     * @return Nethgui_Core_HostConfigurationInterface
      */
     protected function provideHostConfiguration()
     {
-        $configurationMock = $this->getMockBuilder('NethGui_Core_HostConfiguration')
+        $configurationMock = $this->getMockBuilder('Nethgui_Core_HostConfiguration')
                 ->disableOriginalConstructor()
                 ->setMethods(array('getDatabase'))
                 ->getMock()
@@ -105,13 +105,13 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
 
     /**
      *
-     * @param NethGui_Core_ConfigurationDatabase $database
-     * @return NethGui_Core_ConfigurationDatabase Mocked
+     * @param Nethgui_Core_ConfigurationDatabase $database
+     * @return Nethgui_Core_ConfigurationDatabase Mocked
      */
     public function getMockForConfigurationDatabase($database)
     {
         if ( ! isset($this->databaseMocks[$database])) {
-            $databaseMock = $this->getMockBuilder('NethGui_Core_ConfigurationDatabase')
+            $databaseMock = $this->getMockBuilder('Nethgui_Core_ConfigurationDatabase')
                     ->disableOriginalConstructor()
                     ->setMethods(array(
                         'getProp',
@@ -146,11 +146,11 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
 
     /**
      * @param array $requestData
-     * @return NethGui_Core_RequestInterface
+     * @return Nethgui_Core_RequestInterface
      */
     protected function provideRequest()
     {
-        $requestMock = $this->getMockBuilder("NethGui_Core_Request")
+        $requestMock = $this->getMockBuilder("Nethgui_Core_Request")
                 ->disableOriginalConstructor()
                 ->setMethods(array('hasParameter', 'getParameter', 'isEmpty', 'isSubmitted', 'getParameters'))
                 ->getMock()
@@ -207,11 +207,11 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
     /**
      * Provide a view mock expecting all parameters are set to expected value.
      *
-     * @return NethGui_Core_ViewInterface
+     * @return Nethgui_Core_ViewInterface
      */
-    public function spawnView(NethGui_Core_ModuleInterface $module, $expectedOffsetSet)
+    public function spawnView(Nethgui_Core_ModuleInterface $module, $expectedOffsetSet)
     {
-        $viewMock = $this->getMockBuilder('NethGui_Core_View')
+        $viewMock = $this->getMockBuilder('Nethgui_Core_View')
                 ->setMethods(array('offsetSet', 'buildUrl', 'spawnView'))
                 ->setConstructorArgs(array($module))
                 ->getMock()
@@ -241,11 +241,11 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
     /**
      * Provided mock fails if it receives `addError()` message.
      *
-     * @return NethGui_Core_ValidationReport
+     * @return Nethgui_Core_ValidationReport
      */
     protected function provideValidationReport()
     {
-        $reportMock = $this->getMockBuilder('NethGui_Module_NotificationArea')
+        $reportMock = $this->getMockBuilder('Nethgui_Module_NotificationArea')
                 ->getMock();
 
         $reportMock->expects($this->never())
@@ -256,7 +256,7 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
     }
     
     protected function provideNotificationCarrier() {
-        return $this->getMock('NethGui_Module_NotificationArea');
+        return $this->getMock('Nethgui_Module_NotificationArea');
     }
 
     protected function setUp()
@@ -269,7 +269,7 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
         $this->submittedRequest = TRUE;
     }
 
-    protected function runModuleTestProcedure($viewMode = NethGui_Core_ModuleInterface::VIEW_SERVER)
+    protected function runModuleTestProcedure($viewMode = Nethgui_Core_ModuleInterface::VIEW_SERVER)
     {
         $this->object->setHostConfiguration($this->provideHostConfiguration());
         $this->object->initialize();

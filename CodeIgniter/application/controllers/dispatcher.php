@@ -1,15 +1,15 @@
 <?php
 
 /**
- * NethGui
+ * Nethgui
  *
- * @package NethGuiFramework
+ * @package NethguiFramework
  */
 
 /**
  * TODO: describe class
  *
- * @package NethGuiFramework
+ * @package NethguiFramework
  * @subpackage CodeIgniter
  */
 class Dispatcher extends CI_Controller {
@@ -24,9 +24,9 @@ class Dispatcher extends CI_Controller {
             exit;
         }
 
-        require_once(APPPATH . '../../NethGui/Framework.php');
+        require_once(APPPATH . '../../Nethgui/Framework.php');
 
-        $NFW = NethGui_Framework::getInstance($this);
+        $NFW = Nethgui_Framework::getInstance($this);
         $NFW->dispatch($method, $parameters);
     }
 

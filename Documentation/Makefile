@@ -17,7 +17,7 @@ PDEPEND_OUTPUT=Metrics/pyramid.svg Metrics/jdepend.svg Metrics/summary.xml
 all: ${HTMLFILES} ${PDEPEND_OUTPUT} 
 
 api: 
-	phpdoc -dn NethGui -ti NethGui -d ../NethGui -i *Template* -t Api
+	phpdoc -dn Nethgui -ti Nethgui -d ../Nethgui -i *Template* -t Api
 
 clean:
 	rm -f ${HTMLFILES} ${PDEPEND_OUTPUT}
@@ -28,5 +28,5 @@ ${PDEPEND_OUTPUT}:
 	  --summary-xml=Metrics/summary.xml  \
 	  --jdepend-chart=Metrics/jdepend.svg  \
 	  --overview-pyramid=Metrics/pyramid.svg  \
-	  --ignore=../NethGui/Language/ \
-	  ../NethGui/
+	  --ignore=../Nethgui/Language/ \
+	  ../Nethgui/
