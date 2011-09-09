@@ -28,6 +28,7 @@ class Nethgui_Module_World extends Nethgui_Core_Module_Abstract
                     'ui' => base_url() . 'js/jquery-ui-1.8.16.custom.min.js',
                     'dataTables' => base_url() . 'js/jquery.dataTables.min.js',
                     'test' => base_url() . 'js/nethgui.js',
+                    'qTip' => base_url() . 'js/jquery.qtip.min.js',
                     /*'switcher' => 'http://jqueryui.com/themeroller/themeswitchertool/',*/ 
                 ),
             );
