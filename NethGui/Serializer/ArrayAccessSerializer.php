@@ -25,11 +25,11 @@ class NethGui_Serializer_ArrayAccessSerializer implements NethGui_Serializer_Ser
         $this->table = $table;
         $this->key = $key;
 
-        if (is_null($prop) || empty($prop)) {
+        if (is_null($prop) || $prop == '' || $prop === FALSE) {
             throw new InvalidArgumentException('The `prop` argument is invalid');
         }
 
-        $this->prop = $prop;
+        $this->prop = strval($prop);
     }
 
     public function read()

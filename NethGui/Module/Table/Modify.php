@@ -132,7 +132,8 @@ class NethGui_Module_Table_Modify extends NethGui_Module_Table_Action
                 $separator = array_shift($parameterDeclaration);
 
                 if (is_null($prop)) {
-                    $prop = $parameterName;
+                    // expect the table column name is the same as parameter name
+                    $prop = $parameterName;  
                 }
 
                 $valueProvider = array($this->tableAdapter, $key, $prop, $separator);
