@@ -684,8 +684,8 @@ PHP file, this time under ``GearUi/Template/`` directory,
 
    <!-- GearUi/Template/OnOffService.php contents --><?php 
    echo $view
-          ->checkBox('serviceStatus', 'enabled')
-          ->checkBox('serviceStatus', 'disabled')
+          ->insert($view->checkBox('serviceStatus', 'enabled'))
+          ->insert(checkBox('serviceStatus', 'disabled'))
    ;
    ?>
    
