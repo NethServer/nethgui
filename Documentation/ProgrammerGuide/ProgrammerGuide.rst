@@ -1,5 +1,5 @@
 =======================
-   NethGui framework
+   Nethgui framework
 =======================
 ------------------
  Programmer guide
@@ -20,7 +20,7 @@ web user interface for the administration of a GNU/Linux system.
 Overview
 ========
 
-The NethGui framework helps with the building of a graphical user
+The Nethgui framework helps with the building of a graphical user
 interface for the administration of a GNU/Linux system.
 
 Through that interface the user can change the system configuration --
@@ -45,7 +45,7 @@ The Host Configuration Database
 
 The Host Configuration Database is the component providing the storage
 of the operating system configuration and the methods to apply it to
-the running system.  Out of the boundaries of the NethGui framework,
+the running system.  Out of the boundaries of the Nethgui framework,
 this is implemented by the SME Server Configuration Database described
 by the SME Server Developers Manual [SMEDEV]_.
 
@@ -107,7 +107,7 @@ __ http://wiki.contribs.org/SME_Server:Documentation:Developers_Manual
 Modules
 =======
 
-Modules in NethGui constitute the functional part of your interface,
+Modules in Nethgui constitute the functional part of your interface,
 where the *business rules* reside.  You achieve the wished behaviour
 
 * by mapping input data to proper values into Host Configuration
@@ -335,7 +335,7 @@ the ``status`` parameter in the module class, ``readStatus()`` and ``writeStatus
 .. note:: The converter methods are optional for the Identity adapter,
           but **mandatory** for the Mapping adapter.
 
-The NethGui framework defines also a Table and an Array adapter that
+The Nethgui framework defines also a Table and an Array adapter that
 provide a PHP array interface to the database values.  Those are
 closely related to the CRUD scenario implementation thus are discussed
 in `The Table Controller`_ section.
@@ -357,7 +357,7 @@ Module composition
 A module can be composed of other modules. In this case the first
 plays the *parent* role while the seconds play the *children* role.
 
-The NethGui framework has two concrete types of composition: the List
+The Nethgui framework has two concrete types of composition: the List
 and the Controller.  The concept of *Composite* module is outlined in
 the `Composite abstract class`_.
 
@@ -425,7 +425,7 @@ View layer
 The View layer displays the module parameters data on the User's
 screen according to a set of customizable Templates and pre-defined
 user interactions. As stated before, you do not have to care about the
-interface "look and feeling": the NethGui framework provides a set of
+interface "look and feeling": the Nethgui framework provides a set of
 ready-to-use controls that you employ to build the user interface.
 
 The rendering phase, as stated in `Module dissection`_, is
@@ -594,8 +594,8 @@ Renderer object itself, so we can chain another call::
 
 The second group of methods generate control containers: `form`, `dialog`, `tabs`, as outlined in [UI-CONTROLS]_ and [UI-INTERACTIONS]_.
 
-.. [UI-CONTROLS] `Basic UI Controls <../UserInterface/BasicUiControls.html>`_ *NethGui User Interface Design* 
-.. [UI-INTERACTIONS] `Interactions <../UserInterface/Interactions.html>`__ *NethGui User Interface Design* 
+.. [UI-CONTROLS] `Basic UI Controls <../UserInterface/BasicUiControls.html>`_ *Nethgui User Interface Design* 
+.. [UI-INTERACTIONS] `Interactions <../UserInterface/Interactions.html>`__ *Nethgui User Interface Design* 
 
 
 .. _`NethGui_Renderer_Abstract`: ../Api/Renderer/NethGui_Renderer_Abstract.html
@@ -704,7 +704,7 @@ must test OnOffService in three scenarios:
 3. The User takes no action.
 
 We can check if OnOffService module is correct by writing a
-PHPUnit_ test case. NethGui comes with a basic class to be extended to
+PHPUnit_ test case. Nethgui comes with a basic class to be extended to
 build module tests upon it: ModuleTestCase_.
 
 As we are testing a module of the hypothetical *GearUi* project , we

@@ -2,7 +2,7 @@
  Label placement
 =================
 -------------------------------
- NethGui User Interface Design
+ Nethgui User Interface Design
 -------------------------------
 
 .. contents:: 
