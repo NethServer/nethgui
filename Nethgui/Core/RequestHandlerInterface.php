@@ -5,6 +5,13 @@
 
 /**
  * Request handlers executes Module logics.
+ * 
+ * A request handler is delegated to
+ * - receive input parameters (parameter binding),
+ * - validate,
+ * - perform process()-ing.
+ *
+ * @see Nethgui_Core_ModuleInterface
  * @package Core
  */
 interface Nethgui_Core_RequestHandlerInterface {

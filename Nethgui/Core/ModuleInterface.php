@@ -4,12 +4,14 @@
  */
 
 /**
- * A Nethgui_Core_ModuleInterface implementation is delegated to
- *    - receive input parameters (parameter binding),
- *    - validate,
- *    - perform process()-ing,
- *    - prepare view parameters.
+ * Core module operations
  *
+ * A module interface implementation is delegated to
+ * - initialize the module (and its submodules)
+ * - prepare view parameters
+ * - provide module informations
+ *
+ * @see Nethgui_Core_RequestHandlerInterface
  * @package Core
  */
 interface Nethgui_Core_ModuleInterface
