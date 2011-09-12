@@ -8,7 +8,7 @@
     </head>
     <body>
         <div id="allWrapper"> 
-            <div id="header"><div id="product">NethServer</div><?php echo $view['NotificationArea'] ?></div>
+            <div id="header"><div id="ModuleTitle"><?php echo $view['CurrentModule']->translate($view['CurrentModule']->getModule()->getTitle()) ?></div><div id="product">NethServer</div><?php echo $view['NotificationArea'] ?></div>
             <div class="colmask leftmenu">
                 <div class="colleft">
                     <div class="col1"><div class="<?php echo $view['CurrentModule']->getModule()->getIdentifier(); ?> CurrentModule"><?php echo $view['CurrentModule'] ?></div></div>
