@@ -20,13 +20,13 @@ $L['Ignore_label'] = 'Ignora';
 $L['All changes have been saved'] = 'Tutte le modifiche sono state salvate';
 $L['Reset_label'] = 'Ripristina';
 
-$L['regexp "${0}"'] = 'espressione regolare "${0}"';
-$L['Incorrect values'] = 'Valori errati';
-$L['Incorrect value'] = 'Valore errato';
+$L['valid_regexp "${0}"'] = 'espressione regolare "${0}"';
+$L['valid_positive'] = 'numero positivo';
+$L['valid_integer'] = 'numero intero';
+$L['valid_ipV4Address'] = 'indirizzo IPv4';
+$L['valid_username'] = 'lettera iniziale, poi solo lettere minuscole, numeri, simboli "-" e "_"';
+$L['valid_notEmpty'] = 'non vuoto';
 
-$L['positive'] = 'numero positivo';
-$L['integer'] = 'numero intero';
-$L['ipV4Address'] = 'indirizzo IPv4';
 $L['Incorrect value'] = 'Valore non corretto';
 $L['Incorrect values'] = 'Valori non corretti';
 

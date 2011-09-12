@@ -97,7 +97,7 @@ class Nethgui_Module_NotificationArea extends Nethgui_Core_Module_Standard imple
         }
 
         $validationView['type'] = Nethgui_Core_DialogBox::NOTIFY_ERROR;
-        $validationView['dialogId'] = 'dlgValidation';
+        $validationView['dialogId'] = 'dlg' . substr(md5('Validation-' . microtime()), 0, 6);
         $validationView['transient'] = TRUE;
         $validationView['errors'] = new ArrayObject();
 
@@ -105,7 +105,7 @@ class Nethgui_Module_NotificationArea extends Nethgui_Core_Module_Standard imple
             list($fieldName, $errorInfo, $module) = $error;
             $eV = $validationView->spawnView($module);
             $eV->setTemplate(array($this, 'renderValidationError'));
-            $eV['errorInfo'] = array($eV->translate($errorInfo[0]), $errorInfo[1]);
+            $eV['errorInfo'] = $eV->translate('valid_' . $errorInfo[0], $errorInfo[1]);
             $eV['fieldName'] = $fieldName;
             $eV['fieldId'] = $eV->getUniqueId($fieldName);
             $eV['fieldLabel'] = $eV->translate($fieldName . '_label');
@@ -118,7 +118,7 @@ class Nethgui_Module_NotificationArea extends Nethgui_Core_Module_Standard imple
     public function renderValidationError(Nethgui_Renderer_Abstract $view) {
         return $view->button($view['fieldName'], Nethgui_Renderer_Abstract::BUTTON_LINK)
             ->setAttribute('value', '#' . $view['fieldId'])
-            ->setAttribute('title', $view->translate($view['errorInfo'][0], $view['errorInfo'][1]));
+            ->setAttribute('title', $view['errorInfo']);
     }
 
     private function makeActionViewsForDialog(Nethgui_Core_DialogBox $dialog, $mode, Nethgui_Core_ViewInterface $dialogView)
