@@ -22,7 +22,7 @@ class Nethgui_Widget_Xhtml_Hidden extends Nethgui_Widget_Xhtml
         $name = $this->getAttribute('name');
         $value = $this->getAttribute('value');
         $flags = $this->getAttribute('flags');
-        $content ='';
+        $content = '';
 
         if (is_null($value)) {
             $value = $this->view[$name];
@@ -36,7 +36,6 @@ class Nethgui_Widget_Xhtml_Hidden extends Nethgui_Widget_Xhtml
 
         return $content;
     }
-
 
     private function hiddenArrayRecursive($valueArray, $flags, $path = array())
     {
@@ -52,8 +51,9 @@ class Nethgui_Widget_Xhtml_Hidden extends Nethgui_Widget_Xhtml
                 $attributes = array(
                     'type' => 'hidden',
                     'value' => $value,
-                    'name' => $this->view->getControlName($namePath)
-                );                
+                    'name' => $this->view->getControlName($namePath),
+                    'id' => FALSE
+                );
 
                 $content .= $this->controlTag('input', FALSE, $flags, 'Hidden', $attributes);
             }
