@@ -15,7 +15,7 @@
                     <div class="col2"><div id="moduleMenu" class="ModuleMenu"><?php echo $view['Menu'] ?></div></div>
                 </div>
             </div>
-            
+            <div class="HelpArea"><div id="HelpAreaContent"></div></div>
         </div>        
         <?php foreach ($view['js'] as $scriptPath): ?><script type="text/javascript" src="<?php echo htmlspecialchars($scriptPath) ?>" ></script><?php endforeach; ?>        
     </body>
