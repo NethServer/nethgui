@@ -18,7 +18,7 @@ class Nethgui_Module_World extends Nethgui_Core_Module_Abstract
     public function prepareView(Nethgui_Core_ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
-        
+
         if ($mode === self::VIEW_SERVER) {
             $immutables = array(
                 'lang' => Nethgui_Framework::getInstance()->getLanguageCode(),
@@ -29,7 +29,7 @@ class Nethgui_Module_World extends Nethgui_Core_Module_Abstract
                     'dataTables' => base_url() . 'js/jquery.dataTables.min.js',
                     'test' => base_url() . 'js/nethgui.js',
                     'qTip' => base_url() . 'js/jquery.qtip.min.js',
-                    /*'switcher' => 'http://jqueryui.com/themeroller/themeswitchertool/',*/ 
+                /* 'switcher' => 'http://jqueryui.com/themeroller/themeswitchertool/', */
                 ),
             );
 
@@ -41,11 +41,27 @@ class Nethgui_Module_World extends Nethgui_Core_Module_Abstract
         foreach ($this->modules as $module) {
             $innerView = $view->spawnView($module, TRUE);
             $module->prepareView($innerView, $mode);
-            // Consider the first module as CURRENT.
+            // Consider the first module as Current.
             if ( ! isset($view['CurrentModule']) && $mode === self::VIEW_SERVER) {
+
+                if ($module instanceof Nethgui_Core_Module_Abstract) {
+                    if ( ! $module->hasInputForm()) {
+                        $wrapView = $view->spawnView($module);
+                        $wrapView['__originalView'] = $innerView;
+                        $wrapView->setTemplate(array($this, 'renderFormWrap'));
+
+                        $innerView = $wrapView;
+                    }
+                }
+
                 $view['CurrentModule'] = $innerView;
             }
         }
+    }
+
+    public function renderFormWrap(Nethgui_Renderer_Abstract $view)
+    {
+        return $view->form()->insert($view->inset('__originalView'));
     }
 
     public function addModule(Nethgui_Core_ModuleInterface $module)
