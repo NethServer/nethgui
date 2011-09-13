@@ -43,7 +43,7 @@ interface Nethgui_Renderer_Abstract
     
     const SELECTOR_MULTIPLE = 0x20000;
     const SELECTOR_DROPDOWN = 0x40000;
-
+    
     /**
      * Create a member inclusion
      * @param string $name The view member name
