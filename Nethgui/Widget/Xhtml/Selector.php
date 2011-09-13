@@ -96,7 +96,7 @@ class Nethgui_Widget_Xhtml_Selector extends Nethgui_Widget_Xhtml
 
         $content .= $this->openTag('div', $choicesAttributes);
         // This hidden control holds the control name prefix:
-        $content .= $this->controlTag('input', $name, $flags, '', array('type' => 'hidden'));      
+        $content .= $this->controlTag('input', $name, $flags, '', array('type' => 'hidden'));
         if ($selectorEnabled && count($choices) > 0) {
             $content .= $this->generateSelectorContentWidgetList($name, $value, $choices, $flags);
         }
@@ -168,10 +168,17 @@ class Nethgui_Widget_Xhtml_Selector extends Nethgui_Widget_Xhtml
         $tagContent = '';
 
         foreach (array_values($choices) as $index => $choice) {
-            $choiceLabel = ( ! empty($choice[1]) ? $choice[1] : $choice[0]);
-            $tagContent .= $this->openTag('option', array('value' => $choice[0]));
-            $tagContent .= $choiceLabel;
-            $tagContent .= $this->closeTag('option');
+            $labelText = ! empty($choice[1]) ? $choice[1] : htmlspecialchars(strval($choice[0]));
+            if (is_array($choice[0])) {
+                // nested options => create optgroup
+                $tagContent .= $this->openTag('optgroup', array('label' => $labelText));
+                $tagContent .= $this->generateSelectorContentDropdown($name, $value, $choice[0], $flags);
+                $tagContent .= $this->closeTag('optgroup');
+            } else {
+                $tagContent .= $this->openTag('option', array('value' => $choice[0], 'selected' => $value == $choice[0] ? 'selected' : FALSE));
+                $tagContent .= $labelText;
+                $tagContent .= $this->closeTag('option');
+            }
         }
 
         return $tagContent;
