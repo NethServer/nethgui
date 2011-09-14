@@ -63,7 +63,7 @@ class Nethgui_Module_World extends Nethgui_Core_Module_Abstract
 
     public function renderFormWrap(Nethgui_Renderer_Abstract $view)
     {
-        return $view->form()->insert($view->inset('__originalView'));
+        return $view->panel($view->getModule()->getIdentifier())->setAttribute('class', 'Action')->insert($view->form()->insert($view->inset('__originalView')));
     }
 
     public function addModule(Nethgui_Core_ModuleInterface $module)

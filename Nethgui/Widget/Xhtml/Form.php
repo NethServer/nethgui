@@ -20,7 +20,7 @@ class Nethgui_Widget_Xhtml_Form extends Nethgui_Widget_Xhtml_Panel
     public function render()
     {                       
         $action = $this->getAttribute('action');
-        $this->setAttribute('class', FALSE);
+        $this->setAttribute('class', $this->getAttribute('class', FALSE));
         $this->setAttribute('name', FALSE);
 
         $content = '';
