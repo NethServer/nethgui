@@ -130,7 +130,7 @@ class Nethgui_Core_ConfigurationDatabase implements Nethgui_Authorization_Policy
 		{
                     $tokens = explode("=", $line);
                     $key = $tokens[0];
-                    $tokens = explode("\|", $tokens[1]);
+                    $tokens = explode("|", $tokens[1]);
                     if($type && $tokens[0] != $type)
                        continue;
                     if($filter && stristr($key, $filter) === FALSE)
@@ -165,7 +165,7 @@ class Nethgui_Core_ConfigurationDatabase implements Nethgui_Authorization_Policy
         $output = shell_exec($this->command . " " . $this->db . " get " . escapeshellarg($key));
         if ($output != "")
         {
-            $tokens = explode("\|", $output);
+            $tokens = explode("|", $output);
             for ($i = 1; $i <= count($tokens); $i ++ ) { //skip type
                 if (isset($tokens[$i])) //avoid outbound tokens
                     $result[trim($tokens[$i])] = trim($tokens[ ++ $i]);
