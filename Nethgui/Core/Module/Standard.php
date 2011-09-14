@@ -177,7 +177,7 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
     /**
      * The given $eventName is required to be signalled after any database change
      * @param string $eventName
-     * @param array $eventArgs
+     * @param array $eventArgs Arguments to the event. You can pass a callback function as argument provider. The callback will be invoked with the event name as first argument.
      * @param Nethgui_Core_EventObserverInterface $observer Optional
      */
     protected function requireEvent($eventName, $eventArgs = array(), $observer = NULL)

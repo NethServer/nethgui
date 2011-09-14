@@ -16,10 +16,12 @@ class Nethgui_Core_HostConfiguration implements Nethgui_Core_HostConfigurationIn
      * @var array
      */
     private $databases;
+
     /**
      * @var PolicyDecisionPointInterface;
      */
     private $policyDecisionPoint;
+
     /**
      * Keeps User object acting on host configuration.
      * @var Nethgui_Core_UserInterface
@@ -183,36 +185,26 @@ class Nethgui_Core_HostConfiguration implements Nethgui_Core_HostConfigurationIn
         if (empty($this->eventQueue)) {
             return NULL;
         }
-
-
         foreach ($this->eventQueue as $eventData) {
             $output = array();
-
             $args = array();
-
 
             foreach ($eventData['args'] as $arg) {
                 if (is_callable($arg)) {
                     // invoke argument value provider:
                     $arg = call_user_func($arg, $eventData['name']);
                 }
-
                 if ($arg === NULL) {
                     continue; // skip NULL values
                 }
-
                 $args[] = (String) $arg;
             }
-
             $exitStatus = $this->signalEvent($eventData['name'], $args, $output);
-
             foreach ($eventData['objs'] as $observer) {
-                if ($observer instanceof Nethgui_Core_EventObserverInterface)
-                {
+                if ($observer instanceof Nethgui_Core_EventObserverInterface) {
                     $observer->notifyEventCompletion($eventData['name'], $args, $exitStatus, $output);
                 }
             }
-
             if ($exitStatus === FALSE) {
                 return FALSE;
             }
