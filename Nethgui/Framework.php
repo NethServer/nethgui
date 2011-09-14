@@ -15,6 +15,7 @@ class Nethgui_Framework
      */
     private $controller;
     private $languageCode = 'it';
+
     /**
      * This is a stack of catalog names. Current catalog is the last element
      * of the array.
@@ -156,7 +157,7 @@ class Nethgui_Framework
         $segments = array();
 
         while (list($index, $slice) = each($path)) {
-            if ($slice == '.' || !$slice) {
+            if ($slice == '.' || ! $slice) {
                 continue;
             } elseif ($slice == '..') {
                 next($path);
@@ -165,7 +166,7 @@ class Nethgui_Framework
                 $fragment = $slice;
                 continue;
             }
-            
+
             array_unshift($segments, $slice);
         }
 
@@ -506,6 +507,28 @@ class Nethgui_Framework
 
         // Control reaches this point only if no redirect occurred.
         $notificationManager->dismissTransientDialogBoxes();
+    }
+
+    /**
+     * Convert the given hash to the array format accepted from UI widgets as
+     * "datasource".
+     * 
+     * @param array $h 
+     * @return array
+     */
+    public static function hashToDatasource($H)
+    {
+        $D = array();
+
+        foreach ($H as $k => $v) {
+            if (is_array($v)) {
+                $D[] = array(self::hashToDatasource($v), $k);
+            } elseif (is_string($v)) {
+                $D[] = array($k, $v);
+            }
+        }
+
+        return $D;
     }
 
 }
