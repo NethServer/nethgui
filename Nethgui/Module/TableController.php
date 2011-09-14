@@ -171,6 +171,8 @@ class Nethgui_Module_TableController extends Nethgui_Core_Module_Controller
      * This callback template is invoked if the current view is not defined.
      * @param Nethgui_Renderer_Abstract $view
      * @return Nethgui_Renderer_WidgetInterface
+     *
+     * @todo refactor into parent class
      */
     public function renderDefault(Nethgui_Renderer_Abstract $view)
     {
@@ -222,6 +224,9 @@ class Nethgui_Module_TableController extends Nethgui_Core_Module_Controller
         return $widget;
     }
 
+    /**
+     * @todo refactor into parent class
+     */
     public function prepareView(Nethgui_Core_ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
