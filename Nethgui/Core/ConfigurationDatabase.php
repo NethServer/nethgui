@@ -3,7 +3,7 @@
  * Nethgui
  *
  * @package Core
- * @author Giacomo Sanchietti 
+ * @author Giacomo Sanchietti <giacomo.sanchietti@nethesis.it>
  */
 
 /**
@@ -128,9 +128,9 @@ class Nethgui_Core_ConfigurationDatabase implements Nethgui_Authorization_Policy
                 $line = trim($line);
                 if($line)
 		{
-                    $tokens = split("=", $line);
+                    $tokens = explode("=", $line);
                     $key = $tokens[0];
-                    $tokens = split("\|", $tokens[1]);
+                    $tokens = explode("\|", $tokens[1]);
                     if($type && $tokens[0] != $type)
                        continue;
                     if($filter && stristr($key, $filter) === FALSE)
@@ -165,7 +165,7 @@ class Nethgui_Core_ConfigurationDatabase implements Nethgui_Authorization_Policy
         $output = shell_exec($this->command . " " . $this->db . " get " . escapeshellarg($key));
         if ($output != "")
         {
-            $tokens = split("\|", $output);
+            $tokens = explode("\|", $output);
             for ($i = 1; $i <= count($tokens); $i ++ ) { //skip type
                 if (isset($tokens[$i])) //avoid outbound tokens
                     $result[trim($tokens[$i])] = trim($tokens[ ++ $i]);
