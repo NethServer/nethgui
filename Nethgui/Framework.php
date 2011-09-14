@@ -345,8 +345,8 @@ class Nethgui_Framework
      */
     static public function autoloader($className)
     {
-        /* Skip CodeIgniter "namespace" */
-        if (substr($className, 0, 3) == 'CI_') {
+        /* Skip CodeIgniter "namespace", "configuration" */
+        if (substr($className, 0, 3) == 'CI_' || $className === 'configuration') {
             return;
         }
         $classPath = str_replace("_", "/", $className) . '.php';
