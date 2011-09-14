@@ -29,6 +29,7 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
             | self::LABEL_ABOVE
             | self::LABEL_LEFT
             | self::LABEL_RIGHT
+            | self::LABEL_NONE
         ;
 
         $this->inheritFlags = $inheritFlags & $inheritableFlagsMask;

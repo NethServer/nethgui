@@ -21,28 +21,29 @@
  */
 interface Nethgui_Renderer_Abstract
 {
-    const LABEL_LEFT = 0x01;
-    const LABEL_RIGHT = 0x02;
-    const LABEL_ABOVE = 0x04;
+    const LABEL_NONE = 0x1;
+    const LABEL_LEFT = 0x2;
+    const LABEL_RIGHT = 0x4;
+    const LABEL_ABOVE = 0x8;
+   
+    const STATE_CHECKED = 0x10;
+    const STATE_DISABLED = 0x20;
+    const STATE_VALIDATION_ERROR = 0x40;
+    const STATE_READONLY = 0x80;
 
-    const STATE_CHECKED = 0x08;
-    const STATE_DISABLED = 0x10;
-    const STATE_VALIDATION_ERROR = 0x20;
-    const STATE_READONLY = 0x40;
+    const BUTTON_SUBMIT = 0x100;
+    const BUTTON_CANCEL = 0x200;
+    const BUTTON_RESET = 0x400;
+    const BUTTON_LINK = 0x800;
+    const BUTTON_CUSTOM = 0x1000;
 
-    const BUTTON_SUBMIT = 0x80;
-    const BUTTON_CANCEL = 0x100;
-    const BUTTON_RESET = 0x200;
-    const BUTTON_LINK = 0x400;
-    const BUTTON_CUSTOM = 0x800;
-
-    const DIALOG_MODAL = 0x1000;
-    const DIALOG_SUCCESS = 0x4000;
-    const DIALOG_WARNING = 0x8000;
-    const DIALOG_ERROR = 0x10000;
+    const DIALOG_MODAL = 0x4000;
+    const DIALOG_SUCCESS = 0x8000;
+    const DIALOG_WARNING = 0x10000;
+    const DIALOG_ERROR = 0x20000;
     
-    const SELECTOR_MULTIPLE = 0x20000;
-    const SELECTOR_DROPDOWN = 0x40000;
+    const SELECTOR_MULTIPLE = 0x40000;
+    const SELECTOR_DROPDOWN = 0x80000;
     
     /**
      * Create a member inclusion

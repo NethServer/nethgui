@@ -15,6 +15,7 @@ abstract class Nethgui_Widget_Xhtml implements Nethgui_Renderer_WidgetInterface
     static private $instance = 0;
     private $children = array();
     private $attributes = array();
+
     /**
      * @var Nethgui_Core_ViewInterface 
      */
@@ -191,27 +192,30 @@ abstract class Nethgui_Widget_Xhtml implements Nethgui_Renderer_WidgetInterface
         }
 
         $wrapperClass = 'labeled-control';
-
-        if ($flags & Nethgui_Renderer_Abstract::LABEL_RIGHT) {
-            $wrapperClass .= ' label-right';
-        } elseif ($flags & Nethgui_Renderer_Abstract::LABEL_ABOVE) {
-            $wrapperClass .= ' label-above';
-        } else {
-            $wrapperClass .= ' label-left';
-        }
-
         $content = '';
 
-        $content .= $this->openTag('div', array('class' => $wrapperClass));
-
-        if ($flags & Nethgui_Renderer_Abstract::LABEL_RIGHT) {
+        if ($flags & Nethgui_Renderer_Abstract::LABEL_NONE) {
             $content .= $this->controlTag($tag, $name, $flags, $cssClass, $attributes, $tagContent);
-            $content .= $this->label($label, $controlId);
         } else {
-            $content .= $this->label($label, $controlId);
-            $content .= $this->controlTag($tag, $name, $flags, $cssClass, $attributes, $tagContent);
+
+            if ($flags & Nethgui_Renderer_Abstract::LABEL_RIGHT) {
+                $wrapperClass .= ' label-right';
+                $content .= $this->openTag('div', array('class' => $wrapperClass));
+                $content .= $this->controlTag($tag, $name, $flags, $cssClass, $attributes, $tagContent);
+                $content .= $this->label($label, $controlId);
+                $content .= $this->closeTag('div');
+            } else {
+                if ($flags & Nethgui_Renderer_Abstract::LABEL_ABOVE) {
+                    $wrapperClass .= ' label-above';
+                } elseif ($flags & Nethgui_Renderer_Abstract::LABEL_LEFT) {
+                    $wrapperClass .= ' label-left';
+                }
+                $content .= $this->openTag('div', array('class' => $wrapperClass));
+                $content .= $this->label($label, $controlId);
+                $content .= $this->controlTag($tag, $name, $flags, $cssClass, $attributes, $tagContent);
+                $content .= $this->closeTag('div');
+            }
         }
-        $content .= $this->closeTag('div');
 
         return $content;
     }
@@ -290,7 +294,7 @@ abstract class Nethgui_Widget_Xhtml implements Nethgui_Renderer_WidgetInterface
 
     protected function applyDefaultLabelAlignment($flags, $default)
     {
-        return (Nethgui_Renderer_Abstract::LABEL_ABOVE | Nethgui_Renderer_Abstract::LABEL_LEFT | Nethgui_Renderer_Abstract::LABEL_RIGHT) & $flags ? $flags : $flags | $default;
+        return (Nethgui_Renderer_Abstract::LABEL_NONE | Nethgui_Renderer_Abstract::LABEL_ABOVE | Nethgui_Renderer_Abstract::LABEL_LEFT | Nethgui_Renderer_Abstract::LABEL_RIGHT) & $flags ? $flags : $flags | $default;
     }
 
     /**
@@ -321,7 +325,6 @@ abstract class Nethgui_Widget_Xhtml implements Nethgui_Renderer_WidgetInterface
         }
 
         return $this->view->getClientEventTarget($this->getAttribute('name'));
-        
     }
 
 }
