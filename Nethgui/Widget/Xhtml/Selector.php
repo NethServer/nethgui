@@ -61,7 +61,7 @@ class Nethgui_Widget_Xhtml_Selector extends Nethgui_Widget_Xhtml
     private function renderDropdown($name, $value, $flags, $choices, $dataSourceName)
     {
         $flags = $this->applyDefaultLabelAlignment($flags, Nethgui_Renderer_Abstract::LABEL_ABOVE);
-        if ($flags & Nethgui_Renderer_Abstract::STATE_DISABLED) {
+        if (count($choices) == 0) {
             $tagContent = '<option selected="selected" value=""/>';
         } else {
             $tagContent = $this->generateSelectorContentDropdown($name, $value, $choices, $flags);
@@ -91,15 +91,11 @@ class Nethgui_Widget_Xhtml_Selector extends Nethgui_Widget_Xhtml
             'class' => 'choices ' . $this->view->getClientEventTarget($dataSourceName),
             'id' => $this->view->getUniqueId($dataSourceName)
         );
-
-        $selectorEnabled = ! ($flags & Nethgui_Renderer_Abstract::STATE_DISABLED);
-
+      
         $content .= $this->openTag('div', $choicesAttributes);
         // This hidden control holds the control name prefix:
-        $content .= $this->controlTag('input', $name, $flags, '', array('type' => 'hidden'));
-        if ($selectorEnabled && count($choices) > 0) {
-            $content .= $this->generateSelectorContentWidgetList($name, $value, $choices, $flags);
-        }
+        $content .= $this->controlTag('input', $name, $flags, '', array('type' => 'hidden'));        
+        $content .= $this->generateSelectorContentWidgetList($name, $value, $choices, $flags);        
         $content .= $this->closeTag('div');
         $content .= $this->closeTag('fieldset');
         return $content;
@@ -115,6 +111,10 @@ class Nethgui_Widget_Xhtml_Selector extends Nethgui_Widget_Xhtml
     private function generateSelectorContentWidgetList($name, $value, $choices, $flags)
     {
         $content = '';
+
+        if(count($choices) == 0) {
+            return '';
+        }
 
         $content .= $this->openTag('ul');
         foreach (array_values($choices) as $index => $choice) {
