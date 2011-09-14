@@ -44,8 +44,16 @@ class Nethgui_Core_Validator implements Nethgui_Core_ValidatorInterface
         } else {
             $set = $args;
         }
+      
+        if(count($set) > 5) {
+            $setToShow = array_splice($set, 0, 3);
+            $setToShow[] = '... ';
+            $setToShow = array_merge($setToShow, array_splice($set, -2, 2));
+        } else {
+            $setToShow = $set;
+        }
 
-        $messageTemplate = array('member of [${0}]', array('${0}' => implode(', ', $set)));
+        $messageTemplate = array('member of {${0}}', array('${0}' => implode(', ', $setToShow)));
 
         return $this->addToChain(__FUNCTION__, $messageTemplate, $set);
     }
