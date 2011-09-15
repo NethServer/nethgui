@@ -89,11 +89,6 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
     protected $autosave;
 
     /**
-     * @var ArrayObject
-     */
-    private $immutables;
-
-    /**
      * Validator configuration. Holds declared parameters.
      * @var array
      */
@@ -119,7 +114,6 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
     {
         parent::__construct($identifier);
         $this->parameters = new Nethgui_Core_ParameterSet();
-        $this->immutables = new ArrayObject();
         $this->autosave = TRUE;
     }
 
@@ -175,7 +169,12 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
     }
 
     /**
-     * The given $eventName is required to be signalled after any database change
+     * Enqueue an event to be signalled lately
+     * 
+     * The given $eventName is required to be signalled after 
+     * all database changes.
+     *
+     * @see signalAllEventsFinally()
      * @param string $eventName
      * @param array $eventArgs Arguments to the event. You can pass a callback function as argument provider. The callback will be invoked with the event name as first argument.
      * @param Nethgui_Core_EventObserverInterface $observer Optional
@@ -229,12 +228,15 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
     }
 
     /**
-     * Event signalling routine
-     * @see requireEvent
+     * Raise enqueued events.
+     *
+     * Signals all required events, flushing the event queue.
+     *
+     * @see requireEvent()
      */
     protected function signalAllEventsFinally()
     {
-        foreach ($this->requiredEvents as $eventCall) {
+        while ($eventCall = array_shift($this->requiredEvents)) {
             $this->getHostConfiguration()->signalEventFinally($eventCall[0], $eventCall[1], $eventCall[2]);
         }
     }
@@ -301,7 +303,7 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
     {
         $readerCallback = 'read' . ucfirst($parameterName);
         $writerCallback = 'write' . ucfirst($parameterName);
-            
+
         if (is_callable(array($this, $readerCallback))) { // NOTE: writer is optional, see MultipleAdapter
             if (empty($args)) {
                 $args = array();
@@ -334,42 +336,6 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
         }
 
         return $adapterObject;
-    }
-
-    /**
-     * Immutable parameters cannot be changed after declaration.  The View
-     * associated to the Module receives immutable parameters only in
-     * SERVER view.
-     *
-     * Enumerations and constants are examples of immutable parameters.
-     *
-     * @deprecated
-     * @see prepareView()
-     * @param string $immutableName
-     * @param mixed $immutableValue
-     */
-    protected function declareImmutable($immutableName, $immutableValue)
-    {
-        if (isset($this->immutables[$immutableName])) {
-            throw new Exception('Immutable `' . $immutableName . '` is already declared.');
-        }
-
-        if (is_object($immutableValue)) {
-            $immutableValue = clone $immutableValue;
-        }
-
-        $this->immutables[$immutableName] = $immutableValue;
-    }
-
-    /**
-     *
-     * @deprecated
-     * @param type $immutableName
-     * @return type
-     */
-    protected function getImmutableValue($immutableName)
-    {
-        return $this->immutables[$immutableName];
     }
 
     public function bind(Nethgui_Core_RequestInterface $request)
@@ -421,7 +387,6 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
         parent::prepareView($view, $mode);
         $view->copyFrom($this->parameters);
         if ($mode === self::VIEW_SERVER) {
-            $view->copyFrom($this->immutables);
             $view['__invalidParameters'] = $this->invalidParameters;
         }
     }
@@ -435,7 +400,8 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
         return $this->request;
     }
 
-    protected function hasInputForm() {
+    protected function hasInputForm()
+    {
         return $this->getParent() !== NULL;
     }
 
