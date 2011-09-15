@@ -75,6 +75,17 @@ abstract class Nethgui_Core_Module_Composite extends Nethgui_Core_Module_Abstrac
             $childModule->setHostConfiguration($hostConfiguration);
         }
     }
+
+    protected function hasInputForm()
+    {
+        foreach($this->getChildren() as $module) {
+            if($module instanceof Nethgui_Core_Module_Abstract
+                && $module->hasInputForm()) {
+                return TRUE;
+            }
+        }
+        return FALSE;
+    }
     
 }
 
