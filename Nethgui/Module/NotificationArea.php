@@ -105,7 +105,7 @@ class Nethgui_Module_NotificationArea extends Nethgui_Core_Module_Standard imple
             list($fieldName, $errorInfo, $module) = $error;
             $eV = $validationView->spawnView($module);
             $eV->setTemplate(array($this, 'renderValidationError'));
-            $eV['errorInfo'] = $eV->translate('valid_' . $errorInfo[0], $errorInfo[1]);
+            $eV['errorInfo'] = $eV->translate($errorInfo[0], $errorInfo[1]);
             $eV['fieldName'] = $fieldName;
             $eV['fieldId'] = $eV->getUniqueId($fieldName);
             $eV['fieldLabel'] = $eV->translate($fieldName . '_label');

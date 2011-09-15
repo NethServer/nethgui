@@ -236,7 +236,7 @@ class Nethgui_Core_Validator implements Nethgui_Core_ValidatorInterface
                 }
 
                 if ( ! isset($expression[3]) || ! is_array($expression[3])) {
-                    $expression[3] = array($expression[0], array());
+                    $expression[3] = array('valid_' . $expression[0], array());
                 }
 
                 array_unshift($args, $value);
