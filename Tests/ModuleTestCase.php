@@ -30,12 +30,14 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
      * @var Nethgui_Core_Module_Standard
      */
     protected $object;
+
     /**
      * Module input parameters in the form name => value
      *
      * @var array
      */
     protected $moduleParameters;
+
     /**
      * View output parameters. An ordered array of couples <name, value>. Must be
      * in the same order of input parameters.
@@ -43,6 +45,7 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
      * @var array
      */
     protected $expectedView;
+
     /**
      * An array representing the sequence of operations performd on database.
      * Each element is a n-uple <database, function, args, return_value>.
@@ -50,18 +53,26 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
      * @var array
      */
     protected $expectedDb;
+
     /**
      * Events triggered by the module. Currently not used.
      * @todo
      * @var array
      */
     protected $expectedEvents;
+
     /**
      * Controls return value of Nethgui_Core_Request::isSubmitted() mock
      * @var bool
      */
     protected $submittedRequest;
+
+    /**
+     * Collection of database mock objects
+     * @var array
+     */
     private $databaseMocks;
+
     /**
      * The string is prefixed to values returned by Nethgui_Core_View::buildUrl()
      * @var string
@@ -69,14 +80,20 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
     protected $urlReturnPrefix = 'http://localhost/';
 
     /**
+     * User mock object
+     * @var PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $userMock;
+
+    /**
      * @return Nethgui_Core_HostConfigurationInterface
      */
     protected function provideHostConfiguration()
     {
         $configurationMock = $this->getMockBuilder('Nethgui_Core_HostConfiguration')
-                ->disableOriginalConstructor()
-                ->setMethods(array('getDatabase'))
-                ->getMock()
+            ->disableOriginalConstructor()
+            ->setMethods(array('getDatabase'))
+            ->getMock()
         ;
 
         // Mocking getDatabase():
@@ -112,18 +129,18 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
     {
         if ( ! isset($this->databaseMocks[$database])) {
             $databaseMock = $this->getMockBuilder('Nethgui_Core_ConfigurationDatabase')
-                    ->disableOriginalConstructor()
-                    ->setMethods(array(
-                        'getProp',
-                        'setProp',
-                        'delProp',
-                        'deleteKey',
-                        'setKey',
-                        'getKey',
-                        'getType',
-                        'setType',
-                        'getAll'))
-                    ->getMock();
+                ->disableOriginalConstructor()
+                ->setMethods(array(
+                    'getProp',
+                    'setProp',
+                    'delProp',
+                    'deleteKey',
+                    'setKey',
+                    'getKey',
+                    'getType',
+                    'setType',
+                    'getAll'))
+                ->getMock();
 
             $index = 0;
             foreach ($this->expectedDb as $op) {
@@ -132,7 +149,7 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
                 }
 
                 $method = $databaseMock->expects($this->at($index))
-                        ->method($op[1]);
+                    ->method($op[1]);
                 $with = call_user_func_array(array($method, 'with'), is_array($op[2]) ? $op[2] : array($op[2]));
                 $with->will($this->returnValue($op[3]));
                 $index ++;
@@ -151,9 +168,9 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
     protected function provideRequest()
     {
         $requestMock = $this->getMockBuilder("Nethgui_Core_Request")
-                ->disableOriginalConstructor()
-                ->setMethods(array('hasParameter', 'getParameter', 'isEmpty', 'isSubmitted', 'getParameters'))
-                ->getMock()
+            ->disableOriginalConstructor()
+            ->setMethods(array('hasParameter', 'getParameter', 'isEmpty', 'isSubmitted', 'getParameters'))
+            ->getMock()
         ;
 
         if (empty($this->moduleParameters)) {
@@ -209,12 +226,12 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
      *
      * @return Nethgui_Core_ViewInterface
      */
-    public function spawnView(Nethgui_Core_ModuleInterface $module, $expectedOffsetSet)
+    public function spawnView(Nethgui_Core_ModuleInterface $module, $register = FALSE, $expectedOffsetSet = array())
     {
         $viewMock = $this->getMockBuilder('Nethgui_Core_View')
-                ->setMethods(array('offsetSet', 'buildUrl', 'spawnView'))
-                ->setConstructorArgs(array($module))
-                ->getMock()
+            ->setMethods(array('offsetSet', 'buildUrl', 'spawnView'))
+            ->setConstructorArgs(array($module))
+            ->getMock()
         ;
 
         foreach ($expectedOffsetSet as $index => $args) {
@@ -223,12 +240,10 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
                 ->with($args[0], $args[1]);
         }
 
-
         $viewMock->expects($this->any())
             ->method('spawnView')
             ->withAnyParameters()
             ->will($this->returnCallback(array($this, 'spawnView')));
-
 
         $viewMock->expects($this->any())
             ->method('buildUrl')
@@ -246,17 +261,14 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
     protected function provideValidationReport()
     {
         $reportMock = $this->getMockBuilder('Nethgui_Module_NotificationArea')
-                ->getMock();
+            ->setConstructorArgs(array($this->userMock))
+            ->getMock();
 
         $reportMock->expects($this->never())
             ->method('addError')
             ->withAnyParameters();
 
         return $reportMock;
-    }
-    
-    protected function provideNotificationCarrier() {
-        return $this->getMock('Nethgui_Module_NotificationArea');
     }
 
     protected function setUp()
@@ -267,6 +279,15 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
         $this->expectedEvents = array();
         $this->databaseMocks = array();
         $this->submittedRequest = TRUE;
+        $this->userMock = $this->provideUser();
+    }
+
+    /**
+     *
+     * @return PHPUnit_Framework_MockObject_MockObject
+     */
+    protected function provideUser() {
+        return $this->getMock('Nethgui_Core_UserInterface');
     }
 
     protected function runModuleTestProcedure($viewMode = Nethgui_Core_ModuleInterface::VIEW_SERVER)
@@ -276,8 +297,8 @@ abstract class ModuleTestCase extends PHPUnit_Framework_TestCase
         $this->object->bind($this->provideRequest());
         $this->object->validate($this->provideValidationReport());
 
-        $this->object->process($this->provideNotificationCarrier());        
-        $this->object->prepareView($this->spawnView($this->object, $this->expectedView), $viewMode);       
+        $this->object->process();
+        $this->object->prepareView($this->spawnView($this->object, FALSE, $this->expectedView), $viewMode);
     }
 
 }
