@@ -79,7 +79,7 @@ class Nethgui_Framework
         }
 
         if (is_callable($viewName)) {
-// Callback
+            // Callback
             $viewOutput = (string) call_user_func_array($viewName, $viewState);
         } else {
             $ciViewPath = '../../../' . str_replace('_', '/', $viewName);
@@ -91,7 +91,7 @@ class Nethgui_Framework
                 return '';
             }
 
-// PHP script
+            // PHP script
             $viewOutput = (string) $this->controller->load->view($ciViewPath, $viewState, true);
         }
 
@@ -148,8 +148,8 @@ class Nethgui_Framework
 
         $path = explode('/', $path);
 
-// FIXME: the controller name must not be added
-// if url-rewriting (or similar) is enabled
+        // FIXME: the controller name must not be added
+        // if url-rewriting (or similar) is enabled
         array_unshift($path, $this->getControllerName());
 
         $path = array_reverse($path);
@@ -263,17 +263,17 @@ class Nethgui_Framework
         while (($catalog = array_pop($languageCatalogs)) !== NULL) {
 
             if (is_array($catalog)) {
-// push nested catalog stack elements
+                // push nested catalog stack elements
                 $languageCatalogs = array_merge($languageCatalogs, $catalog);
                 continue;
             }
 
-// If catalog is missing load it
+            // If catalog is missing load it
             if ( ! isset($this->catalogs[$languageCode][$catalog])) {
                 $this->loadLanguageCatalog($languageCode, $catalog);
             }
 
-// If key exists break
+            // If key exists break
             if (isset($this->catalogs[$languageCode][$catalog][$key])) {
                 $translation = $this->catalogs[$languageCode][$catalog][$key];
                 break;
@@ -283,7 +283,7 @@ class Nethgui_Framework
         }
 
         if ($translation === NULL) {
-// By default prepare an identity-translation
+            // By default prepare an identity-translation
             $translation = $key;
             if (ENVIRONMENT == 'development') {
                 $this->logMessage("Missing `$languageCode` translation for `$key`. Catalogs: " . implode(', ', $attempts), 'debug');
@@ -394,9 +394,9 @@ class Nethgui_Framework
      */
     public function dispatch($currentModuleIdentifier, $arguments = array())
     {
-// Replace "index" request with a  default module value
+        // Replace "index" request with a  default module value
         if ($currentModuleIdentifier == 'index') {
-// TODO read from configuration
+            // TODO read from configuration
             $this->redirect('dispatcher/User');
         }
 
@@ -411,7 +411,7 @@ class Nethgui_Framework
          * from Nethgui_Framework.
          */
         $hostConfiguration = new Nethgui_Core_HostConfiguration($user);
-// TODO: set a configuration parameter for the application path
+        // TODO: set a configuration parameter for the application path
         $appPath = realpath(dirname(__FILE__) . '/../NethServer');
         $this->languageCatalogStack[] = basename($appPath);
         $topModuleDepot = new Nethgui_Core_TopModuleDepot($appPath, $hostConfiguration, $user);
@@ -425,13 +425,13 @@ class Nethgui_Framework
         $topModuleDepot->setPolicyDecisionPoint($pdp);
 
         if ($request->isSubmitted()) {
-// Multiple modules can be called in the same POST request.
+            // Multiple modules can be called in the same POST request.
             $moduleWakeupList = $request->getParameters();
         } else {
             $moduleWakeupList = array();
         }
 
-// Ensure the current module is the first of the list (as required by World Module):
+        // Ensure the current module is the first of the list (as required by World Module):
         array_unshift($moduleWakeupList, $currentModuleIdentifier);
         $moduleWakeupList = array_unique($moduleWakeupList);
 
@@ -440,7 +440,7 @@ class Nethgui_Framework
 
         $topModuleDepot->registerModule($notificationManager);
 
-// The World module is a non-processing container.
+        // The World module is a non-processing container.
         $worldModule = new Nethgui_Module_World();
         $worldModule->setHostConfiguration($hostConfiguration);
 
@@ -454,7 +454,7 @@ class Nethgui_Framework
             if ($module instanceof Nethgui_Core_ModuleInterface) {
                 $worldModule->addModule($module);
 
-// Module initialization
+                // Module initialization
                 $module->initialize();
             } else {
                 show_404();
@@ -465,17 +465,17 @@ class Nethgui_Framework
                 continue;
             }
 
-// Pass request parameters to the handler
+            // Pass request parameters to the handler
             $module->bind(
                 $request->getParameterAsInnerRequest(
                     $moduleIdentifier, ($moduleIdentifier === $currentModuleIdentifier) ? $request->getArguments() : array()
                 )
             );
 
-// Validate request
+            // Validate request
             $module->validate($notificationManager);
 
-// Skip process() step, if $module has added some validation errors:
+            // Skip process() step, if $module has added some validation errors:
             if ($notificationManager->hasValidationErrors()) {
                 continue;
             }
@@ -485,7 +485,7 @@ class Nethgui_Framework
 
         $worldModule->addModule($notificationManager);
 
-// Finally, signal "final" events
+        // Finally, signal "final" events
         $hostConfiguration->signalFinalEvents();
 
         /**
@@ -493,8 +493,8 @@ class Nethgui_Framework
          * See RFC2616, section 10.4 "Client Error 4xx"
          */
         if ($notificationManager->hasValidationErrors()) {
-// FIXME: check if we are in FAST-CGI module:
-// @see http://php.net/manual/en/function.header.php
+            // FIXME: check if we are in FAST-CGI module:
+            // @see http://php.net/manual/en/function.header.php
             header("HTTP/1.1 400 Request validation error");
         }
 
@@ -517,9 +517,7 @@ class Nethgui_Framework
             echo json_encode($view->getClientEvents());
         }
 
-
-
-// Control reaches this point only if no redirect occurred.
+        // Control reaches this point only if no redirect occurred.
         $notificationManager->dismissTransientDialogBoxes();
     }
 
