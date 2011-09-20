@@ -23,7 +23,7 @@ class Nethgui_Core_HostConfigurationTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new Nethgui_Core_HostConfiguration(new Nethgui_Core_AlwaysAuthenticatedUser());
+        $this->object = new Nethgui_Core_HostConfiguration($this->getMock('Nethgui_Core_UserInterface'));
         $this->object->setPolicyDecisionPoint(new Nethgui_Authorization_PermissivePolicyDecisionPoint());
     }
 
@@ -45,22 +45,26 @@ class Nethgui_Core_HostConfigurationTest extends PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testSignalEvent()
+    public function testSignalEvent1()
     {
-        $this->assertEquals(false, $this->object->signalEvent("not-exist-event"));
-        $this->assertEquals(true, $this->object->signalEvent("nethgui-test"));
+        $exitStatusInfo = $this->object->signalEvent("not-exist-event");
+        $this->assertNotEquals(0, $exitStatusInfo->getExitStatus());
+    }
+
+    public function testSignalEvent2()
+    {
+        $exitStatusInfo = $this->object->signalEvent("nethgui-test");
+        $this->assertEquals(0, $exitStatusInfo->getExitStatus());
     }
 
     public function testGetMapAdapter()
     {
         $adapter = $this->object->getMapAdapter(
-                array($this, 'readCallback'),
-                array($this, 'writeCallback'),
-                array(
-                    array('testdb', 'testkey1'),
-                    array('testdb', 'testkey2', 'testpropA'),
-                    array('testdb', 'testkey3', 'testpropB'),
-                )
+            array($this, 'readCallback'), array($this, 'writeCallback'), array(
+            array('testdb', 'testkey1'),
+            array('testdb', 'testkey2', 'testpropA'),
+            array('testdb', 'testkey3', 'testpropB'),
+            )
         );
         $this->assertInstanceOf('Nethgui_Adapter_AdapterInterface', $adapter);
     }

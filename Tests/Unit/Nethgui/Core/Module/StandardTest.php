@@ -18,7 +18,7 @@ class Nethgui_Core_Module_StandardTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->object = new ConcreteStandardModule1();
+        $this->object = new Test_Unit_ConcreteStandardModule1();
     }
 
     public function testIsInitialized()
@@ -54,21 +54,22 @@ class Nethgui_Core_Module_StandardTest extends PHPUnit_Framework_TestCase
         $viewMock->expects($this->once())
             ->method('copyFrom')
             ->with($this->anything());
-        -
-            $this->object->prepareView($viewMock, Nethgui_Core_Module_Standard::VIEW_CLIENT);
+
+        $this->object->prepareView($viewMock, Nethgui_Core_Module_Standard::VIEW_CLIENT);
     }
 
     public function testPrepareView2()
     {
         $viewMock = $this->getMockBuilder('Nethgui_Core_View')
+            ->setMethods(array('copyFrom'))
             ->disableOriginalConstructor()
             ->getMock();
 
-        $viewMock->expects($this->exactly(2))
+        $viewMock->expects($this->once())
             ->method('copyFrom')
             ->with($this->anything());
-        
-            $this->object->prepareView($viewMock, Nethgui_Core_Module_Standard::VIEW_SERVER);
+
+        $this->object->prepareView($viewMock, Nethgui_Core_Module_Standard::VIEW_SERVER);
     }
 
     public function testGetLanguageCatalog()
@@ -78,7 +79,7 @@ class Nethgui_Core_Module_StandardTest extends PHPUnit_Framework_TestCase
 
 }
 
-class ConcreteStandardModule1 extends Nethgui_Core_Module_Standard
+class Test_Unit_ConcreteStandardModule1 extends Nethgui_Core_Module_Standard
 {
 
     public function initialize()

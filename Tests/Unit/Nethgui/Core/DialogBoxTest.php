@@ -47,7 +47,7 @@ class Nethgui_Core_DialogBoxTest extends PHPUnit_Framework_TestCase
     
     public function testGetMessage()
     {
-        $this->assertEquals('message', $this->object->getMessage());
+        $this->assertEquals(array('message', array()), $this->object->getMessage());
     }
 
     /**

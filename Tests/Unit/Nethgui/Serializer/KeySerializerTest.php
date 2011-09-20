@@ -11,11 +11,11 @@
  * @package Tests
  * @subpackage Unit
  */
-class Nethgui_Core_KeySerializerTest extends PHPUnit_Framework_TestCase
+class Nethgui_Serializer_KeySerializerTest extends PHPUnit_Framework_TestCase
 {
 
     /**
-     * @var Nethgui_Core_KeySerializer
+     * @var Nethgui_Serializer_KeySerializer
      */
     protected $object;
 

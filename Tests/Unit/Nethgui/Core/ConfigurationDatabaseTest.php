@@ -24,7 +24,7 @@ class Nethgui_Core_ConfigurationDatabaseTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new Nethgui_Core_ConfigurationDatabase('testdb', new Nethgui_Core_AlwaysAuthenticatedUser());
+        $this->object = new Nethgui_Core_ConfigurationDatabase('testdb', $this->getMock('Nethgui_Core_UserInterface'));
         $this->object->setPolicyDecisionPoint(new Nethgui_Authorization_PermissivePolicyDecisionPoint());
     }
 

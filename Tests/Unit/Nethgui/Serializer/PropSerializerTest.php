@@ -15,7 +15,7 @@ class Nethgui_Serializer_PropSerializerTest extends PHPUnit_Framework_TestCase
 {
 
     /**
-     * @var Nethgui_Core_PropSerializer
+     * @var Nethgui_Serializer_PropSerializer
      */
     protected $object;
 
