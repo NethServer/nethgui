@@ -14,7 +14,7 @@ interface Nethgui_Core_ValidationReportInterface
     /**
      * @param Nethgui_Core_ModuleInterface $module
      * @param string $parameterName
-     * @param string $message
+     * @param string|array $message The message text (not translated)  or a couple [(string) $messageTemplate, (array) $messageArgs]
      */
     public function addValidationError(Nethgui_Core_ModuleInterface $module, $parameterName, $message);
 

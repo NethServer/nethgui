@@ -206,6 +206,9 @@ class Nethgui_Module_NotificationArea extends Nethgui_Core_Module_Standard imple
 
     public function addValidationError(Nethgui_Core_ModuleInterface $module, $fieldId, $message)
     {
+        if(is_string($message)) {
+            $message = array($message, array());
+        }            
         $this->errors[] = array($fieldId, $message, $module);
     }
 
