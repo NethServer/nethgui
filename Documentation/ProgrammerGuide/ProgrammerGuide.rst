@@ -690,8 +690,8 @@ PHP file, this time under ``GearUi/Template/`` directory,
    ?>
    
 
-.. _ModuleTestCase: 
-.. _basic testing class: http://nethgui.nethesis.it/docs/Tests/ModuleTestCase.html
+.. _Test_Tool_ModuleTestCase: 
+.. _basic testing class: http://nethgui.nethesis.it/docs/Tests/Tool/ModuleTestCase.html
 .. _Nethgui_Core_Module_Standard: ../Api/Core/Module/Nethgui_Core_Module_Standard.html
 .. _Nethgui_Core_Module_Composite: ../Api/Core/Module/Nethgui_Core_Module_Composite.html
 .. _initialize: ../Api/Core/Module/Nethgui_Core_Module_Standard.html#initialize
@@ -713,7 +713,7 @@ must test OnOffService in three scenarios:
 
 We can check if OnOffService module is correct by writing a
 PHPUnit_ test case. Nethgui comes with a basic class to be extended to
-build module tests upon it: ModuleTestCase_.
+build module tests upon it: Test_Tool_ModuleTestCase_.
 
 As we are testing a module of the hypothetical *GearUi* project , we
 put our test case class under ``Tests/Unit/GearUi/Module/`` directory;
@@ -727,69 +727,63 @@ In ``OnOffServiceTest.php`` we write::
    {
        protected function setUp() 
        {
-           parent::setUp(); 
            $this->object = new GearUi_Module_OnOffService();
        }
 
        public function testTurnOn() 
        {
-           // set the input parameter value:
-           $this->moduleParameters = array(
-              'serviceStatus'=>'enabled'
-           );
+           $env = new Test_Tool_ModuleTestEnvironment();
 
-           $this->expectedView = array(
-                // expect a view state with a "serviceStatus" element :
-                array('serviceStatus', 'enabled')
-           );
+           // 1. Set the input parameter value:
+           $env->setRequest(array('serviceStatus'=>'enabled'));
 
-           $this->expectedDb = array(
+           // 2. Expect "serviceStatus" has value "enabled" in view state:
+           $env->setView(array('serviceStatus', 'enabled'));
 
-                // expect a getprop call returning "disabled":
-                array('myconf', self::DB_GET_PROP, array('onoff', 'status'), 'disabled'),
+           // 3. Create a mock object to simulate the real database object           
+           $myConfDb0 = new Test_Tool_MockState();
 
-                // expect a setprop call setting value to "enabled":
-                array('myconf', self::DB_SET_PROP, array('onoff', array('status' => 'enabled')), TRUE),
-           );
+           // 3.1 Return "disabled" on getProp('onoff', 'status'):
+           $myConfDb0->set(Test_Tool_DB::getProp('onoff', 'status'), 'disabled');
 
-           $this->runModuleTestProcedure();
+           // 3.2 Enter a new state on setProp():
+           $myConfDb1 = $myConfDb0->transition(Test_Tool_DB::setProp('onoff', 'status', 'enabled'), TRUE);
+
+           // 3.3 Mark state as "final":
+           $myConfDb1->setFinal();
+
+           // 3.4 Set the initial state of `myconf` database:
+           $env->setDatabase('myconf', $myConfDb0);
+
+           $this->runModuleTest($this->object, $env);
        }
       
        public function testTurnOff() 
        {
-           $this->markTestIncomplete();                      // skip test
+           $this->markTestIncomplete();                      
        }
 
        public function testNoAction() 
        {
-           $this->markTestIncomplete();                      // skip test
+           $this->markTestIncomplete();                      
        }
 
    } // end of class
 
 Consider the body of ``testTurnOn()`` method.  To run the test
-procedure we first set up three member variables:
+procedure we have to create and set up a `test environment object`_.
 
-* moduleParameters_
+* setRequest() defines the request object contents that will be passed to the module bind() method. 
 
-* expectedView_
+* setView() defines the expected view parameters value after the module prepareView() method.
 
-* expectedDb_
+* setDatabase() defines the states of a specific database: each read
+  and write operation must be properly defined. See
+  `Test_Tool_MockState`_ for details.
 
-In moduleParameters_ we assign to each parameter the corresponding
-input value.
-
-In expectedView_ we prepare an array of couples ``<name, value>``.
-The module is expected to transfer to the View layer exactly that list
-of values in that order.
-
-In expectedDb_ we specify the list of low level database calls the
-module must execute.
-
+.. _`Test_Tool_MockState`: ../Api
+.. _`test environment object`: ../Api
 .. _PHPUnit: http://www.phpunit.de/manual/3.5/en/index.html
-.. _expectedDb: ../Api/Tests/ModuleTestCase.html#$expectedDb
-.. _expectedView: ../Api/Tests/ModuleTestCase.html#$expectedView
-.. _moduleParameters: ../Api/Tests/ModuleTestCase.html#$moduleParameters
 .. _`previous section example`: `Implementing a simple Module`_
 
 Localization
