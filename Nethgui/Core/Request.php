@@ -102,7 +102,7 @@ class Nethgui_Core_Request implements Nethgui_Core_RequestInterface
         return $instance;
     }
 
-    private function __construct(Nethgui_Core_UserInterface $user, $data, $submitted, $arguments)
+    protected function __construct(Nethgui_Core_UserInterface $user, $data, $submitted, $arguments)
     {
         if (is_null($data)) {
             $data = array();
