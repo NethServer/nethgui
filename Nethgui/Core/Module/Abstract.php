@@ -25,7 +25,7 @@ abstract class Nethgui_Core_Module_Abstract implements Nethgui_Core_ModuleInterf
      */
     private $initialized = FALSE;
     /**
-     * @var HostConfigurationInterface
+     * @var Nethgui_Core_HostConfigurationInterface
      */
     private $hostConfiguration;
     

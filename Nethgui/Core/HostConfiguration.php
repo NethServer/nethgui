@@ -123,16 +123,14 @@ class Nethgui_Core_HostConfiguration implements Nethgui_Core_HostConfigurationIn
      * TODO: authorize user action on PDP.
      *
      * @param string $event Event name
-     * @param array $argv Optional arguments array.
-     * @param array &$output Optional output array. If the output argument is present, then the specified array will be filled with every line of output from the event.
-     * @access public
-     * @return boolean true on success, false otherwise
+     * @param array $arguments Optional arguments array.
+     * @return Nethgui_Core_SystemCommandInterface
      */
-    public function signalEvent($event, $argv = array(), &$output=array())
+    public function signalEvent($event, $arguments = array())
     {
-        array_unshift($argv, $event);
-        exec('/usr/bin/sudo /sbin/e-smith/signal-event ' . implode(' ', array_map('escapeshellarg', $argv)), $output, $ret);
-        return ($ret == 0);
+        array_unshift($arguments, $event);
+        $command = '/usr/bin/sudo /sbin/e-smith/signal-event ' . implode(' ', array_map('escapeshellarg', $arguments));
+        return $this->exec($command);
     }
 
     public function signalEventFinally($event, $argv = array(), $observer = NULL)
@@ -186,7 +184,6 @@ class Nethgui_Core_HostConfiguration implements Nethgui_Core_HostConfigurationIn
             return NULL;
         }
         foreach ($this->eventQueue as $eventData) {
-            $output = array();
             $args = array();
 
             foreach ($eventData['args'] as $arg) {
@@ -199,13 +196,13 @@ class Nethgui_Core_HostConfiguration implements Nethgui_Core_HostConfigurationIn
                 }
                 $args[] = (String) $arg;
             }
-            $exitStatus = $this->signalEvent($eventData['name'], $args, $output);
+            $exitInfo = $this->signalEvent($eventData['name'], $args);
             foreach ($eventData['objs'] as $observer) {
                 if ($observer instanceof Nethgui_Core_EventObserverInterface) {
-                    $observer->notifyEventCompletion($eventData['name'], $args, $exitStatus, $output);
+                    $observer->notifyEventCompletion($eventData['name'], $args, $exitInfo->getExitStatus() === 0, $exitInfo->getOutput());
                 }
             }
-            if ($exitStatus === FALSE) {
+            if ($exitInfo->getExitStatus() !== 0) {
                 return FALSE;
             }
         }
@@ -220,6 +217,16 @@ class Nethgui_Core_HostConfiguration implements Nethgui_Core_HostConfigurationIn
     public function setPolicyDecisionPoint(Nethgui_Authorization_PolicyDecisionPointInterface $pdp)
     {
         $this->policyDecisionPoint = $pdp;
+    }
+
+    public function exec($command, $arguments = array())
+    {
+        $commandObject = new Nethgui_Core_SystemCommand($command);
+        foreach ($arguments as $arg) {
+            $commandObject->addArgument($arg);
+        }
+        $commandObject->exec();
+        return $commandObject;
     }
 
 }

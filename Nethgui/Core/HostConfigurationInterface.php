@@ -72,15 +72,13 @@ interface Nethgui_Core_HostConfigurationInterface
     public function getTableAdapter($database, $typeOrKey, $filterOrProp = NULL, $separators = NULL);
 
     /**
-     * Signal an event and return the status
+     * Signal an event and return the status synchronously
      *
      * @param string $event Event name
      * @param array $argv Optional event arguments
-     * @param array &$output Optional output array. If the output argument is present, then the specified array will be filled with every line of output from the event.
-     * @access public
-     * @return boolean true on success, false otherwise
+     * @return Nethgui_Core_SystemCommandInterface
      */
-    public function signalEvent($event, $argv = array(), &$output=array());
+    public function signalEvent($event, $arguments = array());
 
     /**
      * Ask the host configuration to signal the given event lately, after all database 
@@ -91,6 +89,22 @@ interface Nethgui_Core_HostConfigurationInterface
      * @param Nethgui_Core_EventObserverInterface $observer Optional
      */
     public function signalEventFinally($eventName, $argv = array(), $observer = NULL);
+
+    /**
+     * PHP exec() wrapper
+     *
+     * The arguments are replaced in the command string, searching for placeholders
+     * in the form ${1} .. ${N}.
+     *
+     * NOTE: Only placeholders corresponding to i+1 element in the
+     * arguments array are replaced.
+     *
+     * @param string $command
+     * @param array $arguments Arguments for the command. Will be shell-escaped.
+     * @return Nethgui_Core_SystemCommandInterface
+     */
+    public function exec($command, $arguments = array());
+        
 }
 
 
