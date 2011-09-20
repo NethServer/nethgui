@@ -79,7 +79,7 @@ class Nethgui_Core_ArrayAdapterTest extends PHPUnit_Framework_TestCase
     public function testSetNull()
     {
         $this->fixture->set(NULL);
-        $this->assertNull($this->fixture->get());
+        $this->assertEmpty($this->fixture->get());
         $this->fixture[0] = 'MODIFIED';
         $this->assertEquals('MODIFIED', $this->fixture[0]);
     }
@@ -115,16 +115,18 @@ class Nethgui_Core_ArrayAdapterTest extends PHPUnit_Framework_TestCase
 
     public function testSaveModified()
     {
-        $this->serializer->expects($this->once())
+        $this->serializer->expects($this->exactly(1))
             ->method('read')
             ->will($this->returnValue('ONE,TWO,THREE'));
 
         $this->serializer->expects($this->once())
             ->method('write')
-            ->with('UNO,TWO,THREE');
+            ->with('UNO,DUE,THREE');
 
         $this->fixture[0] = 'UNO';
+        $this->fixture[1] = 'DUE';
         $this->assertEquals(1, $this->fixture->save());
+        $this->assertEquals('THREE', $this->fixture[2]);
     }
 
     public function testSaveDeleted()

@@ -68,13 +68,13 @@ class Nethgui_Adapter_ArrayAdapter implements Nethgui_Adapter_AdapterInterface, 
             $this->lazyInitialization();
         }
 
-        if (is_null($value) && is_null($this->data))
+        if (empty($value) && is_null($this->data))
         {
             $this->modified = FALSE;
             return;
         }
 
-        if (is_null($value) && !is_null($this->data))
+        if (empty($value) && !is_null($this->data))
         {
             $this->modified = TRUE;
             $this->data = NULL;
