@@ -128,31 +128,11 @@ abstract class Nethgui_Core_Module_Abstract implements Nethgui_Core_ModuleInterf
     }
 
     /**
-     * Return TRUE from this method if
-     * @return boolean
+     * Declare if the module emits the FORM tag.
+     * @return boolean FALSE if the FORM tag has to be generated automatically
      */
     protected function hasInputForm() {
         return FALSE;
-    }
-
-    /**
-     *
-     * @param Nethgui_Renderer_Abstract $view
-     * @param type $childId
-     * @return Nethgui_Renderer_WidgetInterface
-     */
-    protected function wrapFormAroundChild(Nethgui_Renderer_Abstract $view, $childId, $flags = 0)
-    {
-        $module = $view[$childId]->getModule();
-        $widget = $view->inset($childId, $flags);
-        if ($module instanceof Nethgui_Core_Module_Abstract) {
-            if ($module->hasInputForm()) {
-                // FIXME: read $flags from $view
-                $renderer = new Nethgui_Renderer_Xhtml($view[$childId], $flags);
-                $widget = $renderer->form()->insert($widget)->setAttribute('name', $widget->getAttribute('name'));
-            }
-        }
-        return $widget;
     }
 
 }

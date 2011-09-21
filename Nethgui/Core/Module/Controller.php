@@ -144,13 +144,20 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
         parent::prepareView($view, $mode);
 
         if (is_null($this->currentAction)) {
-            return;
+            // Handle a NULL current action, rendering all the children in a
+            // "DISABLED" state.
+            foreach ($this->getChildren() as $childModule) {
+                $innerView = $view->spawnView($childModule, TRUE);
+                $childModule->prepareView($innerView, $mode);
+            }
+            $view->setTemplate(array($this, 'renderDefault'));
+        } else {
+            $view->setTemplate(array($this, 'renderCurrentAction'));
+            $innerView = $view->spawnView($this->currentAction, TRUE);
+            // FIXME: delete this `__action` view parameter:
+            $view['__action'] = $this->currentAction->getIdentifier();
+            $this->currentAction->prepareView($innerView, $mode);
         }
-
-        $view->setTemplate(array($this, 'renderCurrentAction'));
-        $innerView = $view->spawnView($this->currentAction, TRUE);
-        $view['__action'] = $this->currentAction->getIdentifier();
-        $this->currentAction->prepareView($innerView, $mode);
     }
 
     /**
@@ -166,6 +173,40 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
     public function renderCurrentAction(Nethgui_Renderer_Abstract $view)
     {
         return $this->wrapFormAroundChild($view, $this->currentAction->getIdentifier());
+    }
+
+    public function renderDefault(Nethgui_Renderer_Abstract $view)
+    {
+        $container = $view->panel()->setAttribute('class', 'Controller');
+        foreach ($this->getChildren() as $index => $module) {
+            $this->renderAction($view, $container, $module, $index);
+        }
+        return $container;
+    }
+
+    protected function renderAction(Nethgui_Renderer_Abstract $view, Nethgui_Renderer_WidgetInterface $container, Nethgui_Core_ModuleInterface $module, $index)
+    {
+        if ($index == 0) {
+            $flags = 0;
+            $extraCssClass = ' raised';
+        } else {
+            $flags = Nethgui_Renderer_Abstract::STATE_DISABLED;
+            $extraCssClass = '';
+        }
+
+        $actionWidget = $view->panel($flags)->insert(
+            $this->wrapFormAroundChild($view, $module->getIdentifier(), $flags)
+        );
+
+        $actionWidget->setAttribute('name', $module->getIdentifier());
+
+        if ($module instanceof Nethgui_Module_Table_Action && $module->isModal()) {
+            $actionWidget->setAttribute('class', 'Dialog');
+        } else {
+            $actionWidget->setAttribute('class', 'Reaction' . $extraCssClass);
+        }
+
+        $container->insert($actionWidget);
     }
 
 }

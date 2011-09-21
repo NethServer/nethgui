@@ -168,63 +168,6 @@ class Nethgui_Module_TableController extends Nethgui_Core_Module_Controller
     }
 
     /**
-     * This callback template is invoked if the current view is not defined.
-     * @param Nethgui_Renderer_Abstract $view
-     * @return Nethgui_Renderer_WidgetInterface
-     *
-     * @todo refactor into parent class
-     */
-    public function renderDefault(Nethgui_Renderer_Abstract $view)
-    {
-        $widget = $view->panel();
-        $widget->setAttribute('class', 'Table');
-
-        $tableRead = $view->panel()->setAttribute('class', 'TableAction TableRead raised');
-        $widget->insert($tableRead);
-
-        foreach ($this->getChildren() as $index => $child) {
-            // The FIRST child must ALWAYS be the "READ" action (default)
-            if ($index === 0) {
-                // insert the 'read' action
-                $tableRead->insert($view->inset($child->getIdentifier()));
-            } else {
-                $flags = Nethgui_Renderer_Abstract::STATE_DISABLED;
-                
-                // Subsequent children are embedded into a DISABLED dialog frame.
-                $actionWidget = $view->panel($flags)->insert(
-                    $this->wrapFormAroundChild($view, $child->getIdentifier(), $flags)
-               );
-
-                $actionWidget->setAttribute('name', $child->getIdentifier());
-
-                if ($child instanceof Nethgui_Module_Table_Action && $child->isModal()) {
-                    $actionWidget->setAttribute('class', 'Dialog');
-                } else {
-                    $actionWidget->setAttribute('class', 'TableAction');
-                }
-
-                $widget->insert($actionWidget);
-            }
-        }
-
-        $elementList = $view->elementList()->setAttribute('class', 'buttonList');
-
-        foreach ($this->getTableActions() as $tableAction) {
-            $action = $tableAction->getIdentifier();
-
-            $button = $view
-                ->button($action, Nethgui_Renderer_Abstract::BUTTON_LINK)
-                ->setAttribute('value', array($action, '#' . $view->getUniqueId($action)));
-
-            $elementList->insert($button);
-        }
-
-        $tableRead->insert($elementList);
-
-        return $widget;
-    }
-
-    /**
      * @todo refactor into parent class
      */
     public function prepareView(Nethgui_Core_ViewInterface $view, $mode)
@@ -232,6 +175,7 @@ class Nethgui_Module_TableController extends Nethgui_Core_Module_Controller
         parent::prepareView($view, $mode);
 
         if (is_object($this->currentAction)
+            && $mode == self::VIEW_CLIENT
             && $this->getRequest()->isSubmitted()
             && $this->hasAction('read')) {
             // Load 'read' action when some other action has occurred,
@@ -239,16 +183,33 @@ class Nethgui_Module_TableController extends Nethgui_Core_Module_Controller
             $readAction = $this->getAction('read');
             $innerView = $view->spawnView($readAction, TRUE);
             $readAction->prepareView($innerView, $mode);
-        } elseif (is_null($this->currentAction)) {
-            // Handle a NULL current action, rendering all the children in a
-            // "DISABLED" state. This is the default controller state,
-            // where the table action buttons are displayed.
-            foreach ($this->getChildren() as $childModule) {
-                $innerView = $view->spawnView($childModule, TRUE);
-                $childModule->prepareView($innerView, $mode);
+        }
+    }
+
+    protected function renderAction(Nethgui_Renderer_Abstract $view, Nethgui_Renderer_WidgetInterface $container, Nethgui_Core_ModuleInterface $module, $index)
+    {
+        if ($index == 0) {
+            // Assume that the index 0 corresponds to the "read" action
+            $tableRead = $view->panel()->setAttribute('class', 'Reaction TableRead raised');
+            $container->insert($tableRead);
+            $tableRead->insert($view->inset($module->getIdentifier()));
+
+            $elementList = $view->elementList()->setAttribute('class', 'buttonList');
+
+            foreach ($this->getTableActions() as $tableAction) {
+                $action = $tableAction->getIdentifier();
+
+                $button = $view
+                    ->button($action, Nethgui_Renderer_Abstract::BUTTON_LINK)
+                    ->setAttribute('value', array($action, '#' . $view->getUniqueId($action)));
+
+                $elementList->insert($button);
             }
 
-            $view->setTemplate(array($this, 'renderDefault'));
+            $tableRead->insert($elementList);
+        } else {
+            // render default disabled state for subsequent indexes..
+            parent::renderAction($view, $container, $module, $index);
         }
     }
 
