@@ -46,7 +46,21 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
     public function bind(Nethgui_Core_RequestInterface $request)
     {
         $this->request = $request;
+        $actionId = $this->establishCurrentActionId();
+
+        if (empty($actionId)) {
+            return; // don't bind the request to any action.
+        }
+
+        $this->currentAction = $this->getAction($actionId);
+        $this->currentAction->bind($request->getParameterAsInnerRequest($actionId, array_slice($request->getArguments(), 1)));
+    }
+
+    protected function establishCurrentActionId()
+    {
+        $request = $this->getRequest();
         $arguments = $request->getArguments();
+        $actionId = FALSE;
 
         if ( ! empty($arguments) && isset($arguments[0])) {
             // We can identify the current action from request arguments
@@ -60,12 +74,9 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
             // we can check the `__action` parameter that is automatically
             // added by this class.
             $actionId = $request->getParameter('__action');
-        } else {
-            return; // don't bind the request to any action.
         }
 
-        $this->currentAction = $this->getAction($actionId);
-        $this->currentAction->bind($request->getParameterAsInnerRequest($actionId, array_slice($arguments, 1)));
+        return $actionId;
     }
 
     /**
