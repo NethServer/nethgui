@@ -69,11 +69,6 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
                 // a NULL action at this point results in a "not found" condition:
                 throw new Nethgui_Exception_HttpStatusClientError('Not Found', 404);
             }
-        } elseif ($request->isSubmitted() && $request->hasParameter('__action')) {
-            // We don't have request arguments, but if request is submitted
-            // we can check the `__action` parameter that is automatically
-            // added by this class.
-            $actionId = $request->getParameter('__action');
         }
 
         return $actionId;
@@ -154,8 +149,6 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
         } else {
             $view->setTemplate(array($this, 'renderCurrentAction'));
             $innerView = $view->spawnView($this->currentAction, TRUE);
-            // FIXME: delete this `__action` view parameter:
-            $view['__action'] = $this->currentAction->getIdentifier();
             $this->currentAction->prepareView($innerView, $mode);
         }
     }

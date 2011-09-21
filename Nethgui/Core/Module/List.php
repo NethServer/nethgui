@@ -20,14 +20,11 @@
 class Nethgui_Core_Module_List extends Nethgui_Core_Module_Composite implements Nethgui_Core_RequestHandlerInterface
 {
     const TEMPLATE_LIST = 1;
-    const TEMPLATE_TABS = 2;
 
     public function __construct($identifier = NULL, $template = self::TEMPLATE_LIST)
     {
         parent::__construct($identifier);
-        if ($template === self::TEMPLATE_TABS) {
-            $this->setViewTemplate(array($this, 'renderTabs'));
-        } elseif ($template === self::TEMPLATE_LIST) {
+        if ($template === self::TEMPLATE_LIST) {
             $this->setViewTemplate(array($this, 'renderList'));
         } else {
             $this->setViewTemplate($template);
@@ -83,20 +80,5 @@ class Nethgui_Core_Module_List extends Nethgui_Core_Module_Composite implements 
         $widget->setAttribute('class', 'List');
         return $widget;
     }
-
-    public function renderTabs(Nethgui_Renderer_Abstract $view)
-    {
-        $widget = $view->tabs();
-        $widget->setAttribute('tabClass', 'Action');
-        $widget->setAttribute('class', 'Tabs');
-        foreach ($this->getChildren() as $child) {
-            $widget->insert(
-                $this->wrapFormAroundChild($view, $child->getIdentifier())
-            );
-        }
-        return $widget;
-    }
-
-
 
 }
