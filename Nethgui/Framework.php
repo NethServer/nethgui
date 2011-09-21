@@ -344,7 +344,7 @@ class Nethgui_Framework
             default:
                 $format = 'dd/mm/YYYY';
         }
-        
+
         return $format;
     }
 
@@ -485,7 +485,7 @@ class Nethgui_Framework
 
         $worldModule->addModule($notificationManager);
 
-        // Finally, signal "final" events
+        // Finally, signal "final" events (see #506)
         $hostConfiguration->signalFinalEvents();
 
         /**
@@ -498,14 +498,22 @@ class Nethgui_Framework
             header("HTTP/1.1 400 Request validation error");
         }
 
+
+        // Set the redirect condition:
+        $redirect = $user->getRedirect();
+        if ( ! is_null($redirect)) {
+            list($module, $path) = $redirect;
+            $redirectUrl = $this->buildModuleUrl($module, $path);
+        } else {
+            $redirectUrl = FALSE;
+        }
+
         /*
          * Prepare the views and render into Xhtml or Json
          */
         if ($request->getContentType() === Nethgui_Core_Request::CONTENT_TYPE_HTML) {
-            $redirect = $user->getRedirect();
-            if ( ! is_null($redirect)) {
-                list($module, $path) = $redirect;
-                $this->redirect($this->buildModuleUrl($module, $path));
+            if ($redirectUrl !== FALSE) {
+                $this->redirect($redirectUrl);
             }
             $worldModule->addModule(new Nethgui_Module_Menu($topModuleDepot->getModules()));
             header("Content-Type: text/html; charset=UTF-8");
@@ -514,11 +522,17 @@ class Nethgui_Framework
         } elseif ($request->getContentType() === Nethgui_Core_Request::CONTENT_TYPE_JSON) {
             header("Content-Type: application/json; charset=UTF-8");
             $worldModule->prepareView($view, Nethgui_Core_ModuleInterface::VIEW_CLIENT);
-            echo json_encode($view->getClientEvents());
+            $events = $view->getClientEvents();
+            if ($redirectUrl !== FALSE) {
+                $events[] = array('Redirect', $redirectUrl);
+            }
+            echo json_encode($events);
         }
 
-        // Control reaches this point only if no redirect occurred.
-        $notificationManager->dismissTransientDialogBoxes();
+        // Dismiss transient dialog boxes only if no redirection occurred.
+        if ($redirectUrl === FALSE) {
+            $notificationManager->dismissTransientDialogBoxes();
+        }
     }
 
     /**

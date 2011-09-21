@@ -145,6 +145,10 @@ class Nethgui_Core_View implements Nethgui_Core_ViewInterface
         return Nethgui_Framework::getInstance()->renderView($this->template, $state, $languageCatalog);
     }
 
+    /**
+     * Get the array of events to properly transfer the view on the client side.
+     * @return array
+     */
     public function getClientEvents() {
         $events = array();
 
