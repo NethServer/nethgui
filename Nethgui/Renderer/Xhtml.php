@@ -126,6 +126,12 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
         return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags));
     }
 
+    public function includeView(Nethgui_Core_ViewInterface $view, $flags = 0)
+    {
+        $flags |= $this->inheritFlags;
+        return $this->createWidget(__FUNCTION__, array('value' => $view, 'flags' => $flags));
+    }
+
     public function panel($flags = 0)
     {
         $flags |= $this->inheritFlags;

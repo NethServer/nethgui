@@ -40,7 +40,7 @@ class Nethgui_Module_Table_Read extends Nethgui_Module_Table_Action
                 $this->columns[] = $columnInfo;
             } else {
                 // FIXME: setting here the default buttonList formatter for Actions column:
-                $this->columns[] = array('name' => strval($columnInfo), 'formatter' => ($columnInfo == 'Actions' ?  'buttonList' : NULL));
+                $this->columns[] = array('name' => strval($columnInfo), 'formatter' => ($columnInfo == 'Actions' ? 'buttonList' : NULL));
             }
         }
     }
@@ -110,30 +110,30 @@ class Nethgui_Module_Table_Read extends Nethgui_Module_Table_Action
      */
     public function prepareViewForColumnActions(Nethgui_Core_ViewInterface $view, $mode, $key, $values)
     {
-        $columnView = $view->spawnView($this);
-        $columnView->setTemplate(array($this, 'renderColumnActions'));        
+        $cellView = $view->spawnView($this->getParent());
+        $cellView->setTemplate(array($this, 'renderColumnActions'));
 
         foreach ($this->getParent()->getRowActions() as $action) {
-            $actionView = $columnView->spawnView($action, TRUE);
-            $actionView[] = $actionView->translate($action->getIdentifier() . '_label');
-            $actionView[] = Nethgui_Framework::getInstance()->buildModuleUrl($this, array('..', $action->getIdentifier(), $key, '#' . $actionView->getUniqueId()));
+            $actionId = $action->getIdentifier();
+            $actionInfo = array();
+            $actionInfo[] = $cellView->translate($actionId . '_label');
+            $actionInfo[] = Nethgui_Framework::getInstance()->buildModuleUrl($this, array('..', $action->getIdentifier(), $key, '#' . $cellView->getUniqueId($actionId)));
+
+            $cellView[$actionId] = $actionInfo;
         }
 
-        return $columnView;
+        return $cellView;
     }
 
     public function renderColumnActions(Nethgui_Renderer_Abstract $view)
     {
         $elementList = $view->elementList()->setAttribute('class', 'buttonList');
 
-        foreach ($view as $action => $actionView) {
-            if ($actionView instanceof Nethgui_Core_ViewInterface) {
-                $button = $view
-                    ->button($action, Nethgui_Renderer_Abstract::BUTTON_LINK)
-                    ->setAttribute('value', $actionView[1]);
-
-                $elementList->insert($button);
-            }
+        foreach ($view as $actionId => $actionInfo) {
+            $button = $view
+                ->button($actionId, Nethgui_Renderer_Abstract::BUTTON_LINK)
+                ->setAttribute('value', $actionInfo[1]);
+            $elementList->insert($button);
         }
 
         return $elementList;

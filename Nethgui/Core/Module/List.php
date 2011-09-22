@@ -10,8 +10,6 @@
  * A List of modules that forwards request handling to its parts.
  * 
  * A List executes no action. It forwards each call to its subparts. 
- * 
- * You can instruct a List to render a plain list, a form or tabs container.
  *
  * @see Nethgui_Core_Module_Composite
  * @package Core
@@ -73,9 +71,7 @@ class Nethgui_Core_Module_List extends Nethgui_Core_Module_Composite implements 
     {
         $widget = $view->panel();
         foreach ($this->getChildren() as $child) {
-            $widget->insert(
-                $this->wrapFormAroundChild($view, $child->getIdentifier())
-            );
+            $widget->insert($view->inset($child->getIdentifier()));
         }
         $widget->setAttribute('class', 'List');
         return $widget;

@@ -21,10 +21,9 @@ class Nethgui_Widget_Xhtml_Inset extends Nethgui_Widget_Xhtml
     {
         $name = $this->getAttribute('name');
         $flags = $this->getAttribute('flags');
+        $value = $this->getAttribute('value', $this->view[$name]);
         $content = '';
-
-        $value = $this->view[$name];
-
+      
         if ($value instanceof Nethgui_Core_ViewInterface) {
             $content .= $this->includeTemplate($value, $flags);
         } else {
@@ -36,18 +35,27 @@ class Nethgui_Widget_Xhtml_Inset extends Nethgui_Widget_Xhtml
 
     private function includeTemplate(Nethgui_Core_ViewInterface $view, $flags = 0)
     {
+        $dview = new Nethgui_Renderer_Xhtml($view, $flags);
+        $module = $view->getModule();
+
         $languageCatalog = NULL;
-        if ($view->getModule() instanceof Nethgui_Core_LanguageCatalogProvider) {
-            $languageCatalog = $view->getModule()->getLanguageCatalog();
+        if ($module instanceof Nethgui_Core_LanguageCatalogProvider) {
+            $languageCatalog = $module->getLanguageCatalog();
         }
 
-        $state = array(
-            'view' => new Nethgui_Renderer_Xhtml($view, $flags),
-        );
-
+        $state = array('view' => $dview);
         $content = Nethgui_Framework::getInstance()->renderView($view->getTemplate(), $state, $languageCatalog);
 
-        return $content;
+        $contentWidget = $dview->literal($content);
+
+        if ($module instanceof Nethgui_Core_RequestHandlerInterface
+            && ! $module instanceof Nethgui_Core_ModuleCompositeInterface
+            && stripos($content, '<form ') === FALSE) {
+            // Wrap a simple module into a FORM tag automatically
+            $contentWidget = $dview->form($flags)->insert($contentWidget);
+        }
+
+        return (String) $contentWidget;
     }
 
 }

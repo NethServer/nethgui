@@ -31,22 +31,26 @@ class Nethgui_Core_View implements Nethgui_Core_ViewInterface
      * @var Nethgui_Core_ModuleInterface
      */
     private $module;
+
     /**
      * Holds view state
      * @var array
      */
     private $data;
+
     /**
      *
      * @var string
      */
     private $template;
+
     /**
      * Caches the identifier of all ancestors from the root to the
      * associated $module.
      * @var array
      */
     private $modulePath;
+
     /**
      * Caches the language catalogs associated to $module
      * @var array
@@ -126,47 +130,27 @@ class Nethgui_Core_View implements Nethgui_Core_ViewInterface
     }
 
     /**
-     * Renders the view.
-     *
-     * @return string
-     */
-    public function render()
-    {
-        $languageCatalog = NULL;
-        if ($this->getModule() instanceof Nethgui_Core_LanguageCatalogProvider) {
-            $languageCatalog = $this->getModule()->getLanguageCatalog();
-        }
-
-        $state = array(
-            // Decorate the view object with a Renderer interface:
-            'view' => new Nethgui_Renderer_Xhtml($this),
-        );
-
-        return Nethgui_Framework::getInstance()->renderView($this->template, $state, $languageCatalog);
-    }
-
-    /**
      * Get the array of events to properly transfer the view on the client side.
      * @return array
      */
-    public function getClientEvents() {
+    public function getClientEvents()
+    {
         $events = array();
 
         return $this->fillEvents($events);
     }
 
-    private function fillEvents(&$events) {
-        foreach($this as $offset => $value) {
+    private function fillEvents(&$events)
+    {
+        foreach ($this as $offset => $value) {
 
             $eventTarget = $this->getClientEventTarget($offset);
 
             if ($value instanceof self) {
                 $value->fillEvents($events);
                 continue;
-                
             } elseif ($value instanceof Traversable) {
                 $eventData = $this->traversableToArray($value);
-
             } else {
                 $eventData = $value;
             }
@@ -175,15 +159,6 @@ class Nethgui_Core_View implements Nethgui_Core_ViewInterface
         }
 
         return $events;
-    }
-
-    /**
-     * @see Nethgui_Core_View::render()
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->render();
     }
 
     /**
@@ -279,10 +254,10 @@ class Nethgui_Core_View implements Nethgui_Core_ViewInterface
 
     public function getClientEventTarget($name)
     {
-        if(ENVIRONMENT === 'development') {
+        if (ENVIRONMENT === 'development') {
             return $this->getUniqueId($name);
         }
-        
+
         return substr(md5($this->getUniqueId($name)), 0, 8);
     }
 
@@ -322,6 +297,14 @@ class Nethgui_Core_View implements Nethgui_Core_ViewInterface
         }
 
         return $nameSegments;
+    }
+
+    public function __toString()
+    {
+        $dummyView = new Nethgui_Core_View($this->getModule());
+        $dummyView['V'] = $this;
+        $renderer = new Nethgui_Renderer_Xhtml($dummyView);
+        return (String) $renderer->inset('V');
     }
 
 }

@@ -45,25 +45,9 @@ class Nethgui_Module_World extends Nethgui_Core_Module_Abstract
             $module->prepareView($innerView, $mode);
             // Consider the first module as Current.
             if ( ! isset($view['CurrentModule']) && $mode === self::VIEW_SERVER) {
-
-                if ($module instanceof Nethgui_Core_Module_Abstract) {
-                    if ( ! $module->hasInputForm()) {
-                        $wrapView = $view->spawnView($module);
-                        $wrapView['__originalView'] = $innerView;
-                        $wrapView->setTemplate(array($this, 'renderFormWrap'));
-
-                        $innerView = $wrapView;
-                    }
-                }
-
                 $view['CurrentModule'] = $innerView;
             }
         }
-    }
-
-    public function renderFormWrap(Nethgui_Renderer_Abstract $view)
-    {
-        return $view->panel($view->getModule()->getIdentifier())->setAttribute('class', 'Action')->insert($view->form()->insert($view->inset('__originalView')));
     }
 
     public function addModule(Nethgui_Core_ModuleInterface $module)

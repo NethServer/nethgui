@@ -46,12 +46,20 @@ interface Nethgui_Renderer_Abstract
     const SELECTOR_DROPDOWN = 0x80000;
     
     /**
-     * Create a member inclusion
+     * Include a view member
      * @param string $name The view member name
      * @param integer $flags Optional {STATE_DISABLED}
      * @return Nethgui_Renderer_WidgetInterface
      */
     public function inset($name, $flags = 0);
+
+    /**
+     * Include a view member
+     * @param string $name The view member name
+     * @param integer $flags Optional {STATE_DISABLED}
+     * @return Nethgui_Renderer_WidgetInterface
+     */
+    public function includeView(Nethgui_Core_ViewInterface $view, $flags = 0);
 
     /**
      * Create a text input control

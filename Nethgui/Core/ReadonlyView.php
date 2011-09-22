@@ -100,9 +100,4 @@ class Nethgui_Core_ReadonlyView implements Nethgui_Core_ViewInterface
         return $this->view->getControlName($parts);
     }
 
-    public function render()
-    {
-        return $this->view->render();
-    }
-
 }

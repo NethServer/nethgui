@@ -15,6 +15,7 @@ abstract class Nethgui_Core_Module_Abstract implements Nethgui_Core_ModuleInterf
      * @var string
      */
     private $identifier;
+
     /**
      *
      * @var ModuleInterface;
@@ -24,11 +25,12 @@ abstract class Nethgui_Core_Module_Abstract implements Nethgui_Core_ModuleInterf
      * @var bool
      */
     private $initialized = FALSE;
+
     /**
      * @var Nethgui_Core_HostConfigurationInterface
      */
     private $hostConfiguration;
-    
+
     /**
      * Template applied to view, if different from NULL
      *
@@ -105,19 +107,21 @@ abstract class Nethgui_Core_Module_Abstract implements Nethgui_Core_ModuleInterf
     public function prepareView(Nethgui_Core_ViewInterface $view, $mode)
     {
         $template = $this->getViewTemplate();
-        if (!is_null($template)) {
+        if ( ! is_null($template)) {
             $view->setTemplate($template);
         }
     }
 
-    protected function setViewTemplate($template) {
+    protected function setViewTemplate($template)
+    {
         $this->viewTemplate = $template;
     }
 
-    protected function getViewTemplate() {
+    protected function getViewTemplate()
+    {
         return $this->viewTemplate;
     }
-    
+
     /**
      * @param string $languageCode
      * @return string
@@ -125,14 +129,6 @@ abstract class Nethgui_Core_Module_Abstract implements Nethgui_Core_ModuleInterf
     public function getLanguageCatalog()
     {
         return get_class($this);
-    }
-
-    /**
-     * Declare if the module emits the FORM tag.
-     * @return boolean FALSE if the FORM tag has to be generated automatically
-     */
-    protected function hasInputForm() {
-        return FALSE;
     }
 
 }

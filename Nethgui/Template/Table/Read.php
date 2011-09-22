@@ -8,9 +8,9 @@
             }
         ?>
     </tr></thead>
-    <tbody><?php foreach ($view['rows'] as $row): ?>
+    <tbody><?php foreach ($view['rows'] as $rowId => $row): ?>
     <tr>
-        <?php foreach ($row as $value): ?>
+        <?php foreach ($row as $colId => $value): ?>
              <td><?php echo $value ?></td>
         <?php endforeach; ?>
     </tr>

@@ -75,17 +75,6 @@ abstract class Nethgui_Core_Module_Composite extends Nethgui_Core_Module_Abstrac
         }
     }
 
-    protected function hasInputForm()
-    {
-        foreach ($this->getChildren() as $module) {
-            if ($module instanceof Nethgui_Core_Module_Abstract
-                && $module->hasInputForm()) {
-                return TRUE;
-            }
-        }
-        return FALSE;
-    }
-
     /**
      * Instantiates the given classes, adding the created objects as children of
      * this List module.
@@ -118,26 +107,6 @@ abstract class Nethgui_Core_Module_Composite extends Nethgui_Core_Module_Abstrac
 
             $this->addChild($childModule);
         }
-    }
-
-    /**
-     *
-     * @param Nethgui_Renderer_Abstract $view
-     * @param type $childId
-     * @return Nethgui_Renderer_WidgetInterface
-     */
-    protected function wrapFormAroundChild(Nethgui_Renderer_Abstract $view, $childId, $flags = 0)
-    {
-        $widget = $view->inset($childId, $flags);
-        if ($view[$childId] instanceof Nethgui_Core_ViewInterface) {
-            $module = $view[$childId]->getModule();
-            if ($module instanceof Nethgui_Core_Module_Abstract && $module->hasInputForm()) {
-                // FIXME: read $flags from $view
-                $renderer = new Nethgui_Renderer_Xhtml($view[$childId], $flags);
-                $widget = $renderer->form()->insert($widget)->setAttribute('name', $widget->getAttribute('name'));
-            }
-        }
-        return $widget;
     }
 
 }

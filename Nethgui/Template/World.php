@@ -8,11 +8,11 @@
     </head>
     <body>
         <div id="allWrapper"> 
-            <div id="header"><div id="ModuleTitle"><?php echo $view['CurrentModule']->translate($view['CurrentModule']->getModule()->getTitle()) ?></div><div id="product">NethServer</div><?php echo $view['NotificationArea'] ?></div>
+            <div id="header"><div id="ModuleTitle"><?php echo $view['CurrentModule']->translate($view['CurrentModule']->getModule()->getTitle()) ?></div><div id="product">NethServer</div><?php echo $view->inset('NotificationArea') ?></div>
             <div class="colmask leftmenu">
                 <div class="colleft">
-                    <div class="col1"><div class="<?php echo $view['CurrentModule']->getModule()->getIdentifier(); ?> CurrentModule"><?php echo $view['CurrentModule'] ?></div></div>
-                    <div class="col2"><div id="moduleMenu" class="ModuleMenu"><?php echo $view['Menu'] ?></div></div>
+                    <div class="col1"><div class="<?php echo $view['CurrentModule']->getModule()->getIdentifier(); ?> CurrentModule"><?php echo $view->inset('CurrentModule') ?></div></div>
+                    <div class="col2"><div id="moduleMenu" class="ModuleMenu"><?php echo $view->inset('Menu') ?></div></div>
                 </div>
             </div>
             <div class="HelpArea"><div id="HelpAreaContent"></div></div>

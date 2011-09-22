@@ -35,7 +35,7 @@ class Nethgui_Module_TabsController extends Nethgui_Core_Module_Controller
 
     protected function renderAction(Nethgui_Renderer_Abstract $view, Nethgui_Renderer_WidgetInterface $container, Nethgui_Core_ModuleInterface $module, $index)
     {
-        $container->insert($this->wrapFormAroundChild($view, $module->getIdentifier()));
+        $container->insert($view->inset($module->getIdentifier()));
     }
 
 }

@@ -6,7 +6,7 @@
 /**
  * @package Module
  */
-class Nethgui_Module_Menu extends Nethgui_Core_Module_Standard
+class Nethgui_Module_Menu extends Nethgui_Core_Module_Abstract
 {
 
     /**

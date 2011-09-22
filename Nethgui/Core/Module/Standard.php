@@ -400,10 +400,5 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
         return $this->request;
     }
 
-    protected function hasInputForm()
-    {
-        return $this->getParent() !== NULL;
-    }
-
 }
 

@@ -165,7 +165,7 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
      */
     public function renderCurrentAction(Nethgui_Renderer_Abstract $view)
     {
-        return $this->wrapFormAroundChild($view, $this->currentAction->getIdentifier());
+        return $view->inset($this->currentAction->getIdentifier());
     }
 
     public function renderDefault(Nethgui_Renderer_Abstract $view)
@@ -187,9 +187,7 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
             $extraCssClass = '';
         }
 
-        $actionWidget = $view->panel($flags)->insert(
-            $this->wrapFormAroundChild($view, $module->getIdentifier(), $flags)
-        );
+        $actionWidget = $view->panel($flags)->insert($view->inset($module->getIdentifier()));
 
         $actionWidget->setAttribute('name', $module->getIdentifier());
 

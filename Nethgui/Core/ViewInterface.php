@@ -24,7 +24,6 @@ interface Nethgui_Core_ViewInterface extends ArrayAccess, IteratorAggregate
      * representing the view state as argument and is expected to return
      * a string representing the view.
      *
-     * @see render();
      * @param string|callback $template The template converting the view state to a string
      */
     public function setTemplate($template);
@@ -47,14 +46,6 @@ interface Nethgui_Core_ViewInterface extends ArrayAccess, IteratorAggregate
      * @return Nethgui_Core_ViewInterface The new view object, of the same type of the actual.
      */
     public function spawnView(Nethgui_Core_ModuleInterface $module, $register = FALSE);
-
-    /**
-     * Renders a string representation of the view, performing string translations
-     * on view string elements.
-     * @see setTemplate();
-     * @return string
-     */
-    public function render();
 
     /**
      * The module associated to this view.
