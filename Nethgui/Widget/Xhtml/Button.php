@@ -9,6 +9,12 @@
 
 /**
  *
+ * Attributes:
+ * - name
+ * - value
+ * - flags
+ * - label
+ *
  * @package Widget
  * @subpackage Xhtml
  * @internal
@@ -22,11 +28,11 @@ class Nethgui_Widget_Xhtml_Button extends Nethgui_Widget_Xhtml
         $name = $this->getAttribute('name');
         $value = $this->getAttribute('value', $this->view[$name]);
         $flags = $this->getAttribute('flags');
+        $label = $this->getAttribute('label', $name . '_label');
         $content = '';
 
         $attributes = array();
-        $cssClass = 'Button';
-        $buttonLabel = $name . '_label';
+        $cssClass = 'Button';        
 
         if ($flags & (Nethgui_Renderer_Abstract::BUTTON_LINK | Nethgui_Renderer_Abstract::BUTTON_CANCEL)) {
 
@@ -49,7 +55,7 @@ class Nethgui_Widget_Xhtml_Button extends Nethgui_Widget_Xhtml
             $attributes['title'] = $this->getAttribute('title', FALSE);
 
             $content .= $this->openTag('a', $attributes);
-            $content .= $this->view->translate($buttonLabel);
+            $content .= $this->view->translate($label);
             $content .= $this->closeTag('a');
         } else {
 
@@ -66,7 +72,7 @@ class Nethgui_Widget_Xhtml_Button extends Nethgui_Widget_Xhtml
                 $cssClass .= ' custom';
             }
 
-            $attributes['value'] = $this->view->translate($buttonLabel);
+            $attributes['value'] = $this->view->translate($label);
 
             $content .= $this->controlTag('button', $name, $flags, $cssClass, $attributes);
         }

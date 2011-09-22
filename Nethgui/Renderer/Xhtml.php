@@ -51,7 +51,23 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
     public function elementList($flags = 0)
     {
         $flags |= $this->inheritFlags;
-        return $this->createWidget(__FUNCTION__, array('flags' => $flags));
+        $widget = $this->createWidget(__FUNCTION__, array('flags' => $flags));
+
+        if ($flags & (self::BUTTON_SUBMIT | self::BUTTON_RESET | self::BUTTON_CANCEL)) {
+            $widget->setAttribute('class', 'buttonList');
+
+            if ($flags & self::BUTTON_SUBMIT) {
+                $widget->insert($this->button('Submit', self::BUTTON_SUBMIT));
+            }
+            if ($flags & self::BUTTON_RESET) {
+                $widget->insert($this->button('Reset', self::BUTTON_RESET));
+            }
+            if ($flags & self::BUTTON_CANCEL) {
+                $widget->insert($this->button('Cancel', self::BUTTON_CANCEL));
+            }
+        }
+
+        return $widget;
     }
 
     public function button($name, $flags = 0)
