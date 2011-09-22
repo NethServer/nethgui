@@ -498,8 +498,45 @@ class Nethgui_Framework
             header("HTTP/1.1 400 Request validation error");
         }
 
+        /*
+         * Prepare the views and render into Xhtml or Json
+         */
+        if ($request->getContentType() === Nethgui_Core_Request::CONTENT_TYPE_HTML) {
+            $worldModule->addModule(new Nethgui_Module_Menu($topModuleDepot->getModules()));
+            $worldModule->prepareView($view, Nethgui_Core_ModuleInterface::VIEW_SERVER);
+            $redirectUrl = $this->getRedirectUrl($user);
+            if ($redirectUrl !== FALSE) {
+                $this->redirect($redirectUrl);
+            }
+            header("Content-Type: text/html; charset=UTF-8");
+            echo $view;
+        } elseif ($request->getContentType() === Nethgui_Core_Request::CONTENT_TYPE_JSON) {
+            $worldModule->prepareView($view, Nethgui_Core_ModuleInterface::VIEW_CLIENT);
+            $events = $view->getClientEvents();
+            $redirectUrl = $this->getRedirectUrl($user);
+            if ($redirectUrl !== FALSE) {
+                $events[] = array('Redirect', $redirectUrl);
+            }
+            header("Content-Type: application/json; charset=UTF-8");
+            echo json_encode($events);
+        } else {
+            $redirectUrl = FALSE;
+        }
 
-        // Set the redirect condition:
+        // Dismiss transient dialog boxes only if no redirection occurred.
+        if ($redirectUrl === FALSE) {
+            $notificationManager->dismissTransientDialogBoxes();
+        }
+    }
+
+    /**
+     * Check if a redirect condition has been set calculate the URL.
+     * 
+     * @param Nethgui_Core_UserInterface $user
+     * @return string|bool The URL where to redirect the user
+     */
+    private function getRedirectUrl(Nethgui_Core_UserInterface $user)
+    {
         $redirect = $user->getRedirect();
         if ( ! is_null($redirect)) {
             list($module, $path) = $redirect;
@@ -507,32 +544,7 @@ class Nethgui_Framework
         } else {
             $redirectUrl = FALSE;
         }
-
-        /*
-         * Prepare the views and render into Xhtml or Json
-         */
-        if ($request->getContentType() === Nethgui_Core_Request::CONTENT_TYPE_HTML) {
-            if ($redirectUrl !== FALSE) {
-                $this->redirect($redirectUrl);
-            }
-            $worldModule->addModule(new Nethgui_Module_Menu($topModuleDepot->getModules()));
-            header("Content-Type: text/html; charset=UTF-8");
-            $worldModule->prepareView($view, Nethgui_Core_ModuleInterface::VIEW_SERVER);
-            echo $view->render();
-        } elseif ($request->getContentType() === Nethgui_Core_Request::CONTENT_TYPE_JSON) {
-            header("Content-Type: application/json; charset=UTF-8");
-            $worldModule->prepareView($view, Nethgui_Core_ModuleInterface::VIEW_CLIENT);
-            $events = $view->getClientEvents();
-            if ($redirectUrl !== FALSE) {
-                $events[] = array('Redirect', $redirectUrl);
-            }
-            echo json_encode($events);
-        }
-
-        // Dismiss transient dialog boxes only if no redirection occurred.
-        if ($redirectUrl === FALSE) {
-            $notificationManager->dismissTransientDialogBoxes();
-        }
+        return $redirectUrl;
     }
 
     /**

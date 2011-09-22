@@ -133,7 +133,7 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
 
                 if (is_null($prop)) {
                     // expect the table column name is the same as parameter name
-                    $prop = $parameterName;  
+                    $prop = $parameterName;
                 }
 
                 $valueProvider = array($this->tableAdapter, $key, $prop, $separator);
@@ -186,9 +186,6 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
         if ($changes > 0) {
             $this->signalAllEventsFinally();
         }
-
-        // Redirect to parent controller module
-        $this->getRequest()->getUser()->setRedirect($this->getParent());
     }
 
     public function prepareView(Nethgui_Core_ViewInterface $view, $mode)
@@ -196,6 +193,16 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
         parent::prepareView($view, $mode);
         if ($mode == self::VIEW_SERVER) {
             $view['__key'] = $this->key;
+        }
+
+        $request = $this->getRequest();
+        if ($request instanceof Nethgui_Core_RequestInterface
+            && $request->isSubmitted()) {
+            $module = $this;
+            while ($module->getParent() !== NULL) {
+                $module = $module->getParent();
+            }
+            $request->getUser()->setRedirect($module);
         }
     }
 
