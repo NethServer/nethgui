@@ -523,9 +523,9 @@ class Nethgui_Framework
             $redirectUrl = FALSE;
         }
 
-        // Dismiss transient dialog boxes only if no redirection occurred.
-        if ($redirectUrl === FALSE) {
-            $notificationManager->dismissTransientDialogBoxes();
+        // Dismiss transient dialog boxes only if no redirection or fake redirection occurred:
+        if ($redirectUrl === FALSE || $redirectUrl == $this->buildUrl($currentModuleIdentifier)) {
+            $notificationManager->dismissTransientDialogBoxes();           
         }
     }
 
