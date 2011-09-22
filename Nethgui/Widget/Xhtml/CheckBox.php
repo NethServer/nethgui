@@ -23,6 +23,7 @@ class Nethgui_Widget_Xhtml_CheckBox extends Nethgui_Widget_Xhtml
         $value = $this->getAttribute('value');
         $uncheckedValue = $this->getAttribute('uncheckedValue', '');
         $flags = $this->getAttribute('flags');
+        $label = $this->getAttribute('label', $name . '_label');
         $content = '';
 
         $attributes = array(
@@ -37,7 +38,7 @@ class Nethgui_Widget_Xhtml_CheckBox extends Nethgui_Widget_Xhtml
         $flags = $this->applyDefaultLabelAlignment($flags, Nethgui_Renderer_Abstract::LABEL_RIGHT);
 
         $content .= $this->controlTag('input', $name, $flags, 'HiddenConst', array('type' => 'hidden', 'value' => $uncheckedValue, 'id' => FALSE));
-        $content .= $this->labeledControlTag('input', $name, $name, $flags, 'CheckBox', $attributes);
+        $content .= $this->labeledControlTag('input', $name, $label, $flags, 'CheckBox', $attributes);
 
         return $content;
     }

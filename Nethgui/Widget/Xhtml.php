@@ -155,18 +155,18 @@ abstract class Nethgui_Widget_Xhtml implements Nethgui_Renderer_WidgetInterface
     }
 
     /**
-     * Push a LABEL tag for given control id
+     * Push a LABEL tag
      *
      * @see http://www.w3.org/TR/html401/interact/forms.html#h-17.9.1
      * @param string $name
      * @param string $id
      * @return string
      */
-    private function label($name, $id)
+    private function label($text, $id)
     {
         $content = '';
         $content .= $this->openTag('label', array('for' => $id));
-        $content .= htmlspecialchars($this->view->translate($name . '_label'));
+        $content .= htmlspecialchars($this->view->translate($text));
         $content .= $this->closeTag('label');
         return $content;
     }
