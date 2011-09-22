@@ -52,6 +52,20 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
     const VALID_POSITIVE_INTEGER = 106;
 
     /**
+     * Valid host name
+     *
+     * @see #478
+     */
+    const VALID_HOSTNAME = 107;
+
+    /**
+     * Valid host name or ip address
+     *
+     * @see #478
+     */
+    const VALID_HOSTADDRESS = 108;
+
+    /**
      * A valid IPv4 address like '192.168.1.1' 
      */
     const VALID_IPv4 = 200;
@@ -266,6 +280,12 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
 
             case self::VALID_USERNAME:
                 return $validator->username();
+
+            case self::VALID_HOSTNAME:
+                return $validator->hostname();
+
+            case self::VALID_HOSTADDRESS:
+                return $validator->orValidator($this->getValidator()->ipV4Address(), $this->getValidator()->hostname());
 
             case self::VALID_NOTEMPTY:
                 return $validator->notEmpty();

@@ -171,7 +171,7 @@ class Nethgui_Core_ValidatorTest extends PHPUnit_Framework_TestCase
 
     /**
      * @todo
-     */    
+     */
     public function testInteger()
     {
         $this->markTestIncomplete();
@@ -215,6 +215,47 @@ class Nethgui_Core_ValidatorTest extends PHPUnit_Framework_TestCase
     public function testEqualTo()
     {
         $this->markTestIncomplete();
+    }
+
+    /**
+     * @exp
+     */
+    public function testMinLength()
+    {
+        $this->object->minLength(3);
+              
+        $this->assertFalse($this->object->evaluate(''));
+        $this->assertFalse($this->object->evaluate('AA'));
+        $this->assertTrue($this->object->evaluate('AAA'));
+        $this->assertTrue($this->object->evaluate('AAAA'));
+        
+        $this->setExpectedException('Nethgui_Exception_Validator');
+        $this->object->evaluate(array('a'));        
+    }
+
+    public function testMaxLength()
+    {
+        $this->object->maxLength(3);
+
+        $this->assertTrue($this->object->evaluate(''));
+        $this->assertTrue($this->object->evaluate('AA'));
+        $this->assertTrue($this->object->evaluate('AAA'));
+        $this->assertFalse($this->object->evaluate('AAAA'));
+
+        $this->setExpectedException('Nethgui_Exception_Validator');
+        $this->object->evaluate(10);
+    }
+
+    public function testHostnamePass1()
+    {
+        $this->object->hostname();
+        $this->assertTrue($this->object->evaluate('www.nethesis.it'));
+        $this->assertFalse($this->object->evaluate('www.micro$oft.com'));
+        $this->assertFalse($this->object->evaluate(''));
+        $this->assertFalse($this->object->evaluate(str_repeat('w', 65) . '.example.com'));
+        $this->assertFalse($this->object->evaluate('www.' . str_repeat('.aaa', 100)));
+
+        //print_r($this->object->getFailureInfo());
     }
 
 }

@@ -44,8 +44,8 @@ class Nethgui_Core_Validator implements Nethgui_Core_ValidatorInterface
         } else {
             $set = $args;
         }
-      
-        if(count($set) > 5) {
+
+        if (count($set) > 5) {
             $setToShow = array_splice($set, 0, 3);
             $setToShow[] = '... ';
             $setToShow = array_merge($setToShow, array_splice($set, -2, 2));
@@ -112,6 +112,18 @@ class Nethgui_Core_Validator implements Nethgui_Core_ValidatorInterface
     }
 
     /**
+     * Check if the given value is a valid host name
+     * @return Nethgui_Core_Validator
+     */
+    public function hostname()
+    {
+        return $this
+                ->addToChain('minLength', NULL, 1)
+                ->addToChain('maxLength', NULL, 255)
+                ->addToChain(__FUNCTION__);
+    }
+
+    /**
      * @todo
      * @return Nethgui_Core_Validator
      */
@@ -155,22 +167,33 @@ class Nethgui_Core_Validator implements Nethgui_Core_ValidatorInterface
 
     public function lessThan($cmp)
     {
-        $template = array('less than ${0}', array('${0}'=> $cmp));
+        $template = array('less than ${0}', array('${0}' => $cmp));
         return $this->addToChain(__FUNCTION__, $template, $cmp);
     }
 
     public function greatThan($cmp)
     {
-        $template = array('great than ${0}', array('${0}'=> $cmp));
+        $template = array('great than ${0}', array('${0}' => $cmp));
         return $this->addToChain(__FUNCTION__, $template, $cmp);
     }
 
     public function equalTo($cmp)
     {
-        $template = array('equal to ${0}', array('${0}'=> $cmp));
+        $template = array('equal to ${0}', array('${0}' => $cmp));
         return $this->addToChain(__FUNCTION__, $template, $cmp);
     }
 
+    public function minLength($length)
+    {
+        $template = array('minimum length ${0}', array('${0}' => $length));
+        return $this->addToChain(__FUNCTION__, $template, $length);
+    }
+
+    public function maxLength($length)
+    {
+        $template = array('maximum length ${0}', array('${0}' => $length));
+        return $this->addToChain(__FUNCTION__, $template, $length);
+    }
 
     /**
      * Invert the evaluation result for the next rule.
@@ -413,6 +436,43 @@ class Nethgui_Core_Validator implements Nethgui_Core_ValidatorInterface
         return $value == $cmp;
     }
 
+    private function evalMinLength($s, $min)
+    {
+        if ( ! is_string($s)) {
+            throw new Nethgui_Exception_Validator(sprintf("Invalid type `%s`. Value must be a string.", gettype($s)));
+        }
+        return strlen($s) >= $min;
+    }
+
+    private function evalMaxLength($s, $max)
+    {
+        if ( ! is_string($s)) {
+            throw new Nethgui_Exception_Validator(sprintf("Invalid type `%s`. Value must be a string.", gettype($s)));
+        }
+        return strlen($s) <= $max;
+    }
+
+    private function evalHostname($value)
+    {
+        $parts = explode('.', $value);
+
+        // letter-case ignored.
+        // FIXME: allow underscore (_) in hostname?
+        $pattern = '/^[a-z0-9][-_a-z0-9]*$/i';
+
+        foreach ($parts as $part) {
+            if (strlen($part) > 63) {
+                return FALSE;
+            }
+
+            if (preg_match($pattern, $part) == 0) {
+                return FALSE;
+            }
+        }
+
+        return TRUE;
+    }
+
 }
 
 /**
@@ -429,6 +489,7 @@ class Nethgui_Core_CollectionValidator implements Nethgui_Core_ValidatorInterfac
      */
     private $memberValidator;
     private $failureInfo;
+
     /**
      *
      * @var Iterator
@@ -488,6 +549,7 @@ class Nethgui_Core_OrValidator implements Nethgui_Core_ValidatorInterface
      * @var Nethgui_Core_ValidatorInterface
      */
     private $v1;
+
     /**
      *
      * @var Nethgui_Core_ValidatorInterface
