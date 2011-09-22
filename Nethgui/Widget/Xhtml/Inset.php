@@ -53,6 +53,11 @@ class Nethgui_Widget_Xhtml_Inset extends Nethgui_Widget_Xhtml
             && stripos($content, '<form ') === FALSE) {
             // Wrap a simple module into a FORM tag automatically
             $contentWidget = $dview->form($flags)->insert($contentWidget);
+
+            // Re-wrap a simple root-module into an Action div
+            if($module->getParent() === NULL) {
+                $contentWidget = $dview->panel()->setAttribute('class', 'Action')->insert($contentWidget);
+            }
         }
 
         return (String) $contentWidget;
