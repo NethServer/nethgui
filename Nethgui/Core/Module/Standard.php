@@ -81,6 +81,13 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
     const VALID_TIME = 110;
 
     /**
+     * Boolean validator.
+     * 
+     * '', '0', FALSE are FALSE boolean values. Other values are TRUE.
+     */
+    const VALID_BOOLEAN = 111;
+
+    /**
      * A valid IPv4 address like '192.168.1.1' 
      */
     const VALID_IPv4 = 200;
@@ -99,6 +106,11 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
      * Alias for VALID_IPv4_OR_EMPTY
      */
     const VALID_IP_OR_EMPTY = 203;
+
+    /**
+     * A valid TCP/UDP port number 0-65535
+     */
+    const VALID_PORTNUMBER = 204;
 
     /**
      * This collection holds the parameter values as primitive datatype or adapter objects.
@@ -317,6 +329,12 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
 
             case self::VALID_POSITIVE_INTEGER:
                 return $validator->integer()->positive();
+
+            case self::VALID_PORTNUMBER:
+                return $validator->integer()->greatThan(0)->lessThan(65535);
+
+            case self::VALID_BOOLEAN:
+                return $validator->memberOf('1', 'yes', '0', '');
 
             case self::VALID_IP_OR_EMPTY:
             case self::VALID_IPv4_OR_EMPTY:
