@@ -246,16 +246,22 @@ class Nethgui_Core_ValidatorTest extends PHPUnit_Framework_TestCase
         $this->object->evaluate(10);
     }
 
-    public function testHostnamePass1()
+    public function testHostname()
     {
         $this->object->hostname();
-        $this->assertTrue($this->object->evaluate('www.nethesis.it'));
+
+        $this->assertTrue($this->object->evaluate('www.Nethesis.It'));
+        $this->assertTrue($this->object->evaluate('A'));
+        
         $this->assertFalse($this->object->evaluate('www.micro$oft.com'));
+        $this->assertFalse($this->object->evaluate('-ww.fail.com'));
+        $this->assertFalse($this->object->evaluate('www._fail.com'));
+        $this->assertFalse($this->object->evaluate('www.fail.-'));
         $this->assertFalse($this->object->evaluate(''));
+
+        //length test
         $this->assertFalse($this->object->evaluate(str_repeat('w', 65) . '.example.com'));
         $this->assertFalse($this->object->evaluate('www.' . str_repeat('.aaa', 100)));
-
-        //print_r($this->object->getFailureInfo());
     }
 
 }
