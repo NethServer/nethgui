@@ -23,21 +23,27 @@ class Nethgui_Core_ValidatorTest extends PHPUnit_Framework_TestCase
         $this->object = new Nethgui_Core_Validator;
     }
 
-    /**
-     * @todo Implement testOrValidator().
-     */
     public function testOrValidator()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $v1 = new Nethgui_Core_Validator();
+        $v2 = new Nethgui_Core_Validator();
+        $v1->equalTo(1);
+        $v2->equalTo(2);
+        $this->object->orValidator($v1, $v2);
+
+        $this->assertTrue($this->object->evaluate(1));
+        $this->assertTrue($this->object->evaluate(2));
+
+        $this->assertFalse($this->object->evaluate(0));
+        $this->assertFalse($this->object->evaluate(3));
     }
 
     public function testMemberOf1()
     {
-        $this->object->memberOf('a', 'b', 'c');
+        $this->object->memberOf('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h');
         $this->assertTrue($this->object->evaluate('a'));
+        $this->assertTrue($this->object->evaluate('h'));
+        $this->assertTrue($this->object->evaluate('d'));
         $this->assertFalse($this->object->evaluate('z'));
     }
 
@@ -60,13 +66,23 @@ class Nethgui_Core_ValidatorTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($this->object->evaluate('aaaaa'));
     }
 
-    /**
-     * @todo Implement testNotEmpty().
-     */
+
     public function testNotEmpty()
     {
         $this->object->notEmpty();
         $this->assertFalse($this->object->evaluate(''));
+    }
+
+    public function testEmpty()
+    {
+        $this->object->isEmpty();
+        $this->assertTrue($this->object->evaluate(''));
+        $this->assertTrue($this->object->evaluate(FALSE));
+        $this->assertTrue($this->object->evaluate(NULL));
+        $this->assertTrue($this->object->evaluate(array()));
+        $this->assertTrue($this->object->evaluate('0'));
+
+        $this->assertFalse($this->object->evaluate('1'));
     }
 
     public function testForceResultTrue()
@@ -86,21 +102,12 @@ class Nethgui_Core_ValidatorTest extends PHPUnit_Framework_TestCase
      */
     public function testIpV4Address()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
-    }
+        $this->object->ipV4Address();
 
-    /**
-     * @todo Implement testIpV6Address().
-     */
-    public function testIpV6Address()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $this->assertTrue($this->object->evaluate('1.1.1.1'));
+        $this->assertFalse($this->object->evaluate('0.1.1.1'));
+        $this->assertFalse($this->object->evaluate(''));
+        $this->assertFalse($this->object->evaluate('a.b.c.d'));
     }
 
     /**
@@ -113,6 +120,20 @@ class Nethgui_Core_ValidatorTest extends PHPUnit_Framework_TestCase
             'This test has not been implemented yet.'
         );
     }
+    
+
+    /**
+     * @todo Implement testIpV6Address().
+     */
+    public function testIpV6Address()
+    {
+        // Remove the following lines when you implement this test.
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
+    }
+
+
 
     /**
      * @todo Implement testIpV6Netmask().
@@ -174,47 +195,64 @@ class Nethgui_Core_ValidatorTest extends PHPUnit_Framework_TestCase
      */
     public function testInteger()
     {
-        $this->markTestIncomplete();
+        $this->object->integer();
+
+        $this->assertTrue($this->object->evaluate('123'));
+        $this->assertTrue($this->object->evaluate('123.0'));
+        $this->assertFalse($this->object->evaluate('123.1'));
+        $this->assertFalse($this->object->evaluate('a'));
+        $this->assertTrue($this->object->evaluate('-123'));
     }
 
-    /**
-     * @todo
-     */
     public function testPositive()
     {
-        $this->markTestIncomplete();
+        $this->object->positive();
+
+        $this->assertTrue($this->object->evaluate(1.1));
+        $this->assertTrue($this->object->evaluate('1.1'));
+
+        $this->assertFalse($this->object->evaluate('0'));
+        $this->assertFalse($this->object->evaluate(FALSE));
+        $this->assertFalse($this->object->evaluate(-1));
     }
 
-    /**
-     * @todo
-     */
     public function testNegative()
     {
-        $this->markTestIncomplete();
+        $this->object->negative();
+        $this->assertTrue($this->object->evaluate('-1.2'));
+        $this->assertTrue($this->object->evaluate(-1));
+
+        $this->assertFalse($this->object->evaluate(1.1));
+        $this->assertFalse($this->object->evaluate('1.1'));
+
+        $this->assertFalse($this->object->evaluate('0'));
     }
 
-    /**
-     * @todo
-     */
     public function testGreatThan()
     {
-        $this->markTestIncomplete();
+        $this->object->greatThan('100');
+
+        $this->assertTrue($this->object->evaluate('101'));
+        $this->assertFalse($this->object->evaluate('100'));
+        $this->assertFalse($this->object->evaluate('99'));
     }
 
-    /**
-     * @todo
-     */
     public function testLessThan()
     {
-        $this->markTestIncomplete();
-    }
+        $this->object->lessThan('100');
 
-    /**
-     * @todo
-     */
+        $this->assertTrue($this->object->evaluate('99'));
+        $this->assertFalse($this->object->evaluate('100'));
+        $this->assertFalse($this->object->evaluate('101'));
+
+        }
+
     public function testEqualTo()
     {
-        $this->markTestIncomplete();
+        $this->object->equalTo('100');
+
+        $this->assertTrue($this->object->evaluate('100'));
+        $this->assertFalse($this->object->evaluate('101'));
     }
 
     /**
@@ -223,14 +261,14 @@ class Nethgui_Core_ValidatorTest extends PHPUnit_Framework_TestCase
     public function testMinLength()
     {
         $this->object->minLength(3);
-              
+
         $this->assertFalse($this->object->evaluate(''));
         $this->assertFalse($this->object->evaluate('AA'));
         $this->assertTrue($this->object->evaluate('AAA'));
         $this->assertTrue($this->object->evaluate('AAAA'));
-        
+
         $this->setExpectedException('Nethgui_Exception_Validator');
-        $this->object->evaluate(array('a'));        
+        $this->object->evaluate(array('a'));
     }
 
     public function testMaxLength()
@@ -252,7 +290,7 @@ class Nethgui_Core_ValidatorTest extends PHPUnit_Framework_TestCase
 
         $this->assertTrue($this->object->evaluate('www.Nethesis.It'));
         $this->assertTrue($this->object->evaluate('A'));
-        
+
         $this->assertFalse($this->object->evaluate('www.micro$oft.com'));
         $this->assertFalse($this->object->evaluate('-ww.fail.com'));
         $this->assertFalse($this->object->evaluate('www._fail.com'));
@@ -262,6 +300,69 @@ class Nethgui_Core_ValidatorTest extends PHPUnit_Framework_TestCase
         //length test
         $this->assertFalse($this->object->evaluate(str_repeat('w', 65) . '.example.com'));
         $this->assertFalse($this->object->evaluate('www.' . str_repeat('.aaa', 100)));
+    }
+
+    public function testDateSmallEndian()
+    {
+        $this->object->date('dd/mm/YYYY');
+
+        $this->assertTrue($this->object->evaluate('31/12/1999'));
+        $this->assertTrue($this->object->evaluate('1/1/1999'));
+
+        $this->assertFalse($this->object->evaluate(''));
+        $this->assertFalse($this->object->evaluate('12-31-1999'));
+        $this->assertFalse($this->object->evaluate('1999-31-12'));
+        $this->assertFalse($this->object->evaluate('0/0/0'));
+        $this->assertFalse($this->object->evaluate('29-02-1999'));
+        $this->assertFalse($this->object->evaluate('29/02/1999'));
+    }
+
+    public function testDateMiddleEndian()
+    {
+        $this->object->date('mm-dd-YYYY');
+
+        $this->assertTrue($this->object->evaluate('12-31-1999'));
+        $this->assertTrue($this->object->evaluate('1-1-1999'));
+
+        $this->assertFalse($this->object->evaluate(''));
+        $this->assertFalse($this->object->evaluate('31/12/1999'));
+        $this->assertFalse($this->object->evaluate('1999-31-12'));
+        $this->assertFalse($this->object->evaluate('0-0-0'));
+        $this->assertFalse($this->object->evaluate('02-29-1999'));
+        $this->assertFalse($this->object->evaluate('02/29/1999'));
+    }
+
+    public function testDateBigEndian()
+    {
+        $this->object->date('YYYY-mm-dd');
+
+        $this->assertTrue($this->object->evaluate('1999-12-31'));
+        $this->assertFalse($this->object->evaluate('1999-31-12'));
+    }
+
+    public function testDateDefault()
+    {
+        $this->object->date();
+
+        $this->assertTrue($this->object->evaluate('31/12/1999'));
+    }
+
+    public function testDateUnknownFormat()
+    {
+        $this->setExpectedException('Nethgui_Exception_Validator');
+        $this->object->date('mm.dd.yyyy');
+        $this->object->evaluate('1999-12-31');
+    }
+
+    public function testTime()
+    {
+        $this->object->time();
+
+        $this->assertTrue($this->object->evaluate('00:00'));
+        $this->assertTrue($this->object->evaluate('23:59'));
+
+        $this->assertFalse($this->object->evaluate('24:00'));
+        $this->assertFalse($this->object->evaluate('1:0'));
     }
 
 }
