@@ -26,6 +26,9 @@ $L['valid_integer'] = 'numero intero';
 $L['valid_ipV4Address'] = 'indirizzo IPv4';
 $L['valid_username'] = 'lettera iniziale, poi solo lettere minuscole, numeri, simboli "-" e "_"';
 $L['valid_notEmpty'] = 'non vuoto';
+$L['valid_OR'] = 'oppure';
+$L['valid_hostname'] = 'nome host';
+
 
 $L['Incorrect value'] = 'Valore non corretto';
 $L['Incorrect values'] = 'Valori non corretti';
@@ -34,3 +37,4 @@ $L['nethgui-test_success'] = 'Evento di test Nethgui eseguito con successo (${0}
 $L['nethgui-test_failure'] = 'Errore durante l\'evento di test Nethgui (${0})';
 
 $L['Please wait...'] = 'Attendere prego...';
+

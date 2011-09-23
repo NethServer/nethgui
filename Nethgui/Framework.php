@@ -240,7 +240,19 @@ class Nethgui_Framework
             return $translation;
         }
 
-        return strtr($translation, $args);
+        /**
+         * Automatically susbstitute numeric keys with ${N} placeholders.
+         */
+        $placeholders = array();
+        foreach($args as $argId => $argValue) {
+            if(is_numeric($argId)) {
+                $placeholders[sprintf('${%d}', $argId)] = $argValue;
+            } else {
+                $placeholders[$argId] = $argValue;
+            }
+        }
+
+        return strtr($translation, $placeholders);
     }
 
     /**

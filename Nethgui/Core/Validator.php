@@ -258,6 +258,7 @@ class Nethgui_Core_Validator implements Nethgui_Core_ValidatorInterface
                     $args = array();
                 }
 
+                // If error message template and arguments is missing create a default one:
                 if ( ! isset($expression[3]) || ! is_array($expression[3])) {
                     $expression[3] = array('valid_' . $expression[0], array());
                 }
@@ -265,17 +266,17 @@ class Nethgui_Core_Validator implements Nethgui_Core_ValidatorInterface
                 array_unshift($args, $value);
                 $isValid = call_user_func_array($expression[1], $args);
                 if (($isValid XOR $notFlag) === FALSE) {
-                    $this->failureInfo = $expression[3];
+                    $this->failureInfo[] = $expression[3];
                     return FALSE;
                 }
             } elseif ($expression instanceof Nethgui_Core_ValidatorInterface) {
                 $isValid = $expression->evaluate($value);
                 if (($isValid XOR $notFlag) === FALSE) {
-                    $this->failureInfo = $expression->getFailureInfo();
+                    $this->failureInfo = array_merge($this->failureInfo, $expression->getFailureInfo());
                     return FALSE;
                 }
             } elseif ($expression === FALSE) {
-                $this->failureInfo = 'forceResult';
+                $this->failureInfo[] = array('valid_forced_failure', array());
                 return FALSE;
             } elseif ($expression === TRUE) {
                 break;
@@ -284,8 +285,7 @@ class Nethgui_Core_Validator implements Nethgui_Core_ValidatorInterface
             // reset $notFlag flag
             $notFlag = FALSE;
         }
-
-        $this->failureInfo = FALSE;
+        
         return TRUE;
     }
 
@@ -458,7 +458,7 @@ class Nethgui_Core_Validator implements Nethgui_Core_ValidatorInterface
 
         // letter-case ignored.
         // FIXME: allow underscore (_) in hostname?
-        $pattern = '/^[a-z0-9][-_a-z0-9]*$/i';
+        $pattern = '/^[a-z0-9](-?[a-z0-9])*$/i';
 
         foreach ($parts as $part) {
             if (strlen($part) > 63) {
@@ -519,7 +519,7 @@ class Nethgui_Core_CollectionValidator implements Nethgui_Core_ValidatorInterfac
 
         foreach ($this->iterator as $e) {
             if ($this->memberValidator->evaluate($e) === FALSE) {
-                $this->failureInfo[] = $this->memberValidator->getFailureInfo();
+                $this->failureInfo = array_merge($this->failureInfo, $this->memberValidator->getFailureInfo());
                 return FALSE;
             }
         }
@@ -572,8 +572,7 @@ class Nethgui_Core_OrValidator implements Nethgui_Core_ValidatorInterface
             $e2 = $this->v2->evaluate($value);
 
             if ($e2 === FALSE) {
-                $this->failureInfo[] = $this->v1->getFailureInfo();
-                $this->failureInfo[] = $this->v2->getFailureInfo();
+                $this->failureInfo = array_merge($this->failureInfo, $this->v1->getFailureInfo(), $this->v2->getFailureInfo());
                 return FALSE;
             }
             return TRUE;
