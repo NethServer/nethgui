@@ -46,9 +46,9 @@ class Nethgui_Core_Validator implements Nethgui_Core_ValidatorInterface
         }
 
         if (count($set) > 5) {
-            $setToShow = array_splice($set, 0, 3);
+            $setToShow = array_slice($set, 0, 3);
             $setToShow[] = '... ';
-            $setToShow = array_merge($setToShow, array_splice($set, -2, 2));
+            $setToShow = array_merge($setToShow, array_slice($set, -2, 2));
         } else {
             $setToShow = $set;
         }
@@ -215,6 +215,33 @@ class Nethgui_Core_Validator implements Nethgui_Core_ValidatorInterface
     }
 
     /**
+     * Valid date
+     *
+     * Default format is given by the current user language settings.
+     *
+     * @see #513
+     */
+    public function date($format = NULL)
+    {
+        if (is_null($format)) {
+            $format = Nethgui_Framework::getInstance()->getDateFormat();
+        }
+
+        $template = array('valid_date `${0}`', array('${0}' => $format));
+        return $this->addToChain(__FUNCTION__, $template, $format);
+    }
+
+    /**
+     * Valid time 24-hours format HH:MM(:SS)?
+     *
+     * @see #513
+     */
+    public function time()
+    {
+        return $this->addToChain(__FUNCTION__);
+    }
+
+    /**
      * Check if the value is collection of elements satisfying the given validator
      * @param Nethgui_Core_Validator $v Member validator
      * @return Nethgui_Core_Validator 
@@ -285,7 +312,7 @@ class Nethgui_Core_Validator implements Nethgui_Core_ValidatorInterface
             // reset $notFlag flag
             $notFlag = FALSE;
         }
-        
+
         return TRUE;
     }
 
@@ -426,7 +453,7 @@ class Nethgui_Core_Validator implements Nethgui_Core_ValidatorInterface
         return $value < $cmp;
     }
 
-    private function greaterThan($value, $cmp)
+    private function evalGreatThan($value, $cmp)
     {
         return $value > $cmp;
     }
@@ -471,6 +498,43 @@ class Nethgui_Core_Validator implements Nethgui_Core_ValidatorInterface
         }
 
         return TRUE;
+    }
+
+    private function evalDate($value, $format)
+    {
+        if ($format == 'dd/mm/YYYY') {
+            list($day, $month, $year) = explode('/', $value) + array(0,0,0);
+        } elseif ($format == 'mm-dd-YYYY') {
+            list($month, $day, $year) = explode('-', $value) + array(0,0,0);
+        } elseif ($format == 'YYYY-mm-dd') {
+            list($year, $month, $day) = explode('-', $value) + array(0,0,0);
+        } else {
+            throw new Nethgui_Exception_Validator(sprintf("Unknown date format `%s`", $format));
+        }
+
+        return checkdate(intval($month), intval($day), intval($year));
+    }
+
+    private function evalTime($value)
+    {
+        $parts = array();
+        $pattern = '|^(\d\d):(\d\d)(?:\:(\d\d))?$|';
+
+        if (preg_match($pattern, $value, $parts) == 0) {
+            return FALSE;
+        };
+
+        $parts = $parts + array('00', '00', '00');
+
+        list($h, $m, $s) = array_map('intval', $parts);
+
+        if (($h >= 0 && $h < 24)
+            && ($m >= 0 && $m < 60)
+            && ($s >= 0 && $s < 60)) {
+            return TRUE;
+        }
+
+        return FALSE;
     }
 
 }
@@ -538,7 +602,7 @@ class Nethgui_Core_CollectionValidator implements Nethgui_Core_ValidatorInterfac
 /**
  * @author Davide Principi <davide.principi@nethesis.it>
  * @package Core
- * @internal
+ * @ignore
  * @see Nethgui_Core_Validator::orValidator()
  */
 class Nethgui_Core_OrValidator implements Nethgui_Core_ValidatorInterface

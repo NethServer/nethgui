@@ -2,6 +2,7 @@
 /**
  * @package Core
  * @author Davide Principi <davide.principi@nethesis.it>
+ * @ignore
  */
 
 /**
@@ -9,7 +10,7 @@
  * during DialogBox serialization.
  * 
  * @see Nethgui_Core_DialogBox
- * @internal
+ * @ignore
  * @package Core
  */
 class Nethgui_Core_ModuleSurrogate implements Nethgui_Core_ModuleInterface, Nethgui_Core_LanguageCatalogProvider, Serializable

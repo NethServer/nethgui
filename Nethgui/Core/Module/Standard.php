@@ -65,6 +65,21 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
      */
     const VALID_HOSTADDRESS = 108;
 
+
+    /**
+     * Valid date
+     *
+     * @see #513
+     */
+    const VALID_DATE = 109;
+
+    /**
+     * Valid time
+     *
+     * @see #513
+     */
+    const VALID_TIME = 110;
+
     /**
      * A valid IPv4 address like '192.168.1.1' 
      */
@@ -289,6 +304,12 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
 
             case self::VALID_NOTEMPTY:
                 return $validator->notEmpty();
+
+            case self::VALID_DATE:
+                return $validator->date();
+
+            case self::VALID_TIME:
+                return $validator->time();
 
             case self::VALID_IP:
             case self::VALID_IPv4:

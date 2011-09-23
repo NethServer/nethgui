@@ -353,15 +353,21 @@ class Nethgui_Framework
     public function getDateFormat()
     {
         switch ($this->getLanguageCode()) {
-            default:
+            case 'en': // middle endian
+                $format = 'mm-dd-YYYY';
+                break;
+            case 'it': // little endian
                 $format = 'dd/mm/YYYY';
+                break;
+            default: // big endian ISO 8601
+                $format = 'YYYY-mm-dd';
         }
 
         return $format;
     }
 
     /**
-     * Class autoloader
+     * Simple class autoloader
      *
      * This function is registered as SPL class autoloader.
      *
@@ -371,7 +377,7 @@ class Nethgui_Framework
      */
     static public function autoloader($className)
     {
-        /* Skip CodeIgniter "namespace", "configuration" */
+        /* Skip CodeIgniter namespace, and "configuration" */
         if (substr($className, 0, 3) == 'CI_' || $className === 'configuration') {
             return;
         }

@@ -28,6 +28,8 @@ $L['valid_username'] = 'lettera iniziale, poi solo lettere minuscole, numeri, si
 $L['valid_notEmpty'] = 'non vuoto';
 $L['valid_OR'] = 'oppure';
 $L['valid_hostname'] = 'nome host';
+$L['valid_time'] = 'formato ora `HH:MM[:SS]`';
+$L['valid_date `${0}`'] = 'formato data `${0}`';
 
 
 $L['Incorrect value'] = 'Valore non corretto';
