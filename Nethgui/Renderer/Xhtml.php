@@ -1,11 +1,13 @@
 <?php
 /**
  * @package Renderer
+ * @ignore
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
 /**
  * @package Renderer
+ * @ignore
  */
 class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgui_Renderer_Abstract
 {

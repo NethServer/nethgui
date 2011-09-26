@@ -5,10 +5,10 @@
  */
 
 /**
- * Widgets help in the creation of the XHTML view output.
+ * Help in the creation of the XHTML view output.
  *
- * - Widgets can be nested in a hierarchical way through the insert() method.
- * - Widgets are configured through the attributes API {set,get,has}Attribute.
+ * - Can be nested in a hierarchical way through the insert() method.
+ * - Are configured through the attributes API {set,get,has}Attribute.
  *
  * @package Renderer
  * @author Davide Principi <davide.principi@nethesis.it>

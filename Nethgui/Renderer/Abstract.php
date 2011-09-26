@@ -8,14 +8,10 @@
  * A decorator that enhances a View with rendering capabilities
  * and forbids changes to the view data.
  *
- * Rendering methods calls can be chained, as they return a Renderer instance:
- * - Invoking a "container" method returns a new Renderer instance,
- *   representing the container itself.
- * - Invoking a "control" method returns the same Renderer instance.
+ * The rendering methods create and configure widget objects, implementing
+ * Nethgui_Renderer_WidgetInterface.
  *
- * Invoking the render() method, or casting the object to a string resets the
- * object to the initial (empty string) state.
- *
+ * @see Nethgui_Renderer_WidgetInterface
  * @see http://en.wikipedia.org/wiki/Decorator_pattern
  * @package Renderer
  */
