@@ -88,7 +88,7 @@ class Nethgui_Widget_Xhtml_Selector extends Nethgui_Widget_Xhtml
         );
 
         $content .= $this->openTag('fieldset', $fieldsetAttributes);
-       
+
         if (strlen($label) > 0) {
             $content .= $this->openTag('legend');
             $content .= htmlspecialchars($this->view->translate($label));
@@ -104,7 +104,11 @@ class Nethgui_Widget_Xhtml_Selector extends Nethgui_Widget_Xhtml
 
         $content .= $this->openTag('div', $choicesAttributes);
         // This hidden control holds the control name prefix:
-        $content .= $this->controlTag('input', $name, $flags, '', array('type' => 'hidden'));
+        if ($flags & Nethgui_Renderer_Abstract::SELECTOR_MULTIPLE) {
+            $content .= $this->controlTag('input', $name, $flags, '', array('type' => 'hidden', 'name' => $this->view->getControlName($name) . '[]'));
+        } else {
+            $content .= $this->controlTag('input', $name, $flags, '', array('type' => 'hidden'));
+        }
         $content .= $this->generateSelectorContentWidgetList($name, $value, $choices, $flags);
         $content .= $this->closeTag('div');
         $content .= $this->closeTag('fieldset');
