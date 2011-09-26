@@ -37,7 +37,7 @@ abstract class Test_Tool_ModuleTestCase extends PHPUnit_Framework_TestCase
             $this->assertEquals($value, $view[$key], "View parameter `{$key}`.");
         }
 
-        $env->fullViewOutput = $view->getClientEvents();
+        $this->fullViewOutput = $view->getClientEvents();
 
         foreach ($this->dbObjectCheckList as $dbStubInfo) {
             $this->assertTrue($dbStubInfo[1]->getState()->isFinal(), sprintf('Database `%s` is not in final state! %s', $dbStubInfo[0], $dbStubInfo[1]->getState()));

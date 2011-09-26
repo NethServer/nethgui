@@ -19,12 +19,12 @@ class Test_Tool_ModuleTestEnvironment
     private $databases = array();
     private $events = array();
     private $shellCommands = array();
-
     public $fullViewOutput = NULL;
 
     public function setDatabase($dbName, Test_Tool_MockState $state)
     {
         $this->databases[$dbName] = $state;
+        return $this;
     }
 
     public function getDatabaseNames()
@@ -32,6 +32,10 @@ class Test_Tool_ModuleTestEnvironment
         return array_keys($this->databases);
     }
 
+    /**
+     * @param string $name
+     * @return Test_Tool_MockState
+     */
     public function getDatabase($name)
     {
         return $this->databases[$name];
@@ -39,7 +43,7 @@ class Test_Tool_ModuleTestEnvironment
 
     public function isSubmitted()
     {
-        return !is_null($this->request);
+        return ! is_null($this->request);
     }
 
     public function setRequest($request)
@@ -49,6 +53,7 @@ class Test_Tool_ModuleTestEnvironment
         } else {
             $this->request = NULL;
         }
+        return $this;
     }
 
     public function getRequest()
@@ -63,6 +68,7 @@ class Test_Tool_ModuleTestEnvironment
     public function setArguments($arguments)
     {
         $this->arguments = $arguments;
+        return $this;
     }
 
     public function getArguments()
@@ -73,6 +79,7 @@ class Test_Tool_ModuleTestEnvironment
     public function setView($expectedView)
     {
         $this->expectedView = $expectedView;
+        return $this;
     }
 
     public function getView()
@@ -87,6 +94,7 @@ class Test_Tool_ModuleTestEnvironment
     public function setViewMode($viewMode)
     {
         $this->viewMode = $viewMode;
+        return $this;
     }
 
     public function getViewMode()
@@ -97,6 +105,7 @@ class Test_Tool_ModuleTestEnvironment
     public function setEvents($events)
     {
         $this->events = $events;
+        return $this;
     }
 
     public function getEvents()
@@ -104,14 +113,16 @@ class Test_Tool_ModuleTestEnvironment
         return $this->events;
     }
 
-    public function setCommand($cmd, $output)
+    public function setCommand($regexp, $output)
     {
-        $this->shellCommands[$cmd] = $output;
+        $this->shellCommands[$regexp] = $output;
+        return $this;
     }
 
     public function setCommands($commands)
     {
         $this->shellCommands = $commands;
+        return $this;
     }
 
     public function getCommands()
