@@ -161,19 +161,14 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
         }
 
         $action = $this->getIdentifier();
+        $key = $this->parameters[$this->key];
 
         if ($action == 'delete') {
-            $key = $this->parameters[$this->key];
-
-            if (isset($this->tableAdapter[$key])) {
-                unset($this->tableAdapter[$key]);
-            } else {
-                throw new Nethgui_Exception_Process('Cannot delete `' . $key . '`');
-            }
+            $this->processDelete($key);
         } elseif ($action == 'create') {
-            // PASS
+            $this->processCreate($key);
         } elseif ($action == 'update') {
-            // PASS 
+            $this->processUpdate($key);
         } else {
             throw new Nethgui_Exception_HttpStatusClientError('Not found', 404);
         }
@@ -186,6 +181,25 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
         if ($changes > 0) {
             $this->signalAllEventsFinally();
         }
+    }
+
+    protected function processDelete($key)
+    {       
+        if (isset($this->tableAdapter[$key])) {
+            unset($this->tableAdapter[$key]);
+        } else {
+            throw new Nethgui_Exception_Process('Cannot delete `' . $key . '`');
+        }
+    }
+
+    protected function processCreate($key)
+    {
+        // NOOP
+    }
+
+    protected function processUpdate($key)
+    {
+        // NOOP
     }
 
     public function prepareView(Nethgui_Core_ViewInterface $view, $mode)
