@@ -214,6 +214,10 @@ class Nethgui_Framework
      */
     public function translate($string, $args, $languageCode = NULL, $catalog = NULL)
     {
+        if ( ! is_string($string)) {
+            throw new InvalidArgumentException(sprintf("translate(): unexpected `%s` type!", gettype($string)));
+        }
+
         if ( ! isset($languageCode)) {
             $languageCode = $this->languageCode;
         }
@@ -244,8 +248,8 @@ class Nethgui_Framework
          * Automatically susbstitute numeric keys with ${N} placeholders.
          */
         $placeholders = array();
-        foreach($args as $argId => $argValue) {
-            if(is_numeric($argId)) {
+        foreach ($args as $argId => $argValue) {
+            if (is_numeric($argId)) {
                 $placeholders[sprintf('${%d}', $argId)] = $argValue;
             } else {
                 $placeholders[$argId] = $argValue;
@@ -543,7 +547,7 @@ class Nethgui_Framework
 
         // Dismiss transient dialog boxes only if no redirection or fake redirection occurred:
         if ($redirectUrl === FALSE || $redirectUrl == $this->buildUrl($currentModuleIdentifier)) {
-            $notificationManager->dismissTransientDialogBoxes();           
+            $notificationManager->dismissTransientDialogBoxes();
         }
     }
 
@@ -556,13 +560,11 @@ class Nethgui_Framework
     private function getRedirectUrl(Nethgui_Core_UserInterface $user)
     {
         $redirect = $user->getRedirect();
-        if ( ! is_null($redirect)) {
+        if (is_array($redirect)) {
             list($module, $path) = $redirect;
-            $redirectUrl = $this->buildModuleUrl($module, $path);
-        } else {
-            $redirectUrl = FALSE;
+            return $this->buildModuleUrl($module, $path);
         }
-        return $redirectUrl;
+        return FALSE;
     }
 
     /**

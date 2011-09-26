@@ -181,6 +181,16 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
         if ($changes > 0) {
             $this->signalAllEventsFinally();
         }
+
+        $request = $this->getRequest();
+        if ($request instanceof Nethgui_Core_RequestInterface
+            && $request->isSubmitted()) {
+            $module = $this;
+            while ($module->getParent() !== NULL) {
+                $module = $module->getParent();
+            }
+            $request->getUser()->setRedirect($module);
+        }
     }
 
     protected function processDelete($key)
@@ -207,16 +217,6 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
         parent::prepareView($view, $mode);
         if ($mode == self::VIEW_SERVER) {
             $view['__key'] = $this->key;
-        }
-
-        $request = $this->getRequest();
-        if ($request instanceof Nethgui_Core_RequestInterface
-            && $request->isSubmitted()) {
-            $module = $this;
-            while ($module->getParent() !== NULL) {
-                $module = $module->getParent();
-            }
-            $request->getUser()->setRedirect($module);
         }
     }
 
