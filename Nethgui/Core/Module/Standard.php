@@ -297,10 +297,10 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
                 return $validator->forceResult(TRUE);
 
             case self::VALID_ANYTHING_COLLECTION:
-                return $validator->collectionValidator($this->getValidator()->forceResult(TRUE));
+                return $validator->orValidator($this->getValidator()->isEmpty(), $this->getValidator()->collectionValidator($this->getValidator()->forceResult(TRUE)));
 
             case self::VALID_USERNAME_COLLECTION:
-                return $validator->collectionValidator($this->getValidator()->username());
+                return $validator->orValidator($this->getValidator()->isEmpty(), $this->getValidator()->collectionValidator($this->getValidator()->username()));
 
             case self::VALID_SERVICESTATUS:
                 return $validator->memberOf('enabled', 'disabled');
