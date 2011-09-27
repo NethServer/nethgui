@@ -40,6 +40,8 @@ interface Nethgui_Renderer_Abstract
     
     const SELECTOR_MULTIPLE = 0x40000;
     const SELECTOR_DROPDOWN = 0x80000;
+
+    const TEXTINPUT_PASSWORD = 0x100000;
     
     /**
      * Include a view member
