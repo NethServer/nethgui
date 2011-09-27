@@ -157,7 +157,9 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
      * Render callback.
      *
      * This is the view template callback function that forwards the
-     * render message to the current action. 
+     * render message to the current action.
+     *
+     * Note: The current action template is wrapped inside a DIV.Action tag.
      *
      * @internal Actually called by the framework.
      * @param Nethgui_Renderer_Abstract $view The view
@@ -165,7 +167,8 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
      */
     public function renderCurrentAction(Nethgui_Renderer_Abstract $view)
     {
-        return $view->inset($this->currentAction->getIdentifier());
+        $contentWidget = $view->inset($this->currentAction->getIdentifier());
+        return $view->panel()->setAttribute('class', 'Action')->insert($contentWidget);
     }
 
     public function renderDefault(Nethgui_Renderer_Abstract $view)
