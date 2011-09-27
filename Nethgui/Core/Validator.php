@@ -503,11 +503,11 @@ class Nethgui_Core_Validator implements Nethgui_Core_ValidatorInterface
     private function evalDate($value, $format)
     {
         if ($format == 'dd/mm/YYYY') {
-            list($day, $month, $year) = explode('/', $value) + array(0,0,0);
+            list($day, $month, $year) = explode('/', $value) + array(0, 0, 0);
         } elseif ($format == 'mm-dd-YYYY') {
-            list($month, $day, $year) = explode('-', $value) + array(0,0,0);
+            list($month, $day, $year) = explode('-', $value) + array(0, 0, 0);
         } elseif ($format == 'YYYY-mm-dd') {
-            list($year, $month, $day) = explode('-', $value) + array(0,0,0);
+            list($year, $month, $day) = explode('-', $value) + array(0, 0, 0);
         } else {
             throw new Nethgui_Exception_Validator(sprintf("Unknown date format `%s`", $format));
         }
@@ -575,7 +575,7 @@ class Nethgui_Core_CollectionValidator implements Nethgui_Core_ValidatorInterfac
         } elseif ($iterableObject instanceof IteratorAggregate) {
             $this->iterator = $iterableObject->getIterator();
         } elseif ($iterableObject instanceof Iterator) {
-            $this->iterator = $iterableObject;
+            $this->iterator = $iterableObject;        
         } else {
             $this->failureInfo[] = array("Not a collection", array());
             return FALSE;
