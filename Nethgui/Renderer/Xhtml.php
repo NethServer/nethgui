@@ -165,7 +165,7 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
     public function selector($name, $flags = 0)
     {
         $flags |= $this->inheritFlags;
-        return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags));
+        return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags, 'icon-before' => 'ui-icon-triangle-1-s'));
     }
 
     public function tabs($flags = 0)

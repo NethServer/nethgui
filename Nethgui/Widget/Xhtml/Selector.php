@@ -51,14 +51,24 @@ class Nethgui_Widget_Xhtml_Selector extends Nethgui_Widget_Xhtml
             $choices = array();
         }
 
+        $cssClass = 'Selector '
+            . ($flags & Nethgui_Renderer_Abstract::SELECTOR_MULTIPLE ? 'multiple ' : '')
+            . $this->getClientEventTarget()
+            . ' '
+            . $this->view->getClientEventTarget($dataSourceName);
+        ;
+
+        // Render the choices list
+        $attributes = array('class' => $cssClass, 'id' => $this->view->getUniqueId($name));
+
         if ($flags & Nethgui_Renderer_Abstract::SELECTOR_DROPDOWN) {
-            return $this->renderDropdown($value, $choices, $dataSourceName);
+            return $this->renderDropdown($value, $choices, $attributes);
         } else {
-            return $this->renderWidgetList($value, $choices, $dataSourceName);
+            return $this->renderWidgetList($value, $choices, $attributes);
         }
     }
 
-    private function renderDropdown($value, $choices, $dataSourceName)
+    private function renderDropdown($value, $choices, $attributes)
     {
         $name = $this->getAttribute('name');
         $flags = $this->getAttribute('flags');
@@ -69,50 +79,38 @@ class Nethgui_Widget_Xhtml_Selector extends Nethgui_Widget_Xhtml
         } else {
             $tagContent = $this->generateSelectorContentDropdown($name, $value, $choices, $flags);
         }
-        $content = $this->labeledControlTag('select', $name, $label, $flags, 'Selector ' . $this->view->getClientEventTarget($dataSourceName), array(), $tagContent);
+        $content = $this->labeledControlTag($label, 'select', $name, $flags, '', $attributes, $tagContent);
         return $content;
     }
 
-    private function renderWidgetList($value, $choices, $dataSourceName)
+    private function renderWidgetList($value, $choices, $attributes)
     {
         $name = $this->getAttribute('name');
         $flags = $this->getAttribute('flags');
-        $label = $this->getAttribute('label', $name . '_label');
 
-        $content = '';
-        $cssClass = 'Selector ' . ($flags & Nethgui_Renderer_Abstract::SELECTOR_MULTIPLE ? 'multiple ' : '') . $this->getClientEventTarget();
+        $hiddenWidget = new Nethgui_Widget_Xhtml_Hidden($this->view);
+        $hiddenWidget->setAttribute('flags', $flags)
+            ->setAttribute('value', '')
+            ->setAttribute('class', 'Hidden')
+            ->setAttribute('name', $name);
 
-        $fieldsetAttributes = array(
-            'class' => $cssClass,
-            'id' => $this->view->getUniqueId($name)
-        );
+        $contentWidget = new Nethgui_Widget_Xhtml_Literal($this->view);
+        $contentWidget->setAttribute('data', $this->generateSelectorContentWidgetList($name, $value, $choices, $flags));
 
-        $content .= $this->openTag('fieldset', $fieldsetAttributes);
+        $panelWidget = new Nethgui_Widget_Xhtml_Panel($this->view);
+        $panelWidget
+            ->setAttribute('class', $attributes['class'])
+            ->setAttribute('name', $name)
+            ->insert($hiddenWidget)
+            ->insert($contentWidget);
 
-        if (strlen($label) > 0) {
-            $content .= $this->openTag('legend');
-            $content .= htmlspecialchars($this->view->translate($label));
-            $content .= $this->closeTag('legend');
+        $fieldsetWidget = new Nethgui_Widget_Xhtml_Fieldset($this->view);
+        $fieldsetWidget->setAttribute('template', $this->getAttribute('label', $name . '_label'));
+        if ($this->hasAttribute('icon-before')) {
+            $fieldsetWidget->setAttribute('icon-before', $this->getAttribute('icon-before'));
         }
-
-        // Render the choices list
-
-        $choicesAttributes = array(
-            'class' => 'choices ' . $this->view->getClientEventTarget($dataSourceName),
-            'id' => $this->view->getUniqueId($dataSourceName)
-        );
-
-        $content .= $this->openTag('div', $choicesAttributes);
-        // This hidden control holds the control name prefix:
-        if ($flags & Nethgui_Renderer_Abstract::SELECTOR_MULTIPLE) {
-            $content .= $this->controlTag('input', $name, $flags, '', array('type' => 'hidden', 'name' => $this->view->getControlName($name) . '[]'));
-        } else {
-            $content .= $this->controlTag('input', $name, $flags, '', array('type' => 'hidden'));
-        }
-        $content .= $this->generateSelectorContentWidgetList($name, $value, $choices, $flags);
-        $content .= $this->closeTag('div');
-        $content .= $this->closeTag('fieldset');
-        return $content;
+        $fieldsetWidget->insert($panelWidget);
+        return $fieldsetWidget->render();
     }
 
     /**
@@ -138,7 +136,6 @@ class Nethgui_Widget_Xhtml_Selector extends Nethgui_Widget_Xhtml
 
             if ($flags & Nethgui_Renderer_Abstract::SELECTOR_MULTIPLE) {
                 $choiceName = $name . '/' . $index;
-                $choiceId = $choiceName;
 
                 if (in_array($choice[0], $value)) {
                     $choiceFlags |= Nethgui_Renderer_Abstract::STATE_CHECKED;
@@ -150,7 +147,6 @@ class Nethgui_Widget_Xhtml_Selector extends Nethgui_Widget_Xhtml
                 );
             } else {
                 $choiceName = $name;
-                $choiceId = $name . '/' . $index;
 
                 if ($choice[0] == $value) {
                     $choiceFlags |= Nethgui_Renderer_Abstract::STATE_CHECKED;
@@ -159,12 +155,12 @@ class Nethgui_Widget_Xhtml_Selector extends Nethgui_Widget_Xhtml
                 $attributes = array(
                     'type' => 'radio',
                     'value' => $choice[0],
-                    'id' => $this->view->getUniqueId($choiceId),
+                    'id' => $this->view->getUniqueId($name . '/' . $index),
                 );
             }
 
             $choiceLabel = ( ! empty($choice[1]) ? $choice[1] : $choice[0]);
-            $content .= $this->labeledControlTag('input', $choiceName, $choiceLabel, $choiceFlags, '', $attributes);
+            $content .= $this->labeledControlTag($choiceLabel, 'input', $choiceName, $choiceFlags, 'choice', $attributes);
             $content .= $this->closeTag('li');
         }
         $content .= $this->closeTag('ul');

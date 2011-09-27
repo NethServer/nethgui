@@ -43,7 +43,7 @@ class Nethgui_Widget_Xhtml_TextInput extends Nethgui_Widget_Xhtml
             $flags |= Nethgui_Renderer_Abstract::STATE_VALIDATION_ERROR;
         }
 
-        $content .= $this->labeledControlTag('input', $name, $label, $flags, $cssClass, $attributes);
+        $content .= $this->labeledControlTag($label, 'input', $name, $flags, $cssClass, $attributes);
 
         return $content;
     }

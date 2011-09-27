@@ -20,13 +20,9 @@ class Nethgui_Widget_Xhtml_Hidden extends Nethgui_Widget_Xhtml
     public function render()
     {
         $name = $this->getAttribute('name');
-        $value = $this->getAttribute('value');
+        $value = $this->getAttribute('value', $this->view[$name]);
         $flags = $this->getAttribute('flags');
         $content = '';
-
-        if (is_null($value)) {
-            $value = $this->view[$name];
-        }
 
         if ( ! is_array($value)) {
             $value = array($name => $value);
@@ -54,6 +50,10 @@ class Nethgui_Widget_Xhtml_Hidden extends Nethgui_Widget_Xhtml
                     'name' => $this->view->getControlName($namePath),
                     'id' => FALSE
                 );
+
+                if($this->hasAttribute('class')) {
+                    $attributes['class'] = $this->getAttribute('class');
+                }
 
                 $content .= $this->controlTag('input', FALSE, $flags, 'Hidden', $attributes);
             }
