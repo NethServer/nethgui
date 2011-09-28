@@ -53,7 +53,7 @@ class Nethgui_Core_Validator implements Nethgui_Core_ValidatorInterface
             $setToShow = $set;
         }
 
-        $messageTemplate = array('member of {${0}}', array('${0}' => implode(', ', $setToShow)));
+        $messageTemplate = array('valid_memberOf ${0}', array('${0}' => implode(', ', $setToShow)));
 
         return $this->addToChain(__FUNCTION__, $messageTemplate, $set);
     }
@@ -65,7 +65,7 @@ class Nethgui_Core_Validator implements Nethgui_Core_ValidatorInterface
      */
     public function regexp($e)
     {
-        $messageTemplate = array('regexp "${0}"', array('${0}' => $e));
+        $messageTemplate = array('valid_regexp ${0}', array('${0}' => $e));
         return $this->addToChain(__FUNCTION__, $messageTemplate, $e);
     }
 
@@ -167,31 +167,31 @@ class Nethgui_Core_Validator implements Nethgui_Core_ValidatorInterface
 
     public function lessThan($cmp)
     {
-        $template = array('less than ${0}', array('${0}' => $cmp));
+        $template = array('valid_lessThan ${0}', array('${0}' => $cmp));
         return $this->addToChain(__FUNCTION__, $template, $cmp);
     }
 
     public function greatThan($cmp)
     {
-        $template = array('great than ${0}', array('${0}' => $cmp));
+        $template = array('valid_greatThan ${0}', array('${0}' => $cmp));
         return $this->addToChain(__FUNCTION__, $template, $cmp);
     }
 
     public function equalTo($cmp)
     {
-        $template = array('equal to ${0}', array('${0}' => $cmp));
+        $template = array('valid_equalTo ${0}', array('${0}' => $cmp));
         return $this->addToChain(__FUNCTION__, $template, $cmp);
     }
 
     public function minLength($length)
     {
-        $template = array('minimum length ${0}', array('${0}' => $length));
+        $template = array('valid_minLength ${0}', array('${0}' => $length));
         return $this->addToChain(__FUNCTION__, $template, $length);
     }
 
     public function maxLength($length)
     {
-        $template = array('maximum length ${0}', array('${0}' => $length));
+        $template = array('vald_maxLength ${0}', array('${0}' => $length));
         return $this->addToChain(__FUNCTION__, $template, $length);
     }
 
@@ -227,7 +227,7 @@ class Nethgui_Core_Validator implements Nethgui_Core_ValidatorInterface
             $format = Nethgui_Framework::getInstance()->getDateFormat();
         }
 
-        $template = array('valid_date `${0}`', array('${0}' => $format));
+        $template = array('valid_date ${0}', array('${0}' => $format));
         return $this->addToChain(__FUNCTION__, $template, $format);
     }
 

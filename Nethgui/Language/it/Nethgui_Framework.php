@@ -20,7 +20,7 @@ $L['Ignore_label'] = 'Ignora';
 $L['All changes have been saved'] = 'Tutte le modifiche sono state salvate';
 $L['Reset_label'] = 'Ripristina';
 
-$L['valid_regexp "${0}"'] = 'espressione regolare "${0}"';
+$L['valid_regexp ${0}'] = 'espressione regolare "${0}"';
 $L['valid_positive'] = 'numero positivo';
 $L['valid_integer'] = 'numero intero';
 $L['valid_ipV4Address'] = 'indirizzo IPv4';
@@ -29,7 +29,13 @@ $L['valid_notEmpty'] = 'non vuoto';
 $L['valid_OR'] = 'oppure';
 $L['valid_hostname'] = 'nome host';
 $L['valid_time'] = 'formato ora `HH:MM[:SS]`';
-$L['valid_date `${0}`'] = 'formato data `${0}`';
+$L['valid_date ${0}'] = 'formato data `${0}`';
+$L['valid_minLength ${0}'] = 'lunghezza minima ${0} caratteri';
+$L['valid_maxLength ${0}'] = 'lunghezza massima ${0} caratteri';
+$L['valid_greatThan ${0}'] = 'maggiore di ${0}';
+$L['valid_lessThan ${0}'] = 'minore di ${0}';
+$L['valid_equalTo ${0}'] = 'uguale a ${0}';
+$L['valid_memberOf ${0}'] = 'un valore tra ${0}';
 
 
 $L['Incorrect value'] = 'Valore non corretto';
