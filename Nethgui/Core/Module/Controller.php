@@ -168,7 +168,8 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
     public function renderCurrentAction(Nethgui_Renderer_Abstract $view)
     {
         $contentWidget = $view->inset($this->currentAction->getIdentifier());
-        return $view->panel()->setAttribute('class', 'Action')->insert($contentWidget);
+        return $contentWidget;
+        //return $view->panel()->setAttribute('class', 'Action')->insert($contentWidget);
     }
 
     public function renderDefault(Nethgui_Renderer_Abstract $view)
