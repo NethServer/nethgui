@@ -8,6 +8,17 @@
  */
 
 /**
+ * Attributes:
+ *
+ * - name
+ * - flags
+ * - escapeHtml
+ * - tag
+ * - template
+ * - args
+ * - icon-before
+ * - icon-after
+ * - class
  *
  * @package Widget
  * @subpackage Xhtml

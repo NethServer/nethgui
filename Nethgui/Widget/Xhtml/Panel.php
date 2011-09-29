@@ -20,7 +20,8 @@ class Nethgui_Widget_Xhtml_Panel extends Nethgui_Widget_Xhtml
     public function render()
     {
         $content = '';
-        $cssClass = $this->getAttribute('class', 'panel');
+        $cssClass = $this->getAttribute('class', FALSE);
+        $tag = $this->getAttribute('tag', 'div');
 
         $flags = $this->getAttribute('flags');
         if ($flags & Nethgui_Renderer_Abstract::STATE_DISABLED) {
@@ -34,13 +35,13 @@ class Nethgui_Widget_Xhtml_Panel extends Nethgui_Widget_Xhtml
         }
 
         $attributes = array(
-            'class' => $cssClass,
+            'class' => empty($cssClass) ? FALSE : trim($cssClass),
             'id' => $id
         );
 
-        $content .= $this->openTag('div', $attributes);
+        $content .= $this->openTag($tag, $attributes);
         $content .= $this->renderChildren();
-        $content .= $this->closeTag('div');
+        $content .= $this->closeTag($tag);
 
         return $content;
     }

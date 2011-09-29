@@ -8,36 +8,51 @@
  */
 
 /**
+ * Attributes:
+ *
+ * - name, see TextLabel
+ * - template, see TextLabel
+ * - flags
  *
  * @package Widget
  * @subpackage Xhtml
  * @internal
  * @ignore
  */
-class Nethgui_Widget_Xhtml_Fieldset extends Nethgui_Widget_Xhtml_TextLabel
+class Nethgui_Widget_Xhtml_Fieldset extends Nethgui_Widget_Xhtml_Panel
 {
 
     public function render()
     {
-        $this->setAttribute('tag', 'legend');
+        // force container tag to FIELDSET:
+        $this->setAttribute('tag', 'fieldset');
 
-        if ($this->hasAttribute('name') || $this->hasAttribute('template')) {
-            $text = parent::render();
+        if ($this->getAttribute('flags') & Nethgui_Renderer_Abstract::FIELDSET_EXPANDABLE) {
+            $this->setAttribute('class', 'Fieldset expandable');
         } else {
-            $text = '';
+            $this->setAttribute('class', 'Fieldset');
         }
 
-        $content = '';
-        $content .= $this->opentag('fieldset');
+        $legendWidget = new Nethgui_Widget_Xhtml_TextLabel($this->view);
+        $legendWidget->setAttribute('tag', 'legend');
+        $renderLegend = FALSE;
 
-        if ($text) {
-            $content .= $text;
+        if ($this->hasAttribute('name')) {
+            $legendWidget->setAttribute('name', $this->getAttribute('name'));
+            $renderLegend = TRUE;
         }
 
-        $content .= $this->renderChildren();
-        $content .= $this->closetag('fieldset');
+        if ($this->hasAttribute('template')) {
+            $legendWidget->setAttribute('template', $this->getAttribute('template'));
+            $renderLegend = TRUE;
+        }
 
-        return $content;
+        if ($renderLegend) {
+            $legendWidget->setAttribute('icon-before', $this->getAttribute('icon-before', FALSE));
+            $this->prepend($legendWidget);
+        }
+
+        return parent::render();
     }
 
 }

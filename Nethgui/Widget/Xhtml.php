@@ -51,6 +51,12 @@ abstract class Nethgui_Widget_Xhtml implements Nethgui_Renderer_WidgetInterface
         return self::$instance;
     }
 
+    protected function prepend(Nethgui_Renderer_WidgetInterface $widget)
+    {
+        array_unshift($this->children, $widget);
+        return $this;
+    }
+
     public function insert(Nethgui_Renderer_WidgetInterface $widget)
     {
         $this->children[] = $widget;
@@ -272,10 +278,10 @@ abstract class Nethgui_Widget_Xhtml implements Nethgui_Renderer_WidgetInterface
             }
         }
 
-        if(!isset($attributes['class'])) {
+        if ( ! isset($attributes['class'])) {
             $attributes['class'] = trim($cssClass . ' ' . $this->getClientEventTarget());
         }
-        
+
         $content = '';
 
         if ($tagContent == '') {

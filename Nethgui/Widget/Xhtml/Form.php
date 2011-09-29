@@ -8,7 +8,7 @@
  */
 
 /**
- *
+ * Wrap FORM tag around a Panel object
  * @package Widget
  * @subpackage Xhtml
  * @internal

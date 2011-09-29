@@ -131,7 +131,7 @@ class Nethgui_Widget_Xhtml_Selector extends Nethgui_Widget_Xhtml
         $content .= $this->openTag('ul');
         foreach (array_values($choices) as $index => $choice) {
 
-            $content .= $this->openTag('li', array('class' => 'labeled-control label-right'));
+            $content .= $this->openTag('li');
             $choiceFlags = $flags & ~Nethgui_Renderer_Abstract::LABEL_RIGHT | Nethgui_Renderer_Abstract::LABEL_RIGHT;
 
             if ($flags & Nethgui_Renderer_Abstract::SELECTOR_MULTIPLE) {
