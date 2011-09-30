@@ -46,6 +46,38 @@ Buttons (enabled & disabled)::
 
   [ Cancel ]  | Apply |  
 
+Button group::
+
+  [ Button 1 | Button 2 | Button 3 ]
+
+Button drop-down panel (normal)::
+
+  [ Button v ]
+
+Button drop-down panel (clicked)::
+
+  [ Button v ]
+  +--------------------+
+  |                    |
+  | // panel contents  |
+  |                    |
+  +--------------------+
+
+Button group with "main action" (normal)::
+
+  [ Main Action | v ]
+
+Button group with "main action" (``v`` is clicked)::
+
+  [ Main Action | v ]
+  +--------------------+
+  |                    |
+  | // panel contents  |
+  |                    |
+  +--------------------+
+
+.. note:: Panel contents can be buttons, links or any other widget.
+
 Basic Selector (multiple)::
 
   [x] Label1 
