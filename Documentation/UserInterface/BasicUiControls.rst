@@ -46,9 +46,9 @@ Buttons (enabled & disabled)::
 
   [ Cancel ]  | Apply |  
 
-Button group::
+Button list::
 
-  [ Button 1 | Button 2 | Button 3 ]
+  [ Button 1 ]  [ Button 2 ]  [ Button 3 ]
 
 Button drop-down panel (normal)::
 
@@ -63,20 +63,24 @@ Button drop-down panel (clicked)::
   |                    |
   +--------------------+
 
-Button group with "main action" (normal)::
-
-  [ Main Action | v ]
-
-Button group with "main action" (``v`` is clicked)::
-
-  [ Main Action | v ]
-  +--------------------+
-  |                    |
-  | // panel contents  |
-  |                    |
-  +--------------------+
-
 .. note:: Panel contents can be buttons, links or any other widget.
+
+Button set::
+
+  [ Button 1 | Button 2 | Button 3 ]
+
+Button set with upper limit (set to 1)::
+
+  [ Main Action | v ]
+
+Button set with upper limit (``v`` is clicked)::
+
+  [ Main Action | v ]
+  +--------------------+
+  | Action 2           |
+  | Action 3           |
+  | Action 4           |
+  +--------------------+
 
 Basic Selector (multiple)::
 

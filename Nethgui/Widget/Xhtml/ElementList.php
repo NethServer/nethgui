@@ -17,32 +17,46 @@
 class Nethgui_Widget_Xhtml_ElementList extends Nethgui_Widget_Xhtml
 {
 
+    private $childWrapTag;
+
     public function render()
     {
         $name = $this->getAttribute('name');
         $value = $this->getAttribute('value');
         $flags = $this->getAttribute('flags');
-        $classes = $this->getAttribute('class', 'ElementList');
+        $cssClass = $this->getAttribute('class', 'ElementList');
+        $wrap = explode('/', $this->getAttribute('wrap', 'ul/li')) + array('div', 'div');
+
+        $this->childWrapTag = $wrap[1];
 
         if ($flags & Nethgui_Renderer_Abstract::STATE_DISABLED) {
-            $classes .= ' disabled';
+            $cssClass .= ' disabled';
         }
-        
+
+        if ($this->hasAttribute('maxElements')) {
+            $maxElements = intval($this->getAttribute('maxElements'));
+            if ($maxElements > 0) {
+                $cssClass .= ' v' . $maxElements;
+            }
+        }
+
         $content = '';
 
-        $content .= $this->openTag('ul', array('class' => $classes));
+        $content .= $this->openTag($wrap[0], array('class' => $cssClass));
         $content .= $this->renderChildren();
-        $content .= $this->closeTag('ul');
+        $content .= $this->closeTag($wrap[0]);
 
         return $content;
     }
 
     protected function wrapChild($childOutput)
     {
+        $childTag = explode('.', $this->childWrapTag) + array(FALSE, FALSE);
+
         $content = '';
-        $content .= $this->openTag('li');
+        $content .= $this->openTag($childTag[0]);
         $content .= parent::wrapChild($childOutput);
-        $content .= $this->closeTag('li');
+        $content .= $this->closeTag($childTag[0]);
         return $content;
     }
 

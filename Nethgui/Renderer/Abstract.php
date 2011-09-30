@@ -43,6 +43,8 @@ interface Nethgui_Renderer_Abstract
 
     const TEXTINPUT_PASSWORD = 0x100000;
     const FIELDSET_EXPANDABLE = 0x200000;
+    const BUTTONSET = 0x400000;
+    const BUTTON_DROPDOWN = 0x800000;
     
     /**
      * Include a view member

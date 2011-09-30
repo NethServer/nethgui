@@ -26,13 +26,13 @@ class Nethgui_Widget_Xhtml_Button extends Nethgui_Widget_Xhtml
     public function render()
     {
         $name = $this->getAttribute('name');
-        $value = $this->getAttribute('value', $this->view[$name]);
+        $value = $this->getAttribute('value', isset($this->view[$name]) ? $this->view[$name] : $name);
         $flags = $this->getAttribute('flags');
         $label = $this->getAttribute('label', $name . '_label');
         $content = '';
 
         $attributes = array();
-        $cssClass = 'Button';        
+        $cssClass = 'Button';
 
         if ($flags & (Nethgui_Renderer_Abstract::BUTTON_LINK | Nethgui_Renderer_Abstract::BUTTON_CANCEL)) {
 
@@ -58,7 +58,6 @@ class Nethgui_Widget_Xhtml_Button extends Nethgui_Widget_Xhtml
             $content .= $this->view->translate($label);
             $content .= $this->closeTag('a');
         } else {
-
             if ($flags & Nethgui_Renderer_Abstract::BUTTON_SUBMIT) {
                 $attributes['type'] = 'submit';
                 $cssClass .= ' submit';
@@ -70,11 +69,20 @@ class Nethgui_Widget_Xhtml_Button extends Nethgui_Widget_Xhtml
             } elseif ($flags & Nethgui_Renderer_Abstract::BUTTON_CUSTOM) {
                 $attributes['type'] = 'button';
                 $cssClass .= ' custom';
+            } elseif ($flags & Nethgui_Renderer_Abstract::BUTTON_DROPDOWN) {
+                $attributes['type'] = 'button';
+                $attributes['name'] = FALSE;
+                $attributes['id'] = FALSE;
+                $cssClass .= ' dropdown';
+                $childContent = $this->renderChildren();
             }
 
             $attributes['value'] = $this->view->translate($label);
 
             $content .= $this->controlTag('button', $name, $flags, $cssClass, $attributes);
+            if (isset($childContent)) {
+                $content .= $childContent;
+            }
         }
 
         return $content;
@@ -82,7 +90,7 @@ class Nethgui_Widget_Xhtml_Button extends Nethgui_Widget_Xhtml
 
     private function prepareHrefAttribute($value)
     {
-        if(is_string($value) && preg_match('/https?/', parse_url($value, PHP_URL_SCHEME))) {
+        if (is_string($value) && preg_match('/https?/', parse_url($value, PHP_URL_SCHEME))) {
             return $value;
         }
 

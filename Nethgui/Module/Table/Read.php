@@ -40,7 +40,7 @@ class Nethgui_Module_Table_Read extends Nethgui_Module_Table_Action
                 $this->columns[] = $columnInfo;
             } else {
                 // FIXME: setting here the default buttonList formatter for Actions column:
-                $this->columns[] = array('name' => strval($columnInfo), 'formatter' => ($columnInfo == 'Actions' ? 'buttonList' : NULL));
+                $this->columns[] = array('name' => strval($columnInfo), 'formatter' => ($columnInfo == 'Actions' ? 'Buttonset' : NULL));
             }
         }
     }
@@ -127,7 +127,8 @@ class Nethgui_Module_Table_Read extends Nethgui_Module_Table_Action
 
     public function renderColumnActions(Nethgui_Renderer_Abstract $view)
     {
-        $elementList = $view->elementList()->setAttribute('class', 'buttonList');
+        $elementList = $view->elementList(Nethgui_Renderer_Abstract::BUTTONSET)            
+            ->setAttribute('maxElements', 1);
 
         foreach ($view as $actionId => $actionInfo) {
             $button = $view
