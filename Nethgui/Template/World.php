@@ -5,6 +5,7 @@
     <head>
         <title>NethServer</title>
         <link rel="stylesheet" type="text/css" href="<?php echo htmlspecialchars($view['cssMain']); ?>" />
+        <script type="text/javascript">document.write("<style>#allWrapper {display:none}</style>")</script>
     </head>
     <body>
         <div id="allWrapper"> 
