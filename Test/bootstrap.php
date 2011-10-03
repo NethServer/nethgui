@@ -9,13 +9,15 @@
  * @package Test
  */
 
-ini_set('include_path', ini_get('include_path') . ':' . realpath(dirname(__FILE__) . '/..'));
-
-define('ENVIRONMENT', 'development');
 
 require_once('Nethgui/Framework.php');
-spl_autoload_register('Nethgui_Framework::autoloader');
 require_once('Tool/Helpers.php');
+
+define('NETHGUI_ENVIRONMENT', 'development');
+define('ENVIRONMENT', 'development');
+
+// this installs the autoloader function:
+Nethgui_Framework::getInstance();
 
 
 

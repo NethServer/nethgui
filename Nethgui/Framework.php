@@ -23,6 +23,7 @@ class Nethgui_Framework
      */
     private $languageCatalogStack;
     private $catalogs = array();
+    private static $path;
 
     /**
      * Returns framework singleton instance.
@@ -32,21 +33,19 @@ class Nethgui_Framework
     static public function getInstance(CI_Controller $codeIgniterController = NULL)
     {
         static $instance;
-
         if ( ! isset($instance)) {
             $instance = new self($codeIgniterController);
         }
-
         return $instance;
     }
 
     private function __construct($codeIgniterController)
     {
-        spl_autoload_register(get_class($this) . '::autoloader');
-        ini_set('include_path', ini_get('include_path') . ':' . realpath(dirname(__FILE__) . '/..'));
-
         $this->controller = $codeIgniterController;
         $this->languageCatalogStack = array(get_class());
+        self::$path = realpath(dirname(__FILE__) . '/..');
+        spl_autoload_register(get_class($this) . '::autoloader');
+        ini_set('include_path', ini_get('include_path') . ':' . self::$path);
     }
 
     /**
@@ -385,7 +384,7 @@ class Nethgui_Framework
         if (substr($className, 0, 3) == 'CI_' || $className === 'configuration') {
             return;
         }
-        $classPath = str_replace("_", "/", $className) . '.php';
+        $classPath = self::$path . '/' . str_replace("_", "/", $className) . '.php';
         require($classPath);
     }
 
@@ -433,8 +432,7 @@ class Nethgui_Framework
          * from Nethgui_Framework.
          */
         $hostConfiguration = new Nethgui_Core_HostConfiguration($user);
-        // TODO: set a configuration parameter for the application path
-        $appPath = realpath(dirname(__FILE__) . '/../NethServer');
+        $appPath = realpath(dirname(__FILE__) . '/../' . NETHGUI_APPLICATION);
         $this->languageCatalogStack[] = basename($appPath);
         $topModuleDepot = new Nethgui_Core_TopModuleDepot($appPath, $hostConfiguration, $user);
 

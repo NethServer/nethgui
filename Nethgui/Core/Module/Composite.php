@@ -24,11 +24,12 @@ abstract class Nethgui_Core_Module_Composite extends Nethgui_Core_Module_Abstrac
 
     /**
      * Propagates initialize() message to children.
+     * 
+     * @see loadChildren()
      */
     public function initialize()
     {
-        parent::initialize();
-        // TODO: implement child autoloading
+        parent::initialize();        
         foreach ($this->children as $child) {
             if ( ! $child->isInitialized()) {
                 $child->initialize();
