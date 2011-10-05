@@ -74,7 +74,7 @@ class Nethgui_Core_Request implements Nethgui_Core_RequestInterface
         }
 
         // XXX: This is a non-compliant HTTP Accept-header parsing:
-        $httpAccept = trim(array_shift(explode(',', $_SERVER['HTTP_ACCEPT'])));
+        $httpAccept = isset($_SERVER['HTTP_ACCEPT']) ? trim(array_shift(explode(',', $_SERVER['HTTP_ACCEPT']))) : FALSE;
 
         if ($httpAccept == 'application/json')
             $contentType = self::CONTENT_TYPE_JSON;
