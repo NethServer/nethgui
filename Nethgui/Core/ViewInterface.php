@@ -17,14 +17,16 @@ interface Nethgui_Core_ViewInterface extends ArrayAccess, IteratorAggregate
     /**
      * Set the template to be applied to this object.
      *
-     * If a string is given, it identifies a PHP Template script
-     * (ie. Nethgui_View_MyTemplate).
+     * - If a string is given, it identifies a PHP Template script
+     *   (ie. Nethgui_View_MyTemplate);
      *
-     * If a callback function is given, it is invoked with an array
-     * representing the view state as argument and is expected to return
-     * a string representing the view.
+     * - If a callback function is given, it is invoked with an array
+     *   representing the view state as argument and is expected to return
+     *   a string representing the view;
      *
-     * @param string|callback $template The template converting the view state to a string
+     * - If a boolean FALSE, is given the view is rendered as an empty string.
+     *
+     * @param string|callback|boolean $template The template converting the view state to a string
      */
     public function setTemplate($template);
     

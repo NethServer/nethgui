@@ -299,12 +299,6 @@ class Nethgui_Core_View implements Nethgui_Core_ViewInterface
         return $nameSegments;
     }
 
-    public function __toString()
-    {
-        $dummyView = new Nethgui_Core_View($this->getModule());
-        $dummyView['V'] = $this;
-        $renderer = new Nethgui_Renderer_Xhtml($dummyView);
-        return (String) $renderer->inset('V');
-    }
+
 
 }

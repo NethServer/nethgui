@@ -15,13 +15,13 @@
  * @see http://en.wikipedia.org/wiki/Decorator_pattern
  * @package Renderer
  */
-interface Nethgui_Renderer_Abstract
+interface Nethgui_Renderer_Abstract extends Nethgui_Core_ViewInterface
 {
     const LABEL_NONE = 0x1;
     const LABEL_LEFT = 0x2;
     const LABEL_RIGHT = 0x4;
     const LABEL_ABOVE = 0x8;
-   
+
     const STATE_CHECKED = 0x10;
     const STATE_DISABLED = 0x20;
     const STATE_VALIDATION_ERROR = 0x40;
@@ -37,7 +37,7 @@ interface Nethgui_Renderer_Abstract
     const DIALOG_SUCCESS = 0x8000;
     const DIALOG_WARNING = 0x10000;
     const DIALOG_ERROR = 0x20000;
-    
+
     const SELECTOR_MULTIPLE = 0x40000;
     const SELECTOR_DROPDOWN = 0x80000;
 
@@ -45,14 +45,18 @@ interface Nethgui_Renderer_Abstract
     const FIELDSET_EXPANDABLE = 0x200000;
     const BUTTONSET = 0x400000;
     const BUTTON_DROPDOWN = 0x800000;
-    
+
     /**
-     * Include a view member
-     * @param string $name The view member name
-     * @param integer $flags Optional {STATE_DISABLED}
-     * @return Nethgui_Renderer_WidgetInterface
+     *
+     * @return integer
      */
-    public function inset($name, $flags = 0);
+    public function getDefaultFlags();
+
+    public function setDefaultFlags($flags);
+
+    public function setInnerView(Nethgui_Core_ViewInterface $view);
+
+    public function getInnerView(Nethgui_Core_ViewInterface $view);
 
     /**
      * Include a view member
@@ -60,7 +64,7 @@ interface Nethgui_Renderer_Abstract
      * @param integer $flags Optional {STATE_DISABLED}
      * @return Nethgui_Renderer_WidgetInterface
      */
-    public function includeView(Nethgui_Core_ViewInterface $view, $flags = 0);
+    public function inset($name, $flags = 0);
 
     /**
      * Create a text input control
@@ -191,7 +195,6 @@ interface Nethgui_Renderer_Abstract
      * @return Nethgui_Renderer_WidgetInterface
      */
     public function elementList($flags = 0);
-
 
     /**
      * Create literal data - helper.

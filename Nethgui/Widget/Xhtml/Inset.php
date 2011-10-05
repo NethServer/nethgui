@@ -21,46 +21,38 @@ class Nethgui_Widget_Xhtml_Inset extends Nethgui_Widget_Xhtml
     {
         $name = $this->getAttribute('name');
         $flags = $this->getAttribute('flags');
-        $value = $this->getAttribute('value', $this->view[$name]);
+        $value = $this->view->offsetGet($name);
         $content = '';
-      
-        if ($value instanceof Nethgui_Core_ViewInterface) {
-            $content .= $this->includeTemplate($value, $flags);
+
+        if ($value instanceof Nethgui_Renderer_Abstract) {
+            $content = (String) $this->wrapView($value);
         } else {
-            $content .= $value; // add plain xhtml text
+            $content = (String) $this->view->literal($value);
         }
 
         return $content;
     }
 
-    private function includeTemplate(Nethgui_Core_ViewInterface $view, $flags = 0)
+    protected function wrapView(Nethgui_Renderer_Abstract $inset)
     {
-        $dview = new Nethgui_Renderer_Xhtml($view, $flags);
-        $module = $view->getModule();
-
-        $languageCatalog = NULL;
-        if ($module instanceof Nethgui_Core_LanguageCatalogProvider) {
-            $languageCatalog = $module->getLanguageCatalog();
-        }
-
-        $state = array('view' => $dview);
-        $content = Nethgui_Framework::getInstance()->renderView($view->getTemplate(), $state, $languageCatalog);
-
-        $contentWidget = $dview->literal($content);
+        $module = $inset->getModule();
+        $inset->setDefaultFlags($this->view->getDefaultFlags());
+        $content = (String) $inset;
+        $contentWidget = $this->view->literal($content);
 
         if ($module instanceof Nethgui_Core_RequestHandlerInterface
             && ! $module instanceof Nethgui_Core_ModuleCompositeInterface
             && stripos($content, '<form ') === FALSE) {
             // Wrap a simple module into a FORM tag automatically
-            $contentWidget = $dview->form($flags)->insert($contentWidget);
+            $contentWidget = $this->view->form()->insert($contentWidget);
 
             // Re-wrap a simple root-module into an Action div
-            if($module->getParent() === NULL) {
-                $contentWidget = $dview->panel()->setAttribute('class', 'Action')->insert($contentWidget);
+            if ($module->getParent() === NULL) {
+                $contentWidget = $this->view->panel()->setAttribute('class', 'Action')->insert($contentWidget);
             }
         }
 
-        return (String) $contentWidget;
+        return $contentWidget;
     }
 
 }

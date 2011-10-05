@@ -22,14 +22,26 @@
  */
 class Nethgui_Widget_Xhtml_Literal extends Nethgui_Widget_Xhtml
 {
+
     public function render()
     {
-        $data = strval($this->getAttribute('data', ''));
+        $value = $this->getAttribute('data', '');
 
-        if($this->getAttribute('hsc', FALSE) === TRUE) {
-            $data = htmlspecialchars($data);
+        $content = '';
+
+        if ($value instanceof Nethgui_Core_ViewInterface) {
+            $renderer = clone $this->view;
+            $renderer->setInnerView($value);
+            $content = (String) $renderer; 
+        } else {
+            $content = (String) $value;
         }
 
-        return $data;
+        if ($this->getAttribute('hsc', FALSE) === TRUE) {
+            $content = htmlspecialchars($content);
+        }
+
+        return $content;
     }
+
 }

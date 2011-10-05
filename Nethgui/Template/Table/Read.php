@@ -11,7 +11,7 @@
     <tbody><?php foreach ($view['rows'] as $rowId => $row): ?>
     <tr>
         <?php foreach ($row as $colId => $value): ?>
-             <td><?php echo $value ?></td>
+             <td><?php echo $view->literal($value) ?></td>
         <?php endforeach; ?>
     </tr>
     <?php endforeach ?></tbody>

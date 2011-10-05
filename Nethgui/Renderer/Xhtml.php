@@ -37,7 +37,16 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
         $this->inheritFlags = $inheritFlags & $inheritableFlagsMask;
     }
 
-    private function createWidget($widgetName, $attributes = array())
+    public function offsetGet($offset)
+    {
+        $value = parent::offsetGet($offset);
+        if ($value instanceof Nethgui_Core_ViewInterface) {
+            return new self($value, $this->inheritFlags);
+        }
+        return $value;
+    }
+
+    protected function createWidget($widgetName, $attributes = array())
     {
         $className = 'Nethgui_Widget_Xhtml_' . ucfirst($widgetName);
 
@@ -155,12 +164,6 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
         return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags));
     }
 
-    public function includeView(Nethgui_Core_ViewInterface $view, $flags = 0)
-    {
-        $flags |= $this->inheritFlags;
-        return $this->createWidget(__FUNCTION__, array('value' => $view, 'flags' => $flags));
-    }
-
     public function panel($flags = 0)
     {
         $flags |= $this->inheritFlags;
@@ -225,6 +228,39 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
     public function columns()
     {
         return $this->createWidget(__FUNCTION__, array());
+    }
+
+    public function __toString()
+    {
+        $module = $this->getModule();
+        $languageCatalog = NULL;
+        if ($module instanceof Nethgui_Core_LanguageCatalogProvider) {
+            $languageCatalog = $module->getLanguageCatalog();
+        }
+        $state = array('view' => $this);
+        return Nethgui_Framework::getInstance()->renderView($this->getTemplate(), $state, $languageCatalog);
+    }
+
+    public function getDefaultFlags()
+    {
+        return $this->inheritFlags;
+    }
+
+    public function getInnerView(Nethgui_Core_ViewInterface $view)
+    {
+        return $this->view;
+    }
+
+    public function setDefaultFlags($flags)
+    {
+        $this->inheritFlags = $flags;
+        return $this;
+    }
+
+    public function setInnerView(Nethgui_Core_ViewInterface $view)
+    {
+        $this->view = $view;
+        return $this;
     }
 
 }
