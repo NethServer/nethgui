@@ -53,7 +53,9 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
         }
 
         $this->currentAction = $this->getAction($actionId);
-        $this->currentAction->bind($request->getParameterAsInnerRequest($actionId, array_slice($request->getArguments(), 1)));
+        if ($this->currentAction instanceof Nethgui_Core_RequestHandlerInterface) {
+            $this->currentAction->bind($request->getParameterAsInnerRequest($actionId, array_slice($request->getArguments(), 1)));
+        }
     }
 
     protected function establishCurrentActionId()
@@ -109,7 +111,9 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
             return;
         }
 
-        $this->currentAction->validate($report);
+        if ($this->currentAction instanceof Nethgui_Core_RequestHandlerInterface) {
+            $this->currentAction->validate($report);
+        }
     }
 
     /**
@@ -123,7 +127,9 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
             return;
         }
 
-        $this->currentAction->process();
+        if ($this->currentAction instanceof Nethgui_Core_RequestHandlerInterface) {
+            $this->currentAction->process();
+        }
     }
 
     /**
