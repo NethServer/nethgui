@@ -385,7 +385,7 @@ class Nethgui_Framework
             return;
         }
         $classPath = self::$path . '/' . str_replace("_", "/", $className) . '.php';
-        require($classPath);
+        @include $classPath;
     }
 
     /**
@@ -460,47 +460,54 @@ class Nethgui_Framework
 
         $topModuleDepot->registerModule($notificationManager);
 
+        $helpModule = new Nethgui_Module_Help();
+        $helpModule->moduleSet = $topModuleDepot;
+        $helpModule->setHostConfiguration($hostConfiguration);
+        $topModuleDepot->registerModule($helpModule);
+
         // The World module is a non-processing container.
         $worldModule = new Nethgui_Module_World();
         $worldModule->setHostConfiguration($hostConfiguration);
 
         $view = new Nethgui_Core_View($worldModule);
 
-        $processExitCode = NULL;
+        try {
+            foreach ($moduleWakeupList as $moduleIdentifier) {
+                $module = $topModuleDepot->findModule($moduleIdentifier);
 
-        foreach ($moduleWakeupList as $moduleIdentifier) {
-            $module = $topModuleDepot->findModule($moduleIdentifier);
+                if ($module instanceof Nethgui_Core_ModuleInterface) {
+                    $worldModule->addModule($module);
 
-            if ($module instanceof Nethgui_Core_ModuleInterface) {
-                $worldModule->addModule($module);
+                    // Module initialization
+                    $module->initialize();
+                } else {
+                    show_404();
+                }
 
-                // Module initialization
-                $module->initialize();
-            } else {
-                show_404();
+
+                if ( ! $module instanceof Nethgui_Core_RequestHandlerInterface) {
+                    continue;
+                }
+
+                // Pass request parameters to the handler
+                $module->bind(
+                    $request->getParameterAsInnerRequest(
+                        $moduleIdentifier, ($moduleIdentifier === $currentModuleIdentifier) ? $request->getArguments() : array()
+                    )
+                );
+
+                // Validate request
+                $module->validate($notificationManager);
+
+                // Skip process() step, if $module has added some validation errors:
+                if ($notificationManager->hasValidationErrors()) {
+                    continue;
+                }
+
+                $module->process($notificationManager);
             }
-
-
-            if ( ! $module instanceof Nethgui_Core_RequestHandlerInterface) {
-                continue;
-            }
-
-            // Pass request parameters to the handler
-            $module->bind(
-                $request->getParameterAsInnerRequest(
-                    $moduleIdentifier, ($moduleIdentifier === $currentModuleIdentifier) ? $request->getArguments() : array()
-                )
-            );
-
-            // Validate request
-            $module->validate($notificationManager);
-
-            // Skip process() step, if $module has added some validation errors:
-            if ($notificationManager->hasValidationErrors()) {
-                continue;
-            }
-
-            $module->process($notificationManager);
+        } catch (Exception $ex) {
+            show_error($ex->getMessage(), intval($ex->getCode()), 'Status ' . intval($ex->getCode()));
         }
 
         $worldModule->addModule($notificationManager);

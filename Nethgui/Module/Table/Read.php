@@ -55,6 +55,9 @@ class Nethgui_Module_Table_Read extends Nethgui_Module_Table_Action
             $view['tableClass'] = count($view['rows']) > PHP_INT_MAX ? 'large-dataTable' : 'small-dataTable';
             $view['tableClass'] .= ' ' . $view->getClientEventTarget('rows');
             $view['tableId'] = $view->getUniqueId();
+        } elseif ($mode == self::VIEW_HELP) {
+            // Ignore the view in help mode:
+            $view->setTemplate(FALSE);
         }
     }
 
@@ -127,7 +130,7 @@ class Nethgui_Module_Table_Read extends Nethgui_Module_Table_Action
 
     public function renderColumnActions(Nethgui_Renderer_Abstract $view)
     {
-        $elementList = $view->elementList(Nethgui_Renderer_Abstract::BUTTONSET)            
+        $elementList = $view->elementList(Nethgui_Renderer_Abstract::BUTTONSET)
             ->setAttribute('maxElements', 1);
 
         foreach ($view as $actionId => $actionInfo) {

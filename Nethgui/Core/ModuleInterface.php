@@ -24,6 +24,11 @@ interface Nethgui_Core_ModuleInterface
      * Prepare the client view
      */
     const VIEW_CLIENT = 1;
+    /**
+     * Prepare an help template
+     */
+    const VIEW_HELP = 2;
+
 
     /**
      * Sets the host configuration Model.
