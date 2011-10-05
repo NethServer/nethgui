@@ -33,6 +33,7 @@ class Nethgui_Module_World extends Nethgui_Core_Module_Abstract
                     'datepicker-regional' => base_url() . sprintf('js/jquery.ui.datepicker-%s.js', $lang),
                 /* 'switcher' => 'http://jqueryui.com/themeroller/themeswitchertool/', */
                 ),
+                'favicon' => base_url() . 'images/favicon.ico',
             );
 
             foreach ($immutables as $immutableName => $immutableValue) {
