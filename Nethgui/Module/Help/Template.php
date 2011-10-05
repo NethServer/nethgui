@@ -52,22 +52,16 @@ class Nethgui_Module_Help_Template extends Nethgui_Core_Module_Standard
         $rootView = new Nethgui_Core_View($this->module);
         $rootView->setTemplate('Nethgui_Template_Help_Schema');
 
-        $moduleView = $rootView->spawnView($this->module, 'V');
+        $moduleView = $rootView->spawnView($this->module);
         $this->module->prepareView($moduleView, self::VIEW_HELP);
 
         $rootView['title'] = $this->module->getTitle();
         $rootView['lang'] = Nethgui_Framework::getInstance()->getLanguageCode();
         $rootView['content'] = $moduleView;
 
-        $this->sendResponse($rootView);
-    }
-
-    private function sendResponse(Nethgui_Core_ViewInterface $view)
-    {
         header("Content-Type: text/html; charset=UTF-8");
-        $renderer = new Nethgui_Renderer_Help($view);
-        echo (String) $renderer;
+        echo (String) new Nethgui_Renderer_Xhtml($rootView);
         exit;
     }
-
+   
 }

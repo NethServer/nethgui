@@ -40,8 +40,10 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
     public function offsetGet($offset)
     {
         $value = parent::offsetGet($offset);
+        // Substitute View with Renderer:
         if ($value instanceof Nethgui_Core_ViewInterface) {
-            return new self($value, $this->inheritFlags);
+            $className = get_class($this);
+            return new $className($value, $this->inheritFlags);
         }
         return $value;
     }
@@ -246,7 +248,7 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
         return $this->inheritFlags;
     }
 
-    public function getInnerView(Nethgui_Core_ViewInterface $view)
+    public function getInnerView()
     {
         return $this->view;
     }

@@ -15,7 +15,6 @@
 class Nethgui_Core_ReadonlyView implements Nethgui_Core_ViewInterface
 {
     /**
-     *
      * @var Nethgui_Core_ViewInterface
      */
     protected $view;

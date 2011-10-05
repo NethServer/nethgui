@@ -52,11 +52,20 @@ interface Nethgui_Renderer_Abstract extends Nethgui_Core_ViewInterface
      */
     public function getDefaultFlags();
 
+    /**
+     * @return Nethgui_Renderer_Abstract
+     */
     public function setDefaultFlags($flags);
 
+    /**
+     * @return Nethgui_Renderer_Abstract
+     */
     public function setInnerView(Nethgui_Core_ViewInterface $view);
 
-    public function getInnerView(Nethgui_Core_ViewInterface $view);
+    /**
+     * @return Nethgui_Core_ViewInterface
+     */
+    public function getInnerView();
 
     /**
      * Include a view member
