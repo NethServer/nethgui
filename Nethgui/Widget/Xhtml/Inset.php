@@ -44,11 +44,11 @@ class Nethgui_Widget_Xhtml_Inset extends Nethgui_Widget_Xhtml
             && ! $module instanceof Nethgui_Core_ModuleCompositeInterface
             && stripos($content, '<form ') === FALSE) {
             // Wrap a simple module into a FORM tag automatically
-            $contentWidget = $this->view->form()->insert($contentWidget);
+            $contentWidget = $inset->form()->insert($contentWidget);
 
             // Re-wrap a simple root-module into an Action div
             if ($module->getParent() === NULL) {
-                $contentWidget = $this->view->panel()->setAttribute('class', 'Action')->insert($contentWidget);
+                $contentWidget = $inset->panel()->setAttribute('class', 'Action')->insert($contentWidget);
             }
         }
 
