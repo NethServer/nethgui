@@ -45,6 +45,7 @@ interface Nethgui_Renderer_Abstract extends Nethgui_Core_ViewInterface
     const FIELDSET_EXPANDABLE = 0x200000;
     const BUTTONSET = 0x400000;
     const BUTTON_DROPDOWN = 0x800000;
+    const BUTTON_HELP = 0x1000000;
 
     /**
      *

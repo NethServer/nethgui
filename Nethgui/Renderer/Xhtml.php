@@ -68,14 +68,14 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
 
         if ($flags & self::BUTTONSET) {
             $widget->setAttribute('class', 'Buttonset')
-                ->setAttribute('wrap', 'div/span');
+                ->setAttribute('wrap', 'div/');
         }
 
         // Automatically add standard submit/reset/cancel buttons:
-        if ($flags & (self::BUTTON_SUBMIT | self::BUTTON_RESET | self::BUTTON_CANCEL)) {
+        if ($flags & (self::BUTTON_SUBMIT | self::BUTTON_RESET | self::BUTTON_CANCEL | self::BUTTON_HELP)) {
             if ( ! $widget->hasAttribute('class')) {
                 $widget->setAttribute('class', 'Buttonlist')
-                    ->setAttribute('wrap', 'div/span');
+                    ->setAttribute('wrap', 'div/');
             }
 
             if ($flags & self::BUTTON_SUBMIT) {
@@ -87,9 +87,10 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
             if ($flags & self::BUTTON_CANCEL) {
                 $widget->insert($this->button('Cancel', self::BUTTON_CANCEL));
             }
+            if ($flags & self::BUTTON_HELP) {
+                $widget->insert($this->button('Help', self::BUTTON_HELP));
+            }
         }
-
-
 
         return $widget;
     }

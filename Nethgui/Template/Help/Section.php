@@ -3,7 +3,7 @@
 <?php if(count($view['fields']) == 0) return; ?>
 <dl>
     <?php foreach ($view['fields'] as $name => $label): ?>
-        <dt class="<?php echo $name ?>" ><?php echo T($label) ?></dt>
-        <dd>Describe <code><?php echo T($label) ?></code> here..</dd>
+        <dt class="<?php echo $name ?>" ><?php echo T($label); ?></dt>
+        <dd>Describe <tt><?php echo T($label); ?></tt> here..</dd>
     <?php endforeach; ?>
 </dl>

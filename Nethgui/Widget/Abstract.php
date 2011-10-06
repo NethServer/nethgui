@@ -168,7 +168,7 @@ class Nethgui_Widget_Abstract implements Nethgui_Renderer_WidgetInterface
     protected function buildUrl()
     {
         $parameters = array();
-        $path = $this->view->getModulePath();
+        $path = array();
 
         foreach (func_get_args() as $arg) {
             if (is_array($arg)) {
@@ -176,6 +176,10 @@ class Nethgui_Widget_Abstract implements Nethgui_Renderer_WidgetInterface
             } else {
                 $path[] = strval($arg);
             }
+        }
+
+        if (count($path) > 0 && substr($path[0], 0, 1) != '/') {
+            $path = array_merge($this->view->getModulePath(), $path);
         }
 
         return Nethgui_Framework::getInstance()->buildUrl($path, $parameters);
@@ -189,7 +193,5 @@ class Nethgui_Widget_Abstract implements Nethgui_Renderer_WidgetInterface
 
         return $this->view->getClientEventTarget($this->getAttribute('name'));
     }
-
-
 
 }

@@ -26,7 +26,6 @@ class Nethgui_Widget_Xhtml_Button extends Nethgui_Widget_Xhtml
     public function render()
     {
         $name = $this->getAttribute('name');
-        $value = $this->getAttribute('value', isset($this->view[$name]) ? $this->view[$name] : $name);
         $flags = $this->getAttribute('flags');
         $label = $this->getAttribute('label', $name . '_label');
         $content = '';
@@ -34,18 +33,24 @@ class Nethgui_Widget_Xhtml_Button extends Nethgui_Widget_Xhtml
         $attributes = array();
         $cssClass = 'Button';
 
-        if ($flags & (Nethgui_Renderer_Abstract::BUTTON_LINK | Nethgui_Renderer_Abstract::BUTTON_CANCEL)) {
+        if ($flags & (Nethgui_Renderer_Abstract::BUTTON_LINK | Nethgui_Renderer_Abstract::BUTTON_CANCEL | Nethgui_Renderer_Abstract::BUTTON_HELP)) {
+
+            $value = $this->getAttribute('value', isset($this->view[$name]) ? $this->view[$name] : NULL);
 
             if (is_null($value)) {
                 if ($flags & Nethgui_Renderer_Abstract::BUTTON_LINK) {
                     $value = $name;
-                } else {
+                } elseif ($flags & Nethgui_Renderer_Abstract::BUTTON_CANCEL) {
                     $value = '..';
                 }
             }
 
             if ($flags & Nethgui_Renderer_Abstract::BUTTON_CANCEL) {
                 $cssClass .= ' cancel';
+            } elseif ($flags & Nethgui_Renderer_Abstract::BUTTON_HELP) {
+                // Pick the root module identifier:
+                $value = '/Help/Read/' . array_shift($this->view->getModulePath()) . '.html#HelpArea';
+                $cssClass .= ' Help';
             } else {
                 $cssClass .= ' link';
             }

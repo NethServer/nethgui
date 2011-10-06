@@ -69,7 +69,7 @@ class Nethgui_Framework
      */
     public function renderView($viewName, $viewState, $languageCatalog = NULL)
     {
-        if($viewName === FALSE) {
+        if ($viewName === FALSE) {
             return '';
         }
 
@@ -389,7 +389,12 @@ class Nethgui_Framework
             return;
         }
         $classPath = self::$path . '/' . str_replace("_", "/", $className) . '.php';
-        @include $classPath;
+        include $classPath;
+    }
+
+    public function getApplicationPath()
+    {
+        return realpath(self::$path . '/' . NETHGUI_APPLICATION);
     }
 
     /**
@@ -539,7 +544,7 @@ class Nethgui_Framework
             if ($redirectUrl !== FALSE) {
                 $this->redirect($redirectUrl);
             }
-            header("Content-Type: text/html; charset=UTF-8");            
+            header("Content-Type: text/html; charset=UTF-8");
             echo new Nethgui_Renderer_Xhtml($view);
         } elseif ($request->getContentType() === Nethgui_Core_Request::CONTENT_TYPE_JSON) {
             $worldModule->prepareView($view, Nethgui_Core_ModuleInterface::VIEW_CLIENT);

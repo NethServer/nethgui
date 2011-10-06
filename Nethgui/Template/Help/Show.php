@@ -1,1 +1,3 @@
-<h1>Show</h1>
+<div class="EmbeddedHelpArea">
+<?php echo $view['content'] ?>
+</div>

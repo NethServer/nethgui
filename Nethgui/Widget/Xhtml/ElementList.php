@@ -51,6 +51,10 @@ class Nethgui_Widget_Xhtml_ElementList extends Nethgui_Widget_Xhtml
 
     protected function wrapChild($childOutput)
     {
+        if ( ! $this->childWrapTag) {
+            return parent::wrapChild($childOutput);
+        }
+        
         $childTag = explode('.', $this->childWrapTag) + array(FALSE, FALSE);
 
         $content = '';

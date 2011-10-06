@@ -18,8 +18,9 @@ class Nethgui_Module_Help extends Nethgui_Core_Module_Controller
     public function initialize()
     {
         parent::initialize();
-        $this->loadChildren(array('_Show', '_Template'));
+        $this->loadChildren(array('_Show', '_Template', '_Read'));
 
+        // Propagate moduleSet to children
         foreach ($this->getChildren() as $child) {
             $child->moduleSet = $this->moduleSet;
         }

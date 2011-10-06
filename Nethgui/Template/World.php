@@ -1,9 +1,10 @@
 <?php
-    echo '<?xml version="1.0" encoding="utf-8"?>' . "\n";
-    $pageTitle = $view['CurrentModule']->translate($view['CurrentModule']->getModule()->getTitle());
+echo '<?xml version="1.0" encoding="utf-8"?>' . "\n";
+$pageTitle = $view['CurrentModule']->translate($view['CurrentModule']->getModule()->getTitle());
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="<?php echo $view['lang'] ?>" xml:lang="<?php echo $view['lang'] ?>">
     <head>
         <title><?php echo $pageTitle ?></title>
@@ -20,8 +21,13 @@
                     <div class="col2"><div id="moduleMenu" class="ModuleMenu"><?php echo $view->inset('Menu') ?></div></div>
                 </div>
             </div>
-            <div class="HelpArea"><div id="HelpAreaContent"></div></div>
+            <div id="HelpArea" class="HelpArea disabled">
+                <div class="HelpAreaContent">
+                    <?php echo $view->elementList($view::BUTTONSET)->insert($view->button('Hide', $view::BUTTON_CANCEL)); ?>
+                    <div id="HelpAreaInnerDocument"></div>
+                </div>
+            </div>
         </div>        
-        <?php foreach ($view['js'] as $scriptPath): ?><script type="text/javascript" src="<?php echo htmlspecialchars($scriptPath) ?>" ></script><?php endforeach; ?>        
+<?php foreach ($view['js'] as $scriptPath): ?><script type="text/javascript" src="<?php echo htmlspecialchars($scriptPath) ?>" ></script><?php endforeach; ?>        
     </body>
 </html>
