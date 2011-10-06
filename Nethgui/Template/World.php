@@ -9,7 +9,7 @@
         <title><?php echo $pageTitle ?></title>
         <link rel="icon"  type="image/png"  href="<?php echo htmlspecialchars($view['favicon']) ?>" />
         <link rel="stylesheet" type="text/css" href="<?php echo htmlspecialchars($view['cssMain']); ?>" />
-        <script type="text/javascript">document.write("<style>#allWrapper {display:none}</style>")</script>
+        <script type="text/javascript">document.write('<style type="text/css">#allWrapper {display:none}</style>')</script>
     </head>
     <body>
         <div id="allWrapper"> 

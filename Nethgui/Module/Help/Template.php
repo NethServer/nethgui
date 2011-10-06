@@ -34,11 +34,12 @@ class Nethgui_Module_Help_Template extends Nethgui_Core_Module_Standard
             return;
         }
 
-        if (preg_match('/[a-z][a-z0-9]+/i', $arguments[0]) == 0) {
+        if (preg_match('/[a-z][a-z0-9]+(.html)/i', $arguments[0]) == 0) {
             throw new Nethgui_Exception_HttpStatusClientError('Not found', 404);
         }
 
-        $this->module = $this->moduleSet->findModule($arguments[0]);
+        // Now assuming a trailing ".html" suffix.
+        $this->module = $this->moduleSet->findModule(substr($arguments[0], 0, -5));
 
         if (is_null($this->module)) {
             throw new Nethgui_Exception_HttpStatusClientError('Not found', 404);
