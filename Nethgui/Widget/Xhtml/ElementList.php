@@ -42,9 +42,13 @@ class Nethgui_Widget_Xhtml_ElementList extends Nethgui_Widget_Xhtml
 
         $content = '';
 
-        $content .= $this->openTag($wrap[0], array('class' => $cssClass));
+        if ($wrap[0]) {
+            $content .= $this->openTag($wrap[0], array('class' => $cssClass));
+        }
         $content .= $this->renderChildren();
-        $content .= $this->closeTag($wrap[0]);
+        if ($wrap[0]) {
+            $content .= $this->closeTag($wrap[0]);
+        }
 
         return $content;
     }
@@ -54,7 +58,7 @@ class Nethgui_Widget_Xhtml_ElementList extends Nethgui_Widget_Xhtml
         if ( ! $this->childWrapTag) {
             return parent::wrapChild($childOutput);
         }
-        
+
         $childTag = explode('.', $this->childWrapTag) + array(FALSE, FALSE);
 
         $content = '';

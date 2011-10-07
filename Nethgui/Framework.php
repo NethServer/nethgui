@@ -106,38 +106,6 @@ class Nethgui_Framework
     }
 
     /**
-     * @see anchor()
-     * @param Nethgui_Core_ModuleInterface $module
-     * @return <type>
-     */
-    public function renderModuleAnchor(Nethgui_Core_ModuleInterface $module)
-    {
-        $html = '';
-
-        if (strlen($module->getTitle()) == 0) {
-            return '';
-        }
-
-        if ( ! $module instanceof Nethgui_Core_RequestHandlerInterface) {
-            $html = '<div class="moduleTitle" title="' . htmlspecialchars(T($module->getDescription())) . '"><a href="#">' . htmlspecialchars(T($module->getTitle())) . '</a></div>';
-        } else {
-            $ciControllerClassName = $this->getControllerName();
-
-            $moduleTitle = $module->getTitle();
-            if ($module instanceof Nethgui_Core_LanguageCatalogProvider) {
-                $catalog = $module->getLanguageCatalog();
-                $moduleTitle = $this->translate($moduleTitle, array(), NULL, $catalog);
-            }
-
-            $html = anchor($ciControllerClassName . '/' . $module->getIdentifier(), htmlspecialchars($moduleTitle), array('class' => 'moduleTitle ' . $module->getIdentifier(), 'title' => htmlspecialchars($module->getDescription())
-                )
-            );
-        }
-
-        return $html;
-    }
-
-    /**
      * @param string|array $path
      * @param array $parameters
      */
