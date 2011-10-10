@@ -70,6 +70,7 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
             $widget->setAttribute('class', 'Buttonset')
                 ->setAttribute('wrap', 'div/');
         }
+        
 
         // Automatically add standard submit/reset/cancel buttons:
         if ($flags & (self::BUTTON_SUBMIT | self::BUTTON_RESET | self::BUTTON_CANCEL | self::BUTTON_HELP)) {
@@ -78,14 +79,15 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
                     ->setAttribute('wrap', 'div/');
             }
 
-            if ($flags & self::BUTTON_SUBMIT) {
-                $widget->insert($this->button('Submit', self::BUTTON_SUBMIT));
-            }
+
             if ($flags & self::BUTTON_RESET) {
                 $widget->insert($this->button('Reset', self::BUTTON_RESET));
             }
             if ($flags & self::BUTTON_CANCEL) {
                 $widget->insert($this->button('Cancel', self::BUTTON_CANCEL));
+            }
+            if ($flags & self::BUTTON_SUBMIT) {
+                $widget->insert($this->button('Submit', self::BUTTON_SUBMIT));
             }
             if ($flags & self::BUTTON_HELP) {
                 $widget->insert($this->button('Help', self::BUTTON_HELP));
@@ -216,7 +218,7 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
     public function header($name = NULL, $flags = 0)
     {
         $flags |= $this->inheritFlags;
-        $widget = $this->createWidget('textLabel', array('flags' => $flags, 'class' => 'header ui-widget-header ui-corner-all ui-helper-clearfix', 'tag' => 'div'));
+        $widget = $this->createWidget('textLabel', array('flags' => $flags, 'class' => 'header ui-widget-header ui-corner-all ui-helper-clearfix', 'tag' => 'h2'));
         if ( ! is_null($name)) {
             $widget->setAttribute('name', $name);
         }

@@ -13,14 +13,19 @@ $pageTitle = $view['CurrentModule']->translate($view['CurrentModule']->getModule
         <script type="text/javascript">document.write('<style type="text/css">#allWrapper {display:none}</style>')</script>
     </head>
     <body>
-        <div id="allWrapper"> 
-            <div id="header"><div id="ModuleTitle"><?php echo $pageTitle ?></div><div id="product">NethServer</div><?php echo $view->inset('NotificationArea') ?></div>
-            <div class="colmask leftmenu">
-                <div class="colleft">
-                    <div class="col1"><div class="<?php echo $view['CurrentModule']->getModule()->getIdentifier(); ?> CurrentModule"><?php echo $view->inset('CurrentModule') ?></div></div>
-                    <div class="col2"><div id="moduleMenu" class="ModuleMenu"><?php echo $view->inset('Menu') ?></div></div>
+        <div id="allWrapper">
+            <div id="pageHeader"><?php echo $view->inset('NotificationArea') ?><a id="product" href="Dashboard">NethServer</a><h1 id="ModuleTitle"><?php echo $pageTitle ?></h1></div>
+
+            <div id="pageContent">
+                <div class="primaryContent" role="mainTask">
+                    <div class="<?php echo $view['CurrentModule']->getModule()->getIdentifier(); ?> CurrentModule"><?php echo $view->inset('CurrentModule') ?></div>
+                </div>
+
+                <div class="secondaryContent" role="otherTask">
+                    <div class="Navigation Flat"><?php echo $view->inset('Menu') ?></div>
                 </div>
             </div>
+            
             <div id="HelpArea" class="HelpArea disabled">
                 <div class="HelpAreaContent">
                     <?php echo $view->elementList($view::BUTTONSET)->insert($view->button('Hide', $view::BUTTON_CANCEL)); ?>
