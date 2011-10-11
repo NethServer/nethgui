@@ -78,7 +78,7 @@ class Nethgui_Module_Menu extends Nethgui_Core_Module_Abstract
                 $rootList->insert(
                     $view->panel()
                         ->setAttribute('class', 'moduleTitle')
-                        ->insert($this->makeModuleAnchor($view, $this->menuIterator->current()))
+                        ->insert($view->literal($view->translate($this->menuIterator->current()->getTitle()))->setAttribute('hsc', TRUE))
                 );
 
                 // Add category contents:
