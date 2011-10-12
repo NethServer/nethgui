@@ -16,7 +16,7 @@
  * @see Nethgui_Module_Table_Read
  * @package Module
  */
-class Nethgui_Module_TableController extends Nethgui_Core_Module_Controller
+class Nethgui_Module_TableController extends Nethgui_Core_Module_Controller implements Nethgui_Core_Module_DefaultUiStateInterface
 {
 
     /**
@@ -186,4 +186,9 @@ class Nethgui_Module_TableController extends Nethgui_Core_Module_Controller
         }
     }
 
+    public function getDefaultUiStyleFlags()
+    {
+        return self::STYLE_CONTAINER_TABLE;
+    }
+   
 }

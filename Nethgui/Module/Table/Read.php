@@ -55,10 +55,35 @@ class Nethgui_Module_Table_Read extends Nethgui_Module_Table_Action
             $view['tableClass'] = count($view['rows']) > PHP_INT_MAX ? 'large-dataTable' : 'small-dataTable';
             $view['tableClass'] .= ' ' . $view->getClientEventTarget('rows');
             $view['tableId'] = $view->getUniqueId();
+            $view['TableActions'] = $view->spawnView($this->getParent());
+            $view['TableActions']->setTemplate(array($this, 'renderTableActions'));
         } elseif ($mode == self::VIEW_HELP) {
             // Ignore the view in help mode:
             $view->setTemplate(FALSE);
         }
+    }
+
+    public function renderTableActions(Nethgui_Renderer_Abstract $view)
+    {
+        $tableActions = $view->getModule()->getTableActions();
+        $buttonList = $view->elementList()
+            ->setAttribute('class', 'Buttonlist')
+            ->setAttribute('wrap', 'div/');
+
+        foreach ($tableActions as $tableAction) {
+            $action = $tableAction->getIdentifier();
+
+            if ($tableAction instanceof Nethgui_Module_Table_Help) {
+                $button = $view->button('Help', Nethgui_Renderer_Abstract::BUTTON_HELP);
+            } else {
+                $button = $view
+                    ->button($action, Nethgui_Renderer_Abstract::BUTTON_LINK)
+                    ->setAttribute('value', array($action, '#' . $view->getUniqueId($action)));
+            }
+
+            $buttonList->insert($button);
+        }      
+        return $buttonList;
     }
 
     protected function getActionIdentifier(Nethgui_Core_ModuleInterface $m)

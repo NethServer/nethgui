@@ -178,7 +178,16 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
 
     public function renderDefault(Nethgui_Renderer_Abstract $view)
     {
-        $container = $view->panel()->setAttribute('class', 'Controller');
+        $containerClass = 'Controller';
+
+        if ($this instanceof Nethgui_Core_Module_DefaultUiStateInterface) {
+            if($this->getDefaultUiStyleFlags()
+                & Nethgui_Core_Module_DefaultUiStateInterface::STYLE_CONTAINER_TABLE) {
+                $containerClass = 'Table';
+            }
+        }
+
+        $container = $view->panel()->setAttribute('class', $containerClass);
 
         foreach ($this->getChildren() as $index => $module) {
             if ($module instanceof Nethgui_Core_Module_DefaultUiStateInterface) {

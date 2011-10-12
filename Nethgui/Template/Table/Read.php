@@ -16,3 +16,4 @@
     </tr>
     <?php endforeach ?></tbody>
 </table></div>
+<?php echo $view->inset('TableActions') ?>

@@ -27,12 +27,10 @@ class Nethgui_Module_TabsController extends Nethgui_Core_Module_Controller
         ;
 
         foreach ($this->getChildren() as $index => $module) {
-            $this->renderAction($view, $container, $module, $index);
+            $container->insert($view->inset($module->getIdentifier()));
         }
 
         return $container;
     }
-
-
 
 }
