@@ -186,39 +186,4 @@ class Nethgui_Module_TableController extends Nethgui_Core_Module_Controller
         }
     }
 
-    protected function renderAction(Nethgui_Renderer_Abstract $view, Nethgui_Renderer_WidgetInterface $container, Nethgui_Core_ModuleInterface $module, $index)
-    {
-        // Assume that the index 0 corresponds to the "read" action
-        if ($index == 0) {
-            // change the container CSS class attribute:
-            $container->setAttribute('class', 'Table');
-
-            $tableRead = $view->panel()->setAttribute('class', 'Reaction TableRead raised');
-            $container->insert($tableRead);
-            $tableRead->insert($view->inset($module->getIdentifier()));
-
-            $elementList = $view->elementList()->setAttribute('class', 'Buttonlist')->setAttribute('wrap', 'div/');
-
-            foreach ($this->getTableActions() as $tableAction) {
-                $action = $tableAction->getIdentifier();
-
-                if ($tableAction instanceof Nethgui_Module_Table_Help) {
-                    $button = $view->button('Help', Nethgui_Renderer_Abstract::BUTTON_HELP);
-                } else {
-                    $button = $view
-                        ->button($action, Nethgui_Renderer_Abstract::BUTTON_LINK)
-                        ->setAttribute('value', array($action, '#' . $view->getUniqueId($action)));
-                    
-                }
-
-                $elementList->insert($button);
-            }
-
-            $tableRead->insert($elementList);
-        } else {
-            // render default disabled state for subsequent indexes..
-            parent::renderAction($view, $container, $module, $index);
-        }
-    }
-
 }

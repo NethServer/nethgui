@@ -220,14 +220,4 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
         }
     }
 
-    public function isModal()
-    {
-        if ($this->getIdentifier() == 'delete')
-        {
-            return TRUE;
-        }
-
-        return parent::isModal();
-    }
-
 }
