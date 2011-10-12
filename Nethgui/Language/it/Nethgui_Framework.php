@@ -7,7 +7,8 @@
 $L['status_disabled_label'] = 'Disabilitato';
 $L['status_enabled_label'] = 'Abilitato';
 
-$L['Confirm deletion of `${0}`?'] = 'Confermi l\'eliminazione di `${0}`?';
+$L['Confirm deletion of `${0}`?'] = 'Confermi l\'eliminazione di "${0}"?';
+$L['Delete `${0}`'] = 'Elimina "${0}"';
 $L['Actions_label'] = 'Azioni';
 $L['Submit_label'] = 'Salva';
 $L['Apply_label'] = 'Applica';
@@ -47,5 +48,4 @@ $L['nethgui-test_success'] = 'Evento di test Nethgui eseguito con successo (${0}
 $L['nethgui-test_failure'] = 'Errore durante l\'evento di test Nethgui (${0})';
 
 $L['Please wait...'] = 'Attendere prego...';
-$L['Other modules'] = 'Altri moduli';
 
