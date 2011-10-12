@@ -1,16 +1,11 @@
-<?php
-echo '<?xml version="1.0" encoding="utf-8"?>' . "\n";
-$pageTitle = $view['CurrentModule']->translate($view['CurrentModule']->getModule()->getTitle());
-
-?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="<?php echo $view['lang'] ?>" xml:lang="<?php echo $view['lang'] ?>">
+<?php $pageTitle = $view['CurrentModule']->translate($view['CurrentModule']->getModule()->getTitle()); ?><!DOCTYPE html>
+<html lang="<?php echo $view['lang'] ?>">
     <head>
         <title><?php echo $pageTitle ?></title>
         <link rel="icon"  type="image/png"  href="<?php echo htmlspecialchars($view['favicon']) ?>" />
         <link rel="stylesheet" type="text/css" href="<?php echo htmlspecialchars($view['cssMain']); ?>" />
         <script type="text/javascript">document.write('<style type="text/css">#allWrapper {display:none}</style>')</script>
+        <meta name="viewport" content="width=device-width" />
     </head>
     <body>
         <div id="allWrapper">
