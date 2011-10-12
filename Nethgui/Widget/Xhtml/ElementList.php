@@ -65,6 +65,7 @@ class Nethgui_Widget_Xhtml_ElementList extends Nethgui_Widget_Xhtml
         $content .= $this->openTag($childTag[0]);
         $content .= parent::wrapChild($childOutput);
         $content .= $this->closeTag($childTag[0]);
+
         return $content;
     }
 

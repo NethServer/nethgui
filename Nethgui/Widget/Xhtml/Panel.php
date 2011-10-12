@@ -24,7 +24,7 @@ class Nethgui_Widget_Xhtml_Panel extends Nethgui_Widget_Xhtml
         $tag = $this->getAttribute('tag', 'div');
 
         $flags = $this->getAttribute('flags');
-        if ($flags & Nethgui_Renderer_Abstract::STATE_DISABLED) {
+        if ($cssClass && ($flags & Nethgui_Renderer_Abstract::STATE_DISABLED)) {
             $cssClass .= ' disabled';
         }
 

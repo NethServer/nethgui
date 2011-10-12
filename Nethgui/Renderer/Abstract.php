@@ -212,7 +212,7 @@ interface Nethgui_Renderer_Abstract extends Nethgui_Core_ViewInterface
      * @param string|object $data Can be a string or any object implementing toString() method.
      * @return Nethgui_Renderer_WidgetInterface
      */
-    public function literal($data);
+    public function literal($data, $flags = 0);
 
     /**
      * Create a column container - helper.
@@ -223,3 +223,5 @@ interface Nethgui_Renderer_Abstract extends Nethgui_Core_ViewInterface
      */
     public function columns();
 }
+
+define('NETHGUI_INHERITABLE_FLAGS', Nethgui_Renderer_Abstract::STATE_DISABLED | Nethgui_Renderer_Abstract::LABEL_ABOVE | Nethgui_Renderer_Abstract::LABEL_LEFT | Nethgui_Renderer_Abstract::LABEL_RIGHT | Nethgui_Renderer_Abstract::LABEL_NONE);

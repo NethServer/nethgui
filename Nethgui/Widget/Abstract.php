@@ -70,8 +70,12 @@ class Nethgui_Widget_Abstract implements Nethgui_Renderer_WidgetInterface
 
     protected function renderChildren()
     {
+        $flags = $this->getAttribute('flags', 0) & NETHGUI_INHERITABLE_FLAGS;
         $output = '';
         foreach ($this->children as $child) {
+            if($child->hasAttribute('flags')) {
+                $child->setAttribute('flags', $flags | $child->getAttribute('flags'));
+            }
             $output .= $this->wrapChild($child->render());
         }
         return $output;

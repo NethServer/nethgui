@@ -16,7 +16,7 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
      *
      * @var integer
      */
-    private $inheritFlags = 0;
+    private $inheritFlags = 0;    
 
     /**
      *
@@ -26,15 +26,7 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
     public function __construct(Nethgui_Core_ViewInterface $view, $inheritFlags = 0)
     {
         parent::__construct($view);
-
-        $inheritableFlagsMask = self::STATE_DISABLED
-            | self::LABEL_ABOVE
-            | self::LABEL_LEFT
-            | self::LABEL_RIGHT
-            | self::LABEL_NONE
-        ;
-
-        $this->inheritFlags = $inheritFlags & $inheritableFlagsMask;
+        $this->inheritFlags = $inheritFlags & NETHGUI_INHERITABLE_FLAGS;
     }
 
     public function offsetGet($offset)
@@ -70,7 +62,6 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
             $widget->setAttribute('class', 'Buttonset')
                 ->setAttribute('wrap', 'div/');
         }
-        
 
         // Automatically add standard submit/reset/cancel buttons:
         if ($flags & (self::BUTTON_SUBMIT | self::BUTTON_RESET | self::BUTTON_CANCEL | self::BUTTON_HELP)) {
@@ -79,15 +70,14 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
                     ->setAttribute('wrap', 'div/');
             }
 
-
+            if ($flags & self::BUTTON_SUBMIT) {
+                $widget->insert($this->button('Submit', self::BUTTON_SUBMIT));
+            }
             if ($flags & self::BUTTON_RESET) {
                 $widget->insert($this->button('Reset', self::BUTTON_RESET));
             }
             if ($flags & self::BUTTON_CANCEL) {
                 $widget->insert($this->button('Cancel', self::BUTTON_CANCEL));
-            }
-            if ($flags & self::BUTTON_SUBMIT) {
-                $widget->insert($this->button('Submit', self::BUTTON_SUBMIT));
             }
             if ($flags & self::BUTTON_HELP) {
                 $widget->insert($this->button('Help', self::BUTTON_HELP));
@@ -225,9 +215,9 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
         return $widget;
     }
 
-    public function literal($data)
+    public function literal($data, $flags = 0)
     {
-        return $this->createWidget(__FUNCTION__, array('data' => $data));
+        return $this->createWidget(__FUNCTION__, array('data' => $data, 'flags' => $flags));
     }
 
     public function columns()
