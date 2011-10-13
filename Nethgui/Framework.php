@@ -118,13 +118,7 @@ class Nethgui_Framework
         }
 
         $path = explode('/', $path);
-
-        // FIXME: the controller name must not be added
-        // if url-rewriting (or similar) is enabled
-        array_unshift($path, $this->getControllerName());
-
         $path = array_reverse($path);
-
         $segments = array();
 
         while (list($index, $slice) = each($path)) {
@@ -141,13 +135,36 @@ class Nethgui_Framework
             array_unshift($segments, $slice);
         }
 
+        // FIXME: skip controller segments if url rewriting is active:
+        array_unshift($segments, 'index.php', $this->getControllerName());
+
         if ( ! empty($parameters)) {
-            $url = site_url($segments) . '?' . http_build_query($parameters);
+            $url = $this->baseUrl($segments) . '?' . http_build_query($parameters);
         } else {
-            $url = site_url($segments);
+            $url = $this->baseUrl($segments);
         }
 
         return $url . $fragment;
+    }
+
+    public function baseUrl($segments = array())
+    {
+        static $baseUrl;
+
+        if ( ! isset($baseUrl)) {
+
+
+            $parts = explode('/', $_SERVER['SCRIPT_NAME']);
+            $lastPart = $parts[max(0, count($parts) - 1)];
+            $nethguiFile = basename(NETHGUI_FILE);
+
+            if ($lastPart == $nethguiFile) {
+                array_pop($parts);
+            }
+            $baseUrl = implode('/', $parts);
+        }
+
+        return $baseUrl . '/' . implode('/', $segments);
     }
 
     /**
@@ -166,7 +183,7 @@ class Nethgui_Framework
             $module = $module->getParent();
         } while ( ! is_null($module));
 
-        return Nethgui_Framework::getInstance()->buildUrl($path, array());
+        return $this->buildUrl($path, array());
     }
 
     /**
@@ -395,7 +412,7 @@ class Nethgui_Framework
         // Replace "index" request with a  default module value
         if ($currentModuleIdentifier == 'index') {
             // TODO read from configuration
-            $this->redirect('dispatcher/Dashboard');
+            $this->redirect('dispatcher/User');
         }
 
         $request = Nethgui_Core_Request::getHttpRequest($arguments);
@@ -541,7 +558,7 @@ class Nethgui_Framework
      */
     private function getRedirectUrl(Nethgui_Core_UserInterface $user)
     {
-        $redirect = $user->getRedirect();
+        $redirect = FALSE;
         if (is_array($redirect)) {
             list($module, $path) = $redirect;
             return $this->buildModuleUrl($module, $path);

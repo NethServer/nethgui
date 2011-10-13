@@ -82,7 +82,7 @@ class Nethgui_Module_Table_Read extends Nethgui_Module_Table_Action
             }
 
             $buttonList->insert($button);
-        }      
+        }
         return $buttonList;
     }
 
@@ -145,7 +145,12 @@ class Nethgui_Module_Table_Read extends Nethgui_Module_Table_Action
             $actionId = $action->getIdentifier();
             $actionInfo = array();
             $actionInfo[] = $cellView->translate($actionId . '_label');
-            $actionInfo[] = Nethgui_Framework::getInstance()->buildModuleUrl($this, array('..', $action->getIdentifier(), $key, '#' . $cellView->getUniqueId($actionId)));
+
+            if ($mode == self::VIEW_CLIENT) {
+                $actionInfo[] = Nethgui_Framework::getInstance()->buildModuleUrl($this->getParent(), array($action->getIdentifier(), $key, '#' . $cellView->getUniqueId($actionId)));
+            } else {
+                $actionInfo[] = array($action->getIdentifier(), $key, '#' . $cellView->getUniqueId($actionId));
+            }
 
             $cellView[$actionId] = $actionInfo;
         }
