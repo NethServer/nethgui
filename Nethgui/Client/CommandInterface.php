@@ -26,8 +26,17 @@ interface Nethgui_Client_CommandInterface
      */
     public function getArguments();
 
+    /**
+     * Check if the command can be safely converted into an absolute URL for
+     * HTTP redirection.
+     *
+     * @return TRUE If the command can be converted to an absolute URL
+     */
     public function isRedirection();
-    
+
+    /**
+     * Get the absolute URL for client redirection
+     */
     public function getRedirectionUrl();
 }
 

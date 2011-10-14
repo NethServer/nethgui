@@ -225,6 +225,12 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
         return $this->createWidget(__FUNCTION__, array());
     }
 
+    public function progressBar($name, $flags = 0)
+    {
+        $flags |= $this->inheritFlags;
+        return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags));
+    }
+
     public function __toString()
     {
         $module = $this->getModule();

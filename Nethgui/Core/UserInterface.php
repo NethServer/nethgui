@@ -8,7 +8,7 @@
  *
  * @package Core
  */
-interface Nethgui_Core_UserInterface
+interface Nethgui_Core_UserInterface extends ArrayAccess
 {
 
     /**
@@ -18,12 +18,14 @@ interface Nethgui_Core_UserInterface
 
     /**
      * @param bool $status
+     * @return Nethgui_Core_UserInterface
      */
     public function setAuthenticated($status);
 
     /**
      * @param string $credentialName
      * @param mixed $credentialValue
+     * @return Nethgui_Core_UserInterface
      */
     public function setCredential($credentialName, $credentialValue);
 
@@ -50,21 +52,32 @@ interface Nethgui_Core_UserInterface
      * @param string $message
      * @param array $actions
      * @param integer $type
-     * @return void
+     * @return Nethgui_Core_UserInterface
      */
     public function showDialogBox(Nethgui_Core_ModuleInterface $module, $message, $actions = array(), $type = Nethgui_Core_DialogBox::NOTIFY_SUCCESS);
 
     public function getDialogBoxes();
 
+    /**
+     * @return Nethgui_Core_UserInterface
+     */
     public function dismissDialogBox($dialogId);
 
+    /**
+     * @return Nethgui_Core_UserInterface
+     */
     public function addClientCommand(Nethgui_Client_CommandInterface $command);
 
+    /**
+     * @return Nethgui_Core_UserInterface
+     */
     public function addClientCommandEnable(Nethgui_Core_ModuleInterface $action);
 
+    /**
+     * @return Nethgui_Core_UserInterface
+     */
     public function addClientCommandActivate(Nethgui_Core_ModuleInterface $action, Nethgui_Core_ModuleInterface $cancelAction = NULL);
 
     public function getClientCommands();
 }
-
 

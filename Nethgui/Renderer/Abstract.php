@@ -222,6 +222,15 @@ interface Nethgui_Renderer_Abstract extends Nethgui_Core_ViewInterface
      * @return Nethgui_Renderer_WidgetInterface
      */
     public function columns();
+
+    /**
+     * Create a progress bar
+     *
+     * Refs #554.
+     *
+     * - name View member holding the percent value Int range [0, 100]
+     */
+    public function progressBar($name, $flags = 0);
 }
 
 define('NETHGUI_INHERITABLE_FLAGS', Nethgui_Renderer_Abstract::STATE_DISABLED | Nethgui_Renderer_Abstract::LABEL_ABOVE | Nethgui_Renderer_Abstract::LABEL_LEFT | Nethgui_Renderer_Abstract::LABEL_RIGHT | Nethgui_Renderer_Abstract::LABEL_NONE);
