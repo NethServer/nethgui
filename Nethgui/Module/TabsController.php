@@ -22,7 +22,7 @@ class Nethgui_Module_TabsController extends Nethgui_Core_Module_Controller
     public function renderDefault(Nethgui_Renderer_Abstract $view)
     {
         $container = $view->tabs()
-            ->setAttribute('class', 'Tabs')
+            ->setAttribute('class', 'TabsController')
             ->setAttribute('tabClass', 'TabAction')
         ;
 

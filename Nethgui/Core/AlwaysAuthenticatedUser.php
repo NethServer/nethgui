@@ -17,8 +17,8 @@ class Nethgui_Core_AlwaysAuthenticatedUser implements Nethgui_Core_UserInterface
 
     private $credentials;
     private $dialogs;
-    private $redirect;
-    
+    private $clientCommands = array();
+
     public function __construct()
     {
         session_name('Nethgui');
@@ -97,22 +97,24 @@ class Nethgui_Core_AlwaysAuthenticatedUser implements Nethgui_Core_UserInterface
         return $this->dialogs;
     }
 
-    public function setRedirect(Nethgui_Core_ModuleInterface $module, $path = array())
+    public function addClientCommandEnable(Nethgui_Core_ModuleInterface $action)
     {
-        if ( ! isset($this->redirect))
-        {
-            $this->redirect = array($module, $path);
-        }
+        $this->addClientCommand(new Nethgui_Client_Command_Enable($action));
     }
 
-    public function getRedirect()
+    public function addClientCommandActivate(Nethgui_Core_ModuleInterface $action, Nethgui_Core_ModuleInterface $cancelAction = NULL)
     {
-        if ( ! isset($this->redirect)) {
-            return NULL;
-        }
+        $this->addClientCommand(new Nethgui_Client_Command_Activate($action, $cancelAction));
+    }
 
-        return $this->redirect;
+    public function addClientCommand(Nethgui_Client_CommandInterface $command)
+    {
+        $this->clientCommands[] = $command;
+    }
+
+    public function getClientCommands()
+    {
+        return $this->clientCommands;
     }
 
 }
-

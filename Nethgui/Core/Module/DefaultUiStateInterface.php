@@ -18,7 +18,9 @@ interface Nethgui_Core_Module_DefaultUiStateInterface
     const STYLE_DIALOG = 0x1;
     const STYLE_ENABLED = 0x2;
 
-    const STYLE_CONTAINER_TABLE = 0x4;    
+    const STYLE_CONTAINER_TABLE = 0x4;
+    const STYLE_CONTAINER_TABS = 0x08;
+    const STYLE_NOFORMWRAP = 0x10;
 
     /**
      * @return int The style flags

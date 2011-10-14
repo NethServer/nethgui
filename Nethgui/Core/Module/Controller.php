@@ -84,7 +84,7 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
      * @param string $identifier 
      * @return Nethgui_Core_ModuleInterface
      */
-    protected function getAction($identifier = NULL)
+    public function getAction($identifier = NULL)
     {
         foreach ($this->getChildren() as $child) {
             if ($child->getIdentifier() == $identifier || is_null($identifier))
@@ -181,9 +181,12 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
         $containerClass = 'Controller';
 
         if ($this instanceof Nethgui_Core_Module_DefaultUiStateInterface) {
-            if($this->getDefaultUiStyleFlags()
+            if ($this->getDefaultUiStyleFlags()
                 & Nethgui_Core_Module_DefaultUiStateInterface::STYLE_CONTAINER_TABLE) {
-                $containerClass = 'Table';
+                $containerClass = 'TableController';
+            } elseif ($this->getDefaultUiStyleFlags()
+                & Nethgui_Core_Module_DefaultUiStateInterface::STYLE_CONTAINER_TABS) {
+                $containerClass = 'TabsController';
             }
         }
 
@@ -197,7 +200,7 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
                     & Nethgui_Core_Module_DefaultUiStateInterface::STYLE_DIALOG) {
                     $widgetClass = 'Dialog';
                 } else {
-                    $widgetClass = 'Reaction';
+                    $widgetClass = 'Action';
                 }
             } else {
                 $flagEnabled = $index == 0;
@@ -208,8 +211,8 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
 
             if ( ! $flagEnabled) {
                 $flags |= $view::STATE_DISABLED;
-            } elseif ($widgetClass == 'Reaction') {
-                $widgetClass .= ' raised';
+            } else {
+                $widgetClass .= ' visible';
             }
 
             $panel = $view->panel()

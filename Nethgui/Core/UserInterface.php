@@ -39,7 +39,7 @@ interface Nethgui_Core_UserInterface
     public function getCredentials();
 
     public function hasCredential($credentialName);
-    
+
     /**
      * Add a new Dialog Box in current user session, waiting for the user answer.
      * The answer is handled through NotificationArea module, which is responsible
@@ -53,13 +53,18 @@ interface Nethgui_Core_UserInterface
      * @return void
      */
     public function showDialogBox(Nethgui_Core_ModuleInterface $module, $message, $actions = array(), $type = Nethgui_Core_DialogBox::NOTIFY_SUCCESS);
-    
+
     public function getDialogBoxes();
-    
-    public function dismissDialogBox($dialogId); 
-    
-    public function setRedirect(Nethgui_Core_ModuleInterface $module, $path = array());
-    
-    public function getRedirect();
+
+    public function dismissDialogBox($dialogId);
+
+    public function addClientCommand(Nethgui_Client_CommandInterface $command);
+
+    public function addClientCommandEnable(Nethgui_Core_ModuleInterface $action);
+
+    public function addClientCommandActivate(Nethgui_Core_ModuleInterface $action, Nethgui_Core_ModuleInterface $cancelAction = NULL);
+
+    public function getClientCommands();
 }
+
 

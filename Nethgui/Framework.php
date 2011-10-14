@@ -147,6 +147,13 @@ class Nethgui_Framework
         return $url . $fragment;
     }
 
+    /**
+     * Prefix the given segments with the URL path to the controller.
+     * 
+     * @staticvar type $baseUrl
+     * @param type $segments
+     * @return type
+     */
     public function baseUrl($segments = array())
     {
         static $baseUrl;
@@ -172,7 +179,7 @@ class Nethgui_Framework
      * @param Nethgui_Core_ModuleInterface  $module
      * @param array|string $path;
      */
-    public function buildModuleUrl(Nethgui_Core_ModuleInterface $module, $path)
+    public function buildModuleUrl(Nethgui_Core_ModuleInterface $module, $path = array())
     {
         if (is_string($path)) {
             $path = array($path);
@@ -534,10 +541,12 @@ class Nethgui_Framework
         } elseif ($request->getContentType() === Nethgui_Core_Request::CONTENT_TYPE_JSON) {
             $worldModule->prepareView($view, Nethgui_Core_ModuleInterface::VIEW_CLIENT);
             $events = $view->getClientEvents();
-            $redirectUrl = $this->getRedirectUrl($user);
-            if ($redirectUrl !== FALSE) {
-                $events[] = array('Redirect', $redirectUrl);
+            $redirectUrl = FALSE;
+            $clientCommands = $this->clientCommandsToArray($user->getClientCommands());
+            if ( ! empty($clientCommands)) {
+                $events[] = array('ClientCommandHandler', $clientCommands);
             }
+
             header("Content-Type: application/json; charset=UTF-8");
             echo json_encode($events);
         } else {
@@ -545,24 +554,40 @@ class Nethgui_Framework
         }
 
         // Dismiss transient dialog boxes only if no redirection or fake redirection occurred:
-        if ($redirectUrl === FALSE || $redirectUrl == $this->buildUrl($currentModuleIdentifier)) {
+        if ($redirectUrl === FALSE) {
             $notificationManager->dismissTransientDialogBoxes();
         }
     }
 
+    private function clientCommandsToArray($clientCommands)
+    {
+        $output = array();
+        foreach ($clientCommands as $command) {
+            if ($command instanceof Nethgui_Client_CommandInterface) {
+                $output[] = array(
+                    'targetSelector' => $command->getTargetSelector(),
+                    'method' => $command->getMethod(),
+                    'arguments' => $command->getArguments(),
+                );
+            }
+        }
+        return $output;
+    }
+
     /**
-     * Check if a redirect condition has been set calculate the URL.
+     * Check if a redirect condition has been set and calculate the URL.
      * 
      * @param Nethgui_Core_UserInterface $user
      * @return string|bool The URL where to redirect the user
      */
     private function getRedirectUrl(Nethgui_Core_UserInterface $user)
     {
-        $redirect = FALSE;
-        if (is_array($redirect)) {
-            list($module, $path) = $redirect;
-            return $this->buildModuleUrl($module, $path);
+        foreach ($user->getClientCommands() as $command) {
+            if ($command instanceof Nethgui_Client_CommandInterface && $command->isRedirection()) {
+                return $command->getRedirectionUrl();
+            }
         }
+
         return FALSE;
     }
 

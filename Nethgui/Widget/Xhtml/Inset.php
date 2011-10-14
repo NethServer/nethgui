@@ -42,8 +42,19 @@ class Nethgui_Widget_Xhtml_Inset extends Nethgui_Widget_Xhtml
         $content = (String) $inset;
         $contentWidget = $this->view->literal($content);
 
+        // 1. If we have a NOFORMWRAP give up here.
+        if ($module instanceof Nethgui_Core_Module_DefaultUiStateInterface
+            && $module->getDefaultUiStyleFlags() & Nethgui_Core_Module_DefaultUiStateInterface::STYLE_NOFORMWRAP) {
+            return $contentWidget;
+        }
+
+        // 2. Composite modules are never wrapped into FORM tag.
+        if ($module instanceof Nethgui_Core_ModuleCompositeInterface) {
+            return $contentWidget;
+        }
+
+        // 3. Wrap automatically a FORM tag only if instancof RequestHandler and no FORM tag has been emitted.
         if ($module instanceof Nethgui_Core_RequestHandlerInterface
-            && ! $module instanceof Nethgui_Core_ModuleCompositeInterface
             && stripos($content, '<form ') === FALSE) {
             // Wrap a simple module into a FORM tag automatically
             $contentWidget = $inset->form()->insert($contentWidget);

@@ -29,9 +29,9 @@ class Nethgui_Widget_Xhtml_ElementList extends Nethgui_Widget_Xhtml
 
         $this->childWrapTag = $wrap[1];
 
-        if ($flags & Nethgui_Renderer_Abstract::STATE_DISABLED) {
-            $cssClass .= ' disabled';
-        }
+        //if ($flags & Nethgui_Renderer_Abstract::STATE_DISABLED) {
+        //    $cssClass .= ' disabled';
+        //}
 
         if ($this->hasAttribute('maxElements')) {
             $maxElements = intval($this->getAttribute('maxElements'));
