@@ -250,6 +250,18 @@ interface Nethgui_Renderer_Abstract extends Nethgui_Core_ViewInterface
      * @see textArea()
      */
     public function console($name, $flags = 0);
+
+    /**
+     * Create a date picker widget:
+     *
+     * Refs #474
+     *
+     * Attributes:
+     * - format (string) one of "" (default), "be", "me", "le"
+     *
+     * @see Nethgui_Framework::getDateFormat();
+     */
+    public function dateInput($name, $flags);
 }
 
 define('NETHGUI_INHERITABLE_FLAGS', Nethgui_Renderer_Abstract::STATE_DISABLED | Nethgui_Renderer_Abstract::LABEL_ABOVE | Nethgui_Renderer_Abstract::LABEL_LEFT | Nethgui_Renderer_Abstract::LABEL_RIGHT | Nethgui_Renderer_Abstract::LABEL_NONE);

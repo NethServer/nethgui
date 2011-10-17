@@ -9,8 +9,9 @@
  * @package Test
  */
 
+$basedir = realpath(dirname(__FILE__) . '/../');
 
-require_once('Nethgui/Framework.php');
+require_once($basedir . '/Nethgui/Framework.php');
 require_once('Tool/Helpers.php');
 
 define('NETHGUI_ENVIRONMENT', 'development');

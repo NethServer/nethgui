@@ -344,7 +344,7 @@ class Nethgui_Core_ValidatorTest extends PHPUnit_Framework_TestCase
     {
         $this->object->date();
 
-        $this->assertTrue($this->object->evaluate('31/12/1999'));
+        $this->assertTrue($this->object->evaluate('1999-12-31'));
     }
 
     public function testDateUnknownFormat()
