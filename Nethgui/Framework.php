@@ -541,7 +541,7 @@ class Nethgui_Framework
         } elseif ($request->getContentType() === Nethgui_Core_Request::CONTENT_TYPE_JSON) {
             $worldModule->prepareView($view, Nethgui_Core_ModuleInterface::VIEW_CLIENT);
             $events = $view->getClientEvents();
-            $redirectUrl = FALSE;
+            $redirectUrl = $this->getRedirectUrl($user);
             $clientCommands = $this->clientCommandsToArray($user->getClientCommands());
             if ( ! empty($clientCommands)) {
                 $events[] = array('ClientCommandHandler', $clientCommands);
