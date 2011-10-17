@@ -7,11 +7,14 @@
 $L['status_disabled_label'] = 'Disabilitato';
 $L['status_enabled_label'] = 'Abilitato';
 
-$L['Confirm deletion of `${0}`?'] = 'Confermi l\'eliminazione di `${0}`?';
+$L['Confirm deletion of `${0}`?'] = 'Confermi l\'eliminazione di "${0}"?';
+$L['Delete `${0}`'] = 'Elimina "${0}"';
 $L['Actions_label'] = 'Azioni';
 $L['Submit_label'] = 'Salva';
 $L['Apply_label'] = 'Applica';
 $L['Cancel_label'] = 'Annulla';
+$L['Help_label'] = 'Aiuto';
+$L['Hide_label'] = 'Nascondi';
 $L['update_label'] = 'Modifica';
 $L['delete_label'] = 'Elimina';
 $L['create_label'] = 'Crea nuovo';

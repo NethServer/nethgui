@@ -45,6 +45,7 @@ interface Nethgui_Renderer_Abstract extends Nethgui_Core_ViewInterface
     const FIELDSET_EXPANDABLE = 0x200000;
     const BUTTONSET = 0x400000;
     const BUTTON_DROPDOWN = 0x800000;
+    const BUTTON_HELP = 0x1000000;
 
     /**
      *
@@ -211,7 +212,7 @@ interface Nethgui_Renderer_Abstract extends Nethgui_Core_ViewInterface
      * @param string|object $data Can be a string or any object implementing toString() method.
      * @return Nethgui_Renderer_WidgetInterface
      */
-    public function literal($data);
+    public function literal($data, $flags = 0);
 
     /**
      * Create a column container - helper.
@@ -221,4 +222,34 @@ interface Nethgui_Renderer_Abstract extends Nethgui_Core_ViewInterface
      * @return Nethgui_Renderer_WidgetInterface
      */
     public function columns();
+
+    /**
+     * Create a progress bar
+     *
+     * Refs #554.
+     *
+     * - name View member holding the percent value Int range [0, 100]
+     */
+    public function progressBar($name, $flags = 0);
+
+    /**
+     * Create a text area
+     *
+     * Refs #556
+     *
+     * Attributes:
+     * - dimensions
+     * - appendOnly
+     */
+    public function textArea($name, $flags = 0);
+
+
+    /**
+     * Create a console-like text area
+     *
+     * @see textArea()
+     */
+    public function console($name, $flags = 0);
 }
+
+define('NETHGUI_INHERITABLE_FLAGS', Nethgui_Renderer_Abstract::STATE_DISABLED | Nethgui_Renderer_Abstract::LABEL_ABOVE | Nethgui_Renderer_Abstract::LABEL_LEFT | Nethgui_Renderer_Abstract::LABEL_RIGHT | Nethgui_Renderer_Abstract::LABEL_NONE);

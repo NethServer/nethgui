@@ -70,8 +70,12 @@ class Nethgui_Widget_Abstract implements Nethgui_Renderer_WidgetInterface
 
     protected function renderChildren()
     {
+        $flags = $this->getAttribute('flags', 0) & NETHGUI_INHERITABLE_FLAGS;
         $output = '';
         foreach ($this->children as $child) {
+            if($child->hasAttribute('flags')) {
+                $child->setAttribute('flags', $flags | $child->getAttribute('flags'));
+            }
             $output .= $this->wrapChild($child->render());
         }
         return $output;
@@ -122,7 +126,8 @@ class Nethgui_Widget_Abstract implements Nethgui_Renderer_WidgetInterface
      */
     protected function selfClosingTag($tag, $attributes)
     {
-        return sprintf('<%s%s />', strtolower($tag), $this->prepareXhtmlAttributes($attributes));
+        $tag = strtolower($tag);
+        return sprintf('<%s%s></%s>', $tag, $this->prepareXhtmlAttributes($attributes), $tag);
     }
 
     /**
@@ -168,7 +173,7 @@ class Nethgui_Widget_Abstract implements Nethgui_Renderer_WidgetInterface
     protected function buildUrl()
     {
         $parameters = array();
-        $path = $this->view->getModulePath();
+        $path = array();
 
         foreach (func_get_args() as $arg) {
             if (is_array($arg)) {
@@ -176,6 +181,10 @@ class Nethgui_Widget_Abstract implements Nethgui_Renderer_WidgetInterface
             } else {
                 $path[] = strval($arg);
             }
+        }
+
+        if (count($path) > 0 && substr($path[0], 0, 1) != '/') {
+            $path = array_merge($this->view->getModulePath(), $path);
         }
 
         return Nethgui_Framework::getInstance()->buildUrl($path, $parameters);
@@ -189,7 +198,5 @@ class Nethgui_Widget_Abstract implements Nethgui_Renderer_WidgetInterface
 
         return $this->view->getClientEventTarget($this->getAttribute('name'));
     }
-
-
 
 }

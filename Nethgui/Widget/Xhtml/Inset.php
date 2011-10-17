@@ -20,14 +20,14 @@ class Nethgui_Widget_Xhtml_Inset extends Nethgui_Widget_Xhtml
     public function render()
     {
         $name = $this->getAttribute('name');
-        $flags = $this->getAttribute('flags');
+        $flags = $this->getAttribute('flags', 0);
         $value = $this->view->offsetGet($name);
         $content = '';
 
         if ($value instanceof Nethgui_Renderer_Abstract) {
             $content = (String) $this->wrapView($value);
         } else {
-            $content = (String) $this->view->literal($value);
+            $content = (String) $this->view->literal($value, $flags);
         }
 
         return $content;
@@ -36,12 +36,25 @@ class Nethgui_Widget_Xhtml_Inset extends Nethgui_Widget_Xhtml
     protected function wrapView(Nethgui_Renderer_Abstract $inset)
     {
         $module = $inset->getModule();
-        $inset->setDefaultFlags($this->view->getDefaultFlags());
+        $flags = $this->getAttribute('flags', 0);
+
+        $inset->setDefaultFlags($this->view->getDefaultFlags() | $flags);
         $content = (String) $inset;
         $contentWidget = $this->view->literal($content);
 
+        // 1. If we have a NOFORMWRAP give up here.
+        if ($module instanceof Nethgui_Core_Module_DefaultUiStateInterface
+            && $module->getDefaultUiStyleFlags() & Nethgui_Core_Module_DefaultUiStateInterface::STYLE_NOFORMWRAP) {
+            return $contentWidget;
+        }
+
+        // 2. Composite modules are never wrapped into FORM tag.
+        if ($module instanceof Nethgui_Core_ModuleCompositeInterface) {
+            return $contentWidget;
+        }
+
+        // 3. Wrap automatically a FORM tag only if instancof RequestHandler and no FORM tag has been emitted.
         if ($module instanceof Nethgui_Core_RequestHandlerInterface
-            && ! $module instanceof Nethgui_Core_ModuleCompositeInterface
             && stripos($content, '<form ') === FALSE) {
             // Wrap a simple module into a FORM tag automatically
             $contentWidget = $inset->form()->insert($contentWidget);

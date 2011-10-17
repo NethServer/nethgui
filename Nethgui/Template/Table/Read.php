@@ -1,4 +1,4 @@
-<div class="DataTable <?php echo $view['tableClass']?>" id="<?php echo $view->getUniqueId() ?>" ><table>
+<div class="DataTable <?php echo $view['tableClass']?>" ><table>
     <thead><tr>
         <?php
             foreach ($view['columns'] as $columnInfo) {
@@ -16,3 +16,4 @@
     </tr>
     <?php endforeach ?></tbody>
 </table></div>
+<?php echo $view->inset('TableActions') ?>

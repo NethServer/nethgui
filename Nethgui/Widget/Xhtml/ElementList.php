@@ -29,9 +29,9 @@ class Nethgui_Widget_Xhtml_ElementList extends Nethgui_Widget_Xhtml
 
         $this->childWrapTag = $wrap[1];
 
-        if ($flags & Nethgui_Renderer_Abstract::STATE_DISABLED) {
-            $cssClass .= ' disabled';
-        }
+        //if ($flags & Nethgui_Renderer_Abstract::STATE_DISABLED) {
+        //    $cssClass .= ' disabled';
+        //}
 
         if ($this->hasAttribute('maxElements')) {
             $maxElements = intval($this->getAttribute('maxElements'));
@@ -42,21 +42,30 @@ class Nethgui_Widget_Xhtml_ElementList extends Nethgui_Widget_Xhtml
 
         $content = '';
 
-        $content .= $this->openTag($wrap[0], array('class' => $cssClass));
+        if ($wrap[0]) {
+            $content .= $this->openTag($wrap[0], array('class' => $cssClass));
+        }
         $content .= $this->renderChildren();
-        $content .= $this->closeTag($wrap[0]);
+        if ($wrap[0]) {
+            $content .= $this->closeTag($wrap[0]);
+        }
 
         return $content;
     }
 
     protected function wrapChild($childOutput)
     {
+        if ( ! $this->childWrapTag) {
+            return parent::wrapChild($childOutput);
+        }
+
         $childTag = explode('.', $this->childWrapTag) + array(FALSE, FALSE);
 
         $content = '';
         $content .= $this->openTag($childTag[0]);
         $content .= parent::wrapChild($childOutput);
         $content .= $this->closeTag($childTag[0]);
+
         return $content;
     }
 

@@ -13,7 +13,7 @@
  * @subpackage Table
  * 
  */
-class Nethgui_Module_Table_Action extends Nethgui_Core_Module_Standard
+class Nethgui_Module_Table_Action extends Nethgui_Core_Module_Standard implements Nethgui_Core_Module_DefaultUiStateInterface
 {
     /**
      *
@@ -34,10 +34,15 @@ class Nethgui_Module_Table_Action extends Nethgui_Core_Module_Standard
         return ! is_null($this->tableAdapter);
     }
 
-    public function isModal()
+    public function getDefaultUiStyleFlags()
     {
-        return FALSE;
+        switch($this->getIdentifier()) {
+            case 'delete':
+                return self::STYLE_DIALOG;
+            case 'read':
+                return self::STYLE_ENABLED;
+        }
+        return 0;
     }
-    
 }
 

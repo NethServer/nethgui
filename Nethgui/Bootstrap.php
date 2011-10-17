@@ -8,8 +8,6 @@
  *
  * @ignore
  */
-
-
 if ( ! defined('NETHGUI_FILE')) {
     exit("Bootstrap: NETHGUI_FILE is not defined.");
 }
@@ -37,6 +35,12 @@ switch (NETHGUI_ENVIRONMENT) {
 }
 
 define('ENVIRONMENT', NETHGUI_ENVIRONMENT);
+
+define('NETHGUI_SITEURL', (empty($_SERVER['HTTPS']) ? 'http://' : 'https://') .  $_SERVER['SERVER_NAME']);
+
+if (parse_url(NETHGUI_SITEURL) === FALSE) {
+    die('Invalid site URL');
+}
 
 require_once('Framework.php');
 

@@ -84,7 +84,7 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
      * @param string $identifier 
      * @return Nethgui_Core_ModuleInterface
      */
-    protected function getAction($identifier = NULL)
+    public function getAction($identifier = NULL)
     {
         foreach ($this->getChildren() as $child) {
             if ($child->getIdentifier() == $identifier || is_null($identifier))
@@ -173,41 +173,56 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
      */
     public function renderCurrentAction(Nethgui_Renderer_Abstract $view)
     {
-        $contentWidget = $view->inset($this->currentAction->getIdentifier());
-        return $contentWidget;
-        //return $view->panel()->setAttribute('class', 'Action')->insert($contentWidget);
+        return $view->inset($this->currentAction->getIdentifier());
     }
 
     public function renderDefault(Nethgui_Renderer_Abstract $view)
     {
-        $container = $view->panel()->setAttribute('class', 'Controller');
+        $containerClass = 'Controller';
+
+        if ($this instanceof Nethgui_Core_Module_DefaultUiStateInterface) {
+            if ($this->getDefaultUiStyleFlags()
+                & Nethgui_Core_Module_DefaultUiStateInterface::STYLE_CONTAINER_TABLE) {
+                $containerClass = 'TableController';
+            } elseif ($this->getDefaultUiStyleFlags()
+                & Nethgui_Core_Module_DefaultUiStateInterface::STYLE_CONTAINER_TABS) {
+                $containerClass = 'TabsController';
+            }
+        }
+
+        $container = $view->panel()->setAttribute('class', $containerClass);
+
         foreach ($this->getChildren() as $index => $module) {
-            $this->renderAction($view, $container, $module, $index);
+            if ($module instanceof Nethgui_Core_Module_DefaultUiStateInterface) {
+                $flagEnabled = $module->getDefaultUiStyleFlags()
+                    & Nethgui_Core_Module_DefaultUiStateInterface::STYLE_ENABLED;
+                if ($module->getDefaultUiStyleFlags()
+                    & Nethgui_Core_Module_DefaultUiStateInterface::STYLE_DIALOG) {
+                    $widgetClass = 'Dialog';
+                } else {
+                    $widgetClass = 'Action';
+                }
+            } else {
+                $flagEnabled = $index == 0;
+                $widgetClass = 'Action';
+            }
+
+            $flags = 0;
+
+            if ( ! $flagEnabled) {
+                $flags |= $view::STATE_DISABLED;
+            } else {
+                $widgetClass .= ' visible';
+            }
+
+            $panel = $view->panel()
+                ->setAttribute('flags', $flags)
+                ->setAttribute('class', $widgetClass)
+                ->setAttribute('name', $module->getIdentifier())
+                ->insert($view->inset($module->getIdentifier()));
+            $container->insert($panel);
         }
         return $container;
-    }
-
-    protected function renderAction(Nethgui_Renderer_Abstract $view, Nethgui_Renderer_WidgetInterface $container, Nethgui_Core_ModuleInterface $module, $index)
-    {
-        if ($index == 0) {
-            $flags = 0;
-            $extraCssClass = ' raised';
-        } else {
-            $flags = Nethgui_Renderer_Abstract::STATE_DISABLED;
-            $extraCssClass = '';
-        }
-
-        $actionWidget = $view->panel($flags)->insert($view->inset($module->getIdentifier()));
-
-        $actionWidget->setAttribute('name', $module->getIdentifier());
-
-        if ($module instanceof Nethgui_Module_Table_Action && $module->isModal()) {
-            $actionWidget->setAttribute('class', 'Dialog');
-        } else {
-            $actionWidget->setAttribute('class', 'Reaction' . $extraCssClass);
-        }
-
-        $container->insert($actionWidget);
     }
 
 }
