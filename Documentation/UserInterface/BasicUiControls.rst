@@ -38,7 +38,7 @@ Checkboxes::
   [x] Selected
   [ ] Unselected
 
-Dropdown menu::
+Dropdown menu NG348_::
 
   [__________|v] 
 
@@ -46,15 +46,15 @@ Buttons (enabled & disabled)::
 
   [ Cancel ]  | Apply |  
 
-Button list::
+Button list NG476_::
 
   [ Button 1 ]  [ Button 2 ]  [ Button 3 ]
 
-Button drop-down panel (normal)::
+Button drop-down panel (normal) NG528_::
 
   [ Button v ]
 
-Button drop-down panel (clicked)::
+Button drop-down panel (clicked) NG528_::
 
   [ Button v ]
   +--------------------+
@@ -65,15 +65,15 @@ Button drop-down panel (clicked)::
 
 .. note:: Panel contents can be buttons, links or any other widget.
 
-Button set::
+Button set NG528_::
 
   [ Button 1 | Button 2 | Button 3 ]
 
-Button set with upper limit (set to 1)::
+Button set with upper limit (set to 1) NG528_::
 
   [ Main Action | v ]
 
-Button set with upper limit (``v`` is clicked)::
+Button set with upper limit (``v`` is clicked) NG528_::
 
   [ Main Action | v ]
   +--------------------+
@@ -96,6 +96,15 @@ Basic Selector (single)::
   ( ) Label2
   (o) Label3
 
+Progress bar NG554_::
+
+  [ ########## 50% __________ ]
+
+
+.. _NG554: http://dev.nethesis.it/issues/554
+.. _NG476: http://dev.nethesis.it/issues/476
+.. _NG528: http://dev.nethesis.it/issues/528
+.. _NG348: http://dev.nethesis.it/issues/348
 
 
 Containers
