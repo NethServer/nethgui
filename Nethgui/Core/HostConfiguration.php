@@ -229,4 +229,26 @@ class Nethgui_Core_HostConfiguration implements Nethgui_Core_HostConfigurationIn
         return $commandObject;
     }
 
+    /**
+     * Signal an event asynchronously and return the status
+     *
+     * TODO: authorize user action on PDP.
+     *
+     * @param string $event Event name
+     * @param array $arguments Optional arguments array.
+     * @return Nethgui_Core_SystemCommandInterface
+     */
+    public function signalEventDetach($event, $arguments = array())
+    {
+        array_unshift($arguments, $event);
+        $pid = pcntl_fork();
+        if ($pid == 0)
+        {
+            posix_setsid();
+            pcntl_exec('/usr/bin/sudo /sbin/e-smith/signal-event ' . implode(' ', array_map('escapeshellarg', $arguments)), $args, $_ENV);
+        }
+        
+        return $this->exec($command);
+    }
+
 }
