@@ -16,7 +16,7 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
      *
      * @var integer
      */
-    private $inheritFlags = 0;    
+    private $inheritFlags = 0;
 
     /**
      *
@@ -229,6 +229,19 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
     {
         $flags |= $this->inheritFlags;
         return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags));
+    }
+
+    public function textArea($name, $flags = 0)
+    {
+        $flags |= $this->inheritFlags;
+        return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags));
+    }
+
+    public function console($name, $flags = 0)
+    {
+        $flags |= self::STATE_READONLY;
+        $flags |= self::LABEL_NONE;
+        return $this->textArea($name, $flags)->setAttribute('appendOnly', TRUE)->setAttribute('class', 'console');
     }
 
     public function __toString()

@@ -22,11 +22,20 @@ Text label::
   This is another paragraph.  Your name is "E. Smith".
 
 
-Text input field (normal/focused)::
+Text input (normal/focused)::
 
   [__________________] 
 
   [I_________________]
+
+Text area NG556_::
+
+  |____________________| 
+  |____________________| 
+  |____________________| 
+  |____________________|
+  |____________________|     
+
 
 Radio button::
 
@@ -105,6 +114,7 @@ Progress bar NG554_::
 .. _NG476: http://dev.nethesis.it/issues/476
 .. _NG528: http://dev.nethesis.it/issues/528
 .. _NG348: http://dev.nethesis.it/issues/348
+.. _NG556: http://dev.nethesis.it/issues/556
 
 
 Containers
