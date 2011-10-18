@@ -20,20 +20,21 @@ class Nethgui_Module_World extends Nethgui_Core_Module_Abstract
         parent::prepareView($view, $mode);
 
         if ($mode === self::VIEW_SERVER) {
-            $lang = Nethgui_Framework::getInstance()->getLanguageCode();
+            $F = Nethgui_Framework::getInstance();
+            $lang = $F->getLanguageCode();
             $immutables = array(
                 'lang' => $lang,
-                'cssMain' => base_url() . 'css/main.css',
+                'cssMain' => $F->baseUrl() . 'css/main.css',
                 'js' => array(
-                    'base' => base_url() . 'js/jquery-1.6.2.min.js',
-                    'ui' => base_url() . 'js/jquery-ui-1.8.16.custom.min.js',
-                    'dataTables' => base_url() . 'js/jquery.dataTables.min.js',
-                    'test' => base_url() . 'js/nethgui.js',
-                    'qTip' => base_url() . 'js/jquery.qtip.min.js',
-                    'datepicker-regional' => base_url() . sprintf('js/jquery.ui.datepicker-%s.js', $lang),
+                    'base' => $F->baseUrl() . 'js/jquery-1.6.2.min.js',
+                    'ui' => $F->baseUrl() . 'js/jquery-ui-1.8.16.custom.min.js',
+                    'dataTables' => $F->baseUrl() . 'js/jquery.dataTables.min.js',
+                    'test' => $F->baseUrl() . 'js/nethgui.js',
+                    'qTip' => $F->baseUrl() . 'js/jquery.qtip.min.js',
+                    'datepicker-regional' => $F->baseUrl() . sprintf('js/jquery.ui.datepicker-%s.js', $lang),
                 /* 'switcher' => 'http://jqueryui.com/themeroller/themeswitchertool/', */
                 ),
-                'favicon' => base_url() . 'images/favicon.ico',
+                'favicon' => $F->baseUrl() . 'images/favicon.ico',
             );
 
             foreach ($immutables as $immutableName => $immutableValue) {

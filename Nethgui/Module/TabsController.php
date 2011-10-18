@@ -22,20 +22,15 @@ class Nethgui_Module_TabsController extends Nethgui_Core_Module_Controller
     public function renderDefault(Nethgui_Renderer_Abstract $view)
     {
         $container = $view->tabs()
-            ->setAttribute('class', 'Tabs')
+            ->setAttribute('class', 'TabsController')
             ->setAttribute('tabClass', 'TabAction')
         ;
 
         foreach ($this->getChildren() as $index => $module) {
-            $this->renderAction($view, $container, $module, $index);
+            $container->insert($view->inset($module->getIdentifier()));
         }
 
         return $container;
-    }
-
-    protected function renderAction(Nethgui_Renderer_Abstract $view, Nethgui_Renderer_WidgetInterface $container, Nethgui_Core_ModuleInterface $module, $index)
-    {
-        $container->insert($view->inset($module->getIdentifier()));
     }
 
 }

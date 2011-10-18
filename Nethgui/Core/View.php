@@ -200,6 +200,13 @@ class Nethgui_Core_View implements Nethgui_Core_ViewInterface
         return $languageCatalogList;
     }
 
+    /**
+     *
+     * @param type $value
+     * @param type $args
+     * @param type $hsc DEPRECATED no longer used
+     * @return type
+     */
     public function translate($value, $args = array(), $hsc = TRUE)
     {
         if ( ! isset($this->languageCatalogList)) {

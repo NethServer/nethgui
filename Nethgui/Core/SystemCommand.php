@@ -71,6 +71,7 @@ class Nethgui_Core_SystemCommand implements Nethgui_Core_SystemCommandInterface
             $escapedArguments[sprintf('${%d}', $i)] = escapeshellarg($arg);
             $i ++;
         }
+        $escapedArguments['${@}'] = implode(' ', array_map('escapeshellarg', $this->arguments));
 
         $escapedCommand = strtr($this->command, $escapedArguments);
 

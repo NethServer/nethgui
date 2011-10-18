@@ -12,7 +12,7 @@
  *
  * @package Module
  */
-class Nethgui_Module_NotificationArea extends Nethgui_Core_Module_Standard implements Nethgui_Core_ValidationReportInterface
+class Nethgui_Module_NotificationArea extends Nethgui_Core_Module_Standard implements Nethgui_Core_ValidationReportInterface, Nethgui_Core_Module_DefaultUiStateInterface
 {
 
     private $errors = array();
@@ -235,6 +235,11 @@ class Nethgui_Module_NotificationArea extends Nethgui_Core_Module_Standard imple
                 $this->user->dismissDialogBox($dialog->getId());
             }
         }
+    }
+
+    public function getDefaultUiStyleFlags()
+    {
+        return self::STYLE_NOFORMWRAP;
     }
 
 }

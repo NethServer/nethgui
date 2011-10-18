@@ -69,7 +69,7 @@ class Nethgui_Framework
      */
     public function renderView($viewName, $viewState, $languageCatalog = NULL)
     {
-        if($viewName === FALSE) {
+        if ($viewName === FALSE) {
             return '';
         }
 
@@ -106,38 +106,6 @@ class Nethgui_Framework
     }
 
     /**
-     * @see anchor()
-     * @param Nethgui_Core_ModuleInterface $module
-     * @return <type>
-     */
-    public function renderModuleAnchor(Nethgui_Core_ModuleInterface $module)
-    {
-        $html = '';
-
-        if (strlen($module->getTitle()) == 0) {
-            return '';
-        }
-
-        if ( ! $module instanceof Nethgui_Core_RequestHandlerInterface) {
-            $html = '<div class="moduleTitle" title="' . htmlspecialchars(T($module->getDescription())) . '"><a href="#">' . htmlspecialchars(T($module->getTitle())) . '</a></div>';
-        } else {
-            $ciControllerClassName = $this->getControllerName();
-
-            $moduleTitle = $module->getTitle();
-            if ($module instanceof Nethgui_Core_LanguageCatalogProvider) {
-                $catalog = $module->getLanguageCatalog();
-                $moduleTitle = $this->translate($moduleTitle, array(), NULL, $catalog);
-            }
-
-            $html = anchor($ciControllerClassName . '/' . $module->getIdentifier(), htmlspecialchars($moduleTitle), array('class' => 'moduleTitle ' . $module->getIdentifier(), 'title' => htmlspecialchars($module->getDescription())
-                )
-            );
-        }
-
-        return $html;
-    }
-
-    /**
      * @param string|array $path
      * @param array $parameters
      */
@@ -150,13 +118,7 @@ class Nethgui_Framework
         }
 
         $path = explode('/', $path);
-
-        // FIXME: the controller name must not be added
-        // if url-rewriting (or similar) is enabled
-        array_unshift($path, $this->getControllerName());
-
         $path = array_reverse($path);
-
         $segments = array();
 
         while (list($index, $slice) = each($path)) {
@@ -173,13 +135,43 @@ class Nethgui_Framework
             array_unshift($segments, $slice);
         }
 
+        // FIXME: skip controller segments if url rewriting is active:
+        array_unshift($segments, 'index.php', $this->getControllerName());
+
         if ( ! empty($parameters)) {
-            $url = site_url($segments) . '?' . http_build_query($parameters);
+            $url = $this->baseUrl($segments) . '?' . http_build_query($parameters);
         } else {
-            $url = site_url($segments);
+            $url = $this->baseUrl($segments);
         }
 
         return $url . $fragment;
+    }
+
+    /**
+     * Prefix the given segments with the URL path to the controller.
+     * 
+     * @staticvar type $baseUrl
+     * @param type $segments
+     * @return type
+     */
+    public function baseUrl($segments = array())
+    {
+        static $baseUrl;
+
+        if ( ! isset($baseUrl)) {
+
+
+            $parts = explode('/', $_SERVER['SCRIPT_NAME']);
+            $lastPart = $parts[max(0, count($parts) - 1)];
+            $nethguiFile = basename(NETHGUI_FILE);
+
+            if ($lastPart == $nethguiFile) {
+                array_pop($parts);
+            }
+            $baseUrl = implode('/', $parts);
+        }
+
+        return $baseUrl . '/' . implode('/', $segments);
     }
 
     /**
@@ -187,7 +179,7 @@ class Nethgui_Framework
      * @param Nethgui_Core_ModuleInterface  $module
      * @param array|string $path;
      */
-    public function buildModuleUrl(Nethgui_Core_ModuleInterface $module, $path)
+    public function buildModuleUrl(Nethgui_Core_ModuleInterface $module, $path = array())
     {
         if (is_string($path)) {
             $path = array($path);
@@ -198,7 +190,7 @@ class Nethgui_Framework
             $module = $module->getParent();
         } while ( ! is_null($module));
 
-        return Nethgui_Framework::getInstance()->buildUrl($path, array());
+        return $this->buildUrl($path, array());
     }
 
     /**
@@ -360,10 +352,10 @@ class Nethgui_Framework
     public function getDateFormat()
     {
         switch ($this->getLanguageCode()) {
-            case 'en': // middle endian
+            case 'xx': // UNUSED - middle endian
                 $format = 'mm-dd-YYYY';
                 break;
-            case 'it': // little endian
+            case 'yy': // UNUSER - little endian
                 $format = 'dd/mm/YYYY';
                 break;
             default: // big endian ISO 8601
@@ -389,7 +381,12 @@ class Nethgui_Framework
             return;
         }
         $classPath = self::$path . '/' . str_replace("_", "/", $className) . '.php';
-        @include $classPath;
+        include $classPath;
+    }
+
+    public function getApplicationPath()
+    {
+        return realpath(self::$path . '/' . NETHGUI_APPLICATION);
     }
 
     /**
@@ -539,15 +536,17 @@ class Nethgui_Framework
             if ($redirectUrl !== FALSE) {
                 $this->redirect($redirectUrl);
             }
-            header("Content-Type: text/html; charset=UTF-8");            
+            header("Content-Type: text/html; charset=UTF-8");
             echo new Nethgui_Renderer_Xhtml($view);
         } elseif ($request->getContentType() === Nethgui_Core_Request::CONTENT_TYPE_JSON) {
             $worldModule->prepareView($view, Nethgui_Core_ModuleInterface::VIEW_CLIENT);
             $events = $view->getClientEvents();
             $redirectUrl = $this->getRedirectUrl($user);
-            if ($redirectUrl !== FALSE) {
-                $events[] = array('Redirect', $redirectUrl);
+            $clientCommands = $this->clientCommandsToArray($user->getClientCommands());
+            if ( ! empty($clientCommands)) {
+                $events[] = array('ClientCommandHandler', $clientCommands);
             }
+
             header("Content-Type: application/json; charset=UTF-8");
             echo json_encode($events);
         } else {
@@ -555,24 +554,40 @@ class Nethgui_Framework
         }
 
         // Dismiss transient dialog boxes only if no redirection or fake redirection occurred:
-        if ($redirectUrl === FALSE || $redirectUrl == $this->buildUrl($currentModuleIdentifier)) {
+        if ($redirectUrl === FALSE) {
             $notificationManager->dismissTransientDialogBoxes();
         }
     }
 
+    private function clientCommandsToArray($clientCommands)
+    {
+        $output = array();
+        foreach ($clientCommands as $command) {
+            if ($command instanceof Nethgui_Client_CommandInterface) {
+                $output[] = array(
+                    'targetSelector' => $command->getTargetSelector(),
+                    'method' => $command->getMethod(),
+                    'arguments' => $command->getArguments(),
+                );
+            }
+        }
+        return $output;
+    }
+
     /**
-     * Check if a redirect condition has been set calculate the URL.
+     * Check if a redirect condition has been set and calculate the URL.
      * 
      * @param Nethgui_Core_UserInterface $user
      * @return string|bool The URL where to redirect the user
      */
     private function getRedirectUrl(Nethgui_Core_UserInterface $user)
     {
-        $redirect = $user->getRedirect();
-        if (is_array($redirect)) {
-            list($module, $path) = $redirect;
-            return $this->buildModuleUrl($module, $path);
+        foreach ($user->getClientCommands() as $command) {
+            if ($command instanceof Nethgui_Client_CommandInterface && $command->isRedirection()) {
+                return $command->getRedirectionUrl();
+            }
         }
+
         return FALSE;
     }
 

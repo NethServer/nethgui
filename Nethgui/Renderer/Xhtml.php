@@ -26,15 +26,7 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
     public function __construct(Nethgui_Core_ViewInterface $view, $inheritFlags = 0)
     {
         parent::__construct($view);
-
-        $inheritableFlagsMask = self::STATE_DISABLED
-            | self::LABEL_ABOVE
-            | self::LABEL_LEFT
-            | self::LABEL_RIGHT
-            | self::LABEL_NONE
-        ;
-
-        $this->inheritFlags = $inheritFlags & $inheritableFlagsMask;
+        $this->inheritFlags = $inheritFlags & NETHGUI_INHERITABLE_FLAGS;
     }
 
     public function offsetGet($offset)
@@ -68,14 +60,14 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
 
         if ($flags & self::BUTTONSET) {
             $widget->setAttribute('class', 'Buttonset')
-                ->setAttribute('wrap', 'div/span');
+                ->setAttribute('wrap', 'div/');
         }
 
         // Automatically add standard submit/reset/cancel buttons:
-        if ($flags & (self::BUTTON_SUBMIT | self::BUTTON_RESET | self::BUTTON_CANCEL)) {
+        if ($flags & (self::BUTTON_SUBMIT | self::BUTTON_RESET | self::BUTTON_CANCEL | self::BUTTON_HELP)) {
             if ( ! $widget->hasAttribute('class')) {
                 $widget->setAttribute('class', 'Buttonlist')
-                    ->setAttribute('wrap', 'div/span');
+                    ->setAttribute('wrap', 'div/');
             }
 
             if ($flags & self::BUTTON_SUBMIT) {
@@ -87,9 +79,10 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
             if ($flags & self::BUTTON_CANCEL) {
                 $widget->insert($this->button('Cancel', self::BUTTON_CANCEL));
             }
+            if ($flags & self::BUTTON_HELP) {
+                $widget->insert($this->button('Help', self::BUTTON_HELP));
+            }
         }
-
-
 
         return $widget;
     }
@@ -215,21 +208,55 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
     public function header($name = NULL, $flags = 0)
     {
         $flags |= $this->inheritFlags;
-        $widget = $this->createWidget('textLabel', array('flags' => $flags, 'class' => 'header ui-widget-header ui-corner-all ui-helper-clearfix', 'tag' => 'div'));
+        $widget = $this->createWidget('textLabel', array('flags' => $flags, 'class' => 'header ui-widget-header ui-corner-all ui-helper-clearfix', 'tag' => 'h2'));
         if ( ! is_null($name)) {
             $widget->setAttribute('name', $name);
         }
         return $widget;
     }
 
-    public function literal($data)
+    public function literal($data, $flags = 0)
     {
-        return $this->createWidget(__FUNCTION__, array('data' => $data));
+        return $this->createWidget(__FUNCTION__, array('data' => $data, 'flags' => $flags));
     }
 
     public function columns()
     {
         return $this->createWidget(__FUNCTION__, array());
+    }
+
+    public function progressBar($name, $flags = 0)
+    {
+        $flags |= $this->inheritFlags;
+        return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags));
+    }
+
+    public function textArea($name, $flags = 0)
+    {
+        $flags |= $this->inheritFlags;
+        return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags));
+    }
+
+    public function console($name, $flags = 0)
+    {
+        $flags |= self::STATE_READONLY;
+        $flags |= self::LABEL_NONE;
+        return $this->textArea($name, $flags)->setAttribute('appendOnly', TRUE)->setAttribute('class', 'console');
+    }
+
+    public function dateInput($name, $flags = 0)
+    {
+        $dateFormat = substr(strtolower(Nethgui_Framework::getInstance()->getDateFormat()), 0, 2);
+
+        if($dateFormat == 'dd') {
+            $encodedFormat = 'le';
+        } elseif($dateFormat == 'mm') {
+            $encodedFormat = 'me';
+        } else {
+            $encodedFormat = 'be';
+        }
+
+        return $this->textInput('date')->setAttribute('class', 'Date ' . $encodedFormat);
     }
 
     public function __toString()

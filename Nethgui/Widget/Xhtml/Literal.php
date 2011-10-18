@@ -27,11 +27,14 @@ class Nethgui_Widget_Xhtml_Literal extends Nethgui_Widget_Xhtml
     {
         $value = $this->getAttribute('data', '');
 
+
         $content = '';
 
         if ($value instanceof Nethgui_Core_ViewInterface) {
+            $flags = $this->getAttribute('flags', 0);
             $renderer = clone $this->view;
             $renderer->setInnerView($value);
+            $renderer->setDefaultFlags($this->view->getDefaultFlags() | $flags);
             $content = (String) $renderer; 
         } else {
             $content = (String) $value;

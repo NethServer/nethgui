@@ -185,11 +185,7 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
         $request = $this->getRequest();
         if ($request instanceof Nethgui_Core_RequestInterface
             && $request->isSubmitted()) {
-            $module = $this;
-            while ($module->getParent() !== NULL) {
-                $module = $module->getParent();
-            }
-            $request->getUser()->setRedirect($module);
+            $request->getUser()->addClientCommandEnable($this->getParent()->getAction('read'));
         }
     }
 
@@ -218,16 +214,6 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
         if ($mode == self::VIEW_SERVER) {
             $view['__key'] = $this->key;
         }
-    }
-
-    public function isModal()
-    {
-        if ($this->getIdentifier() == 'delete')
-        {
-            return TRUE;
-        }
-
-        return parent::isModal();
     }
 
 }

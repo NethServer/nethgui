@@ -15,10 +15,29 @@
 class Nethgui_Core_AlwaysAuthenticatedUser implements Nethgui_Core_UserInterface
 {
 
+    /**
+     * User authentication credentials
+     * @var array
+     */
     private $credentials;
+    /**
+     * Persistent message dialog boxes
+     * @var array
+     */
     private $dialogs;
-    private $redirect;
+    /**
+     * Any kind of session data, accessible through the ArrayAccess interface
+     * @var array
+     */
+    private $data;
+
+    /**
+     * Command to be executed on the client side.
+     * @var type
+     */
+    private $clientCommands = array();
     
+
     public function __construct()
     {
         session_name('Nethgui');
@@ -26,7 +45,7 @@ class Nethgui_Core_AlwaysAuthenticatedUser implements Nethgui_Core_UserInterface
             session_start();
         }
 
-        foreach (array('credentials', 'dialogs') as $member) {
+        foreach (array('credentials', 'dialogs', 'data') as $member) {
             if (isset($_SESSION[$member])) {
                 $this->{$member} = unserialize($_SESSION[$member]);
             } else {
@@ -37,7 +56,7 @@ class Nethgui_Core_AlwaysAuthenticatedUser implements Nethgui_Core_UserInterface
 
     public function __destruct()
     {
-        foreach (array('credentials', 'dialogs') as $member) {
+        foreach (array('credentials', 'dialogs', 'data') as $member) {
             $_SESSION[$member] = serialize($this->{$member});
         }
     }
@@ -62,12 +81,13 @@ class Nethgui_Core_AlwaysAuthenticatedUser implements Nethgui_Core_UserInterface
 
     public function setAuthenticated($status)
     {
-        
+        return $this;
     }
 
     public function setCredential($credentialName, $credentialValue)
     {
         $this->credentials[$credentialName] = $credentialValue;
+        return $this;
     }
 
     public function hasCredential($credentialName)
@@ -83,6 +103,7 @@ class Nethgui_Core_AlwaysAuthenticatedUser implements Nethgui_Core_UserInterface
         {
             $this->dialogs[$dialog->getId()] = $dialog;
         }
+        return $this;
     }
 
     public function dismissDialogBox($dialogId)
@@ -90,6 +111,7 @@ class Nethgui_Core_AlwaysAuthenticatedUser implements Nethgui_Core_UserInterface
         if (array_key_exists($dialogId, $this->dialogs)) {
             unset($this->dialogs[$dialogId]);
         }
+        return $this;
     }
 
     public function getDialogBoxes()
@@ -97,22 +119,47 @@ class Nethgui_Core_AlwaysAuthenticatedUser implements Nethgui_Core_UserInterface
         return $this->dialogs;
     }
 
-    public function setRedirect(Nethgui_Core_ModuleInterface $module, $path = array())
+    public function addClientCommandEnable(Nethgui_Core_ModuleInterface $action)
     {
-        if ( ! isset($this->redirect))
-        {
-            $this->redirect = array($module, $path);
-        }
+        $this->addClientCommand(new Nethgui_Client_Command_Enable($action));
+        return $this;
     }
 
-    public function getRedirect()
+    public function addClientCommandActivate(Nethgui_Core_ModuleInterface $action, Nethgui_Core_ModuleInterface $cancelAction = NULL)
     {
-        if ( ! isset($this->redirect)) {
-            return NULL;
-        }
+        $this->addClientCommand(new Nethgui_Client_Command_Activate($action, $cancelAction));
+        return $this;
+    }
 
-        return $this->redirect;
+    public function addClientCommand(Nethgui_Client_CommandInterface $command)
+    {
+        $this->clientCommands[] = $command;
+        return $this;
+    }
+
+    public function getClientCommands()
+    {
+        return $this->clientCommands;
+    }
+
+    public function offsetExists($offset)
+    {
+        return array_key_exists($offset, $this->data);
+    }
+
+    public function offsetGet($offset)
+    {
+        return $this->data[$offset];
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        $this->data[$offset] = $value;
+    }
+
+    public function offsetUnset($offset)
+    {
+        unset($this->data[$offset]);
     }
 
 }
-

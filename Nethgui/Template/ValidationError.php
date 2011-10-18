@@ -2,7 +2,7 @@
     <span class='NotificationIcon ui-icon ui-icon-info'></span><?php echo $view->textLabel('message') ?>:
     <?php
     foreach ($view['errors'] as $errorView) {
-        echo ' ' . $errorView;
+        echo ' ' . $view->literal($errorView);
     }
     ?>
 

@@ -26,44 +26,72 @@ class Nethgui_Module_Menu extends Nethgui_Core_Module_Abstract
      * @param RecursiveIterator $rootModule
      * @return string
      */
-    private function iteratorToHtml(RecursiveIterator $menuIterator, $level = 0)
+    private function iteratorToHtml(RecursiveIterator $menuIterator, Nethgui_Renderer_Abstract $view, Nethgui_Renderer_WidgetInterface $widget, $level = 0)
     {
-        if ($level === 0) {
-            $allWrap = '%s';
-            $itemWrap = '%s';
-        } elseif ($level > 4) {
-            return '';
-        } else {
-            $allWrap = '<ul>%s</ul>';
-            $itemWrap = '<li>%s</li>';
+        if ($level > 4) {
+            return $widget;
         }
-
-
-
-        $framework = Nethgui_Framework::getInstance();
-
-        $output = '';
 
         $menuIterator->rewind();
 
         while ($menuIterator->valid()) {
-            $item = $framework->renderModuleAnchor($menuIterator->current());
+
+            $module = $menuIterator->current();
+
+            $widget->insert($this->makeModuleAnchor($view, $module));
 
             if ($menuIterator->hasChildren()) {
-                $item .= $this->iteratorToHtml($menuIterator->getChildren(), $level + 1);
+                $childWidget = $view->elementList()->setAttribute('class', FALSE);
+                $this->iteratorToHtml($menuIterator->getChildren(), $view, $childWidget, $level + 1);
+                $widget->insert($childWidget);
             }
-
-            $output .= sprintf($itemWrap, $item);
 
             $menuIterator->next();
         }
 
-        return sprintf($allWrap, $output);
+        return $widget;
     }
 
-    public function renderModuleMenu($view)
+    private function makeModuleAnchor(Nethgui_Renderer_Abstract $view, Nethgui_Core_ModuleInterface $module)
     {
-        return $this->iteratorToHtml($this->menuIterator);
+        $itemView = new Nethgui_Core_View($module);
+
+        $placeholders = array(
+            '%HREF' => htmlspecialchars(Nethgui_Framework::getInstance()->buildModuleUrl($module, '')),
+            '%CONTENT' => htmlspecialchars($itemView->translate($module->getTitle())),
+            '%TITLE' => htmlspecialchars($itemView->translate($module->getDescription())),
+        );
+
+        return $view->literal(strtr('<a href="%HREF" title="%TITLE">%CONTENT</a>', $placeholders))->setAttribute('hsc', FALSE);
+    }
+
+    public function renderModuleMenu(Nethgui_Renderer_Abstract $view)
+    {
+        $rootList = $view->elementList()->setAttribute('wrap', '/');
+
+        $this->menuIterator->rewind();
+
+        while ($this->menuIterator->valid()) {
+
+            if ($this->menuIterator->hasChildren()) {
+                // Add category title with fake module
+                $rootList->insert(
+                    $view->panel()
+                        ->setAttribute('class', 'moduleTitle')
+                        ->insert($view->literal($view->translate($this->menuIterator->current()->getTitle()))->setAttribute('hsc', TRUE))
+                );
+
+                // Add category contents:
+                $childWidget = $view->elementList()->setAttribute('class', FALSE);
+                $this->iteratorToHtml($this->menuIterator->getChildren(), $view, $childWidget);
+                $rootList->insert($childWidget);
+            }
+
+            $this->menuIterator->next();
+        }
+
+
+        return $rootList;
     }
 
     public function prepareView(Nethgui_Core_ViewInterface $view, $mode)
