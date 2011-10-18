@@ -87,7 +87,7 @@ class Nethgui_Core_HostConfiguration implements Nethgui_Core_HostConfigurationIn
     public function getTableAdapter($database, $typeOrKey, $filterOrProp = NULL, $separators = NULL)
     {
         if (is_null($separators)) {
-            return new Nethgui_Adapter_TableAdapter($this->getDatabase($database), $typeOrKey);
+            return new Nethgui_Adapter_TableAdapter($this->getDatabase($database), $typeOrKey, $filterOrProp);
         }
 
         $innerAdapter = $this->getIdentityAdapter($database, $typeOrKey, $filterOrProp, $separators[0]);
