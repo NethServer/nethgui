@@ -29,22 +29,27 @@ class Nethgui_Core_ConfigurationDatabase implements Nethgui_Authorization_Policy
      * @var PolicyDecisionPointInterface;
      */
     private $policyDecisionPoint;
+
     /**
      * @var SME DB database command
      * */
     private $command = "/usr/bin/sudo /sbin/e-smith/db";
+
     /**
      * @var $db Database name, it's translated into the db file path. For example: /home/e-smith/db/testdb
      * */
     private $db;
+
     /**
      * @var $canRead Read flag permission, it's true if the current user can read the database, false otherwise
      * */
     private $canRead = FALSE;
+
     /**
      * @var $canWrite Write flag permission, it's true if the current user can write the database, false otherwise
      * */
     private $canWrite = FALSE;
+
     /**
      * Keeps User object acting on this database. 
      * @var Nethgui_Core_UserInterface
@@ -105,7 +110,6 @@ class Nethgui_Core_ConfigurationDatabase implements Nethgui_Authorization_Policy
         }
     }
 
-
     /**
      * Retrieve all keys from the database. If needed, you can use filter the results by type and key name. 
      *
@@ -114,7 +118,7 @@ class Nethgui_Core_ConfigurationDatabase implements Nethgui_Authorization_Policy
      * @access public
      * @return array associative array in the form "[KeyName] => array( [type] => [TypeValue], [PropName1] => [PropValue1], [PropName2] => [PropValue2], ...) 
      */
-    public function getAll($type=false,$filter=false)
+    public function getAll($type=false, $filter=false)
     {
         if ( ! $this->canRead)
             throw new Exception("Permission Denied");
@@ -123,30 +127,28 @@ class Nethgui_Core_ConfigurationDatabase implements Nethgui_Authorization_Policy
         $output = shell_exec($this->command . " " . $this->db . " print");
         if ($output != "")
         {
-            foreach(explode("\n",$output) as $line)
-            {
+            foreach (explode("\n", $output) as $line) {
                 $line = trim($line);
-                if($line)
-		{
+                if ($line)
+                {
                     $tokens = explode("=", $line);
                     $key = $tokens[0];
                     $tokens = explode("|", $tokens[1]);
-                    if($type && $tokens[0] != $type)
-                       continue;
-                    if($filter && stristr($key, $filter) === FALSE)
-                       continue;
+                    if ($type && $tokens[0] != $type)
+                        continue;
+                    if ($filter && stristr($key, $filter) === FALSE)
+                        continue;
 
                     $result[$key]['type'] = $tokens[0];
                     for ($i = 1; $i <= count($tokens); $i ++ ) { //skip type
                         if (isset($tokens[$i])) //avoid outbound tokens
-                             $result[$key][trim($tokens[$i])] = trim($tokens[ ++ $i]);
+                            $result[$key][trim($tokens[$i])] = trim($tokens[ ++ $i]);
                     }
                 }
             }
         }
         return $result;
     }
-
 
     /**
      * Retrieve a key from the database. 
