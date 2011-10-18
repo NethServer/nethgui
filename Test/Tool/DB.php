@@ -46,7 +46,7 @@ class Test_Tool_DB extends Test_Tool_MockState
         return array('setProp', array($key, $prop));
     }
 
-    public static function getAll($type = FALSE, $filter = FALSE)
+    public static function getAll($type = NULL, $filter = NULL)
     {
         return array('getAll', array($type, $filter));
     }

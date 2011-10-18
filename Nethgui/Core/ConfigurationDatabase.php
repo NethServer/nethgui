@@ -118,7 +118,7 @@ class Nethgui_Core_ConfigurationDatabase implements Nethgui_Authorization_Policy
      * @access public
      * @return array associative array in the form "[KeyName] => array( [type] => [TypeValue], [PropName1] => [PropValue1], [PropName2] => [PropValue2], ...) 
      */
-    public function getAll($type=false, $filter=false)
+    public function getAll($type = NULL, $filter = NULL)
     {
         if ( ! $this->canRead)
             throw new Exception("Permission Denied");
@@ -134,9 +134,9 @@ class Nethgui_Core_ConfigurationDatabase implements Nethgui_Authorization_Policy
                     $tokens = explode("=", $line);
                     $key = $tokens[0];
                     $tokens = explode("|", $tokens[1]);
-                    if ($type && $tokens[0] != $type)
+                    if ( ! is_null($type) && $tokens[0] != $type)
                         continue;
-                    if ($filter && stristr($key, $filter) === FALSE)
+                    if ( ! is_null($filter) && stristr($key, $filter) === FALSE)
                         continue;
 
                     $result[$key]['type'] = $tokens[0];
