@@ -26,6 +26,12 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
      */
     private $key;
 
+    /**
+     * Values passed into the view in GET/create
+     * @var array
+     */
+    private $createDefaults = array();
+
     public function __construct($identifier, $parameterSchema, $requireEvents, $viewTemplate = NULL)
     {
         if ( ! in_array($identifier, array('create', 'delete', 'update'))) {
@@ -151,6 +157,13 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
         }
 
         parent::bind($request);
+
+        if (! $request->isSubmitted()
+            && $this->getIdentifier() == 'create') {
+            foreach ($this->createDefaults as $paramName => $paramValue) {
+                $this->parameters[$paramName] = $paramValue;
+            }
+        }
     }
 
     public function process()
@@ -190,7 +203,7 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
     }
 
     protected function processDelete($key)
-    {       
+    {
         if (isset($this->tableAdapter[$key])) {
             unset($this->tableAdapter[$key]);
         } else {
@@ -214,6 +227,17 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
         if ($mode == self::VIEW_SERVER) {
             $view['__key'] = $this->key;
         }
+    }
+
+    /**
+     * Set the default parameter values in "create" action
+     * @param array $defaultValues
+     * @return Nethgui_Module_Table_Modify
+     */
+    public function setCreateDefaults($defaultValues)
+    {
+        $this->createDefaults = $defaultValues;
+        return $this;
     }
 
 }
