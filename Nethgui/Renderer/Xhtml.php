@@ -244,6 +244,21 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
         return $this->textArea($name, $flags)->setAttribute('appendOnly', TRUE)->setAttribute('class', 'console');
     }
 
+    public function dateInput($name, $flags = 0)
+    {
+        $dateFormat = substr(strtolower(Nethgui_Framework::getInstance()->getDateFormat()), 0, 2);
+
+        if($dateFormat == 'dd') {
+            $encodedFormat = 'le';
+        } elseif($dateFormat == 'mm') {
+            $encodedFormat = 'me';
+        } else {
+            $encodedFormat = 'be';
+        }
+
+        return $this->textInput('date')->setAttribute('class', 'Date ' . $encodedFormat);
+    }
+
     public function __toString()
     {
         $module = $this->getModule();

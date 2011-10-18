@@ -352,10 +352,10 @@ class Nethgui_Framework
     public function getDateFormat()
     {
         switch ($this->getLanguageCode()) {
-            case 'en': // middle endian
+            case 'xx': // UNUSED - middle endian
                 $format = 'mm-dd-YYYY';
                 break;
-            case 'it': // little endian
+            case 'yy': // UNUSER - little endian
                 $format = 'dd/mm/YYYY';
                 break;
             default: // big endian ISO 8601
