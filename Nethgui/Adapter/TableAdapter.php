@@ -30,6 +30,13 @@ class Nethgui_Adapter_TableAdapter implements Nethgui_Adapter_AdapterInterface, 
      */
     private $changes;
 
+    /**
+    *
+    * @db string Database used for table mapping
+    * @type string Type of the key for mapping
+    * @filter mixed Can be a string or an associative array. When using a string, filter is a fulltext search on db keys, otherwise it's an array in the form ('prop1'=>'val1',...,'propN'=>'valN') where valN it's a regexp. In this case, the adapter will return only rows where all props match all associated regexp.
+    *
+    **/
     public function __construct(Nethgui_Core_ConfigurationDatabase $db, $type, $filter = FALSE)
     {
         $this->database = $db;
@@ -37,17 +44,36 @@ class Nethgui_Adapter_TableAdapter implements Nethgui_Adapter_AdapterInterface, 
         $this->filter = $filter;
     }
 
+    private function filterMatch($value)
+    {
+        foreach($this->filter as $prop=>$regexp) {
+             if(!preg_match($regexp,$value[$prop])) {
+                 return false;
+             }
+        }
+        return true;
+    }
+
     private function lazyInitialization()
     {
         $this->data = new ArrayObject();
-        
-        $rawData =$this->database->getAll($this->type, $this->filter);
-        
-        if(is_array($rawData)) {
-            // skip the first column, where getAll() returns the key type.
+       
+        if(is_array($this->filter)) { #apply simple filter only if filter is a string
+            $rawData =$this->database->getAll($this->type); 
+            if(is_array($rawData)) {
+                // skip the first column, where getAll() returns the key type.
+                foreach($rawData as $key => $row) {
+                    if($this->filterMatch(array_slice($row, 1))) {
+                        $this->data[$key] = array_slice($row, 1);
+                    }
+                }
+            }
+        } else {
+            $rawData =$this->database->getAll($this->type, $this->filter);
             foreach($rawData as $key => $row) {
                 $this->data[$key] = array_slice($row, 1);
             }
+
         }
                 
         $this->changes = new ArrayObject();
