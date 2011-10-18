@@ -113,6 +113,11 @@ interface Nethgui_Core_HostConfigurationInterface
      */
     public function signalEventDetach($event, $arguments = array());
 
+    /**
+     * @param string $command
+     * @param array $arguments
+     * @return Nethgui_Core_SystemCommandInterface
+     */
     public function exec($command, $arguments = array());
         
 }

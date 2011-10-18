@@ -26,8 +26,9 @@ class Nethgui_Widget_Xhtml_Fieldset extends Nethgui_Widget_Xhtml_Panel
     {
         // force container tag to FIELDSET:
         $this->setAttribute('tag', 'fieldset');
+        $flags = $this->getAttribute('flags', 0);
 
-        if ($this->getAttribute('flags') & Nethgui_Renderer_Abstract::FIELDSET_EXPANDABLE) {
+        if ($flags & Nethgui_Renderer_Abstract::FIELDSET_EXPANDABLE) {
             $this->setAttribute('class', 'Fieldset expandable');
         } else {
             $this->setAttribute('class', 'Fieldset');
@@ -47,7 +48,7 @@ class Nethgui_Widget_Xhtml_Fieldset extends Nethgui_Widget_Xhtml_Panel
             $renderLegend = TRUE;
         }
 
-        if ($renderLegend) {
+        if ($renderLegend && ! ($flags & Nethgui_Renderer_Abstract::LABEL_NONE)) {
             $legendWidget->setAttribute('icon-before', $this->getAttribute('icon-before', FALSE));
             $this->prepend($legendWidget);
         }
