@@ -34,6 +34,7 @@ class Nethgui_Widget_Xhtml_TextInput extends Nethgui_Widget_Xhtml
         $attributes = array(
             'value' => strval($this->view[$name]),
             'type' => ($flags & Nethgui_Renderer_Abstract::TEXTINPUT_PASSWORD) ? 'password' : 'text',
+            'placeholder' => $this->getAttribute('placeholder',false),
         );
 
         $flags = $this->applyDefaultLabelAlignment($flags, Nethgui_Renderer_Abstract::LABEL_ABOVE);
