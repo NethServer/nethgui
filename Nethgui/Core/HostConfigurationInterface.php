@@ -104,20 +104,6 @@ interface Nethgui_Core_HostConfigurationInterface
      * @return Nethgui_Core_SystemCommandInterface
      */
 
-    /**
-     * Signal an event and return the status asynchronously
-     *
-     * @param string $event Event name
-     * @param array $argv Optional event arguments
-     * @return Nethgui_Core_SystemCommandInterface
-     */
-    public function signalEventDetach($event, $arguments = array());
-
-    /**
-     * @param string $command
-     * @param array $arguments
-     * @return Nethgui_Core_SystemCommandInterface
-     */
     public function exec($command, $arguments = array());
         
 }
