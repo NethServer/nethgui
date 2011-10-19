@@ -18,7 +18,7 @@
  * @package Core
  * @subpackage Module
  */
-class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite implements Nethgui_Core_RequestHandlerInterface
+class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite implements Nethgui_Core_RequestHandlerInterface, Nethgui_Core_Module_DefaultUiStateInterface
 {
 
     /**
@@ -223,6 +223,11 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
             $container->insert($panel);
         }
         return $container;
+    }
+
+    public function getDefaultUiStyleFlags()
+    {
+        return self::STYLE_NOFORMWRAP;
     }
 
 }

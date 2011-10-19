@@ -209,7 +209,7 @@ interface Nethgui_Renderer_Abstract extends Nethgui_Core_ViewInterface
     /**
      * Create literal data - helper.
      *
-     * @param string|object $data Can be a string or any object implementing toString() method.
+     * @param string|object|Nethgui_Core_ViewInterface $data Can be a string, any object implementing toString() method, or a View.
      * @return Nethgui_Renderer_WidgetInterface
      */
     public function literal($data, $flags = 0);

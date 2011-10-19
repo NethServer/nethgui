@@ -29,7 +29,7 @@ abstract class Nethgui_Core_Module_Composite extends Nethgui_Core_Module_Abstrac
      */
     public function initialize()
     {
-        parent::initialize();        
+        parent::initialize();
         foreach ($this->children as $child) {
             if ( ! $child->isInitialized()) {
                 $child->initialize();
@@ -108,6 +108,11 @@ abstract class Nethgui_Core_Module_Composite extends Nethgui_Core_Module_Abstrac
 
             $this->addChild($childModule);
         }
+    }
+
+    protected function loadChildrenFromPath($path)
+    {
+        throw new Exception(sprintf('%s() is not Implemented'), __FUNCTION__);
     }
 
 }
