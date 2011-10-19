@@ -5,7 +5,7 @@
 RSTFILES := $(shell find . -name '*.rst')
 HTMLFILES := $(addsuffix .html, $(basename ${RSTFILES}))
 
-RST2HTML=rst2html.py --stylesheet-path=css/style.css --link-stylesheet
+RST2HTML=rst2html --stylesheet-path=css/style.css --link-stylesheet
 
 PDEPEND_OUTPUT=Metrics/pyramid.svg Metrics/jdepend.svg Metrics/summary.xml
 
