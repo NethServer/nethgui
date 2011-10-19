@@ -124,10 +124,16 @@ class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Ne
 
         if ($module instanceof Nethgui_Core_TopModuleInterface) {
             $parentId = $module->getParentMenuIdentifier();
-            if (is_null($parentId)) {
-                $parentId = '__ROOT__';
+            
+            # if category is NULL, create the category
+            if (is_null($parentId[0])) {
+                $this->menu['__ROOT__'][] = $module->getIdentifier();
+            } else { #otherwise insert into the menu according to menu and index 
+                if(!isset($this->menu[$parentId[0]])) { #initialize array, if needed
+                    $this->menu[$parentId[0]] = array();
+                }
+                array_splice($this->menu[$parentId[0]], $parentId[1], 0, $module->getIdentifier()); # avoid index clash by expanding array
             }
-            $this->menu[$parentId][] = $module->getIdentifier();
         }
     }
 
