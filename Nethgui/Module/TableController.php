@@ -186,9 +186,26 @@ class Nethgui_Module_TableController extends Nethgui_Core_Module_Controller impl
         }
     }
 
+    /**
+     *
+     * @param array $createDefaults
+     * @return Nethgui_Module_TableController
+     */
+    protected function setCreateDefaults($createDefaults)
+    {
+        $create = $this->getAction('create');
+        if (is_null($create)) {
+            return $this;
+        }
+
+        $create->setCreateDefaults($createDefaults);
+
+        return $this;
+    }
+
     public function getDefaultUiStyleFlags()
     {
         return self::STYLE_CONTAINER_TABLE;
     }
-   
+
 }

@@ -53,7 +53,7 @@ class Nethgui_Core_HostConfigurationTest extends PHPUnit_Framework_TestCase
 
     public function testSignalEvent2()
     {
-        $exitStatusInfo = $this->object->signalEvent("nethgui-test");
+        $exitStatusInfo = $this->object->signalEvent("nethgui-framework-test");
         $this->assertEquals(0, $exitStatusInfo->getExitStatus());
     }
 

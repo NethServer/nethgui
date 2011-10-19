@@ -40,14 +40,12 @@ class Nethgui_Widget_Xhtml_ElementList extends Nethgui_Widget_Xhtml
             }
         }
 
-        $content = '';
+        $content = $this->renderChildren();
 
-        if ($wrap[0]) {
-            $content .= $this->openTag($wrap[0], array('class' => $cssClass));
-        }
-        $content .= $this->renderChildren();
-        if ($wrap[0]) {
-            $content .= $this->closeTag($wrap[0]);
+        if ($content && $wrap[0]) {
+            $content = $this->openTag($wrap[0], array('class' => $cssClass))
+                . $content
+                . $this->closeTag($wrap[0]);
         }
 
         return $content;

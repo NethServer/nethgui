@@ -19,6 +19,11 @@ interface Nethgui_Core_ValidationReportInterface
      */
     public function addValidationErrorMessage(Nethgui_Core_ModuleInterface $module, $parameterName, $message, $args = array());
 
+    /**
+     * @param Nethgui_Core_ModuleInterface $module
+     * @param string $parameterName
+     * @param Nethgui_Core_ValidatorInterface $validator
+     */
     public function addValidationError(Nethgui_Core_ModuleInterface $module, $parameterName, Nethgui_Core_ValidatorInterface $validator);
 
     /**

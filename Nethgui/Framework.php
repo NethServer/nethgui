@@ -419,7 +419,7 @@ class Nethgui_Framework
         // Replace "index" request with a  default module value
         if ($currentModuleIdentifier == 'index') {
             // TODO read from configuration
-            $this->redirect('dispatcher/User');
+            $this->redirect('dispatcher/Dashboard');
         }
 
         $request = Nethgui_Core_Request::getHttpRequest($arguments);
@@ -508,7 +508,8 @@ class Nethgui_Framework
                 $module->process($notificationManager);
             }
         } catch (Exception $ex) {
-            show_error($ex->getMessage(), intval($ex->getCode()), 'Status ' . intval($ex->getCode()));
+            // TODO - validate $ex->getCode(): is it a valid HTTP status code?
+            throw $ex;
         }
 
         $worldModule->addModule($notificationManager);

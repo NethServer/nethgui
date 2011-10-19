@@ -105,7 +105,8 @@ class Nethgui_Widget_Xhtml_Selector extends Nethgui_Widget_Xhtml
             ->insert($contentWidget);
 
         $fieldsetWidget = new Nethgui_Widget_Xhtml_Fieldset($this->view);
-        $fieldsetWidget->setAttribute('template', $this->getAttribute('label', $name . '_label'));
+        $fieldsetWidget->setAttribute('template', $this->getAttribute('label', $name . '_label'))
+            ->setAttribute('flags', $this->getAttribute('flags'));
         if ($this->hasAttribute('icon-before')) {
             $fieldsetWidget->setAttribute('icon-before', $this->getAttribute('icon-before'));
         }
@@ -132,7 +133,7 @@ class Nethgui_Widget_Xhtml_Selector extends Nethgui_Widget_Xhtml
         foreach (array_values($choices) as $index => $choice) {
 
             $content .= $this->openTag('li');
-            $choiceFlags = $flags & ~Nethgui_Renderer_Abstract::LABEL_RIGHT | Nethgui_Renderer_Abstract::LABEL_RIGHT;
+            $choiceFlags = ($flags & ~(Nethgui_Renderer_Abstract::LABEL_LEFT | Nethgui_Renderer_Abstract::LABEL_NONE))  | Nethgui_Renderer_Abstract::LABEL_RIGHT;
 
             if ($flags & Nethgui_Renderer_Abstract::SELECTOR_MULTIPLE) {
                 $choiceName = $name . '/' . $index;

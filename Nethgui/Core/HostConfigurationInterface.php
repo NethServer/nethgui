@@ -103,6 +103,7 @@ interface Nethgui_Core_HostConfigurationInterface
      * @param array $arguments Arguments for the command. Will be shell-escaped.
      * @return Nethgui_Core_SystemCommandInterface
      */
+
     public function exec($command, $arguments = array());
         
 }
