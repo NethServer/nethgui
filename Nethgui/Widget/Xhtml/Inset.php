@@ -48,12 +48,7 @@ class Nethgui_Widget_Xhtml_Inset extends Nethgui_Widget_Xhtml
             return $contentWidget;
         }
 
-        // 2. Composite modules are never wrapped into FORM tag.
-        if ($module instanceof Nethgui_Core_ModuleCompositeInterface) {
-            return $contentWidget;
-        }
-
-        // 3. Wrap automatically a FORM tag only if instancof RequestHandler and no FORM tag has been emitted.
+        // 2. Wrap automatically a FORM tag only if instancof RequestHandler and no FORM tag has been emitted.
         if ($module instanceof Nethgui_Core_RequestHandlerInterface
             && stripos($content, '<form ') === FALSE) {
             // Wrap a simple module into a FORM tag automatically
