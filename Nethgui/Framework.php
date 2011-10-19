@@ -507,6 +507,13 @@ class Nethgui_Framework
 
                 $module->process($notificationManager);
             }
+        } catch (Nethgui_Exception_HttpStatusClientError $ex) {
+            $statusCode = intval($ex->getCode());
+            if ($statusCode >= 400 && $statusCode < 600) {
+                show_error($ex->getMessage(), $statusCode);
+            } else {
+                show_error(sprintf('Original status %d, %s', $statusCode, $ex->getMessage()), 500);
+            }
         } catch (Exception $ex) {
             // TODO - validate $ex->getCode(): is it a valid HTTP status code?
             throw $ex;

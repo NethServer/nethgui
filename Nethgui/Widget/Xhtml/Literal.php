@@ -26,8 +26,7 @@ class Nethgui_Widget_Xhtml_Literal extends Nethgui_Widget_Xhtml
     public function render()
     {
         $value = $this->getAttribute('data', '');
-
-
+        
         $content = '';
 
         if ($value instanceof Nethgui_Core_ViewInterface) {
@@ -45,6 +44,14 @@ class Nethgui_Widget_Xhtml_Literal extends Nethgui_Widget_Xhtml
         }
 
         return $content;
+    }
+
+    public function setAttribute($attribute, $value)
+    {
+        if($attribute == 'data' && $value instanceof Nethgui_Core_ViewInterface) {
+            parent::setAttribute('name', $value->getModule()->getIdentifier());
+        }
+        return parent::setAttribute($attribute, $value);
     }
 
 }
