@@ -14,11 +14,17 @@ class Nethgui_Module_Menu extends Nethgui_Core_Module_Abstract
      * @var RecursiveIterator
      */
     private $menuIterator;
+    /**
+     *
+     * @var string Current menu item identifier
+     */
+    private $currentItem;
 
-    public function __construct(RecursiveIterator $menuIterator)
+    public function __construct(RecursiveIterator $menuIterator, $currentItem)
     {
         parent::__construct();
         $this->menuIterator = $menuIterator;
+        $this->currentItem = $currentItem;
     }
 
     /**
@@ -62,7 +68,13 @@ class Nethgui_Module_Menu extends Nethgui_Core_Module_Abstract
             '%TITLE' => htmlspecialchars($itemView->translate($module->getDescription())),
         );
 
-        return $view->literal(strtr('<a href="%HREF" title="%TITLE">%CONTENT</a>', $placeholders))->setAttribute('hsc', FALSE);
+        if($module->getIdentifier() == $this->currentItem) {
+            $placeholders['%CLASS']='currentMenuItem';
+            $tpl = '<a href="%HREF" title="%TITLE" class="%CLASS">%CONTENT</a>';
+        } else {
+            $tpl = '<a href="%HREF" title="%TITLE">%CONTENT</a>';
+        }
+        return $view->literal(strtr($tpl, $placeholders))->setAttribute('hsc', FALSE);
     }
 
     public function renderModuleMenu(Nethgui_Renderer_Abstract $view)
