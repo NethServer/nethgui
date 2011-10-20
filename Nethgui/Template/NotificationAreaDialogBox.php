@@ -1,7 +1,7 @@
 <?php
 switch (intval($view['type']) & Nethgui_Core_DialogBox::MASK_SEVERITY) {
     case Nethgui_Core_DialogBox::NOTIFY_SUCCESS:
-        $cssClass = 'Notification success ui-state-highlight';
+        $cssClass = 'Notification success ui-state-success';
         $icon = 'check';
         break;
     case Nethgui_Core_DialogBox::NOTIFY_WARNING:
