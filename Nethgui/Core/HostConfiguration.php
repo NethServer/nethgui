@@ -221,12 +221,15 @@ class Nethgui_Core_HostConfiguration implements Nethgui_Core_HostConfigurationIn
 
     public function exec($command, $arguments = array())
     {
-        $commandObject = new Nethgui_Core_SystemCommand($command);
-        foreach ($arguments as $arg) {
-            $commandObject->addArgument($arg);
-        }
+        $commandObject = new Nethgui_Core_SystemCommand($command, $arguments);
         $commandObject->exec();
         return $commandObject;
     }
 
+    public function trace(Nethgui_Core_UserInterface $user, $command, $arguments = array())
+    {
+        $commandObject = new Nethgui_Core_SystemCommandDetached($command);
+        $commandObject->exec();
+        return $commandObject;
+    }
 }

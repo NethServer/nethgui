@@ -11,7 +11,7 @@
  * @ignore
  * @package Core
  */
-class Nethgui_Core_SystemCommand implements Nethgui_Core_SystemCommandInterface
+class Nethgui_Core_SystemCommand implements Nethgui_Core_SystemCommandInterface, Nethgui_Core_GlobalFunctionConsumer
 {
 
     /**
@@ -34,19 +34,26 @@ class Nethgui_Core_SystemCommand implements Nethgui_Core_SystemCommandInterface
      */
     private $arguments;
 
-    public function __construct($command)
+    /**
+     *
+     * @var integer
+     */
+    private $state;
+
+    /**
+     *
+     * @var Nethgui_Core_GlobalFunctionWrapper
+     */
+    private $globalFunctionWrapper;
+
+    public function __construct($command, $arguments = array())
     {
-        $this->arguments = array();
+        $this->globalFunctionWrapper = new Nethgui_Core_GlobalFunctionWrapper();
+        $this->arguments = $arguments;
         $this->command = $command;
-
-        $this->initialize();
-    }
-
-    private function initialize()
-    {
+        $this->state = self::STATE_NEW;
         $this->output = array();
-        $this->exitStatus = PHP_INT_MAX;
-        $this->executed = FALSE;
+        $this->exitStatus = FALSE;
     }
 
     public function addArgument($arg)
@@ -54,17 +61,35 @@ class Nethgui_Core_SystemCommand implements Nethgui_Core_SystemCommandInterface
         $this->arguments[] = $arg;
     }
 
-    public function isExecuted()
+    public function __clone()
     {
-        return $this->executed === TRUE;
+        $this->state = self::STATE_NEW;
+        $this->output = array();
+        $this->exitStatus = FALSE;
+    }
+
+    public function kill()
+    {
+        return FALSE;
     }
 
     public function exec()
     {
-        if ($this->isExecuted()) {
+        if ($this->getExecutionState() !== self::STATE_NEW) {
             return FALSE;
         }
+        $this->globalFunctionWrapper->exec($this->prepareEscapedCommand(), &$this->output, &$this->exitStatus);
+        $this->changeState(self::STATE_EXITED);
+        return $this->getExecutionState();
+    }
 
+    private function changeState($newState)
+    {
+        $this->state = $newState;
+    }
+
+    private function prepareEscapedCommand()
+    {
         $escapedArguments = array();
         $i = 1;
         foreach ($this->arguments as $arg) {
@@ -73,25 +98,9 @@ class Nethgui_Core_SystemCommand implements Nethgui_Core_SystemCommandInterface
         }
         $escapedArguments['${@}'] = implode(' ', array_map('escapeshellarg', $this->arguments));
 
-        $escapedCommand = strtr($this->command, $escapedArguments);
-
-        $this->executed = TRUE;
-
-        exec($escapedCommand, $this->output, $this->exitStatus);
-
-        $this->exitStatus === 0;
+        return strtr($this->command, $escapedArguments);
     }
-
-    public function __clone()
-    {
-        $this->initialize();
-    }
-
-    public function getCommand()
-    {
-        return $this->command;
-    }
-
+    
     public function getExitStatus()
     {
         return $this->exitStatus;
@@ -105,6 +114,16 @@ class Nethgui_Core_SystemCommand implements Nethgui_Core_SystemCommandInterface
     public function getOutputArray()
     {
         return $this->output;
+    }
+
+    public function getExecutionState()
+    {
+        return $this->state;
+    }
+
+    public function setGlobalFunctionWrapper(Nethgui_Core_GlobalFunctionWrapper $object)
+    {
+        $this->globalFunctionWrapper = $object;
     }
 
 }

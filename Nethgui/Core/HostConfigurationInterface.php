@@ -105,6 +105,8 @@ interface Nethgui_Core_HostConfigurationInterface
      */
 
     public function exec($command, $arguments = array());
+    
+    public function trace(Nethgui_Core_UserInterface $user, $command, $arguments = array());
         
 }
 
