@@ -124,7 +124,7 @@ class Nethgui_Core_HostConfiguration implements Nethgui_Core_HostConfigurationIn
      *
      * @param string $event Event name
      * @param array $arguments Optional arguments array.
-     * @return Nethgui_Core_SystemCommandInterface
+     * @return Nethgui_System_ProcessInterface
      */
     public function signalEvent($event, $arguments = array())
     {
@@ -221,14 +221,14 @@ class Nethgui_Core_HostConfiguration implements Nethgui_Core_HostConfigurationIn
 
     public function exec($command, $arguments = array())
     {
-        $commandObject = new Nethgui_Core_SystemCommand($command, $arguments);
+        $commandObject = new Nethgui_System_Process($command, $arguments);
         $commandObject->exec();
         return $commandObject;
     }
 
     public function trace(Nethgui_Core_UserInterface $user, $command, $arguments = array())
     {
-        $commandObject = new Nethgui_Core_SystemCommandDetached($command);
+        $commandObject = new Nethgui_System_ProcessDetached($command);
         $commandObject->exec();
         return $commandObject;
     }

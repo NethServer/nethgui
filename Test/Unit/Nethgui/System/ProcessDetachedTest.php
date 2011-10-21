@@ -5,15 +5,15 @@
  */
 
 /**
- * Test class for Nethgui_Core_SystemCommandTest.
+ * Test class for Nethgui_System_ProcessTest.
  * @package Tests
  * @subpackage Unit
  */
-class Nethgui_Core_SystemCommandDetachedTest extends PHPUnit_Framework_TestCase
+class Nethgui_System_ProcessDetachedTest extends PHPUnit_Framework_TestCase
 {
 
     /**
-     * @var Nethgui_Core_SystemCommand
+     * @var Nethgui_System_Process
      */
     protected $object;
     protected $outputFile;
@@ -32,18 +32,18 @@ class Nethgui_Core_SystemCommandDetachedTest extends PHPUnit_Framework_TestCase
     {
         $this->arguments = array('arg; ls1', 'arg&2', 'a(r)g3');
         $this->outputFile = tempnam('/tmp', 'ngtest-');
-        $this->object = new Nethgui_Core_SystemCommandDetached('${1} ${2} ${3} ${@}', $this->arguments);
+        $this->object = new Nethgui_System_ProcessDetached('${1} ${2} ${3} ${@}', $this->arguments);
         $this->simulation = new Test_Tool_GlobalFunctionWrapperTimedForDetachedCommand();
         $this->object->setGlobalFunctionWrapper($this->simulation);
     }
 
     public function testGetExecutionState1()
     {
-        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_NEW, $this->object->readExecutionState());
+        $this->assertEquals(Nethgui_System_ProcessInterface::STATE_NEW, $this->object->readExecutionState());
         $this->object->exec();
-        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_RUNNING, $this->object->readExecutionState());
+        $this->assertEquals(Nethgui_System_ProcessInterface::STATE_RUNNING, $this->object->readExecutionState());
         $this->simulation->timeStep();
-        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_EXITED, $this->object->readExecutionState());
+        $this->assertEquals(Nethgui_System_ProcessInterface::STATE_EXITED, $this->object->readExecutionState());
     }
 
     public function testKill1()
@@ -59,20 +59,20 @@ class Nethgui_Core_SystemCommandDetachedTest extends PHPUnit_Framework_TestCase
 
     public function testExec1()
     {
-        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_RUNNING, $this->object->exec());
+        $this->assertEquals(Nethgui_System_ProcessInterface::STATE_RUNNING, $this->object->exec());
     }
 
     public function test__clone1()
     {
         $c = clone $this->object;
-        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_RUNNING, $c->exec());
+        $this->assertEquals(Nethgui_System_ProcessInterface::STATE_RUNNING, $c->exec());
     }
 
     public function test__clone2()
     {
         $this->object->exec();
         $c = clone $this->object;
-        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_RUNNING, $c->exec());
+        $this->assertEquals(Nethgui_System_ProcessInterface::STATE_RUNNING, $c->exec());
         $this->assertFalse($this->object->exec());
     }
 
@@ -141,11 +141,11 @@ class Nethgui_Core_SystemCommandDetachedTest extends PHPUnit_Framework_TestCase
     public function testSerialize3()
     {
         $this->object->exec();
-        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_RUNNING, $this->object->readExecutionState());
+        $this->assertEquals(Nethgui_System_ProcessInterface::STATE_RUNNING, $this->object->readExecutionState());
         $this->simulation->timeStep();
 
         // Force an internal object state update before serializing:
-        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_EXITED, $this->object->readExecutionState());
+        $this->assertEquals(Nethgui_System_ProcessInterface::STATE_EXITED, $this->object->readExecutionState());
 
         $data = unserialize($this->object->serialize());
 

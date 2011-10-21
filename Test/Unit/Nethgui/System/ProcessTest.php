@@ -5,15 +5,15 @@
  */
 
 /**
- * Test class for Nethgui_Core_SystemCommandTest.
+ * Test class for Nethgui_System_ProcessTest.
  * @package Tests
  * @subpackage Unit
  */
-class Nethgui_Core_SystemCommandTest extends PHPUnit_Framework_TestCase
+class Nethgui_System_ProcessTest extends PHPUnit_Framework_TestCase
 {
 
     /**
-     * @var Nethgui_Core_SystemCommand
+     * @var Nethgui_System_Process
      */
     protected $object;
 
@@ -24,7 +24,7 @@ class Nethgui_Core_SystemCommandTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->arguments = array('arg; ls1', 'arg&2', 'a(r)g3');
-        $this->object = new Nethgui_Core_SystemCommand('echo ${1} ${2} ${3} ${@}', $this->arguments);
+        $this->object = new Nethgui_System_Process('echo ${1} ${2} ${3} ${@}', $this->arguments);
         $this->object->setGlobalFunctionWrapper(new MockGlobalFunctionWrapper());
     }
 
@@ -41,20 +41,20 @@ class Nethgui_Core_SystemCommandTest extends PHPUnit_Framework_TestCase
 
     public function testExec()
     {
-        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_EXITED, $this->object->exec());
+        $this->assertEquals(Nethgui_System_ProcessInterface::STATE_EXITED, $this->object->exec());
     }
 
     public function test__clone1()
     {
         $c = clone $this->object;
-        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_EXITED, $c->exec());
+        $this->assertEquals(Nethgui_System_ProcessInterface::STATE_EXITED, $c->exec());
     }
 
     public function test__clone2()
     {
         $this->object->exec();
         $c = clone $this->object;
-        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_EXITED, $c->exec());
+        $this->assertEquals(Nethgui_System_ProcessInterface::STATE_EXITED, $c->exec());
         $this->assertFalse($this->object->exec());
     }
 
@@ -95,9 +95,9 @@ class Nethgui_Core_SystemCommandTest extends PHPUnit_Framework_TestCase
 
     public function testReadExecutionState()
     {
-        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_NEW, $this->object->readExecutionState());
+        $this->assertEquals(Nethgui_System_ProcessInterface::STATE_NEW, $this->object->readExecutionState());
         $this->object->exec();
-        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_EXITED, $this->object->readExecutionState());
+        $this->assertEquals(Nethgui_System_ProcessInterface::STATE_EXITED, $this->object->readExecutionState());
     }
 
 }

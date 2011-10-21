@@ -1,6 +1,6 @@
 <?php
 /**
- * @package Core
+ * @package System
  * @ignore
  */
 
@@ -9,9 +9,9 @@
  *
  * @see Nethgui_Core_HostConfiguration::exec()
  * @ignore
- * @package Core
+ * @package System
  */
-class Nethgui_Core_SystemCommand implements Nethgui_Core_SystemCommandInterface, Nethgui_Core_GlobalFunctionConsumer
+class Nethgui_System_Process implements Nethgui_System_ProcessInterface, Nethgui_Core_GlobalFunctionConsumer
 {
 
     /**

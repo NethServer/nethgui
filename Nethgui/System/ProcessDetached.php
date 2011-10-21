@@ -1,6 +1,6 @@
 <?php
 /**
- * @package Core
+ * @package System
  * @ignore
  */
 
@@ -9,9 +9,9 @@
  *
  * @see Nethgui_Core_HostConfiguration::exec()
  * @ignore
- * @package Core
+ * @package System
  */
-class Nethgui_Core_SystemCommandDetached implements Nethgui_Core_SystemCommandInterface, Nethgui_Core_GlobalFunctionConsumer, Serializable
+class Nethgui_System_ProcessDetached implements Nethgui_System_ProcessInterface, Nethgui_Core_GlobalFunctionConsumer, Serializable
 {
 
     /**
@@ -31,7 +31,7 @@ class Nethgui_Core_SystemCommandDetached implements Nethgui_Core_SystemCommandIn
 
     /**
      *
-     * @var Nethgui_Core_SystemCommand
+     * @var Nethgui_System_Process
      */
     private $innerCommand;
 
@@ -54,7 +54,7 @@ class Nethgui_Core_SystemCommandDetached implements Nethgui_Core_SystemCommandIn
 
     public function __construct($command, $arguments = array())
     {
-        $this->innerCommand = new Nethgui_Core_SystemCommand($this->shellBackgroundInvocation($command), $arguments);
+        $this->innerCommand = new Nethgui_System_Process($this->shellBackgroundInvocation($command), $arguments);
         $this->setGlobalFunctionWrapper(new Nethgui_Core_GlobalFunctionWrapper());
         $this->initialize();
     }

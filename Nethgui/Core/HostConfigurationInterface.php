@@ -76,7 +76,7 @@ interface Nethgui_Core_HostConfigurationInterface
      *
      * @param string $event Event name
      * @param array $argv Optional event arguments
-     * @return Nethgui_Core_SystemCommandInterface
+     * @return Nethgui_System_ProcessInterface
      */
     public function signalEvent($event, $arguments = array());
 
@@ -101,7 +101,7 @@ interface Nethgui_Core_HostConfigurationInterface
      *
      * @param string $command
      * @param array $arguments Arguments for the command. Will be shell-escaped.
-     * @return Nethgui_Core_SystemCommandInterface
+     * @return Nethgui_System_ProcessInterface
      */
 
     public function exec($command, $arguments = array());
