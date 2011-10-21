@@ -39,11 +39,11 @@ class Nethgui_Core_SystemCommandDetachedTest extends PHPUnit_Framework_TestCase
 
     public function testGetExecutionState1()
     {
-        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_NEW, $this->object->getExecutionState());
+        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_NEW, $this->object->readExecutionState());
         $this->object->exec();
-        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_RUNNING, $this->object->getExecutionState());
+        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_RUNNING, $this->object->readExecutionState());
         $this->simulation->timeStep();
-        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_EXITED, $this->object->getExecutionState());
+        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_EXITED, $this->object->readExecutionState());
     }
 
     public function testKill1()
@@ -103,6 +103,57 @@ class Nethgui_Core_SystemCommandDetachedTest extends PHPUnit_Framework_TestCase
         $output = $this->object->getOutputArray();
         $this->assertInternalType('array', $output);
         $this->assertRegExp('/^contents of /', $output[0]);
+    }
+
+    /**
+     * Serialize a new process
+     */
+    public function testSerialize1()
+    {
+        $data = unserialize($this->object->serialize());
+
+        $this->assertRegExp('#^/tmp/.*$#', array_shift($data)); // errorFile
+        $this->assertRegExp('#^/tmp/.*$#', array_shift($data)); // outputFile
+        $this->assertNull(array_shift($data)); // processId
+        $this->assertNull(array_shift($data)); // exitStatus
+        $this->assertInstanceOf('Nethgui_Core_GlobalFunctionWrapper', array_shift($data)); // globalFunctionWrapper
+    }
+
+    /**
+     * Serialize a running process
+     */
+    public function testSerialize2()
+    {
+        $this->object->exec();
+
+        $data = unserialize($this->object->serialize());
+
+        $this->assertRegExp('#^/tmp/.*$#', array_shift($data)); // errorFile
+        $this->assertRegExp('#^/tmp/.*$#', array_shift($data)); // outputFile
+        $this->assertGreaterThan(0, array_shift($data)); // processId
+        $this->assertNull(array_shift($data)); // exitStatus
+        $this->assertInstanceOf('Nethgui_Core_GlobalFunctionWrapper', array_shift($data)); // globalFunctionWrapper
+    }
+
+    /**
+     * Serialize an exited process
+     */
+    public function testSerialize3()
+    {
+        $this->object->exec();
+        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_RUNNING, $this->object->readExecutionState());
+        $this->simulation->timeStep();
+
+        // Force an internal object state update before serializing:
+        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_EXITED, $this->object->readExecutionState());
+
+        $data = unserialize($this->object->serialize());
+
+        $this->assertRegExp('#^/tmp/.*$#', array_shift($data)); // errorFile
+        $this->assertRegExp('#^/tmp/.*$#', array_shift($data)); // outputFile
+        $this->assertGreaterThan(0, array_shift($data)); // processId
+        $this->assertEquals(0, array_shift($data)); // exitStatus
+        $this->assertInstanceOf('Nethgui_Core_GlobalFunctionWrapper', array_shift($data)); // globalFunctionWrapper
     }
 
 }

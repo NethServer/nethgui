@@ -56,9 +56,10 @@ interface Nethgui_Core_SystemCommandInterface
     public function kill();
 
     /**
-     * The execution state, one of NEW, RUNNING, EXITED
+     * Read and returns the execution state, one of NEW, RUNNING, EXITED
+     * @return integer
      */
-    public function getExecutionState();
+    public function readExecutionState();
 }
 
 

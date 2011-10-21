@@ -93,11 +93,11 @@ class Nethgui_Core_SystemCommandTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($output, array(implode(' ', $this->arguments) . ' ' . implode(' ', $this->arguments)));
     }
 
-    public function testGetExecutionState1()
+    public function testReadExecutionState()
     {
-        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_NEW, $this->object->getExecutionState());
+        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_NEW, $this->object->readExecutionState());
         $this->object->exec();
-        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_EXITED, $this->object->getExecutionState());
+        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_EXITED, $this->object->readExecutionState());
     }
 
 }

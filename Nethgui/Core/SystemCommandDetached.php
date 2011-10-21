@@ -11,7 +11,7 @@
  * @ignore
  * @package Core
  */
-class Nethgui_Core_SystemCommandDetached implements Nethgui_Core_SystemCommandInterface, Nethgui_Core_GlobalFunctionConsumer
+class Nethgui_Core_SystemCommandDetached implements Nethgui_Core_SystemCommandInterface, Nethgui_Core_GlobalFunctionConsumer, Serializable
 {
 
     /**
@@ -91,7 +91,7 @@ class Nethgui_Core_SystemCommandDetached implements Nethgui_Core_SystemCommandIn
 
     public function exec()
     {
-        if ($this->getExecutionState() != self::STATE_NEW) {
+        if ($this->readExecutionState() != self::STATE_NEW) {
             return FALSE;
         }
 
@@ -104,7 +104,7 @@ class Nethgui_Core_SystemCommandDetached implements Nethgui_Core_SystemCommandIn
             $this->setExecutionState(self::STATE_EXITED);
         }
 
-        return $this->getExecutionState();
+        return $this->readExecutionState();
     }
 
     private function setExecutionState($newState)
@@ -115,7 +115,7 @@ class Nethgui_Core_SystemCommandDetached implements Nethgui_Core_SystemCommandIn
         }
     }
 
-    public function getExecutionState()
+    public function readExecutionState()
     {
         // An undetermined state or a running state are polled at each request
         if (is_null($this->state) || $this->state === self::STATE_RUNNING)
@@ -144,7 +144,7 @@ class Nethgui_Core_SystemCommandDetached implements Nethgui_Core_SystemCommandIn
      */
     public function getExitStatus()
     {
-        if ($this->getExecutionState() == self::STATE_EXITED) {
+        if ($this->readExecutionState() == self::STATE_EXITED) {
             return $this->exitStatus;
         }
         return FALSE;
@@ -162,7 +162,7 @@ class Nethgui_Core_SystemCommandDetached implements Nethgui_Core_SystemCommandIn
 
     public function kill()
     {
-        if ($this->getExecutionState() == self::STATE_RUNNING) {
+        if ($this->readExecutionState() == self::STATE_RUNNING) {
             $killExitCode = NULL;
             $killOutput = array();
             $this->globalFunctionWrapper->exec(sprintf('/bin/kill %d', $this->processId), &$killOutput, &$killExitCode);
@@ -174,10 +174,32 @@ class Nethgui_Core_SystemCommandDetached implements Nethgui_Core_SystemCommandIn
         return FALSE;
     }
 
-
-
-    public function __wakeup()
+    public function serialize()
     {
-        ;
+        $ostate = array(
+            $this->errorFile,
+            $this->outputFile,
+            $this->processId,
+            $this->exitStatus,
+            $this->globalFunctionWrapper
+        );
+
+        return serialize($ostate);
     }
+
+    public function unserialize($serialized)
+    {
+        $ostate = unserialize($serialized);
+
+        list(
+            $this->errorFile,
+            $this->outputFile,
+            $this->processId,
+            $this->exitStatus,
+            $this->globalFunctionWrapper
+        ) = $ostate;
+
+        return $this;
+    }
+
 }

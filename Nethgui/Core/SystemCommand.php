@@ -75,12 +75,12 @@ class Nethgui_Core_SystemCommand implements Nethgui_Core_SystemCommandInterface,
 
     public function exec()
     {
-        if ($this->getExecutionState() !== self::STATE_NEW) {
+        if ($this->readExecutionState() !== self::STATE_NEW) {
             return FALSE;
         }
         $this->globalFunctionWrapper->exec($this->prepareEscapedCommand(), &$this->output, &$this->exitStatus);
         $this->changeState(self::STATE_EXITED);
-        return $this->getExecutionState();
+        return $this->readExecutionState();
     }
 
     private function changeState($newState)
@@ -116,7 +116,7 @@ class Nethgui_Core_SystemCommand implements Nethgui_Core_SystemCommandInterface,
         return $this->output;
     }
 
-    public function getExecutionState()
+    public function readExecutionState()
     {
         return $this->state;
     }
