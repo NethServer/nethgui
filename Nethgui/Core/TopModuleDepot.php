@@ -132,7 +132,7 @@ class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Ne
                 if(!isset($this->menu[$parentId[0]])) { #initialize array, if needed
                     $this->menu[$parentId[0]] = array();
                 }
-                array_splice($this->menu[$parentId[0]], $parentId[1], 0, $module->getIdentifier()); # avoid index clash by expanding array
+                array_splice($this->menu[$parentId[0]], intval($parentId[1]), 0, $module->getIdentifier()); # avoid index clash by expanding array
             }
         }
     }
