@@ -2,17 +2,22 @@
 /**
  * Nethgui
  *
- * @package Core
+ * @package System
  */
 
 /**
  * Brings the output and exit status of an external command
  *
  * @see exec()
- * @package Core
+ * @package System
  */
-interface Nethgui_Core_SystemCommandInterface
+interface Nethgui_System_ProcessInterface
 {
+
+    const STATE_NEW = 0;
+    const STATE_RUNNING = 1;
+    const STATE_EXITED = 2;
+
     /**
      * The command output
      * @return string
@@ -38,14 +43,23 @@ interface Nethgui_Core_SystemCommandInterface
 
     /**
      * Execute the command
-     * @return bool FALSE
+     * @return the execution status
+     * @see getExecStatus
      */
     public function exec();
 
     /**
-     * @see exec();
-     * @return bool TRUE if the command has been executed
+     * Kills a RUNNING command
+     *
+     * @return FALSE on error, TRUE if the command was RUNNING
      */
-    public function isExecuted();
+    public function kill();
 
+    /**
+     * Read and returns the execution state, one of NEW, RUNNING, EXITED
+     * @return integer
+     */
+    public function readExecutionState();
 }
+
+

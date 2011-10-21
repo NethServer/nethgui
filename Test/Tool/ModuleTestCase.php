@@ -96,7 +96,7 @@ abstract class Test_Tool_ModuleTestCase extends PHPUnit_Framework_TestCase
                 $eventExp = array($eventExp, array());
             }
 
-            $systemCommandMockForSignalEvent = $this->getMock('Nethgui_Core_SystemCommandInterface', array('getOutput', 'getExitStatus', 'getOutputArray', 'isExecuted', 'exec', 'addArgument'));
+            $systemCommandMockForSignalEvent = $this->getMock('Nethgui_System_ProcessInterface', array('getOutput', 'getExitStatus', 'getOutputArray', 'isExecuted', 'exec', 'addArgument'));
 
             $hostConfigurationStub->set(array('signalEvent', array($eventExp[0], $eventExp[1])), $systemCommandMockForSignalEvent);
         }
@@ -109,7 +109,7 @@ abstract class Test_Tool_ModuleTestCase extends PHPUnit_Framework_TestCase
             ->method('signalEvent')
             ->will($this->returnMockObject($hostConfigurationStub));
 
-        $systemCommandMock = $this->getMock('Nethgui_Core_SystemCommandInterface', array('getOutput', 'getExitStatus', 'getOutputArray', 'isExecuted', 'exec', 'addArgument'));
+        $systemCommandMock = $this->getMock('Nethgui_System_ProcessInterface', array('getOutput', 'getExitStatus', 'getOutputArray', 'isExecuted', 'exec', 'addArgument'));
         $configurationMock->expects($this->any())
             ->method('exec')
             ->will(new Test_Tool_SystemCommandExecution($env->getCommands(), $systemCommandMock));
@@ -318,7 +318,7 @@ class Test_Tool_ArrayKeyExists implements PHPUnit_Framework_MockObject_Stub
 
 /**
  * @ignore
- * @see Nethgui_Core_SystemCommandInterface
+ * @see Nethgui_System_ProcessInterface
  */
 class Test_Tool_SystemCommandExecution extends Test_Tool_ArrayKeyGetRegexp
 {
