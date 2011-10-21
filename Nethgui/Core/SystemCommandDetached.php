@@ -14,11 +14,37 @@
 class Nethgui_Core_SystemCommandDetached implements Nethgui_Core_SystemCommandInterface, Nethgui_Core_GlobalFunctionConsumer
 {
 
+    /**
+     * @var string
+     */
     private $outputFile;
+
+    /**
+     * @var string
+     */
     private $errorFile;
+
+    /**
+     * @var integer
+     */
     private $state;
-    private $systemCommand;
-    private $processId = NULL;
+
+    /**
+     *
+     * @var Nethgui_Core_SystemCommand
+     */
+    private $innerCommand;
+
+    /**
+     * @var integer
+     */
+    private $processId;
+
+    /**
+     *
+     * @var boolean|integer
+     */
+    private $exitStatus;
 
     /**
      *
@@ -28,7 +54,7 @@ class Nethgui_Core_SystemCommandDetached implements Nethgui_Core_SystemCommandIn
 
     public function __construct($command, $arguments = array())
     {
-        $this->systemCommand = new Nethgui_Core_SystemCommand($this->shellBackgroundInvocation($command), $arguments);
+        $this->innerCommand = new Nethgui_Core_SystemCommand($this->shellBackgroundInvocation($command), $arguments);
         $this->setGlobalFunctionWrapper(new Nethgui_Core_GlobalFunctionWrapper());
         $this->initialize();
     }
@@ -36,12 +62,12 @@ class Nethgui_Core_SystemCommandDetached implements Nethgui_Core_SystemCommandIn
     public function setGlobalFunctionWrapper(Nethgui_Core_GlobalFunctionWrapper $object)
     {
         $this->globalFunctionWrapper = $object;
-        $this->systemCommand->setGlobalFunctionWrapper($object);
+        $this->innerCommand->setGlobalFunctionWrapper($object);
     }
 
     private function initialize()
     {
-        $this->state = self::STATE_NEW;
+        $this->setExecutionState(self::STATE_NEW);
         $dir = '/tmp';
         $prefix = 'ng-';
         $this->outputFile = tempnam($dir, $prefix);
@@ -50,7 +76,7 @@ class Nethgui_Core_SystemCommandDetached implements Nethgui_Core_SystemCommandIn
 
     public function __clone()
     {
-        $this->initialize(NULL);
+        $this->initialize();
     }
 
     private function shellBackgroundInvocation($commandTemplate)
@@ -60,7 +86,7 @@ class Nethgui_Core_SystemCommandDetached implements Nethgui_Core_SystemCommandIn
 
     public function addArgument($arg)
     {
-        $this->systemCommand->addArgument($arg);
+        $this->innerCommand->addArgument($arg);
     }
 
     public function exec()
@@ -68,8 +94,9 @@ class Nethgui_Core_SystemCommandDetached implements Nethgui_Core_SystemCommandIn
         if ($this->getExecutionState() != self::STATE_NEW) {
             return FALSE;
         }
-        $this->systemCommand->exec();
-        $this->processId = intval($this->systemCommand->getOutput());
+
+        $this->innerCommand->exec();
+        $this->processId = intval($this->innerCommand->getOutput());
 
         if ($this->processId > 0) {
             $this->setExecutionState(self::STATE_RUNNING);
@@ -83,11 +110,29 @@ class Nethgui_Core_SystemCommandDetached implements Nethgui_Core_SystemCommandIn
     private function setExecutionState($newState)
     {
         $this->state = $newState;
+        if ($newState === self::STATE_EXITED) {
+            $this->exitStatus = $this->processId > 0 ? 0 : 1;
+        }
     }
 
     public function getExecutionState()
     {
+        // An undetermined state or a running state are polled at each request
+        if (is_null($this->state) || $this->state === self::STATE_RUNNING)
+        {
+            $this->pollProcessState();
+        }
+
         return $this->state;
+    }
+
+    private function pollProcessState()
+    {
+        if ($this->globalFunctionWrapper->is_readable(sprintf('/proc/%d', $this->processId))) {
+            $this->setExecutionState(self::STATE_RUNNING);
+        } else {
+            $this->setExecutionState(self::STATE_EXITED);
+        }
     }
 
     /**
@@ -95,14 +140,14 @@ class Nethgui_Core_SystemCommandDetached implements Nethgui_Core_SystemCommandIn
      *
      * NOTE: This is not the exit status code of the detached process.
      *
-     * @return integer 
+     * @return integer|boolean FALSE if the command has not exited yet.
      */
     public function getExitStatus()
     {
-        if ($this->getExecutionState() != self::STATE_EXITED) {
-            return FALSE;
+        if ($this->getExecutionState() == self::STATE_EXITED) {
+            return $this->exitStatus;
         }
-        $this->systemCommand->getExitStatus();
+        return FALSE;
     }
 
     public function getOutput()
@@ -129,4 +174,10 @@ class Nethgui_Core_SystemCommandDetached implements Nethgui_Core_SystemCommandIn
         return FALSE;
     }
 
+
+
+    public function __wakeup()
+    {
+        ;
+    }
 }

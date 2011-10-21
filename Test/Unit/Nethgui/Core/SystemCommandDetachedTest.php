@@ -19,6 +19,12 @@ class Nethgui_Core_SystemCommandDetachedTest extends PHPUnit_Framework_TestCase
     protected $outputFile;
 
     /**
+     *
+     * @var Test_Tool_GlobalFunctionWrapperTimedForDetachedCommand
+     */
+    private $simulation;
+
+    /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
@@ -27,7 +33,17 @@ class Nethgui_Core_SystemCommandDetachedTest extends PHPUnit_Framework_TestCase
         $this->arguments = array('arg; ls1', 'arg&2', 'a(r)g3');
         $this->outputFile = tempnam('/tmp', 'ngtest-');
         $this->object = new Nethgui_Core_SystemCommandDetached('${1} ${2} ${3} ${@}', $this->arguments);
-        $this->object->setGlobalFunctionWrapper(new Nethgui_Core_SystemCommandDetachedTest_Core_GlobalFunctionWrapper());
+        $this->simulation = new Test_Tool_GlobalFunctionWrapperTimedForDetachedCommand();
+        $this->object->setGlobalFunctionWrapper($this->simulation);
+    }
+
+    public function testGetExecutionState1()
+    {
+        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_NEW, $this->object->getExecutionState());
+        $this->object->exec();
+        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_RUNNING, $this->object->getExecutionState());
+        $this->simulation->timeStep();
+        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_EXITED, $this->object->getExecutionState());
     }
 
     public function testKill1()
@@ -60,60 +76,96 @@ class Nethgui_Core_SystemCommandDetachedTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($this->object->exec());
     }
 
-    /**
-     * @todo Implement testGetExitStatus().
-     */
-    public function testGetExitStatus()
+    public function testGetExitStatus1()
     {
         $this->object->exec();
         $this->assertEquals(FALSE, $this->object->getExitStatus());
     }
 
+    public function testGetExitStatus2()
+    {
+        $this->object->exec();
+        $this->simulation->timeStep();
+        $this->assertEquals(0, $this->object->getExitStatus());
+    }
+
     public function testGetOutput()
     {
         $this->object->exec();
-        $output = $this->object->getOutput();
-        $this->assertRegExp('/^contents of /', $output);
+        $this->simulation->timeStep();
+        $this->assertRegExp('/^contents of /', $this->object->getOutput());
     }
 
     public function testGetOutputArray()
     {
         $this->object->exec();
+        $this->simulation->timeStep();
         $output = $this->object->getOutputArray();
         $this->assertInternalType('array', $output);
         $this->assertRegExp('/^contents of /', $output[0]);
     }
 
-    public function testGetExecutionState1()
-    {
-        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_NEW, $this->object->getExecutionState());
-        $this->object->exec();
-        $this->assertEquals(Nethgui_Core_SystemCommandInterface::STATE_RUNNING, $this->object->getExecutionState());
-    }
-
 }
 
-class Nethgui_Core_SystemCommandDetachedTest_Core_GlobalFunctionWrapper extends Nethgui_Core_GlobalFunctionWrapper
+class Test_Tool_GlobalFunctionWrapperTimedForDetachedCommand extends Nethgui_Core_GlobalFunctionWrapper
 {
+
+    private $instantNames = array('START', 'COMMAND_RUNNING', 'COMMAND_COMPLETED');
+    private $currentInstant = 0;
+
+    public function timeStep($units = 1)
+    {
+        $this->currentInstant += $units;
+    }
+
+    public function getInstantName()
+    {
+        if ( ! isset($this->instantNames[$this->currentInstant])) {
+            return '<UNDEFINED>';
+        }
+
+        return $this->instantNames[$this->currentInstant];
+    }
 
     public function file_get_contents($fileName)
     {
-        return "contents of " . $fileName;
+        if ($this->getInstantName() == 'COMMAND_COMPLETED') {
+            return "contents of " . $fileName;
+        } else {
+            return '';
+        }
     }
 
     public function exec($command, &$output, &$exitCode)
     {
-        if (preg_match('/^\/bin\/kill 999/', $command) > 0) {
-            $output[] = '';
-            $exitCode = 0;
+        if (preg_match('/^\/bin\/kill 1234/', $command) > 0) {
+            if ($this->currentInstant > 0) {
+                $output[] = '';
+                $exitCode = 0;
+                return $output[0];
+            } else {
+                $output[] = 'No such process';
+                $exitCode = 0;
+                return $output[1];
+            }
         } else if (preg_match('/^nohup .*/', $command) > 0) {
-            $output[] = '999';
-            $exitCode = 0;
-        } else {
-            throw new InvalidArgumentException(sprintf('Unknown command "%s"', $command));
+            if ($this->getInstantName() == 'START') {
+                $output[] = '1234';
+                $exitCode = 0;
+                $this->timeStep();
+                return $output[0];
+            }
         }
 
-        return $output[0];
+        throw new InvalidArgumentException(sprintf('Command `%s` not defined at instant "%s"', $command, $this->getInstantName()));
+    }
+
+    public function is_readable($file)
+    {
+        if ($this->getInstantName() == 'COMMAND_RUNNING') {
+            return TRUE;
+        }
+        return FALSE;
     }
 
 }
