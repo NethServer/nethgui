@@ -129,9 +129,7 @@ class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Ne
             # if category is NULL, create the category
             if (is_null($parentId[0])) {
                 $this->categories[$parentId[1].$module->getIdentifier()] = $module->getIdentifier();
-                #$this->menu['__ROOT__'][] = $module->getIdentifier();
             } else { #otherwise insert into the menu according to menu and index 
-                $index = $parentId[1].$parentId[0];
                 $this->menu[$parentId[0]][$parentId[1]] = $module->getIdentifier();
             }
         }
