@@ -219,17 +219,15 @@ class Nethgui_Core_HostConfiguration implements Nethgui_Core_HostConfigurationIn
         $this->policyDecisionPoint = $pdp;
     }
 
-    public function exec($command, $arguments = array())
+    public function exec($command, $arguments = array(), $detached = FALSE)
     {
-        $commandObject = new Nethgui_System_Process($command, $arguments);
+        if ($detached) {
+            $commandObject = new Nethgui_System_ProcessDetached($command, $arguments);
+        } else {
+            $commandObject = new Nethgui_System_Process($command, $arguments);
+        }
         $commandObject->exec();
         return $commandObject;
     }
 
-    public function trace(Nethgui_Core_UserInterface $user, $command, $arguments = array())
-    {
-        $commandObject = new Nethgui_System_ProcessDetached($command);
-        $commandObject->exec();
-        return $commandObject;
-    }
 }

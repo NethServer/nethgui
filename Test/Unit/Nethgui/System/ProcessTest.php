@@ -100,6 +100,19 @@ class Nethgui_System_ProcessTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(Nethgui_System_ProcessInterface::STATE_EXITED, $this->object->readExecutionState());
     }
 
+    public function testReadOutput()
+    {
+        $this->object->exec();
+        $output = $this->object->getOutput();
+        $buffer = '';
+
+        $buffer = $this->object->readOutput();
+        $this->assertEquals($output, $buffer);
+
+        $buffer = $this->object->readOutput();
+        $this->assertFalse($buffer);
+    }
+
 }
 
 class MockGlobalFunctionWrapper extends Nethgui_Core_GlobalFunctionWrapper

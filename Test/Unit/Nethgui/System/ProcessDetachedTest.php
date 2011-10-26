@@ -156,6 +156,27 @@ class Nethgui_System_ProcessDetachedTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Nethgui_Core_GlobalFunctionWrapper', array_shift($data)); // globalFunctionWrapper
     }
 
+    public function testReadOutput()
+    {
+
+
+        $this->object->exec();
+
+        $buffer = $this->object->readOutput();
+        $this->assertEquals('', $buffer);
+
+        $this->simulation->timeStep();
+
+        $buffer = $this->object->readOutput();
+        $this->assertRegExp('/^contents of /', $buffer);
+
+        $buffer = $this->object->readOutput();
+        $this->assertFalse($buffer);
+
+        $buffer = $this->object->readOutput();
+        $this->assertFalse($buffer);
+    }
+
 }
 
 class Test_Tool_GlobalFunctionWrapperTimedForDetachedCommand extends Nethgui_Core_GlobalFunctionWrapper
@@ -199,7 +220,7 @@ class Test_Tool_GlobalFunctionWrapperTimedForDetachedCommand extends Nethgui_Cor
                 $exitCode = 0;
                 return $output[1];
             }
-        } else if (preg_match('/^nohup .*/', $command) > 0) {
+        } else if (preg_match('#^/usr/bin/nohup .*#', $command) > 0) {
             if ($this->getInstantName() == 'START') {
                 $output[] = '1234';
                 $exitCode = 0;

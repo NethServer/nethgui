@@ -30,6 +30,12 @@ interface Nethgui_System_ProcessInterface
      */
     public function getOutputArray();
 
+
+    /**
+     * @return string|bool An output chunk, if more data is available, FALSE otherwise.
+     */
+    public function readOutput();
+
     /**
      * The exit status code
      * @return int

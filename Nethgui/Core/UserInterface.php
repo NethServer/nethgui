@@ -79,5 +79,21 @@ interface Nethgui_Core_UserInterface extends ArrayAccess
     public function addClientCommandActivate(Nethgui_Core_ModuleInterface $action, Nethgui_Core_ModuleInterface $cancelAction = NULL);
 
     public function getClientCommands();
+
+    /**
+     * @return Nethgui_Core_UserInterface
+     */
+    public function traceProcess(Nethgui_System_ProcessInterface $process, $name = NULL);
+
+    /**
+     * @return array An array of Nethgui_System_ProcessInterface traced objects
+     * @see Nethgui_System_ProcessInterface
+     */
+    public function getTracedProcesses();
+
+    public function getTracedProcess($name);
+
+
+
 }
 

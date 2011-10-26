@@ -39,6 +39,7 @@ class Nethgui_System_Process implements Nethgui_System_ProcessInterface, Nethgui
      * @var integer
      */
     private $state;
+    private $outputRed;
 
     /**
      *
@@ -54,6 +55,7 @@ class Nethgui_System_Process implements Nethgui_System_ProcessInterface, Nethgui
         $this->state = self::STATE_NEW;
         $this->output = array();
         $this->exitStatus = FALSE;
+        $this->outputRed = FALSE;
     }
 
     public function addArgument($arg)
@@ -66,6 +68,7 @@ class Nethgui_System_Process implements Nethgui_System_ProcessInterface, Nethgui
         $this->state = self::STATE_NEW;
         $this->output = array();
         $this->exitStatus = FALSE;
+        $this->outputRed = FALSE;
     }
 
     public function kill()
@@ -100,7 +103,7 @@ class Nethgui_System_Process implements Nethgui_System_ProcessInterface, Nethgui
 
         return strtr($this->command, $escapedArguments);
     }
-    
+
     public function getExitStatus()
     {
         return $this->exitStatus;
@@ -124,6 +127,16 @@ class Nethgui_System_Process implements Nethgui_System_ProcessInterface, Nethgui
     public function setGlobalFunctionWrapper(Nethgui_Core_GlobalFunctionWrapper $object)
     {
         $this->globalFunctionWrapper = $object;
+    }
+
+    public function readOutput()
+    {
+        if ($this->outputRed === FALSE) {            
+            $this->outputRed = TRUE;
+            return $this->getOutput();
+        } 
+        
+        return FALSE;
     }
 
 }
