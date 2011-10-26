@@ -23,6 +23,7 @@ class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Ne
      */
     private $modules = array();
     private $menu = array();
+    private $categories = array();
     /**
      * Policy Decision Point is applied to all attached modules and panels
      * that implement PolicyEnforcementPointInterface.
@@ -127,12 +128,9 @@ class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Ne
             
             # if category is NULL, create the category
             if (is_null($parentId[0])) {
-                $this->menu['__ROOT__'][] = $module->getIdentifier();
+                $this->categories[$parentId[1].$module->getIdentifier()] = $module->getIdentifier();
             } else { #otherwise insert into the menu according to menu and index 
-                if(!isset($this->menu[$parentId[0]])) { #initialize array, if needed
-                    $this->menu[$parentId[0]] = array();
-                }
-                array_splice($this->menu[$parentId[0]], intval($parentId[1]), 0, $module->getIdentifier()); # avoid index clash by expanding array
+                $this->menu[$parentId[0]][$parentId[1]] = $module->getIdentifier();
             }
         }
     }
@@ -167,7 +165,22 @@ class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Ne
     public function getModules()
     {
         // TODO: authorize access
-        return new Nethgui_Core_ModuleMenuIterator($this, '__ROOT__', $this->menu);
+        ksort($this->categories);
+
+        foreach($this->menu as $cat=>$sub_menu)
+        {
+            ksort($sub_menu,SORT_NUMERIC);
+            $this->menu[$cat] = $sub_menu;
+        }
+
+        foreach($this->categories as $cat)
+        {
+            $ret['__ROOT__'][] = $cat;
+            if(isset($this->menu[$cat])) {
+                $ret[$cat] = array_values($this->menu[$cat]);
+            }
+        }
+        return new Nethgui_Core_ModuleMenuIterator($this, '__ROOT__', $ret);
     }
 
     /**
