@@ -1,3 +1,4 @@
+<?php echo $view->inset('TableActions') ?>
 <div class="DataTable <?php echo $view['tableClass']?>" ><table>
     <thead><tr>
         <?php
@@ -16,4 +17,3 @@
     </tr>
     <?php endforeach ?></tbody>
 </table></div>
-<?php echo $view->inset('TableActions') ?>
