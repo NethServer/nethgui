@@ -33,7 +33,7 @@ interface Nethgui_Core_HostConfigurationInterface
      *
      * @see Nethgui_Adapter_AdapterAggregationInterface
      * @see getMapAdapter()
-     * @param string $database Database name
+     * @param string|ArrayAccess $database Database name or ArrayAccess object
      * @param string $key Key connected to the adapter.
      * @param string $prop Optional - Set to a prop name to connect a prop instead of a key.
      * @param string $separator Optional - Specify a single character string to obtain an ArrayAccess and Countable interface.
