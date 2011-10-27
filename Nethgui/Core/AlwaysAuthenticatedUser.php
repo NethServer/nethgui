@@ -20,11 +20,13 @@ class Nethgui_Core_AlwaysAuthenticatedUser implements Nethgui_Core_UserInterface
      * @var array
      */
     private $credentials;
+
     /**
      * Persistent message dialog boxes
      * @var array
      */
     private $dialogs;
+
     /**
      * Any kind of session data, accessible through the ArrayAccess interface
      * @var array
@@ -36,7 +38,12 @@ class Nethgui_Core_AlwaysAuthenticatedUser implements Nethgui_Core_UserInterface
      * @var type
      */
     private $clientCommands = array();
-    
+
+    /**
+     * Traced processes
+     * @var type
+     */
+    private $processes;
 
     public function __construct()
     {
@@ -45,9 +52,9 @@ class Nethgui_Core_AlwaysAuthenticatedUser implements Nethgui_Core_UserInterface
             session_start();
         }
 
-        foreach (array('credentials', 'dialogs', 'data') as $member) {
+        foreach (array('credentials', 'dialogs', 'data', 'processes') as $member) {
             if (isset($_SESSION[$member])) {
-                $this->{$member} = unserialize($_SESSION[$member]);
+                $this->{$member} = $_SESSION[$member];
             } else {
                 $this->{$member} = array();
             }
@@ -56,8 +63,8 @@ class Nethgui_Core_AlwaysAuthenticatedUser implements Nethgui_Core_UserInterface
 
     public function __destruct()
     {
-        foreach (array('credentials', 'dialogs', 'data') as $member) {
-            $_SESSION[$member] = serialize($this->{$member});
+        foreach (array('credentials', 'dialogs', 'data', 'processes') as $member) {
+            $_SESSION[$member] = $this->{$member};
         }
     }
 
@@ -160,6 +167,29 @@ class Nethgui_Core_AlwaysAuthenticatedUser implements Nethgui_Core_UserInterface
     public function offsetUnset($offset)
     {
         unset($this->data[$offset]);
+    }
+
+    public function traceProcess(Nethgui_System_ProcessInterface $process, $name = NULL)
+    {
+        if (is_null($name)) {
+            $name = uniqid();
+        }
+
+        $this->processes[$name] = $process;
+        return $this;
+    }
+
+    public function getTracedProcesses()
+    {
+        return array_values($this->processes);
+    }
+
+    public function getTracedProcess($name)
+    {
+        if ( ! isset($this->processes[$name])) {
+            return FALSE;
+        }
+        return $this->processes[$name];
     }
 
 }

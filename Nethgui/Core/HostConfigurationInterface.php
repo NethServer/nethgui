@@ -101,12 +101,11 @@ interface Nethgui_Core_HostConfigurationInterface
      *
      * @param string $command
      * @param array $arguments Arguments for the command. Will be shell-escaped.
+     * @param boolean $detached If set the command is run in detached from the PHP process.
      * @return Nethgui_System_ProcessInterface
      */
-
-    public function exec($command, $arguments = array());
-    
-    public function trace(Nethgui_Core_UserInterface $user, $command, $arguments = array());
+    public function exec($command, $arguments = array(), $detached = FALSE);
+   
         
 }
 

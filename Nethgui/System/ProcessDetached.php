@@ -45,6 +45,7 @@ class Nethgui_System_ProcessDetached implements Nethgui_System_ProcessInterface,
      * @var boolean|integer
      */
     private $exitStatus;
+    private $outputPosition;
 
     /**
      *
@@ -54,9 +55,9 @@ class Nethgui_System_ProcessDetached implements Nethgui_System_ProcessInterface,
 
     public function __construct($command, $arguments = array())
     {
-        $this->innerCommand = new Nethgui_System_Process($this->shellBackgroundInvocation($command), $arguments);
-        $this->setGlobalFunctionWrapper(new Nethgui_Core_GlobalFunctionWrapper());
         $this->initialize();
+        $this->innerCommand = new Nethgui_System_Process($this->shellBackgroundInvocation($command), $arguments);
+        $this->setGlobalFunctionWrapper(new Nethgui_Core_GlobalFunctionWrapper());        
     }
 
     public function setGlobalFunctionWrapper(Nethgui_Core_GlobalFunctionWrapper $object)
@@ -69,9 +70,10 @@ class Nethgui_System_ProcessDetached implements Nethgui_System_ProcessInterface,
     {
         $this->setExecutionState(self::STATE_NEW);
         $dir = '/tmp';
-        $prefix = 'ng-';
+        $prefix = 'ng-detached-';
         $this->outputFile = tempnam($dir, $prefix);
         $this->errorFile = tempnam($dir, $prefix);
+        $this->outputPosition = 0;
     }
 
     public function __clone()
@@ -81,7 +83,7 @@ class Nethgui_System_ProcessDetached implements Nethgui_System_ProcessInterface,
 
     private function shellBackgroundInvocation($commandTemplate)
     {
-        return sprintf('nohup %s >%s 2>%s & echo $!', $commandTemplate, escapeshellarg($this->outputFile), escapeshellarg($this->errorFile));
+        return sprintf('/usr/bin/nohup %s >%s 2>%s & echo $!', $commandTemplate, escapeshellarg($this->outputFile), escapeshellarg($this->errorFile));
     }
 
     public function addArgument($arg)
@@ -181,7 +183,8 @@ class Nethgui_System_ProcessDetached implements Nethgui_System_ProcessInterface,
             $this->outputFile,
             $this->processId,
             $this->exitStatus,
-            $this->globalFunctionWrapper
+            $this->globalFunctionWrapper,
+            $this->outputPosition,
         );
 
         return serialize($ostate);
@@ -196,10 +199,27 @@ class Nethgui_System_ProcessDetached implements Nethgui_System_ProcessInterface,
             $this->outputFile,
             $this->processId,
             $this->exitStatus,
-            $this->globalFunctionWrapper
-        ) = $ostate;
+            $this->globalFunctionWrapper,
+            $this->outputPosition,
+            ) = $ostate;
 
         return $this;
+    }
+
+    public function readOutput()
+    {
+        $currentOutput = (String) $this->getOutput();
+        $nextPos = strlen($currentOutput);
+
+        if ($nextPos > 0) {
+            $buffer = substr($currentOutput, $this->outputPosition);
+        } else {
+            $buffer = '';
+        }
+
+        $this->outputPosition = $nextPos;
+
+        return $buffer;
     }
 
 }
