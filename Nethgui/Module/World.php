@@ -24,7 +24,6 @@ class Nethgui_Module_World extends Nethgui_Core_Module_Abstract
             $lang = $F->getLanguageCode();
             $immutables = array(
                 'lang' => $lang,
-                'cssMain' => $F->baseUrl() . 'css/main.css',
                 'js' => array(
                     'base' => $F->baseUrl() . 'js/jquery-1.6.2.min.js',
                     'ui' => $F->baseUrl() . 'js/jquery-ui-1.8.16.custom.min.js',
@@ -50,6 +49,10 @@ class Nethgui_Module_World extends Nethgui_Core_Module_Abstract
                 $view['CurrentModule'] = $innerView;
             }
         }
+
+        //read css from db
+        $db = $this->getHostConfiguration()->getDatabase('configuration');
+        $view['css'] = $db->getProp('httpd-admin','css') ? $F->baseUrl() . 'css/' . $db->getProp('httpd-admin','css') . ".css" : $F->baseUrl() . 'css/default.css';
     }
 
     public function addModule(Nethgui_Core_ModuleInterface $module)
