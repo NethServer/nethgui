@@ -86,6 +86,13 @@ interface Nethgui_Core_ModuleInterface
      * @see Nethgui_Core_ViewInterface
      */
     public function prepareView(Nethgui_Core_ViewInterface $view, $mode);
+
+
+    /**
+     * Get module tags for search implementation. Any composite module must take care of getTags children's call.
+     * @return string rappresenting search tags in the form "tag1 tag2 tag3"
+     */
+    public function getTags();
 }
 
 /**

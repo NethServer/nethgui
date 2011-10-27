@@ -131,4 +131,13 @@ abstract class Nethgui_Core_Module_Abstract implements Nethgui_Core_ModuleInterf
         return get_class($this);
     }
 
+    
+    /**
+     * Standard implementation for getTags: return class title
+     * @return string class title
+     */
+    public function getTags()
+    {
+        return $this->getTitle();
+    }
 }

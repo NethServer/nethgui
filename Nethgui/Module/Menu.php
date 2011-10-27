@@ -6,7 +6,7 @@
 /**
  * @package Module
  */
-class Nethgui_Module_Menu extends Nethgui_Core_Module_Abstract
+class Nethgui_Module_Menu extends Nethgui_Core_Module_Standard
 {
 
     /**
@@ -103,8 +103,10 @@ class Nethgui_Module_Menu extends Nethgui_Core_Module_Abstract
         }
 
 
-        return $rootList;
+        return $view->form()->setAttribute('method','get')->insert($view->textInput("search",$view::LABEL_NONE)->setAttribute('placeholder',$view->translate('Search')."..."))->insert($view->button("submit",$view::BUTTON_SUBMIT))->insert($rootList);
     }
+
+
 
     public function prepareView(Nethgui_Core_ViewInterface $view, $mode)
     {
@@ -113,6 +115,15 @@ class Nethgui_Module_Menu extends Nethgui_Core_Module_Abstract
         if ($mode === self::VIEW_SERVER) {
             $view->setTemplate(array($this, 'renderModuleMenu'));
         }
+
+        /*$request = $this->getRequest();
+        if(is_null($request) || $mode != self::VIEW_CLIENT)
+            return;
+
+        $action = array_shift($request->getArguments());
+        if(method_exists($this, $action))
+            call_user_func(array($this,$action), $view);*/
+
     }
 
 }
