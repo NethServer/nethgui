@@ -40,7 +40,7 @@ class Nethgui_Module_Table_Read extends Nethgui_Module_Table_Action
                 $this->columns[] = $columnInfo;
             } else {
                 // FIXME: setting here the default buttonList formatter for Actions column:
-                $this->columns[] = array('name' => strval($columnInfo), 'formatter' => ($columnInfo == 'Actions' ? 'Buttonset' : NULL));
+                $this->columns[] = array('name' => strval($columnInfo), 'formatter' => ($columnInfo == 'Actions' ? 'fmtButtonset' : NULL));
             }
         }
     }
@@ -52,7 +52,7 @@ class Nethgui_Module_Table_Read extends Nethgui_Module_Table_Action
         if ($mode == self::VIEW_SERVER) {
             $view['columns'] = $this->columns;
             // FIXME: implement pagination - on the client side:
-            $view['tableClass'] = count($view['rows']) > PHP_INT_MAX ? 'large-dataTable' : 'small-dataTable';
+            $view['tableClass'] = count($view['rows']) > 10 ? 'large-dataTable' : 'small-dataTable';
             $view['tableClass'] .= ' ' . $view->getClientEventTarget('rows');
             $view['tableId'] = $view->getUniqueId();
             $view['TableActions'] = $view->spawnView($this->getParent());
