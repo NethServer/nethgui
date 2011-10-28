@@ -13,7 +13,7 @@
  * @subpackage Table
  * 
  */
-class Nethgui_Module_Table_Action extends Nethgui_Core_Module_Standard implements Nethgui_Core_Module_DefaultUiStateInterface
+class Nethgui_Module_Table_Action extends Nethgui_Core_Module_Standard implements Nethgui_Module_Table_ActionInterface, Nethgui_Core_Module_DefaultUiStateInterface
 {
     /**
      *
