@@ -106,6 +106,47 @@ class Nethgui_Module_Menu extends Nethgui_Core_Module_Standard
         return $view->form()->setAttribute('method','get')->insert($view->textInput("search",$view::LABEL_NONE)->setAttribute('placeholder',$view->translate('Search')."..."))->insert($view->button("submit",$view::BUTTON_SUBMIT))->insert($rootList);
     }
 
+   /* private function iteratorToSearch(RecursiveIterator $menuIterator, $tags = "", $level = 0)
+    {
+        if ($level > 10) {
+            return $tags;
+        }
+
+        $menuIterator->rewind();
+
+        while ($menuIterator->valid()) {
+
+            $module = $menuIterator->current();
+ 
+            $tags .= ' '.$module->getTags(Nethgui_Framework::getInstance());
+ 
+            if ($menuIterator->hasChildren()) {
+                $this->iteratorToSearch($menuIterator->getChildren(), $tags, $level + 1);
+            }
+
+            $menuIterator->next();
+        }
+        return $tags;
+    }*/
+    private function iteratorToSearch(RecursiveIterator $menuIterator, &$tags = "")
+    {
+        $menuIterator->rewind();
+
+        while ($menuIterator->valid()) {
+
+            $module = $menuIterator->current();
+ 
+            $tags .= ' '.$module->getTags(Nethgui_Framework::getInstance());
+ 
+            if ($menuIterator->hasChildren()) {
+                $this->iteratorToSearch($menuIterator->getChildren(), $tags); 
+            } 
+
+            $menuIterator->next();
+        }
+        return $tags;
+    }
+
 
 
     public function prepareView(Nethgui_Core_ViewInterface $view, $mode)
@@ -116,14 +157,15 @@ class Nethgui_Module_Menu extends Nethgui_Core_Module_Standard
             $view->setTemplate(array($this, 'renderModuleMenu'));
         }
 
-        /*$request = $this->getRequest();
+        $request = $this->getRequest();
         if(is_null($request) || $mode != self::VIEW_CLIENT)
             return;
 
         $action = array_shift($request->getArguments());
-        if(method_exists($this, $action))
-            call_user_func(array($this,$action), $view);*/
+        if(!$action) { //search
+           $tmp = $this->iteratorToSearch($this->menuIterator);
+           $view['tags'] = array_values(array_unique(explode(" ", strtolower($tmp))));
+        }
 
     }
-
 }
