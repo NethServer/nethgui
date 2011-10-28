@@ -134,6 +134,6 @@ abstract class Nethgui_Core_Module_Abstract implements Nethgui_Core_ModuleInterf
     
     public function getTags(Nethgui_Framework $framework)
     {
-        return $framework->translate($this->getTitle(),array(),NULL,$this->getLanguageCatalog());
+        return array($framework->buildModuleUrl($this) => array($framework->translate($this->getTitle(),array(),NULL,$this->getLanguageCatalog())));
     }
 }

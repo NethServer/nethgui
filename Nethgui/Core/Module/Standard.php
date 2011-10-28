@@ -461,7 +461,7 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
 
     public function getTags(Nethgui_Framework $framework)
     {
-       return $framework->translate($this->getIdentifier()."_tags",array(),NULL,$this->getLanguageCatalog());
+       return array($framework->buildModuleUrl($this) => array_values(array_unique(explode(" ", strtolower($framework->translate($this->getIdentifier()."_tags",array(),NULL,$this->getLanguageCatalog()))))));
     }
 
 }

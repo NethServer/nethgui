@@ -90,7 +90,8 @@ interface Nethgui_Core_ModuleInterface
 
     /**
      * Get module tags for search implementation. Any composite module must take care of getTags children's call.
-     * @return string rappresenting search tags in the form "tag1 tag2 tag3"
+     * @param Nethgui_Framework $framework environment used for tag translation
+     * @return array in the form (urlModule, (tag1,tag2..tagn)) rappresenting search tags foreach module 
      */
     public function getTags(Nethgui_Framework $framework);
 }

@@ -106,37 +106,18 @@ class Nethgui_Module_Menu extends Nethgui_Core_Module_Standard
         return $view->form()->setAttribute('method','get')->insert($view->textInput("search",$view::LABEL_NONE)->setAttribute('placeholder',$view->translate('Search')."..."))->insert($view->button("submit",$view::BUTTON_SUBMIT))->insert($rootList);
     }
 
-   /* private function iteratorToSearch(RecursiveIterator $menuIterator, $tags = "", $level = 0)
+    private function iteratorToSearch(RecursiveIterator $menuIterator, &$tags = array())
     {
-        if ($level > 10) {
-            return $tags;
-        }
-
         $menuIterator->rewind();
 
         while ($menuIterator->valid()) {
 
             $module = $menuIterator->current();
  
-            $tags .= ' '.$module->getTags(Nethgui_Framework::getInstance());
- 
-            if ($menuIterator->hasChildren()) {
-                $this->iteratorToSearch($menuIterator->getChildren(), $tags, $level + 1);
+            list($key,$value) = each($module->getTags(Nethgui_Framework::getInstance()));
+            if($key) { 
+                $tags[$key] =$value;
             }
-
-            $menuIterator->next();
-        }
-        return $tags;
-    }*/
-    private function iteratorToSearch(RecursiveIterator $menuIterator, &$tags = "")
-    {
-        $menuIterator->rewind();
-
-        while ($menuIterator->valid()) {
-
-            $module = $menuIterator->current();
- 
-            $tags .= ' '.$module->getTags(Nethgui_Framework::getInstance());
  
             if ($menuIterator->hasChildren()) {
                 $this->iteratorToSearch($menuIterator->getChildren(), $tags); 
@@ -164,7 +145,8 @@ class Nethgui_Module_Menu extends Nethgui_Core_Module_Standard
         $action = array_shift($request->getArguments());
         if(!$action) { //search
            $tmp = $this->iteratorToSearch($this->menuIterator);
-           $view['tags'] = array_values(array_unique(explode(" ", strtolower($tmp))));
+           #$view['tags'] = array_values(array_unique(explode(" ", strtolower($tmp))));
+           $view['tags'] = $tmp;
         }
 
     }
