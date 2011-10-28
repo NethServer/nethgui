@@ -465,6 +465,11 @@ class Nethgui_Framework
         $helpModule->moduleSet = $topModuleDepot;
         $helpModule->setHostConfiguration($hostConfiguration);
         $topModuleDepot->registerModule($helpModule);
+        
+        $menuModule = new Nethgui_Module_Menu($topModuleDepot->getModules(),$currentModuleIdentifier);
+        $menuModule->setHostConfiguration($hostConfiguration);
+        $topModuleDepot->registerModule($menuModule);
+
 
         // The World module is a non-processing container.
         $worldModule = new Nethgui_Module_World();
@@ -538,7 +543,7 @@ class Nethgui_Framework
          * Prepare the views and render into Xhtml or Json
          */
         if ($request->getContentType() === Nethgui_Core_Request::CONTENT_TYPE_HTML) {
-            $worldModule->addModule(new Nethgui_Module_Menu($topModuleDepot->getModules(),$currentModuleIdentifier));
+            $worldModule->addModule($menuModule);
             $worldModule->prepareView($view, Nethgui_Core_ModuleInterface::VIEW_SERVER);
             $redirectUrl = $this->getRedirectUrl($user);
             if ($redirectUrl !== FALSE) {

@@ -18,7 +18,7 @@
 
                 <div class="secondaryContent" role="otherTask">
                     <h2><?php echo T('Other modules') ?></h2>
-                    <div class="Navigation Flat"><?php echo $view->inset('Menu') ?></div>
+                    <?php echo $view->inset('Menu') ?>
                 </div>
             </div>
             
