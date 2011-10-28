@@ -25,3 +25,4 @@ $L['regexp "${0}"'] = 'regular expression \'${0}\'';
 
 $L['nethgui-test_success'] = 'Nethgui test event processed successfully (${0})';
 $L['nethgui-test_failure'] = 'Error in Nethgui test event processing (${0})';
+$L['Search'] = 'Search';
