@@ -24,7 +24,7 @@ class Nethgui_Module_Help_Template extends Nethgui_Module_Help_Common
         $rootView['content'] = $moduleView;
         $rootView['url'] = NETHGUI_SITEURL . Nethgui_Framework::getInstance()->buildModuleUrl($this, $this->module->getIdentifier() . '.html');
 
-        header("Content-Type: text/html; charset=UTF-8");
+        $this->globalFunctions->header("Content-Type: text/html; charset=UTF-8");
         echo (String) new Nethgui_Renderer_Xhtml($rootView);
         exit;
     }  

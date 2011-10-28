@@ -16,6 +16,10 @@ class Nethgui_Module_Help_Show extends Nethgui_Module_Help_Common
     {
         parent::prepareView($view, $mode);
 
+        if (is_null($this->module)) {
+            return;
+        }
+
         $filePath = $this->getHelpDocumentPath($this->module);
 
         $content = $this->readHelpDocumentContent($filePath);
@@ -32,7 +36,7 @@ class Nethgui_Module_Help_Show extends Nethgui_Module_Help_Common
     private function readHelpDocumentContent($filePath)
     {
         $document = new XMLReader();
-        if ( ! $document->open('file://' . $filePath)) {
+        if ( $document->open('file://' . $filePath, 'utf-8', LIBXML_NOENT) !== TRUE) {
             return FALSE;
         }
 

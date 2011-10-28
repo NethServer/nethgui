@@ -461,8 +461,7 @@ class Nethgui_Framework
 
         $topModuleDepot->registerModule($notificationManager);
 
-        $helpModule = new Nethgui_Module_Help();
-        $helpModule->moduleSet = $topModuleDepot;
+        $helpModule = new Nethgui_Module_Help($topModuleDepot);
         $helpModule->setHostConfiguration($hostConfiguration);
         $topModuleDepot->registerModule($helpModule);
 

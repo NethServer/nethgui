@@ -3,6 +3,6 @@ CodeIgniter/system
 Documentation/Metrics/
 Documentation/CodeCoverage/
 Documentation/Api/
+Documentation/*/*.html
 www-NethServer/Documentation
 *~
-*.html

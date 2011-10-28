@@ -9,7 +9,7 @@
  * @subpackage Help
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class Nethgui_Module_Help_Common extends Nethgui_Core_Module_Standard
+class Nethgui_Module_Help_Common extends Nethgui_Core_Module_Standard implements Nethgui_Core_GlobalFunctionConsumer
 {
 
     /**
@@ -23,6 +23,18 @@ class Nethgui_Module_Help_Common extends Nethgui_Core_Module_Standard
      * @var Nethgui_Core_ModuleSetInterface
      */
     public $moduleSet;
+
+    /**
+     *
+     * @var Nethgui_Core_GlobalFunctionWrapper
+     */
+    protected $globalFunctions;
+
+    public function __construct($identifier = NULL)
+    {
+        parent::__construct($identifier);
+        $this->globalFunctions = new Nethgui_Core_GlobalFunctionWrapper();        
+    }
 
     public function bind(Nethgui_Core_RequestInterface $request)
     {
@@ -51,6 +63,11 @@ class Nethgui_Module_Help_Common extends Nethgui_Core_Module_Standard
         $lang = Nethgui_Framework::getInstance()->getLanguageCode();
 
         return "${appPath}/Help/${lang}/${fileName}";
+    }
+
+    public function setGlobalFunctionWrapper(Nethgui_Core_GlobalFunctionWrapper $object)
+    {
+        $this->globalFunctions = $object;
     }
 
 }
