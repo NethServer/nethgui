@@ -52,7 +52,7 @@ class Nethgui_Widget_Xhtml_Button extends Nethgui_Widget_Xhtml
                 $value = '/Help/Read/' . array_shift($this->view->getModulePath()) . '.html#HelpArea';
                 $cssClass .= ' Help';
             } else {
-                $cssClass .= ' link';
+                $cssClass .= ' link ' . $this->getClientEventTarget();
             }
 
             $attributes['href'] = $this->prepareHrefAttribute($value);
