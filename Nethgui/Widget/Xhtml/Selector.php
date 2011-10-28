@@ -53,6 +53,9 @@ class Nethgui_Widget_Xhtml_Selector extends Nethgui_Widget_Xhtml
 
         $cssClass = 'Selector '
             . ($flags & Nethgui_Renderer_Abstract::SELECTOR_MULTIPLE ? 'multiple ' : '')
+            . ' '
+            . $this->getAttribute('class')
+            . ' '
             . $this->getClientEventTarget()
             . ' '
             . $this->view->getClientEventTarget($dataSourceName);
