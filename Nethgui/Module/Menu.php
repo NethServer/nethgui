@@ -6,7 +6,7 @@
 /**
  * @package Module
  */
-class Nethgui_Module_Menu extends Nethgui_Core_Module_Abstract
+class Nethgui_Module_Menu extends Nethgui_Core_Module_Standard
 {
 
     /**
@@ -102,9 +102,34 @@ class Nethgui_Module_Menu extends Nethgui_Core_Module_Abstract
             $this->menuIterator->next();
         }
 
+        $form = $view->form()->setAttribute('method','get')->insert($view->textInput("search",$view::LABEL_NONE)->setAttribute('placeholder',$view->translate('Search')."..."))->insert($view->button("submit",$view::BUTTON_SUBMIT))->insert($rootList);
 
-        return $rootList;
+        return   "<div class=\"Navigation Flat ".$view->getClientEventTarget("tags")."\">$form</div>";
     }
+
+    private function iteratorToSearch(RecursiveIterator $menuIterator, &$tags = array())
+    {
+        $menuIterator->rewind();
+
+        while ($menuIterator->valid()) {
+
+            $module = $menuIterator->current();
+ 
+            list($key,$value) = @each($module->getTags(Nethgui_Framework::getInstance()));
+            if($key) { 
+                $tags[$key] =$value;
+            }
+ 
+            if ($menuIterator->hasChildren()) {
+                $this->iteratorToSearch($menuIterator->getChildren(), $tags); 
+            } 
+
+            $menuIterator->next();
+        }
+        return $tags;
+    }
+
+
 
     public function prepareView(Nethgui_Core_ViewInterface $view, $mode)
     {
@@ -113,6 +138,22 @@ class Nethgui_Module_Menu extends Nethgui_Core_Module_Abstract
         if ($mode === self::VIEW_SERVER) {
             $view->setTemplate(array($this, 'renderModuleMenu'));
         }
-    }
 
+        $request = $this->getRequest();
+        if(is_null($request) || $mode != self::VIEW_CLIENT)
+            return;
+
+        $action = array_shift($request->getArguments());
+        if(!$action) { //search
+           $tmp = $this->iteratorToSearch($this->menuIterator);
+           foreach($tmp as $url=>$tags) {
+               $it = new RecursiveIteratorIterator(new RecursiveArrayIterator($tags));
+               foreach($it as $v) {
+                   $tmp2[$url][] = $v;
+               }
+           }
+           $view['tags'] = $tmp2;
+        }
+
+    }
 }

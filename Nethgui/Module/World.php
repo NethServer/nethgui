@@ -21,7 +21,6 @@ class Nethgui_Module_World extends Nethgui_Core_Module_Abstract
 
         $F = Nethgui_Framework::getInstance();
         if ($mode === self::VIEW_SERVER) {
-            
             $lang = $F->getLanguageCode();
             $immutables = array(
                 'lang' => $lang,
