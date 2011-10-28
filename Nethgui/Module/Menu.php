@@ -102,8 +102,9 @@ class Nethgui_Module_Menu extends Nethgui_Core_Module_Standard
             $this->menuIterator->next();
         }
 
+        $form = $view->form()->setAttribute('method','get')->insert($view->textInput("search",$view::LABEL_NONE)->setAttribute('placeholder',$view->translate('Search')."..."))->insert($view->button("submit",$view::BUTTON_SUBMIT))->insert($rootList);
 
-        return $view->form()->setAttribute('method','get')->insert($view->textInput("search",$view::LABEL_NONE)->setAttribute('placeholder',$view->translate('Search')."..."))->insert($view->button("submit",$view::BUTTON_SUBMIT))->insert($rootList);
+        return   "<div class=\"Navigation Flat ".$view->getClientEventTarget("tags")."\">$form</div>";
     }
 
     private function iteratorToSearch(RecursiveIterator $menuIterator, &$tags = array())
