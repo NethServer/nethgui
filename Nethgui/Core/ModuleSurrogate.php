@@ -95,4 +95,9 @@ class Nethgui_Core_ModuleSurrogate implements Nethgui_Core_ModuleInterface, Neth
         $this->info = unserialize($serialized);
     }
 
+    public function getTags(Nethgui_Framework $framework)
+    {
+        return NULL;
+    }
+
 }
