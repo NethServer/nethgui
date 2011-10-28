@@ -24,7 +24,7 @@ class Nethgui_Widget_Xhtml_Tabs extends Nethgui_Widget_Xhtml
         $content .= $this->openTag('div', array('class' => $this->getAttribute('class', 'Tabs')));
 
         if ($this->hasChildren()) {
-            $content .=$this->openTag('ul', array('class' => 'tabList'));
+            $content .=$this->openTag('ul', array('class' => 'TabList tabList'));
 
             foreach ($this->getChildren() as $child) {
                 $page = $child->getAttribute('name');
@@ -52,7 +52,7 @@ class Nethgui_Widget_Xhtml_Tabs extends Nethgui_Widget_Xhtml
 
         $panel
             ->setAttribute('name', $widget->getAttribute('name'))
-            ->setAttribute('class', $this->getAttribute('tabClass', 'tab-panel'))
+            ->setAttribute('class', $this->getAttribute('tabClass', 'TabPanel tab-panel'))
             ->insert($widget);
        
         return $this;
