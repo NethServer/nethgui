@@ -1,5 +1,5 @@
 <?php echo $view->inset('TableActions') ?>
-<div class="DataTable <?php echo $view['tableClass']?>" ><table>
+<div class="DataTable <?php echo $view['tableClass']?>" ><?php if(count($view['rows']) > 0) : ?><table>
     <thead><tr>
         <?php
             foreach ($view['columns'] as $columnInfo) {
@@ -15,5 +15,5 @@
              <td><?php echo $view->literal($value) ?></td>
         <?php endforeach; ?>
     </tr>
-    <?php endforeach ?></tbody>
-</table></div>
+    <?php endforeach; ?></tbody>
+</table><?php else: echo '<p>' . T('Empty table') . '</p>'; endif ?></div>
