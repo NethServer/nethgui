@@ -6,6 +6,7 @@
         <link rel="stylesheet" type="text/css" href="<?php echo htmlspecialchars($view['css']); ?>" />
         <script type="text/javascript">document.write('<style type="text/css">#allWrapper {display:none}</style>')</script>
         <meta name="viewport" content="width=device-width" />
+        <?php foreach ($view['js'] as $scriptPath): ?><script type="text/javascript" src="<?php echo htmlspecialchars($scriptPath) ?>" ></script><?php endforeach; ?>        
     </head>
     <body>
         <div id="allWrapper">
@@ -29,6 +30,5 @@
                 </div>
             </div>
         </div>        
-<?php foreach ($view['js'] as $scriptPath): ?><script type="text/javascript" src="<?php echo htmlspecialchars($scriptPath) ?>" ></script><?php endforeach; ?>        
     </body>
 </html>
