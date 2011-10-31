@@ -1,4 +1,4 @@
-<?php $pageTitle = $view['company']." - ".$view['CurrentModule']->translate($view['CurrentModule']->getModule()->getTitle()); ?><!DOCTYPE html>
+<?php $moduleTitle = $view['CurrentModule']->translate($view['CurrentModule']->getModule()->getTitle()); $pageTitle = $view['company']." - ".$moduleTitle; ?><!DOCTYPE html>
 <html lang="<?php echo $view['lang'] ?>">
     <head>
         <title><?php echo $pageTitle ?></title>
@@ -10,7 +10,7 @@
     </head>
     <body>
         <div id="allWrapper">
-            <div id="pageHeader"><?php echo $view->inset('NotificationArea') ?><a id="product" href="Dashboard" title='NethServer'></a><h1 id="ModuleTitle"><?php echo $pageTitle ?></h1><h2>'NethServer</h2></div>
+            <div id="pageHeader"><?php echo $view->inset('NotificationArea') ?><a id="product" href="Dashboard" title='NethServer'></a><h1 id="ModuleTitle"><?php echo $moduleTitle ?></h1><h2>'NethServer</h2></div>
 
             <div id="pageContent">
                 <div class="primaryContent" role="mainTask">
