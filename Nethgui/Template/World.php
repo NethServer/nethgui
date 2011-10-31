@@ -1,4 +1,4 @@
-<?php $pageTitle = $view['CurrentModule']->translate($view['CurrentModule']->getModule()->getTitle()); ?><!DOCTYPE html>
+<?php $pageTitle = $view['company']." - ".$view['CurrentModule']->translate($view['CurrentModule']->getModule()->getTitle()); ?><!DOCTYPE html>
 <html lang="<?php echo $view['lang'] ?>">
     <head>
         <title><?php echo $pageTitle ?></title>
@@ -29,6 +29,6 @@
                     <div id="HelpAreaInnerDocument"></div>
                 </div>
             </div>
-        </div>        
+        </div>       
     </body>
 </html>
