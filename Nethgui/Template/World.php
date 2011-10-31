@@ -15,6 +15,7 @@
             <div id="pageContent">
                 <div class="primaryContent" role="mainTask">
                     <div class="<?php echo $view['CurrentModule']->getModule()->getIdentifier(); ?> CurrentModule"><?php echo $view->inset('CurrentModule') ?></div>
+                    <div id='footer'><?php echo htmlspecialchars($view['company']." - ".$view['address']); ?></div>
                 </div>
 
                 <div class="secondaryContent" role="otherTask">
