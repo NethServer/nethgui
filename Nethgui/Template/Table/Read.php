@@ -10,8 +10,9 @@
         ?>
     </tr></thead>
     <tbody><?php foreach ($view['rows'] as $rowId => $row): ?>
-    <tr>
-        <?php foreach ($row as $colId => $value): ?>
+    <tr class='<?php echo $row[0]['rowCssClass'];?>' >
+        <?php foreach ($row as $colId => $value): 
+              if($colId == 0) continue;  ?>
              <td><?php echo $view->literal($value) ?></td>
         <?php endforeach; ?>
     </tr>
