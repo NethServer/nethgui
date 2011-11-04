@@ -63,7 +63,12 @@ class Nethgui_Renderer_Help extends Nethgui_Renderer_Xhtml
 
             $id = $this->getInnerView()->getUniqueId($name);
 
-            $fields[$id] = $label;
+            $fields[] = array(
+                'name' => $name,
+                'id' => $id,
+                'helpId' => $widget->getAttribute('helpId', $name),
+                'label' => $label,
+            );
         }
 
         $view = $this->getInnerView()->spawnView($this->getInnerView()->getModule());
