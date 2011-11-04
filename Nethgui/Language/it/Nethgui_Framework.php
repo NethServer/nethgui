@@ -49,3 +49,5 @@ $L['nethgui-test_failure'] = 'Errore durante l\'evento di test Nethgui (${0})';
 
 $L['Please wait...'] = 'Attendere prego...';
 $L['Search'] = 'Cerca';
+$L['Search...'] = 'Cerca...';
+$L['Add'] = 'Aggiungi';

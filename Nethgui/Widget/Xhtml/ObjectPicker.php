@@ -24,7 +24,7 @@ class Nethgui_Widget_Xhtml_ObjectPicker extends Nethgui_Widget_Xhtml
     {
         $this->metadata = array(
             'value' => $this->getAttribute('objectValue', 0),
-            'label' => $this->getAttribute('objectLabel', $this->getAttribute('objectValue')),
+            'label' => $this->getAttribute('objectLabel', $this->getAttribute('objectValue', 0)),
             'url' => $this->getAttribute('objectUrl', FALSE),
             'listenToEvents' => array(),
             'selector' => FALSE,
@@ -85,12 +85,11 @@ class Nethgui_Widget_Xhtml_ObjectPicker extends Nethgui_Widget_Xhtml
         $content .= $this->renderChildren();
         $content .= $this->closeTag('div');
         $content .= $this->openTag('div', array('class' => 'searchbox'));
-        $content .= $this->selfClosingTag('input', array('type' => 'text', 'class' => 'TextInput', 'disabled' => 'disabled', 'value' => '', 'placeholder' => $this->view->translate('Search..')));
+        $content .= $this->selfClosingTag('input', array('type' => 'text', 'class' => 'TextInput', 'disabled' => 'disabled', 'value' => '', 'placeholder' => $this->view->translate('Search...')));
         $content .= ' ' . $this->openTag('button', array('type' => 'button', 'class' => 'Button custom', 'disabled' => 'disabled')) . htmlspecialchars($this->view->translate('Add')) . $this->closeTag('button');
         $content .= $this->closeTag('div');
         $content .= $this->renderObjects();
         $content .= $this->closeTag('div');
-
 
         if ($this->hasAttribute('template')) {
             $fieldsetWidget = new Nethgui_Widget_Xhtml_Fieldset($this->view);
