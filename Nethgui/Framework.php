@@ -42,6 +42,7 @@ class Nethgui_Framework
     private function __construct($codeIgniterController)
     {
         $this->controller = $codeIgniterController;
+        $this->setLanguageCode($_SERVER['HTTP_ACCEPT_LANGUAGE']);
         $this->languageCatalogStack = array(get_class());
         self::$path = realpath(dirname(__FILE__) . '/..');
         spl_autoload_register(get_class($this) . '::autoloader');
@@ -333,7 +334,9 @@ class Nethgui_Framework
      */
     public function setLanguageCode($code)
     {
-        $this->languageCode = strtolower(substr($code, 0, 2));
+        if($code) {
+            $this->languageCode = strtolower(substr($code, 0, 2));
+        }
     }
 
     /**

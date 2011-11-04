@@ -207,6 +207,17 @@ interface Nethgui_Renderer_Abstract extends Nethgui_Core_ViewInterface
     public function elementList($flags = 0);
 
     /**
+     * Create a list of button elements
+     * 
+     * Add the actual elements invoking the insert() operation of the returned object.
+     * 
+     * @param integer $flags
+     * @return Nethgui_Renderer_WidgetInterface
+     */
+    public function buttonList($flags = 0);
+
+
+    /**
      * Create literal data - helper.
      *
      * @param string|object|Nethgui_Core_ViewInterface $data Can be a string, any object implementing toString() method, or a View.

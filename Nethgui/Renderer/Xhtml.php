@@ -87,6 +87,17 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
         return $widget;
     }
 
+    public function buttonList($flags = 0)
+    {
+        $flags |= $this->inheritFlags;
+        $widget = $this->createWidget("elementList", array('flags' => $flags));
+
+        $widget->setAttribute('class', 'Buttonlist')->setAttribute('wrap', 'div/');
+
+        return $widget;
+    }
+
+
     public function button($name, $flags = 0)
     {
         $flags |= $this->inheritFlags;

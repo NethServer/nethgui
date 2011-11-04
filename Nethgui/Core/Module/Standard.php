@@ -113,6 +113,11 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
     const VALID_PORTNUMBER = 204;
 
     /**
+     * A choice between 'yes' and 'no' values
+     */
+    const VALID_YES_NO = 205;
+
+    /**
      * This collection holds the parameter values as primitive datatype or adapter objects.
      * @var Nethgui_Core_ParameterSet
      */
@@ -238,7 +243,7 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
         }
 
         if ($exitStatus === FALSE) {
-            $type = Nethgui_Core_DialogBox::NOTIFY_WARNING;
+            $type = Nethgui_Core_DialogBox::NOTIFY_ERROR;
             $messageTemplate = $eventName . '_failure';
         } else {
             $type = Nethgui_Core_DialogBox::NOTIFY_SUCCESS;
@@ -339,6 +344,10 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
             case self::VALID_IP_OR_EMPTY:
             case self::VALID_IPv4_OR_EMPTY:
                 return $validator->orValidator($this->getValidator()->ipV4Address(), $this->getValidator()->isEmpty());
+            
+            case self::VALID_YES_NO:
+                return $validator->memberOf('yes', 'no');
+
         }
 
         throw new InvalidArgumentException('Unknown standard validator code: ' . $ruleCode);
