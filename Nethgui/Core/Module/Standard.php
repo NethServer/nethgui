@@ -238,7 +238,7 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
         }
 
         if ($exitStatus === FALSE) {
-            $type = Nethgui_Core_DialogBox::NOTIFY_WARNING;
+            $type = Nethgui_Core_DialogBox::NOTIFY_ERROR;
             $messageTemplate = $eventName . '_failure';
         } else {
             $type = Nethgui_Core_DialogBox::NOTIFY_SUCCESS;
