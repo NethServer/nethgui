@@ -22,8 +22,13 @@ abstract class Nethgui_Widget_Xhtml extends Nethgui_Widget_Abstract
      */
     private function label($text, $id)
     {
+        $attributes = array(
+            'for' => $id,
+            'class' => $this->getAttribute('helpId', $this->getAttribute('name', FALSE))
+        );
+
         $content = '';
-        $content .= $this->openTag('label', array('for' => $id));
+        $content .= $this->openTag('label', $attributes);
         $content .= htmlspecialchars($this->view->translate($text));
         $content .= $this->closeTag('label');
         return $content;
