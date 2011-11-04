@@ -259,7 +259,7 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
         return $this->textInput('date')->setAttribute('class', 'Date ' . $encodedFormat);
     }
 
-    public function objectPicker($name, $flags)
+    public function objectPicker($name, $flags = 0)
     {
         $flags |= $this->inheritFlags;
         return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags, 'icon-before' => 'ui-icon-triangle-1-s'));
