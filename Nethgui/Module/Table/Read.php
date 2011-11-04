@@ -136,6 +136,7 @@ class Nethgui_Module_Table_Read extends Nethgui_Module_Table_Action
      * @param int $mode
      * @param string $key The data row key
      * @param array $values The data row values
+     * @param array &$rowMetadata The metadadata row values, like css classes
      * @return Nethgui_Core_ViewInterface 
      */
     public function prepareViewForColumnActions(Nethgui_Core_ViewInterface $view, $mode, $key, $values, &$rowMetadata)
