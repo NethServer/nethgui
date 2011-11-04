@@ -32,12 +32,13 @@ abstract class Nethgui_Widget_Xhtml extends Nethgui_Widget_Abstract
     /**
      *
      * @see controlTag()
+     * @param string $label The label text
      * @param string $tag The XHTML tag of the control.
      * @param string $name The name of the view parameter that holds the data
-     * @param string $label The label text
      * @param integer $flags Flags bitmask {STATE_CHECKED, STATE_DISABLED, LABEL_*}
      * @param string $cssClass The `class` attribute value
      * @param array $attributes  Generic attributes array See {@link openTag()}
+     * @param string $tagContent The content of the tag. An empty string results in a self-closing tag.
      * @return string
      */
     protected function labeledControlTag($label, $tag, $name, $flags, $cssClass = '', $attributes = array(), $tagContent = '')
@@ -117,7 +118,9 @@ abstract class Nethgui_Widget_Xhtml extends Nethgui_Widget_Abstract
         }
 
         if ($tag == 'button') {
-            $tagContent = $attributes['value'];
+            if (empty($tagContent)) {
+                $tagContent = $attributes['value'];
+            }
         }
 
         if (in_array($tag, array('input', 'button', 'textarea', 'select', 'optgroup', 'option'))) {

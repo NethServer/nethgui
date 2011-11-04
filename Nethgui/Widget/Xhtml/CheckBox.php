@@ -37,7 +37,9 @@ class Nethgui_Widget_Xhtml_CheckBox extends Nethgui_Widget_Xhtml
 
         $flags = $this->applyDefaultLabelAlignment($flags, Nethgui_Renderer_Abstract::LABEL_RIGHT);
 
-        $content .= $this->controlTag('input', $name, $flags, 'HiddenConst', array('type' => 'hidden', 'value' => $uncheckedValue, 'id' => FALSE));
+        if ($uncheckedValue !== FALSE) {
+            $content .= $this->controlTag('input', $name, $flags, 'HiddenConst', array('type' => 'hidden', 'value' => $uncheckedValue, 'id' => FALSE));
+        }
         $content .= $this->labeledControlTag($label, 'input', $name, $flags, 'CheckBox', $attributes);
 
         return $content;

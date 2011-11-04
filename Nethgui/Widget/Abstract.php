@@ -73,7 +73,7 @@ class Nethgui_Widget_Abstract implements Nethgui_Renderer_WidgetInterface
         $flags = $this->getAttribute('flags', 0) & NETHGUI_INHERITABLE_FLAGS;
         $output = '';
         foreach ($this->children as $child) {
-            if($child->hasAttribute('flags')) {
+            if ($child->hasAttribute('flags')) {
                 $child->setAttribute('flags', $flags | $child->getAttribute('flags'));
             }
             $output .= $this->wrapChild($child->render());
@@ -98,7 +98,12 @@ class Nethgui_Widget_Abstract implements Nethgui_Renderer_WidgetInterface
 
     public function __toString()
     {
-        return $this->render();
+        try {
+            return $this->render();
+        } catch (Exception $ex) {
+            Nethgui_Framework::getInstance()->logMessage($ex->getMessage());
+            throw $ex;
+        }
     }
 
     /**
