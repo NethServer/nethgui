@@ -20,6 +20,7 @@ $L['delete_label'] = 'Elimina';
 $L['create_label'] = 'Crea nuovo';
 $L['Yes_label'] = 'Si'; 
 $L['No_label'] = 'No'; 
+$L['Ok_label'] = 'Ok'; 
 $L['Ignore_label'] = 'Ignora';
 $L['All changes have been saved'] = 'Tutte le modifiche sono state salvate';
 $L['Reset_label'] = 'Ripristina';
