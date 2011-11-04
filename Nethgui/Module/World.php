@@ -30,11 +30,13 @@ class Nethgui_Module_World extends Nethgui_Core_Module_Abstract
                     'dataTables' => $F->baseUrl() . 'js/jquery.dataTables.min.js',
                     'test' => $F->baseUrl() . 'js/nethgui.js',
                     'qTip' => $F->baseUrl() . 'js/jquery.qtip.min.js',
-                    'datepicker-regional' => $F->baseUrl() . sprintf('js/jquery.ui.datepicker-%s.js', $lang),
                 /* 'switcher' => 'http://jqueryui.com/themeroller/themeswitchertool/', */
                 ),
                 'favicon' => $F->baseUrl() . 'images/favicon.ico',
             );
+            if ($lang != 'en') {
+                $immutables['js']['datepicker-regional'] = $F->baseUrl() . sprintf('js/jquery.ui.datepicker-%s.js', $lang);
+            }
 
             foreach ($immutables as $immutableName => $immutableValue) {
                 $view[$immutableName] = $immutableValue;
