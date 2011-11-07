@@ -334,7 +334,7 @@ class Nethgui_Framework
      */
     public function setLanguageCode($code)
     {
-        if($code) {
+        if ($code) {
             $this->languageCode = strtolower(substr($code, 0, 2));
         }
     }
@@ -467,8 +467,8 @@ class Nethgui_Framework
         $helpModule = new Nethgui_Module_Help($topModuleDepot);
         $helpModule->setHostConfiguration($hostConfiguration);
         $topModuleDepot->registerModule($helpModule);
-        
-        $menuModule = new Nethgui_Module_Menu($topModuleDepot->getModules(),$currentModuleIdentifier);
+
+        $menuModule = new Nethgui_Module_Menu($topModuleDepot->getModules(), $currentModuleIdentifier);
         $menuModule->setHostConfiguration($hostConfiguration);
         $topModuleDepot->registerModule($menuModule);
 
@@ -548,28 +548,22 @@ class Nethgui_Framework
             $worldModule->addModule($menuModule);
             $worldModule->prepareView($view, Nethgui_Core_ModuleInterface::VIEW_SERVER);
             $redirectUrl = $this->getRedirectUrl($user);
-            if ($redirectUrl !== FALSE) {
+            if ($redirectUrl === FALSE) {
+                header("Content-Type: text/html; charset=UTF-8");
+                echo new Nethgui_Renderer_Xhtml($view);
+                $notificationManager->dismissTransientDialogBoxes();
+            } else {
                 $this->redirect($redirectUrl);
             }
-            header("Content-Type: text/html; charset=UTF-8");
-            echo new Nethgui_Renderer_Xhtml($view);
         } elseif ($request->getContentType() === Nethgui_Core_Request::CONTENT_TYPE_JSON) {
             $worldModule->prepareView($view, Nethgui_Core_ModuleInterface::VIEW_CLIENT);
-            $events = $view->getClientEvents();
-            $redirectUrl = $this->getRedirectUrl($user);
+            $events = $view->getClientEvents();            
             $clientCommands = $this->clientCommandsToArray($user->getClientCommands());
             if ( ! empty($clientCommands)) {
                 $events[] = array('ClientCommandHandler', $clientCommands);
             }
-
             header("Content-Type: application/json; charset=UTF-8");
             echo json_encode($events);
-        } else {
-            $redirectUrl = FALSE;
-        }
-
-        // Dismiss transient dialog boxes only if no redirection or fake redirection occurred:
-        if ($redirectUrl === FALSE) {
             $notificationManager->dismissTransientDialogBoxes();
         }
     }
