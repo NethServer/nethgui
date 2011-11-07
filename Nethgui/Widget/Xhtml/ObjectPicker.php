@@ -88,6 +88,9 @@ class Nethgui_Widget_Xhtml_ObjectPicker extends Nethgui_Widget_Xhtml
         $content = '';
         $content .= $this->openTag('div', array('class' => 'ObjectPicker ' . implode(' ', $this->metadata['listenToEvents'])));
         $content .= $this->controlTag('input', 'meta', 0, '', array('type' => 'hidden', 'disabled' => 'disabled', 'value' => json_encode($this->metadata), 'class' => 'metadata'));
+        foreach ($this->getChildren() as $child) {
+            $content .= $this->controlTag('input', $child->getAttribute('name'), 0, 'HiddenConst', array('type' => 'hidden', 'value' => '', 'id' => FALSE));
+        }
         $content .= $this->openTag('div', array('class' => 'schema'));
         $content .= $this->renderChildren();
         $content .= $this->closeTag('div');
@@ -97,6 +100,10 @@ class Nethgui_Widget_Xhtml_ObjectPicker extends Nethgui_Widget_Xhtml
         $content .= $this->closeTag('div');
         $content .= $this->renderObjects();
         $content .= $this->closeTag('div');
+
+
+
+
 
         if ($this->hasAttribute('template')) {
             $fieldsetWidget = new Nethgui_Widget_Xhtml_Fieldset($this->view);
