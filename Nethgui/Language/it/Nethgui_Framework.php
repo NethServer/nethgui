@@ -28,7 +28,8 @@ $L['Reset_label'] = 'Ripristina';
 $L['valid_regexp ${0}'] = 'espressione regolare "${0}"';
 $L['valid_positive'] = 'numero positivo';
 $L['valid_integer'] = 'numero intero';
-$L['valid_ipV4Address'] = 'indirizzo IPv4';
+$L['valid_ipV4Address'] = 'indirizzo IPv4 valido';
+$L['valid_ipV4Netmask'] = 'maschera IPv4 valida';
 $L['valid_username'] = 'lettera iniziale, poi solo lettere minuscole, numeri, simboli "-" e "_"';
 $L['valid_notEmpty'] = 'non vuoto';
 $L['valid_OR'] = 'oppure';
@@ -41,7 +42,8 @@ $L['valid_greatThan ${0}'] = 'maggiore di ${0}';
 $L['valid_lessThan ${0}'] = 'minore di ${0}';
 $L['valid_equalTo ${0}'] = 'uguale a ${0}';
 $L['valid_memberOf ${0}'] = 'un valore tra ${0}';
-
+$L['valid_isEmpty'] = 'vuoto';
+$L['valid_macAddress'] = 'indirizzo MAC valido';
 
 $L['Incorrect value'] = 'Valore non corretto';
 $L['Incorrect values'] = 'Valori non corretti';

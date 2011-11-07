@@ -422,7 +422,7 @@ class Nethgui_Framework
         // Replace "index" request with a  default module value
         if ($currentModuleIdentifier == 'index') {
             // TODO read from configuration
-            $this->redirect('dispatcher/Dashboard');
+            $this->redirect('dispatcher/Status');
         }
 
         $request = Nethgui_Core_Request::getHttpRequest($arguments);

@@ -118,6 +118,25 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
     const VALID_YES_NO = 205;
 
     /**
+     * A valid ipv4 netmask address like '255.255.255.0'
+     */
+    const VALID_IPv4_NETMASK = 206;
+
+    /**
+     * Alias for VALID_IPv4_NETMASK
+     */
+    const VALID_NETMASK = 207;
+    
+    /**
+     * A valid mac address like 00:16:3E:78:7A:7B 
+     */
+    const VALID_MACADDRESS = 208;
+
+    /**
+
+
+
+    /**
      * This collection holds the parameter values as primitive datatype or adapter objects.
      * @var Nethgui_Core_ParameterSet
      */
@@ -331,6 +350,13 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
             case self::VALID_IP:
             case self::VALID_IPv4:
                 return $validator->ipV4Address();
+
+            case self::VALID_NETMASK:
+            case self::VALID_IPv4_NETMASK:
+                return $validator->ipV4Netmask();
+            
+            case self::VALID_MACADDRESS:
+                return $validator->macAddress();
 
             case self::VALID_POSITIVE_INTEGER:
                 return $validator->integer()->positive();
