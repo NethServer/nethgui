@@ -42,7 +42,8 @@ $L['valid_greatThan ${0}'] = 'maggiore di ${0}';
 $L['valid_lessThan ${0}'] = 'minore di ${0}';
 $L['valid_equalTo ${0}'] = 'uguale a ${0}';
 $L['valid_memberOf ${0}'] = 'un valore tra ${0}';
-
+$L['valid_isEmpty'] = 'vuoto';
+$L['valid_macAddress'] = 'indirizzo MAC valido';
 
 $L['Incorrect value'] = 'Valore non corretto';
 $L['Incorrect values'] = 'Valori non corretti';

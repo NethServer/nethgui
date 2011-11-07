@@ -145,6 +145,16 @@ class Nethgui_Core_Validator implements Nethgui_Core_ValidatorInterface
      * @todo
      * @return Nethgui_Core_Validator
      */
+    public function macAddress()
+    {
+        return $this->addToChain(__FUNCTION__);
+    }
+
+
+    /**
+     * @todo
+     * @return Nethgui_Core_Validator
+     */
     public function ipV6Netmask()
     {
         return $this->notImplemented(__FUNCTION__);
@@ -540,6 +550,12 @@ class Nethgui_Core_Validator implements Nethgui_Core_ValidatorInterface
     private function evalIpV4Netmask($value)
     {
         $pattern = "/^(((128|192|224|240|248|252|254)\.0\.0\.0)|(255\.(0|128|192|224|240|248|252|254)\.0\.0)|(255\.255\.(0|128|192|224|240|248|252|254)\.0)|(255\.255\.255\.(0|128|192|224|240|248|252|254)))$/i";
+        return preg_match($pattern, $value);
+    }
+
+    private function evalMacAddress($value)
+    {
+        $pattern = "'/^([0-9a-f]{2}([:]|$)){6}$/i'";
         return preg_match($pattern, $value);
     }
 

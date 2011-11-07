@@ -126,6 +126,13 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
      * Alias for VALID_IPv4_NETMASK
      */
     const VALID_NETMASK = 207;
+    
+    /**
+     * A valid mac address like 00:16:3E:78:7A:7B 
+     */
+    const VALID_MACADDRESS = 208;
+
+    /**
 
 
 
@@ -347,6 +354,9 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
             case self::VALID_NETMASK:
             case self::VALID_IPv4_NETMASK:
                 return $validator->ipV4Netmask();
+            
+            case self::VALID_MACADDRESS:
+                return $validator->macAddress();
 
             case self::VALID_POSITIVE_INTEGER:
                 return $validator->integer()->positive();
