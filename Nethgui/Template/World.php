@@ -3,7 +3,7 @@
     <head>
         <title><?php echo $pageTitle ?></title>
         <link rel="icon"  type="image/png"  href="<?php echo htmlspecialchars($view['favicon']) ?>" />
-        <link rel="stylesheet" type="text/css" href="<?php echo htmlspecialchars($view['css']); ?>" />
+        <?php foreach ($view['css'] as $cssPath): ?> <link rel="stylesheet" type="text/css" href="<?php echo htmlspecialchars($cssPath) ?>" /><?php endforeach; ?>        
         <script type="text/javascript">document.write('<style type="text/css">#allWrapper {display:none}</style>')</script>
         <meta name="viewport" content="width=device-width" />
         <?php foreach ($view['js'] as $scriptPath): ?><script type="text/javascript" src="<?php echo htmlspecialchars($scriptPath) ?>" ></script><?php endforeach; ?>        
