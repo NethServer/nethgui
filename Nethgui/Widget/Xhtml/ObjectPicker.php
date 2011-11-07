@@ -60,10 +60,17 @@ class Nethgui_Widget_Xhtml_ObjectPicker extends Nethgui_Widget_Xhtml
             throw new Nethgui_Exception_View(sprintf('Unsupported widget class: %s', get_class($child)));
         }
 
+        if ( ! $child->hasAttribute('uncheckedValue')) {
+            $child->setAttribute('uncheckedValue', FALSE);
+        }
+
+        // Force help id to FALSE (disabled) - No help context can be specified here.
+        $child->setAttribute('helpId', FALSE);
+
         $childFlags = $child->getAttribute('flags', 0);
 
-        // Mask STATE_DISABLED and LABEL_* flags:
-        $childFlags &= ~ (Nethgui_Renderer_Abstract::LABEL_ABOVE | Nethgui_Renderer_Abstract::LABEL_RIGHT | Nethgui_Renderer_Abstract::LABEL_LEFT | Nethgui_Renderer_Abstract::STATE_CHECKED);
+        // Mask LABEL_* flags:
+        $childFlags &= ~ (Nethgui_Renderer_Abstract::LABEL_ABOVE | Nethgui_Renderer_Abstract::LABEL_RIGHT | Nethgui_Renderer_Abstract::LABEL_LEFT);
 
         // Force to STATE_DISABLED & LABEL_RIGHT
         $childFlags |= Nethgui_Renderer_Abstract::LABEL_RIGHT | Nethgui_Renderer_Abstract::STATE_DISABLED;
@@ -103,20 +110,6 @@ class Nethgui_Widget_Xhtml_ObjectPicker extends Nethgui_Widget_Xhtml
         }
 
         return $content;
-    }
-
-    protected function renderChildren()
-    {
-        $output = '';
-
-        foreach ($this->getChildren() as $child) {
-            $child->setAttribute('flags', Nethgui_Renderer_Abstract::STATE_DISABLED | intval($child->getAttribute('flags')));
-            $child->setAttribute('uncheckedValue', FALSE);
-            $child->setAttribute('value', '');
-            $output .= $this->wrapChild($child->render());
-        }
-
-        return $output;
     }
 
     private function renderObjects()
@@ -188,12 +181,7 @@ class Nethgui_Widget_Xhtml_ObjectPicker extends Nethgui_Widget_Xhtml
             $childClone->setAttribute('label', $child->getAttribute('label', $child->getAttribute('name') . '_label'));
             $childClone->setAttribute('value', $object[$this->metadata['value']]);
 
-            if ( ! $child->hasAttribute('uncheckedValue')) {
-                $childClone->setAttribute('uncheckedValue', FALSE);
-            }
-
             $content .= $childClone->render();
-            //$content .= $childClone->label($childClone->getAttribute('label'), $this->view->getUniqueId($childClone->getAttribute('name')));
         }
         $content .= '</span>';
 

@@ -101,7 +101,7 @@ class Nethgui_Widget_Abstract implements Nethgui_Renderer_WidgetInterface
         try {
             return $this->render();
         } catch (Exception $ex) {
-            Nethgui_Framework::getInstance()->logMessage($ex->getMessage());
+            Nethgui_Framework::getInstance()->logMessage('EXCEPTION ' . $ex->getMessage() . " Trace: " . strtr($ex->getTraceAsString(), "\n", " "));
             throw $ex;
         }
     }

@@ -279,7 +279,7 @@ interface Nethgui_Renderer_Abstract extends Nethgui_Core_ViewInterface
      * Pick/selects objects from a collection
      * @see selector()
      */
-    public function objectPicker($name, $flags = 0);
+    public function objectPicker($name = NULL, $flags = 0);
 }
 
 define('NETHGUI_INHERITABLE_FLAGS', Nethgui_Renderer_Abstract::STATE_DISABLED | Nethgui_Renderer_Abstract::LABEL_ABOVE | Nethgui_Renderer_Abstract::LABEL_LEFT | Nethgui_Renderer_Abstract::LABEL_RIGHT | Nethgui_Renderer_Abstract::LABEL_NONE);
