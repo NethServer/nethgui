@@ -41,6 +41,12 @@ class Nethgui_Module_World extends Nethgui_Core_Module_Abstract
             foreach ($immutables as $immutableName => $immutableValue) {
                 $view[$immutableName] = $immutableValue;
             }
+
+            //read css from db
+            $db = $this->getHostConfiguration()->getDatabase('configuration');
+            $view['css'] = $db->getProp('httpd-admin','css') ? $F->baseUrl() . 'css/' . $db->getProp('httpd-admin','css') . ".css" : $F->baseUrl() . 'css/default.css';
+            $view['company'] = $db->getProp('ldap','defaultCompany');
+            $view['address'] = $db->getProp('ldap','defaultStreet').", ".$db->getProp('ldap','defaultCity');
         }
 
         foreach ($this->modules as $module) {
@@ -52,11 +58,6 @@ class Nethgui_Module_World extends Nethgui_Core_Module_Abstract
             }
         }
 
-        //read css from db
-        $db = $this->getHostConfiguration()->getDatabase('configuration');
-        $view['css'] = $db->getProp('httpd-admin','css') ? $F->baseUrl() . 'css/' . $db->getProp('httpd-admin','css') . ".css" : $F->baseUrl() . 'css/default.css';
-        $view['company'] = $db->getProp('ldap','defaultCompany');
-        $view['address'] = $db->getProp('ldap','defaultStreet').", ".$db->getProp('ldap','defaultCity');
     }
 
     public function addModule(Nethgui_Core_ModuleInterface $module)
