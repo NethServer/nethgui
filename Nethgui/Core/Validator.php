@@ -138,7 +138,7 @@ class Nethgui_Core_Validator implements Nethgui_Core_ValidatorInterface
      */
     public function ipV4Netmask()
     {
-        return $this->notImplemented(__FUNCTION__);
+        return $this->addToChain(__FUNCTION__);
     }
 
     /**
@@ -535,6 +535,12 @@ class Nethgui_Core_Validator implements Nethgui_Core_ValidatorInterface
         }
 
         return FALSE;
+    }
+
+    private function evalIpV4Netmask($value)
+    {
+        $pattern = "/^(((128|192|224|240|248|252|254)\.0\.0\.0)|(255\.(0|128|192|224|240|248|252|254)\.0\.0)|(255\.255\.(0|128|192|224|240|248|252|254)\.0)|(255\.255\.255\.(0|128|192|224|240|248|252|254)))$/i";
+        return preg_match($pattern, $value);
     }
 
 }
