@@ -62,7 +62,6 @@ class Nethgui_Module_World extends Nethgui_Core_Module_Abstract
                    $view['css']['2dashboard'] = $F->baseUrl() . 'css/dashboard.css'; 
                    $view['js']['chart'] = $F->baseUrl() . 'js/jquery.jqChart.min.js';
                    $view['js']['dashboard'] = $F->baseUrl() . 'js/dashboard.js';
-                   $view['js']['monitor'] = $F->baseUrl() . 'js/monitor.js';
                 }
             }
         }
