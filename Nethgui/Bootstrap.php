@@ -36,7 +36,11 @@ switch (NETHGUI_ENVIRONMENT) {
 
 define('ENVIRONMENT', NETHGUI_ENVIRONMENT);
 
-define('NETHGUI_SITEURL', (empty($_SERVER['HTTPS']) ? 'http://' : 'https://') .  $_SERVER['SERVER_NAME']);
+define('NETHGUI_SITEURL', (empty($_SERVER['HTTPS']) ? 'http://' : 'https://') . $_SERVER['SERVER_NAME']);
+
+if ( ! defined('NETHGUI_CUSTOMCSS')) {
+    define('NETHGUI_CUSTOMCSS', FALSE);
+}
 
 if (parse_url(NETHGUI_SITEURL) === FALSE) {
     die('Invalid site URL');
