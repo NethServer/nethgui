@@ -132,7 +132,7 @@ class Nethgui_Widget_Abstract implements Nethgui_Renderer_WidgetInterface
     protected function selfClosingTag($tag, $attributes)
     {
         $tag = strtolower($tag);
-        return sprintf('<%s%s></%s>', $tag, $this->prepareXhtmlAttributes($attributes), $tag);
+        return sprintf('<%s%s />', $tag, $this->prepareXhtmlAttributes($attributes));
     }
 
     /**

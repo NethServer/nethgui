@@ -87,9 +87,9 @@ class Nethgui_Widget_Xhtml_ObjectPicker extends Nethgui_Widget_Xhtml
 
         $content = '';
         $content .= $this->openTag('div', array('class' => 'ObjectPicker ' . implode(' ', $this->metadata['listenToEvents'])));
-        $content .= $this->controlTag('input', 'meta', 0, '', array('type' => 'hidden', 'disabled' => 'disabled', 'value' => json_encode($this->metadata), 'class' => 'metadata'));
+        $content .= $this->selfClosingTag('input', array('name' => $this->view->getControlName('meta'), 'type' => 'hidden', 'disabled' => 'disabled', 'value' => json_encode($this->metadata), 'class' => 'metadata'));
         foreach ($this->getChildren() as $child) {
-            $content .= $this->controlTag('input', $child->getAttribute('name'), 0, 'HiddenConst', array('type' => 'hidden', 'value' => '', 'id' => FALSE));
+            $content .= $this->selfClosingTag('input', array('type' => 'hidden', 'value' => '', 'name' => $this->view->getControlName($child->getAttribute('name'))));
         }
         $content .= $this->openTag('div', array('class' => 'schema'));
         $content .= $this->renderChildren();
@@ -99,11 +99,8 @@ class Nethgui_Widget_Xhtml_ObjectPicker extends Nethgui_Widget_Xhtml
         $content .= ' ' . $this->openTag('button', array('type' => 'button', 'class' => 'Button custom', 'disabled' => 'disabled')) . htmlspecialchars($this->view->translate('Add')) . $this->closeTag('button');
         $content .= $this->closeTag('div');
         $content .= $this->renderObjects();
+        
         $content .= $this->closeTag('div');
-
-
-
-
 
         if ($this->hasAttribute('template')) {
             $fieldsetWidget = new Nethgui_Widget_Xhtml_Fieldset($this->view);
@@ -168,7 +165,7 @@ class Nethgui_Widget_Xhtml_ObjectPicker extends Nethgui_Widget_Xhtml
             $content .= $this->openTag('span', array('class' => 'label')) . htmlspecialchars($this->view->translate($object[$this->metadata['label']], array())) . $this->closeTag('span');
         }
 
-        $content .= '<span class="checkboxset">';
+        $content .= '<div class="checkboxset">';
         foreach ($this->getChildren() as $child) {
             $childClone = clone $child;
 
@@ -190,7 +187,7 @@ class Nethgui_Widget_Xhtml_ObjectPicker extends Nethgui_Widget_Xhtml
 
             $content .= $childClone->render();
         }
-        $content .= '</span>';
+        $content .= '</div>';
 
         return $content;
     }

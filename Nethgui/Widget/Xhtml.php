@@ -144,7 +144,7 @@ abstract class Nethgui_Widget_Xhtml extends Nethgui_Widget_Abstract
 
         $content = '';
 
-        if ($tagContent == '') {
+        if ($tagContent == '' && $tag !== 'textarea') {
             $content .= $this->selfClosingTag($tag, $attributes);
         } else {
             $content .= $this->openTag($tag, $attributes);

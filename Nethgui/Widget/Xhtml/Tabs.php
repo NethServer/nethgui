@@ -18,7 +18,7 @@ class Nethgui_Widget_Xhtml_Tabs extends Nethgui_Widget_Xhtml
 {
 
     public function render()
-    {                                       
+    {
         $content = '';
 
         $content .= $this->openTag('div', array('class' => $this->getAttribute('class', 'Tabs')));
@@ -37,24 +37,28 @@ class Nethgui_Widget_Xhtml_Tabs extends Nethgui_Widget_Xhtml
 
             $content .=$this->closeTag('ul');
         }
-        
+
         $content .= $this->renderChildren();
 
         $content .= $this->closeTag('div');
-       
+
         return $content;
     }
 
     public function insert(Nethgui_Renderer_WidgetInterface $widget)
     {
-        $panel = new Nethgui_Widget_Xhtml_Panel($this->view);
-        parent::insert($panel);
+        if ($widget instanceof Nethgui_Widget_Xhtml_Panel) {
+            $widget->setAttribute('class', $widget->getAttribute('class', '') . ' ' . $this->getAttribute('tabClass', 'TabPanel tab-panel'));
+            parent::insert($widget);            
+        } else {
+            $panel = new Nethgui_Widget_Xhtml_Panel($this->view);
+            parent::insert($panel);
+            $panel
+                ->setAttribute('name', $widget->getAttribute('name'))
+                ->setAttribute('class', $this->getAttribute('tabClass', 'TabPanel tab-panel'))
+                ->insert($widget);
+        }
 
-        $panel
-            ->setAttribute('name', $widget->getAttribute('name'))
-            ->setAttribute('class', $this->getAttribute('tabClass', 'TabPanel tab-panel'))
-            ->insert($widget);
-       
         return $this;
     }
 

@@ -30,8 +30,7 @@ class Nethgui_Widget_Xhtml_ProgressBar extends Nethgui_Widget_Xhtml
 
         $cssClass .= ' ' . $this->getClientEventTarget();
 
-
-        $content = $this->selfClosingTag('div', array('class' => $cssClass));
+        $content = $this->openTag('div', array('class' => $cssClass)) . $this->closeTag('div');
         return $content;
     }
 
