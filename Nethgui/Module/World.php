@@ -33,7 +33,7 @@ class Nethgui_Module_World extends Nethgui_Core_Module_Abstract
                 /* 'switcher' => 'http://jqueryui.com/themeroller/themeswitchertool/', */
                 )),
                 'favicon' => $F->baseUrl() . 'images/favicon.ico',
-                'css' => new ArrayObject(),
+                'css' => new ArrayObject(array('0base' => $F->baseUrl() . 'css/base.css')),
             );
             if ($lang != 'en') {
                 $immutables['js']['datepicker-regional'] = $F->baseUrl() . sprintf('js/jquery.ui.datepicker-%s.js', $lang);
@@ -45,7 +45,7 @@ class Nethgui_Module_World extends Nethgui_Core_Module_Abstract
 
             //read css from db
             $db = $this->getHostConfiguration()->getDatabase('configuration');
-            $view['css']['base'] = $db->getProp('httpd-admin','css') ? $F->baseUrl() . 'css/' . $db->getProp('httpd-admin','css') . ".css" : $F->baseUrl() . 'css/default.css';
+            $view['css']['1theme'] = $db->getProp('httpd-admin','css') ? $F->baseUrl() . 'css/' . $db->getProp('httpd-admin','css') . ".css" : $F->baseUrl() . 'css/default.css';
             $view['company'] = $db->getProp('ldap','defaultCompany');
             $view['address'] = $db->getProp('ldap','defaultStreet').", ".$db->getProp('ldap','defaultCity');
         }
@@ -58,7 +58,7 @@ class Nethgui_Module_World extends Nethgui_Core_Module_Abstract
                 $view['CurrentModule'] = $innerView;
                 if( $module->getIdentifier() == 'Status')
                 {
-                   $view['css']['dashboard'] = $F->baseUrl() . 'css/dashboard.css'; 
+                   $view['css']['2dashboard'] = $F->baseUrl() . 'css/dashboard.css'; 
                    $view['js']['chart'] = $F->baseUrl() . 'js/jquery.jqChart.min.js';
                    $view['js']['dashboard'] = $F->baseUrl() . 'js/dashboard.js';
                    $view['js']['monitor'] = $F->baseUrl() . 'js/monitor.js';
