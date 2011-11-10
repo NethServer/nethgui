@@ -8,7 +8,7 @@
  * TODO describe this class
  * @package Core
  */
-class Nethgui_Core_HostConfiguration implements Nethgui_Core_HostConfigurationInterface, Nethgui_Authorization_PolicyEnforcementPointInterface
+class Nethgui_System_NethPlatform implements Nethgui_System_PlatformInterface, Nethgui_Authorization_PolicyEnforcementPointInterface
 {
 
     /**
@@ -42,12 +42,12 @@ class Nethgui_Core_HostConfiguration implements Nethgui_Core_HostConfigurationIn
     /**
      *
      * @param string $database SME database configuration name
-     * @return Nethgui_Core_ConfigurationDatabase
+     * @return Nethgui_System_ConfigurationDatabase
      */
     public function getDatabase($database)
     {
         if ( ! isset($this->databases[$database])) {
-            $object = new Nethgui_Core_ConfigurationDatabase($database, $this->user);
+            $object = new Nethgui_System_ConfigurationDatabase($database, $this->user);
             $object->setPolicyDecisionPoint($this->getPolicyDecisionPoint());
             $this->databases[$database] = $object;
         }
@@ -146,7 +146,7 @@ class Nethgui_Core_HostConfiguration implements Nethgui_Core_HostConfigurationIn
             );
         }
 
-        if ($observer instanceof Nethgui_Core_EventObserverInterface) {
+        if ($observer instanceof Nethgui_System_EventObserverInterface) {
             $this->eventQueue[$eventId]['objs'][] = $observer;
         }
     }
@@ -198,7 +198,7 @@ class Nethgui_Core_HostConfiguration implements Nethgui_Core_HostConfigurationIn
             }
             $exitInfo = $this->signalEvent($eventData['name'], $args);
             foreach ($eventData['objs'] as $observer) {
-                if ($observer instanceof Nethgui_Core_EventObserverInterface) {
+                if ($observer instanceof Nethgui_System_EventObserverInterface) {
                     $observer->notifyEventCompletion($eventData['name'], $args, $exitInfo->getExitStatus() === 0, $exitInfo->getOutput());
                 }
             }

@@ -435,17 +435,17 @@ class Nethgui_Framework
          * TODO: get hostConfiguration and topModuleDepot class names
          * from Nethgui_Framework.
          */
-        $hostConfiguration = new Nethgui_Core_HostConfiguration($user);
+        $platform = new Nethgui_System_NethPlatform($user);
         $appPath = realpath(dirname(__FILE__) . '/../' . NETHGUI_APPLICATION);
         $this->languageCatalogStack[] = basename($appPath);
-        $topModuleDepot = new Nethgui_Core_TopModuleDepot($appPath, $hostConfiguration, $user);
+        $topModuleDepot = new Nethgui_Core_TopModuleDepot($appPath, $platform, $user);
 
         /*
          * TODO: enforce some security policy on Models
          */
         $pdp = new Nethgui_Authorization_PermissivePolicyDecisionPoint();
 
-        $hostConfiguration->setPolicyDecisionPoint($pdp);
+        $platform->setPolicyDecisionPoint($pdp);
         $topModuleDepot->setPolicyDecisionPoint($pdp);
 
         if ($request->isSubmitted()) {
@@ -460,22 +460,22 @@ class Nethgui_Framework
         $moduleWakeupList = array_unique($moduleWakeupList);
 
         $notificationManager = new Nethgui_Module_NotificationArea($user);
-        $notificationManager->setHostConfiguration($hostConfiguration);
+        $notificationManager->setPlatform($platform);
 
         $topModuleDepot->registerModule($notificationManager);
 
         $helpModule = new Nethgui_Module_Help($topModuleDepot);
-        $helpModule->setHostConfiguration($hostConfiguration);
+        $helpModule->setPlatform($platform);
         $topModuleDepot->registerModule($helpModule);
 
         $menuModule = new Nethgui_Module_Menu($topModuleDepot->getModules(), $currentModuleIdentifier);
-        $menuModule->setHostConfiguration($hostConfiguration);
+        $menuModule->setPlatform($platform);
         $topModuleDepot->registerModule($menuModule);
 
 
         // The World module is a non-processing container.
         $worldModule = new Nethgui_Module_World();
-        $worldModule->setHostConfiguration($hostConfiguration);
+        $worldModule->setPlatform($platform);
 
         $view = new Nethgui_Core_View($worldModule);
 
@@ -529,7 +529,7 @@ class Nethgui_Framework
         $worldModule->addModule($notificationManager);
 
         // Finally, signal "final" events (see #506)
-        $hostConfiguration->signalFinalEvents();
+        $platform->signalFinalEvents();
 
         /**
          * Validation error http status.

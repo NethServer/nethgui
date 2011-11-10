@@ -48,8 +48,8 @@ abstract class Nethgui_Core_Module_Composite extends Nethgui_Core_Module_Abstrac
         if ( ! isset($this->children[$childModule->getIdentifier()])) {
             $this->children[$childModule->getIdentifier()] = $childModule;
             $childModule->setParent($this);
-            if ($this->getHostConfiguration() !== NULL) {
-                $childModule->setHostConfiguration($this->getHostConfiguration());
+            if ($this->getPlatform() !== NULL) {
+                $childModule->setPlatform($this->getPlatform());
             }
             if ($this->isInitialized() && ! $childModule->isInitialized()) {
                 $childModule->initialize();
@@ -68,11 +68,11 @@ abstract class Nethgui_Core_Module_Composite extends Nethgui_Core_Module_Abstrac
         return array_values($this->children);
     }
 
-    public function setHostConfiguration(Nethgui_Core_HostConfigurationInterface $hostConfiguration)
+    public function setPlatform(Nethgui_System_PlatformInterface $platform)
     {
-        parent::setHostConfiguration($hostConfiguration);
+        parent::setPlatform($platform);
         foreach ($this->getChildren() as $childModule) {
-            $childModule->setHostConfiguration($hostConfiguration);
+            $childModule->setPlatform($platform);
         }
     }
 
@@ -102,8 +102,8 @@ abstract class Nethgui_Core_Module_Composite extends Nethgui_Core_Module_Abstrac
             }
 
             $childModule = new $childModuleClass();
-            if ( ! is_null($this->getHostConfiguration())) {
-                $childModule->setHostConfiguration($this->getHostConfiguration());
+            if ( ! is_null($this->getPlatform())) {
+                $childModule->setPlatform($this->getPlatform());
             }
 
             $this->addChild($childModule);

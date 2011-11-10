@@ -8,18 +8,18 @@
 /**
  * HostConfigurationInterface
  *
- * An Nethgui_Core_HostConfigurationInterface implementing object allows
+ * An Nethgui_System_PlatformInterface implementing object allows
  * access to configuration databases and event signaling.
  *
  *
  * @package Core
  */
-interface Nethgui_Core_HostConfigurationInterface
+interface Nethgui_System_PlatformInterface
 {
 
     /**
      * @var string
-     * @return Nethgui_Core_ConfigurationDatabase
+     * @return Nethgui_System_ConfigurationDatabase
      */
     public function getDatabase($database);
 
@@ -86,7 +86,7 @@ interface Nethgui_Core_HostConfigurationInterface
      * 
      * @param string $event
      * @param array $argv Optional event arguments
-     * @param Nethgui_Core_EventObserverInterface $observer Optional
+     * @param Nethgui_System_EventObserverInterface $observer Optional
      */
     public function signalEventFinally($eventName, $argv = array(), $observer = NULL);
 

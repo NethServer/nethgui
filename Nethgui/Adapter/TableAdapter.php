@@ -14,7 +14,7 @@ class Nethgui_Adapter_TableAdapter implements Nethgui_Adapter_AdapterInterface, 
 
     /**
      *
-     * @var Nethgui_Core_ConfigurationDatabase
+     * @var Nethgui_System_ConfigurationDatabase
      */
     private $database;
     private $type;
@@ -37,7 +37,7 @@ class Nethgui_Adapter_TableAdapter implements Nethgui_Adapter_AdapterInterface, 
     * @filter mixed Can be a string or an associative array. When using a string, filter is a fulltext search on db keys, otherwise it's an array in the form ('prop1'=>'val1',...,'propN'=>'valN') where valN it's a regexp. In this case, the adapter will return only rows where all props match all associated regexp.
     *
     **/
-    public function __construct(Nethgui_Core_ConfigurationDatabase $db, $type, $filter = FALSE)
+    public function __construct(Nethgui_System_ConfigurationDatabase $db, $type, $filter = FALSE)
     {
         $this->database = $db;
         $this->type = $type;

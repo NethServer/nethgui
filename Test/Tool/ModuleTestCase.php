@@ -16,8 +16,8 @@ abstract class Test_Tool_ModuleTestCase extends PHPUnit_Framework_TestCase
 
     protected function runModuleTest(Nethgui_Core_ModuleInterface $module, Test_Tool_ModuleTestEnvironment $env)
     {
-        $hostConfiguration = $this->createHostConfigurationMock($env);
-        $module->setHostConfiguration($hostConfiguration);
+        $platform = $this->createHostConfigurationMock($env);
+        $module->setPlatform($platform);
         $module->initialize();
 
         if ($module instanceof Nethgui_Core_RequestHandlerInterface) {
@@ -31,7 +31,7 @@ abstract class Test_Tool_ModuleTestCase extends PHPUnit_Framework_TestCase
         $view = $this->createViewMock($module, $env);
         $module->prepareView($view, $env->getViewMode());
 
-        $hostConfiguration->signalFinalEvents();
+        $platform->signalFinalEvents();
 
         foreach ($env->getView() as $key => $value) {
             $this->assertEquals($value, $view[$key], "View parameter `{$key}`.");
@@ -46,7 +46,7 @@ abstract class Test_Tool_ModuleTestCase extends PHPUnit_Framework_TestCase
 
     protected function createHostConfigurationMock(Test_Tool_ModuleTestEnvironment $env)
     {
-        $configurationMock = $this->getMockBuilder('Nethgui_Core_HostConfiguration')
+        $configurationMock = $this->getMockBuilder('Nethgui_System_NethPlatform')
             ->disableOriginalConstructor()
             ->setMethods(array('getDatabase', 'signalEvent', 'exec'))
             ->getMock()
@@ -65,11 +65,11 @@ abstract class Test_Tool_ModuleTestCase extends PHPUnit_Framework_TestCase
             'getType' => FALSE,
         );
 
-        $hostConfigurationStub = new Test_Tool_MockState();
+        $platformStub = new Test_Tool_MockState();
 
         foreach ($env->getDatabaseNames() as $database) {
             $dbStub = $env->getDatabase($database);
-            $dbMock = $this->getMockBuilder('Nethgui_Core_ConfigurationDatabase')
+            $dbMock = $this->getMockBuilder('Nethgui_System_ConfigurationDatabase')
                 ->disableOriginalConstructor()
                 ->setMethods(array_keys($databaseMethods))
                 ->getMock();
@@ -87,7 +87,7 @@ abstract class Test_Tool_ModuleTestCase extends PHPUnit_Framework_TestCase
                     ->will($methodStub);
             }
 
-            $hostConfigurationStub->set(array('getDatabase', array($database)), $dbMock);
+            $platformStub->set(array('getDatabase', array($database)), $dbMock);
         }
 
 
@@ -98,16 +98,16 @@ abstract class Test_Tool_ModuleTestCase extends PHPUnit_Framework_TestCase
 
             $systemCommandMockForSignalEvent = $this->getMock('Nethgui_System_ProcessInterface', array('getOutput', 'getExitStatus', 'getOutputArray', 'isExecuted', 'exec', 'addArgument'));
 
-            $hostConfigurationStub->set(array('signalEvent', array($eventExp[0], $eventExp[1])), $systemCommandMockForSignalEvent);
+            $platformStub->set(array('signalEvent', array($eventExp[0], $eventExp[1])), $systemCommandMockForSignalEvent);
         }
 
         $configurationMock->expects($this->any())
             ->method('getDatabase')
-            ->will($this->returnMockObject($hostConfigurationStub));
+            ->will($this->returnMockObject($platformStub));
 
         $configurationMock->expects($this->exactly(count($env->getEvents())))
             ->method('signalEvent')
-            ->will($this->returnMockObject($hostConfigurationStub));
+            ->will($this->returnMockObject($platformStub));
 
         $systemCommandMock = $this->getMock('Nethgui_System_ProcessInterface', array('getOutput', 'getExitStatus', 'getOutputArray', 'isExecuted', 'exec', 'addArgument'));
         $configurationMock->expects($this->any())

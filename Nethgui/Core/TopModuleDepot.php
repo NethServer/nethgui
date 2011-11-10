@@ -38,16 +38,16 @@ class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Ne
     /**
      * @var HostConfigurationInterface
      */
-    private $hostConfiguration;
+    private $platform;
 
     /*
      * Absolute directory path where the module class files are located
      */
     private $applicationPath;
     
-    public function __construct($applicationPath, Nethgui_Core_HostConfigurationInterface $hostConfiguration, Nethgui_Core_UserInterface $user)
+    public function __construct($applicationPath, Nethgui_System_PlatformInterface $platform, Nethgui_Core_UserInterface $user)
     {
-        $this->hostConfiguration = $hostConfiguration;
+        $this->platform = $platform;
         $this->user = $user;
         $this->applicationPath = realpath($applicationPath);
         $this->createTopModules();        
@@ -101,7 +101,7 @@ class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Ne
             throw new Exception("Each module must provide an unique identifier.");
         }
 
-        $module->setHostConfiguration($this->hostConfiguration);
+        $module->setPlatform($this->platform);
 
         if(ENVIRONMENT == 'development') {
             Nethgui_Framework::getInstance()->logMessage("Created `" . $module->getIdentifier() . "`, as `{$className}` instance.", 'debug');

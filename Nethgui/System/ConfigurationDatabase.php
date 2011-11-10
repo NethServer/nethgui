@@ -22,7 +22,7 @@
  * 
  * 
  */
-class Nethgui_Core_ConfigurationDatabase implements Nethgui_Authorization_PolicyEnforcementPointInterface
+class Nethgui_System_ConfigurationDatabase implements Nethgui_Authorization_PolicyEnforcementPointInterface
 {
 
     /**

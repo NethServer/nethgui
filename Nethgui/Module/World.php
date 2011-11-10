@@ -44,7 +44,7 @@ class Nethgui_Module_World extends Nethgui_Core_Module_Abstract
             }
 
             //read css from db
-            $db = $this->getHostConfiguration()->getDatabase('configuration');
+            $db = $this->getPlatform()->getDatabase('configuration');
             $customCss = NETHGUI_CUSTOMCSS !== FALSE ? strval(NETHGUI_CUSTOMCSS) : $db->getProp('httpd-admin','css');
             $view['css']['1theme'] = $F->baseUrl() .  ($customCss ? sprintf('css/%s.css', $customCss) : 'css/default.css');
             $view['company'] = $db->getProp('ldap','defaultCompany');

@@ -33,7 +33,7 @@ interface Nethgui_Core_ModuleInterface
     /**
      * Sets the host configuration Model.
      */
-    public function setHostConfiguration(Nethgui_Core_HostConfigurationInterface $hostConfiguration);
+    public function setPlatform(Nethgui_System_PlatformInterface $platform);
 
     /**
      * The Module Identifier is a string that univocally identifies a Module.

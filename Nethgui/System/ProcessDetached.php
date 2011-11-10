@@ -7,7 +7,7 @@
 /**
  * Internal class for exec() return value
  *
- * @see Nethgui_Core_HostConfiguration::exec()
+ * @see Nethgui_System_NethPlatform::exec()
  * @ignore
  * @package System
  */

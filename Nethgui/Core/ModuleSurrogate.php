@@ -75,7 +75,7 @@ class Nethgui_Core_ModuleSurrogate implements Nethgui_Core_ModuleInterface, Neth
         throw new Exception('Not implemented ' . __METHOD__);
     }
 
-    public function setHostConfiguration(Nethgui_Core_HostConfigurationInterface $hostConfiguration)
+    public function setPlatform(Nethgui_System_PlatformInterface $platform)
     {
         throw new Exception('Not implemented ' . __METHOD__);
     }

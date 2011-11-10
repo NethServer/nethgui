@@ -14,11 +14,11 @@ class Nethgui_Serializer_KeySerializer implements Nethgui_Serializer_SerializerI
     private $key;
     /**
      *
-     * @var Nethgui_Core_ConfigurationDatabase
+     * @var Nethgui_System_ConfigurationDatabase
      */
     private $database;
 
-    public function __construct(Nethgui_Core_ConfigurationDatabase $database, $key)
+    public function __construct(Nethgui_System_ConfigurationDatabase $database, $key)
     {
         $this->database = $database;
         $this->key = $key;

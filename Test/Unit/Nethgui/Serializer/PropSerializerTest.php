@@ -21,7 +21,7 @@ class Nethgui_Serializer_PropSerializerTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->database = $this->getMockBuilder('Nethgui_Core_ConfigurationDatabase')
+        $this->database = $this->getMockBuilder('Nethgui_System_ConfigurationDatabase')
                 ->disableOriginalConstructor()
                 ->getMock();
 

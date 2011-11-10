@@ -27,9 +27,9 @@ abstract class Nethgui_Core_Module_Abstract implements Nethgui_Core_ModuleInterf
     private $initialized = FALSE;
 
     /**
-     * @var Nethgui_Core_HostConfigurationInterface
+     * @var Nethgui_System_PlatformInterface
      */
-    private $hostConfiguration;
+    private $platform;
 
     /**
      * Template applied to view, if different from NULL
@@ -49,17 +49,17 @@ abstract class Nethgui_Core_Module_Abstract implements Nethgui_Core_ModuleInterf
         }
     }
 
-    public function setHostConfiguration(Nethgui_Core_HostConfigurationInterface $hostConfiguration)
+    public function setPlatform(Nethgui_System_PlatformInterface $platform)
     {
-        $this->hostConfiguration = $hostConfiguration;
+        $this->platform = $platform;
     }
 
     /**
-     * @return Nethgui_Core_HostConfigurationInterface
+     * @return Nethgui_System_PlatformInterface
      */
-    protected function getHostConfiguration()
+    protected function getPlatform()
     {
-        return $this->hostConfiguration;
+        return $this->platform;
     }
 
     /**

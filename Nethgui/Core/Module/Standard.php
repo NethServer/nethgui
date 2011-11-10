@@ -13,7 +13,7 @@
  * @package Core
  * @subpackage Module
  */
-abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract implements Nethgui_Core_RequestHandlerInterface, Nethgui_Core_EventObserverInterface
+abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract implements Nethgui_Core_RequestHandlerInterface, Nethgui_System_EventObserverInterface
 {
     /**
      * A valid service status is a 'disabled' or 'enabled' string.
@@ -195,8 +195,8 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
      * Host Configuration link is available after initialization only: don't
      * call in class constructor in this case!
      *
-     * @see Nethgui_Core_HostConfigurationInterface::getIdentityAdapter()
-     * @see Nethgui_Core_HostConfigurationInterface::getMapAdapter()
+     * @see Nethgui_System_PlatformInterface::getIdentityAdapter()
+     * @see Nethgui_System_PlatformInterface::getMapAdapter()
      *
      * @param string $parameterName The name of the parameter
      * @param mixed $validator Optional - A regular expression catching the correct value format OR An constant-integer corresponding to a predefined validator OR boolean FALSE for a readonly parameter
@@ -221,7 +221,7 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
 
         if (is_callable($valueProvider)) {
             // Create a read-only Map Adapter using $valueProvider as read-callback
-            $this->parameters->register($this->getHostConfiguration()->getMapAdapter($valueProvider, NULL, array()), $parameterName);
+            $this->parameters->register($this->getPlatform()->getMapAdapter($valueProvider, NULL, array()), $parameterName);
         } elseif ($valueProvider instanceof Nethgui_Adapter_AdapterInterface) {
             $this->parameters->register($valueProvider, $parameterName);
         } elseif (is_array($valueProvider)) {
@@ -242,7 +242,7 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
      * @see signalAllEventsFinally()
      * @param string $eventName
      * @param array $eventArgs Arguments to the event. You can pass a callback function as argument provider. The callback will be invoked with the event name as first argument.
-     * @param Nethgui_Core_EventObserverInterface $observer Optional
+     * @param Nethgui_System_EventObserverInterface $observer Optional
      */
     protected function requireEvent($eventName, $eventArgs = array(), $observer = NULL)
     {
@@ -278,7 +278,7 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
      * This method receives the same arguments given to notifyEventCompletion()
      * and should return the action definitions to display a dialog box.
      *
-     * @see Nethgui_Core_EventObserverInterface::notifyEventCompletion
+     * @see Nethgui_System_EventObserverInterface::notifyEventCompletion
      * @see Nethgui_Core_DialogBox
      * @param string $eventName
      * @param array $args
@@ -302,7 +302,7 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
     protected function signalAllEventsFinally()
     {
         while ($eventCall = array_shift($this->requiredEvents)) {
-            $this->getHostConfiguration()->signalEventFinally($eventCall[0], $eventCall[1], $eventCall[2]);
+            $this->getPlatform()->signalEventFinally($eventCall[0], $eventCall[1], $eventCall[2]);
         }
     }
 
@@ -412,7 +412,7 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
                 $args = array($args);
             }
 
-            $adapterObject = $this->getHostConfiguration()->getMapAdapter(
+            $adapterObject = $this->getPlatform()->getMapAdapter(
                 array($this, $readerCallback), array($this, $writerCallback), $args
             );
         } elseif (isset($args[0], $args[1])) {
@@ -422,7 +422,7 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
             $prop = isset($args[2]) ? (string) $args[2] : NULL;
             $separator = isset($args[3]) ? (string) $args[3] : NULL;
 
-            $adapterObject = $this->getHostConfiguration()->getIdentityAdapter($database, $key, $prop, $separator);
+            $adapterObject = $this->getPlatform()->getIdentityAdapter($database, $key, $prop, $separator);
         }
 
         if (is_null($adapterObject)) {

@@ -69,7 +69,7 @@ class Nethgui_Module_TableController extends Nethgui_Core_Module_Controller
          * Create the table adapter object and assign it to every children, if
          * it has not been done before.
          */
-        $tableAdapter = call_user_func_array(array($this->getHostConfiguration(), 'getTableAdapter'), $this->tableAdapterArguments);
+        $tableAdapter = call_user_func_array(array($this->getPlatform(), 'getTableAdapter'), $this->tableAdapterArguments);
         foreach ($this->getChildren() as $action) {
             if ($action instanceof Nethgui_Module_Table_Action
                 && ! $action->hasTableAdapter())

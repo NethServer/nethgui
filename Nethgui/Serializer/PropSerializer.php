@@ -15,11 +15,11 @@ class Nethgui_Serializer_PropSerializer implements Nethgui_Serializer_Serializer
 
     /**
      *
-     * @var Nethgui_Core_ConfigurationDatabase
+     * @var Nethgui_System_ConfigurationDatabase
      */
     private $database;
 
-    public function __construct(Nethgui_Core_ConfigurationDatabase $database, $key, $prop)
+    public function __construct(Nethgui_System_ConfigurationDatabase $database, $key, $prop)
     {
         $this->database = $database;
         $this->key = $key;
