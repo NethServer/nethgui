@@ -33,21 +33,21 @@ class Nethgui_Widget_Xhtml_Button extends Nethgui_Widget_Xhtml
         $attributes = array();
         $cssClass = 'Button';
 
-        if ($flags & (Nethgui_Renderer_Abstract::BUTTON_LINK | Nethgui_Renderer_Abstract::BUTTON_CANCEL | Nethgui_Renderer_Abstract::BUTTON_HELP)) {
+        if ($flags & (Nethgui_Renderer_WidgetFactoryInterface::BUTTON_LINK | Nethgui_Renderer_WidgetFactoryInterface::BUTTON_CANCEL | Nethgui_Renderer_WidgetFactoryInterface::BUTTON_HELP)) {
 
             $value = $this->getAttribute('value', isset($this->view[$name]) ? $this->view[$name] : NULL);
 
             if (is_null($value)) {
-                if ($flags & Nethgui_Renderer_Abstract::BUTTON_LINK) {
+                if ($flags & Nethgui_Renderer_WidgetFactoryInterface::BUTTON_LINK) {
                     $value = $name;
-                } elseif ($flags & Nethgui_Renderer_Abstract::BUTTON_CANCEL) {
+                } elseif ($flags & Nethgui_Renderer_WidgetFactoryInterface::BUTTON_CANCEL) {
                     $value = '..';
                 }
             }
 
-            if ($flags & Nethgui_Renderer_Abstract::BUTTON_CANCEL) {
+            if ($flags & Nethgui_Renderer_WidgetFactoryInterface::BUTTON_CANCEL) {
                 $cssClass .= ' cancel';
-            } elseif ($flags & Nethgui_Renderer_Abstract::BUTTON_HELP) {
+            } elseif ($flags & Nethgui_Renderer_WidgetFactoryInterface::BUTTON_HELP) {
                 // Pick the root module identifier:
                 $value = '/Help/Read/' . array_shift($this->view->getModulePath()) . '.html#HelpArea';
                 $cssClass .= ' Help';
@@ -63,18 +63,18 @@ class Nethgui_Widget_Xhtml_Button extends Nethgui_Widget_Xhtml
             $content .= $this->view->translate($label);
             $content .= $this->closeTag('a');
         } else {
-            if ($flags & Nethgui_Renderer_Abstract::BUTTON_SUBMIT) {
+            if ($flags & Nethgui_Renderer_WidgetFactoryInterface::BUTTON_SUBMIT) {
                 $attributes['type'] = 'submit';
                 $cssClass .= ' submit';
                 $attributes['id'] = FALSE;
                 $attributes['name'] = FALSE;
-            } elseif ($flags & Nethgui_Renderer_Abstract::BUTTON_RESET) {
+            } elseif ($flags & Nethgui_Renderer_WidgetFactoryInterface::BUTTON_RESET) {
                 $attributes['type'] = 'reset';
                 $cssClass .= ' reset';
-            } elseif ($flags & Nethgui_Renderer_Abstract::BUTTON_CUSTOM) {
+            } elseif ($flags & Nethgui_Renderer_WidgetFactoryInterface::BUTTON_CUSTOM) {
                 $attributes['type'] = 'button';
                 $cssClass .= ' custom';
-            } elseif ($flags & Nethgui_Renderer_Abstract::BUTTON_DROPDOWN) {
+            } elseif ($flags & Nethgui_Renderer_WidgetFactoryInterface::BUTTON_DROPDOWN) {
                 $attributes['type'] = 'button';
                 $attributes['name'] = FALSE;
                 $attributes['id'] = FALSE;

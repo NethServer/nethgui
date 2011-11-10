@@ -58,20 +58,20 @@ abstract class Nethgui_Widget_Xhtml extends Nethgui_Widget_Abstract
         $wrapperClass = 'labeled-control';
         $content = '';
 
-        if ($flags & Nethgui_Renderer_Abstract::LABEL_NONE) {
+        if ($flags & Nethgui_Renderer_WidgetFactoryInterface::LABEL_NONE) {
             $content .= $this->controlTag($tag, $name, $flags, $cssClass, $attributes, $tagContent);
         } else {
 
-            if ($flags & Nethgui_Renderer_Abstract::LABEL_RIGHT) {
+            if ($flags & Nethgui_Renderer_WidgetFactoryInterface::LABEL_RIGHT) {
                 $wrapperClass .= ' label-right';
                 $content .= $this->openTag('div', array('class' => $wrapperClass));
                 $content .= $this->controlTag($tag, $name, $flags, $cssClass, $attributes, $tagContent);
                 $content .= $this->label($label, $controlId);
                 $content .= $this->closeTag('div');
             } else {
-                if ($flags & Nethgui_Renderer_Abstract::LABEL_ABOVE) {
+                if ($flags & Nethgui_Renderer_WidgetFactoryInterface::LABEL_ABOVE) {
                     $wrapperClass .= ' label-above';
-                } elseif ($flags & Nethgui_Renderer_Abstract::LABEL_LEFT) {
+                } elseif ($flags & Nethgui_Renderer_WidgetFactoryInterface::LABEL_LEFT) {
                     $wrapperClass .= ' label-left';
                 }
                 $content .= $this->openTag('div', array('class' => $wrapperClass));
@@ -110,10 +110,10 @@ abstract class Nethgui_Widget_Xhtml extends Nethgui_Widget_Abstract
 
         $isCheckable = ($tag == 'input') && isset($attributes['type']) && ($attributes['type'] == 'checkbox' || $attributes['type'] == 'radio');
 
-        if ($flags & Nethgui_Renderer_Abstract::STATE_CHECKED && $isCheckable) {
+        if ($flags & Nethgui_Renderer_WidgetFactoryInterface::STATE_CHECKED && $isCheckable) {
             $attributes['checked'] = 'checked';
         }
-        if ($flags & Nethgui_Renderer_Abstract::STATE_READONLY) {
+        if ($flags & Nethgui_Renderer_WidgetFactoryInterface::STATE_READONLY) {
             if ($isCheckable) {
                 // `readonly` attribute is not appliable to checkable controls
                 $attributes['disabled'] = 'disabled';
@@ -129,11 +129,11 @@ abstract class Nethgui_Widget_Xhtml extends Nethgui_Widget_Abstract
         }
 
         if (in_array($tag, array('input', 'button', 'textarea', 'select', 'optgroup', 'option'))) {
-            if ($flags & Nethgui_Renderer_Abstract::STATE_DISABLED) {
+            if ($flags & Nethgui_Renderer_WidgetFactoryInterface::STATE_DISABLED) {
                 $attributes['disabled'] = 'disabled';
             }
 
-            if ($flags & Nethgui_Renderer_Abstract::STATE_VALIDATION_ERROR) {
+            if ($flags & Nethgui_Renderer_WidgetFactoryInterface::STATE_VALIDATION_ERROR) {
                 $cssClass .= ' validation-error ui-state-error';
             }
         }
@@ -157,7 +157,7 @@ abstract class Nethgui_Widget_Xhtml extends Nethgui_Widget_Abstract
 
     protected function applyDefaultLabelAlignment($flags, $default)
     {
-        return (Nethgui_Renderer_Abstract::LABEL_NONE | Nethgui_Renderer_Abstract::LABEL_ABOVE | Nethgui_Renderer_Abstract::LABEL_LEFT | Nethgui_Renderer_Abstract::LABEL_RIGHT) & $flags ? $flags : $flags | $default;
+        return (Nethgui_Renderer_WidgetFactoryInterface::LABEL_NONE | Nethgui_Renderer_WidgetFactoryInterface::LABEL_ABOVE | Nethgui_Renderer_WidgetFactoryInterface::LABEL_LEFT | Nethgui_Renderer_WidgetFactoryInterface::LABEL_RIGHT) & $flags ? $flags : $flags | $default;
     }
 
     /**

@@ -131,19 +131,19 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Renderer_Abstract implements Nethgu
 
         $className = 'dialog';
 
-        if ($flags & Nethgui_Renderer_Abstract::DIALOG_SUCCESS) {
+        if ($flags & Nethgui_Renderer_WidgetFactoryInterface::DIALOG_SUCCESS) {
             $className .= ' success';
-        } elseif ($flags & Nethgui_Renderer_Abstract::DIALOG_WARNING) {
+        } elseif ($flags & Nethgui_Renderer_WidgetFactoryInterface::DIALOG_WARNING) {
             $className .= ' warning';
-        } elseif ($flags & Nethgui_Renderer_Abstract::DIALOG_ERROR) {
+        } elseif ($flags & Nethgui_Renderer_WidgetFactoryInterface::DIALOG_ERROR) {
             $className .= ' error';
         }
 
-        if ($flags & Nethgui_Renderer_Abstract::DIALOG_MODAL) {
+        if ($flags & Nethgui_Renderer_WidgetFactoryInterface::DIALOG_MODAL) {
             $className .= ' modal';
         }
 
-        if ($flags & Nethgui_Renderer_Abstract::STATE_DISABLED) {
+        if ($flags & Nethgui_Renderer_WidgetFactoryInterface::STATE_DISABLED) {
             $className .= ' disabled';
         }
 

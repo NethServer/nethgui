@@ -74,10 +74,10 @@ class Nethgui_Module_Table_Read extends Nethgui_Module_Table_Action
             $action = $tableAction->getIdentifier();
 
             if ($tableAction instanceof Nethgui_Module_Table_Help) {
-                $button = $view->button('Help', Nethgui_Renderer_Abstract::BUTTON_HELP);
+                $button = $view->button('Help', Nethgui_Renderer_WidgetFactoryInterface::BUTTON_HELP);
             } else {
                 $button = $view
-                    ->button($action, Nethgui_Renderer_Abstract::BUTTON_LINK)
+                    ->button($action, Nethgui_Renderer_WidgetFactoryInterface::BUTTON_LINK)
                     ->setAttribute('value', array($action, '#' . $view->getUniqueId($action)));
             }
 
@@ -163,12 +163,12 @@ class Nethgui_Module_Table_Read extends Nethgui_Module_Table_Action
 
     public function renderColumnActions(Nethgui_Renderer_Abstract $view)
     {
-        $elementList = $view->elementList(Nethgui_Renderer_Abstract::BUTTONSET)
+        $elementList = $view->elementList(Nethgui_Renderer_WidgetFactoryInterface::BUTTONSET)
             ->setAttribute('maxElements', 1);
 
         foreach ($view as $actionId => $actionInfo) {
             $button = $view
-                ->button($actionId, Nethgui_Renderer_Abstract::BUTTON_LINK)
+                ->button($actionId, Nethgui_Renderer_WidgetFactoryInterface::BUTTON_LINK)
                 ->setAttribute('value', $actionInfo[1]);
             $elementList->insert($button);
         }

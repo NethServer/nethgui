@@ -24,7 +24,7 @@ class Nethgui_Widget_Xhtml_ProgressBar extends Nethgui_Widget_Xhtml
 
         $cssClass = 'Progressbar';
 
-        if ($flags & Nethgui_Renderer_Abstract::STATE_DISABLED) {
+        if ($flags & Nethgui_Renderer_WidgetFactoryInterface::STATE_DISABLED) {
             $cssClass .= ' disabled';
         }
 

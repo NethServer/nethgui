@@ -33,15 +33,15 @@ class Nethgui_Widget_Xhtml_TextInput extends Nethgui_Widget_Xhtml
         
         $attributes = array(
             'value' => strval($this->view[$name]),
-            'type' => ($flags & Nethgui_Renderer_Abstract::TEXTINPUT_PASSWORD) ? 'password' : 'text',
+            'type' => ($flags & Nethgui_Renderer_WidgetFactoryInterface::TEXTINPUT_PASSWORD) ? 'password' : 'text',
             'placeholder' => $this->getAttribute('placeholder',false),
         );
 
-        $flags = $this->applyDefaultLabelAlignment($flags, Nethgui_Renderer_Abstract::LABEL_ABOVE);
+        $flags = $this->applyDefaultLabelAlignment($flags, Nethgui_Renderer_WidgetFactoryInterface::LABEL_ABOVE);
 
         // Check if $name is in the list of invalid parameters.
         if (isset($this->view['__invalidParameters']) && in_array($name, $this->view['__invalidParameters'])) {
-            $flags |= Nethgui_Renderer_Abstract::STATE_VALIDATION_ERROR;
+            $flags |= Nethgui_Renderer_WidgetFactoryInterface::STATE_VALIDATION_ERROR;
         }
 
         $content .= $this->labeledControlTag($label, 'input', $name, $flags, $cssClass, $attributes);

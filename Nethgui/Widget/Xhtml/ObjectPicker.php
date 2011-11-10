@@ -70,10 +70,10 @@ class Nethgui_Widget_Xhtml_ObjectPicker extends Nethgui_Widget_Xhtml
         $childFlags = $child->getAttribute('flags', 0);
 
         // Mask LABEL_* flags:
-        $childFlags &= ~ (Nethgui_Renderer_Abstract::LABEL_ABOVE | Nethgui_Renderer_Abstract::LABEL_RIGHT | Nethgui_Renderer_Abstract::LABEL_LEFT);
+        $childFlags &= ~ (Nethgui_Renderer_WidgetFactoryInterface::LABEL_ABOVE | Nethgui_Renderer_WidgetFactoryInterface::LABEL_RIGHT | Nethgui_Renderer_WidgetFactoryInterface::LABEL_LEFT);
 
         // Force to STATE_DISABLED & LABEL_RIGHT
-        $childFlags |= Nethgui_Renderer_Abstract::LABEL_RIGHT | Nethgui_Renderer_Abstract::STATE_DISABLED;
+        $childFlags |= Nethgui_Renderer_WidgetFactoryInterface::LABEL_RIGHT | Nethgui_Renderer_WidgetFactoryInterface::STATE_DISABLED;
 
         // Fix the flags:
         $child->setAttribute('flags', $childFlags);
@@ -172,12 +172,12 @@ class Nethgui_Widget_Xhtml_ObjectPicker extends Nethgui_Widget_Xhtml
             $childFlags = $child->getAttribute('flags', 0);
 
             // Mask STATE_DISABLED
-            $childFlags &= ~Nethgui_Renderer_Abstract::STATE_DISABLED;
+            $childFlags &= ~Nethgui_Renderer_WidgetFactoryInterface::STATE_DISABLED;
 
             if (in_array($object[$this->metadata['value']], $this->values[$child->getAttribute('name')])) {
-                $childFlags |= Nethgui_Renderer_Abstract::STATE_CHECKED;
+                $childFlags |= Nethgui_Renderer_WidgetFactoryInterface::STATE_CHECKED;
             } else {
-                $childFlags &= ~Nethgui_Renderer_Abstract::STATE_CHECKED;
+                $childFlags &= ~Nethgui_Renderer_WidgetFactoryInterface::STATE_CHECKED;
             }
 
             $childClone->setAttribute('flags', $childFlags);

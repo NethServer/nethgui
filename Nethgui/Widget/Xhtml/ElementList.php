@@ -29,7 +29,7 @@ class Nethgui_Widget_Xhtml_ElementList extends Nethgui_Widget_Xhtml
 
         $this->childWrapTag = $wrap[1];
 
-        //if ($flags & Nethgui_Renderer_Abstract::STATE_DISABLED) {
+        //if ($flags & Nethgui_Renderer_WidgetFactoryInterface::STATE_DISABLED) {
         //    $cssClass .= ' disabled';
         //}
 

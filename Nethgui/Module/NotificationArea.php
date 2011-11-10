@@ -125,7 +125,7 @@ class Nethgui_Module_NotificationArea extends Nethgui_Core_Module_Standard imple
 
     public function renderValidationError(Nethgui_Renderer_Abstract $view)
     {
-        return $view->button($view['fieldName'], Nethgui_Renderer_Abstract::BUTTON_LINK)
+        return $view->button($view['fieldName'], Nethgui_Renderer_WidgetFactoryInterface::BUTTON_LINK)
                 ->setAttribute('value', '#' . $view['fieldId'])
                 ->setAttribute('title', str_replace("\n", " ", $view['errorInfo']));
     }
@@ -200,14 +200,14 @@ class Nethgui_Module_NotificationArea extends Nethgui_Core_Module_Standard imple
     {
         if ($view['transient'] && count($view['data']) == 0) {
             // render as link
-            $widget = $view->button($view['name'], Nethgui_Renderer_Abstract::BUTTON_LINK)->setAttribute('value', $view['location']);
+            $widget = $view->button($view['name'], Nethgui_Renderer_WidgetFactoryInterface::BUTTON_LINK)->setAttribute('value', $view['location']);
         } else {
             // render as form
             $widget = $view->form()
                 ->setAttribute('action', $view['location'])
                 ->setAttribute('name', 'NotificationDialogAction_' . $view['name'])
                 ->insert($view->hidden('data'))
-                ->insert($view->button($view['name'], Nethgui_Renderer_Abstract::BUTTON_SUBMIT));
+                ->insert($view->button($view['name'], Nethgui_Renderer_WidgetFactoryInterface::BUTTON_SUBMIT));
         }
 
         return $widget;

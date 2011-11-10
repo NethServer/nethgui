@@ -26,14 +26,14 @@ class Nethgui_Widget_Xhtml_CheckBox extends Nethgui_Widget_Xhtml
         $label = $this->getAttribute('label', $name . '_label');
         $content = '';
 
-        $flags = $this->applyDefaultLabelAlignment($flags, Nethgui_Renderer_Abstract::LABEL_RIGHT);
+        $flags = $this->applyDefaultLabelAlignment($flags, Nethgui_Renderer_WidgetFactoryInterface::LABEL_RIGHT);
 
         $attributes = array(
             'type' => 'checkbox',
             'value' => $value,
         );
 
-        if ($value === $this->view[$name] || $flags & Nethgui_Renderer_Abstract::STATE_CHECKED) {
+        if ($value === $this->view[$name] || $flags & Nethgui_Renderer_WidgetFactoryInterface::STATE_CHECKED) {
             $attributes['checked'] = 'checked';
         }
        

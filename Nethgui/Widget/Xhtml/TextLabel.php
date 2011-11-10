@@ -43,7 +43,7 @@ class Nethgui_Widget_Xhtml_TextLabel extends Nethgui_Widget_Xhtml
         }
 
 
-        if ($flags & Nethgui_Renderer_Abstract::STATE_DISABLED) {
+        if ($flags & Nethgui_Renderer_WidgetFactoryInterface::STATE_DISABLED) {
             $cssClass .= ' disabled';
             $stateDisabled = TRUE;
         } else {
