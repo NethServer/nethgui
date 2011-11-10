@@ -9,7 +9,7 @@
  * Abstract Widget class
  * @ignore
  */
-class Nethgui_Widget_Abstract implements Nethgui_Renderer_WidgetInterface
+abstract class Nethgui_Widget_Abstract implements Nethgui_Renderer_WidgetInterface
 {
 
     static private $instance = 0;
@@ -104,70 +104,6 @@ class Nethgui_Widget_Abstract implements Nethgui_Renderer_WidgetInterface
             Nethgui_Framework::getInstance()->logMessage('EXCEPTION ' . $ex->getMessage() . " Trace: " . strtr($ex->getTraceAsString(), "\n", " "));
             throw $ex;
         }
-    }
-
-    /**
-     * Get an XHTML opening tag string
-     *
-     * @param string $tag The tag name (DIV, P, FORM...)
-     * @param array $attributes The HTML attributes (id, name, for...)
-     * @param string $content Raw content string
-     * @return string
-     */
-    protected function openTag($tag, $attributes = array())
-    {
-        $tag = strtolower($tag);
-        $attributeString = $this->prepareXhtmlAttributes($attributes);
-        return sprintf('<%s%s>', $tag, $attributeString);
-    }
-
-    /**
-     * Get an XHTML self-closing tag string
-     *
-     * @see openTag()
-     * @param string $tag
-     * @param array $attributes
-     * @return string
-     */
-    protected function selfClosingTag($tag, $attributes)
-    {
-        $tag = strtolower($tag);
-        return sprintf('<%s%s />', $tag, $this->prepareXhtmlAttributes($attributes));
-    }
-
-    /**
-     * Get an XHTML closing tag string
-     *
-     * @param string $tag Tag to be closed.
-     * @return string
-     */
-    protected function closeTag($tag)
-    {
-        return sprintf('</%s>', strtolower($tag));
-    }
-
-    /**
-     * Convert an hash to a string of HTML tag attributes.
-     *
-     * - htmlspecialchars() is applied to all attribute values.
-     * - A FALSE value ensures the attribute is not set.
-     *
-     * @see htmlspecialchars()
-     * @param array $attributes
-     * @return string
-     */
-    private function prepareXhtmlAttributes($attributes)
-    {
-        $content = '';
-
-        foreach ($attributes as $attribute => $value) {
-            if ($value === FALSE) {
-                continue;
-            }
-            $content .= $attribute . '="' . htmlspecialchars($value) . '" ';
-        }
-
-        return ' ' . trim($content);
     }
 
     /**

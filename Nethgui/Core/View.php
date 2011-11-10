@@ -129,57 +129,6 @@ class Nethgui_Core_View implements Nethgui_Core_ViewInterface
         unset($this->data[$offset]);
     }
 
-    /**
-     * Get the array of events to properly transfer the view on the client side.
-     * @return array
-     */
-    public function getClientEvents()
-    {
-        $events = array();
-
-        return $this->fillEvents($events);
-    }
-
-    private function fillEvents(&$events)
-    {
-        foreach ($this as $offset => $value) {
-
-            $eventTarget = $this->getClientEventTarget($offset);
-
-            if ($value instanceof self) {
-                $value->fillEvents($events);
-                continue;
-            } elseif ($value instanceof Traversable) {
-                $eventData = $this->traversableToArray($value);
-            } else {
-                $eventData = $value;
-            }
-
-            $events[] = array($eventTarget, $eventData);
-        }
-
-        return $events;
-    }
-
-    /**
-     * Convert a Traversable object to a PHP array
-     * @param Traversable $value
-     * @return array
-     */
-    private function traversableToArray(Traversable $value)
-    {
-        $a = array();
-        foreach ($value as $k => $v) {
-            if ($v instanceof Traversable) {
-                $v = $this->traversableToArray($v);
-//            } elseif (is_string($v)) {
-//                $v = htmlspecialchars($v);
-            }
-            $a[$k] = $v;
-        }
-        return $a;
-    }
-
     private function extractLanguageCatalogList(Nethgui_Core_ModuleInterface $module)
     {
         $languageCatalogList = array();
@@ -267,45 +216,5 @@ class Nethgui_Core_View implements Nethgui_Core_ViewInterface
 
         return substr(md5($this->getUniqueId($name)), 0, 8);
     }
-
-    public function getControlName($parts = '')
-    {
-        $nameSegments = $this->realPath($parts);
-        $prefix = array_shift($nameSegments); // the first segment is a special one
-        return $prefix . '[' . implode('][', $nameSegments) . ']';
-    }
-
-    private function realPath($name)
-    {
-        if (is_array($name)) {
-            // ensure the $name argument is a string in the form of ../segment1/../segment2/..
-            $name = implode('/', $name);
-        }
-
-        if (strlen($name) > 0 && $name[0] == '/') {
-            // if the first character is a / consider an absolute path
-            $nameSegments = array();
-        } else {
-            // else consider a path relative to the current module
-            $nameSegments = $this->getModulePath();
-        }
-
-        // split the path into its parts
-        $parts = explode('/', $name);
-
-        foreach ($parts as $part) {
-            if ($part == '') {
-                continue; // skip empty parts
-            } elseif ($part == '..') {
-                array_pop($nameSegments); // backreference
-            } else {
-                $nameSegments[] = $part; // add segment
-            }
-        }
-
-        return $nameSegments;
-    }
-
-
 
 }

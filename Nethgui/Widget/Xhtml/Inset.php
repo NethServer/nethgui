@@ -24,8 +24,8 @@ class Nethgui_Widget_Xhtml_Inset extends Nethgui_Widget_Xhtml
         $value = $this->view->offsetGet($name);
         $content = '';
 
-        if ($value instanceof Nethgui_Renderer_Abstract) {
-            $content = (String) $this->wrapView($value);
+        if ($value instanceof Nethgui_Core_ViewInterface) {
+            $content = (String) $this->wrapView(new Nethgui_Renderer_Xhtml($value, $flags));
         } else {
             $content = (String) $this->view->literal($value, $flags);
         }
@@ -33,12 +33,10 @@ class Nethgui_Widget_Xhtml_Inset extends Nethgui_Widget_Xhtml
         return $content;
     }
 
-    protected function wrapView(Nethgui_Renderer_Abstract $inset)
+    protected function wrapView(Nethgui_Renderer_Xhtml $inset)
     {
         $module = $inset->getModule();
-        $flags = $this->getAttribute('flags', 0);
 
-        $inset->setDefaultFlags($this->view->getDefaultFlags() | $flags);
         $content = (String) $inset;
         $contentWidget = $this->view->literal($content);
 

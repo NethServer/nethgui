@@ -87,9 +87,9 @@ class Nethgui_Widget_Xhtml_ObjectPicker extends Nethgui_Widget_Xhtml
 
         $content = '';
         $content .= $this->openTag('div', array('class' => 'ObjectPicker ' . implode(' ', $this->metadata['listenToEvents'])));
-        $content .= $this->selfClosingTag('input', array('name' => $this->view->getControlName('meta'), 'type' => 'hidden', 'disabled' => 'disabled', 'value' => json_encode($this->metadata), 'class' => 'metadata'));
+        $content .= $this->selfClosingTag('input', array('name' => $this->getControlName('meta'), 'type' => 'hidden', 'disabled' => 'disabled', 'value' => json_encode($this->metadata), 'class' => 'metadata'));
         foreach ($this->getChildren() as $child) {
-            $content .= $this->selfClosingTag('input', array('type' => 'hidden', 'value' => '', 'name' => $this->view->getControlName($child->getAttribute('name'))));
+            $content .= $this->selfClosingTag('input', array('type' => 'hidden', 'value' => '', 'name' => $this->getControlName($child->getAttribute('name'))));
         }
         $content .= $this->openTag('div', array('class' => 'schema'));
         $content .= $this->renderChildren();

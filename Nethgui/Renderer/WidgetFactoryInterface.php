@@ -1,0 +1,246 @@
+<?php
+/**
+ * @package Renderer
+ * @author Davide Principi <davide.principi@nethesis.it>
+ */
+
+
+/**
+ * Create Widget objects applying default widget flags
+ *
+ * The interface methods create and configure widget objects.
+ *
+ * @see Nethgui_Renderer_WidgetInterface
+ * @package Renderer
+ */
+interface Nethgui_Renderer_WidgetFactoryInterface
+{
+
+
+    /**
+     *
+     * @return integer
+     */
+    public function getDefaultFlags();
+
+    /**
+     * @return Nethgui_Renderer_WidgetFactoryInterface
+     */
+    public function setDefaultFlags($flags);
+
+    /**
+     * Include a view element that is a sub-view
+     * @param string $name The view member name
+     * @param integer $flags Optional {STATE_DISABLED}
+     * @return Nethgui_Renderer_WidgetInterface
+     */
+    public function inset($name, $flags = 0);
+
+    /**
+     * Create a text input control
+     * @param string $name The view member name
+     * @param integer $flags Optional {STATE_DISABLED}
+     * @return Nethgui_Renderer_WidgetInterface
+     */
+    public function textInput($name, $flags = 0);
+
+    /**
+     * Create a text label.
+     *
+     * @param string $name The view member name to generate the label contents
+     * @param integer $flags Optional {STATE_DISABLED}
+     * @return Nethgui_Renderer_WidgetInterface
+     */
+    public function textLabel($name, $flags = 0);
+
+    /**
+     * Create a fieldset container
+     *
+     * @see textLabel()
+     * @param string $name OPTIONAL - The view member passed as argument for the "template" attribute.
+     * @param integer $flags OPTIONAL - flags
+     * @return Nethgui_Renderer_WidgetInterface
+     */
+    public function fieldset($name = NULL, $flags = 0);
+
+    /**
+     * Create a text header control
+     *
+     * @see textLabel()
+     * @param string $name OPTIONAL - The view member passed as argument for the "template" attribute.
+     */
+    public function header($name = NULL, $flags = 0);
+
+    /**
+     * Create an hidden control
+     * @param string $name The view member name
+     * @param integer $flags Optional {STATE_DISABLED}
+     * @return Nethgui_Renderer_WidgetInterface
+     */
+    public function hidden($name, $flags = 0);
+
+    /**
+     * Create a selector control
+     *
+     * @param string $name The view member name holding the selected value(s)
+     * @param integer $flags
+     * @return Nethgui_Renderer_WidgetInterface
+     */
+    public function selector($name, $flags = 0);
+
+    /**
+     * Create a button control
+     * @param string $name The view member name
+     * @param integer $flags Optional - {DIALOG_*, STATE_ENABLED}
+     * @return Nethgui_Renderer_WidgetInterface
+     */
+    public function button($name, $flags = 0);
+
+    /**
+     * Create a radio button control
+     * @param string $name The view member name
+     * @param string $value The value assigned to the control, when selected.
+     * @param integer $flags Optional {STATE_DISABLED, STATE_CHECKED}
+     * @return Nethgui_Renderer_WidgetInterface
+     */
+    public function radioButton($name, $value, $flags = 0);
+
+    /**
+     * Create a checkbox control
+     * @param string $name The view member name
+     * @param string $value The value assigned to the control, when selected.
+     * @param integer $flags Optional {STATE_DISABLED, STATE_CHECKED}
+     * @return Nethgui_Renderer_WidgetInterface
+     */
+    public function checkBox($name, $value, $flags = 0);
+
+    /**
+     * Create a selectable fieldset container.
+     *
+     * @see checkbox()
+     * @param string $name
+     * @param string $value
+     * @param integer $flags
+     * @return Nethgui_Renderer_WidgetInterface
+     */
+    public function fieldsetSwitch($name, $value, $flags = 0);
+
+    /**
+     * Create a dialog box container.
+     *
+     * @param int $flags Render flags: {DIALOG_MODAL, DIALOG_EMBEDDED, STATE_DISABLED, DIALOG_SUCCESS, DIALOG_WARNING, DIALOG_ERROR}
+     * @return Nethgui_Renderer_WidgetInterface
+     */
+    public function dialog($name, $flags = 0);
+
+    /**
+     * Create a tabs container.
+     *
+     * @param integer $flags {STATE_DISABLED}
+     * @return Nethgui_Renderer_WidgetInterface
+     */
+    public function tabs($flags = 0);
+
+    /**
+     * Create a simple form container.
+     * @param integer $flags Optional - {STATE_DISABLED}
+     * @return Nethgui_Renderer_WidgetInterface
+     */
+    public function form($flags = 0);
+
+    /**
+     * Create a panel container
+     *
+     * @param integer $flags
+     * @return Nethgui_Renderer_WidgetInterface
+     */
+    public function panel($flags = 0);
+
+    /**
+     * Create a list of elements
+     *
+     * Add the actual elements invoking the insert() operation of the returned object.
+     *
+     * @param integer $flags
+     * @return Nethgui_Renderer_WidgetInterface
+     */
+    public function elementList($flags = 0);
+
+    /**
+     * Create a list of button elements
+     *
+     * Add the actual elements invoking the insert() operation of the returned object.
+     *
+     * @param integer $flags
+     * @return Nethgui_Renderer_WidgetInterface
+     */
+    public function buttonList($flags = 0);
+
+
+    /**
+     * Create literal data - helper.
+     *
+     * @param string|object|Nethgui_Core_ViewInterface $data Can be a string, any object implementing toString() method, or a View.
+     * @return Nethgui_Renderer_WidgetInterface
+     */
+    public function literal($data, $flags = 0);
+
+    /**
+     * Create a column container - helper.
+     *
+     * Add the actual columns through the insert() operation of the returned object
+     *
+     * @return Nethgui_Renderer_WidgetInterface
+     */
+    public function columns();
+
+    /**
+     * Create a progress bar
+     *
+     * Refs #554.
+     *
+     * - name View member holding the percent value Int range [0, 100]
+     */
+    public function progressBar($name, $flags = 0);
+
+    /**
+     * Create a text area
+     *
+     * Refs #556
+     *
+     * Attributes:
+     * - dimensions
+     * - appendOnly
+     */
+    public function textArea($name, $flags = 0);
+
+
+    /**
+     * Create a console-like text area
+     *
+     * @see textArea()
+     */
+    public function console($name, $flags = 0);
+
+    /**
+     * Create a date picker widget:
+     *
+     * Refs #474
+     *
+     * Attributes:
+     * - format (string) one of "" (default), "be", "me", "le"
+     *
+     * @see Nethgui_Framework::getDateFormat();
+     */
+    public function dateInput($name, $flags);
+
+
+    /*
+     * Pick/selects objects from a collection
+     * @see selector()
+     */
+    public function objectPicker($name = NULL, $flags = 0);
+
+
+}
+

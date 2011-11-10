@@ -557,13 +557,13 @@ class Nethgui_Framework
             }
         } elseif ($request->getContentType() === Nethgui_Core_Request::CONTENT_TYPE_JSON) {
             $worldModule->prepareView($view, Nethgui_Core_ModuleInterface::VIEW_CLIENT);
-            $events = $view->getClientEvents();            
             $clientCommands = $this->clientCommandsToArray($user->getClientCommands());
             if ( ! empty($clientCommands)) {
-                $events[] = array('ClientCommandHandler', $clientCommands);
+                throw new Exception('TODO: client commands are not supported');
+                //$events[] = array('ClientCommandHandler', $clientCommands);
             }
             header("Content-Type: application/json; charset=UTF-8");
-            echo json_encode($events);
+            echo new Nethgui_Renderer_Json($view);
             $notificationManager->dismissTransientDialogBoxes();
         }
     }

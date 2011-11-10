@@ -5,20 +5,34 @@
  */
 
 /**
- * Help in the creation of the XHTML view output.
+ * Help in the creation of the view output.
  *
+ * A widget object can be rendered to a string through 
+ *
+ * Usually, a widget is associated to a view element by setting its "name" attribute
+ * to the key of the view element. 
+ *
+ * Widgets:
  * - Can be nested in a hierarchical way through the insert() method.
  * - Are configured through the attributes API {set,get,has}Attribute.
+ *
+ * Basic attribute:
+ * - name
+ *
+ * Implementations can extend the attribute list with their own semantics.
  *
  * @package Renderer
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-interface Nethgui_Renderer_WidgetInterface {
+interface Nethgui_Renderer_WidgetInterface
+{
+
     /**
      * @param Nethgui_Renderer_WidgetInterface $widget Another widget to be nested inside the current object
      * @return Nethgui_Renderer_WidgetInterface the current object
      */
     public function insert(Nethgui_Renderer_WidgetInterface $widget);
+
     /**
      * Set the given $attribute to $value
      *
@@ -27,6 +41,7 @@ interface Nethgui_Renderer_WidgetInterface {
      * @return Nethgui_Renderer_WidgetInterface the current object
      */
     public function setAttribute($attribute, $value);
+
     /**
      * Checks if the widget has the given $attribute
      *
@@ -34,6 +49,7 @@ interface Nethgui_Renderer_WidgetInterface {
      * @return boolean TRUE, if the $attribute has been set to any value
      */
     public function hasAttribute($attribute);
+
     /**
      * Read an attribute value.
      * 
@@ -43,6 +59,7 @@ interface Nethgui_Renderer_WidgetInterface {
      * @param mixed $default The default value
      */
     public function getAttribute($attribute, $default = NULL);
+
     /**
      * Transform the current object in a string value.
      *

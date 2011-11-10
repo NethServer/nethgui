@@ -7,6 +7,8 @@
  */
 
 /**
+ * Disable write access operations of a view.
+ *
  * @package Nethgui
  * @subpackage Core
  * @author Davide Principi <davide.principi@nethesis.it>
@@ -21,7 +23,12 @@ class Nethgui_Core_ReadonlyView implements Nethgui_Core_ViewInterface
 
     public function __construct(Nethgui_Core_ViewInterface $view)
     {
-        $this->view = $view;
+        if ($view instanceof self) {
+            // Prevent re-wrapping of a read-only view instance:
+            $this->view = $view->view;
+        } else {
+            $this->view = $view;
+        }
     }
 
     public function copyFrom($data)
@@ -92,11 +99,6 @@ class Nethgui_Core_ReadonlyView implements Nethgui_Core_ViewInterface
     public function getClientEventTarget($name)
     {
         return $this->view->getClientEventTarget($name);
-    }
-
-    public function getControlName($parts = '')
-    {
-        return $this->view->getControlName($parts);
     }
 
 }

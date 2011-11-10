@@ -13,16 +13,6 @@ class Nethgui_Renderer_Help extends Nethgui_Renderer_Xhtml
     public $nestingLevel = 1;
     private $describeWidgets = array();
 
-    public function __construct(Nethgui_Core_ViewInterface $view, $inheritFlags = 0)
-    {
-        if ($view instanceof Nethgui_Renderer_Abstract) {
-            // Prevent re-wrapping of a Renderer instance:
-            parent::__construct($view->getInnerView(), $inheritFlags);
-        } else {
-            parent::__construct($view, $inheritFlags);
-        }
-    }
-
     protected function createWidget($widgetName, $attributes = array())
     {
         $o = new Nethgui_Widget_Help($this);
@@ -40,7 +30,7 @@ class Nethgui_Renderer_Help extends Nethgui_Renderer_Xhtml
         return $o;
     }
 
-    public function __toString()
+    protected function render()
     {
         $fields = array();
 
@@ -61,7 +51,7 @@ class Nethgui_Renderer_Help extends Nethgui_Renderer_Xhtml
                 $label = $widget->getAttribute('label', $name . '_' . $value . '_label');
             }
 
-            $id = $this->getInnerView()->getUniqueId($name);
+            $id = $this->view->getUniqueId($name);
 
             $fields[] = array(
                 'name' => $name,
@@ -71,7 +61,7 @@ class Nethgui_Renderer_Help extends Nethgui_Renderer_Xhtml
             );
         }
 
-        $view = $this->getInnerView()->spawnView($this->getInnerView()->getModule());
+        $view = $this->view->spawnView($this->view->getModule());
         $view->setTemplate('Nethgui_Template_Help_Section');
         $view['title'] = $this->getModule()->getTitle();
         $view['description'] = $this->getModule()->getDescription();

@@ -6,17 +6,22 @@
  */
 
 /**
+ * Enanches the abstract renderer with the wiget factory interface
+ *
+ * Fragments of the view string representation can be generated through the widget objects
+ * returned by the factory interface.
+ *
  * @package Renderer
  * @ignore
  */
-class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgui_Renderer_Abstract
+class Nethgui_Renderer_Xhtml extends Nethgui_Renderer_Abstract implements Nethgui_Renderer_WidgetFactoryInterface
 {
 
     /**
      *
      * @var integer
      */
-    private $inheritFlags = 0;
+    protected $inheritFlags = 0;
 
     /**
      *
@@ -29,15 +34,15 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
         $this->inheritFlags = $inheritFlags & NETHGUI_INHERITABLE_FLAGS;
     }
 
-    public function offsetGet($offset)
+    public function getDefaultFlags()
     {
-        $value = parent::offsetGet($offset);
-        // Substitute View with Renderer:
-        if ($value instanceof Nethgui_Core_ViewInterface) {
-            $className = get_class($this);
-            return new $className($value, $this->inheritFlags);
-        }
-        return $value;
+        return $this->inheritFlags;
+    }
+
+    public function setDefaultFlags($flags)
+    {
+        $this->inheritFlags = $flags;
+        return $this;
     }
 
     protected function createWidget($widgetName, $attributes = array())
@@ -51,6 +56,17 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
         }
 
         return $o;
+    }
+
+    protected function render()
+    {
+        $module = $this->getModule();
+        $languageCatalog = NULL;
+        if ($module instanceof Nethgui_Core_LanguageCatalogProvider) {
+            $languageCatalog = $module->getLanguageCatalog();
+        }
+        $state = array('view' => $this);
+        return Nethgui_Framework::getInstance()->renderView($this->getTemplate(), $state, $languageCatalog);
     }
 
     public function elementList($flags = 0)
@@ -96,7 +112,6 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
 
         return $widget;
     }
-
 
     public function button($name, $flags = 0)
     {
@@ -259,9 +274,9 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
     {
         $dateFormat = substr(strtolower(Nethgui_Framework::getInstance()->getDateFormat()), 0, 2);
 
-        if($dateFormat == 'dd') {
+        if ($dateFormat == 'dd') {
             $encodedFormat = 'le';
-        } elseif($dateFormat == 'mm') {
+        } elseif ($dateFormat == 'mm') {
             $encodedFormat = 'me';
         } else {
             $encodedFormat = 'be';
@@ -274,39 +289,6 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Core_ReadonlyView implements Nethgu
     {
         $flags |= $this->inheritFlags;
         return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags, 'icon-before' => 'ui-icon-triangle-1-s'));
-    }
-
-    public function __toString()
-    {
-        $module = $this->getModule();
-        $languageCatalog = NULL;
-        if ($module instanceof Nethgui_Core_LanguageCatalogProvider) {
-            $languageCatalog = $module->getLanguageCatalog();
-        }
-        $state = array('view' => $this);
-        return Nethgui_Framework::getInstance()->renderView($this->getTemplate(), $state, $languageCatalog);
-    }
-
-    public function getDefaultFlags()
-    {
-        return $this->inheritFlags;
-    }
-
-    public function getInnerView()
-    {
-        return $this->view;
-    }
-
-    public function setDefaultFlags($flags)
-    {
-        $this->inheritFlags = $flags;
-        return $this;
-    }
-
-    public function setInnerView(Nethgui_Core_ViewInterface $view)
-    {
-        $this->view = $view;
-        return $this;
     }
 
 }

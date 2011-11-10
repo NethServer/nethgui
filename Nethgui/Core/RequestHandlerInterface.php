@@ -12,6 +12,7 @@
  * - perform process()-ing.
  *
  * @see Nethgui_Core_ModuleInterface
+ * @see http://en.wikipedia.org/wiki/Template_method_pattern
  * @package Core
  */
 interface Nethgui_Core_RequestHandlerInterface {
@@ -29,7 +30,7 @@ interface Nethgui_Core_RequestHandlerInterface {
     public function validate(Nethgui_Core_ValidationReportInterface $report);
 
     /**
-     * Module behaviour implementation.
+     * Module behaviour implementation. Executed only if no validation errors has occurred.
      *
      * @return void
      */

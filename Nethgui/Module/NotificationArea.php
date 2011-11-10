@@ -188,7 +188,7 @@ class Nethgui_Module_NotificationArea extends Nethgui_Core_Module_Standard imple
             if (is_array($value)) {
                 $output = array_merge($output, $this->prepareDialogDataForClient($value, $innerPrefix));
             } else {
-                $controlName = $view->getControlName($innerPrefix);
+                $controlName = implode('/', array_merge($view->getModulePath(), $innerPrefix));
                 $output[$controlName] = strval($value);
             }
         }
