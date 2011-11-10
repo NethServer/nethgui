@@ -2,13 +2,13 @@
 /**
  * Nethgui
  *
- * @package Core
+ * @package System
  */
 
 /**
  * Describes an object that will be notified of a signal-event call completion
  * 
- * @package Core
+ * @package System
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 interface Nethgui_System_EventObserverInterface

@@ -1,12 +1,13 @@
 <?php
 /**
- * @package Core
+ * @package System
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
 /**
- * TODO describe this class
- * @package Core
+ * Implementation of the platform interface for Nethesis products
+ *
+ * @package System
  */
 class Nethgui_System_NethPlatform implements Nethgui_System_PlatformInterface, Nethgui_Authorization_PolicyEnforcementPointInterface
 {

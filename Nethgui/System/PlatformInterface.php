@@ -2,17 +2,13 @@
 /**
  * Nethgui
  *
- * @package Core
+ * @package System
  */
 
 /**
- * HostConfigurationInterface
+ * Interface to the underlying platform
  *
- * An Nethgui_System_PlatformInterface implementing object allows
- * access to configuration databases and event signaling.
- *
- *
- * @package Core
+ * @package System
  */
 interface Nethgui_System_PlatformInterface
 {
