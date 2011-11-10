@@ -9,101 +9,33 @@
 class Nethgui_Framework
 {
 
-    /**
-     * Underlying Code Igniter framework controller.
-     * @var CI_Controller
-     */
-    private $controller;
-    private $languageCode = 'it';
-
-    /**
-     * This is a stack of catalog names. Current catalog is the last element
-     * of the array.
-     * @var array
-     */
-    private $languageCatalogStack;
-    private $catalogs = array();
-    private static $path;
+    private $controllerName;
 
     /**
      * Returns framework singleton instance.
      * @staticvar Nethgui_Framework $instance
      * @return Nethgui_Framework
      */
-    static public function getInstance(CI_Controller $codeIgniterController = NULL)
+    static public function getInstance()
     {
         static $instance;
         if ( ! isset($instance)) {
-            $instance = new self($codeIgniterController);
+            $instance = new self();
         }
         return $instance;
     }
 
-    private function __construct($codeIgniterController)
+    private function __construct()
     {
-        $this->controller = $codeIgniterController;
-        $this->setLanguageCode($_SERVER['HTTP_ACCEPT_LANGUAGE']);
-        $this->languageCatalogStack = array(get_class());
-        self::$path = realpath(dirname(__FILE__) . '/..');
         spl_autoload_register(get_class($this) . '::autoloader');
-        ini_set('include_path', ini_get('include_path') . ':' . self::$path);
     }
 
-    /**
-     * @return CI_Controller
-     */
-    public function getControllerName()
+    public function setControllerName($controllerName)
     {
-        return strtolower(get_class($this->controller));
-    }
-
-    /**
-     * Renders a view passing $viewState as view parameters.
-     *
-     * If specified, this function sets the default language catalog used
-     * by T() translation function.
-     *
-     * @param string|callable $view Full view name that follows class naming convention or function callback
-     * @param array $viewState Array of view parameters.
-     * @param string|array $languageCatalog Name of language strings catalog.
-     * @return string
-     */
-    public function renderView($viewName, $viewState, $languageCatalog = NULL)
-    {
-        if ($viewName === FALSE) {
-            return '';
+        if ( ! isset($this->controllerName)) {
+            $this->controllerName = $controllerName;
         }
-
-        if ( ! is_null($languageCatalog) && ! empty($languageCatalog)) {
-            if (is_array($languageCatalog)) {
-                $languageCatalog = array_reverse($languageCatalog);
-            }
-
-            $this->languageCatalogStack[] = $languageCatalog;
-        }
-
-        if (is_callable($viewName)) {
-            // Callback
-            $viewOutput = (string) call_user_func_array($viewName, $viewState);
-        } else {
-            $ciViewPath = '../../../' . str_replace('_', '/', $viewName);
-
-            $absoluteViewPath = realpath(APPPATH . 'views/' . $ciViewPath . '.php');
-
-            if ( ! $absoluteViewPath) {
-                $this->logMessage("Unable to load `{$viewName}`.", 'warning');
-                return '';
-            }
-
-            // PHP script
-            $viewOutput = (string) $this->controller->load->view($ciViewPath, $viewState, true);
-        }
-
-        if ( ! is_null($languageCatalog) && ! empty($languageCatalog)) {
-            array_pop($this->languageCatalogStack);
-        }
-
-        return $viewOutput;
+        return $this;
     }
 
     /**
@@ -137,8 +69,8 @@ class Nethgui_Framework
         }
 
         // FIXME: skip controller segments if url rewriting is active:
-        array_unshift($segments, 'index.php', $this->getControllerName());
-
+        array_unshift($segments, 'index.php' . isset($this->controllerName) ? '/' . $this->controllerName : '');
+        
         if ( ! empty($parameters)) {
             $url = $this->baseUrl($segments) . '?' . http_build_query($parameters);
         } else {
@@ -195,180 +127,6 @@ class Nethgui_Framework
     }
 
     /**
-     * Translate $string substituting $args
-     *
-     * Each key in array $args is searched and replaced in $string with
-     * correspondent value.
-     *
-     * @see strtr()
-     *
-     * @param string $string The string to be translated
-     * @param array $args Values substituted in output string.
-     * @param string $languageCode The language code
-     * @param string|array $catalog The catalog or the catalog list where to search for the translation
-     * @return string
-     */
-    public function translate($string, $args, $languageCode = NULL, $catalog = NULL)
-    {
-        if ( ! is_string($string)) {
-            throw new InvalidArgumentException(sprintf("translate(): unexpected `%s` type!", gettype($string)));
-        }
-
-        if ( ! isset($languageCode)) {
-            $languageCode = $this->languageCode;
-        }
-
-        if (empty($languageCode)) {
-            $translation = $string;
-        } else {
-
-            if (is_array($catalog)) {
-                $catalog = array_reverse($catalog);
-            } elseif ( ! empty($catalog)) {
-                $catalog = array($catalog);
-            } else {
-                $catalog = array();
-            }
-
-            $translation = $this->lookupTranslation($string, $languageCode, $catalog);
-        }
-
-        /**
-         * Apply args to string
-         */
-        if (empty($args)) {
-            return $translation;
-        }
-
-        /**
-         * Automatically susbstitute numeric keys with ${N} placeholders.
-         */
-        $placeholders = array();
-        foreach ($args as $argId => $argValue) {
-            if (is_numeric($argId)) {
-                $placeholders[sprintf('${%d}', $argId)] = $argValue;
-            } else {
-                $placeholders[$argId] = $argValue;
-            }
-        }
-
-        return strtr($translation, $placeholders);
-    }
-
-    /**
-     * @param string $key The string to be translated
-     * @param string $languageCode The language code of the translated string
-     * @param array $catalogStack The catalog stack where to start the search
-     * @return string The translated string 
-     */
-    private function lookupTranslation($key, $languageCode, $catalogStack)
-    {
-        $languageCatalogs = $this->languageCatalogStack;
-
-        if ( ! empty($catalogStack)) {
-            $languageCatalogs[] = $catalogStack;
-        }
-
-        $translation = NULL;
-        $attempts = array();
-
-        while (($catalog = array_pop($languageCatalogs)) !== NULL) {
-
-            if (is_array($catalog)) {
-                // push nested catalog stack elements
-                $languageCatalogs = array_merge($languageCatalogs, $catalog);
-                continue;
-            }
-
-            // If catalog is missing load it
-            if ( ! isset($this->catalogs[$languageCode][$catalog])) {
-                $this->loadLanguageCatalog($languageCode, $catalog);
-            }
-
-            // If key exists break
-            if (isset($this->catalogs[$languageCode][$catalog][$key])) {
-                $translation = $this->catalogs[$languageCode][$catalog][$key];
-                break;
-            } else {
-                $attempts[] = $catalog;
-            }
-        }
-
-        if ($translation === NULL) {
-            // By default prepare an identity-translation
-            $translation = $key;
-            if (ENVIRONMENT == 'development') {
-                $this->logMessage("Missing `$languageCode` translation for `$key`. Catalogs: " . implode(', ', $attempts), 'debug');
-            }
-        }
-
-        return $translation;
-    }
-
-    private function loadLanguageCatalog($languageCode, $languageCatalog)
-    {
-        $L = array();
-
-        if (preg_match('/[a-z][a-z]/', $languageCode) == 0) {
-            throw new InvalidArgumentException('Language code must be a valid ISO 639-1 language code');
-        }
-
-        if (preg_match('/[a-z_A-Z0-9]+/', $languageCatalog) == 0) {
-            throw new InvalidArgumentException("Language catalog name can contain only alphanumeric or `_` characters. It was `$languageCatalog`.");
-        }
-
-        $prefix = array_shift(explode('_', $languageCatalog));
-        $filePath = dirname(__FILE__) . '/../' . $prefix . '/Language/' . $languageCode . '/' . $languageCatalog . '.php';
-        @include($filePath);
-
-        if (ENVIRONMENT == 'development' && ! empty($L)) {
-            $this->logMessage('Loaded catalog ' . $filePath);
-        }
-
-        $this->catalogs[$languageCode][$languageCatalog] = &$L;
-    }
-
-    /**
-     * Set the current language code
-     * @param string $code ISO 639-1 language code (2 characters).
-     */
-    public function setLanguageCode($code)
-    {
-        if ($code) {
-            $this->languageCode = strtolower(substr($code, 0, 2));
-        }
-    }
-
-    /**
-     * Get the current language code
-     * @return string ISO 639-1 language code (2 characters).
-     */
-    public function getLanguageCode()
-    {
-        return $this->languageCode;
-    }
-
-    /**
-     * Get the date format according to the current language
-     * @return string
-     */
-    public function getDateFormat()
-    {
-        switch ($this->getLanguageCode()) {
-            case 'xx': // UNUSED - middle endian
-                $format = 'mm-dd-YYYY';
-                break;
-            case 'yy': // UNUSER - little endian
-                $format = 'dd/mm/YYYY';
-                break;
-            default: // big endian ISO 8601
-                $format = 'YYYY-mm-dd';
-        }
-
-        return $format;
-    }
-
-    /**
      * Simple class autoloader
      *
      * This function is registered as SPL class autoloader.
@@ -383,13 +141,8 @@ class Nethgui_Framework
         if (substr($className, 0, 3) == 'CI_' || $className === 'configuration') {
             return;
         }
-        $classPath = self::$path . '/' . str_replace("_", "/", $className) . '.php';
+        $classPath = NETHGUI_ROOTDIR . '/' . str_replace("_", "/", $className) . '.php';
         include $classPath;
-    }
-
-    public function getApplicationPath()
-    {
-        return realpath(self::$path . '/' . NETHGUI_APPLICATION);
     }
 
     /**
@@ -399,7 +152,7 @@ class Nethgui_Framework
      */
     public function logMessage($message, $level = 'error')
     {
-        log_message($level, $message);
+        error_log($level . "\t" . $message . PHP_EOL);
     }
 
     /**
@@ -476,8 +229,8 @@ class Nethgui_Framework
         // The World module is a non-processing container.
         $worldModule = new Nethgui_Module_World();
         $worldModule->setPlatform($platform);
-
-        $view = new Nethgui_Core_View($worldModule);
+        
+        $view = new Nethgui_Core_View($worldModule, new Nethgui_Language_Translator());
 
         try {
             foreach ($moduleWakeupList as $moduleIdentifier) {
@@ -586,10 +339,10 @@ class Nethgui_Framework
     /**
      * Check if a redirect condition has been set and calculate the URL.
      * 
-     * @param Nethgui_Client_UserInterface $user
+     * @param Nethgui_Core_UserInterface $user
      * @return string|bool The URL where to redirect the user
      */
-    private function getRedirectUrl(Nethgui_Client_UserInterface $user)
+    private function getRedirectUrl(Nethgui_Core_UserInterface $user)
     {
         foreach ($user->getClientCommands() as $command) {
             if ($command instanceof Nethgui_Client_CommandInterface && $command->isRedirection()) {

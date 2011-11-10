@@ -13,6 +13,7 @@ class Nethgui_Module_Help_Template extends Nethgui_Module_Help_Common
 {
     public function process()
     {
+        // FIXME: move to prepareView and use Translator
         $rootView = new Nethgui_Core_View($this->module);
         $rootView->setTemplate('Nethgui_Template_Help_Schema');
 

@@ -59,7 +59,7 @@ class Nethgui_Module_Help_Common extends Nethgui_Core_Module_Standard implements
     protected function getHelpDocumentPath(Nethgui_Core_ModuleInterface $module)
     {
         $fileName = get_class($module) . '.html';
-        $appPath = Nethgui_Framework::getInstance()->getApplicationPath();
+        $appPath = realpath(NETHGUI_FILE . '../' . NETHGUI_APPLICATION);
         $lang = Nethgui_Framework::getInstance()->getLanguageCode();
 
         return "${appPath}/Help/${lang}/${fileName}";

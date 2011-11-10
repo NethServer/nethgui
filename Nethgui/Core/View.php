@@ -52,19 +52,18 @@ class Nethgui_Core_View implements Nethgui_Core_ViewInterface
     private $modulePath;
 
     /**
-     * Caches the language catalogs associated to $module
-     * @var array
+     *
+     * @var Nethgui_Language_Translator;
      */
-    private $languageCatalogList;
+    private $translator;
 
-    public function __construct($module = NULL)
+    public function __construct(Nethgui_Core_ModuleInterface $module, Nethgui_Language_Translator $translator)
     {
-        if ($module instanceof Nethgui_Core_ModuleInterface) {
-            $this->module = $module;
-            // XXX: trying to guess view name
-            $this->template = str_replace('_Module_', '_Template_', get_class($module));
-        }
+        $this->module = $module;
+        $this->translator = $translator;
 
+        // XXX: trying to guess view name
+        $this->template = str_replace('_Module_', '_Template_', get_class($module));
         $this->data = array();
     }
 
@@ -87,7 +86,7 @@ class Nethgui_Core_View implements Nethgui_Core_ViewInterface
 
     public function spawnView(Nethgui_Core_ModuleInterface $module, $register = FALSE)
     {
-        $spawnedView = new self($module);
+        $spawnedView = new self($module, $this->translator);
         if ($register === TRUE) {
             $this[$module->getIdentifier()] = $spawnedView;
         } elseif (is_string($register)) {
@@ -129,39 +128,14 @@ class Nethgui_Core_View implements Nethgui_Core_ViewInterface
         unset($this->data[$offset]);
     }
 
-    private function extractLanguageCatalogList(Nethgui_Core_ModuleInterface $module)
+    public function translate($value, $args = array())
     {
-        $languageCatalogList = array();
-
-        do {
-            if ($module instanceof Nethgui_Core_LanguageCatalogProvider) {
-                $catalog = $module->getLanguageCatalog();
-                if (is_array($catalog)) {
-                    $languageCatalogList = array_merge($languageCatalogList, $catalog);
-                } else {
-                    $languageCatalogList[] = $catalog;
-                }
-            }
-
-            $module = $module->getParent();
-        } while ( ! is_null($module));
-
-        return $languageCatalogList;
+        return $this->translator->translate($value, $args);
     }
 
-    /**
-     *
-     * @param type $value
-     * @param type $args
-     * @param type $hsc DEPRECATED no longer used
-     * @return type
-     */
-    public function translate($value, $args = array(), $hsc = TRUE)
+    public function getTranslator()
     {
-        if ( ! isset($this->languageCatalogList)) {
-            $this->languageCatalogList = $this->extractLanguageCatalogList($this->getModule());
-        }
-        return Nethgui_Framework::getInstance()->translate($value, $args, NULL, $this->languageCatalogList);
+        return $this->translator;
     }
 
     public function getModule()

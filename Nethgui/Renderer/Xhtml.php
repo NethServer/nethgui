@@ -66,7 +66,64 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Renderer_Abstract implements Nethgu
             $languageCatalog = $module->getLanguageCatalog();
         }
         $state = array('view' => $this);
-        return Nethgui_Framework::getInstance()->renderView($this->getTemplate(), $state, $languageCatalog);
+        return $this->renderView($this->getTemplate(), $state, $languageCatalog);
+    }
+
+    /**
+     * Renders a view passing $viewState as view parameters.
+     *
+     * If specified, this function sets the default language catalog used
+     * by T() translation function.
+     *
+     * @param string|callable $view Full view name that follows class naming convention or function callback
+     * @param array $viewState Array of view parameters.
+     * @param string|array $languageCatalog Name of language strings catalog.
+     * @return string
+     */
+    public function renderView($viewName, $viewState, $languageCatalog = NULL)
+    {
+        if ($viewName === FALSE) {
+            return '';
+        }
+
+        if ( ! is_null($languageCatalog) && ! empty($languageCatalog)) {
+            if (is_array($languageCatalog)) {
+                $languageCatalog = array_reverse($languageCatalog);
+            }
+
+            $this->languageCatalogStack[] = $languageCatalog;
+        }
+
+        if (is_callable($viewName)) {
+            // Callback
+            $viewOutput = (string) call_user_func_array($viewName, $viewState);
+        } else {
+            $viewPath = str_replace('_', '/', $viewName);
+
+            $absoluteViewPath = realpath(NETHGUI_FILE . '../' . $viewPath . '.php');
+
+            if ( ! $absoluteViewPath) {
+                $this->logMessage("Unable to load `{$viewName}`.", 'warning');
+                return '';
+            }
+
+            // PHP script
+            $viewOutput = $this->runTemplateScript($viewPath, $viewState, true);
+        }
+
+        if ( ! is_null($languageCatalog) && ! empty($languageCatalog)) {
+            array_pop($this->languageCatalogStack);
+        }
+
+        return $viewOutput;
+    }
+
+    private function runTemplateScript($scriptPath, &$vars)
+    {
+        extract($vars);
+        ob_start();
+        include($scriptPath);
+        return ob_get_flush();
     }
 
     public function elementList($flags = 0)

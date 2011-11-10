@@ -86,6 +86,11 @@ class Nethgui_Core_ReadonlyView implements Nethgui_Core_ViewInterface
         return $this->view->translate($message, $args);
     }
 
+    public function getTranslator()
+    {
+        return $this->view->getTranslator();
+    }
+
     public function getModulePath()
     {
         return $this->view->getModulePath();

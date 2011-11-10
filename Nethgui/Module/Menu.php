@@ -60,12 +60,12 @@ class Nethgui_Module_Menu extends Nethgui_Core_Module_Standard
 
     private function makeModuleAnchor(Nethgui_Renderer_Abstract $view, Nethgui_Core_ModuleInterface $module)
     {
-        $itemView = new Nethgui_Core_View($module);
+        $translator = $view->getTranslator();
 
         $placeholders = array(
             '%HREF' => htmlspecialchars(Nethgui_Framework::getInstance()->buildModuleUrl($module, '')),
-            '%CONTENT' => htmlspecialchars($itemView->translate($module->getTitle())),
-            '%TITLE' => htmlspecialchars($itemView->translate($module->getDescription())),
+            '%CONTENT' => htmlspecialchars($translator->translate($module, $module->getTitle())),
+            '%TITLE' => htmlspecialchars($translator->translate($module, $module->getDescription())),
         );
 
         if($module->getIdentifier() == $this->currentItem) {

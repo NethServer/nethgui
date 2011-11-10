@@ -20,6 +20,10 @@ if ( ! defined('NETHGUI_ENVIRONMENT')) {
     exit("Bootstrap: NETHGUI_ENVIRONMENT is not defined.");
 }
 
+// Find the root directory, where Nethgui/ and APPLICATION dirs are placed:
+define ('NETHGUI_ROOTDIR', realpath(dirname(__FILE__) . '/..'));
+ini_set('include_path', ini_get('include_path') . ':' . NETHGUI_ROOTDIR);
+
 switch (NETHGUI_ENVIRONMENT) {
     case 'development':
         error_reporting(E_ALL | E_STRICT);
@@ -34,6 +38,7 @@ switch (NETHGUI_ENVIRONMENT) {
         exit('Bootstrap: NETHGUI_ENVIRONMENT is not set correctly.');
 }
 
+// ENVIRONMENT is used by CodeIgniter and takes the same value:
 define('ENVIRONMENT', NETHGUI_ENVIRONMENT);
 
 define('NETHGUI_SITEURL', (empty($_SERVER['HTTPS']) ? 'http://' : 'https://') . $_SERVER['SERVER_NAME']);

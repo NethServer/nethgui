@@ -82,11 +82,19 @@ interface Nethgui_Core_ViewInterface extends ArrayAccess, IteratorAggregate
     public function getClientEventTarget($name);
 
     /**
-     * A (shortcut) method to translate a message in the current language.
-     * 
+     * A method to translate a message in the current language.
+     *
+     * @param string $value
+     * @param array $args
+     * @return string
      * @see Nethgui_Framework::translate()
      */
     public function translate($message, $args = array());
+
+    /**
+     * @return Nethgui_Core_TranslatorInterface
+     */
+    public function getTranslator();
 }
 
 ?>
