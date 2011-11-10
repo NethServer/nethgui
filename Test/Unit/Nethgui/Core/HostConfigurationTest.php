@@ -23,7 +23,7 @@ class Nethgui_System_NethPlatformTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new Nethgui_System_NethPlatform($this->getMock('Nethgui_Core_UserInterface'));
+        $this->object = new Nethgui_System_NethPlatform($this->getMock('Nethgui_Client_UserInterface'));
         $this->object->setPolicyDecisionPoint(new Nethgui_Authorization_PermissivePolicyDecisionPoint());
     }
 

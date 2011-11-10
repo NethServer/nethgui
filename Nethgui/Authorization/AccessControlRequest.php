@@ -14,7 +14,7 @@
 final class Nethgui_Authorization_AccessControlRequest implements Nethgui_Authorization_AccessControlRequestInterface
 {
 
-    public function __construct(Nethgui_Core_UserInterface $subject, $resource, $action)
+    public function __construct(Nethgui_Client_UserInterface $subject, $resource, $action)
     {
         $this->subject = $subject;
         $this->action = $action;

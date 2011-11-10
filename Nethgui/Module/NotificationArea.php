@@ -19,11 +19,11 @@ class Nethgui_Module_NotificationArea extends Nethgui_Core_Module_Standard imple
 
     /**
      *
-     * @var Nethgui_Core_UserInterface;
+     * @var Nethgui_Client_UserInterface;
      */
     private $user;
 
-    public function __construct(Nethgui_Core_UserInterface $user)
+    public function __construct(Nethgui_Client_UserInterface $user)
     {
         parent::__construct(NULL);
         $this->user = $user;

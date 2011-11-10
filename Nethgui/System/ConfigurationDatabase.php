@@ -52,7 +52,7 @@ class Nethgui_System_ConfigurationDatabase implements Nethgui_Authorization_Poli
 
     /**
      * Keeps User object acting on this database. 
-     * @var Nethgui_Core_UserInterface
+     * @var Nethgui_Client_UserInterface
      */
     private $user;
 
@@ -86,7 +86,7 @@ class Nethgui_System_ConfigurationDatabase implements Nethgui_Authorization_Poli
      * 
      * @param string $database Database name
      */
-    public function __construct($database, Nethgui_Core_UserInterface $user)
+    public function __construct($database, Nethgui_Client_UserInterface $user)
     {
         if ( ! $database)
             throw new Exception("You must provide a valid database name.");

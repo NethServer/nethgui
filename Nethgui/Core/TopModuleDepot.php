@@ -32,7 +32,7 @@ class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Ne
      */
     private $policyDecisionPoint;
     /**
-     * @var Nethgui_Core_UserInterface
+     * @var Nethgui_Client_UserInterface
      */
     private $user;
     /**
@@ -45,7 +45,7 @@ class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Ne
      */
     private $applicationPath;
     
-    public function __construct($applicationPath, Nethgui_System_PlatformInterface $platform, Nethgui_Core_UserInterface $user)
+    public function __construct($applicationPath, Nethgui_System_PlatformInterface $platform, Nethgui_Client_UserInterface $user)
     {
         $this->platform = $platform;
         $this->user = $user;

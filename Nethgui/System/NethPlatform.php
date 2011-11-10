@@ -25,16 +25,16 @@ class Nethgui_System_NethPlatform implements Nethgui_System_PlatformInterface, N
 
     /**
      * Keeps User object acting on host configuration.
-     * @var Nethgui_Core_UserInterface
+     * @var Nethgui_Client_UserInterface
      */
     private $user;
     private $eventQueue;
 
     /**
      * We must specify who acts on host configuration.
-     * @param Nethgui_Core_UserInterface $user
+     * @param Nethgui_Client_UserInterface $user
      */
-    public function __construct(Nethgui_Core_UserInterface $user)
+    public function __construct(Nethgui_Client_UserInterface $user)
     {
         $this->user = $user;
         $this->eventQueue = array();

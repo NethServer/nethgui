@@ -182,7 +182,7 @@ abstract class Test_Tool_ModuleTestCase extends PHPUnit_Framework_TestCase
 
     protected function createUserMock(Test_Tool_ModuleTestEnvironment $env)
     {
-        return $this->getMock('Nethgui_Core_UserInterface');
+        return $this->getMock('Nethgui_Client_UserInterface');
     }
 
     protected function createValidationReportMock(Test_Tool_ModuleTestEnvironment $env)
@@ -377,7 +377,7 @@ class Test_Tool_SystemCommandExecution extends Test_Tool_ArrayKeyGetRegexp
 class Test_Tool_ModuleTestCaseCoreRequest extends Nethgui_Core_Request
 {
 
-    public static function createInstance(Nethgui_Core_UserInterface $user, $data, $submitted, $arguments)
+    public static function createInstance(Nethgui_Client_UserInterface $user, $data, $submitted, $arguments)
     {
         return new self( $user, $data, $submitted, $arguments);
     }

@@ -70,7 +70,7 @@ interface Nethgui_Core_RequestInterface
 
     /**
      * The User that has sent the request.
-     * @return Nethgui_Core_UserInterface
+     * @return Nethgui_Client_UserInterface
      */
     public function getUser();
 }

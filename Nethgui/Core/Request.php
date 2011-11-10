@@ -85,7 +85,7 @@ class Nethgui_Core_Request implements Nethgui_Core_RequestInterface
 
 
         // TODO: retrieve user state from Session
-        $user = new Nethgui_Core_AlwaysAuthenticatedUser();
+        $user = new Nethgui_Client_AlwaysAuthenticatedUser();
 
         $instance = new self($user, $data, $submitted, $arguments);
 
@@ -102,7 +102,7 @@ class Nethgui_Core_Request implements Nethgui_Core_RequestInterface
         return $instance;
     }
 
-    protected function __construct(Nethgui_Core_UserInterface $user, $data, $submitted, $arguments)
+    protected function __construct(Nethgui_Client_UserInterface $user, $data, $submitted, $arguments)
     {
         if (is_null($data)) {
             $data = array();

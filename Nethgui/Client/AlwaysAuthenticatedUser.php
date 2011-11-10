@@ -12,7 +12,7 @@
  * @deprecated Substitute with the complete implementation in version Phi.
  * @package Core
  */
-class Nethgui_Core_AlwaysAuthenticatedUser implements Nethgui_Core_UserInterface
+class Nethgui_Client_AlwaysAuthenticatedUser implements Nethgui_Client_UserInterface
 {
 
     /**

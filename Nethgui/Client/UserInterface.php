@@ -4,11 +4,11 @@
  */
 
 /**
- * Nethgui_Core_UserInterface provides access to the login information of the current user.
+ * Nethgui_Client_UserInterface provides access to the login information of the current user.
  *
  * @package Core
  */
-interface Nethgui_Core_UserInterface extends ArrayAccess
+interface Nethgui_Client_UserInterface extends ArrayAccess
 {
 
     /**
@@ -18,14 +18,14 @@ interface Nethgui_Core_UserInterface extends ArrayAccess
 
     /**
      * @param bool $status
-     * @return Nethgui_Core_UserInterface
+     * @return Nethgui_Client_UserInterface
      */
     public function setAuthenticated($status);
 
     /**
      * @param string $credentialName
      * @param mixed $credentialValue
-     * @return Nethgui_Core_UserInterface
+     * @return Nethgui_Client_UserInterface
      */
     public function setCredential($credentialName, $credentialValue);
 
@@ -52,36 +52,36 @@ interface Nethgui_Core_UserInterface extends ArrayAccess
      * @param string $message
      * @param array $actions
      * @param integer $type
-     * @return Nethgui_Core_UserInterface
+     * @return Nethgui_Client_UserInterface
      */
     public function showDialogBox(Nethgui_Core_ModuleInterface $module, $message, $actions = array(), $type = Nethgui_Core_DialogBox::NOTIFY_SUCCESS);
 
     public function getDialogBoxes();
 
     /**
-     * @return Nethgui_Core_UserInterface
+     * @return Nethgui_Client_UserInterface
      */
     public function dismissDialogBox($dialogId);
 
     /**
-     * @return Nethgui_Core_UserInterface
+     * @return Nethgui_Client_UserInterface
      */
     public function addClientCommand(Nethgui_Client_CommandInterface $command);
 
     /**
-     * @return Nethgui_Core_UserInterface
+     * @return Nethgui_Client_UserInterface
      */
     public function addClientCommandEnable(Nethgui_Core_ModuleInterface $action);
 
     /**
-     * @return Nethgui_Core_UserInterface
+     * @return Nethgui_Client_UserInterface
      */
     public function addClientCommandActivate(Nethgui_Core_ModuleInterface $action, Nethgui_Core_ModuleInterface $cancelAction = NULL);
 
     public function getClientCommands();
 
     /**
-     * @return Nethgui_Core_UserInterface
+     * @return Nethgui_Client_UserInterface
      */
     public function traceProcess(Nethgui_System_ProcessInterface $process, $name = NULL);
 

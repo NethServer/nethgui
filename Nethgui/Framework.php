@@ -586,10 +586,10 @@ class Nethgui_Framework
     /**
      * Check if a redirect condition has been set and calculate the URL.
      * 
-     * @param Nethgui_Core_UserInterface $user
+     * @param Nethgui_Client_UserInterface $user
      * @return string|bool The URL where to redirect the user
      */
-    private function getRedirectUrl(Nethgui_Core_UserInterface $user)
+    private function getRedirectUrl(Nethgui_Client_UserInterface $user)
     {
         foreach ($user->getClientCommands() as $command) {
             if ($command instanceof Nethgui_Client_CommandInterface && $command->isRedirection()) {
