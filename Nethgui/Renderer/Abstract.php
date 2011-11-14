@@ -13,6 +13,7 @@
  */
 abstract class Nethgui_Renderer_Abstract extends Nethgui_Core_ReadonlyView
 {
+
     abstract protected function render();
 
     public function __toString()
@@ -23,6 +24,28 @@ abstract class Nethgui_Renderer_Abstract extends Nethgui_Core_ReadonlyView
             error_log($ex->getMessage() . '; ' . sprintf('file: %s, line: %d.', $ex->getFile(), $ex->getLine()));
             throw $ex;
         }
+    }
+
+    /**
+     * Convert the given hash to the array format accepted from UI widgets as
+     * "datasource".
+     *
+     * @param array $h
+     * @return array
+     */
+    public static function hashToDatasource($H)
+    {
+        $D = array();
+
+        foreach ($H as $k => $v) {
+            if (is_array($v)) {
+                $D[] = array(self::hashToDatasource($v), $k);
+            } elseif (is_string($v)) {
+                $D[] = array($k, $v);
+            }
+        }
+
+        return $D;
     }
 
 }

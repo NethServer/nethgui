@@ -9,7 +9,6 @@
 class Nethgui_Framework
 {
 
-    private $controllerName;
 
     /**
      * Returns framework singleton instance.
@@ -30,14 +29,6 @@ class Nethgui_Framework
         spl_autoload_register(get_class($this) . '::autoloader');
     }
 
-    public function setControllerName($controllerName)
-    {
-        if ( ! isset($this->controllerName)) {
-            $this->controllerName = $controllerName;
-        }
-        return $this;
-    }
-    
     /**
      * Simple class autoloader
      *
@@ -80,20 +71,11 @@ class Nethgui_Framework
             $this->redirect('dispatcher/Status');
         }
 
-        $request = Nethgui_Core_Request::getHttpRequest($arguments);
-
+        $request = $this->createRequest($arguments);
         $user = $request->getUser();
 
-        /*
-         * Create models.
-         *
-         * TODO: get hostConfiguration and topModuleDepot class names
-         * from Nethgui_Framework.
-         */
-        $platform = new Nethgui_System_NethPlatform($user);
-        $appPath = realpath(dirname(__FILE__) . '/../' . NETHGUI_APPLICATION);
-        $this->languageCatalogStack[] = basename($appPath);
-        $topModuleDepot = new Nethgui_Core_TopModuleDepot($appPath, $platform, $user);
+        $platform = new Nethgui_System_NethPlatform($user);               
+        $topModuleDepot = new Nethgui_Core_TopModuleDepot($platform, $user);
 
         /*
          * TODO: enforce some security policy on Models
@@ -114,21 +96,22 @@ class Nethgui_Framework
         array_unshift($moduleWakeupList, $currentModuleIdentifier);
         $moduleWakeupList = array_unique($moduleWakeupList);
 
+        // Configure the NotificationArea:
         $notificationManager = new Nethgui_Module_NotificationArea($user);
         $notificationManager->setPlatform($platform);
-
         $topModuleDepot->registerModule($notificationManager);
 
+        // Configure the online Help:
         $helpModule = new Nethgui_Module_Help($topModuleDepot);
         $helpModule->setPlatform($platform);
         $topModuleDepot->registerModule($helpModule);
 
+        // Configure the module menu
         $menuModule = new Nethgui_Module_Menu($topModuleDepot->getModules(), $currentModuleIdentifier);
         $menuModule->setPlatform($platform);
         $topModuleDepot->registerModule($menuModule);
 
-
-        // The World module is a non-processing container.
+        // Configrue The World module:
         $worldModule = new Nethgui_Module_World();
         $worldModule->setPlatform($platform);
         
@@ -256,25 +239,65 @@ class Nethgui_Framework
     }
 
     /**
-     * Convert the given hash to the array format accepted from UI widgets as
-     * "datasource".
-     *
-     * @param array $h
-     * @return array
+     * Creates a new Nethgui_Core_Request object from current HTTP request.
+     * @param string $defaultModuleIdentifier
+     * @param array $parameters
+     * @return Nethgui_Core_Request
      */
-    public static function hashToDatasource($H)
+    public function createRequest($arguments)
     {
-        $D = array();
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
+            && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') {
+            $isXmlHttpRequest = TRUE;
+        } else {
+            $isXmlHttpRequest = FALSE;
+        }
 
-        foreach ($H as $k => $v) {
-            if (is_array($v)) {
-                $D[] = array(self::hashToDatasource($v), $k);
-            } elseif (is_string($v)) {
-                $D[] = array($k, $v);
+
+        $submitted = FALSE;
+        $data = array();
+
+        if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+            $submitted = TRUE;
+
+            if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/json; charset=UTF-8') {
+                // Decode RAW request
+                $data = json_decode($GLOBALS['HTTP_RAW_POST_DATA'], true);
+
+                if (is_null($data)) {
+                    throw new Nethgui_Exception_HttpStatusClientError('Bad Request', 400);
+                }
+            } else {
+                // Use PHP global:
+                $data = $_POST;
             }
         }
 
-        return $D;
+        // XXX: This is a non-compliant HTTP Accept-header parsing:
+        $httpAccept = isset($_SERVER['HTTP_ACCEPT']) ? trim(array_shift(explode(',', $_SERVER['HTTP_ACCEPT']))) : FALSE;
+
+        if ($httpAccept == 'application/json')
+            $contentType = Nethgui_Core_Request::CONTENT_TYPE_JSON;
+        else {
+            // Standard  POST request.
+            $contentType = Nethgui_Core_Request::CONTENT_TYPE_HTML;
+        }
+
+
+        // TODO: retrieve user state from Session
+        $user = new Nethgui_Client_AlwaysAuthenticatedUser();
+
+        $instance = new Nethgui_Core_Request($user, $data, $submitted, $arguments, array(
+            'XML_HTTP_REQUEST' => $isXmlHttpRequest,
+            'CONTENT_TYPE' => $contentType,
+        ));
+
+        /*
+         * Clear global variables
+         */
+        $_POST = array();
+
+        return $instance;
     }
 
 }

@@ -32,77 +32,7 @@ class Nethgui_Core_Request implements Nethgui_Core_RequestInterface
     private $arguments;
     private $attributes;
 
-    /**
-     * Creates a new Nethgui_Core_Request object from current HTTP request.
-     * @param string $defaultModuleIdentifier
-     * @param array $parameters 
-     * @return Nethgui_Core_Request
-     */
-    static public function getHttpRequest($arguments)
-    {
-        static $instance;
-
-        if (isset($instance)) {
-            return $instance;
-        }
-
-        if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
-            && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') {
-            $isXmlHttpRequest = TRUE;
-        } else {
-            $isXmlHttpRequest = FALSE;
-        }
-
-        
-        $submitted = FALSE;
-        $data = array();
-            
-        if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
-            $submitted = TRUE;
-
-            if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/json; charset=UTF-8') {
-                // Decode RAW request
-                $data = json_decode($GLOBALS['HTTP_RAW_POST_DATA'], true);
-
-                if (is_null($data)) {
-                    throw new Nethgui_Exception_HttpStatusClientError('Bad Request', 400);
-                }
-            } else {
-                // Use PHP global:
-                $data = $_POST;
-            }
-        }
-
-        // XXX: This is a non-compliant HTTP Accept-header parsing:
-        $httpAccept = isset($_SERVER['HTTP_ACCEPT']) ? trim(array_shift(explode(',', $_SERVER['HTTP_ACCEPT']))) : FALSE;
-
-        if ($httpAccept == 'application/json')
-            $contentType = self::CONTENT_TYPE_JSON;
-        else {
-            // Standard  POST request.
-            $contentType = self::CONTENT_TYPE_HTML;
-        }
-
-
-        // TODO: retrieve user state from Session
-        $user = new Nethgui_Client_AlwaysAuthenticatedUser();
-
-        $instance = new self($user, $data, $submitted, $arguments);
-
-        $instance->attributes = array(
-            'XML_HTTP_REQUEST' => $isXmlHttpRequest,
-            'CONTENT_TYPE' => $contentType,
-        );
-
-        /*
-         * Clear global variables
-         */
-        $_POST = array();
-        
-        return $instance;
-    }
-
-    protected function __construct(Nethgui_Client_UserInterface $user, $data, $submitted, $arguments)
+    public function __construct(Nethgui_Client_UserInterface $user, $data, $submitted, $arguments, $attributes)
     {
         if (is_null($data)) {
             $data = array();
@@ -114,6 +44,7 @@ class Nethgui_Core_Request implements Nethgui_Core_RequestInterface
         $this->data = $data;
         $this->submitted = (bool) $submitted;
         $this->arguments = $arguments;
+        $this->attributes = $attributes;
     }
 
     public function hasParameter($parameterName)
@@ -146,7 +77,7 @@ class Nethgui_Core_Request implements Nethgui_Core_RequestInterface
 
     public function getParameterAsInnerRequest($parameterName, $arguments = array())
     {
-        return new self($this->user, $this->getParameter($parameterName), $this->submitted, $arguments);
+        return new self($this->user, $this->getParameter($parameterName), $this->submitted, $arguments, array());
     }
 
     public function getUser()

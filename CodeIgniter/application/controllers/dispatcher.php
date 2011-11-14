@@ -25,7 +25,6 @@ class Dispatcher extends CI_Controller
         }        
 
         $NFW = Nethgui_Framework::getInstance()
-            ->setControllerName('dispatcher')
             ->dispatch($method, $parameters)
             ;
     }
