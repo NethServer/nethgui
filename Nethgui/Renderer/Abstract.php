@@ -13,7 +13,6 @@
  */
 abstract class Nethgui_Renderer_Abstract extends Nethgui_Core_ReadonlyView
 {
-
     abstract protected function render();
 
     public function __toString()

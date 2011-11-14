@@ -9,7 +9,7 @@
  *
  * @package System
  */
-class Nethgui_System_NethPlatform implements Nethgui_System_PlatformInterface, Nethgui_Authorization_PolicyEnforcementPointInterface
+class Nethgui_System_NethPlatform implements Nethgui_System_PlatformInterface, Nethgui_Authorization_PolicyEnforcementPointInterface, Nethgui_Log_LogConsumerInterface
 {
 
     /**
@@ -30,6 +30,12 @@ class Nethgui_System_NethPlatform implements Nethgui_System_PlatformInterface, N
     private $user;
     private $eventQueue;
 
+
+    /**
+     * @var Nethgui_Log_AbstractLog
+     */
+    private $log;
+
     /**
      * We must specify who acts on host configuration.
      * @param Nethgui_Client_UserInterface $user
@@ -38,6 +44,7 @@ class Nethgui_System_NethPlatform implements Nethgui_System_PlatformInterface, N
     {
         $this->user = $user;
         $this->eventQueue = array();
+        $this->log = new Nethgui_Log_Syslog();
     }
 
     /**
@@ -229,6 +236,16 @@ class Nethgui_System_NethPlatform implements Nethgui_System_PlatformInterface, N
         }
         $commandObject->exec();
         return $commandObject;
+    }
+
+    public function getLog()
+    {
+        return $this->log;
+    }
+
+    public function setLog(Nethgui_Log_AbstractLog $log)
+    {
+        $this->log = $log;
     }
 
 }

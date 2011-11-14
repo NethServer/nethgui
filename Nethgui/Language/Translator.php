@@ -8,13 +8,13 @@
  * @ignore
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class Nethgui_Language_Translator implements Nethgui_Core_TranslatorInterface, Nethgui_Core_GlobalFunctionConsumer
+class Nethgui_Language_Translator implements Nethgui_Core_TranslatorInterface, Nethgui_Core_GlobalFunctionConsumer, Nethgui_Log_LogConsumerInterface
 {
+
     /**
      * @var Nethgui_Core_GlobalFunctionWrapper
      */
     private $globalFunctionWrapper;
-
     private $languageCode = 'it';
 
     /**
@@ -25,14 +25,12 @@ class Nethgui_Language_Translator implements Nethgui_Core_TranslatorInterface, N
     private $languageCatalogStack;
     private $catalogs = array();
 
-    static $instance = 0;
-
-    public function __construct()
+    public function __construct(Nethgui_Log_AbstractLog $log)
     {
         $this->globalFunctionWrapper = new Nethgui_Core_GlobalFunctionWrapper();
-        //$this->setLanguageCode($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+        $this->setLanguageCode($_SERVER['HTTP_ACCEPT_LANGUAGE']);
         $this->languageCatalogStack = array('Nethgui_Framework', NETHGUI_APPLICATION);
-        error_log('Translator instance ' . ++self::$instance);
+        $this->log = $log;
     }
 
     /**
@@ -131,7 +129,7 @@ class Nethgui_Language_Translator implements Nethgui_Core_TranslatorInterface, N
             // By default prepare an identity-translation
             $translation = $key;
             if (ENVIRONMENT == 'development') {
-                Nethgui_Framework::getInstance()->logMessage("Missing `$languageCode` translation for `$key`. Catalogs: " . implode(', ', $attempts), 'debug');
+                $this->getLog()->warning("Missing `$languageCode` translation for `$key`. Catalogs: " . implode(', ', $attempts), 'debug');
             }
         }
 
@@ -139,7 +137,7 @@ class Nethgui_Language_Translator implements Nethgui_Core_TranslatorInterface, N
     }
 
     private function loadLanguageCatalog($languageCode, $languageCatalog)
-    {        
+    {
         if (preg_match('/[a-z][a-z]/', $languageCode) == 0) {
             throw new InvalidArgumentException('Language code must be a valid ISO 639-1 language code');
         }
@@ -149,7 +147,13 @@ class Nethgui_Language_Translator implements Nethgui_Core_TranslatorInterface, N
         $prefix = array_shift(explode('_', $languageCatalog));
         $filePath = NETHGUI_ROOTDIR . '/' . $prefix . '/Language/' . $languageCode . '/' . $languageCatalog . '.php';
         $L = array();
-        @$this->globalFunctionWrapper->phpInclude($filePath, array('L' => &$L));
+
+        $included = @$this->globalFunctionWrapper->phpInclude($filePath, array('L' => &$L));
+        if ($included) {
+            $this->getLog()->notice(sprintf('Loaded catalog %s (%s)', $languageCatalog, $languageCode));
+        } else {
+             $this->getLog()->notice(sprintf('Missing catalog %s (%s)', $languageCatalog, $languageCode));
+        }
         $this->catalogs[$languageCode][$languageCatalog] = &$L;
     }
 
@@ -193,7 +197,6 @@ class Nethgui_Language_Translator implements Nethgui_Core_TranslatorInterface, N
         return $format;
     }
 
-
     private function extractLanguageCatalogStack(Nethgui_Core_ModuleInterface $module)
     {
         $languageCatalogList = array();
@@ -203,7 +206,7 @@ class Nethgui_Language_Translator implements Nethgui_Core_TranslatorInterface, N
                 $catalog = $module->getLanguageCatalog();
                 if (is_array($catalog)) {
                     $languageCatalogList = array_merge($languageCatalogList, $catalog);
-                } elseif(is_string($catalog)) {
+                } elseif (is_string($catalog)) {
                     $languageCatalogList[] = $catalog;
                 }
             }
@@ -217,6 +220,17 @@ class Nethgui_Language_Translator implements Nethgui_Core_TranslatorInterface, N
     public function setGlobalFunctionWrapper(Nethgui_Core_GlobalFunctionWrapper $object)
     {
         $this->globalFunctionWrapper = $object;
+    }
+
+    public function getLog()
+    {
+        return $this->log;
+    }
+
+    public function setLog(Nethgui_Log_AbstractLog $log)
+    {
+        $this->log = $log;
+        return $this;
     }
 
 }

@@ -23,7 +23,7 @@
  * @see Nethgui_Core_ModuleInterface::prepareView()
  * @package Core
  */
-class Nethgui_Core_View implements Nethgui_Core_ViewInterface
+class Nethgui_Core_View implements Nethgui_Core_ViewInterface, Nethgui_Log_LogConsumerInterface
 {
 
     /**
@@ -262,6 +262,20 @@ class Nethgui_Core_View implements Nethgui_Core_ViewInterface
     public function getModuleUrl($path = array())
     {
         return $this->buildModuleUrl($this->module, $path);
+    }
+
+    public function setLog(Nethgui_Log_AbstractLog $log)
+    {
+        throw new Exception(sprintf('Cannot invoke setLog() on %s', get_class($this)));
+    }
+
+    public function getLog()
+    {
+        if ($this->getModule() instanceof Nethgui_Log_LogConsumerInterface) {
+            return $this->getModule()->getLog();
+        } else {
+            return $this->translator->getLog();
+        }
     }
 
 }

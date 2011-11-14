@@ -9,7 +9,7 @@
  * Abstract Widget class
  * @ignore
  */
-abstract class Nethgui_Widget_Abstract implements Nethgui_Renderer_WidgetInterface
+abstract class Nethgui_Widget_Abstract implements Nethgui_Renderer_WidgetInterface, Nethgui_Log_LogConsumerInterface
 {
 
     static private $instance = 0;
@@ -101,7 +101,7 @@ abstract class Nethgui_Widget_Abstract implements Nethgui_Renderer_WidgetInterfa
         try {
             return $this->render();
         } catch (Exception $ex) {
-            Nethgui_Framework::getInstance()->logMessage('EXCEPTION ' . $ex->getMessage() . " Trace: " . strtr($ex->getTraceAsString(), "\n", " "));
+            $this->getLog()->exception($ex);
             throw $ex;
         }
     }
@@ -140,4 +140,13 @@ abstract class Nethgui_Widget_Abstract implements Nethgui_Renderer_WidgetInterfa
         return $this->view->getClientEventTarget($this->getAttribute('name'));
     }
 
+    public function setLog(Nethgui_Log_AbstractLog $log)
+    {
+        throw new Exception(sprintf('Cannot invoke setLog() on %s', get_class($this)));
+    }
+
+    public function getLog()
+    {
+        return $this->view->getLog();
+    }
 }

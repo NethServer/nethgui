@@ -15,7 +15,7 @@
  *
  * @package Core
  */
-class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Nethgui_Authorization_PolicyEnforcementPointInterface
+class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Nethgui_Authorization_PolicyEnforcementPointInterface, Nethgui_Log_LogConsumerInterface
 {
 
     /**
@@ -24,6 +24,7 @@ class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Ne
     private $modules = array();
     private $menu = array();
     private $categories = array();
+
     /**
      * Policy Decision Point is applied to all attached modules and panels
      * that implement PolicyEnforcementPointInterface.
@@ -31,12 +32,14 @@ class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Ne
      * @var PolicyDecisionPointInterface
      */
     private $policyDecisionPoint;
+
     /**
      * @var Nethgui_Client_UserInterface
      */
     private $user;
+
     /**
-     * @var HostConfigurationInterface
+     * @var Nethgui_System_PlatformInterface
      */
     private $platform;
 
@@ -44,13 +47,13 @@ class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Ne
      * Absolute directory path where the module class files are located
      */
     private $applicationPath;
-    
+
     public function __construct($applicationPath, Nethgui_System_PlatformInterface $platform, Nethgui_Client_UserInterface $user)
     {
         $this->platform = $platform;
         $this->user = $user;
         $this->applicationPath = realpath($applicationPath);
-        $this->createTopModules();        
+        $this->createTopModules();
     }
 
     /**
@@ -59,10 +62,10 @@ class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Ne
      * for each Module class.
      */
     private function createTopModules()
-    {        
-        $appPrefix = basename($this->applicationPath);        
+    {
+        $appPrefix = basename($this->applicationPath);
         $modulePath = $this->applicationPath . '/Module';
-                
+
         $directoryIterator = new DirectoryIterator($modulePath);
         foreach ($directoryIterator as $element) {
             if (substr($element->getFilename(), -4) == '.php') {
@@ -103,8 +106,8 @@ class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Ne
 
         $module->setPlatform($this->platform);
 
-        if(ENVIRONMENT == 'development') {
-            Nethgui_Framework::getInstance()->logMessage("Created `" . $module->getIdentifier() . "`, as `{$className}` instance.", 'debug');
+        if (ENVIRONMENT == 'development') {
+            $this->getLog()->notice("Created `" . $module->getIdentifier() . "`, as `{$className}` instance.", 'debug');
         }
 
         return $module;
@@ -125,10 +128,10 @@ class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Ne
 
         if ($module instanceof Nethgui_Core_TopModuleInterface) {
             $parentId = $module->getParentMenuIdentifier();
-            
+
             # if category is NULL, create the category
             if (is_null($parentId[0])) {
-                $this->categories[$parentId[1].$module->getIdentifier()] = $module->getIdentifier();
+                $this->categories[$parentId[1] . $module->getIdentifier()] = $module->getIdentifier();
             } else { #otherwise insert into the menu according to menu and index 
                 $this->menu[$parentId[0]][$parentId[1]] = $module->getIdentifier();
             }
@@ -157,7 +160,6 @@ class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Ne
         return $this->policyDecisionPoint;
     }
 
-
     /**
      *
      * @return RecursiveIterator
@@ -167,16 +169,14 @@ class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Ne
         // TODO: authorize access
         ksort($this->categories);
 
-        foreach($this->menu as $cat=>$sub_menu)
-        {
-            ksort($sub_menu,SORT_NUMERIC);
+        foreach ($this->menu as $cat => $sub_menu) {
+            ksort($sub_menu, SORT_NUMERIC);
             $this->menu[$cat] = $sub_menu;
         }
 
-        foreach($this->categories as $cat)
-        {
+        foreach ($this->categories as $cat) {
             $ret['__ROOT__'][] = $cat;
-            if(isset($this->menu[$cat])) {
+            if (isset($this->menu[$cat])) {
                 $ret[$cat] = array_values($this->menu[$cat]);
             }
         }
@@ -193,6 +193,20 @@ class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Ne
             return NULL;
         }
         return $this->modules[$moduleIdentifier];
+    }
+
+    public function setLog(Nethgui_Log_AbstractLog $log)
+    {
+        throw new Exception(sprintf('Cannot invoke setLog() on %s', get_class($this)));
+    }
+
+    public function getLog()
+    {
+        if ($this->platform instanceof Nethgui_Log_LogConsumerInterface) {
+            return $this->platform->getLog();
+        }
+
+        return NULL;
     }
 
 }

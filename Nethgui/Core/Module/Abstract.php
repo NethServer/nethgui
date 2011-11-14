@@ -8,7 +8,7 @@
  * @package Core
  * @subpackage Module
  */
-abstract class Nethgui_Core_Module_Abstract implements Nethgui_Core_ModuleInterface, Nethgui_Core_LanguageCatalogProvider
+abstract class Nethgui_Core_Module_Abstract implements Nethgui_Core_ModuleInterface, Nethgui_Core_LanguageCatalogProvider, Nethgui_Log_LogConsumerInterface
 {
 
     /**
@@ -38,7 +38,7 @@ abstract class Nethgui_Core_Module_Abstract implements Nethgui_Core_ModuleInterf
      * @var string|callable
      */
     private $viewTemplate;
-
+    
     public function __construct($identifier = NULL)
     {
         $this->viewTemplate = NULL;
@@ -135,5 +135,15 @@ abstract class Nethgui_Core_Module_Abstract implements Nethgui_Core_ModuleInterf
     public function getTags(Nethgui_Framework $framework)
     {
         return array($framework->buildModuleUrl($this) => array($framework->translate($this->getTitle(),array(),NULL,$this->getLanguageCatalog())));
+    }
+
+    public function setLog(Nethgui_Log_AbstractLog $log)
+    {
+        throw new Exception(sprintf('Cannot invoke setLog() on %s', get_class($this)));
+    }
+
+    public function getLog()
+    {
+        return $this->getPlatform()->getLog();
     }
 }

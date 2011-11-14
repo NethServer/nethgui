@@ -58,16 +58,6 @@ class Nethgui_Framework
     }
 
     /**
-     * Send a message to logging facility.
-     * @param string $message
-     * @param string $level
-     */
-    public function logMessage($message, $level = 'error')
-    {
-        error_log($level . "\t" . $message . PHP_EOL);
-    }
-
-    /**
      * Sends a 303 status redirect to $url.
      * @param type $url 
      */
@@ -142,7 +132,7 @@ class Nethgui_Framework
         $worldModule = new Nethgui_Module_World();
         $worldModule->setPlatform($platform);
         
-        $view = new Nethgui_Core_View($worldModule, new Nethgui_Language_Translator());
+        $view = new Nethgui_Core_View($worldModule, new Nethgui_Language_Translator($platform->getLog()));
 
         try {
             foreach ($moduleWakeupList as $moduleIdentifier) {

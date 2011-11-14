@@ -14,8 +14,9 @@
  * @author Davide Principi <davide.principi@nethesis.it>
  * @ignore
  */
-class Nethgui_Core_ReadonlyView implements Nethgui_Core_ViewInterface
+class Nethgui_Core_ReadonlyView implements Nethgui_Core_ViewInterface, Nethgui_Log_LogConsumerInterface
 {
+
     /**
      * @var Nethgui_Core_ViewInterface
      */
@@ -110,4 +111,19 @@ class Nethgui_Core_ReadonlyView implements Nethgui_Core_ViewInterface
     {
         return $this->view->getModuleUrl($path);
     }
+
+    public function setLog(Nethgui_Log_AbstractLog $log)
+    {
+        throw new Exception(sprintf('Cannot invoke setLog() on %s', get_class($this)));
+    }
+
+    public function getLog()
+    {
+        if ($this->view instanceof Nethgui_Log_LogConsumerInterface) {
+            return $this->view->getLog();
+        } else {
+            return new Nethgui_Log_Nullog();
+        }
+    }
+
 }

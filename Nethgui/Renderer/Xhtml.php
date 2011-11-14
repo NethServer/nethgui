@@ -71,14 +71,7 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Renderer_Abstract implements Nethgu
 
     protected function render()
     {
-        $module = $this->getModule();
-        $languageCatalog = NULL;
-        if ($module instanceof Nethgui_Core_LanguageCatalogProvider) {
-            $languageCatalog = $module->getLanguageCatalog();
-        }
-        $view = $this;
-        $state = array('view' => $this);
-        return $this->renderView($this->getTemplate(), $state, $languageCatalog);
+        return $this->renderView($this->getTemplate(), array('view' => $this));
     }
 
     /**
@@ -92,18 +85,10 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Renderer_Abstract implements Nethgu
      * @param string|array $languageCatalog Name of language strings catalog.
      * @return string
      */
-    private function renderView($viewName, $viewState, $languageCatalog = NULL)
+    private function renderView($viewName, $viewState)
     {
         if ($viewName === FALSE) {
             return '';
-        }
-
-        if ( ! is_null($languageCatalog) && ! empty($languageCatalog)) {
-            if (is_array($languageCatalog)) {
-                $languageCatalog = array_reverse($languageCatalog);
-            }
-
-            $this->languageCatalogStack[] = $languageCatalog;
         }
 
         if (is_callable($viewName)) {
@@ -113,7 +98,7 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Renderer_Abstract implements Nethgu
             $absoluteViewPath = realpath(NETHGUI_ROOTDIR . '/' . str_replace('_', '/', $viewName) . '.php');
 
             if ( ! $absoluteViewPath) {
-                Nethgui_Framework::getInstance()->logMessage("Unable to load `{$viewName}`.", 'warning');
+                $this->getLog()->warning("Unable to load `{$viewName}`.");
                 return '';
             }
 
@@ -122,10 +107,6 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Renderer_Abstract implements Nethgu
             $this->globalFunctionWrapper->phpInclude($absoluteViewPath, $viewState);
             $viewOutput = ob_get_contents();
             ob_end_clean();
-        }
-
-        if ( ! is_null($languageCatalog) && ! empty($languageCatalog)) {
-            array_pop($this->languageCatalogStack);
         }
 
         return $viewOutput;
