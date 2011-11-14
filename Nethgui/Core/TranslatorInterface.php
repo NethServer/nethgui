@@ -17,7 +17,7 @@ interface Nethgui_Core_TranslatorInterface
      * @param string $languageCode
      * @return string
      */
-    public function translate(Nethgui_Core_ModuleInterface $module, $string, $args, $languageCode = NULL);
+    public function translate(Nethgui_Core_ModuleInterface $module, $string, $args = array(), $languageCode = NULL);
 
     /**
      * @param string $code

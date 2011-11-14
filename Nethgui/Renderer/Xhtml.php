@@ -14,7 +14,7 @@
  * @package Renderer
  * @ignore
  */
-class Nethgui_Renderer_Xhtml extends Nethgui_Renderer_Abstract implements Nethgui_Renderer_WidgetFactoryInterface
+class Nethgui_Renderer_Xhtml extends Nethgui_Renderer_Abstract implements Nethgui_Renderer_WidgetFactoryInterface, Nethgui_Core_GlobalFunctionConsumer
 {
 
     /**
@@ -22,6 +22,11 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Renderer_Abstract implements Nethgu
      * @var integer
      */
     protected $inheritFlags = 0;
+
+    /**
+     * @var Nethgui_Core_GlobalFunctionWrapper
+     */
+    private $globalFunctionWrapper;
 
     /**
      *
@@ -32,6 +37,12 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Renderer_Abstract implements Nethgu
     {
         parent::__construct($view);
         $this->inheritFlags = $inheritFlags & NETHGUI_INHERITABLE_FLAGS;
+        $this->globalFunctionWrapper = new Nethgui_Core_GlobalFunctionWrapper();
+    }
+
+    public function setGlobalFunctionWrapper(Nethgui_Core_GlobalFunctionWrapper $object)
+    {
+        $this->globalFunctionWrapper = $object;
     }
 
     public function getDefaultFlags()
@@ -65,7 +76,18 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Renderer_Abstract implements Nethgu
         if ($module instanceof Nethgui_Core_LanguageCatalogProvider) {
             $languageCatalog = $module->getLanguageCatalog();
         }
-        $state = array('view' => $this);
+        $view = $this;
+        $state = array(
+            'view' => $this,
+            'T' => function ($string, $args = array(), $language = NULL, $catalog = NULL, $hsc = TRUE) use ($view)
+            {
+                $t = $view->translate($string, $args);
+                if ($hsc) {
+                    $t = htmlspecialchars($t);
+                }
+                return $t;
+            }
+        );
         return $this->renderView($this->getTemplate(), $state, $languageCatalog);
     }
 
@@ -80,7 +102,7 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Renderer_Abstract implements Nethgu
      * @param string|array $languageCatalog Name of language strings catalog.
      * @return string
      */
-    public function renderView($viewName, $viewState, $languageCatalog = NULL)
+    private function renderView($viewName, $viewState, $languageCatalog = NULL)
     {
         if ($viewName === FALSE) {
             return '';
@@ -95,20 +117,21 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Renderer_Abstract implements Nethgu
         }
 
         if (is_callable($viewName)) {
-            // Callback
+            // Rendered by callback function
             $viewOutput = (string) call_user_func_array($viewName, $viewState);
         } else {
-            $viewPath = str_replace('_', '/', $viewName);
-
-            $absoluteViewPath = realpath(NETHGUI_FILE . '../' . $viewPath . '.php');
+            $absoluteViewPath = realpath(NETHGUI_ROOTDIR . '/' . str_replace('_', '/', $viewName) . '.php');
 
             if ( ! $absoluteViewPath) {
-                $this->logMessage("Unable to load `{$viewName}`.", 'warning');
+                Nethgui_Framework::getInstance()->logMessage("Unable to load `{$viewName}`.", 'warning');
                 return '';
             }
 
-            // PHP script
-            $viewOutput = $this->runTemplateScript($viewPath, $viewState, true);
+            // Rendered by PHP script
+            ob_start();
+            $this->globalFunctionWrapper->phpInclude($absoluteViewPath, $viewState);
+            $viewOutput = ob_get_contents();
+            ob_end_clean();
         }
 
         if ( ! is_null($languageCatalog) && ! empty($languageCatalog)) {
@@ -116,14 +139,6 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Renderer_Abstract implements Nethgu
         }
 
         return $viewOutput;
-    }
-
-    private function runTemplateScript($scriptPath, &$vars)
-    {
-        extract($vars);
-        ob_start();
-        include($scriptPath);
-        return ob_get_flush();
     }
 
     public function elementList($flags = 0)

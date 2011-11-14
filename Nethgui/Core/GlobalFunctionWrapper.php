@@ -15,8 +15,8 @@ class Nethgui_Core_GlobalFunctionWrapper
         return call_user_func_array($name, $arguments);
     }
 
-    public function xInclude($filePath, $vars) {
-        extract($vars);
+    public function phpInclude($filePath, $vars) {
+        extract($vars, EXTR_REFS);
         return include($filePath);
     }
 

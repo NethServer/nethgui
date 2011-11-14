@@ -130,7 +130,7 @@ class Nethgui_Core_View implements Nethgui_Core_ViewInterface
 
     public function translate($value, $args = array())
     {
-        return $this->translator->translate($value, $args);
+        return $this->translator->translate($this->module, $value, $args);
     }
 
     public function getTranslator()

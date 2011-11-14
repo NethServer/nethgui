@@ -28,8 +28,8 @@ class Nethgui_Language_Translator implements Nethgui_Core_TranslatorInterface, N
     public function __construct()
     {
         $this->globalFunctionWrapper = new Nethgui_Core_GlobalFunctionWrapper();
-        $this->setLanguageCode($_SERVER['HTTP_ACCEPT_LANGUAGE']);
-        $this->languageCatalogStack = array('Nethgui_Framework');
+        //$this->setLanguageCode($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+        $this->languageCatalogStack = array('Nethgui_Framework', NETHGUI_APPLICATION);
     }
 
     /**
@@ -46,7 +46,7 @@ class Nethgui_Language_Translator implements Nethgui_Core_TranslatorInterface, N
      * @param string $languageCode The language code
      * @return string
      */
-    public function translate(Nethgui_Core_ModuleInterface $module, $string, $args, $languageCode = NULL)
+    public function translate(Nethgui_Core_ModuleInterface $module, $string, $args = array(), $languageCode = NULL)
     {
         if ( ! is_string($string)) {
             throw new InvalidArgumentException(sprintf("translate(): unexpected `%s` type!", gettype($string)));
@@ -128,7 +128,7 @@ class Nethgui_Language_Translator implements Nethgui_Core_TranslatorInterface, N
             // By default prepare an identity-translation
             $translation = $key;
             if (ENVIRONMENT == 'development') {
-                $this->logMessage("Missing `$languageCode` translation for `$key`. Catalogs: " . implode(', ', $attempts), 'debug');
+                Nethgui_Framework::getInstance()->logMessage("Missing `$languageCode` translation for `$key`. Catalogs: " . implode(', ', $attempts), 'debug');
             }
         }
 
@@ -136,8 +136,7 @@ class Nethgui_Language_Translator implements Nethgui_Core_TranslatorInterface, N
     }
 
     private function loadLanguageCatalog($languageCode, $languageCatalog)
-    {
-        $L = array();
+    {        
         if (preg_match('/[a-z][a-z]/', $languageCode) == 0) {
             throw new InvalidArgumentException('Language code must be a valid ISO 639-1 language code');
         }
@@ -145,8 +144,9 @@ class Nethgui_Language_Translator implements Nethgui_Core_TranslatorInterface, N
             throw new InvalidArgumentException("Language catalog name can contain only alphanumeric or `_` characters. It was `$languageCatalog`.");
         }
         $prefix = array_shift(explode('_', $languageCatalog));
-        $filePath = dirname(__FILE__) . '/../' . $prefix . '/Language/' . $languageCode . '/' . $languageCatalog . '.php';        
-        @$this->globalFunctionWrapper->xInclude($filePath, array('L' => &$L));
+        $filePath = NETHGUI_ROOTDIR . '/' . $prefix . '/Language/' . $languageCode . '/' . $languageCatalog . '.php';
+        $L = array();
+        @$this->globalFunctionWrapper->phpInclude($filePath, array('L' => &$L));
         $this->catalogs[$languageCode][$languageCatalog] = &$L;
     }
 
