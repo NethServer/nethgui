@@ -78,7 +78,7 @@ class Nethgui_Core_ReadonlyView implements Nethgui_Core_ViewInterface
 
     public function spawnView(Nethgui_Core_ModuleInterface $module, $register = FALSE)
     {
-        throw new Nethgui_Exception_View('Cannot spawn a view now');
+        throw new Nethgui_Exception_View('Readonly view: cannot spawn another view!');
     }
 
     public function translate($message, $args = array())
@@ -106,4 +106,8 @@ class Nethgui_Core_ReadonlyView implements Nethgui_Core_ViewInterface
         return $this->view->getClientEventTarget($name);
     }
 
+    public function getModuleUrl($path = array())
+    {
+        return $this->view->getModuleUrl($path);
+    }
 }

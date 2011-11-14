@@ -18,25 +18,24 @@ class Nethgui_Module_World extends Nethgui_Core_Module_Abstract
     public function prepareView(Nethgui_Core_ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
-
-        $F = Nethgui_Framework::getInstance();
+        
         if ($mode === self::VIEW_SERVER) {
             $lang = $view->getTranslator()->getLanguageCode();
             $immutables = array(
                 'lang' => $lang,
                 'js' => new ArrayObject(array(
-                    'base' => $F->baseUrl() . 'js/jquery-1.6.2.min.js',
-                    'ui' => $F->baseUrl() . 'js/jquery-ui-1.8.16.custom.min.js',
-                    'dataTables' => $F->baseUrl() . 'js/jquery.dataTables.min.js',
-                    'test' => $F->baseUrl() . 'js/nethgui.js',
-                    'qTip' => $F->baseUrl() . 'js/jquery.qtip.min.js',
+                    'base' => NETHGUI_BASEURL . 'js/jquery-1.6.2.min.js',
+                    'ui' => NETHGUI_BASEURL . 'js/jquery-ui-1.8.16.custom.min.js',
+                    'dataTables' => NETHGUI_BASEURL . 'js/jquery.dataTables.min.js',
+                    'test' => NETHGUI_BASEURL . 'js/nethgui.js',
+                    'qTip' => NETHGUI_BASEURL . 'js/jquery.qtip.min.js',
                 /* 'switcher' => 'http://jqueryui.com/themeroller/themeswitchertool/', */
                 )),
-                'favicon' => $F->baseUrl() . 'images/favicon.ico',
-                'css' => new ArrayObject(array('0base' => $F->baseUrl() . 'css/base.css')),
+                'favicon' => NETHGUI_BASEURL . 'images/favicon.ico',
+                'css' => new ArrayObject(array('0base' => NETHGUI_BASEURL . 'css/base.css')),
             );
             if ($lang != 'en') {
-                $immutables['js']['datepicker-regional'] = $F->baseUrl() . sprintf('js/jquery.ui.datepicker-%s.js', $lang);
+                $immutables['js']['datepicker-regional'] = NETHGUI_BASEURL . sprintf('js/jquery.ui.datepicker-%s.js', $lang);
             }
 
             foreach ($immutables as $immutableName => $immutableValue) {
@@ -46,7 +45,7 @@ class Nethgui_Module_World extends Nethgui_Core_Module_Abstract
             //read css from db
             $db = $this->getPlatform()->getDatabase('configuration');
             $customCss = NETHGUI_CUSTOMCSS !== FALSE ? strval(NETHGUI_CUSTOMCSS) : $db->getProp('httpd-admin','css');
-            $view['css']['1theme'] = $F->baseUrl() .  ($customCss ? sprintf('css/%s.css', $customCss) : 'css/default.css');
+            $view['css']['1theme'] = NETHGUI_BASEURL .  ($customCss ? sprintf('css/%s.css', $customCss) : 'css/default.css');
             $view['company'] = $db->getProp('ldap','defaultCompany');
             $view['address'] = $db->getProp('ldap','defaultStreet').", ".$db->getProp('ldap','defaultCity');
         }
@@ -59,9 +58,9 @@ class Nethgui_Module_World extends Nethgui_Core_Module_Abstract
                 $view['CurrentModule'] = $innerView;
                 if( $module->getIdentifier() == 'Status')
                 {
-                   $view['css']['2dashboard'] = $F->baseUrl() . 'css/dashboard.css'; 
-                   $view['js']['chart'] = $F->baseUrl() . 'js/jquery.jqChart.min.js';
-                   $view['js']['dashboard'] = $F->baseUrl() . 'js/dashboard.js';
+                   $view['css']['2dashboard'] = NETHGUI_BASEURL . 'css/dashboard.css';
+                   $view['js']['chart'] = NETHGUI_BASEURL . 'js/jquery.jqChart.min.js';
+                   $view['js']['dashboard'] = NETHGUI_BASEURL . 'js/dashboard.js';
                 }
             }
         }

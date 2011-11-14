@@ -77,17 +77,7 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Renderer_Abstract implements Nethgu
             $languageCatalog = $module->getLanguageCatalog();
         }
         $view = $this;
-        $state = array(
-            'view' => $this,
-            'T' => function ($string, $args = array(), $language = NULL, $catalog = NULL, $hsc = TRUE) use ($view)
-            {
-                $t = $view->translate($string, $args);
-                if ($hsc) {
-                    $t = htmlspecialchars($t);
-                }
-                return $t;
-            }
-        );
+        $state = array('view' => $this);
         return $this->renderView($this->getTemplate(), $state, $languageCatalog);
     }
 

@@ -125,10 +125,10 @@ abstract class Nethgui_Widget_Abstract implements Nethgui_Renderer_WidgetInterfa
         }
 
         if (count($path) > 0 && substr($path[0], 0, 1) != '/') {
-            $path = array_merge($this->view->getModulePath(), $path);
+            return $this->view->getModuleUrl($path);
         }
-
-        return Nethgui_Framework::getInstance()->buildUrl($path, $parameters);
+        
+        return NETHGUI_BASEURL . implode('/', $path) . '?' . http_build_query($parameters);
     }
 
     protected function getClientEventTarget()

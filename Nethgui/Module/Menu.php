@@ -14,6 +14,7 @@ class Nethgui_Module_Menu extends Nethgui_Core_Module_Standard
      * @var RecursiveIterator
      */
     private $menuIterator;
+
     /**
      *
      * @var string Current menu item identifier
@@ -60,16 +61,16 @@ class Nethgui_Module_Menu extends Nethgui_Core_Module_Standard
 
     private function makeModuleAnchor(Nethgui_Renderer_Abstract $view, Nethgui_Core_ModuleInterface $module)
     {
-        $translator = $view->getTranslator();
+        $moduleView = new Nethgui_Core_View($module, $view->getTranslator());
 
         $placeholders = array(
-            '%HREF' => htmlspecialchars(Nethgui_Framework::getInstance()->buildModuleUrl($module, '')),
-            '%CONTENT' => htmlspecialchars($translator->translate($module, $module->getTitle())),
-            '%TITLE' => htmlspecialchars($translator->translate($module, $module->getDescription())),
+            '%HREF' => htmlspecialchars($moduleView->getModuleUrl()),
+            '%CONTENT' => htmlspecialchars($moduleView->translate($module->getTitle())),
+            '%TITLE' => htmlspecialchars($moduleView->translate($module->getDescription())),
         );
 
-        if($module->getIdentifier() == $this->currentItem) {
-            $placeholders['%CLASS']='currentMenuItem';
+        if ($module->getIdentifier() == $this->currentItem) {
+            $placeholders['%CLASS'] = 'currentMenuItem';
             $tpl = '<a href="%HREF" title="%TITLE" class="%CLASS">%CONTENT</a>';
         } else {
             $tpl = '<a href="%HREF" title="%TITLE">%CONTENT</a>';
@@ -102,9 +103,9 @@ class Nethgui_Module_Menu extends Nethgui_Core_Module_Standard
             $this->menuIterator->next();
         }
 
-        $form = $view->form()->setAttribute('method','get')->insert($view->textInput("search",$view::LABEL_NONE)->setAttribute('placeholder',$view->translate('Search')."..."))->insert($view->button("submit",$view::BUTTON_SUBMIT))->insert($rootList);
+        $form = $view->form()->setAttribute('method', 'get')->insert($view->textInput("search", $view::LABEL_NONE)->setAttribute('placeholder', $view->translate('Search') . "..."))->insert($view->button("submit", $view::BUTTON_SUBMIT))->insert($rootList);
 
-        return   "<div class=\"Navigation Flat ".$view->getClientEventTarget("tags")."\">$form</div>";
+        return "<div class=\"Navigation Flat " . $view->getClientEventTarget("tags") . "\">$form</div>";
     }
 
     private function iteratorToSearch(RecursiveIterator $menuIterator, &$tags = array())
@@ -114,22 +115,20 @@ class Nethgui_Module_Menu extends Nethgui_Core_Module_Standard
         while ($menuIterator->valid()) {
 
             $module = $menuIterator->current();
- 
-            list($key,$value) = @each($module->getTags(Nethgui_Framework::getInstance()));
-            if($key) { 
-                $tags[$key] =$value;
+
+            list($key, $value) = @each($module->getTags(Nethgui_Framework::getInstance()));
+            if ($key) {
+                $tags[$key] = $value;
             }
- 
+
             if ($menuIterator->hasChildren()) {
-                $this->iteratorToSearch($menuIterator->getChildren(), $tags); 
-            } 
+                $this->iteratorToSearch($menuIterator->getChildren(), $tags);
+            }
 
             $menuIterator->next();
         }
         return $tags;
     }
-
-
 
     public function prepareView(Nethgui_Core_ViewInterface $view, $mode)
     {
@@ -137,23 +136,23 @@ class Nethgui_Module_Menu extends Nethgui_Core_Module_Standard
 
         if ($mode === self::VIEW_SERVER) {
             $view->setTemplate(array($this, 'renderModuleMenu'));
+        } elseif ($mode === self::VIEW_CLIENT) {
+            $request = $this->getRequest();
+            if (is_null($request)) {
+                return;
+            }
+            $action = array_shift($request->getArguments());
+            if ( ! $action) { //search
+                $tmp = $this->iteratorToSearch($this->menuIterator);
+                foreach ($tmp as $url => $tags) {
+                    $it = new RecursiveIteratorIterator(new RecursiveArrayIterator($tags));
+                    foreach ($it as $v) {
+                        $tmp2[$url][] = $v;
+                    }
+                }
+                $view['tags'] = $tmp2;
+            }
         }
-
-        $request = $this->getRequest();
-        if(is_null($request) || $mode != self::VIEW_CLIENT)
-            return;
-
-        $action = array_shift($request->getArguments());
-        if(!$action) { //search
-           $tmp = $this->iteratorToSearch($this->menuIterator);
-           foreach($tmp as $url=>$tags) {
-               $it = new RecursiveIteratorIterator(new RecursiveArrayIterator($tags));
-               foreach($it as $v) {
-                   $tmp2[$url][] = $v;
-               }
-           }
-           $view['tags'] = $tmp2;
-        }
-
     }
+
 }

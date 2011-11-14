@@ -191,4 +191,77 @@ class Nethgui_Core_View implements Nethgui_Core_ViewInterface
         return substr(md5($this->getUniqueId($name)), 0, 8);
     }
 
+    /**
+     * @param string|array $path
+     * @param array $parameters
+     */
+    private function buildUrl($path, $parameters = array())
+    {
+        $fragment = '';
+
+        if (is_array($path)) {
+            $path = implode('/', $path);
+        }
+
+        $path = explode('/', $path);
+        $path = array_reverse($path);
+        $segments = array();
+
+        while (list($index, $slice) = each($path)) {
+            if ($slice == '.' || ! $slice) {
+                continue;
+            } elseif ($slice == '..') {
+                next($path);
+                continue;
+            } elseif ($slice[0] == '#') {
+                $fragment = $slice;
+                continue;
+            }
+
+            array_unshift($segments, $slice);
+        }
+
+        // FIXME: skip controller segments if url rewriting is active:
+        if (NETHGUI_CONTROLLER) {
+            array_unshift($segments, NETHGUI_CONTROLLER);
+        }
+
+        if ( ! empty($parameters)) {
+            $url = NETHGUI_BASEURL . implode('/', $segments) . '?' . http_build_query($parameters);
+        } else {
+            $url = NETHGUI_BASEURL . implode('/', $segments);
+        }
+
+        return $url . $fragment;
+    }
+
+    /**
+     * Prepend the $module path to $path, resulting in a full URL
+     * @param Nethgui_Core_ModuleInterface  $module
+     * @param array|string $path;
+     */
+    private function buildModuleUrl(Nethgui_Core_ModuleInterface $module, $path = array())
+    {
+        if (is_string($path)) {
+            $path = array($path);
+        }
+
+        do {
+            array_unshift($path, $module->getIdentifier());
+            $module = $module->getParent();
+        } while ( ! is_null($module));
+
+        return $this->buildUrl($path, array());
+    }
+
+    /**
+     *
+     * @param string|array $path
+     * @return string
+     */
+    public function getModuleUrl($path = array())
+    {
+        return $this->buildModuleUrl($this->module, $path);
+    }
+
 }

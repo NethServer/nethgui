@@ -17,7 +17,8 @@ class Nethgui_Client_Command_Redirect implements Nethgui_Client_CommandInterface
 
     public function __construct(Nethgui_Core_ModuleInterface $module, $path = array())
     {
-        $this->url = Nethgui_Framework::getInstance()->buildModuleUrl($module, $path);
+        // FIXME: buildModuleUrl()
+        //        $this->url = Nethgui_Framework::getInstance()->buildModuleUrl($module, $path);
     }
 
     public function getArguments()

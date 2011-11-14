@@ -13,11 +13,18 @@
  */
 abstract class Nethgui_Renderer_Abstract extends Nethgui_Core_ReadonlyView
 {
+
     abstract protected function render();
 
     public function __toString()
     {
-        return $this->render();
+        try {
+            return $this->render();
+        } catch (Exception $ex) {
+            error_log($ex->getMessage() . '; ' . sprintf('file: %s, line: %d.', $ex->getFile(), $ex->getLine()));
+            throw $ex;
+        }
     }
+
 }
 

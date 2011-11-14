@@ -3,7 +3,7 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="<?php echo $view['lang'] ?>" xml:lang="<?php echo $view['lang'] ?>">
     <head>
-        <title><?php echo T($view['title']) ?></title>
+        <title><?php echo htmlspecialchars($view->translate($view['title'])) ?></title>
     </head>
     <body>
         <div id="HelpDocument">

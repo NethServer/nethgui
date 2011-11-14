@@ -63,6 +63,9 @@ interface Nethgui_Core_ViewInterface extends ArrayAccess, IteratorAggregate
      */
     public function getModulePath();
 
+
+    public function getModuleUrl($path = array());
+
     /**
      * Generate a unique identifier for the given $parts. If no parts are given
      * the identifier refers the the module referenced by the view.

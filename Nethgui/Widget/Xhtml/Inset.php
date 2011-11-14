@@ -33,7 +33,7 @@ class Nethgui_Widget_Xhtml_Inset extends Nethgui_Widget_Xhtml
         return $content;
     }
 
-    protected function wrapView(Nethgui_Renderer_Xhtml $inset)
+    private function wrapView(Nethgui_Renderer_Xhtml $inset)
     {
         $module = $inset->getModule();
 

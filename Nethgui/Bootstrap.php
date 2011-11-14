@@ -20,8 +20,36 @@ if ( ! defined('NETHGUI_ENVIRONMENT')) {
     exit("Bootstrap: NETHGUI_ENVIRONMENT is not defined.");
 }
 
+if ( ! defined('NETHGUI_CONTROLLER')) {
+    define('NETHGUI_CONTROLLER', 'index.php/dispatcher');
+}
+
+function _nethgui_calc_baseurl()
+{
+
+}
+
+if ( ! defined('NETHGUI_BASEURL')) {
+    $f = function ($scriptName)
+        {
+            $parts = array_values(array_filter(explode('/', $scriptName)));
+            $lastPart = $parts[max(0, count($parts) - 1)];
+            $nethguiFile = basename(NETHGUI_FILE);
+
+            if ($lastPart == $nethguiFile) {
+                array_pop($parts);
+            }
+            return '/' . implode('/', $parts) . '/';
+        };
+
+
+    define('NETHGUI_BASEURL', $f($_SERVER['SCRIPT_NAME']));
+
+    unset($f);
+}
+
 // Find the root directory, where Nethgui/ and APPLICATION dirs are placed:
-define ('NETHGUI_ROOTDIR', realpath(dirname(__FILE__) . '/..'));
+define('NETHGUI_ROOTDIR', realpath(dirname(__FILE__) . '/..'));
 ini_set('include_path', ini_get('include_path') . ':' . NETHGUI_ROOTDIR);
 
 switch (NETHGUI_ENVIRONMENT) {

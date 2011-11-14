@@ -31,7 +31,8 @@ class Nethgui_Client_Command_Activate implements Nethgui_Client_CommandInterface
 
     public function getArguments()
     {
-        $url = Nethgui_Framework::getInstance()->buildModuleUrl($this->action);
+        // FIXME: buildModuleUrl()
+        //$url = Nethgui_Framework::getInstance()->buildModuleUrl($this->action);
         if (is_null($this->cancelAction)) {
             return array($url);
         }

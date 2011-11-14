@@ -19,7 +19,7 @@
                 </div>
 
                 <div class="secondaryContent" role="otherTask">
-                    <h2><?php echo $T('Other modules') ?></h2>
+                    <h2><?php echo htmlspecialchars($view->translate('Other modules')) ?></h2>
                     <?php echo $view->inset('Menu') ?>
                 </div>
             </div>

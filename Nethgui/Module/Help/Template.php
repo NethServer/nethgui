@@ -23,7 +23,7 @@ class Nethgui_Module_Help_Template extends Nethgui_Module_Help_Common
         $rootView['title'] = $this->module->getTitle();
         $rootView['lang'] = Nethgui_Framework::getInstance()->getLanguageCode();
         $rootView['content'] = $moduleView;
-        $rootView['url'] = NETHGUI_SITEURL . Nethgui_Framework::getInstance()->buildModuleUrl($this, $this->module->getIdentifier() . '.html');
+        $rootView['url'] = NETHGUI_SITEURL . $rootView->getModuleUrl($this->module->getIdentifier() . '.html');
 
         $this->globalFunctions->header("Content-Type: text/html; charset=UTF-8");
         echo (String) new Nethgui_Renderer_Xhtml($rootView);

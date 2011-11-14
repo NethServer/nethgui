@@ -4,7 +4,7 @@
         <?php
             foreach ($view['columns'] as $columnInfo) {
                 echo isset($columnInfo['formatter']) ? '<th class="' . $columnInfo['formatter'] . '">' : '<th>';
-                echo  T($columnInfo['name'] . '_label');
+                echo htmlspecialchars($view->translate($columnInfo['name'] . '_label'));
                 echo '</th>';
             }
         ?>
@@ -17,4 +17,4 @@
         <?php endforeach; ?>
     </tr>
     <?php endforeach; ?></tbody>
-</table><?php else: echo '<p>' . T('Empty table') . '</p>'; endif ?></div>
+</table><?php else: echo '<p>' . htmlspecialchars($view->translate('Empty table')) . '</p>'; endif ?></div>

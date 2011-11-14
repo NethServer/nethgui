@@ -25,11 +25,14 @@ class Nethgui_Language_Translator implements Nethgui_Core_TranslatorInterface, N
     private $languageCatalogStack;
     private $catalogs = array();
 
+    static $instance = 0;
+
     public function __construct()
     {
         $this->globalFunctionWrapper = new Nethgui_Core_GlobalFunctionWrapper();
         //$this->setLanguageCode($_SERVER['HTTP_ACCEPT_LANGUAGE']);
         $this->languageCatalogStack = array('Nethgui_Framework', NETHGUI_APPLICATION);
+        error_log('Translator instance ' . ++self::$instance);
     }
 
     /**
