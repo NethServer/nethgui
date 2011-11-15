@@ -39,7 +39,7 @@ class Nethgui_System_NethPlatformTest extends PHPUnit_Framework_TestCase
     public function testGetDatabase()
     {
         $db = $this->object->getDatabase('testdb');
-        $this->assertInstanceOf('Nethgui_System_ConfigurationDatabase', $db, $message);
+        $this->assertInstanceOf('Nethgui_System_ConfigurationDatabase', $db);
     }
 
     /**

@@ -18,15 +18,31 @@ class Nethgui_System_ValidatorTest extends PHPUnit_Framework_TestCase
      */
     protected $object;
 
+    /**
+     *
+     * @var Nethgui_System_PlatformInterface
+     */
+    private $platform;
+
     protected function setUp()
     {
-        $this->object = new Nethgui_System_Validator;
+        $this->platform = $this->getMockBuilder('Nethgui_System_PlatformInterface')
+            ->disableOriginalConstructor()
+            //->setMethods(array('getDateFormat'))
+            ->getMock();
+
+        $this->platform
+            ->expects($this->any())
+                ->method('getDateFormat')
+                ->will($this->returnValue('YYYY-mm-dd'));
+
+        $this->object = new Nethgui_System_Validator($this->platform);
     }
 
     public function testOrValidator()
     {
-        $v1 = new Nethgui_System_Validator();
-        $v2 = new Nethgui_System_Validator();
+        $v1 = new Nethgui_System_Validator($this->platform);
+        $v2 = new Nethgui_System_Validator($this->platform);
         $v1->equalTo(1);
         $v2->equalTo(2);
         $this->object->orValidator($v1, $v2);
@@ -65,7 +81,6 @@ class Nethgui_System_ValidatorTest extends PHPUnit_Framework_TestCase
         $this->object->regexp('/[0-9]+/');
         $this->assertFalse($this->object->evaluate('aaaaa'));
     }
-
 
     public function testNotEmpty()
     {
@@ -120,7 +135,6 @@ class Nethgui_System_ValidatorTest extends PHPUnit_Framework_TestCase
             'This test has not been implemented yet.'
         );
     }
-    
 
     /**
      * @todo Implement testIpV6Address().
@@ -132,8 +146,6 @@ class Nethgui_System_ValidatorTest extends PHPUnit_Framework_TestCase
             'This test has not been implemented yet.'
         );
     }
-
-
 
     /**
      * @todo Implement testIpV6Netmask().
@@ -170,7 +182,7 @@ class Nethgui_System_ValidatorTest extends PHPUnit_Framework_TestCase
 
     public function testCollectionValidatorNotEmptyMembers()
     {
-        $v = new Nethgui_System_Validator();
+        $v = new Nethgui_System_Validator($this->platform);
 
         // check members are not empty
         $v->notEmpty();
@@ -244,8 +256,7 @@ class Nethgui_System_ValidatorTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->object->evaluate('99'));
         $this->assertFalse($this->object->evaluate('100'));
         $this->assertFalse($this->object->evaluate('101'));
-
-        }
+    }
 
     public function testEqualTo()
     {

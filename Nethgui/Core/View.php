@@ -53,11 +53,11 @@ class Nethgui_Core_View implements Nethgui_Core_ViewInterface, Nethgui_Log_LogCo
 
     /**
      *
-     * @var Nethgui_Language_Translator;
+     * @var Nethgui_Core_TranslatorInterface;
      */
     private $translator;
 
-    public function __construct(Nethgui_Core_ModuleInterface $module, Nethgui_Language_Translator $translator)
+    public function __construct(Nethgui_Core_ModuleInterface $module, Nethgui_Core_TranslatorInterface $translator)
     {
         $this->module = $module;
         $this->translator = $translator;
@@ -214,7 +214,7 @@ class Nethgui_Core_View implements Nethgui_Core_ViewInterface, Nethgui_Log_LogCo
                 if ( ! empty($segments)) {
                     array_pop($segments);
                     continue;
-                }                
+                }
             } elseif ($slice[0] == '#') {
                 $fragment = $slice;
                 continue;
@@ -277,8 +277,10 @@ class Nethgui_Core_View implements Nethgui_Core_ViewInterface, Nethgui_Log_LogCo
     {
         if ($this->getModule() instanceof Nethgui_Log_LogConsumerInterface) {
             return $this->getModule()->getLog();
-        } else {
+        } elseif ($this->translator instanceof Nethgui_Log_LogConsumerInterface) {
             return $this->translator->getLog();
+        } else {
+            return new Nethgui_Log_Nullog();
         }
     }
 

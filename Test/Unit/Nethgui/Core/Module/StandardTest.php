@@ -19,6 +19,25 @@ class Nethgui_Core_Module_StandardTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->object = new Test_Unit_ConcreteStandardModule1();
+
+        $validator = $this->getMockBuilder('Nethgui_System_Validator')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $validator->expects($this->any())
+            ->method($this->anything())
+            ->will($this->returnValue($validator));
+
+        $platform = $this->getMockBuilder('Nethgui_System_PlatformInterface')
+            ->disableOriginalConstructor()            
+            ->getMock();
+
+        $platform
+            ->expects($this->any())
+            ->method('createValidator')
+            ->will($this->returnValue($validator));
+
+        $this->object->setPlatform($platform);
     }
 
     public function testIsInitialized()

@@ -34,8 +34,17 @@ class Nethgui_Core_ViewGenericTest extends PHPUnit_Framework_TestCase
         $module->expects($this->any())
             ->method('getParent')
             ->will($this->returnValue($parentModule));
+
+        $translator = $this->getMockBuilder('Nethgui_Core_TranslatorInterface')
+            ->getMock();
         
-        $this->object = new Nethgui_Core_View($module);
+        $translator->expects($this->any())
+            ->method('translate')->will($this->returnArgument(0));
+
+        $translator->expects($this->any())
+            ->method('getLanguageCode')->will($this->returnValue('en'));
+
+        $this->object = new Nethgui_Core_View($module, $translator);
     }
 
     /**
