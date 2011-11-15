@@ -93,7 +93,11 @@ interface Nethgui_Client_UserInterface extends ArrayAccess
 
     public function getTracedProcess($name);
 
-
+    /**
+     * Get the current language code
+     * @return string ISO 639-1 language code (2 characters).
+     */
+    public function getLanguageCode();   
 
 }
 

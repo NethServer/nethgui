@@ -256,9 +256,7 @@ interface Nethgui_Renderer_WidgetFactoryInterface
      * Refs #474
      *
      * Attributes:
-     * - format (string) one of "" (default), "be", "me", "le"
-     *
-     * @see Nethgui_Framework::getDateFormat();
+     * - class (string) "Date " plus one of "be" (default), "me", "le".
      */
     public function dateInput($name, $flags);
 

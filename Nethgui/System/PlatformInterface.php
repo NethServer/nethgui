@@ -102,7 +102,18 @@ interface Nethgui_System_PlatformInterface
      */
     public function exec($command, $arguments = array(), $detached = FALSE);
    
-        
+    
+    /**
+     * Create a system validator object
+     * @return Nethgui_System_Validator
+     */
+    public function createValidator();
+
+    /**
+     * Get the system internal date format
+     * @return string
+     */
+    public function getDateFormat();
 }
 
 

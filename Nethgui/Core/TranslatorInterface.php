@@ -10,6 +10,7 @@
  */
 interface Nethgui_Core_TranslatorInterface
 {
+
     /**
      * @param Nethgui_Core_ModuleInterface $module
      * @param string $string
@@ -20,17 +21,8 @@ interface Nethgui_Core_TranslatorInterface
     public function translate(Nethgui_Core_ModuleInterface $module, $string, $args = array(), $languageCode = NULL);
 
     /**
-     * @param string $code
-     */
-    public function setLanguageCode($code);
-
-    /**
-     * @return string
+     * Get the default language code
+     * @return string ISO 639-1 language code (2 characters).
      */
     public function getLanguageCode();
-
-    /**
-     * @return string
-     */
-    public function getDateFormat();
 }

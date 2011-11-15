@@ -45,8 +45,19 @@ class Nethgui_Client_AlwaysAuthenticatedUser implements Nethgui_Client_UserInter
      */
     private $processes;
 
+    /**
+     * @var string
+     */
+    private $languageCode;
+
     public function __construct()
     {
+        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+            $this->setLanguageCode($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+        } else {
+            $this->setLanguageCode('en');
+        }
+
         session_name('Nethgui');
         if (session_id() == '') {
             session_start();
@@ -190,6 +201,23 @@ class Nethgui_Client_AlwaysAuthenticatedUser implements Nethgui_Client_UserInter
             return FALSE;
         }
         return $this->processes[$name];
+    }
+
+    /**
+     * Set the current language code
+     * @param string $code ISO 639-1 language code (2 characters).
+     */
+    private function setLanguageCode($languageCode)
+    {
+        if ($languageCode) {
+            $this->languageCode = strtolower(substr($languageCode, 0, 2));
+        }
+    }
+
+
+    public function getLanguageCode()
+    {
+        return $this->languageCode;
     }
 
 }

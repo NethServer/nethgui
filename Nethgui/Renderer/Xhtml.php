@@ -315,17 +315,11 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Renderer_Abstract implements Nethgu
 
     public function dateInput($name, $flags = 0)
     {
-        $dateFormat = substr(strtolower(Nethgui_Framework::getInstance()->getDateFormat()), 0, 2);
-
-        if ($dateFormat == 'dd') {
-            $encodedFormat = 'le';
-        } elseif ($dateFormat == 'mm') {
-            $encodedFormat = 'me';
-        } else {
-            $encodedFormat = 'be';
-        }
-
-        return $this->textInput('date')->setAttribute('class', 'Date ' . $encodedFormat);
+        /*
+         * Set to "be" (Big Endian) date format. Supported also "le" and "me".
+         * see http://en.wikipedia.org/wiki/Calendar_date
+         */
+        return $this->textInput('date')->setAttribute('class', 'Date be');
     }
 
     public function objectPicker($name = NULL, $flags = 0)

@@ -248,4 +248,13 @@ class Nethgui_System_NethPlatform implements Nethgui_System_PlatformInterface, N
         $this->log = $log;
     }
 
+    public function createValidator()
+    {
+        return new Nethgui_System_Validator($this);
+    }
+
+    public function getDateFormat()
+    {
+        return 'YYYY-mm-dd';
+    }
 }

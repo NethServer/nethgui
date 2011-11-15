@@ -205,9 +205,9 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
     protected function declareParameter($parameterName, $validator = FALSE, $valueProvider = NULL)
     {
         if (is_string($validator) && $validator[0] == '/') {
-            $validator = $this->getValidator()->regexp($validator);
+            $validator = $this->createValidator()->regexp($validator);
         } elseif ($validator === FALSE) {
-            $validator = $this->getValidator()->forceResult(FALSE);
+            $validator = $this->createValidator()->forceResult(FALSE);
         } elseif (is_integer($validator)) {
             $validator = $this->createValidatorFromInteger($validator);
         }
@@ -314,17 +314,17 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
      */
     private function createValidatorFromInteger($ruleCode)
     {
-        $validator = $this->getValidator();
+        $validator = $this->createValidator();
 
         switch ($ruleCode) {
             case self::VALID_ANYTHING:
                 return $validator->forceResult(TRUE);
 
             case self::VALID_ANYTHING_COLLECTION:
-                return $validator->orValidator($this->getValidator()->isEmpty(), $this->getValidator()->collectionValidator($this->getValidator()->forceResult(TRUE)));
+                return $validator->orValidator($this->createValidator()->isEmpty(), $this->createValidator()->collectionValidator($this->createValidator()->forceResult(TRUE)));
 
             case self::VALID_USERNAME_COLLECTION:
-                return $validator->orValidator($this->getValidator()->isEmpty(), $this->getValidator()->collectionValidator($this->getValidator()->username()));
+                return $validator->orValidator($this->createValidator()->isEmpty(), $this->createValidator()->collectionValidator($this->createValidator()->username()));
 
             case self::VALID_SERVICESTATUS:
                 return $validator->memberOf('enabled', 'disabled');
@@ -336,7 +336,7 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
                 return $validator->hostname();
 
             case self::VALID_HOSTADDRESS:
-                return $validator->orValidator($this->getValidator()->ipV4Address(), $this->getValidator()->hostname());
+                return $validator->orValidator($this->createValidator()->ipV4Address(), $this->createValidator()->hostname());
 
             case self::VALID_NOTEMPTY:
                 return $validator->notEmpty();
@@ -369,7 +369,7 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
 
             case self::VALID_IP_OR_EMPTY:
             case self::VALID_IPv4_OR_EMPTY:
-                return $validator->orValidator($this->getValidator()->ipV4Address(), $this->getValidator()->isEmpty());
+                return $validator->orValidator($this->createValidator()->ipV4Address(), $this->createValidator()->isEmpty());
             
             case self::VALID_YES_NO:
                 return $validator->memberOf('yes', 'no');
@@ -379,13 +379,12 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
         throw new InvalidArgumentException('Unknown standard validator code: ' . $ruleCode);
     }
 
-    /**
-     * @todo Rename to createValidator()
-     * @return Nethgui_Core_Validator
+    /**     
+     * @return Nethgui_System_Validator
      */
-    protected function getValidator()
+    protected function createValidator()
     {
-        return new Nethgui_System_Validator();
+        return $this->getPlatform()->createValidator();
     }
 
     /**

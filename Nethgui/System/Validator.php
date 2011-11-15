@@ -13,6 +13,16 @@ class Nethgui_System_Validator implements Nethgui_Core_ValidatorInterface
 
     private $chain = array();
     private $failureInfo;
+    /**
+     *
+     * @var Nethgui_System_PlatformInterface
+     */
+    private $platform;
+
+    public function __construct(Nethgui_System_PlatformInterface $platform)
+    {
+        $this->platform = $platform;
+    }
 
     /**
      *
@@ -234,7 +244,7 @@ class Nethgui_System_Validator implements Nethgui_Core_ValidatorInterface
     public function date($format = NULL)
     {
         if (is_null($format)) {
-            $format = Nethgui_Framework::getInstance()->getDateFormat();
+            $format = $this->platform->getDateFormat();
         }
 
         $template = array('valid_date ${0}', array('${0}' => $format));

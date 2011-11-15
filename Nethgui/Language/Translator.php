@@ -15,8 +15,7 @@ class Nethgui_Language_Translator implements Nethgui_Core_TranslatorInterface, N
      * @var Nethgui_Core_GlobalFunctionWrapper
      */
     private $globalFunctionWrapper;
-    private $languageCode = 'it';
-
+    
     /**
      * This is a stack of catalog names. Current catalog is the last element
      * of the array.
@@ -25,12 +24,23 @@ class Nethgui_Language_Translator implements Nethgui_Core_TranslatorInterface, N
     private $languageCatalogStack;
     private $catalogs = array();
 
-    public function __construct(Nethgui_Log_AbstractLog $log)
+    /**
+     *
+     * @var Nethgui_Client_UserInterface
+     */
+    private $user;
+
+    /**
+     * 
+     * @param Nethgui_Client_UserInterface $user
+     * @param Nethgui_Log_AbstractLog $log
+     */
+    public function __construct(Nethgui_Client_UserInterface $user, Nethgui_Log_AbstractLog $log)
     {
-        $this->globalFunctionWrapper = new Nethgui_Core_GlobalFunctionWrapper();
-        $this->setLanguageCode($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+        $this->globalFunctionWrapper = new Nethgui_Core_GlobalFunctionWrapper();        
         $this->languageCatalogStack = array('Nethgui_Framework', NETHGUI_APPLICATION);
         $this->log = $log;
+        $this->user = $user;
     }
 
     /**
@@ -54,7 +64,7 @@ class Nethgui_Language_Translator implements Nethgui_Core_TranslatorInterface, N
         }
 
         if ( ! isset($languageCode)) {
-            $languageCode = $this->languageCode;
+            $languageCode = $this->user->getLanguageCode();
         }
 
         if (empty($languageCode)) {
@@ -157,45 +167,6 @@ class Nethgui_Language_Translator implements Nethgui_Core_TranslatorInterface, N
         $this->catalogs[$languageCode][$languageCatalog] = &$L;
     }
 
-    /**
-     * Set the current language code
-     * @param string $code ISO 639-1 language code (2 characters).
-     */
-    public function setLanguageCode($code)
-    {
-        if ($code) {
-            $this->languageCode = strtolower(substr($code, 0, 2));
-        }
-    }
-
-    /**
-     * Get the current language code
-     * @return string ISO 639-1 language code (2 characters).
-     */
-    public function getLanguageCode()
-    {
-        return $this->languageCode;
-    }
-
-    /**
-     * Get the date format according to the current language
-     * @return string
-     */
-    public function getDateFormat()
-    {
-        switch ($this->getLanguageCode()) {
-            case 'xx': // UNUSED - middle endian
-                $format = 'mm-dd-YYYY';
-                break;
-            case 'yy': // UNUSER - little endian
-                $format = 'dd/mm/YYYY';
-                break;
-            default: // big endian ISO 8601
-                $format = 'YYYY-mm-dd';
-        }
-
-        return $format;
-    }
 
     private function extractLanguageCatalogStack(Nethgui_Core_ModuleInterface $module)
     {
@@ -231,6 +202,11 @@ class Nethgui_Language_Translator implements Nethgui_Core_TranslatorInterface, N
     {
         $this->log = $log;
         return $this;
+    }
+
+    public function getLanguageCode()
+    {
+        return $this->user->getLanguageCode();
     }
 
 }

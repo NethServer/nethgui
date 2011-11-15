@@ -115,7 +115,7 @@ class Nethgui_Framework
         $worldModule = new Nethgui_Module_World();
         $worldModule->setPlatform($platform);
         
-        $view = new Nethgui_Core_View($worldModule, new Nethgui_Language_Translator($platform->getLog()));
+        $view = new Nethgui_Core_View($worldModule, new Nethgui_Language_Translator($user, $platform->getLog()));
 
         try {
             foreach ($moduleWakeupList as $moduleIdentifier) {
