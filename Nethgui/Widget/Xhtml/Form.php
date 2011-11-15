@@ -19,12 +19,12 @@ class Nethgui_Widget_Xhtml_Form extends Nethgui_Widget_Xhtml_Panel
 
     public function render()
     {                       
-        $action = $this->getAttribute('action');
+        $action = $this->getAttribute('action', '');
         $this->setAttribute('class', $this->getAttribute('class', FALSE));
         $this->setAttribute('name', FALSE);
 
         $content = '';
-        $content .= $this->openTag('form', array('method' => 'post', 'action' => $this->buildUrl($action)));
+        $content .= $this->openTag('form', array('method' => 'post', 'action' => $this->view->getModuleUrl($action)));
         $content .= parent::render();
         $content .= $this->closeTag('form');
 

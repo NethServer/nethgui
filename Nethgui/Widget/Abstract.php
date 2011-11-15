@@ -106,31 +106,6 @@ abstract class Nethgui_Widget_Abstract implements Nethgui_Renderer_WidgetInterfa
         }
     }
 
-    /**
-     *
-     * @param array|string $_ Arguments for URL
-     * @return string the URL
-     */
-    protected function buildUrl()
-    {
-        $parameters = array();
-        $path = array();
-
-        foreach (func_get_args() as $arg) {
-            if (is_array($arg)) {
-                $parameters = array_merge($parameters, $arg);
-            } else {
-                $path[] = strval($arg);
-            }
-        }
-
-        if (count($path) > 0 && substr($path[0], 0, 1) != '/') {
-            return $this->view->getModuleUrl($path);
-        }
-        
-        return NETHGUI_BASEURL . implode('/', $path) . '?' . http_build_query($parameters);
-    }
-
     protected function getClientEventTarget()
     {
         if ( ! $this->hasAttribute('name')) {

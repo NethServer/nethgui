@@ -42,14 +42,15 @@ class Nethgui_Widget_Xhtml_Button extends Nethgui_Widget_Xhtml
                     $value = $name;
                 } elseif ($flags & Nethgui_Renderer_WidgetFactoryInterface::BUTTON_CANCEL) {
                     $value = '..';
+                } elseif ($flags & Nethgui_Renderer_WidgetFactoryInterface::BUTTON_HELP) {
+                    $value = array_shift($this->view->getModulePath());
                 }
             }
 
             if ($flags & Nethgui_Renderer_WidgetFactoryInterface::BUTTON_CANCEL) {
                 $cssClass .= ' cancel';
             } elseif ($flags & Nethgui_Renderer_WidgetFactoryInterface::BUTTON_HELP) {
-                // Pick the root module identifier:
-                $value = '/Help/Read/' . array_shift($this->view->getModulePath()) . '.html#HelpArea';
+                $value = array_merge(array_fill(0, count($this->view->getModulePath()), '..'), array('Help', 'Read', urlencode($value) . '.html', '#HelpArea'));
                 $cssClass .= ' Help';
             } else {
                 $cssClass .= ' link ' . $this->getClientEventTarget();
@@ -95,15 +96,13 @@ class Nethgui_Widget_Xhtml_Button extends Nethgui_Widget_Xhtml
 
     private function prepareHrefAttribute($value)
     {
-        if (is_string($value) && preg_match('/https?/', parse_url($value, PHP_URL_SCHEME))) {
+        if (is_string($value) && preg_match('#^(https?|/)#', $value)) {
+            // Leave skip processing of absolute and fully qualified URLs
             return $value;
+        } elseif ( ! is_array($value)) {
+            $value = array(strval($value));
         }
-
-        if ( ! is_array($value)) {
-            $value = array($value);
-        }
-
-        return call_user_func_array(array($this, 'buildUrl'), $value);
+        return $this->view->getModuleUrl($value);
     }
 
 }

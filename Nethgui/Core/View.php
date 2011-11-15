@@ -204,21 +204,23 @@ class Nethgui_Core_View implements Nethgui_Core_ViewInterface, Nethgui_Log_LogCo
         }
 
         $path = explode('/', $path);
-        $path = array_reverse($path);
+
         $segments = array();
 
         while (list($index, $slice) = each($path)) {
             if ($slice == '.' || ! $slice) {
                 continue;
             } elseif ($slice == '..') {
-                next($path);
-                continue;
+                if ( ! empty($segments)) {
+                    array_pop($segments);
+                    continue;
+                }                
             } elseif ($slice[0] == '#') {
                 $fragment = $slice;
                 continue;
             }
 
-            array_unshift($segments, $slice);
+            $segments[] = $slice;
         }
 
         // FIXME: skip controller segments if url rewriting is active:
@@ -242,7 +244,9 @@ class Nethgui_Core_View implements Nethgui_Core_ViewInterface, Nethgui_Log_LogCo
      */
     private function buildModuleUrl(Nethgui_Core_ModuleInterface $module, $path = array())
     {
-        if (is_string($path)) {
+        if (empty($path)) {
+            $path = array();
+        } elseif (is_string($path)) {
             $path = array($path);
         }
 
