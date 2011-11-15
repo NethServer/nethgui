@@ -116,7 +116,7 @@ class Nethgui_Module_Menu extends Nethgui_Core_Module_Standard
 
             $module = $menuIterator->current();
 
-            list($key, $value) = @each($module->getTags(Nethgui_Framework::getInstance()));
+            list($key, $value) = @each($module->getTags(NULL));
             if ($key) {
                 $tags[$key] = $value;
             }

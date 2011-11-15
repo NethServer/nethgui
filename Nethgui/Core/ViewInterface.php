@@ -90,7 +90,7 @@ interface Nethgui_Core_ViewInterface extends ArrayAccess, IteratorAggregate
      * @param string $value
      * @param array $args
      * @return string
-     * @see Nethgui_Framework::translate()
+     * @see Nethgui_Core_TranslatorInterface::translate()
      */
     public function translate($message, $args = array());
 

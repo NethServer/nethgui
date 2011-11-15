@@ -8,6 +8,8 @@
  *
  * @ignore
  */
+date_default_timezone_set('UTC');
+
 if ( ! defined('NETHGUI_FILE')) {
     exit("Bootstrap: NETHGUI_FILE is not defined.");
 }
@@ -20,14 +22,30 @@ if ( ! defined('NETHGUI_ENVIRONMENT')) {
     exit("Bootstrap: NETHGUI_ENVIRONMENT is not defined.");
 }
 
+// Find the root directory, where Nethgui/ and APPLICATION dirs are placed:
+define('NETHGUI_ROOTDIR', realpath(dirname(__FILE__) . '/..'));
+
+if ( ! NETHGUI_ROOTDIR) {
+    exit("Bootstrap: Failed in setting NETHGUI_ROOTDIR");
+}
+
+ini_set('include_path', ini_get('include_path') . ':' . NETHGUI_ROOTDIR);
+
+if ( ! defined('NETHGUI_NATIVE')) {
+    // Default to FALSE: enable CodeIgniter framework
+    define('NETHGUI_NATIVE', FALSE);
+}
+
 if ( ! defined('NETHGUI_CONTROLLER')) {
-    define('NETHGUI_CONTROLLER', 'index.php/dispatcher');
+    // This is the FE controller URL path fragment
+    define('NETHGUI_CONTROLLER', NETHGUI_NATIVE ? basename(NETHGUI_FILE) : basename(NETHGUI_FILE) . '/dispatcher');
 }
 
-function _nethgui_calc_baseurl()
-{
-
+if ( ! defined('NETHGUI_INDEX')) {
+    // Set to the default application module identifier:
+    define('NETHGUI_INDEX', FALSE);
 }
+
 
 if ( ! defined('NETHGUI_BASEURL')) {
     $f = function ($scriptName)
@@ -42,19 +60,15 @@ if ( ! defined('NETHGUI_BASEURL')) {
             return '/' . implode('/', $parts) . '/';
         };
 
-
+    // This is the prefix to any Nethgui-generated URL
     define('NETHGUI_BASEURL', $f($_SERVER['SCRIPT_NAME']));
-
     unset($f);
 }
 
-// Find the root directory, where Nethgui/ and APPLICATION dirs are placed:
-define('NETHGUI_ROOTDIR', realpath(dirname(__FILE__) . '/..'));
-ini_set('include_path', ini_get('include_path') . ':' . NETHGUI_ROOTDIR);
-
 switch (NETHGUI_ENVIRONMENT) {
     case 'development':
-        error_reporting(E_ALL | E_STRICT);
+        //error_reporting(E_ALL | E_STRICT);
+        error_reporting(E_ALL);
         break;
 
     case 'testing':
@@ -66,29 +80,52 @@ switch (NETHGUI_ENVIRONMENT) {
         exit('Bootstrap: NETHGUI_ENVIRONMENT is not set correctly.');
 }
 
-// ENVIRONMENT is used by CodeIgniter and takes the same value:
-define('ENVIRONMENT', NETHGUI_ENVIRONMENT);
 
-define('NETHGUI_SITEURL', (empty($_SERVER['HTTPS']) ? 'http://' : 'https://') . $_SERVER['SERVER_NAME']);
 
 if ( ! defined('NETHGUI_CUSTOMCSS')) {
     define('NETHGUI_CUSTOMCSS', FALSE);
 }
 
-if (parse_url(NETHGUI_SITEURL) === FALSE) {
-    die('Invalid site URL');
+if (defined('STDIN')) {
+    define('NETHGUI_SITEURL', FALSE);
+} else {
+    define('NETHGUI_SITEURL', (empty($_SERVER['HTTPS']) ? 'http://' : 'https://') . $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT']);
+    if (parse_url(NETHGUI_SITEURL) === FALSE) {
+        die('Invalid site NETHGUI_SITEURL');
+    }
 }
 
-require_once('Framework.php');
+if (NETHGUI_APPLICATION == 'Test') {
+    require_once('Framework.php');
+    $FW = new Nethgui_Framework();
+    return;
+} elseif (NETHGUI_NATIVE) {
+    $_nethgui_app = function() {
+            $urlPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+            $suffix = substr($urlPath, strlen(NETHGUI_BASEURL . NETHGUI_CONTROLLER) + 1);
+            $parts = explode('/', $suffix);
 
-$system_path = realpath('../CodeIgniter/system');
-$application_folder = realpath('../CodeIgniter/application');
-date_default_timezone_set('UTC');
+            $FW = new Nethgui_Framework();
+            $FW->dispatch(empty($parts[0]) ? 'index' : $parts[0], array_slice($parts, 1));
+        };
+
+    return $_nethgui_app();
+}
+
+/**
+ * Start CodeIgniter framework
+ */
 
 // Set the current directory correctly for CLI requests
 if (defined('STDIN')) {
     chdir(dirname(NETHGUI_FILE));
 }
+
+// ENVIRONMENT is used by CodeIgniter and takes the same value:
+define('ENVIRONMENT', NETHGUI_ENVIRONMENT);
+
+$system_path = realpath('../CodeIgniter/system');
+$application_folder = realpath('../CodeIgniter/application');
 
 if (realpath($system_path) !== FALSE) {
     $system_path = realpath($system_path) . '/';
@@ -126,13 +163,10 @@ define('SYSDIR', trim(strrchr(trim(BASEPATH, '/'), '/'), '/'));
 
 
 // The path to the "application" folder
-if (is_dir($application_folder))
-{
+if (is_dir($application_folder)) {
     define('APPPATH', $application_folder . '/');
-} else
-{
-    if ( ! is_dir(BASEPATH . $application_folder . '/'))
-    {
+} else {
+    if ( ! is_dir(BASEPATH . $application_folder . '/')) {
         exit("Your application folder path does not appear to be set correctly. Please open the following file and correct this: " . SELF);
     }
 

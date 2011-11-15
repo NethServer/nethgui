@@ -100,7 +100,7 @@ class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Ne
 
         $module->setPlatform($this->platform);
 
-        if (ENVIRONMENT == 'development') {
+        if (NETHGUI_ENVIRONMENT == 'development') {
             $this->getLog()->notice("Created `" . $module->getIdentifier() . "`, as `{$className}` instance.", 'debug');
         }
 

@@ -138,7 +138,7 @@ class Nethgui_Language_Translator implements Nethgui_Core_TranslatorInterface, N
         if ($translation === NULL) {
             // By default prepare an identity-translation
             $translation = $key;
-            if (ENVIRONMENT == 'development') {
+            if (NETHGUI_ENVIRONMENT == 'development') {
                 $this->getLog()->warning("Missing `$languageCode` translation for `$key`. Catalogs: " . implode(', ', $attempts), 'debug');
             }
         }

@@ -184,7 +184,7 @@ class Nethgui_Core_View implements Nethgui_Core_ViewInterface, Nethgui_Log_LogCo
 
     public function getClientEventTarget($name)
     {
-        if (ENVIRONMENT === 'development') {
+        if (NETHGUI_ENVIRONMENT === 'development') {
             return $this->getUniqueId($name);
         }
 

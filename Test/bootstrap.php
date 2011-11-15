@@ -9,17 +9,14 @@
  * @package Test
  */
 
-$basedir = realpath(dirname(__FILE__) . '/../');
-
-require_once($basedir . '/Nethgui/Framework.php');
-require_once('Tool/Helpers.php');
 
 define('NETHGUI_ENVIRONMENT', 'development');
-define('ENVIRONMENT', 'development');
+define('NETHGUI_APPLICATION', 'Test');
+define('NETHGUI_FILE', __FILE__);
+define('NETHGUI_NATIVE', TRUE);
 
-// this installs the autoloader function:
-Nethgui_Framework::getInstance();
-
+require_once('Tool/Helpers.php');
+require_once(realpath(dirname(__FILE__) . '/../') . '/Nethgui/Bootstrap.php');
 
 
 

@@ -121,7 +121,7 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
             // Deprecated key declaration warning:
             if ($declarationIndex === 0 && $valueProvider === NULL) {
                 $isKeyDeclaration = TRUE;
-                Nethgui_Framework::getInstance()->logMessage('Deprecated key declaration form. See.. ', 'warning');
+                $this->getLog()->warning('Deprecated key declaration form. See..');
             }
 
             $isFieldDeclaration = $useTableAdapter

@@ -150,10 +150,7 @@ class Nethgui_Module_NotificationArea extends Nethgui_Core_Module_Standard imple
             }
 
             if ($mode == self::VIEW_CLIENT) {
-                // Translate the `location` in a URL for FORM action attribute
-                $path = $view->getModulePath();
-                $path[] = $action[1];
-                $view['location'] = Nethgui_Framework::getInstance()->buildUrl($path);
+                $view['location'] = $view->getModuleUrl($action[1]);
                 $view['name'] = $view->translate($action[0] . '_label');
                 $view['data'] = $this->prepareDialogDataForClient($view, $viewData);
             } else {

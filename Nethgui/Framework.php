@@ -9,24 +9,9 @@
 class Nethgui_Framework
 {
 
-
-    /**
-     * Returns framework singleton instance.
-     * @staticvar Nethgui_Framework $instance
-     * @return Nethgui_Framework
-     */
-    static public function getInstance()
+    public function __construct()
     {
-        static $instance;
-        if ( ! isset($instance)) {
-            $instance = new self();
-        }
-        return $instance;
-    }
-
-    private function __construct()
-    {
-        spl_autoload_register(get_class($this) . '::autoloader');
+        spl_autoload_register(array($this, 'autoloader'));
     }
 
     /**
@@ -38,7 +23,7 @@ class Nethgui_Framework
      * @param string $className
      * @return void
      */
-    static public function autoloader($className)
+    public function autoloader($className)
     {
         /* Skip CodeIgniter namespace, and "configuration" */
         if (substr($className, 0, 3) == 'CI_' || $className === 'configuration') {
@@ -54,7 +39,9 @@ class Nethgui_Framework
      */
     private function redirect($url)
     {
-        redirect($url);
+        header(sprintf("HTTP/1.1 %d %s", 303, 'See other'));
+        header('Location: ' . NETHGUI_BASEURL . NETHGUI_CONTROLLER . '/' . $url);
+        exit;
     }
 
     /**
@@ -65,16 +52,18 @@ class Nethgui_Framework
      */
     public function dispatch($currentModuleIdentifier, $arguments = array())
     {
-        // Replace "index" request with a  default module value
         if ($currentModuleIdentifier == 'index') {
-            // TODO read from configuration
-            $this->redirect('dispatcher/Status');
+            if (NETHGUI_INDEX) {
+                $this->redirect(NETHGUI_INDEX);
+            } else {
+                $this->httpError(500, 'Server error', 'Missing NETHGUI_INDEX constant');
+            }
         }
 
         $request = $this->createRequest($arguments);
         $user = $request->getUser();
 
-        $platform = new Nethgui_System_NethPlatform($user);               
+        $platform = new Nethgui_System_NethPlatform($user);
         $topModuleDepot = new Nethgui_Core_TopModuleDepot($platform, $user);
 
         /*
@@ -114,7 +103,7 @@ class Nethgui_Framework
         // Configrue The World module:
         $worldModule = new Nethgui_Module_World();
         $worldModule->setPlatform($platform);
-        
+
         $view = new Nethgui_Core_View($worldModule, new Nethgui_Language_Translator($user, $platform->getLog()));
 
         try {
@@ -127,7 +116,7 @@ class Nethgui_Framework
                     // Module initialization
                     $module->initialize();
                 } else {
-                    show_404();
+                    $this->httpError(404, 'Not found', 'Resource not found');
                 }
 
 
@@ -155,9 +144,9 @@ class Nethgui_Framework
         } catch (Nethgui_Exception_HttpStatusClientError $ex) {
             $statusCode = intval($ex->getCode());
             if ($statusCode >= 400 && $statusCode < 600) {
-                show_error($ex->getMessage(), $statusCode);
+                $this->httpError($statusCode, $ex->getMessage(), $statusCode . ': ' . $ex->getMessage());
             } else {
-                show_error(sprintf('Original status %d, %s', $statusCode, $ex->getMessage()), 500);
+                $this->httpError(500, 'Server error', sprintf('Original status %d, %s', $statusCode, $ex->getMessage()));
             }
         } catch (Exception $ex) {
             // TODO - validate $ex->getCode(): is it a valid HTTP status code?
@@ -244,7 +233,7 @@ class Nethgui_Framework
      * @param array $parameters
      * @return Nethgui_Core_Request
      */
-    public function createRequest($arguments)
+    private function createRequest($arguments)
     {
         if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
             && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') {
@@ -288,9 +277,9 @@ class Nethgui_Framework
         $user = new Nethgui_Client_AlwaysAuthenticatedUser();
 
         $instance = new Nethgui_Core_Request($user, $data, $submitted, $arguments, array(
-            'XML_HTTP_REQUEST' => $isXmlHttpRequest,
-            'CONTENT_TYPE' => $contentType,
-        ));
+                'XML_HTTP_REQUEST' => $isXmlHttpRequest,
+                'CONTENT_TYPE' => $contentType,
+            ));
 
         /*
          * Clear global variables
@@ -298,6 +287,14 @@ class Nethgui_Framework
         $_POST = array();
 
         return $instance;
+    }
+
+    private function httpError($errorCode, $title, $text)
+    {
+        header(sprintf("HTTP/1.1 %d %s", $errorCode, $title));
+        header("Content-Type: text/plain; charset=UTF-8");
+        echo $text;
+        exit;
     }
 
 }
