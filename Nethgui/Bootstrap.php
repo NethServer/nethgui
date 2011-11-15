@@ -95,8 +95,9 @@ if (defined('STDIN')) {
     }
 }
 
+require_once('Framework.php');
+
 if (NETHGUI_APPLICATION == 'Test') {
-    require_once('Framework.php');
     $FW = new Nethgui_Framework();
     return;
 } elseif (NETHGUI_NATIVE) {
