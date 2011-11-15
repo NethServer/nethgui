@@ -385,7 +385,7 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
      */
     protected function getValidator()
     {
-        return new Nethgui_Core_Validator();
+        return new Nethgui_System_Validator();
     }
 
     /**

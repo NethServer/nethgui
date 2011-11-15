@@ -8,7 +8,7 @@
  * @author Davide Principi <davide.principi@nethesis.it>
  * @package Core
  */
-class Nethgui_Core_Validator implements Nethgui_Core_ValidatorInterface
+class Nethgui_System_Validator implements Nethgui_Core_ValidatorInterface
 {
 
     private $chain = array();
@@ -22,7 +22,7 @@ class Nethgui_Core_Validator implements Nethgui_Core_ValidatorInterface
      */
     public function orValidator(Nethgui_Core_ValidatorInterface $v1, Nethgui_Core_ValidatorInterface $v2)
     {
-        $this->chain[] = new Nethgui_Core_OrValidator($v1, $v2);
+        $this->chain[] = new Nethgui_System_OrValidator($v1, $v2);
         return $this;
     }
 
@@ -253,12 +253,12 @@ class Nethgui_Core_Validator implements Nethgui_Core_ValidatorInterface
 
     /**
      * Check if the value is collection of elements satisfying the given validator
-     * @param Nethgui_Core_Validator $v Member validator
-     * @return Nethgui_Core_Validator 
+     * @param Nethgui_System_Validator $v Member validator
+     * @return Nethgui_System_Validator 
      */
-    public function collectionValidator(Nethgui_Core_Validator $v)
+    public function collectionValidator(Nethgui_System_Validator $v)
     {
-        $this->chain[] = new Nethgui_Core_CollectionValidator($v);
+        $this->chain[] = new Nethgui_System_CollectionValidator($v);
         return $this;
     }
 
@@ -560,7 +560,7 @@ class Nethgui_Core_Validator implements Nethgui_Core_ValidatorInterface
  * @internal
  * @package Core
  */
-class Nethgui_Core_CollectionValidator implements Nethgui_Core_ValidatorInterface
+class Nethgui_System_CollectionValidator implements Nethgui_Core_ValidatorInterface
 {
 
     /**
@@ -619,9 +619,9 @@ class Nethgui_Core_CollectionValidator implements Nethgui_Core_ValidatorInterfac
  * @author Davide Principi <davide.principi@nethesis.it>
  * @package Core
  * @ignore
- * @see Nethgui_Core_Validator::orValidator()
+ * @see Nethgui_System_Validator::orValidator()
  */
-class Nethgui_Core_OrValidator implements Nethgui_Core_ValidatorInterface
+class Nethgui_System_OrValidator implements Nethgui_Core_ValidatorInterface
 {
 
     /**
