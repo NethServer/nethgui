@@ -141,7 +141,7 @@ class Nethgui_Module_Menu extends Nethgui_Core_Module_Standard
             if (is_null($request)) {
                 return;
             }
-            $action = array_shift($request->getArguments());
+            $action = Nethgui\array_head($request->getArguments());
             if ( ! $action) { //search
                 $tmp = $this->iteratorToSearch($this->menuIterator);
                 foreach ($tmp as $url => $tags) {

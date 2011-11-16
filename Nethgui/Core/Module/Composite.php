@@ -102,10 +102,6 @@ abstract class Nethgui_Core_Module_Composite extends Nethgui_Core_Module_Abstrac
             }
 
             $childModule = new $childModuleClass();
-            if ( ! is_null($this->getPlatform())) {
-                $childModule->setPlatform($this->getPlatform());
-            }
-
             $this->addChild($childModule);
         }
     }
@@ -117,14 +113,13 @@ abstract class Nethgui_Core_Module_Composite extends Nethgui_Core_Module_Abstrac
 
     public function getTags(Nethgui_Framework $framework)
     {
-        $tags = array($framework->buildModuleUrl($this) => array_values(array_unique(explode(" ", strtolower($framework->translate($this->getIdentifier()."_tags",array(),NULL,$this->getLanguageCatalog()))))));
-        foreach($this->getChildren() as $child) {
-            list($key,$value) = each($child->getTags($framework));
+        $tags = array($framework->buildModuleUrl($this) => array_values(array_unique(explode(" ", strtolower($framework->translate($this->getIdentifier() . "_tags", array(), NULL, $this->getLanguageCatalog()))))));
+        foreach ($this->getChildren() as $child) {
+            list($key, $value) = each($child->getTags($framework));
             $tags[$framework->buildModuleUrl($this)][] = $value;
         }
         return $tags;
     }
-
 
 }
 

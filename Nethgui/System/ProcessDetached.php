@@ -167,7 +167,7 @@ class Nethgui_System_ProcessDetached implements Nethgui_System_ProcessInterface,
         if ($this->readExecutionState() == self::STATE_RUNNING) {
             $killExitCode = NULL;
             $killOutput = array();
-            $this->globalFunctionWrapper->exec(sprintf('/bin/kill %d', $this->processId), &$killOutput, &$killExitCode);
+            $this->globalFunctionWrapper->exec(sprintf('/bin/kill %d', $this->processId), $killOutput, $killExitCode);
             if ($killExitCode === 0) {
                 $this->setExecutionState(self::STATE_EXITED);
                 return TRUE;

@@ -45,7 +45,7 @@ abstract class Nethgui_Core_Module_Abstract implements Nethgui_Core_ModuleInterf
         if (isset($identifier)) {
             $this->identifier = $identifier;
         } else {
-            $this->identifier = array_pop(explode('_', get_class($this)));
+            $this->identifier = Nethgui\array_end(explode('_', get_class($this)), -1, 1);
         }
     }
 

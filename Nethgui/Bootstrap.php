@@ -98,6 +98,7 @@ if (defined('STDIN')) {
     }
 }
 
+require_once('Tool.php');
 require_once('Framework.php');
 
 if (NETHGUI_APPLICATION == 'Test') {

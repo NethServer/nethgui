@@ -30,8 +30,6 @@ class Nethgui_System_ConfigurationDatabaseTest extends PHPUnit_Framework_TestCas
     protected function setUp()
     {
         $this->globalsMock = $this->getMock('Nethgui_Core_GlobalFunctionWrapper', array('exec'));
-
-
         $this->object = new Nethgui_System_ConfigurationDatabase('MOCKDB', $this->getMock('Nethgui_Client_UserInterface'));
         $this->object->setGlobalFunctionWrapper($this->globalsMock);
         $this->object->setPolicyDecisionPoint(new Nethgui_Authorization_PermissivePolicyDecisionPoint());

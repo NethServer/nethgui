@@ -9,7 +9,7 @@
  *
  * @package System
  */
-class Nethgui_System_NethPlatform implements Nethgui_System_PlatformInterface, Nethgui_Authorization_PolicyEnforcementPointInterface, Nethgui_Log_LogConsumerInterface
+class Nethgui_System_NethPlatform implements Nethgui_System_PlatformInterface, Nethgui_Authorization_PolicyEnforcementPointInterface, Nethgui_Log_LogConsumerInterface, Nethgui_Core_GlobalFunctionConsumer
 {
 
     /**
@@ -30,11 +30,15 @@ class Nethgui_System_NethPlatform implements Nethgui_System_PlatformInterface, N
     private $user;
     private $eventQueue;
 
-
     /**
      * @var Nethgui_Log_AbstractLog
      */
     private $log;
+
+    /**
+     * @var Nethgui_Core_GlobalFunctionWrapper
+     */
+    private $globalFunctionWrapper;
 
     /**
      * We must specify who acts on host configuration.
@@ -136,9 +140,8 @@ class Nethgui_System_NethPlatform implements Nethgui_System_PlatformInterface, N
      */
     public function signalEvent($event, $arguments = array())
     {
-        array_unshift($arguments, $event);
-        $command = '/usr/bin/sudo /sbin/e-smith/signal-event ' . implode(' ', array_map('escapeshellarg', $arguments));
-        return $this->exec($command);
+        array_unshift($arguments, $event);        
+        return $this->exec('/usr/bin/sudo /sbin/e-smith/signal-event ${@}', $arguments);
     }
 
     public function signalEventFinally($event, $argv = array(), $observer = NULL)
@@ -234,6 +237,11 @@ class Nethgui_System_NethPlatform implements Nethgui_System_PlatformInterface, N
         } else {
             $commandObject = new Nethgui_System_Process($command, $arguments);
         }
+
+        if (isset($this->globalFunctionWrapper)) {
+            $commandObject->setGlobalFunctionWrapper($this->globalFunctionWrapper);
+        }
+
         $commandObject->exec();
         return $commandObject;
     }
@@ -256,5 +264,10 @@ class Nethgui_System_NethPlatform implements Nethgui_System_PlatformInterface, N
     public function getDateFormat()
     {
         return 'YYYY-mm-dd';
+    }
+
+    public function setGlobalFunctionWrapper(Nethgui_Core_GlobalFunctionWrapper $object)
+    {
+        $this->globalFunctionWrapper = $object;
     }
 }

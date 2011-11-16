@@ -9,6 +9,10 @@
 class Nethgui_Framework
 {
 
+    /**
+     * Sends a 303 status redirect to $url.
+     * @param type $url
+     */
     public function __construct()
     {
         spl_autoload_register(array($this, 'autoloader'));
@@ -33,10 +37,6 @@ class Nethgui_Framework
         include $classPath;
     }
 
-    /**
-     * Sends a 303 status redirect to $url.
-     * @param type $url 
-     */
     private function redirect($url)
     {
         header(sprintf("HTTP/1.1 %d %s", 303, 'See other'));
@@ -212,7 +212,7 @@ class Nethgui_Framework
 
     /**
      * Check if a redirect condition has been set and calculate the URL.
-     * 
+     *
      * @param Nethgui_Client_UserInterface $user
      * @return string|bool The URL where to redirect the user
      */
@@ -298,3 +298,4 @@ class Nethgui_Framework
     }
 
 }
+

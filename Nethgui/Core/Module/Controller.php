@@ -54,7 +54,7 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
 
         $this->currentAction = $this->getAction($actionId);
         if ($this->currentAction instanceof Nethgui_Core_RequestHandlerInterface) {
-            $this->currentAction->bind($request->getParameterAsInnerRequest($actionId, array_slice($request->getArguments(), 1)));
+            $this->currentAction->bind($request->getParameterAsInnerRequest($actionId, Nethgui\array_rest($request->getArguments())));
         }
     }
 

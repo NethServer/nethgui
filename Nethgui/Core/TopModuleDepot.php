@@ -74,7 +74,7 @@ class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Ne
                     $module = $this->createModule($className);
                     $this->registerModule($module);
                 } else {
-                    // TODO: log a warning
+                    // TODO: log a warning+
                 }
             }
         }

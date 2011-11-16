@@ -19,12 +19,33 @@ class Nethgui_System_NethPlatformTest extends PHPUnit_Framework_TestCase
     protected $object;
 
     /**
+     * @var PHPUnit_Framework_MockObject_MockObject
+     */
+    private $globalsMock;
+
+    /**
      * Sets up the fixture
      */
     protected function setUp()
     {
+        $this->globalsMock = $this->getMock('Nethgui_Core_GlobalFunctionWrapper', array('exec'));
         $this->object = new Nethgui_System_NethPlatform($this->getMock('Nethgui_Client_UserInterface'));
+        $this->object->setGlobalFunctionWrapper($this->globalsMock);
         $this->object->setPolicyDecisionPoint(new Nethgui_Authorization_PermissivePolicyDecisionPoint());
+    }
+
+    public function exec_successCallback($command, &$output, &$retval)
+    {
+        $output = array('');
+        $retval = 0;
+        return array_slice($output, -1, 1);
+    }
+
+    public function exec_failureCallback($command, &$output, &$retval)
+    {
+        $output = array('');
+        $retval = 128;
+        return array_slice($output, -1, 1);
     }
 
     public function testPdp()
@@ -42,19 +63,28 @@ class Nethgui_System_NethPlatformTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Nethgui_System_ConfigurationDatabase', $db);
     }
 
-    /**
-     *
-     */
-    public function testSignalEvent1()
+    public function testSignalEventSuccess()
     {
-        $exitStatusInfo = $this->object->signalEvent("not-exist-event");
-        $this->assertNotEquals(0, $exitStatusInfo->getExitStatus());
+        $this->globalsMock
+            ->expects($this->once())
+            ->method('exec')
+            ->with(new PHPUnit_Framework_Constraint_StringEndsWith("'myEventName'"))
+            ->will($this->returnCallBack(array($this, 'exec_successCallback')));
+
+        $exitStatusInfo = $this->object->signalEvent("myEventName");
+        $this->assertEquals(0, $exitStatusInfo->getExitStatus());
     }
 
-    public function testSignalEvent2()
+    public function testSignalEventFail()
     {
-        $exitStatusInfo = $this->object->signalEvent("nethgui-framework-test");
-        $this->assertEquals(0, $exitStatusInfo->getExitStatus());
+        $this->globalsMock
+            ->expects($this->once())
+            ->method('exec')
+            ->with(new PHPUnit_Framework_Constraint_StringEndsWith("'myEventName'"))
+            ->will($this->returnCallBack(array($this, 'exec_failureCallback')));
+
+        $exitStatusInfo = $this->object->signalEvent("myEventName");
+        $this->assertEquals(128, $exitStatusInfo->getExitStatus());
     }
 
     public function testGetMapAdapter()

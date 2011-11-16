@@ -16,7 +16,7 @@ abstract class Test_Tool_ModuleTestCase extends PHPUnit_Framework_TestCase
 
     protected function runModuleTest(Nethgui_Core_ModuleInterface $module, Test_Tool_ModuleTestEnvironment $env)
     {
-        $platform = $this->createHostConfigurationMock($env);
+        $platform = $this->createPlatformMock($env);
         $module->setPlatform($platform);
         $module->initialize();
 
@@ -37,16 +37,16 @@ abstract class Test_Tool_ModuleTestCase extends PHPUnit_Framework_TestCase
             $this->assertEquals($value, $view[$key], "View parameter `{$key}`.");
         }
 
-        $this->fullViewOutput = $view->getClientEvents();
+        $this->fullViewOutput = array(); // obsolete: $view->getClientEvents();
 
         foreach ($this->dbObjectCheckList as $dbStubInfo) {
             $this->assertTrue($dbStubInfo[1]->getState()->isFinal(), sprintf('Database `%s` is not in final state! %s', $dbStubInfo[0], $dbStubInfo[1]->getState()));
         }
     }
 
-    protected function createHostConfigurationMock(Test_Tool_ModuleTestEnvironment $env)
+    protected function createPlatformMock(Test_Tool_ModuleTestEnvironment $env)
     {
-        $configurationMock = $this->getMockBuilder('Nethgui_System_NethPlatform')
+        $platformMock = $this->getMockBuilder('Nethgui_System_NethPlatform')
             ->disableOriginalConstructor()
             ->setMethods(array('getDatabase', 'signalEvent', 'exec'))
             ->getMock()
@@ -91,35 +91,51 @@ abstract class Test_Tool_ModuleTestCase extends PHPUnit_Framework_TestCase
         }
 
 
+        $processInterfaceMethods = array('getOutput', 'getExitStatus', 'getOutputArray', 'isExecuted', 'exec', 'addArgument', 'kill', 'readOutput', 'readExecutionState');
+
         foreach ($env->getEvents() as $eventExp) {
             if (is_string($eventExp)) {
                 $eventExp = array($eventExp, array());
             }
 
-            $systemCommandMockForSignalEvent = $this->getMock('Nethgui_System_ProcessInterface', array('getOutput', 'getExitStatus', 'getOutputArray', 'isExecuted', 'exec', 'addArgument'));
+            $systemCommandMockForSignalEvent = $this->getMock('Nethgui_System_ProcessInterface', $processInterfaceMethods);
 
+            // return a Nethgui_System_ProcessInterface object
             $platformStub->set(array('signalEvent', array($eventExp[0], $eventExp[1])), $systemCommandMockForSignalEvent);
         }
 
-        $configurationMock->expects($this->any())
+        $platformMock->expects($this->any())
             ->method('getDatabase')
             ->will($this->returnMockObject($platformStub));
 
-        $configurationMock->expects($this->exactly(count($env->getEvents())))
+        $platformMock->expects($this->exactly(count($env->getEvents())))
             ->method('signalEvent')
             ->will($this->returnMockObject($platformStub));
 
-        $systemCommandMock = $this->getMock('Nethgui_System_ProcessInterface', array('getOutput', 'getExitStatus', 'getOutputArray', 'isExecuted', 'exec', 'addArgument'));
-        $configurationMock->expects($this->any())
+        $systemCommandMock = $this->getMock('Nethgui_System_ProcessInterface', $processInterfaceMethods);
+        $platformMock->expects($this->any())
             ->method('exec')
             ->will(new Test_Tool_SystemCommandExecution($env->getCommands(), $systemCommandMock));
 
-        return $configurationMock;
+        return $platformMock;
     }
 
     protected function createViewMock(Nethgui_Core_ModuleInterface $module, Test_Tool_ModuleTestEnvironment $env)
     {
-        return new Nethgui_Core_View($module);
+        $translator = $this->getMockBuilder('Nethgui_Language_Translator')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+
+        $translator->expects($this->any())
+            ->method('translate')
+            ->will($this->returnArgument(0));
+
+        $translator->expects($this->any())
+            ->method('getLanguageCode')
+            ->will($this->returnValue('en'));
+
+        return new Nethgui_Core_View($module, $translator);
     }
 
     /**
@@ -176,8 +192,7 @@ abstract class Test_Tool_ModuleTestCase extends PHPUnit_Framework_TestCase
         $arguments = $env->getArguments();
         $submitted = $env->isSubmitted();
         $user = $this->createUserMock($env);
-
-        return Test_Tool_ModuleTestCaseCoreRequest::createInstance($user, $data, $submitted, $arguments);
+        return new Nethgui_Core_Request($user, $data, $submitted, $arguments, array());
     }
 
     protected function createUserMock(Test_Tool_ModuleTestEnvironment $env)
@@ -264,8 +279,7 @@ class Test_Tool_ArrayKeyGet implements PHPUnit_Framework_MockObject_Stub
     {
         $parameterName = array_shift($invocation->parameters);
 
-        if (is_array($this->a) && array_key_exists($parameterName, $this->a))
-        {
+        if (is_array($this->a) && array_key_exists($parameterName, $this->a)) {
             return $this->a[$parameterName];
         }
 
@@ -301,8 +315,7 @@ class Test_Tool_ArrayKeyExists implements PHPUnit_Framework_MockObject_Stub
     {
         $parameterName = array_shift($invocation->parameters);
 
-        if (is_array($this->a) && array_key_exists($parameterName, $this->a))
-        {
+        if (is_array($this->a) && array_key_exists($parameterName, $this->a)) {
             return TRUE;
         }
 
@@ -345,8 +358,7 @@ class Test_Tool_SystemCommandExecution extends Test_Tool_ArrayKeyGetRegexp
 
         $mock = clone $this->mock;
 
-        if ($mock instanceof PHPUnit_Framework_MockObject_MockObject)
-        {
+        if ($mock instanceof PHPUnit_Framework_MockObject_MockObject) {
             $mock->expects(PHPUnit_Framework_TestCase::any())
                 ->method('getOutput')
                 ->will(PHPUnit_Framework_TestCase::returnValue($returnData[1]));
@@ -368,18 +380,18 @@ class Test_Tool_SystemCommandExecution extends Test_Tool_ArrayKeyGetRegexp
 
             $mock->expects(PHPUnit_Framework_TestCase::never())
                 ->method('addArgument');
+
+            $mock->expects(PHPUnit_Framework_TestCase::never())
+                ->method('readOutput');
+
+            $mock->expects(PHPUnit_Framework_TestCase::never())
+                ->method('kill');
+
+            $mock->expects(PHPUnit_Framework_TestCase::never())
+                ->method('readExecutionState');
         }
         return $mock;
     }
 
 }
 
-class Test_Tool_ModuleTestCaseCoreRequest extends Nethgui_Core_Request
-{
-
-    public static function createInstance(Nethgui_Client_UserInterface $user, $data, $submitted, $arguments)
-    {
-        return new self( $user, $data, $submitted, $arguments);
-    }
-
-}
