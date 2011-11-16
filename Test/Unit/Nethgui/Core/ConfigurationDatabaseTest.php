@@ -19,97 +19,110 @@ class Nethgui_System_ConfigurationDatabaseTest extends PHPUnit_Framework_TestCas
     protected $object;
 
     /**
+     * @var PHPUnit_Framework_MockObject_MockObject
+     */
+    private $globalsMock;
+
+    /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
     protected function setUp()
     {
-        $this->object = new Nethgui_System_ConfigurationDatabase('testdb', $this->getMock('Nethgui_Client_UserInterface'));
+        $this->globalsMock = $this->getMock('Nethgui_Core_GlobalFunctionWrapper', array('exec'));
+
+
+        $this->object = new Nethgui_System_ConfigurationDatabase('MOCKDB', $this->getMock('Nethgui_Client_UserInterface'));
+        $this->object->setGlobalFunctionWrapper($this->globalsMock);
         $this->object->setPolicyDecisionPoint(new Nethgui_Authorization_PermissivePolicyDecisionPoint());
     }
 
-    /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
-     */
-    protected function tearDown()
+    public function testGetAll1()
     {
+        $this->globalsMock
+            ->expects($this->once())
+            ->method('exec')
+            ->with($this->getCommandMatcher('print', array()))
+            ->will($this->returnCallBack(array($this, 'exec_getAllCallback')));
 
+        $expected = array();
+        for ($i = 0; $i < 5; $i ++ ) {
+            $expected['K' . $i] = array('type' => ($i==3 ? 'F' : 'T'), 'PA' . $i => 'VA' . $i, 'PB' . $i => 'VB' . $i, 'PC' . $i => 'VC' . $i);
+        }
+
+        $ret = $this->object->getAll();
+
+        $this->assertEquals($expected, $ret);
+    }
+
+    public function testGetAll2()
+    {
+        $this->globalsMock
+            ->expects($this->once())
+            ->method('exec')
+            ->with($this->getCommandMatcher('print', array()))
+            ->will($this->returnCallBack(array($this, 'exec_getAllCallback')));
+
+        $expected = array();
+        $i = 3;
+        $expected['K' . $i] = array('type' => 'F', 'PA' . $i => 'VA' . $i, 'PB' . $i => 'VB' . $i, 'PC' . $i => 'VC' . $i);
+
+        $ret = $this->object->getAll('F');
+
+        $this->assertEquals($expected, $ret);
     }
 
     /**
-     * @todo Implement testSetPolicyDecisionPoint().
+     * Currently the $filter argument is not implemented
+     * @expectedException InvalidArgumentException
      */
-    public function testSetPolicyDecisionPoint()
+    public function testGetAll3()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+//        $this->globalsMock
+//            ->expects($this->once())
+//            ->method('exec')
+//            ->with($this->getCommandMatcher('print', array()))
+//            ->will($this->returnCallBack(array($this, 'exec_getAllCallback')));
+//
+//        $expected = array();
+//        $i = 2;
+//        $expected['K' . $i] = array('type' => 'T', 'PA' . $i => 'VA' . $i, 'PB' . $i => 'VB' . $i, 'PC' . $i => 'VC' . $i);
+
+        $ret = $this->object->getAll('T', 'VA2');
+
+        //$this->assertEquals($expected, $ret);
     }
 
-    /**
-     * @depends testSetPolicyDecisionPoint
-     */
-    public function testGetPolicyDecisionPoint()
+    public function exec_getAllCallback($command, &$output, &$retval)
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $output = array();
+
+        for ($i = 0; $i < 5; $i ++ ) {
+            $output[] = strtr('Ki=T|PAi|VAi|PBi|VBi|PCi|VCi', array('i' => $i, 'T' => ($i == 3 ? 'F' : 'T')));
+        }
+
+        $retval = 0;
+        return array_slice($output, -1, 1);
     }
 
-    /**
-     * Implement testGetAll().
-     * @requires testSetKey
-     */
-    public function testGetAll()
+    public function testGetKey1()
     {
-        $props = array("FirstProp" => "firstvalue", "SecondProp" => "2ndvalue");
-        $this->object->setKey("testkey", "testService", $props);
-        $tmp = $this->object->getAll("testService"); //getByType
-        foreach ($tmp as $record) {
-            foreach ($record as $key => $val) {
-                if ($key == 'type')
-                    $this->assertEquals("testService", $record['type']);
-                else
-                    $this->assertEquals($val, $props[$key]);
-            }
-        }
+        $this->globalsMock
+            ->expects($this->once())
+            ->method('exec')
+            ->with($this->getCommandMatcher('get', explode(' ', 'K')))
+            ->will($this->returnCallBack(array($this, 'exec_getKeyCallback')));
 
-        $tmp = $this->object->getAll(false, "testk"); //getByName
-        foreach ($tmp as $record) { //getByType
-            foreach ($record as $key => $val) {
-                if ($key == 'type')
-                    $this->assertEquals("testService", $record['type']);
-                else
-                    $this->assertEquals($val, $props[$key]);
-            }
-        }
+        $ret = $this->object->getKey('K');
 
-        $tmp = $this->object->getAll("testService", "testk"); //getByType && getByName
-        foreach ($tmp as $record) { //getByType
-            foreach ($record as $key => $val) {
-                if ($key == 'type')
-                    $this->assertEquals("testService", $record['type']);
-                else
-                    $this->assertEquals($val, $props[$key]);
-            }
-        }
+        $this->assertEquals(array('p1' => 'v1', 'p2' => 'v2'), $ret);
     }
 
-    /**
-     * Implement testGetKey().
-     * @requires testSetKey
-     */
-    public function testGetKey()
+    public function exec_getKeyCallback($command, &$output, &$retval)
     {
-        $props = array("FirstProp" => "firstvalue", "SecondProp" => "2ndvalue");
-        $this->object->setKey("testkey", "service", $props);
-        $tmp = $this->object->getKey("testkey");
-        foreach ($tmp as $key => $val) {
-            $this->assertEquals($val, $props[$key]);
-        }
+        $output = array('T|p1|v1|p2|v2', '');
+        $retval = 0;
+        return array_slice($output, -1, 1);
     }
 
     /**
@@ -117,8 +130,15 @@ class Nethgui_System_ConfigurationDatabaseTest extends PHPUnit_Framework_TestCas
      */
     public function testSetKey()
     {
-        $props = array("FirstProp" => "firstvalue", "SecondProp" => "2ndvalue");
-        $this->assertEquals(true, $this->object->setKey("testkey", "service", $props));
+        $this->globalsMock
+            ->expects($this->once())
+            ->method('exec')
+            ->with($this->getCommandMatcher('set', explode(' ', 'K T p1 v1 p2 v2')))
+            ->will($this->returnCallBack(array($this, 'exec_success')));
+
+        $ret = $this->object->setKey('K', 'T', array('p1' => 'v1', 'p2' => 'v2'));
+
+        $this->assertEquals(TRUE, $ret);
     }
 
     /**
@@ -126,7 +146,15 @@ class Nethgui_System_ConfigurationDatabaseTest extends PHPUnit_Framework_TestCas
      */
     public function testDeleteKey()
     {
-        $this->assertEquals(true, $this->object->deleteKey("testkey"));
+        $this->globalsMock
+            ->expects($this->once())
+            ->method('exec')
+            ->with($this->getCommandMatcher('delete', array('K')))
+            ->will($this->returnCallBack(array($this, 'exec_success')));
+
+        $ret = $this->object->deleteKey('K');
+
+        $this->assertEquals(TRUE, $ret);
     }
 
     /**
@@ -135,66 +163,95 @@ class Nethgui_System_ConfigurationDatabaseTest extends PHPUnit_Framework_TestCas
      */
     public function testGetType()
     {
-        $props = array("FirstProp" => "firstvalue");
-        $this->object->setKey("testkey", "service", $props);
-        $this->assertEquals("service", $this->object->getType("testkey"));
+        $this->globalsMock
+            ->expects($this->once())
+            ->method('exec')
+            ->with($this->getCommandMatcher('gettype', explode(' ', 'K')))
+            ->will($this->returnCallBack(array($this, 'exec_getTypeCallback')));
+
+        $ret = $this->object->getType('K');
+
+        $this->assertEquals('T', $ret);
     }
 
-    /**
-     * Implement testSetType()
-     * @depends testGetType
-     * @depends testSetKey
-     */
+    public function exec_getTypeCallback($command, &$output, &$retval)
+    {
+        $output = array('T', '');
+        $retval = 0;
+        return array_slice($output, -1, 1);
+    }
+
     public function testSetType()
     {
-        $props = array("FirstProp" => "firstvalue");
-        $this->object->setKey("testkey", "service", $props);
-        $this->object->setType("testkey", "service2");
-        $this->assertEquals("service2", $this->object->getType("testkey"));
+        $this->globalsMock
+            ->expects($this->once())
+            ->method('exec')
+            ->with($this->getCommandMatcher('settype', explode(' ', 'K T')))
+            ->will($this->returnCallBack(array($this, 'exec_success')));
+
+        $ret = $this->object->setType('K', 'T');
+
+        $this->assertEquals(TRUE, $ret);
     }
 
-    /**
-     * Implement testGetProp()
-     * @depends testSetKey
-     */
-    public function testGetProp()
+    public function testGetProp1()
     {
-        $props = array("FirstProp" => "firstvalue");
-        $this->object->setKey("testkey", "service", $props);
-        $this->assertEquals("firstvalue", $this->object->getProp("testkey", "FirstProp"));
+        $this->globalsMock
+            ->expects($this->once())
+            ->method('exec')
+            ->with($this->getCommandMatcher('getprop', explode(' ', 'K P')))
+            ->will($this->returnCallback(array($this, 'exec_getpropCallback')));
+
+        $ret = $this->object->getProp("K", "P");
+
+        $this->assertEquals('V', $ret);
     }
 
-    /**
-     * Implement testSetProp()
-     * @depends testGetProp
-     * @depends testSetKey
-     */
-    public function testSetProp()
+    public function exec_getpropCallback($command, &$output, &$retval)
     {
-        $props = array("FirstProp" => "firstvalue");
-        $props2 = array("SecondProp" => "2ndvalue");
-        $props3 = array("FirstProp" => "newvalue", "ThirdProp" => "3");
-        $this->object->setKey("testkey", "service", $props);
-        $this->object->setProp("testkey", $props2);
-        $this->assertEquals("2ndvalue", $this->object->getProp("testkey", "SecondProp"));
-        $this->object->setProp("testkey", $props3);
-        $this->assertEquals("2ndvalue", $this->object->getProp("testkey", "SecondProp"), "Lost SecondProp");
-        $this->assertEquals("newvalue", $this->object->getProp("testkey", "FirstProp"));
-        $this->assertEquals("3", $this->object->getProp("testkey", "ThirdProp"));
+        $output = array('V', '');
+        $retval = 0;
+        return array_slice($output, -1, 1);
     }
 
-    /**
-     * Implement testDelProp()
-     * @depends testGetProp
-     * @depends testGetKey
-     */
+    public function testSetProp1()
+    {
+        $this->globalsMock
+            ->expects($this->once())
+            ->method('exec')
+            ->with($this->getCommandMatcher('setprop', explode(' ', 'K p1 1 p2 2')))
+            ->will($this->returnValue(''));
+
+        $ret = $this->object->setProp("K", array('p1' => '1', 'p2' => '2'));
+
+        $this->assertEquals(TRUE, $ret);
+    }
+
     public function testDelProp()
     {
-        $props = array("FirstProp" => "1", "SecondProp" => "2", "ThirdProp" => "3");
-        $this->object->setKey("testkey", "service", $props);
-        $this->object->delProp("testkey", array("SecondProp", "ThirdProp"));
-        $this->assertEquals("", $this->object->getProp("testkey", "SecondProp"));
-        $this->assertEquals("", $this->object->getProp("testkey", "ThirdProp"));
+        $this->globalsMock
+            ->expects($this->once())
+            ->method('exec')
+            ->with($this->getCommandMatcher('delprop', explode(' ', 'K A B C')))
+            ->will($this->returnCallBack(array($this, 'exec_success')));
+
+        $ret = $this->object->delProp('K', array('A', 'B', 'C'));
+
+        $this->assertEquals(TRUE, $ret);
+    }
+
+    public function exec_success($command, &$output, &$retval)
+    {
+        $output = array('');
+        $retval = 0;
+        return array_slice($output, -1, 1);
+    }
+
+    private function getCommandMatcher($command, $args)
+    {
+        array_unshift($args, 'MOCKDB', $command);
+        $commandLine = "/usr/bin/sudo /sbin/e-smith/db " . implode(' ', array_map('escapeshellarg', $args));
+        return new PHPUnit_Framework_Constraint_StringMatches($commandLine);
     }
 
 }

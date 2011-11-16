@@ -71,7 +71,10 @@ switch (NETHGUI_ENVIRONMENT) {
         error_reporting(E_ALL);
         break;
 
-    case 'testing':
+    case 'test':
+        error_reporting(E_ALL | E_STRICT);
+        break;
+
     case 'production':
         error_reporting(0);
         break;
@@ -116,7 +119,6 @@ if (NETHGUI_APPLICATION == 'Test') {
 /**
  * Start CodeIgniter framework
  */
-
 // Set the current directory correctly for CLI requests
 if (defined('STDIN')) {
     chdir(dirname(NETHGUI_FILE));

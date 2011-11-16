@@ -82,10 +82,7 @@ class Nethgui_System_Process implements Nethgui_System_ProcessInterface, Nethgui
             return FALSE;
         }
 
-        $output = &$this->output;
-        $exitStatus = &$this->exitStatus;
-
-        $this->globalFunctionWrapper->exec($this->prepareEscapedCommand(), $output, $exitStatus);
+        $this->globalFunctionWrapper->exec($this->prepareEscapedCommand(), $this->output, $this->exitStatus);        
         $this->changeState(self::STATE_EXITED);
         return $this->readExecutionState();
     }
@@ -135,11 +132,11 @@ class Nethgui_System_Process implements Nethgui_System_ProcessInterface, Nethgui
 
     public function readOutput()
     {
-        if ($this->outputRed === FALSE) {            
+        if ($this->outputRed === FALSE) {
             $this->outputRed = TRUE;
             return $this->getOutput();
-        } 
-        
+        }
+
         return FALSE;
     }
 

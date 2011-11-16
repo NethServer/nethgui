@@ -22,8 +22,14 @@
  * 
  * 
  */
-class Nethgui_System_ConfigurationDatabase implements Nethgui_Authorization_PolicyEnforcementPointInterface
+class Nethgui_System_ConfigurationDatabase implements Nethgui_Authorization_PolicyEnforcementPointInterface, Nethgui_Core_GlobalFunctionConsumer
 {
+
+    /**
+     *
+     * @var Nethgui_Core_GlobalFunctionWrapper
+     */
+    private $globalFunctionWrapper;
 
     /**
      * @var PolicyDecisionPointInterface;
@@ -120,33 +126,40 @@ class Nethgui_System_ConfigurationDatabase implements Nethgui_Authorization_Poli
      */
     public function getAll($type = NULL, $filter = NULL)
     {
-        if ( ! $this->canRead)
+        if ( ! $this->canRead) {
             throw new Exception("Permission Denied");
+        }
+
+        if ( ! is_null($filter)) {
+            throw new InvalidArgumentException(sprintf('%s: $filter argument must be NULL!', get_class($this)));
+        }
+
+        $output = NULL;
+        $ret = $this->dbExec('print', array(), $output);
+
+        if (empty($output)) {
+            return array();
+        }
 
         $result = array();
-        $output = shell_exec($this->command . " " . $this->db . " print");
-        if ($output != "")
-        {
-            foreach (explode("\n", $output) as $line) {
-                $line = trim($line);
-                if ($line)
-                {
-                    $tokens = explode("=", $line);
-                    $key = $tokens[0];
-                    $tokens = explode("|", $tokens[1]);
-                    if ( ! is_null($type) && $tokens[0] != $type)
-                        continue;
-                    if ( ! is_null($filter) && stristr($key, $filter) === FALSE)
-                        continue;
 
-                    $result[$key]['type'] = $tokens[0];
-                    for ($i = 1; $i <= count($tokens); $i ++ ) { //skip type
-                        if (isset($tokens[$i])) //avoid outbound tokens
-                            $result[$key][trim($tokens[$i])] = trim($tokens[ ++ $i]);
-                    }
+        foreach (explode("\n", $output) as $line) {
+            $line = trim($line);
+            if ($line) {
+                $tokens = explode("=", $line);
+                $key = $tokens[0];
+                $tokens = explode("|", $tokens[1]);
+                if ( ! is_null($type) && $tokens[0] != $type)
+                    continue;
+
+                $result[$key]['type'] = $tokens[0];
+                for ($i = 1; $i <= count($tokens); $i ++ ) { //skip type
+                    if (isset($tokens[$i])) //avoid outbound tokens
+                        $result[$key][trim($tokens[$i])] = trim($tokens[ ++ $i]);
                 }
             }
         }
+
         return $result;
     }
 
@@ -160,13 +173,16 @@ class Nethgui_System_ConfigurationDatabase implements Nethgui_Authorization_Poli
      */
     public function getKey($key)
     {
-        if ( ! $this->canRead)
+        if ( ! $this->canRead) {
             throw new Exception("Permission Denied");
+        }
 
         $result = array();
-        $output = shell_exec($this->command . " " . $this->db . " get " . escapeshellarg($key));
-        if ($output != "")
-        {
+        $output = NULL;
+
+        $ret = $this->dbExec('get', $this->prepareArguments($key), $output);
+
+        if ($output != "") {
             $tokens = explode("|", $output);
             for ($i = 1; $i <= count($tokens); $i ++ ) { //skip type
                 if (isset($tokens[$i])) //avoid outbound tokens
@@ -189,11 +205,12 @@ class Nethgui_System_ConfigurationDatabase implements Nethgui_Authorization_Poli
      */
     public function setKey($key, $type, $props)
     {
-        if ( ! $this->canWrite)
+        if ( ! $this->canWrite) {
             throw new Exception("Permission Denied");
+        }
 
-        $params = " set " . escapeshellarg($key) . " " . escapeshellarg($type) . " " . $this->propsToString($props);
-        exec($this->command . " " . $this->db . " $params", $output, $ret);
+        $output = NULL;
+        $ret = $this->dbExec('set', $this->prepareArguments($key, $type, $props), $output);
         return ($ret == 0);
     }
 
@@ -207,10 +224,13 @@ class Nethgui_System_ConfigurationDatabase implements Nethgui_Authorization_Poli
      */
     public function deleteKey($key)
     {
-        if ( ! $this->canWrite)
+        if ( ! $this->canWrite) {
             throw new Exception("Permission Denied");
+        }
 
-        exec($this->command . " " . $this->db . " delete " . escapeshellarg($key), $output, $ret);
+        $output = NULL;
+        $output = NULL;
+        $ret = $this->dbExec('delete', $this->prepareArguments($key), $output);
         return ($ret == 0);
     }
 
@@ -224,9 +244,13 @@ class Nethgui_System_ConfigurationDatabase implements Nethgui_Authorization_Poli
      */
     public function getType($key)
     {
-        if ( ! $this->canRead)
+        if ( ! $this->canRead) {
             throw new Exception("Permission Denied");
-        return trim(shell_exec($this->command . " " . $this->db . " gettype " . escapeshellarg($key)));
+        }
+
+        $output = NULL;
+        $ret = $this->dbExec('gettype', $this->prepareArguments($key), $output);
+        return trim($output);
     }
 
     /**
@@ -240,10 +264,12 @@ class Nethgui_System_ConfigurationDatabase implements Nethgui_Authorization_Poli
      */
     public function setType($key, $type)
     {
-        if ( ! $this->canWrite)
+        if ( ! $this->canWrite) {
             throw new Exception("Permission Denied");
+        }
 
-        exec($this->command . " " . $this->db . " settype " . escapeshellarg($key) . " " . escapeshellarg($type), $ret);
+        $output = NULL;
+        $ret = $this->dbExec('settype', $this->prepareArguments($key, $type), $output);
         return ($ret == 0);
     }
 
@@ -258,10 +284,13 @@ class Nethgui_System_ConfigurationDatabase implements Nethgui_Authorization_Poli
      */
     public function getProp($key, $prop)
     {
-        if ( ! $this->canRead)
+        if ( ! $this->canRead) {
             throw new Exception("Permission Denied");
+        }
 
-        return trim(shell_exec($this->command . " " . $this->db . " getprop " . escapeshellarg($key) . " " . escapeshellarg($prop)));
+        $output = NULL;
+        $ret = $this->dbExec('getprop', $this->prepareArguments($key, $prop), $output);
+        return trim($output);
     }
 
     /**
@@ -275,11 +304,12 @@ class Nethgui_System_ConfigurationDatabase implements Nethgui_Authorization_Poli
      */
     public function setProp($key, $props)
     {
-        if ( ! $this->canWrite)
+        if ( ! $this->canWrite) {
             throw new Exception("Permission Denied");
+        }
 
-        $params = " setprop " . escapeshellarg($key) . " " . $this->propsToString($props);
-        exec($this->command . " " . $this->db . " $params ", $output, $ret);
+        $output = NULL;
+        $ret = $this->dbExec('setprop', $this->prepareArguments($key, $props), $output);
         return ($ret == 0);
     }
 
@@ -294,27 +324,55 @@ class Nethgui_System_ConfigurationDatabase implements Nethgui_Authorization_Poli
      */
     public function delProp($key, $props)
     {
-        if ( ! $this->canWrite)
+        if ( ! $this->canWrite) {
             throw new Exception("Permission Denied");
+        }
 
-        $params = " delprop " . escapeshellarg($key) . " " . join(" ", $props);
-        exec($this->command . " " . $this->db . " $params", $output, $ret);
+        $output = NULL;
+        $ret = $this->dbExec('delprop', array_merge(array($key), array_values($props)), $output);
         return ($ret == 0);
     }
 
-    /**
-     * Transform an associative array in the form [PropName] => [PropValue] into a string "PropName PropValue". The function escapes all values to prevent shell injection 
-     * 
-     * @param array $props in the form [PropName] => [PropValue]
-     * @access private
-     * @return string a safe string like "PropName PropValue ..."
-     */
-    private function propsToString($props)
+    public function setGlobalFunctionWrapper(Nethgui_Core_GlobalFunctionWrapper $object)
     {
-        $ret = "";
-        foreach ($props as $key => $value)
-            $ret .= " " . escapeshellarg($key) . " " . escapeshellarg($value) . " ";
-        return $ret;
+        $this->globalFunctionWrapper = $object;
+    }
+
+    private function dbExec($command, $args, &$output)
+    {
+        // prepend the database name and command
+        array_unshift($args, $this->db, $command);
+        $p = new Nethgui_System_Process($this->command . ' ${@}', $args);
+        if (isset($this->globalFunctionWrapper)) {
+            $p->setGlobalFunctionWrapper($this->globalFunctionWrapper);
+        }
+        $p->exec();
+        $output = $p->getOutput();
+        return $p->getExitStatus();
+    }
+
+    /**
+     * Take arbitrary arguments and flattenize to an array
+     *
+     * @param mixed $_
+     * @return array
+     */
+    private function prepareArguments()
+    {
+        $args = array();
+
+        foreach (func_get_args() as $arg) {
+            if (is_array($arg)) {
+                foreach ($arg as $propName => $propValue) {
+                    $args[] = $propName;
+                    $args[] = $propValue;
+                }
+            } else {
+                $args[] = (String) $arg;
+            }
+        }
+
+        return $args;
     }
 
 }

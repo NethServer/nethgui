@@ -10,13 +10,14 @@
  */
 
 
-define('NETHGUI_ENVIRONMENT', 'development');
+define('NETHGUI_ENVIRONMENT', 'test');
 define('NETHGUI_APPLICATION', 'Test');
 define('NETHGUI_FILE', __FILE__);
 define('NETHGUI_NATIVE', TRUE);
 
 require_once('Tool/Helpers.php');
 require_once(realpath(dirname(__FILE__) . '/../') . '/Nethgui/Bootstrap.php');
+
 
 
 
