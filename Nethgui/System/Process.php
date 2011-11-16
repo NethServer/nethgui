@@ -81,7 +81,11 @@ class Nethgui_System_Process implements Nethgui_System_ProcessInterface, Nethgui
         if ($this->readExecutionState() !== self::STATE_NEW) {
             return FALSE;
         }
-        $this->globalFunctionWrapper->exec($this->prepareEscapedCommand(), &$this->output, &$this->exitStatus);
+
+        $output = &$this->output;
+        $exitStatus = &$this->exitStatus;
+
+        $this->globalFunctionWrapper->exec($this->prepareEscapedCommand(), $output, $exitStatus);
         $this->changeState(self::STATE_EXITED);
         return $this->readExecutionState();
     }
