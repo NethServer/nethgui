@@ -135,7 +135,7 @@ abstract class Test_Tool_ModuleTestCase extends PHPUnit_Framework_TestCase
             ->method('getLanguageCode')
             ->will($this->returnValue('en'));
 
-        return new Nethgui_Core_View($module, $translator);
+        return new Nethgui_Client_View($module, $translator);
     }
 
     /**
@@ -192,7 +192,7 @@ abstract class Test_Tool_ModuleTestCase extends PHPUnit_Framework_TestCase
         $arguments = $env->getArguments();
         $submitted = $env->isSubmitted();
         $user = $this->createUserMock($env);
-        return new Nethgui_Core_Request($user, $data, $submitted, $arguments, array());
+        return new Nethgui_Client_Request($user, $data, $submitted, $arguments, array());
     }
 
     protected function createUserMock(Test_Tool_ModuleTestEnvironment $env)

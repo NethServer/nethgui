@@ -66,7 +66,7 @@ class Nethgui_Core_Module_StandardTest extends PHPUnit_Framework_TestCase
 
     public function testPrepareView1()
     {
-        $viewMock = $this->getMockBuilder('Nethgui_Core_View')
+        $viewMock = $this->getMockBuilder('Nethgui_Client_View')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -79,7 +79,7 @@ class Nethgui_Core_Module_StandardTest extends PHPUnit_Framework_TestCase
 
     public function testPrepareView2()
     {
-        $viewMock = $this->getMockBuilder('Nethgui_Core_View')
+        $viewMock = $this->getMockBuilder('Nethgui_Client_View')
             ->setMethods(array('copyFrom'))
             ->disableOriginalConstructor()
             ->getMock();

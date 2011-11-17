@@ -26,7 +26,7 @@ class Nethgui_Renderer_JsonTest extends PHPUnit_Framework_TestCase
         $translator->expects($this->any())
             ->method('getLanguageCode')->will($this->returnValue('en'));
 
-        $view = new Nethgui_Core_View($module, $translator);
+        $view = new Nethgui_Client_View($module, $translator);
         
         $module->prepareView($view, 0);
         

@@ -8,11 +8,11 @@
  * @package Tests
  * 
  */
-class Nethgui_Core_DialogBoxTest extends PHPUnit_Framework_TestCase
+class Nethgui_Client_DialogBoxTest extends PHPUnit_Framework_TestCase
 {
 
     /**
-     * @var Nethgui_Core_DialogBox
+     * @var Nethgui_Client_DialogBox
      */
     protected $object;
 
@@ -25,7 +25,7 @@ class Nethgui_Core_DialogBoxTest extends PHPUnit_Framework_TestCase
         $userMock = $this->getMockBuilder('Nethgui_Core_Module_Standard')
             ->disableOriginalConstructor()
             ->getMock();
-        $this->object = new Nethgui_Core_DialogBox($userMock, 'message');
+        $this->object = new Nethgui_Client_DialogBox($userMock, 'message');
     }
 
     /**
