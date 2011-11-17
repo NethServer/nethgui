@@ -13,6 +13,7 @@
  */
 interface Nethgui_Core_RequestInterface
 {
+
     /**
      * Get a parameter value
      * @param string $parameterName
@@ -45,7 +46,6 @@ interface Nethgui_Core_RequestInterface
      */
     public function getParameters();
 
-
     /**
      * Values coming from the resource name and query string are called
      * "arguments".
@@ -54,7 +54,6 @@ interface Nethgui_Core_RequestInterface
      * @return array
      */
     public function getArguments();
-
 
     /**
      * Indicates whether the request contains any parameter or no.

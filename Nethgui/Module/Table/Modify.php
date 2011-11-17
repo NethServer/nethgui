@@ -32,6 +32,12 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
      */
     private $createDefaults = array();
 
+    /**
+     *
+     * @var Nethgui_Core_ModuleInterface
+     */
+    private $nextAction;
+
     public function __construct($identifier, $parameterSchema, $requireEvents, $viewTemplate = NULL)
     {
         if ( ! in_array($identifier, array('create', 'delete', 'update'))) {
@@ -158,7 +164,7 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
 
         parent::bind($request);
 
-        if (! $request->isSubmitted()
+        if ( ! $request->isSubmitted()
             && $this->getIdentifier() == 'create') {
             foreach ($this->createDefaults as $paramName => $paramValue) {
                 $this->parameters[$paramName] = $paramValue;
@@ -194,12 +200,6 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
         if ($changes > 0) {
             $this->signalAllEventsFinally();
         }
-
-        $request = $this->getRequest();
-        if ($request instanceof Nethgui_Core_RequestInterface
-            && $request->isSubmitted()) {
-            $request->getUser()->addClientCommandEnable($this->getParent()->getAction('read'));
-        }
     }
 
     protected function processDelete($key)
@@ -209,16 +209,26 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
         } else {
             throw new Nethgui_Exception_Process('Cannot delete `' . $key . '`');
         }
+        $this->setNextAction($this->getParent()->getAction('read'));
     }
 
     protected function processCreate($key)
     {
-        // NOOP
+        $this->setNextAction($this->getParent()->getAction('read'));
     }
 
     protected function processUpdate($key)
     {
-        // NOOP
+        $this->setNextAction($this->getParent()->getAction('read'));
+    }
+
+    /**
+     * After the action has been executed point UI to the given $action
+     * @param Nethgui_Core_ModuleInterface $action
+     */
+    protected function setNextAction(Nethgui_Core_ModuleInterface $action)
+    {
+        $this->nextAction = $action;
     }
 
     public function prepareView(Nethgui_Core_ViewInterface $view, $mode)
@@ -226,6 +236,14 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
         parent::prepareView($view, $mode);
         if ($mode == self::VIEW_SERVER) {
             $view['__key'] = $this->key;
+        }
+
+        if ($this->nextAction instanceof Nethgui_Core_ModuleInterface) {
+            $request = $this->getRequest();
+            if ($request instanceof Nethgui_Core_RequestInterface
+                && $request->isSubmitted()) {
+                $view->getCommandFactory()->activate($this->nextAction);
+            }
         }
     }
 

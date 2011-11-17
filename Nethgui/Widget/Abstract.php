@@ -99,10 +99,38 @@ abstract class Nethgui_Widget_Abstract implements Nethgui_Renderer_WidgetInterfa
     public function __toString()
     {
         try {
+            /*
+             * Refs #620
+             * Client commands are applied to the designed widget to keep the view consistent
+             * in both CLIENT and SERVER modes.
+             */
+            $this->executeCommands();
             return $this->render();
         } catch (Exception $ex) {
             $this->getLog()->exception($ex);
             throw $ex;
+        }
+    }
+
+    private function executeCommands()
+    {
+        if ( ! $this->hasAttribute('command')) {
+            return;
+        }
+        
+        $commandBuckets = array_map('trim', explode(',', $this->getAttribute('command')));
+
+        foreach ($commandBuckets as $commandBucket) {
+            if ( ! isset($this->view[$commandBucket])) {
+                continue;
+            }
+
+            $command = $this->view[$commandBucket];
+
+            if ( $command instanceof Nethgui_Client_CommandInterface) {
+                $command->setReceiver($this);
+                $command->execute();
+            }            
         }
     }
 
@@ -124,4 +152,5 @@ abstract class Nethgui_Widget_Abstract implements Nethgui_Renderer_WidgetInterfa
     {
         return $this->view->getLog();
     }
+
 }

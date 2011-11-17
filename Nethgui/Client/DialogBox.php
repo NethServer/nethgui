@@ -17,7 +17,7 @@
  * 
  * @package Core
  */
-class Nethgui_Core_DialogBox implements Serializable
+class Nethgui_Client_DialogBox implements Serializable
 {
     const NOTIFY_SUCCESS = 0x0;
     const NOTIFY_WARNING = 0x1;
@@ -35,8 +35,8 @@ class Nethgui_Core_DialogBox implements Serializable
 
     public function __construct(Nethgui_Core_ModuleInterface $module, $message, $actions = array(), $type = self::NOTIFY_SUCCESS)
     {
-        if ( ! $module instanceof Nethgui_Core_ModuleSurrogate) {
-            $module = new Nethgui_Core_ModuleSurrogate($module);
+        if ( ! $module instanceof Nethgui_Client_ModuleSurrogate) {
+            $module = new Nethgui_Client_ModuleSurrogate($module);
         }
 
         // Sanitize the $message parameter: must be a couple <string, params[]>

@@ -95,7 +95,7 @@ class Nethgui_Module_NotificationArea extends Nethgui_Core_Module_Standard imple
             $validationView['message'] = $view->translate('Incorrect values');
         }
 
-        $validationView['type'] = Nethgui_Core_DialogBox::NOTIFY_ERROR;
+        $validationView['type'] = Nethgui_Client_DialogBox::NOTIFY_ERROR;
         $validationView['dialogId'] = 'dlg' . substr(md5('Validation-' . microtime()), 0, 6);
         $validationView['transient'] = TRUE;
         $validationView['errors'] = new ArrayObject();
@@ -130,7 +130,7 @@ class Nethgui_Module_NotificationArea extends Nethgui_Core_Module_Standard imple
                 ->setAttribute('title', str_replace("\n", " ", $view['errorInfo']));
     }
 
-    private function makeActionViewsForDialog(Nethgui_Core_DialogBox $dialog, $mode, Nethgui_Core_ViewInterface $dialogView)
+    private function makeActionViewsForDialog(Nethgui_Client_DialogBox $dialog, $mode, Nethgui_Core_ViewInterface $dialogView)
     {
         $actionViews = new ArrayObject();
 

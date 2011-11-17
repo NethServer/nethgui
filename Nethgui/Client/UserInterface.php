@@ -54,7 +54,7 @@ interface Nethgui_Client_UserInterface extends ArrayAccess
      * @param integer $type
      * @return Nethgui_Client_UserInterface
      */
-    public function showDialogBox(Nethgui_Core_ModuleInterface $module, $message, $actions = array(), $type = Nethgui_Core_DialogBox::NOTIFY_SUCCESS);
+    public function showDialogBox(Nethgui_Core_ModuleInterface $module, $message, $actions = array(), $type = Nethgui_Client_DialogBox::NOTIFY_SUCCESS);
 
     public function getDialogBoxes();
 
@@ -62,23 +62,6 @@ interface Nethgui_Client_UserInterface extends ArrayAccess
      * @return Nethgui_Client_UserInterface
      */
     public function dismissDialogBox($dialogId);
-
-    /**
-     * @return Nethgui_Client_UserInterface
-     */
-    public function addClientCommand(Nethgui_Client_CommandInterface $command);
-
-    /**
-     * @return Nethgui_Client_UserInterface
-     */
-    public function addClientCommandEnable(Nethgui_Core_ModuleInterface $action);
-
-    /**
-     * @return Nethgui_Client_UserInterface
-     */
-    public function addClientCommandActivate(Nethgui_Core_ModuleInterface $action, Nethgui_Core_ModuleInterface $cancelAction = NULL);
-
-    public function getClientCommands();
 
     /**
      * @return Nethgui_Client_UserInterface

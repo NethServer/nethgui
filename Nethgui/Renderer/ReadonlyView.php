@@ -14,7 +14,7 @@
  * @author Davide Principi <davide.principi@nethesis.it>
  * @ignore
  */
-class Nethgui_Core_ReadonlyView implements Nethgui_Core_ViewInterface, Nethgui_Log_LogConsumerInterface
+class Nethgui_Renderer_ReadonlyView implements Nethgui_Core_ViewInterface, Nethgui_Log_LogConsumerInterface
 {
 
     /**
@@ -124,6 +124,11 @@ class Nethgui_Core_ReadonlyView implements Nethgui_Core_ViewInterface, Nethgui_L
         } else {
             return new Nethgui_Log_Nullog();
         }
+    }
+
+    public function getCommandFactory()
+    {
+        return $this->view->getCommandFactory();
     }
 
 }

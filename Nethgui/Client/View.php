@@ -23,7 +23,7 @@
  * @see Nethgui_Core_ModuleInterface::prepareView()
  * @package Core
  */
-class Nethgui_Core_View implements Nethgui_Core_ViewInterface, Nethgui_Log_LogConsumerInterface
+class Nethgui_Client_View implements Nethgui_Core_ViewInterface, Nethgui_Log_LogConsumerInterface
 {
 
     /**
@@ -57,10 +57,17 @@ class Nethgui_Core_View implements Nethgui_Core_ViewInterface, Nethgui_Log_LogCo
      */
     private $translator;
 
-    public function __construct(Nethgui_Core_ModuleInterface $module, Nethgui_Core_TranslatorInterface $translator)
+    /**
+     *
+     * @var Nethgui_Core_CommandFactoryInterface
+     */
+    private $commandFactory;
+
+    public function __construct(Nethgui_Core_ModuleInterface $module, Nethgui_Core_TranslatorInterface $translator, Nethgui_Core_CommandFactoryInterface $commandFactory = NULL)
     {
         $this->module = $module;
         $this->translator = $translator;
+        $this->commandFactory = is_null($commandFactory) ? new Nethgui_Client_CommandFactory($this) : $commandFactory;
 
         // XXX: trying to guess view name
         $this->template = str_replace('_Module_', '_Template_', get_class($module));
@@ -86,7 +93,7 @@ class Nethgui_Core_View implements Nethgui_Core_ViewInterface, Nethgui_Log_LogCo
 
     public function spawnView(Nethgui_Core_ModuleInterface $module, $register = FALSE)
     {
-        $spawnedView = new self($module, $this->translator);
+        $spawnedView = new self($module, $this->translator, $this->commandFactory);
         if ($register === TRUE) {
             $this[$module->getIdentifier()] = $spawnedView;
         } elseif (is_string($register)) {
@@ -282,5 +289,9 @@ class Nethgui_Core_View implements Nethgui_Core_ViewInterface, Nethgui_Log_LogCo
             return new Nethgui_Log_Nullog();
         }
     }
-
+    
+    public function getCommandFactory()
+    {
+        return $this->commandFactory;
+    }
 }

@@ -8,7 +8,7 @@
  *
  * @package Core
  */
-class Nethgui_Core_Request implements Nethgui_Core_RequestInterface
+class Nethgui_Client_Request implements Nethgui_Core_RequestInterface
 {
     const CONTENT_TYPE_JSON = 1;
     const CONTENT_TYPE_HTML = 2;
@@ -17,14 +17,17 @@ class Nethgui_Core_Request implements Nethgui_Core_RequestInterface
      * @var array
      */
     private $data;
+
     /**
      * @var UserInterface
      */
     private $user;
+
     /**
      * @var bool
      */
     private $submitted;
+
     /**
      * @see Nethgui_Core_RequestInterface::getArguments()
      * @var array
@@ -111,4 +114,3 @@ class Nethgui_Core_Request implements Nethgui_Core_RequestInterface
 
 }
 
-?>

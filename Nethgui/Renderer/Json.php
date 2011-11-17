@@ -19,10 +19,16 @@ class Nethgui_Renderer_Json extends Nethgui_Renderer_Abstract
     private function getClientEvents()
     {
         $events = array();
-        return $this->fillEvents($events);
+        $commands = array();
+        $this->fillEvents($events, $commands);
+
+        if (count($commands) > 0) {
+            $events[] = array('ClientCommandHandler', $commands);
+        }
+        return $events;
     }
 
-    private function fillEvents(&$events)
+    private function fillEvents(&$events, &$commands)
     {
         foreach ($this as $offset => $value) {
 
@@ -31,7 +37,15 @@ class Nethgui_Renderer_Json extends Nethgui_Renderer_Abstract
                 if ( ! $value instanceof Nethgui_Renderer_Json) {
                     $value = new Nethgui_Renderer_Json($value);
                 }
-                $value->fillEvents($events);
+                $value->fillEvents($events, $commands);
+                continue;
+            } elseif ($value instanceof Nethgui_Client_CommandInterface) {
+                $value->setReceiver($eventTarget);
+                $commands[] = array(
+                    'r' => (String) $value->getReceiver(),
+                    'm' => (String) $value->getMethod(),
+                    'a' => $value->getArguments()
+                );
                 continue;
             } elseif ($value instanceof Traversable) {
                 $eventData = $this->traversableToArray($value);
@@ -41,8 +55,6 @@ class Nethgui_Renderer_Json extends Nethgui_Renderer_Abstract
 
             $events[] = array($eventTarget, $eventData);
         }
-
-        return $events;
     }
 
     /**

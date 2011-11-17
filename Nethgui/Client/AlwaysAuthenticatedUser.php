@@ -32,13 +32,7 @@ class Nethgui_Client_AlwaysAuthenticatedUser implements Nethgui_Client_UserInter
      * @var array
      */
     private $data;
-
-    /**
-     * Command to be executed on the client side.
-     * @var type
-     */
-    private $clientCommands = array();
-
+    
     /**
      * Traced processes
      * @var type
@@ -113,9 +107,9 @@ class Nethgui_Client_AlwaysAuthenticatedUser implements Nethgui_Client_UserInter
         return isset($this->credentials[$credentialName]);
     }
 
-    public function showDialogBox(Nethgui_Core_ModuleInterface $module, $message, $actions = array(), $type = Nethgui_Core_DialogBox::NOTIFY_SUCCESS)
+    public function showDialogBox(Nethgui_Core_ModuleInterface $module, $message, $actions = array(), $type = Nethgui_Client_DialogBox::NOTIFY_SUCCESS)
     {
-        $dialog = new Nethgui_Core_DialogBox($module, $message, $actions, $type);
+        $dialog = new Nethgui_Client_DialogBox($module, $message, $actions, $type);
 
         if ( ! array_key_exists($dialog->getId(), $this->dialogs))
         {
@@ -135,29 +129,6 @@ class Nethgui_Client_AlwaysAuthenticatedUser implements Nethgui_Client_UserInter
     public function getDialogBoxes()
     {
         return $this->dialogs;
-    }
-
-    public function addClientCommandEnable(Nethgui_Core_ModuleInterface $action)
-    {
-        $this->addClientCommand(new Nethgui_Client_Command_Enable($action));
-        return $this;
-    }
-
-    public function addClientCommandActivate(Nethgui_Core_ModuleInterface $action, Nethgui_Core_ModuleInterface $cancelAction = NULL)
-    {
-        $this->addClientCommand(new Nethgui_Client_Command_Activate($action, $cancelAction));
-        return $this;
-    }
-
-    public function addClientCommand(Nethgui_Client_CommandInterface $command)
-    {
-        $this->clientCommands[] = $command;
-        return $this;
-    }
-
-    public function getClientCommands()
-    {
-        return $this->clientCommands;
     }
 
     public function offsetExists($offset)

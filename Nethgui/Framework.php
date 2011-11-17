@@ -104,7 +104,7 @@ class Nethgui_Framework
         $worldModule = new Nethgui_Module_World();
         $worldModule->setPlatform($platform);
 
-        $view = new Nethgui_Core_View($worldModule, new Nethgui_Language_Translator($user, $platform->getLog()));
+        $view = new Nethgui_Client_View($worldModule, new Nethgui_Language_Translator($user, $platform->getLog()));
 
         try {
             foreach ($moduleWakeupList as $moduleIdentifier) {
@@ -171,7 +171,7 @@ class Nethgui_Framework
         /*
          * Prepare the views and render into Xhtml or Json
          */
-        if ($request->getContentType() === Nethgui_Core_Request::CONTENT_TYPE_HTML) {
+        if ($request->getContentType() === Nethgui_Client_Request::CONTENT_TYPE_HTML) {
             $worldModule->addModule($menuModule);
             $worldModule->prepareView($view, Nethgui_Core_ModuleInterface::VIEW_SERVER);
             $redirectUrl = $this->getRedirectUrl($user);
@@ -182,32 +182,12 @@ class Nethgui_Framework
             } else {
                 $this->redirect($redirectUrl);
             }
-        } elseif ($request->getContentType() === Nethgui_Core_Request::CONTENT_TYPE_JSON) {
+        } elseif ($request->getContentType() === Nethgui_Client_Request::CONTENT_TYPE_JSON) {
             $worldModule->prepareView($view, Nethgui_Core_ModuleInterface::VIEW_CLIENT);
-            $clientCommands = $this->clientCommandsToArray($user->getClientCommands());
-            if ( ! empty($clientCommands)) {
-                throw new Exception('TODO: client commands are not supported');
-                //$events[] = array('ClientCommandHandler', $clientCommands);
-            }
             header("Content-Type: application/json; charset=UTF-8");
             echo new Nethgui_Renderer_Json($view);
             $notificationManager->dismissTransientDialogBoxes();
         }
-    }
-
-    private function clientCommandsToArray($clientCommands)
-    {
-        $output = array();
-        foreach ($clientCommands as $command) {
-            if ($command instanceof Nethgui_Client_CommandInterface) {
-                $output[] = array(
-                    'targetSelector' => $command->getTargetSelector(),
-                    'method' => $command->getMethod(),
-                    'arguments' => $command->getArguments(),
-                );
-            }
-        }
-        return $output;
     }
 
     /**
@@ -218,17 +198,11 @@ class Nethgui_Framework
      */
     private function getRedirectUrl(Nethgui_Client_UserInterface $user)
     {
-        foreach ($user->getClientCommands() as $command) {
-            if ($command instanceof Nethgui_Client_CommandInterface && $command->isRedirection()) {
-                return $command->getRedirectionUrl();
-            }
-        }
-
         return FALSE;
     }
 
     /**
-     * Creates a new Nethgui_Core_Request object from current HTTP request.
+     * Creates a new Nethgui_Client_Request object from current HTTP request.
      * @param string $defaultModuleIdentifier
      * @param array $parameters
      * @return Nethgui_Core_Request
@@ -266,17 +240,17 @@ class Nethgui_Framework
         $httpAccept = isset($_SERVER['HTTP_ACCEPT']) ? trim(array_shift(explode(',', $_SERVER['HTTP_ACCEPT']))) : FALSE;
 
         if ($httpAccept == 'application/json')
-            $contentType = Nethgui_Core_Request::CONTENT_TYPE_JSON;
+            $contentType = Nethgui_Client_Request::CONTENT_TYPE_JSON;
         else {
             // Standard  POST request.
-            $contentType = Nethgui_Core_Request::CONTENT_TYPE_HTML;
+            $contentType = Nethgui_Client_Request::CONTENT_TYPE_HTML;
         }
 
 
         // TODO: retrieve user state from Session
         $user = new Nethgui_Client_AlwaysAuthenticatedUser();
 
-        $instance = new Nethgui_Core_Request($user, $data, $submitted, $arguments, array(
+        $instance = new Nethgui_Client_Request($user, $data, $submitted, $arguments, array(
                 'XML_HTTP_REQUEST' => $isXmlHttpRequest,
                 'CONTENT_TYPE' => $contentType,
             ));

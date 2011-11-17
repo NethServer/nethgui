@@ -85,19 +85,31 @@ interface Nethgui_Core_ViewInterface extends ArrayAccess, IteratorAggregate
     public function getClientEventTarget($name);
 
     /**
-     * A method to translate a message in the current language.
+     * A method to translate a message according to the user language preferences.
+     *
      *
      * @param string $value
      * @param array $args
      * @return string
      * @see Nethgui_Core_TranslatorInterface::translate()
+     * @see getTranslator()
      */
     public function translate($message, $args = array());
 
     /**
+     * Access to the object performing string translations
+     *
+     * @see translate()
      * @return Nethgui_Core_TranslatorInterface
      */
     public function getTranslator();
+
+    /**
+     * Create command objects through the returned factory class instance
+     * 
+     * @return Nethgui_Core_CommandFactoryInterface
+     */
+    public function getCommandFactory();
 }
 
 ?>

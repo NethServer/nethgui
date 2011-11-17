@@ -43,7 +43,7 @@ class Nethgui_Widget_Xhtml_Button extends Nethgui_Widget_Xhtml
                 } elseif ($flags & Nethgui_Renderer_WidgetFactoryInterface::BUTTON_CANCEL) {
                     $value = '..';
                 } elseif ($flags & Nethgui_Renderer_WidgetFactoryInterface::BUTTON_HELP) {
-                    $value = array_shift($this->view->getModulePath());
+                    $value = Nethgui\array_head($this->view->getModulePath());
                 }
             }
 

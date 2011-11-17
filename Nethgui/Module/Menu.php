@@ -61,7 +61,7 @@ class Nethgui_Module_Menu extends Nethgui_Core_Module_Standard
 
     private function makeModuleAnchor(Nethgui_Renderer_Abstract $view, Nethgui_Core_ModuleInterface $module)
     {
-        $moduleView = new Nethgui_Core_View($module, $view->getTranslator());
+        $moduleView = new Nethgui_Client_View($module, $view->getTranslator());
 
         $placeholders = array(
             '%HREF' => htmlspecialchars($moduleView->getModuleUrl()),

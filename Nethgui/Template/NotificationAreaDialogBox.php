@@ -1,14 +1,14 @@
 <?php
-switch (intval($view['type']) & Nethgui_Core_DialogBox::MASK_SEVERITY) {
-    case Nethgui_Core_DialogBox::NOTIFY_SUCCESS:
+switch (intval($view['type']) & Nethgui_Client_DialogBox::MASK_SEVERITY) {
+    case Nethgui_Client_DialogBox::NOTIFY_SUCCESS:
         $cssClass = 'Notification success ui-state-success';
         $icon = 'check';
         break;
-    case Nethgui_Core_DialogBox::NOTIFY_WARNING:
+    case Nethgui_Client_DialogBox::NOTIFY_WARNING:
         $cssClass = 'Notification warning ui-state-error';
         $icon = 'info';
         break;
-    case Nethgui_Core_DialogBox::NOTIFY_ERROR:
+    case Nethgui_Client_DialogBox::NOTIFY_ERROR:
         $cssClass = 'Notification error ui-state-error';
         $icon = 'alert';
         break;

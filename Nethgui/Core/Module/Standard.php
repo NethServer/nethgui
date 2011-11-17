@@ -262,10 +262,10 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
         }
 
         if ($exitStatus === FALSE) {
-            $type = Nethgui_Core_DialogBox::NOTIFY_ERROR;
+            $type = Nethgui_Client_DialogBox::NOTIFY_ERROR;
             $messageTemplate = $eventName . '_failure';
         } else {
-            $type = Nethgui_Core_DialogBox::NOTIFY_SUCCESS;
+            $type = Nethgui_Client_DialogBox::NOTIFY_SUCCESS;
             $messageTemplate = $eventName . '_success';
         }
 
@@ -279,7 +279,7 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
      * and should return the action definitions to display a dialog box.
      *
      * @see Nethgui_System_EventObserverInterface::notifyEventCompletion
-     * @see Nethgui_Core_DialogBox
+     * @see Nethgui_Client_DialogBox
      * @param string $eventName
      * @param array $args
      * @param boolean $exitStatus
@@ -456,7 +456,7 @@ abstract class Nethgui_Core_Module_Standard extends Nethgui_Core_Module_Abstract
 
             $isValid = $validator->evaluate($this->parameters[$parameterName]);
             if ($isValid !== TRUE) {
-                $report->addValidationError(new Nethgui_Core_ModuleSurrogate($this), $parameterName, $validator);
+                $report->addValidationError(new Nethgui_Client_ModuleSurrogate($this), $parameterName, $validator);
                 $this->invalidParameters[] = $parameterName;
             }
         }

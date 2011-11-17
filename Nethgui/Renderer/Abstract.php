@@ -11,7 +11,7 @@
  * @see http://en.wikipedia.org/wiki/Decorator_pattern
  * @package Renderer
  */
-abstract class Nethgui_Renderer_Abstract extends Nethgui_Core_ReadonlyView
+abstract class Nethgui_Renderer_Abstract extends Nethgui_Renderer_ReadonlyView
 {
 
     abstract protected function render();
