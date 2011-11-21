@@ -6,6 +6,10 @@
  */
 
 /**
+ * Nethgui_Renderer_HttpCommandReceiver
+ *
+ * Implements the command logic as HTTP redirects
+ *
  * @package Renderer
  * @ignore
  */
