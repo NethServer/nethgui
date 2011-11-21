@@ -14,7 +14,7 @@
  * @package Renderer
  * @ignore
  */
-class Nethgui_Renderer_Xhtml extends Nethgui_Renderer_Abstract implements Nethgui_Renderer_WidgetFactoryInterface, Nethgui_Core_GlobalFunctionConsumer
+class Nethgui_Renderer_Xhtml extends Nethgui_Renderer_Abstract implements Nethgui_Renderer_WidgetFactoryInterface, Nethgui_Core_GlobalFunctionConsumer, Nethgui_Core_CommandReceiverAggregateInterface
 {
 
     /**
@@ -29,15 +29,22 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Renderer_Abstract implements Nethgu
     private $globalFunctionWrapper;
 
     /**
+     * @var Nethgui_Core_CommandReceiverInterface
+     */
+    private $commandReceiver;
+
+    /**
      *
      * @param Nethgui_Core_ViewInterface $view
      * @param int $inheritFlags Default flags applied to all widgets created by this renderer
+     * @param Nethgui_Core_CommandReceiverInterface $commandReceiver object where Commands are executed
      */
-    public function __construct(Nethgui_Core_ViewInterface $view, $inheritFlags = 0)
+    public function __construct(Nethgui_Core_ViewInterface $view, $inheritFlags = 0, Nethgui_Core_CommandReceiverInterface $commandReceiver = NULL)
     {
         parent::__construct($view);
         $this->inheritFlags = $inheritFlags & NETHGUI_INHERITABLE_FLAGS;
         $this->globalFunctionWrapper = new Nethgui_Core_GlobalFunctionWrapper();
+        $this->commandReceiver = new Nethgui_Renderer_HttpCommandReceiver($this, $commandReceiver);
     }
 
     public function setGlobalFunctionWrapper(Nethgui_Core_GlobalFunctionWrapper $object)
@@ -107,6 +114,18 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Renderer_Abstract implements Nethgu
             $this->globalFunctionWrapper->phpInclude($absoluteViewPath, $viewState);
             $viewOutput = ob_get_contents();
             ob_end_clean();
+        }
+
+        /**
+         * Search for any non-executed command and invoke execute() on it.
+         */
+        foreach ($this->view as $command) {
+            if ( ! $command instanceof Nethgui_Core_CommandInterface) {
+                continue;
+            }
+            if ( ! $command->isExecuted() ) {
+                $command->setReceiver($this)->execute();
+            }
         }
 
         return $viewOutput;
@@ -326,6 +345,11 @@ class Nethgui_Renderer_Xhtml extends Nethgui_Renderer_Abstract implements Nethgu
     {
         $flags |= $this->inheritFlags;
         return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags, 'icon-before' => 'ui-icon-triangle-1-s'));
+    }
+
+    public function getCommandReceiver()
+    {
+        return $this->commandReceiver;
     }
 
 }

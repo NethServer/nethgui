@@ -116,7 +116,7 @@ class Nethgui_Module_Menu extends Nethgui_Core_Module_Standard
 
             $module = $menuIterator->current();
 
-            list($key, $value) = @each($module->getTags(NULL));
+            list($key, $value) = @each($module->getTags());
             if ($key) {
                 $tags[$key] = $value;
             }
@@ -143,6 +143,7 @@ class Nethgui_Module_Menu extends Nethgui_Core_Module_Standard
             }
             $action = Nethgui\array_head($request->getArguments());
             if ( ! $action) { //search
+                $tmp2 = array();
                 $tmp = $this->iteratorToSearch($this->menuIterator);
                 foreach ($tmp as $url => $tags) {
                     $it = new RecursiveIteratorIterator(new RecursiveArrayIterator($tags));

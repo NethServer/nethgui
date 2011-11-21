@@ -1,6 +1,6 @@
 <?php
 /**
- * @package Core
+ * @package Client
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
@@ -15,7 +15,7 @@
  * 
  * 
  * 
- * @package Core
+ * @package Client
  */
 class Nethgui_Client_DialogBox implements Serializable
 {

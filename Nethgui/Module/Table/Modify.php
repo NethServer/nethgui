@@ -32,12 +32,6 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
      */
     private $createDefaults = array();
 
-    /**
-     *
-     * @var Nethgui_Core_ModuleInterface
-     */
-    private $nextAction;
-
     public function __construct($identifier, $parameterSchema, $requireEvents, $viewTemplate = NULL)
     {
         if ( ! in_array($identifier, array('create', 'delete', 'update'))) {
@@ -199,7 +193,7 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
         $changes += $this->tableAdapter->save();
         if ($changes > 0) {
             $this->signalAllEventsFinally();
-        }
+        }               
     }
 
     protected function processDelete($key)
@@ -209,26 +203,17 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
         } else {
             throw new Nethgui_Exception_Process('Cannot delete `' . $key . '`');
         }
-        $this->setNextAction($this->getParent()->getAction('read'));
+        $this->addUiClientCommand('cancel');
     }
 
     protected function processCreate($key)
     {
-        $this->setNextAction($this->getParent()->getAction('read'));
+        $this->addUiClientCommand('cancel');
     }
 
     protected function processUpdate($key)
     {
-        $this->setNextAction($this->getParent()->getAction('read'));
-    }
-
-    /**
-     * After the action has been executed point UI to the given $action
-     * @param Nethgui_Core_ModuleInterface $action
-     */
-    protected function setNextAction(Nethgui_Core_ModuleInterface $action)
-    {
-        $this->nextAction = $action;
+        $this->addUiClientCommand('cancel');
     }
 
     public function prepareView(Nethgui_Core_ViewInterface $view, $mode)
@@ -236,14 +221,6 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
         parent::prepareView($view, $mode);
         if ($mode == self::VIEW_SERVER) {
             $view['__key'] = $this->key;
-        }
-
-        if ($this->nextAction instanceof Nethgui_Core_ModuleInterface) {
-            $request = $this->getRequest();
-            if ($request instanceof Nethgui_Core_RequestInterface
-                && $request->isSubmitted()) {
-                $view->getCommandFactory()->activate($this->nextAction);
-            }
         }
     }
 

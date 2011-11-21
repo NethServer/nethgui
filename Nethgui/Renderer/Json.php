@@ -9,26 +9,10 @@
  * @package Renderer
  * @ignore
  */
-class Nethgui_Renderer_Json extends Nethgui_Renderer_Abstract
+class Nethgui_Renderer_Json extends Nethgui_Renderer_Abstract implements Nethgui_Core_CommandReceiverInterface
 {
 
-    /**
-     * Get the array of events to properly transfer the view on the client side.
-     * @return array
-     */
-    private function getClientEvents()
-    {
-        $events = array();
-        $commands = array();
-        $this->fillEvents($events, $commands);
-
-        if (count($commands) > 0) {
-            $events[] = array('ClientCommandHandler', $commands);
-        }
-        return $events;
-    }
-
-    private function fillEvents(&$events, &$commands)
+    private function deepWalk(&$events, &$commands)
     {
         foreach ($this as $offset => $value) {
 
@@ -37,15 +21,18 @@ class Nethgui_Renderer_Json extends Nethgui_Renderer_Abstract
                 if ( ! $value instanceof Nethgui_Renderer_Json) {
                     $value = new Nethgui_Renderer_Json($value);
                 }
-                $value->fillEvents($events, $commands);
+                $value->deepWalk($events, $commands);
                 continue;
-            } elseif ($value instanceof Nethgui_Client_CommandInterface) {
-                $value->setReceiver($eventTarget);
+            } elseif ($value instanceof Nethgui_Core_CommandInterface) {
+
+                $executedCommand = $value->setReceiver($this)->execute();
+
                 $commands[] = array(
-                    'r' => (String) $value->getReceiver(),
-                    'm' => (String) $value->getMethod(),
-                    'a' => $value->getArguments()
+                    'receiver' => is_numeric($offset) ? '#' . $this->getUniqueId() : '.' . $eventTarget,
+                    'methodName' => $executedCommand[0],
+                    'arguments' => $executedCommand[1]
                 );
+                
                 continue;
             } elseif ($value instanceof Traversable) {
                 $eventData = $this->traversableToArray($value);
@@ -76,7 +63,20 @@ class Nethgui_Renderer_Json extends Nethgui_Renderer_Abstract
 
     protected function render()
     {
-        return json_encode($this->getClientEvents());
+        $events = array();
+        $commands = array();
+
+        $this->deepWalk($events, $commands);
+        if (count($commands) > 0) {
+            $events[] = array('ClientCommandHandler', $commands);
+        }
+
+        return json_encode($events);
+    }
+
+    public function executeCommand($name, $arguments)
+    {
+        return array($name, $arguments);
     }
 
 }

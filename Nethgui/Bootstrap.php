@@ -89,13 +89,25 @@ if ( ! defined('NETHGUI_CUSTOMCSS')) {
     define('NETHGUI_CUSTOMCSS', FALSE);
 }
 
-if (defined('STDIN')) {
-    define('NETHGUI_SITEURL', FALSE);
-} else {
-    define('NETHGUI_SITEURL', (empty($_SERVER['HTTPS']) ? 'http://' : 'https://') . $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT']);
-    if (parse_url(NETHGUI_SITEURL) === FALSE) {
-        die('Invalid site NETHGUI_SITEURL');
+
+if ( ! defined('NETHGUI_SITEURL')) {
+    if (defined('STDIN')) {
+        define('NETHGUI_SITEURL', FALSE);
+    } else {
+        $tmpSiteUrl = empty($_SERVER['HTTPS']) ? 'http://' : 'https://';
+        $tmpSiteUrl .= $_SERVER['SERVER_NAME'];
+        if (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] != '80') {
+            $tmpSiteUrl .= ':' . $_SERVER['SERVER_PORT'];
+        }
+        define('NETHGUI_SITEURL', $tmpSiteUrl);
+        unset($tmpSiteUrl);
     }
+}
+
+if (parse_url(NETHGUI_SITEURL) === FALSE) {
+    print_r($_SERVER);
+    die(sprintf('Invalid NETHGUI_SITEURL constant "%s"', NETHGUI_SITEURL));
+
 }
 
 require_once('Tool.php');

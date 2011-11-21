@@ -6,7 +6,7 @@
 /**
  * @package Nethgui
  */
-class Nethgui_Framework
+class Nethgui_Framework 
 {
 
     /**
@@ -177,7 +177,7 @@ class Nethgui_Framework
             $redirectUrl = $this->getRedirectUrl($user);
             if ($redirectUrl === FALSE) {
                 header("Content-Type: text/html; charset=UTF-8");
-                echo new Nethgui_Renderer_Xhtml($view);
+                echo new Nethgui_Renderer_Xhtml($view, 0, new Nethgui_Core_LoggingCommandReceiver());
                 $notificationManager->dismissTransientDialogBoxes();
             } else {
                 $this->redirect($redirectUrl);

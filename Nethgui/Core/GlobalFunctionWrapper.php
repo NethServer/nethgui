@@ -26,4 +26,9 @@ class Nethgui_Core_GlobalFunctionWrapper
         return include($filePath);
     }
 
+    public function phpExit($code)
+    {
+        exit($code);
+    }
+
 }

@@ -20,7 +20,7 @@
  * @internal
  * @ignore
  */
-class Nethgui_Widget_Xhtml_Button extends Nethgui_Widget_Xhtml
+class Nethgui_Widget_Xhtml_Button extends Nethgui_Widget_Xhtml implements Nethgui_Core_CommandReceiverInterface
 {
 
     public function render()
@@ -103,6 +103,15 @@ class Nethgui_Widget_Xhtml_Button extends Nethgui_Widget_Xhtml
             $value = array(strval($value));
         }
         return $this->view->getModuleUrl($value);
+    }
+
+    public function executeCommand($name, $arguments)
+    {
+        switch ($name) {
+            case 'setLabel':
+                $this->setAttribute('label', $arguments[0]);
+                break;
+        }
     }
 
 }

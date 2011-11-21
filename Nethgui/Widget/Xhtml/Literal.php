@@ -37,8 +37,8 @@ class Nethgui_Widget_Xhtml_Literal extends Nethgui_Widget_Xhtml
             $valueFlags = 0;
         }
 
-        if ($value instanceof Nethgui_Core_ViewInterface) {
-            $value = new Nethgui_Renderer_Xhtml($value, $valueFlags);
+        if ($value instanceof Nethgui_Core_ViewInterface && $this->view instanceof Nethgui_Core_CommandReceiverAggregateInterface) {
+            $value = new Nethgui_Renderer_Xhtml($value, $valueFlags, $this->view->getCommandReceiver());
         }
 
         $content = (String) $value;

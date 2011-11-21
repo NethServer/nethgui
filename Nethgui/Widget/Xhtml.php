@@ -224,7 +224,6 @@ abstract class Nethgui_Widget_Xhtml extends Nethgui_Widget_Abstract
         return ' ' . trim($content);
     }
 
-
     private function realPath($name)
     {
         if (is_array($name)) {
@@ -260,6 +259,8 @@ abstract class Nethgui_Widget_Xhtml extends Nethgui_Widget_Abstract
      * Generate a control name for the given $parts. If no parts are given
      * the name is generated from the module referenced by the view.
      *
+     * XXX: should be "protected"?
+     * 
      * @param string|array $parts
      * @return string
      */
@@ -270,6 +271,38 @@ abstract class Nethgui_Widget_Xhtml extends Nethgui_Widget_Abstract
         return $prefix . '[' . implode('][', $nameSegments) . ']';
     }
 
+    public function render()
+    {
+        /*
+         * Refs #620
+         * Client commands are applied to the designed widget to keep the view consistent
+         * in both CLIENT and SERVER modes.
+         */
+        $this->invokeCommands();
+        parent::render();
+    }
+
+    private function invokeCommands()
+    {
+        if ( ! $this->hasAttribute('receiver')) {
+            return;
+        }
+
+        $commandBuckets = array_map('trim', explode(',', $this->getAttribute('receiver')));
+
+        foreach ($commandBuckets as $commandBucket) {
+            if ( ! isset($this->view[$commandBucket])) {
+                continue;
+            }
+
+            $command = $this->view[$commandBucket];
+
+            if ($command instanceof Nethgui_Core_CommandInterface
+                && ! $command->isExecuted()) {
+                $command->setReceiver($this)->execute();                
+            }
+        }
+    }
 
 }
 

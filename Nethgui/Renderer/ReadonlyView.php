@@ -126,9 +126,10 @@ class Nethgui_Renderer_ReadonlyView implements Nethgui_Core_ViewInterface, Nethg
         }
     }
 
-    public function getCommandFactory()
+    public function createUiCommand($methodName, $arguments)
     {
-        return $this->view->getCommandFactory();
+        return $this->view->createUiCommand($methodName, $arguments);
     }
+    
 
 }

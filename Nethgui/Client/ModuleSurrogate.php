@@ -95,9 +95,9 @@ class Nethgui_Client_ModuleSurrogate implements Nethgui_Core_ModuleInterface, Ne
         $this->info = unserialize($serialized);
     }
 
-    public function getTags(Nethgui_Framework $framework)
+    public function getTags()
     {
-        return NULL;
+        return array();
     }
 
 }

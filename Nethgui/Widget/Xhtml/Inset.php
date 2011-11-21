@@ -24,8 +24,9 @@ class Nethgui_Widget_Xhtml_Inset extends Nethgui_Widget_Xhtml
         $value = $this->view->offsetGet($name);
         $content = '';
 
-        if ($value instanceof Nethgui_Core_ViewInterface) {
-            $content = (String) $this->wrapView(new Nethgui_Renderer_Xhtml($value, $flags));
+        if ($value instanceof Nethgui_Core_ViewInterface && $this->view instanceof Nethgui_Core_CommandReceiverAggregateInterface) {
+            $innerRenderer = new Nethgui_Renderer_Xhtml($value, $flags, $this->view->getCommandReceiver());
+            $content = (String) $this->wrapView($innerRenderer);
         } else {
             $content = (String) $this->view->literal($value, $flags);
         }

@@ -107,9 +107,9 @@ interface Nethgui_Core_ViewInterface extends ArrayAccess, IteratorAggregate
     /**
      * Create command objects through the returned factory class instance
      * 
-     * @return Nethgui_Core_CommandFactoryInterface
+     * @return Nethgui_Core_CommandInterface;
      */
-    public function getCommandFactory();
+    public function createUiCommand($methodName, $arguments);
 }
 
 ?>

@@ -38,7 +38,8 @@ abstract class Nethgui_Core_Module_Abstract implements Nethgui_Core_ModuleInterf
      * @var string|callable
      */
     private $viewTemplate;
-    
+    private $uiClientCommands = array();
+
     public function __construct($identifier = NULL)
     {
         $this->viewTemplate = NULL;
@@ -110,6 +111,23 @@ abstract class Nethgui_Core_Module_Abstract implements Nethgui_Core_ModuleInterf
         if ( ! is_null($template)) {
             $view->setTemplate($template);
         }
+
+        foreach ($this->uiClientCommands as $commandArgs) {
+            list($methodName, $arguments, $bucketName) = $commandArgs;
+            $command = $view->createUiCommand($methodName, $arguments);
+            $view->offsetSet($bucketName, $command);
+        }
+    }
+
+    /**
+     *
+     * @param string $methodName
+     * @param array $arguments
+     * @param string|object $receiver
+     */
+    protected function addUiClientCommand($methodName, $arguments = array(), $bucketName = NULL)
+    {
+        $this->uiClientCommands[] = array($methodName, $arguments, $bucketName);
     }
 
     protected function setViewTemplate($template)
@@ -131,10 +149,9 @@ abstract class Nethgui_Core_Module_Abstract implements Nethgui_Core_ModuleInterf
         return get_class($this);
     }
 
-    
-    public function getTags(Nethgui_Framework $framework)
+    public function getTags()
     {
-        return array($framework->buildModuleUrl($this) => array($framework->translate($this->getTitle(),array(),NULL,$this->getLanguageCatalog())));
+        return array();
     }
 
     public function setLog(Nethgui_Log_AbstractLog $log)
@@ -146,4 +163,5 @@ abstract class Nethgui_Core_Module_Abstract implements Nethgui_Core_ModuleInterf
     {
         return $this->getPlatform()->getLog();
     }
+
 }
