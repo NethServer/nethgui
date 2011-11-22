@@ -100,8 +100,22 @@ class Nethgui_Renderer_JsonReceiver implements Nethgui_Core_CommandReceiverInter
             $arguments[0] = $this->view->getModuleUrl($arguments[0]);
         } elseif ($name == 'activateAction') {
             $receiver = '';
-            $arguments[0] = $this->view->getUniqueId(isset($arguments[1]) ? $arguments[1] : $arguments[0]);
-            $arguments[1] = $this->view->getModuleUrl($arguments[0]);
+
+            $tmp = array(
+                $this->view->getUniqueId($arguments[0]),
+                $this->view->getModuleUrl($arguments[0]),
+                $this->view->getUniqueId()
+            );
+
+            if (isset($arguments[1])) {
+                $tmp[1] = $this->view->getModuleUrl($arguments[1]);
+            }
+
+            if (isset($arguments[2])) {
+                $tmp[2] = $this->view->getUniqueId($arguments[2]);
+            }
+
+            $arguments = $tmp;
         } elseif ($name == 'debug' || $name == 'alert') {
             $receiver = '';
         } else {

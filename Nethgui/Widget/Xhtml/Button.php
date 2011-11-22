@@ -57,7 +57,7 @@ class Nethgui_Widget_Xhtml_Button extends Nethgui_Widget_Xhtml implements Nethgu
             }
 
             $attributes['href'] = $this->prepareHrefAttribute($value);
-            $attributes['class'] = $cssClass;
+            $attributes['class'] = $this->appendReceiverName($cssClass);
             $attributes['title'] = $this->getAttribute('title', FALSE);
 
             $content .= $this->openTag('a', $attributes);
@@ -85,7 +85,7 @@ class Nethgui_Widget_Xhtml_Button extends Nethgui_Widget_Xhtml implements Nethgu
 
             $attributes['value'] = $this->view->translate($label);
 
-            $content .= $this->controlTag('button', $name, $flags, $cssClass, $attributes);
+            $content .= $this->controlTag('button', $name, $flags, $this->appendReceiverName($cssClass), $attributes);
             if (isset($childContent)) {
                 $content .= $childContent;
             }

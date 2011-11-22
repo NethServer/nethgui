@@ -54,8 +54,12 @@ class Nethgui_Renderer_HttpCommandReceiver implements Nethgui_Core_CommandReceiv
         $this->httpRedirection(302, $this->view->getModuleUrl('..'));
     }
 
-    public function activate($path, $prevComponent = NULL)
+    public function activateAction($actionId, $path = NULL, $prevComponent = NULL)
     {
+        if (is_null($path)) {
+            $path = $actionId;
+        }
+
         $this->httpRedirection(302, $this->view->getModuleUrl($path));
     }
 

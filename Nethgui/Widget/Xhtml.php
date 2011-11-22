@@ -271,5 +271,14 @@ abstract class Nethgui_Widget_Xhtml extends Nethgui_Widget_Abstract
         }
     }
 
+    protected function appendReceiverName($cssClass)
+    {
+        if ($this->hasAttribute('receiver')) {
+            $cssClass .= ' ' . $this->view->getClientEventTarget($this->getAttribute('receiver'));
+        }
+
+        return $cssClass;
+    }
+
 }
 
