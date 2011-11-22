@@ -97,7 +97,7 @@ class Nethgui_Renderer_ReadonlyView implements Nethgui_Core_ViewInterface, Nethg
         return $this->view->getModulePath();
     }
 
-    public function getUniqueId($parts = NULL)
+    public function getUniqueId($parts = '')
     {
         return $this->view->getUniqueId($parts);
     }
@@ -107,7 +107,7 @@ class Nethgui_Renderer_ReadonlyView implements Nethgui_Core_ViewInterface, Nethg
         return $this->view->getClientEventTarget($name);
     }
 
-    public function getModuleUrl($path = array())
+    public function getModuleUrl($path = '')
     {
         return $this->view->getModuleUrl($path);
     }
@@ -131,5 +131,8 @@ class Nethgui_Renderer_ReadonlyView implements Nethgui_Core_ViewInterface, Nethg
         return $this->view->createUiCommand($methodName, $arguments);
     }
     
-
+    public function resolvePath($path)
+    {
+        return $this->view->resolvePath($path);
+    }
 }

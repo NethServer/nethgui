@@ -101,7 +101,7 @@ abstract class Nethgui_Widget_Abstract implements Nethgui_Renderer_WidgetInterfa
         try {
             return $this->render();
         } catch (Exception $ex) {
-            $this->getLog()->exception($ex);
+            $this->getLog()->exception($ex, TRUE);
             throw $ex;
         }
     }

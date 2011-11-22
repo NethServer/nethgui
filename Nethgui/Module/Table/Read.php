@@ -150,7 +150,7 @@ class Nethgui_Module_Table_Read extends Nethgui_Module_Table_Action
             $actionInfo[] = $cellView->translate($actionId . '_label');
 
             if ($mode == self::VIEW_CLIENT) {
-                $actionInfo[] = $cellView->getModuleUrl(array($action->getIdentifier(), $key, '#' . $cellView->getUniqueId($actionId)));
+                $actionInfo[] = $cellView->getModuleUrl(sprintf('%s/%s#%s', $action->getIdentifier(), $key, $cellView->getUniqueId($actionId)));
             } else {
                 $actionInfo[] = array($action->getIdentifier(), $key, '#' . $cellView->getUniqueId($actionId));
             }

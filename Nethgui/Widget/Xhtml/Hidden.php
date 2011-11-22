@@ -47,7 +47,7 @@ class Nethgui_Widget_Xhtml_Hidden extends Nethgui_Widget_Xhtml
                 $attributes = array(
                     'type' => 'hidden',
                     'value' => $value,
-                    'name' => $this->getControlName($namePath),
+                    'name' => $this->getControlName(implode('/', $namePath)),
                     'id' => FALSE
                 );
 

@@ -21,9 +21,9 @@ abstract class Nethgui_Renderer_Abstract extends Nethgui_Renderer_ReadonlyView
         try {
             return $this->render();
         } catch (Exception $ex) {
-            error_log($ex->getMessage() . '; ' . sprintf('file: %s, line: %d.', $ex->getFile(), $ex->getLine()));
-            throw $ex;
+            $this->getLog()->exception($ex, TRUE);
         }
+        return '';
     }
 
     /**

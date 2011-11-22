@@ -22,6 +22,8 @@ interface Nethgui_Core_CommandInterface
     /**
      * Executes the command on the given receiver object
      *
+     * Called by Invoker
+     *
      * @see setReceiver()
      * @param object $context
      * @return mixed.

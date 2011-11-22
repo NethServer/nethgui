@@ -161,23 +161,38 @@ class Nethgui_Client_View implements Nethgui_Core_ViewInterface, Nethgui_Log_Log
         return $this->modulePath;
     }
 
-    public function getUniqueId($parts = '')
+    public function resolvePath($path)
     {
-        $prefix = implode('_', $this->getModulePath());
-
-        if (empty($parts)) {
-            return $prefix;
+        if (is_array($path) || is_object($path)) {
+            throw new InvalidArgumentException(sprintf('%s(): $path argument must be a string, %s given.', __FUNCTION__, gettype($path)));
         }
 
-        if (is_array($parts)) {
-            $suffix = implode('_', $parts);
+        $path = strval($path);
+
+        if (strlen($path) > 0 && $path[0] == '/') {
+            // if the first character is a / consider an absolute path
+            $pathSegments = array();
         } else {
-            $suffix = $parts;
+            // else consider a path relative to the current module
+            $pathSegments = $this->getModulePath();
         }
 
-        $suffix = str_replace('/', '_', $suffix);
+        foreach (explode('/', $path) as $part) {
+            if ($part == '' || $part == '.') {
+                continue; // skip empty parts
+            } elseif ($part == '..') {
+                array_pop($pathSegments); // backreference
+            } else {
+                $pathSegments[] = $part; // add segment
+            }
+        }
 
-        return $prefix . '_' . $suffix;
+        return $pathSegments;
+    }
+
+    public function getUniqueId($path = '')
+    {
+        return implode('_', $this->resolvePath($path));
     }
 
     public function getClientEventTarget($name)
@@ -189,36 +204,25 @@ class Nethgui_Client_View implements Nethgui_Core_ViewInterface, Nethgui_Log_Log
     }
 
     /**
-     * @param string|array $path
+     * @param string $path
      * @param array $parameters
      */
     private function buildUrl($path, $parameters = array())
     {
+        if (is_array($path) || is_object($path)) {
+            throw new InvalidArgumentException(sprintf('%s(): $path argument must be a string, %s given.', __FUNCTION__, gettype($path)));
+        }
+
+        $path = strval($path);
         $fragment = '';
 
-        if (is_array($path)) {
-            $path = implode('/', $path);
+        if (strpos($path, '#') !== FALSE) {
+            list($path, $fragment) = explode('#', $path, 2);
+
+            $fragment = '#' . $fragment;
         }
 
-        $path = explode('/', $path);
-
-        $segments = array();
-
-        while (list($index, $slice) = each($path)) {
-            if ($slice == '.' || ! $slice) {
-                continue;
-            } elseif ($slice == '..') {
-                if ( ! empty($segments)) {
-                    array_pop($segments);
-                    continue;
-                }
-            } elseif ($slice[0] == '#') {
-                $fragment = $slice;
-                continue;
-            }
-
-            $segments[] = $slice;
-        }
+        $segments = $this->resolvePath($path);
 
         // FIXME: skip controller segments if url rewriting is active:
         if (NETHGUI_CONTROLLER) {
@@ -234,35 +238,9 @@ class Nethgui_Client_View implements Nethgui_Core_ViewInterface, Nethgui_Log_Log
         return $url . $fragment;
     }
 
-    /**
-     * Prepend the $module path to $path, resulting in a full URL
-     * @param Nethgui_Core_ModuleInterface  $module
-     * @param array|string $path;
-     */
-    private function buildModuleUrl(Nethgui_Core_ModuleInterface $module, $path = array())
+    public function getModuleUrl($path = '')
     {
-        if (empty($path)) {
-            $path = array();
-        } elseif (is_string($path)) {
-            $path = array($path);
-        }
-
-        do {
-            array_unshift($path, $module->getIdentifier());
-            $module = $module->getParent();
-        } while ( ! is_null($module));
-
-        return $this->buildUrl($path, array());
-    }
-
-    /**
-     *
-     * @param string|array $path
-     * @return string
-     */
-    public function getModuleUrl($path = array())
-    {
-        return $this->buildModuleUrl($this->getModule(), $path);
+        return $this->buildUrl($path);
     }
 
     public function setLog(Nethgui_Log_AbstractLog $log)

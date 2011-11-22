@@ -50,7 +50,7 @@ class Nethgui_Widget_Xhtml_Button extends Nethgui_Widget_Xhtml implements Nethgu
             if ($flags & Nethgui_Renderer_WidgetFactoryInterface::BUTTON_CANCEL) {
                 $cssClass .= ' cancel';
             } elseif ($flags & Nethgui_Renderer_WidgetFactoryInterface::BUTTON_HELP) {
-                $value = array_merge(array_fill(0, count($this->view->getModulePath()), '..'), array('Help', 'Read', urlencode($value) . '.html', '#HelpArea'));
+                $value = '/Help/Read/' . urlencode($value) . '.html#HelpArea';
                 $cssClass .= ' Help';
             } else {
                 $cssClass .= ' link ' . $this->getClientEventTarget();
@@ -96,11 +96,13 @@ class Nethgui_Widget_Xhtml_Button extends Nethgui_Widget_Xhtml implements Nethgu
 
     private function prepareHrefAttribute($value)
     {
-        if (is_string($value) && preg_match('#^(https?|/)#', $value)) {
+        if (is_array($value)) {
+            $value = implode('/', $value);
+        }
+
+        if (preg_match('#^https?#', $value)) {
             // Leave skip processing of absolute and fully qualified URLs
             return $value;
-        } elseif ( ! is_array($value)) {
-            $value = array(strval($value));
         }
         return $this->view->getModuleUrl($value);
     }

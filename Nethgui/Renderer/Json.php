@@ -9,7 +9,7 @@
  * @package Renderer
  * @ignore
  */
-class Nethgui_Renderer_Json extends Nethgui_Renderer_Abstract implements Nethgui_Core_CommandReceiverInterface
+class Nethgui_Renderer_Json extends Nethgui_Renderer_Abstract
 {
 
     private function deepWalk(&$events, &$commands)
@@ -24,15 +24,7 @@ class Nethgui_Renderer_Json extends Nethgui_Renderer_Abstract implements Nethgui
                 $value->deepWalk($events, $commands);
                 continue;
             } elseif ($value instanceof Nethgui_Core_CommandInterface) {
-
-                $executedCommand = $value->setReceiver($this)->execute();
-
-                $commands[] = array(
-                    'receiver' => is_numeric($offset) ? '#' . $this->getUniqueId() : '.' . $eventTarget,
-                    'methodName' => $executedCommand[0],
-                    'arguments' => $executedCommand[1]
-                );
-                
+                $commands[] = $value->setReceiver(new Nethgui_Renderer_JsonReceiver($this->view, $offset))->execute();
                 continue;
             } elseif ($value instanceof Traversable) {
                 $eventData = $this->traversableToArray($value);
@@ -74,9 +66,58 @@ class Nethgui_Renderer_Json extends Nethgui_Renderer_Abstract implements Nethgui
         return json_encode($events);
     }
 
+}
+
+/**
+ * @ignore
+ */
+class Nethgui_Renderer_JsonReceiver implements Nethgui_Core_CommandReceiverInterface
+{
+
+    private $offset;
+
+    /**
+     *
+     * @var Nethgui_Core_ViewInterface
+     */
+    private $view;
+
+    public function __construct(Nethgui_Core_ViewInterface $view, $offset)
+    {
+        $this->view = $view;
+        $this->offset = $offset;
+    }
+
     public function executeCommand($name, $arguments)
     {
-        return array($name, $arguments);
+        if ($name == 'delay'
+            && $arguments[0] instanceof Nethgui_Core_CommandInterface) {
+            $receiver = '';
+            // replace the first argument with the array equivalent
+            $arguments[0] = $arguments[0]->setReceiver(clone $this)->execute();
+        } elseif ($name == 'redirect' || $name == 'queryUrl') {
+            $receiver = '';
+            $arguments[0] = $this->view->getModuleUrl($arguments[0]);
+        } elseif ($name == 'activateAction') {
+            $receiver = '';
+            $arguments[0] = $this->view->getUniqueId(isset($arguments[1]) ? $arguments[1] : $arguments[0]);
+            $arguments[1] = $this->view->getModuleUrl($arguments[0]);
+        } elseif ($name == 'debug' || $name == 'alert') {
+            $receiver = '';
+        } else {
+            $receiver = is_numeric($this->offset) ? '#' . $this->view->getUniqueId() : '.' . $this->view->getClientEventTarget($this->offset);
+        }
+
+        return $this->commandForClient($receiver, $name, $arguments);
+    }
+
+    private function commandForClient($receiver, $name, $arguments)
+    {
+        return array(
+            'receiver' => $receiver,
+            'methodName' => $name,
+            'arguments' => $arguments,
+        );
     }
 
 }

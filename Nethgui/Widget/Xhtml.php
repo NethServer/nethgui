@@ -224,49 +224,16 @@ abstract class Nethgui_Widget_Xhtml extends Nethgui_Widget_Abstract
         return ' ' . trim($content);
     }
 
-    private function realPath($name)
-    {
-        if (is_array($name)) {
-            // ensure the $name argument is a string in the form of ../segment1/../segment2/..
-            $name = implode('/', $name);
-        }
-
-        if (strlen($name) > 0 && $name[0] == '/') {
-            // if the first character is a / consider an absolute path
-            $nameSegments = array();
-        } else {
-            // else consider a path relative to the current module
-            $nameSegments = $this->view->getModulePath();
-        }
-
-        // split the path into its parts
-        $parts = explode('/', $name);
-
-        foreach ($parts as $part) {
-            if ($part == '') {
-                continue; // skip empty parts
-            } elseif ($part == '..') {
-                array_pop($nameSegments); // backreference
-            } else {
-                $nameSegments[] = $part; // add segment
-            }
-        }
-
-        return $nameSegments;
-    }
-
     /**
      * Generate a control name for the given $parts. If no parts are given
      * the name is generated from the module referenced by the view.
-     *
-     * XXX: should be "protected"?
      * 
-     * @param string|array $parts
+     * @param string $parts
      * @return string
      */
-    public function getControlName($parts = '')
+    protected function getControlName($parts = '')
     {
-        $nameSegments = $this->realPath($parts);
+        $nameSegments = $this->view->resolvePath($parts);
         $prefix = array_shift($nameSegments); // the first segment is not wrapped into square brackets
         return $prefix . '[' . implode('][', $nameSegments) . ']';
     }
@@ -299,7 +266,7 @@ abstract class Nethgui_Widget_Xhtml extends Nethgui_Widget_Abstract
 
             if ($command instanceof Nethgui_Core_CommandInterface
                 && ! $command->isExecuted()) {
-                $command->setReceiver($this)->execute();                
+                $command->setReceiver($this)->execute();
             }
         }
     }

@@ -59,21 +59,44 @@ interface Nethgui_Core_ViewInterface extends ArrayAccess, IteratorAggregate
      * Gets the array of the current module identifier plus all identifiers of
      * the ancestor modules, starting from the root.   
      *
+     * @see Nethgui_Core_ModuleInterface::getParent()
+     * @see Nethgui_Core_ModuleInterface::getIdentifier()
      * @return array
      */
     public function getModulePath();
 
-
-    public function getModuleUrl($path = array());
+    /**
+     * Obtain the complete path list, starting from root.
+     *
+     * An heading '/' character treat the $path as absolute, otherwise the
+     * $path is considered relative to the current module and a '..' substring
+     * goes one level up.
+     *
+     * @see getModulePath()
+     * @see getModule()
+     *
+     * @param string $path The path
+     * @return array The path parts, starting from root
+     */
+    public function resolvePath($path);
 
     /**
-     * Generate a unique identifier for the given $parts. If no parts are given
-     * the identifier refers the the module referenced by the view.
+     * Return an absolute url path.
      *
-     * @param string|array $parts
+     * @see resolvePath()
+     * @param string $path Relative to the current module
      * @return string
      */
-    public function getUniqueId($parts = '');
+    public function getModuleUrl($path = '');
+
+    /**
+     * Generate a unique identifier for the given $path. If no parts are given
+     * the identifier refers the the module referenced by the view.
+     *
+     * @param string $path Relative to the current module
+     * @return string
+     */
+    public function getUniqueId($path = '');
 
     /**
      * Get the target control identifier for the given view member

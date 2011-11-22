@@ -161,7 +161,12 @@ abstract class Nethgui_Core_Module_Abstract implements Nethgui_Core_ModuleInterf
 
     public function getLog()
     {
-        return $this->getPlatform()->getLog();
+        $platform = $this->getPlatform();
+
+        if($platform instanceof Nethgui_Log_LogConsumerInterface) {
+            return $platform->getLog();
+        }
+        return new Nethgui_Log_Nullog;
     }
 
 }

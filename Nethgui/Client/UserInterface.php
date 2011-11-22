@@ -74,6 +74,9 @@ interface Nethgui_Client_UserInterface extends ArrayAccess
      */
     public function getTracedProcesses();
 
+    /**
+     * @return Nethgui_System_ProcessInterface
+     */
     public function getTracedProcess($name);
 
     /**
