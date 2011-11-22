@@ -1,11 +1,11 @@
 <?php
 /**
- * @package Core
+ * @package Log
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
 /**
- * @package Core
+ * @package Log
  */
 interface Nethgui_Log_LogConsumerInterface
 {
