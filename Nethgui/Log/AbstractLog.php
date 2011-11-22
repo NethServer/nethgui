@@ -23,7 +23,15 @@ abstract class Nethgui_Log_AbstractLog implements Nethgui_Core_GlobalFunctionCon
     public function exception(Exception $ex, $stackTrace = FALSE)
     {
         $message = sprintf('%s : file %s; line %d', $ex->getMessage(), $ex->getFile(), $ex->getLine());
-        return $this->message(__FUNCTION__, $message);
+        $retval = $this->message(__FUNCTION__, $message);
+
+        if ($stackTrace) {
+            foreach (explode("\n", $ex->getTraceAsString()) as $line) {
+                $this->message(__FUNCTION__, $line);
+            }
+        }
+
+        return $retval;
     }
 
     public function debug($message)
