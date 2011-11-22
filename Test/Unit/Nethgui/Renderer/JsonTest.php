@@ -72,17 +72,31 @@ class Nethgui_Renderer_JsonTest extends PHPUnit_Framework_TestCase
                 'arguments' => array(1, 'A')
             )));
 
-        $oTestCommand3 = json_decode(json_encode(array(
+        $oDelayedCommand1 = json_decode(json_encode(array(
                 'receiver' => '#ID',
-                'methodName' => 'testCommand',
-                'arguments' => array(2, 'A')
+                'methodName' => 'delayedCommand',
+                'arguments' => array('ABC', 'DEF')
+            )));
+
+        $oDelayedCommand2 = json_decode(json_encode(array(
+                'receiver' => '.ID_CMD4',
+                'methodName' => 'delayedCommand',
+                'arguments' => array('ABC', 'DEF')
+            )));
+
+        $oTestCommand3 = json_decode(json_encode(array(
+                'receiver' => '',
+                'methodName' => 'delay',
+                'arguments' => array($oDelayedCommand1, 1000)
             )));
 
         $oTestCommand4 = json_decode(json_encode(array(
-                'receiver' => '#ID',
-                'methodName' => 'testCommand',
-                'arguments' => array(3, 'A')
+                'receiver' => '',
+                'methodName' => 'delay',
+                'arguments' => array($oDelayedCommand2, 1000)
             )));
+
+
 
         $expected = array(
             array(
@@ -111,7 +125,7 @@ class Nethgui_Renderer_JsonTest extends PHPUnit_Framework_TestCase
                     $oTestCommand1,
                     $oTestCommand2,
                     $oTestCommand3,
-                    $oTestCommand4
+                    $oTestCommand4,
                 )
             )
         );
@@ -154,8 +168,9 @@ class Test_Unit_NethguiCoreModuleJsonTest extends Nethgui_Core_Module_Standard
         $view['VIEW']['X'] = 5;
         $view['CMD1'] = $view->createUiCommand('testCommand', array(0, 'A'));
         $view[] = $view->createUiCommand('testCommand', array(1, 'A'));
-        $view[] = $view->createUiCommand('testCommand', array(2, 'A'));
-        $view[] = $view->createUiCommand('testCommand', array(3, 'A'));
+        $innerCommand = $view->createUiCommand('delayedCommand', array('ABC', 'DEF'));
+        $view[] = $view->createUiCommand('delay', array(clone $innerCommand, 1000));
+        $view['CMD4'] = $view->createUiCommand('delay', array(clone $innerCommand, 1000));
     }
 
 }

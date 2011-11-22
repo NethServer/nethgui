@@ -55,11 +55,11 @@ class Nethgui_Renderer_HttpCommandReceiverTest extends PHPUnit_Framework_TestCas
     }
 
 
-    public function testActivate()
+    public function testActivateAction()
     {
         $url = '/OtherModule/a/b#c';
         $this->object->setGlobalFunctionWrapper($this->getGlobalMock($this->urlPrefix . $url));
-        $this->object->activate(array('../OtherModule', 'a', 'b', '#c'));
+        $this->object->activateAction('../OtherModule/a/b#c');
     }
 
 
