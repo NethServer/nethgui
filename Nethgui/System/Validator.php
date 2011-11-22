@@ -13,6 +13,7 @@ class Nethgui_System_Validator implements Nethgui_Core_ValidatorInterface
 
     private $chain = array();
     private $failureInfo;
+
     /**
      *
      * @var Nethgui_System_PlatformInterface
@@ -160,7 +161,6 @@ class Nethgui_System_Validator implements Nethgui_Core_ValidatorInterface
         return $this->addToChain(__FUNCTION__);
     }
 
-
     /**
      * @todo
      * @return Nethgui_Core_Validator
@@ -270,6 +270,12 @@ class Nethgui_System_Validator implements Nethgui_Core_ValidatorInterface
     {
         $this->chain[] = new Nethgui_System_CollectionValidator($v);
         return $this;
+    }
+
+    public function platform($validatorName)
+    {
+        $template = array('valid_platform ${0}', array('${0}' => $validatorName));
+        return $this->addToChain(__FUNCTION__, $template, $validatorName);
     }
 
     public function getFailureInfo()
@@ -563,6 +569,17 @@ class Nethgui_System_Validator implements Nethgui_Core_ValidatorInterface
         return preg_match($pattern, $value);
     }
 
+    private function evalPlatform($value, $validatorName)
+    {
+        $process = $this->platform->exec('/usr/bin/sudo /sbin/e-smith/validate ${@}', array($validatorName, $value));
+
+        if ($process->getExitStatus() !== 0 && $this->platform instanceof Nethgui_Log_LogConsumerInterface) {
+            $this->platform->getLog()->error(sprintf('platformValidator: %s', strtr($process->getOutput(), "\n", " ")));
+        }
+
+        return $process->getExitStatus() === 0;
+    }
+
 }
 
 /**
@@ -601,7 +618,7 @@ class Nethgui_System_CollectionValidator implements Nethgui_Core_ValidatorInterf
         } elseif ($iterableObject instanceof IteratorAggregate) {
             $this->iterator = $iterableObject->getIterator();
         } elseif ($iterableObject instanceof Iterator) {
-            $this->iterator = $iterableObject;        
+            $this->iterator = $iterableObject;
         } else {
             $this->failureInfo[] = array("Not a collection", array());
             return FALSE;
