@@ -12,7 +12,7 @@ namespace Nethgui\Module;
  *
  * @package Module
  */
-class World extends \Nethgui\Core\Module\Abstract
+class World extends \Nethgui\Core\Module\AbstractModule
 {
 
     private $modules = array();

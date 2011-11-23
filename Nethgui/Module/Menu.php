@@ -13,7 +13,7 @@ class Menu extends \Nethgui\Core\Module\Standard
 
     /**
      *
-     * @var RecursiveIterator
+     * @var \RecursiveIterator
      */
     private $menuIterator;
 
@@ -23,7 +23,7 @@ class Menu extends \Nethgui\Core\Module\Standard
      */
     private $currentItem;
 
-    public function __construct(RecursiveIterator $menuIterator, $currentItem)
+    public function __construct(\RecursiveIterator $menuIterator, $currentItem)
     {
         parent::__construct();
         $this->menuIterator = $menuIterator;
@@ -32,10 +32,10 @@ class Menu extends \Nethgui\Core\Module\Standard
 
     /**
      * TODO
-     * @param RecursiveIterator $rootModule
+     * @param \RecursiveIterator $rootModule
      * @return string
      */
-    private function iteratorToHtml(RecursiveIterator $menuIterator, \Nethgui\Renderer\Xhtml $view, \Nethgui\Renderer\WidgetInterface $widget, $level = 0)
+    private function iteratorToHtml(\RecursiveIterator $menuIterator, \Nethgui\Renderer\Xhtml $view, \Nethgui\Renderer\WidgetInterface $widget, $level = 0)
     {
         if ($level > 4) {
             return $widget;
@@ -110,7 +110,7 @@ class Menu extends \Nethgui\Core\Module\Standard
         return "<div class=\"Navigation Flat " . $view->getClientEventTarget("tags") . "\">$form</div>";
     }
 
-    private function iteratorToSearch(RecursiveIterator $menuIterator, &$tags = array())
+    private function iteratorToSearch(\RecursiveIterator $menuIterator, &$tags = array())
     {
         $menuIterator->rewind();
 
@@ -148,7 +148,7 @@ class Menu extends \Nethgui\Core\Module\Standard
                 $tmp2 = array();
                 $tmp = $this->iteratorToSearch($this->menuIterator);
                 foreach ($tmp as $url => $tags) {
-                    $it = new RecursiveIteratorIterator(new RecursiveArrayIterator($tags));
+                    $it = new \RecursiveIteratorIterator(new RecursiveArrayIterator($tags));
                     foreach ($it as $v) {
                         $tmp2[$url][] = $v;
                     }

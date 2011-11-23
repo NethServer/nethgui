@@ -13,7 +13,7 @@ namespace Nethgui\Core;
  *
  * @package Core
  */
-interface ViewInterface extends ArrayAccess, IteratorAggregate
+interface ViewInterface extends \ArrayAccess, \IteratorAggregate
 {
 
     /**

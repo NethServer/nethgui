@@ -158,7 +158,7 @@ class TopModuleDepot implements ModuleSetInterface, \Nethgui\Authorization\Polic
 
     /**
      *
-     * @return RecursiveIterator
+     * @return \RecursiveIterator
      */
     public function getModules()
     {

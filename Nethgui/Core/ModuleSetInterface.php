@@ -17,7 +17,7 @@ interface ModuleSetInterface
 {
 
     /**
-     * @return RecursiveIterator A RecursiveIterator to iterate over all accessible Modules
+     * @return \RecursiveIterator A \RecursiveIterator to iterate over all accessible Modules
      */
     public function getModules();
 

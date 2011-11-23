@@ -10,7 +10,7 @@ namespace Nethgui\Core;
  * @package Core
  * @internal
  */
-final class ModuleMenuIterator implements RecursiveIterator
+final class ModuleMenuIterator implements \RecursiveIterator
 {
 
     private $elements;
