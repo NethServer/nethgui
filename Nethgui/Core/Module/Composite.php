@@ -19,7 +19,7 @@ namespace Nethgui\Core\Module;
  * @package Core
  * @subpackage Module
  */
-abstract class Composite extends Abstract implements \Nethgui\Core\ModuleCompositeInterface
+abstract class Composite extends AbstractModule implements \Nethgui\Core\ModuleCompositeInterface
 {
 
     private $children = array();

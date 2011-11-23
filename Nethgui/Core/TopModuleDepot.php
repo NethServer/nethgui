@@ -71,7 +71,7 @@ class TopModuleDepot implements ModuleSetInterface, \Nethgui\Authorization\Polic
                 $classReflector = new \ReflectionClass($className);
 
                 if ($classReflector->isInstantiable()
-                    && $classReflector->implementsInterface("TopModuleInterface")
+                    && $classReflector->implementsInterface("\Nethgui\Core\TopModuleInterface")
                 ) {
                     $module = $this->createModule($className);
                     $this->registerModule($module);

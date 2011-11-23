@@ -17,7 +17,7 @@ namespace Nethgui\Core\Module;
  * @package Core
  * @subpackage Module
  */
-class List extends Composite implements \Nethgui\Core\RequestHandlerInterface
+class ListComposite extends Composite implements \Nethgui\Core\RequestHandlerInterface
 {
     const TEMPLATE_LIST = 1;
 

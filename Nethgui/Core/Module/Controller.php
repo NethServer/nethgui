@@ -170,15 +170,15 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
      * Note: The current action template is wrapped inside a DIV.Action tag.
      *
      * @internal Actually called by the framework.
-     * @param \Nethgui\Renderer\Abstract $view The view
+     * @param \Nethgui\Renderer\Xhtml $view The view
      * @return string
      */
-    public function renderCurrentAction(\Nethgui\Renderer\Abstract $view)
+    public function renderCurrentAction(\Nethgui\Renderer\Xhtml $view)
     {
         return $view->inset($this->currentAction->getIdentifier());
     }
 
-    public function renderDefault(\Nethgui\Renderer\Abstract $view)
+    public function renderDefault(\Nethgui\Renderer\Xhtml $view)
     {
         $containerClass = 'Controller';
 

@@ -15,7 +15,7 @@ namespace Nethgui\Core\Module;
  * @package Core
  * @subpackage Module
  */
-abstract class Standard extends Abstract implements \Nethgui\Core\RequestHandlerInterface, \Nethgui\System\EventObserverInterface
+abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestHandlerInterface, \Nethgui\System\EventObserverInterface
 {
     /**
      * A valid service status is a 'disabled' or 'enabled' string.

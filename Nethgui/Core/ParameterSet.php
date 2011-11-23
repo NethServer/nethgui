@@ -19,7 +19,7 @@ namespace Nethgui\Core;
  *
  * @package Core
  */
-class ParameterSet implements \Nethgui\Adapter\AdapterAggregationInterface, ArrayAccess, Iterator, Countable
+class ParameterSet implements \Nethgui\Adapter\AdapterAggregationInterface, \ArrayAccess, \Iterator, \Countable
 {
 
     private $data = array();

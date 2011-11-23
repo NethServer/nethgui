@@ -10,7 +10,7 @@ namespace Nethgui\Core\Module;
  * @package Core
  * @subpackage Module
  */
-abstract class Abstract implements \Nethgui\Core\ModuleInterface, \Nethgui\Core\LanguageCatalogProvider, \Nethgui\Log\LogConsumerInterface
+abstract class AbstractModule implements \Nethgui\Core\ModuleInterface, \Nethgui\Core\LanguageCatalogProvider, \Nethgui\Log\LogConsumerInterface
 {
 
     /**
