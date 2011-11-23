@@ -15,12 +15,12 @@ namespace Nethgui\Client;
  * @ignore
  * @package Core
  */
-class ModuleSurrogate implements Nethgui\Core\ModuleInterface, Nethgui\Core\LanguageCatalogProvider, Serializable
+class ModuleSurrogate implements \Nethgui\Core\ModuleInterface, \Nethgui\Core\LanguageCatalogProvider, Serializable
 {
 
     private $info;
 
-    public function __construct(Nethgui\Core\ModuleInterface $originalModule)
+    public function __construct(\Nethgui\Core\ModuleInterface $originalModule)
     {
         $this->info = array();
 
@@ -30,7 +30,7 @@ class ModuleSurrogate implements Nethgui\Core\ModuleInterface, Nethgui\Core\Lang
         $this->info['getLanguageCatalog'] = $originalModule->getLanguageCatalog();
 
         $parent = $originalModule->getParent();
-        if ($parent instanceof Nethgui\Core\ModuleInterface) {
+        if ($parent instanceof \Nethgui\Core\ModuleInterface) {
             $this->info['getParent'] = new self($parent);
         } else {
             $this->info['getParent'] = NULL;
@@ -72,17 +72,17 @@ class ModuleSurrogate implements Nethgui\Core\ModuleInterface, Nethgui\Core\Lang
         throw new Exception('Not implemented ' . __METHOD__);
     }
 
-    public function prepareView(Nethgui\Core\ViewInterface $view, $mode)
+    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
     {
         throw new Exception('Not implemented ' . __METHOD__);
     }
 
-    public function setPlatform(Nethgui\System\PlatformInterface $platform)
+    public function setPlatform(\Nethgui\System\PlatformInterface $platform)
     {
         throw new Exception('Not implemented ' . __METHOD__);
     }
 
-    public function setParent(Nethgui\Core\ModuleInterface $parentModule)
+    public function setParent(\Nethgui\Core\ModuleInterface $parentModule)
     {
         throw new Exception('Not implemented ' . __METHOD__);
     }

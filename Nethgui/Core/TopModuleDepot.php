@@ -17,7 +17,7 @@ namespace Nethgui\Core;
  *
  * @package Core
  */
-class TopModuleDepot implements ModuleSetInterface, Nethgui\Authorization\PolicyEnforcementPointInterface, Nethgui\Log\LogConsumerInterface
+class TopModuleDepot implements ModuleSetInterface, \Nethgui\Authorization\PolicyEnforcementPointInterface, \Nethgui\Log\LogConsumerInterface
 {
 
     /**
@@ -36,18 +36,18 @@ class TopModuleDepot implements ModuleSetInterface, Nethgui\Authorization\Policy
     private $policyDecisionPoint;
 
     /**
-     * @var Nethgui\Client\UserInterface
+     * @var \Nethgui\Client\UserInterface
      */
     private $user;
 
     /**
-     * @var Nethgui\System\PlatformInterface
+     * @var \Nethgui\System\PlatformInterface
      */
     private $platform;
 
 
 
-    public function __construct(Nethgui\System\PlatformInterface $platform, Nethgui\Client\UserInterface $user)
+    public function __construct(\Nethgui\System\PlatformInterface $platform, \Nethgui\Client\UserInterface $user)
     {
         $this->platform = $platform;
         $this->user = $user;
@@ -62,13 +62,13 @@ class TopModuleDepot implements ModuleSetInterface, Nethgui\Authorization\Policy
     private function createTopModules()
     {
         $moduleDir = realpath(implode('/', array(NETHGUI_ROOTDIR, NETHGUI_APPLICATION, 'Module')));
-        $directoryIterator = new DirectoryIterator($moduleDir);
+        $directoryIterator = new \DirectoryIterator($moduleDir);
         foreach ($directoryIterator as $element) {
             if (substr($element->getFilename(), -4) == '.php') {
 
-                $className = NETHGUI_APPLICATION . '_Module_' . substr($element->getFileName(), 0, -4);
+                $className = NETHGUI_APPLICATION . '\\Module\\' . substr($element->getFileName(), 0, -4);
 
-                $classReflector = new ReflectionClass($className);
+                $classReflector = new \ReflectionClass($className);
 
                 if ($classReflector->isInstantiable()
                     && $classReflector->implementsInterface("TopModuleInterface")
@@ -93,11 +93,11 @@ class TopModuleDepot implements ModuleSetInterface, Nethgui\Authorization\Policy
         $module = new $className();
 
         if ( ! $module instanceof ModuleInterface) {
-            throw new Exception("Class `{$className}` must implement ModuleInterface");
+            throw new \Exception("Class `{$className}` must implement ModuleInterface");
         }
 
         if (is_null($module->getIdentifier())) {
-            throw new Exception("Each module must provide an unique identifier.");
+            throw new \Exception("Each module must provide an unique identifier.");
         }
 
         $module->setPlatform($this->platform);
@@ -117,7 +117,7 @@ class TopModuleDepot implements ModuleSetInterface, Nethgui\Authorization\Policy
     public function registerModule(ModuleInterface $module)
     {
         if (isset($this->modules[$module->getIdentifier()])) {
-            throw new Exception("Module id `" . $module->getIdentifier() . "` is already registered.");
+            throw new \Exception("Module id `" . $module->getIdentifier() . "` is already registered.");
         }
 
         $this->modules[$module->getIdentifier()] = $module;
@@ -137,15 +137,15 @@ class TopModuleDepot implements ModuleSetInterface, Nethgui\Authorization\Policy
     /**
      * Use $pdp as Policy Decision Point for each member of the set
      * that implements PolicyEnforcementPointInterface.
-     * @param Nethgui\Authorization\PolicyDecisionPointInterface $pdp
+     * @param \Nethgui\Authorization\PolicyDecisionPointInterface $pdp
      * @return void
      */
-    public function setPolicyDecisionPoint(Nethgui\Authorization\PolicyDecisionPointInterface $pdp)
+    public function setPolicyDecisionPoint(\Nethgui\Authorization\PolicyDecisionPointInterface $pdp)
     {
         $this->policyDecisionPoint = $pdp;
 
         foreach ($this->modules as $module) {
-            if ($module instanceof Nethgui\Authorization\PolicyEnforcementPointInterface) {
+            if ($module instanceof \Nethgui\Authorization\PolicyEnforcementPointInterface) {
                 $module->setPolicyDecisionPoint($pdp);
             }
         }
@@ -191,14 +191,14 @@ class TopModuleDepot implements ModuleSetInterface, Nethgui\Authorization\Policy
         return $this->modules[$moduleIdentifier];
     }
 
-    public function setLog(Nethgui\Log\AbstractLog $log)
+    public function setLog(\Nethgui\Log\AbstractLog $log)
     {
         throw new Exception(sprintf('Cannot invoke setLog() on %s', get_class($this)));
     }
 
     public function getLog()
     {
-        if ($this->platform instanceof Nethgui\Log\LogConsumerInterface) {
+        if ($this->platform instanceof \Nethgui\Log\LogConsumerInterface) {
             return $this->platform->getLog();
         }
 

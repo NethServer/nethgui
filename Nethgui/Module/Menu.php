@@ -8,7 +8,7 @@ namespace Nethgui\Module;
 /**
  * @package Module
  */
-class Menu extends Nethgui\Core\Module\Standard
+class Menu extends \Nethgui\Core\Module\Standard
 {
 
     /**
@@ -35,7 +35,7 @@ class Menu extends Nethgui\Core\Module\Standard
      * @param RecursiveIterator $rootModule
      * @return string
      */
-    private function iteratorToHtml(RecursiveIterator $menuIterator, Nethgui\Renderer\Abstract $view, Nethgui\Renderer\WidgetInterface $widget, $level = 0)
+    private function iteratorToHtml(RecursiveIterator $menuIterator, \Nethgui\Renderer\Abstract $view, \Nethgui\Renderer\WidgetInterface $widget, $level = 0)
     {
         if ($level > 4) {
             return $widget;
@@ -61,9 +61,9 @@ class Menu extends Nethgui\Core\Module\Standard
         return $widget;
     }
 
-    private function makeModuleAnchor(Nethgui\Renderer\Abstract $view, Nethgui\Core\ModuleInterface $module)
+    private function makeModuleAnchor(\Nethgui\Renderer\Abstract $view, \Nethgui\Core\ModuleInterface $module)
     {
-        $moduleView = new Nethgui\Client\View($module, $view->getTranslator());
+        $moduleView = new \Nethgui\Client\View($module, $view->getTranslator());
 
         $placeholders = array(
             '%HREF' => htmlspecialchars($moduleView->getModuleUrl()),
@@ -80,7 +80,7 @@ class Menu extends Nethgui\Core\Module\Standard
         return $view->literal(strtr($tpl, $placeholders))->setAttribute('hsc', FALSE);
     }
 
-    public function renderModuleMenu(Nethgui\Renderer\Abstract $view)
+    public function renderModuleMenu(\Nethgui\Renderer\Abstract $view)
     {
         $rootList = $view->elementList()->setAttribute('wrap', '/');
 
@@ -132,7 +132,7 @@ class Menu extends Nethgui\Core\Module\Standard
         return $tags;
     }
 
-    public function prepareView(Nethgui\Core\ViewInterface $view, $mode)
+    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
 
@@ -143,7 +143,7 @@ class Menu extends Nethgui\Core\Module\Standard
             if (is_null($request)) {
                 return;
             }
-            $action = Nethgui\array_head($request->getArguments());
+            $action = \Nethgui\array_head($request->getArguments());
             if ( ! $action) { //search
                 $tmp2 = array();
                 $tmp = $this->iteratorToSearch($this->menuIterator);

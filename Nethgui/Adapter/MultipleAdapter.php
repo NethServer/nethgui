@@ -27,10 +27,10 @@ class MultipleAdapter implements AdapterInterface
     private $modified;
 
     /**
-     * @see Nethgui\Serializer\SerializerInterface
+     * @see \Nethgui\Serializer\SerializerInterface
      * @param callback $readerCallback The reader PHP callback function: (p1, ..., pN) -> V
      * @param callback $writerCallback The writer PHP callback function: V -> (p1, ..., pN)
-     * @param array $serializers An array of Nethgui\Serializer\SerializerInterface objects
+     * @param array $serializers An array of \Nethgui\Serializer\SerializerInterface objects
      */
     public function __construct($readerCallback, $writerCallback = NULL, $serializers = array())
     {
@@ -42,8 +42,8 @@ class MultipleAdapter implements AdapterInterface
         $this->writerCallback = $writerCallback;
 
         foreach ($serializers as $serializer) {
-            if ( ! $serializer instanceof Nethgui\Serializer\SerializerInterface) {
-                throw new Nethgui\Exception\Adapter('Invalid serializer instance. A serializer must implement Nethgui\Serializer\SerializerInterface.');
+            if ( ! $serializer instanceof \Nethgui\Serializer\SerializerInterface) {
+                throw new \Nethgui\Exception\Adapter('Invalid serializer instance. A serializer must implement \Nethgui\Serializer\SerializerInterface.');
             }
 
             $this->innerAdapters[] = new ScalarAdapter($serializer);

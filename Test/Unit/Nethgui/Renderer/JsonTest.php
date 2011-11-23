@@ -8,20 +8,20 @@
  * @package Tests
  *
  */
-class Nethgui\Renderer\JsonTest extends PHPUnit_Framework_TestCase
+class \Nethgui\Renderer\JsonTest extends PHPUnit_Framework_TestCase
 {
 
     /**
-     * @var Nethgui\Renderer\Json
+     * @var \Nethgui\Renderer\Json
      */
     protected $object;
 
     protected function setUp()
     {
-        $view = $this->getMockBuilder('Nethgui\Core\ViewInterface')
+        $view = $this->getMockBuilder('\Nethgui\Core\ViewInterface')
             ->getMock();
 
-        $innerModule = $this->getMockBuilder('Nethgui\Core\ModuleInterface')
+        $innerModule = $this->getMockBuilder('\Nethgui\Core\ModuleInterface')
             // ->setMethods(array('getParent', 'getIdentifier'))
             ->getMock();
 
@@ -38,7 +38,7 @@ class Nethgui\Renderer\JsonTest extends PHPUnit_Framework_TestCase
 
         $module->initialize();
 
-        $translator = $this->getMockBuilder('Nethgui\Core\TranslatorInterface')
+        $translator = $this->getMockBuilder('\Nethgui\Core\TranslatorInterface')
             ->getMock();
 
         $translator->expects($this->any())
@@ -47,11 +47,11 @@ class Nethgui\Renderer\JsonTest extends PHPUnit_Framework_TestCase
         $translator->expects($this->any())
             ->method('getLanguageCode')->will($this->returnValue('en'));
 
-        $view = new Nethgui\Client\View($module, $translator);
+        $view = new \Nethgui\Client\View($module, $translator);
 
         $module->prepareView($view, 0);
 
-        $this->object = new Nethgui\Renderer\Json($view);
+        $this->object = new \Nethgui\Renderer\Json($view);
     }
 
     public function testRender()
@@ -138,16 +138,16 @@ class Nethgui\Renderer\JsonTest extends PHPUnit_Framework_TestCase
 /**
  * @ignore
  */
-class Test\Unit\NethguiCoreModuleJsonTest extends Nethgui\Core\Module\Standard
+class Test\Unit\NethguiCoreModuleJsonTest extends \Nethgui\Core\Module\Standard
 {
 
     /**
-     * @var Nethgui\Core\ModuleInterface
+     * @var \Nethgui\Core\ModuleInterface
      * 
      */
     private $innerModule;
 
-    public function __construct(Nethgui\Core\ModuleInterface $innerModule, $identifier = NULL)
+    public function __construct(\Nethgui\Core\ModuleInterface $innerModule, $identifier = NULL)
     {
         parent::__construct($identifier);
         $this->innerModule = $innerModule;
@@ -161,7 +161,7 @@ class Test\Unit\NethguiCoreModuleJsonTest extends Nethgui\Core\Module\Standard
         $this->parameters['c'] = new ArrayObject(array('C', 'CC', 'CCC', 'CCCC', new ArrayObject(array('X'))));
     }
 
-    public function prepareView(Nethgui\Core\ViewInterface $view, $mode)
+    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
         $view['VIEW'] = $view->spawnView($this->innerModule);

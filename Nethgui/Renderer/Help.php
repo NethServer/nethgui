@@ -17,7 +17,7 @@ class Help extends Xhtml
 
     protected function createWidget($widgetName, $attributes = array())
     {
-        $o = new Nethgui\Widget\Help($this);
+        $o = new \Nethgui\Widget\Help($this);
 
         foreach ($attributes as $aname => $avalue) {
             $o->setAttribute($aname, $avalue);

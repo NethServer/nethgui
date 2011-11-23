@@ -10,7 +10,7 @@ namespace Nethgui\Core\Module;
  * @package Core
  * @subpackage Module
  */
-abstract class Abstract implements Nethgui\Core\ModuleInterface, Nethgui\Core\LanguageCatalogProvider, Nethgui\Log\LogConsumerInterface
+abstract class Abstract implements \Nethgui\Core\ModuleInterface, \Nethgui\Core\LanguageCatalogProvider, \Nethgui\Log\LogConsumerInterface
 {
 
     /**
@@ -29,14 +29,14 @@ abstract class Abstract implements Nethgui\Core\ModuleInterface, Nethgui\Core\La
     private $initialized = FALSE;
 
     /**
-     * @var Nethgui\System\PlatformInterface
+     * @var \Nethgui\System\PlatformInterface
      */
     private $platform;
 
     /**
      * Template applied to view, if different from NULL
      *
-     * @see Nethgui\Core\ViewInterface::setTemplate()
+     * @see \Nethgui\Core\ViewInterface::setTemplate()
      * @var string|callable
      */
     private $viewTemplate;
@@ -48,17 +48,17 @@ abstract class Abstract implements Nethgui\Core\ModuleInterface, Nethgui\Core\La
         if (isset($identifier)) {
             $this->identifier = $identifier;
         } else {
-            $this->identifier = Nethgui\array_end(explode('_', get_class($this)), -1, 1);
+            $this->identifier = \Nethgui\array_end(explode('_', get_class($this)), -1, 1);
         }
     }
 
-    public function setPlatform(Nethgui\System\PlatformInterface $platform)
+    public function setPlatform(\Nethgui\System\PlatformInterface $platform)
     {
         $this->platform = $platform;
     }
 
     /**
-     * @return Nethgui\System\PlatformInterface
+     * @return \Nethgui\System\PlatformInterface
      */
     protected function getPlatform()
     {
@@ -97,7 +97,7 @@ abstract class Abstract implements Nethgui\Core\ModuleInterface, Nethgui\Core\La
         return $this->getTitle() . '_Description';
     }
 
-    public function setParent(Nethgui\Core\ModuleInterface $parentModule)
+    public function setParent(\Nethgui\Core\ModuleInterface $parentModule)
     {
         $this->parent = $parentModule;
     }
@@ -107,7 +107,7 @@ abstract class Abstract implements Nethgui\Core\ModuleInterface, Nethgui\Core\La
         return $this->parent;
     }
 
-    public function prepareView(Nethgui\Core\ViewInterface $view, $mode)
+    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
     {
         $template = $this->getViewTemplate();
         if ( ! is_null($template)) {
@@ -156,7 +156,7 @@ abstract class Abstract implements Nethgui\Core\ModuleInterface, Nethgui\Core\La
         return array();
     }
 
-    public function setLog(Nethgui\Log\AbstractLog $log)
+    public function setLog(\Nethgui\Log\AbstractLog $log)
     {
         throw new Exception(sprintf('Cannot invoke setLog() on %s', get_class($this)));
     }
@@ -165,10 +165,10 @@ abstract class Abstract implements Nethgui\Core\ModuleInterface, Nethgui\Core\La
     {
         $platform = $this->getPlatform();
 
-        if($platform instanceof Nethgui\Log\LogConsumerInterface) {
+        if($platform instanceof \Nethgui\Log\LogConsumerInterface) {
             return $platform->getLog();
         }
-        return new Nethgui\Log\Nullog;
+        return new \Nethgui\Log\Nullog;
     }
 
 }

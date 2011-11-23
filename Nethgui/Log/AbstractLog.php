@@ -9,17 +9,17 @@ namespace Nethgui\Log;
 /**
  * @package Log
  */
-abstract class AbstractLog implements Nethgui\Core\GlobalFunctionConsumer
+abstract class AbstractLog implements \Nethgui\Core\GlobalFunctionConsumer
 {
 
     /**
-     * @var Nethgui\Core\GlobalFunctionWrapper
+     * @var \Nethgui\Core\GlobalFunctionWrapper
      */
     protected $globalFunctionWrapper;
 
     public function __construct()
     {
-        $this->globalFunctionWrapper = new Nethgui\Core\GlobalFunctionWrapper();
+        $this->globalFunctionWrapper = new \Nethgui\Core\GlobalFunctionWrapper();
     }
 
     public function exception(Exception $ex, $stackTrace = FALSE)
@@ -63,7 +63,7 @@ abstract class AbstractLog implements Nethgui\Core\GlobalFunctionConsumer
 
     abstract public function message($level, $message);
 
-    public function setGlobalFunctionWrapper(Nethgui\Core\GlobalFunctionWrapper $object)
+    public function setGlobalFunctionWrapper(\Nethgui\Core\GlobalFunctionWrapper $object)
     {
         $this->globalFunctionWrapper = $object;
         return $this;

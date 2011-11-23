@@ -16,7 +16,7 @@ namespace Nethgui\Widget\Xhtml;
  * @internal
  * @ignore
  */
-class Nethgui\Widget\Xhtml_CheckBox extends Nethgui\Widget\Xhtml
+class \Nethgui\Widget\Xhtml_CheckBox extends \Nethgui\Widget\Xhtml
 {
 
     public function render()
@@ -28,14 +28,14 @@ class Nethgui\Widget\Xhtml_CheckBox extends Nethgui\Widget\Xhtml
         $label = $this->getAttribute('label', $name . '_label');
         $content = '';
 
-        $flags = $this->applyDefaultLabelAlignment($flags, Nethgui\Renderer\WidgetFactoryInterface::LABEL_RIGHT);
+        $flags = $this->applyDefaultLabelAlignment($flags, \Nethgui\Renderer\WidgetFactoryInterface::LABEL_RIGHT);
 
         $attributes = array(
             'type' => 'checkbox',
             'value' => $value,
         );
 
-        if ($value === $this->view[$name] || $flags & Nethgui\Renderer\WidgetFactoryInterface::STATE_CHECKED) {
+        if ($value === $this->view[$name] || $flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_CHECKED) {
             $attributes['checked'] = 'checked';
         }
        

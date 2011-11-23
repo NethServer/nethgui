@@ -35,9 +35,9 @@ interface CommandInterface
     /**
      * Set the command receiver, the object where the command is executed
      *
-     * @param object An object implementing either CommandReceiverInterface or Nethgui\Client\CommandReceiverAggregateInterface
+     * @param object An object implementing either CommandReceiverInterface or \Nethgui\Client\CommandReceiverAggregateInterface
      * @see CommandReceiverInterface
-     * @see Nethgui\Client\CommandReceiverAggregateInterface
+     * @see \Nethgui\Client\CommandReceiverAggregateInterface
      * @return CommandInterface
      */
     public function setReceiver($receiver);

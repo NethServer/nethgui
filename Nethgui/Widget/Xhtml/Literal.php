@@ -22,7 +22,7 @@ namespace Nethgui\Widget\Xhtml;
  * @internal
  * @ignore
  */
-class Nethgui\Widget\Xhtml_Literal extends Nethgui\Widget\Xhtml
+class \Nethgui\Widget\Xhtml_Literal extends \Nethgui\Widget\Xhtml
 {
 
     public function render()
@@ -33,14 +33,14 @@ class Nethgui\Widget\Xhtml_Literal extends Nethgui\Widget\Xhtml
 
         $flags = $this->getAttribute('flags', 0);
 
-        if ($value instanceof Nethgui\Renderer\WidgetFactoryInterface) {
+        if ($value instanceof \Nethgui\Renderer\WidgetFactoryInterface) {
             $valueFlags = $value->getDefaultFlags() | $this->view->getDefaultFlags();
         } else {
             $valueFlags = 0;
         }
 
-        if ($value instanceof Nethgui\Core\ViewInterface && $this->view instanceof Nethgui\Core\CommandReceiverAggregateInterface) {
-            $value = new Nethgui\Renderer\Xhtml($value, $valueFlags, $this->view->getCommandReceiver());
+        if ($value instanceof \Nethgui\Core\ViewInterface && $this->view instanceof \Nethgui\Core\CommandReceiverAggregateInterface) {
+            $value = new \Nethgui\Renderer\Xhtml($value, $valueFlags, $this->view->getCommandReceiver());
         }
 
         $content = (String) $value;
@@ -54,7 +54,7 @@ class Nethgui\Widget\Xhtml_Literal extends Nethgui\Widget\Xhtml
 
     public function setAttribute($attribute, $value)
     {
-        if ($attribute == 'data' && $value instanceof Nethgui\Core\ViewInterface) {
+        if ($attribute == 'data' && $value instanceof \Nethgui\Core\ViewInterface) {
             parent::setAttribute('name', $value->getModule()->getIdentifier());
         }
         return parent::setAttribute($attribute, $value);

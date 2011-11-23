@@ -10,7 +10,7 @@ namespace Nethgui\Client;
  *
  * @package Core
  */
-interface UserInterface extends ArrayAccess
+interface UserInterface extends \ArrayAccess
 {
 
     /**
@@ -50,13 +50,13 @@ interface UserInterface extends ArrayAccess
      * for the dialog dismission.
      * The dialogs that don't expect an answer are dismissed after being shown.
      *
-     * @param Nethgui\Core\ModuleInterface $module
+     * @param \Nethgui\Core\ModuleInterface $module
      * @param string $message
      * @param array $actions
      * @param integer $type
      * @return UserInterface
      */
-    public function showDialogBox(Nethgui\Core\ModuleInterface $module, $message, $actions = array(), $type = DialogBox::NOTIFY_SUCCESS);
+    public function showDialogBox(\Nethgui\Core\ModuleInterface $module, $message, $actions = array(), $type = DialogBox::NOTIFY_SUCCESS);
 
     public function getDialogBoxes();
 
@@ -68,16 +68,16 @@ interface UserInterface extends ArrayAccess
     /**
      * @return UserInterface
      */
-    public function traceProcess(Nethgui\System\ProcessInterface $process, $name = NULL);
+    public function traceProcess(\Nethgui\System\ProcessInterface $process, $name = NULL);
 
     /**
-     * @return array An array of Nethgui\System\ProcessInterface traced objects
-     * @see Nethgui\System\ProcessInterface
+     * @return array An array of \Nethgui\System\ProcessInterface traced objects
+     * @see \Nethgui\System\ProcessInterface
      */
     public function getTracedProcesses();
 
     /**
-     * @return Nethgui\System\ProcessInterface
+     * @return \Nethgui\System\ProcessInterface
      */
     public function getTracedProcess($name);
 

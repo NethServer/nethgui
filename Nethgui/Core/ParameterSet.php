@@ -19,7 +19,7 @@ namespace Nethgui\Core;
  *
  * @package Core
  */
-class ParameterSet implements Nethgui\Adapter\AdapterAggregationInterface, ArrayAccess, Iterator, Countable
+class ParameterSet implements \Nethgui\Adapter\AdapterAggregationInterface, ArrayAccess, Iterator, Countable
 {
 
     private $data = array();
@@ -50,7 +50,7 @@ class ParameterSet implements Nethgui\Adapter\AdapterAggregationInterface, Array
             return NULL;
         }
 
-        if ($this->data[$offset] instanceof Nethgui\Adapter\AdapterInterface) {
+        if ($this->data[$offset] instanceof \Nethgui\Adapter\AdapterInterface) {
             $value = $this->data[$offset]->get();
         } else {
             $value = $this->data[$offset];
@@ -61,7 +61,7 @@ class ParameterSet implements Nethgui\Adapter\AdapterAggregationInterface, Array
 
     public function offsetSet($offset, $value)
     {
-        if (isset($this->data[$offset]) && $this->data[$offset] instanceof Nethgui\Adapter\AdapterInterface) {
+        if (isset($this->data[$offset]) && $this->data[$offset] instanceof \Nethgui\Adapter\AdapterInterface) {
             $this->data[$offset]->set($value);
         } else {
             $this->data[$offset] = $value;
@@ -70,7 +70,7 @@ class ParameterSet implements Nethgui\Adapter\AdapterAggregationInterface, Array
 
     public function offsetUnset($offset)
     {
-        if ($this->data[$offset] instanceof Nethgui\Adapter\AdapterInterface) {
+        if ($this->data[$offset] instanceof \Nethgui\Adapter\AdapterInterface) {
             $this->data[$offset]->delete();
         }
         unset($this->data[$offset]);
@@ -81,7 +81,7 @@ class ParameterSet implements Nethgui\Adapter\AdapterAggregationInterface, Array
      * forwarding the call to Adapters and Sets.
      *
      * This is an helper function.
-     * @see Nethgui\Adapter\AdapterAggregationInterface::save()
+     * @see \Nethgui\Adapter\AdapterAggregationInterface::save()
      * @return integer The number of saved parameters. A zero value indicates that nothing has been saved.
      */
     public function save()
@@ -89,9 +89,9 @@ class ParameterSet implements Nethgui\Adapter\AdapterAggregationInterface, Array
         $saveCounter = 0;
 
         foreach ($this->data as $value) {
-            if ($value instanceof Nethgui\Adapter\AdapterInterface) {
+            if ($value instanceof \Nethgui\Adapter\AdapterInterface) {
                 $saveCounter += $value->save();
-            } elseif ($value instanceof Nethgui\Adapter\AdapterAggregationInterface) {
+            } elseif ($value instanceof \Nethgui\Adapter\AdapterAggregationInterface) {
                 $saveCounter += $value->save();
             }
         }
@@ -99,14 +99,14 @@ class ParameterSet implements Nethgui\Adapter\AdapterAggregationInterface, Array
         return $saveCounter;
     }
 
-    public function register(Nethgui\Adapter\AdapterInterface $adapter, $key)
+    public function register(\Nethgui\Adapter\AdapterInterface $adapter, $key)
     {
         $this->data[$key] = $adapter;
     }
 
     public function query($key)
     {
-        if ( ! $this->data[$key] instanceof Nethgui\Adapter\AdapterInterface) {
+        if ( ! $this->data[$key] instanceof \Nethgui\Adapter\AdapterInterface) {
             return NULL;
         }
         return $this->data[$key];
@@ -123,9 +123,9 @@ class ParameterSet implements Nethgui\Adapter\AdapterAggregationInterface, Array
         foreach ($keys as $key) {
             $value = $this->data[$key];
 
-            if ($value instanceof Nethgui\Adapter\AdapterInterface) {
+            if ($value instanceof \Nethgui\Adapter\AdapterInterface) {
                 $modified = $value->isModified();
-            } elseif ($value instanceof Nethgui\Adapter\AdapterAggregationInterface) {
+            } elseif ($value instanceof \Nethgui\Adapter\AdapterAggregationInterface) {
                 $modified = $value->isModified(NULL);
             }
 

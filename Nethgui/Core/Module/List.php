@@ -17,7 +17,7 @@ namespace Nethgui\Core\Module;
  * @package Core
  * @subpackage Module
  */
-class List extends Composite implements Nethgui\Core\RequestHandlerInterface
+class List extends Composite implements \Nethgui\Core\RequestHandlerInterface
 {
     const TEMPLATE_LIST = 1;
 
@@ -31,7 +31,7 @@ class List extends Composite implements Nethgui\Core\RequestHandlerInterface
         }
     }
 
-    public function bind(Nethgui\Core\RequestInterface $request)
+    public function bind(\Nethgui\Core\RequestInterface $request)
     {
         $arguments = $request->getArguments();
         $submodule = array_shift($arguments);
@@ -46,7 +46,7 @@ class List extends Composite implements Nethgui\Core\RequestHandlerInterface
         }
     }
 
-    public function validate(Nethgui\Core\ValidationReportInterface $report)
+    public function validate(\Nethgui\Core\ValidationReportInterface $report)
     {
         foreach ($this->getChildren() as $module) {
             $module->validate($report);
@@ -60,7 +60,7 @@ class List extends Composite implements Nethgui\Core\RequestHandlerInterface
         }
     }
 
-    public function prepareView(Nethgui\Core\ViewInterface $view, $mode)
+    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
         foreach ($this->getChildren() as $child) {
@@ -69,7 +69,7 @@ class List extends Composite implements Nethgui\Core\RequestHandlerInterface
         }
     }
 
-    public function renderList(Nethgui\Renderer\Abstract $view)
+    public function renderList(\Nethgui\Renderer\Abstract $view)
     {
         $widget = $view->panel();
         foreach ($this->getChildren() as $child) {

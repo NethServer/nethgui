@@ -71,7 +71,7 @@ interface RequestInterface
 
     /**
      * The User that has sent the request.
-     * @return Nethgui\Client\UserInterface
+     * @return \Nethgui\Client\UserInterface
      */
     public function getUser();
 }

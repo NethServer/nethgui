@@ -19,7 +19,7 @@ namespace Nethgui\Core\Module;
  * @package Core
  * @subpackage Module
  */
-abstract class Composite extends Abstract implements Nethgui\Core\ModuleCompositeInterface
+abstract class Composite extends Abstract implements \Nethgui\Core\ModuleCompositeInterface
 {
 
     private $children = array();
@@ -43,9 +43,9 @@ abstract class Composite extends Abstract implements Nethgui\Core\ModuleComposit
      * Adds a child to Composite, initializing it, if current Composite is
      * initialized.
      * 
-     * @param Nethgui\Core\ModuleInterface $childModule
+     * @param \Nethgui\Core\ModuleInterface $childModule
      */
-    public function addChild(Nethgui\Core\ModuleInterface $childModule)
+    public function addChild(\Nethgui\Core\ModuleInterface $childModule)
     {
         if ( ! isset($this->children[$childModule->getIdentifier()])) {
             $this->children[$childModule->getIdentifier()] = $childModule;
@@ -70,7 +70,7 @@ abstract class Composite extends Abstract implements Nethgui\Core\ModuleComposit
         return array_values($this->children);
     }
 
-    public function setPlatform(Nethgui\System\PlatformInterface $platform)
+    public function setPlatform(\Nethgui\System\PlatformInterface $platform)
     {
         parent::setPlatform($platform);
         foreach ($this->getChildren() as $childModule) {

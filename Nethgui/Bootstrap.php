@@ -114,7 +114,7 @@ require_once('Tool.php');
 require_once('Framework.php');
 
 if (NETHGUI_APPLICATION == 'Test') {
-    $FW = new Nethgui\Framework();
+    $FW = new \Nethgui\Framework();
     return;
 } elseif (NETHGUI_NATIVE) {
     $_nethgui_app = function() {
@@ -122,8 +122,8 @@ if (NETHGUI_APPLICATION == 'Test') {
             $suffix = substr($urlPath, strlen(NETHGUI_BASEURL . NETHGUI_CONTROLLER) + 1);
             $parts = explode('/', $suffix);
 
-            $FW = new Nethgui\Framework();
-            $FW->registerApplication(NETHGUI_ROOTDIR . NETHGUI_APPLICATION);
+            $FW = new \Nethgui\Framework();
+            $FW->registerApplication(NETHGUI_ROOTDIR . '/' . NETHGUI_APPLICATION);
             $FW->dispatch(empty($parts[0]) ? 'index' : $parts[0], array_slice($parts, 1));
         };
 

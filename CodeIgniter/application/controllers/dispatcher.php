@@ -21,7 +21,7 @@ class Dispatcher extends CI_Controller
             exit;
         }        
 
-        $NFW = new Nethgui\Framework();
+        $NFW = new \Nethgui\Framework();
         $NFW->dispatch($method, $parameters);            
     }
 

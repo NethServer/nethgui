@@ -10,7 +10,7 @@ namespace Nethgui\Client;
  *
  * @package Core
  */
-class Request implements Nethgui\Core\RequestInterface
+class Request implements \Nethgui\Core\RequestInterface
 {
     const CONTENT_TYPE_JSON = 1;
     const CONTENT_TYPE_HTML = 2;
@@ -31,7 +31,7 @@ class Request implements Nethgui\Core\RequestInterface
     private $submitted;
 
     /**
-     * @see Nethgui\Core\RequestInterface::getArguments()
+     * @see \Nethgui\Core\RequestInterface::getArguments()
      * @var array
      */
     private $arguments;

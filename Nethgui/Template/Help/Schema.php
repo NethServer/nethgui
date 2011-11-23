@@ -7,7 +7,7 @@
     </head>
     <body>
         <div id="HelpDocument">
-            <?php echo new Nethgui\Renderer\Help($view['content']) ?>
+            <?php echo new \Nethgui\Renderer\Help($view['content']) ?>
         </div>
         <hr/>
         <p><?php printf("Source: %s <br/>Timestamp: %s", $view['url'], strftime("%F %T")) ?></p>

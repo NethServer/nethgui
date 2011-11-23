@@ -20,7 +20,7 @@ namespace Nethgui\Core\Module;
  * @package Core
  * @subpackage Module
  */
-class Controller extends Composite implements Nethgui\Core\RequestHandlerInterface, DefaultUiStateInterface
+class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterface, DefaultUiStateInterface
 {
 
     /**
@@ -32,7 +32,7 @@ class Controller extends Composite implements Nethgui\Core\RequestHandlerInterfa
 
     /**
      *
-     * @return Nethgui\Core\RequestInterface
+     * @return \Nethgui\Core\RequestInterface
      */
     protected function getRequest()
     {
@@ -43,9 +43,9 @@ class Controller extends Composite implements Nethgui\Core\RequestHandlerInterfa
      * Overrides Composite bind() method, defining what is the current action
      * and forwarding the call to it.
      *
-     * @param Nethgui\Core\RequestInterface $request 
+     * @param \Nethgui\Core\RequestInterface $request 
      */
-    public function bind(Nethgui\Core\RequestInterface $request)
+    public function bind(\Nethgui\Core\RequestInterface $request)
     {
         $this->request = $request;
         $actionId = $this->establishCurrentActionId();
@@ -55,8 +55,8 @@ class Controller extends Composite implements Nethgui\Core\RequestHandlerInterfa
         }
 
         $this->currentAction = $this->getAction($actionId);
-        if ($this->currentAction instanceof Nethgui\Core\RequestHandlerInterface) {
-            $this->currentAction->bind($request->getParameterAsInnerRequest($actionId, Nethgui\array_rest($request->getArguments())));
+        if ($this->currentAction instanceof \Nethgui\Core\RequestHandlerInterface) {
+            $this->currentAction->bind($request->getParameterAsInnerRequest($actionId, \Nethgui\array_rest($request->getArguments())));
         }
     }
 
@@ -71,7 +71,7 @@ class Controller extends Composite implements Nethgui\Core\RequestHandlerInterfa
             $actionId = $arguments[0];
             if ( ! $this->hasAction($actionId)) {
                 // a NULL action at this point results in a "not found" condition:
-                throw new Nethgui\Exception\HttpStatusClientError('Not Found', 404);
+                throw new \Nethgui\Exception\HttpStatusClientError('Not Found', 404);
             }
         }
 
@@ -84,7 +84,7 @@ class Controller extends Composite implements Nethgui\Core\RequestHandlerInterfa
      * If the child is not found it returns NULL.
      * 
      * @param string $identifier 
-     * @return Nethgui\Core\ModuleInterface
+     * @return \Nethgui\Core\ModuleInterface
      */
     public function getAction($identifier = NULL)
     {
@@ -104,16 +104,16 @@ class Controller extends Composite implements Nethgui\Core\RequestHandlerInterfa
 
     /**
      * Implements validate() method, forwarding the call to current action only.
-     * @param Nethgui\Core\ValidationReportInterface $report
+     * @param \Nethgui\Core\ValidationReportInterface $report
      * @return void 
      */
-    public function validate(Nethgui\Core\ValidationReportInterface $report)
+    public function validate(\Nethgui\Core\ValidationReportInterface $report)
     {
         if (is_null($this->currentAction)) {
             return;
         }
 
-        if ($this->currentAction instanceof Nethgui\Core\RequestHandlerInterface) {
+        if ($this->currentAction instanceof \Nethgui\Core\RequestHandlerInterface) {
             $this->currentAction->validate($report);
         }
     }
@@ -129,7 +129,7 @@ class Controller extends Composite implements Nethgui\Core\RequestHandlerInterfa
             return;
         }
 
-        if ($this->currentAction instanceof Nethgui\Core\RequestHandlerInterface) {
+        if ($this->currentAction instanceof \Nethgui\Core\RequestHandlerInterface) {
             $this->currentAction->process();
         }
     }
@@ -139,10 +139,10 @@ class Controller extends Composite implements Nethgui\Core\RequestHandlerInterfa
      * state (index) if current action is not defined, or to display the 
      * current action.
      * 
-     * @param Nethgui\Core\ViewInterface $view
+     * @param \Nethgui\Core\ViewInterface $view
      * @param type $mode 
      */
-    public function prepareView(Nethgui\Core\ViewInterface $view, $mode)
+    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
 
@@ -170,15 +170,15 @@ class Controller extends Composite implements Nethgui\Core\RequestHandlerInterfa
      * Note: The current action template is wrapped inside a DIV.Action tag.
      *
      * @internal Actually called by the framework.
-     * @param Nethgui\Renderer\Abstract $view The view
+     * @param \Nethgui\Renderer\Abstract $view The view
      * @return string
      */
-    public function renderCurrentAction(Nethgui\Renderer\Abstract $view)
+    public function renderCurrentAction(\Nethgui\Renderer\Abstract $view)
     {
         return $view->inset($this->currentAction->getIdentifier());
     }
 
-    public function renderDefault(Nethgui\Renderer\Abstract $view)
+    public function renderDefault(\Nethgui\Renderer\Abstract $view)
     {
         $containerClass = 'Controller';
 

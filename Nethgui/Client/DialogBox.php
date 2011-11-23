@@ -35,7 +35,7 @@ class DialogBox implements Serializable
     private $id;
     private $transient;
 
-    public function __construct(Nethgui\Core\ModuleInterface $module, $message, $actions = array(), $type = self::NOTIFY_SUCCESS)
+    public function __construct(\Nethgui\Core\ModuleInterface $module, $message, $actions = array(), $type = self::NOTIFY_SUCCESS)
     {
         if ( ! $module instanceof ModuleSurrogate) {
             $module = new ModuleSurrogate($module);

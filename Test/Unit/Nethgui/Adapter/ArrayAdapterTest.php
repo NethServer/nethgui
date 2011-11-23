@@ -10,26 +10,26 @@
  * @package Tests
  * @subpackage Unit
  */
-class Nethgui\Core\ArrayAdapterTest extends PHPUnit_Framework_TestCase
+class \Nethgui\Core\ArrayAdapterTest extends PHPUnit_Framework_TestCase
 {
 
     /**
-     * @var Nethgui\Adapter\ArrayAdapter
+     * @var \Nethgui\Adapter\ArrayAdapter
      */
     protected $fixture;
     /**
      *
-     * @var Nethgui\Serializer\SerializerInterface
+     * @var \Nethgui\Serializer\SerializerInterface
      */
     private $serializer;
 
     protected function setUp()
     {
-        $this->serializer = $this->getMockBuilder('Nethgui\Serializer\KeySerializer')
+        $this->serializer = $this->getMockBuilder('\Nethgui\Serializer\KeySerializer')
                 ->disableOriginalConstructor()
                 ->getMock();
 
-        $this->fixture = new Nethgui\Adapter\ArrayAdapter(',', $this->serializer);
+        $this->fixture = new \Nethgui\Adapter\ArrayAdapter(',', $this->serializer);
     }
 
     public function testGetCsv()
@@ -85,7 +85,7 @@ class Nethgui\Core\ArrayAdapterTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Nethgui\Exception\Adapter
+     * @expectedException \Nethgui\Exception\Adapter
      */
     public function testSetFail()
     {

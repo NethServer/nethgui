@@ -13,7 +13,7 @@ namespace Nethgui\Module\Help;
  */
 class Template extends Common
 {
-    public function prepareView(Nethgui\Core\ViewInterface $rootView, $mode)
+    public function prepareView(\Nethgui\Core\ViewInterface $rootView, $mode)
     {
         $rootView->setTemplate('Nethgui_Template_Help_Schema');
 
@@ -26,7 +26,7 @@ class Template extends Common
         $rootView['url'] = NETHGUI_SITEURL . $rootView->getModuleUrl($this->module->getIdentifier() . '.html');
 
         $this->globalFunctions->header("Content-Type: text/html; charset=UTF-8");
-        echo (String) new Nethgui\Renderer\Xhtml($rootView);
+        echo (String) new \Nethgui\Renderer\Xhtml($rootView);
         exit;
     }
 }

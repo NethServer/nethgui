@@ -18,7 +18,7 @@ namespace Nethgui\Module;
  * @see Table\Read
  * @package Module
  */
-class TableController extends Nethgui\Core\Module\Controller 
+class TableController extends \Nethgui\Core\Module\Controller 
 {
 
     /**
@@ -91,7 +91,7 @@ class TableController extends Nethgui\Core\Module\Controller
      * A column action is executed in a row context (i.e. row updating, deletion...)
      * @see getRowActions()
      */
-    public function addRowAction(Nethgui\Core\ModuleInterface $a)
+    public function addRowAction(\Nethgui\Core\ModuleInterface $a)
     {
         $this->rowActions[] = $a;
         $this->addChild($a);
@@ -111,7 +111,7 @@ class TableController extends Nethgui\Core\Module\Controller
      * print the table...)
      * @see getTableActions()
      */
-    public function addTableAction(Nethgui\Core\ModuleInterface $a)
+    public function addTableAction(\Nethgui\Core\ModuleInterface $a)
     {
         $this->tableActions[] = $a;
         $this->addChild($a);
@@ -147,7 +147,7 @@ class TableController extends Nethgui\Core\Module\Controller
                 $actionArguments->setTableAdapter($tableAdapter);
             }
             $actionObject = $actionArguments;
-        } elseif ($actionArguments instanceof Nethgui\Core\Module\Standard) {
+        } elseif ($actionArguments instanceof \Nethgui\Core\Module\Standard) {
             $actionObject = $actionArguments;
         }
 
@@ -172,7 +172,7 @@ class TableController extends Nethgui\Core\Module\Controller
     /**
      * @todo refactor into parent class
      */
-    public function prepareView(Nethgui\Core\ViewInterface $view, $mode)
+    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
 

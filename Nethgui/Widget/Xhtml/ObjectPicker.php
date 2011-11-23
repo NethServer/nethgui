@@ -16,7 +16,7 @@ namespace Nethgui\Widget\Xhtml;
  * @internal
  * @ignore
  */
-class Nethgui\Widget\Xhtml_ObjectPicker extends Nethgui\Widget\Xhtml
+class \Nethgui\Widget\Xhtml_ObjectPicker extends \Nethgui\Widget\Xhtml
 {
 
     private $metadata;
@@ -48,7 +48,7 @@ class Nethgui\Widget\Xhtml_ObjectPicker extends Nethgui\Widget\Xhtml
             } elseif (empty($this->view[$childName])) {
                 $value = array();
             } else {
-                throw new Nethgui\Exception\View(sprintf('Invalid value type for %s: %s', $childName, var_export($this->view[$childName], TRUE)));
+                throw new \Nethgui\Exception\View(sprintf('Invalid value type for %s: %s', $childName, var_export($this->view[$childName], TRUE)));
             }
 
             $this->values[$childName] = $value;
@@ -56,10 +56,10 @@ class Nethgui\Widget\Xhtml_ObjectPicker extends Nethgui\Widget\Xhtml
         }
     }
 
-    public function insert(Nethgui\Renderer\WidgetInterface $child)
+    public function insert(\Nethgui\Renderer\WidgetInterface $child)
     {
-        if ( ! $child instanceof Nethgui\Widget\Xhtml_CheckBox) {
-            throw new Nethgui\Exception\View(sprintf('Unsupported widget class: %s', get_class($child)));
+        if ( ! $child instanceof \Nethgui\Widget\Xhtml_CheckBox) {
+            throw new \Nethgui\Exception\View(sprintf('Unsupported widget class: %s', get_class($child)));
         }
 
         if ( ! $child->hasAttribute('uncheckedValue')) {
@@ -72,10 +72,10 @@ class Nethgui\Widget\Xhtml_ObjectPicker extends Nethgui\Widget\Xhtml
         $childFlags = $child->getAttribute('flags', 0);
 
         // Mask LABEL_* flags:
-        $childFlags &= ~ (Nethgui\Renderer\WidgetFactoryInterface::LABEL_ABOVE | Nethgui\Renderer\WidgetFactoryInterface::LABEL_RIGHT | Nethgui\Renderer\WidgetFactoryInterface::LABEL_LEFT);
+        $childFlags &= ~ (\Nethgui\Renderer\WidgetFactoryInterface::LABEL_ABOVE | \Nethgui\Renderer\WidgetFactoryInterface::LABEL_RIGHT | \Nethgui\Renderer\WidgetFactoryInterface::LABEL_LEFT);
 
         // Force to STATE_DISABLED & LABEL_RIGHT
-        $childFlags |= Nethgui\Renderer\WidgetFactoryInterface::LABEL_RIGHT | Nethgui\Renderer\WidgetFactoryInterface::STATE_DISABLED;
+        $childFlags |= \Nethgui\Renderer\WidgetFactoryInterface::LABEL_RIGHT | \Nethgui\Renderer\WidgetFactoryInterface::STATE_DISABLED;
 
         // Fix the flags:
         $child->setAttribute('flags', $childFlags);
@@ -105,7 +105,7 @@ class Nethgui\Widget\Xhtml_ObjectPicker extends Nethgui\Widget\Xhtml
         $content .= $this->closeTag('div');
 
         if ($this->hasAttribute('template')) {
-            $fieldsetWidget = new Nethgui\Widget\Xhtml_Fieldset($this->view);
+            $fieldsetWidget = new \Nethgui\Widget\Xhtml_Fieldset($this->view);
             $fieldsetWidget
                 ->setAttribute('template', $this->getAttribute('template'))
                 ->setAttribute('icon-before', $this->getAttribute('icon-before'))
@@ -174,12 +174,12 @@ class Nethgui\Widget\Xhtml_ObjectPicker extends Nethgui\Widget\Xhtml
             $childFlags = $child->getAttribute('flags', 0);
 
             // Mask STATE_DISABLED
-            $childFlags &= ~Nethgui\Renderer\WidgetFactoryInterface::STATE_DISABLED;
+            $childFlags &= ~\Nethgui\Renderer\WidgetFactoryInterface::STATE_DISABLED;
 
             if (in_array($object[$this->metadata['value']], $this->values[$child->getAttribute('name')])) {
-                $childFlags |= Nethgui\Renderer\WidgetFactoryInterface::STATE_CHECKED;
+                $childFlags |= \Nethgui\Renderer\WidgetFactoryInterface::STATE_CHECKED;
             } else {
-                $childFlags &= ~Nethgui\Renderer\WidgetFactoryInterface::STATE_CHECKED;
+                $childFlags &= ~\Nethgui\Renderer\WidgetFactoryInterface::STATE_CHECKED;
             }
 
             $childClone->setAttribute('flags', $childFlags);

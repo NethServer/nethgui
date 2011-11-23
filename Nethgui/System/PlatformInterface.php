@@ -29,13 +29,13 @@ interface PlatformInterface
      * is enhanced with an ArrayAccess interface, and the value is stored
      * imploding its elements on that $separator.
      *
-     * @see Nethgui\Adapter\AdapterAggregationInterface
+     * @see \Nethgui\Adapter\AdapterAggregationInterface
      * @see getMapAdapter()
      * @param string|ArrayAccess $database Database name or ArrayAccess object
      * @param string $key Key connected to the adapter.
      * @param string $prop Optional - Set to a prop name to connect a prop instead of a key.
      * @param string $separator Optional - Specify a single character string to obtain an ArrayAccess and Countable interface.
-     * @return Nethgui\Adapter\AdapterInterface
+     * @return \Nethgui\Adapter\AdapterInterface
      */
     public function getIdentityAdapter($database, $key, $prop = NULL, $separator = NULL);
 
@@ -46,12 +46,12 @@ interface PlatformInterface
      * converter method. Values are specified through $args parameter.
      *
      * @see getIdentityAdapter()
-     * @see Nethgui\Adapter\AdapterAggregationInterface
+     * @see \Nethgui\Adapter\AdapterAggregationInterface
      * @param callback $readCallback If $args has N elements $readCallback must accept N parameters and return a value.
      * @param callback $writeCallback If $args has N elements $writeCallback must accept a parameter and return an array of N elements.
      * @param array $args An array of arrays in the form ($database, $key, $prop). $prop is optional.
      *
-     * @return Nethgui\Adapter\AdapterInterface
+     * @return \Nethgui\Adapter\AdapterInterface
      */
     public function getMapAdapter($readCallback, $writeCallback, $args);
 
@@ -65,7 +65,7 @@ interface PlatformInterface
      * @param string $typeOrKey The type of the keys to read from database or the key value where the data is stored
      * @param string $filterOrProp The string to filter the table data or set to a prop name to connect a prop instead of a key.
      * @param array $separators An array of one or two separator strings. The first is for the rows, the second for the columns. Set to NULL if $typeOrKey is a TYPE!
-     * @return Nethgui\Adapter\AdapterInterface An adapter with array and countable interfaces.
+     * @return \Nethgui\Adapter\AdapterInterface An adapter with array and countable interfaces.
      */
     public function getTableAdapter($database, $typeOrKey, $filterOrProp = NULL, $separators = NULL);
 

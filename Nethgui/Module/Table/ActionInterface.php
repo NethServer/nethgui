@@ -15,6 +15,6 @@ namespace Nethgui\Module\Table;
  */
 interface ActionInterface
 {
-    public function setTableAdapter(Nethgui\Adapter\AdapterInterface $tableAdapter);
+    public function setTableAdapter(\Nethgui\Adapter\AdapterInterface $tableAdapter);
     public function hasTableAdapter();
 }

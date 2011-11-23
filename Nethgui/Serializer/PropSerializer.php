@@ -17,11 +17,11 @@ class PropSerializer implements SerializerInterface
 
     /**
      *
-     * @var Nethgui\System\ConfigurationDatabase
+     * @var \Nethgui\System\ConfigurationDatabase
      */
     private $database;
 
-    public function __construct(Nethgui\System\ConfigurationDatabase $database, $key, $prop)
+    public function __construct(\Nethgui\System\ConfigurationDatabase $database, $key, $prop)
     {
         $this->database = $database;
         $this->key = $key;

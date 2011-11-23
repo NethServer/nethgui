@@ -210,7 +210,7 @@ interface WidgetFactoryInterface
     /**
      * Create literal data - helper.
      *
-     * @param string|object|Nethgui\Core\ViewInterface $data Can be a string, any object implementing toString() method, or a View.
+     * @param string|object|\Nethgui\Core\ViewInterface $data Can be a string, any object implementing toString() method, or a View.
      * @return WidgetInterface
      */
     public function literal($data, $flags = 0);

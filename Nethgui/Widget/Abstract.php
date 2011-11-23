@@ -11,7 +11,7 @@ namespace Nethgui\Widget;
  * Abstract Widget class
  * @ignore
  */
-abstract class Abstract implements Nethgui\Renderer\WidgetInterface, Nethgui\Log\LogConsumerInterface
+abstract class Abstract implements \Nethgui\Renderer\WidgetInterface, \Nethgui\Log\LogConsumerInterface
 {
 
     static private $instance = 0;
@@ -19,11 +19,11 @@ abstract class Abstract implements Nethgui\Renderer\WidgetInterface, Nethgui\Log
     private $attributes = array();
 
     /**
-     * @var Nethgui\Renderer\Abstract
+     * @var \Nethgui\Renderer\Abstract
      */
     protected $view;
 
-    public function __construct(Nethgui\Renderer\Abstract $view)
+    public function __construct(\Nethgui\Renderer\Abstract $view)
     {
         $this->view = $view;
         self::$instance ++;
@@ -53,13 +53,13 @@ abstract class Abstract implements Nethgui\Renderer\WidgetInterface, Nethgui\Log
         return self::$instance;
     }
 
-    protected function prepend(Nethgui\Renderer\WidgetInterface $widget)
+    protected function prepend(\Nethgui\Renderer\WidgetInterface $widget)
     {
         array_unshift($this->children, $widget);
         return $this;
     }
 
-    public function insert(Nethgui\Renderer\WidgetInterface $widget)
+    public function insert(\Nethgui\Renderer\WidgetInterface $widget)
     {
         $this->children[] = $widget;
         return $this;
@@ -111,13 +111,13 @@ abstract class Abstract implements Nethgui\Renderer\WidgetInterface, Nethgui\Log
     protected function getClientEventTarget()
     {
         if ( ! $this->hasAttribute('name')) {
-            throw new Nethgui\Exception\View('Missing `name` attribute');
+            throw new \Nethgui\Exception\View('Missing `name` attribute');
         }
 
         return $this->view->getClientEventTarget($this->getAttribute('name'));
     }
 
-    public function setLog(Nethgui\Log\AbstractLog $log)
+    public function setLog(\Nethgui\Log\AbstractLog $log)
     {
         throw new Exception(sprintf('Cannot invoke setLog() on %s', get_class($this)));
     }

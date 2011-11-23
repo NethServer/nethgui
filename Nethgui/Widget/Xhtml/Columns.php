@@ -16,7 +16,7 @@ namespace Nethgui\Widget\Xhtml;
  * @internal
  * @ignore
  */
-class Nethgui\Widget\Xhtml_Columns extends Nethgui\Widget\Xhtml_Panel
+class \Nethgui\Widget\Xhtml_Columns extends \Nethgui\Widget\Xhtml_Panel
 {
     public function render()
     {

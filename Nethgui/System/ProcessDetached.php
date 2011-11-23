@@ -13,7 +13,7 @@ namespace Nethgui\System;
  * @ignore
  * @package System
  */
-class ProcessDetached implements ProcessInterface, Nethgui\Core\GlobalFunctionConsumer, Serializable
+class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionConsumer, Serializable
 {
 
     /**
@@ -51,7 +51,7 @@ class ProcessDetached implements ProcessInterface, Nethgui\Core\GlobalFunctionCo
 
     /**
      *
-     * @var Nethgui\Core\GlobalFunctionWrapper
+     * @var \Nethgui\Core\GlobalFunctionWrapper
      */
     protected $globalFunctionWrapper;
 
@@ -59,10 +59,10 @@ class ProcessDetached implements ProcessInterface, Nethgui\Core\GlobalFunctionCo
     {
         $this->initialize();
         $this->innerCommand = new Process($this->shellBackgroundInvocation($command), $arguments);
-        $this->setGlobalFunctionWrapper(new Nethgui\Core\GlobalFunctionWrapper());        
+        $this->setGlobalFunctionWrapper(new \Nethgui\Core\GlobalFunctionWrapper());        
     }
 
-    public function setGlobalFunctionWrapper(Nethgui\Core\GlobalFunctionWrapper $object)
+    public function setGlobalFunctionWrapper(\Nethgui\Core\GlobalFunctionWrapper $object)
     {
         $this->globalFunctionWrapper = $object;
         $this->innerCommand->setGlobalFunctionWrapper($object);

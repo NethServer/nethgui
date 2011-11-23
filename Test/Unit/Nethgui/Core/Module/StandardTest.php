@@ -8,11 +8,11 @@
  * @package Tests
  * @subpackage Unit
  */
-class Nethgui\Core\Module\StandardTest extends PHPUnit_Framework_TestCase
+class \Nethgui\Core\Module\StandardTest extends PHPUnit_Framework_TestCase
 {
 
     /**
-     * @var Nethgui\Core\Module\Standard
+     * @var \Nethgui\Core\Module\Standard
      */
     protected $object;
 
@@ -20,7 +20,7 @@ class Nethgui\Core\Module\StandardTest extends PHPUnit_Framework_TestCase
     {
         $this->object = new Test\Unit\ConcreteStandardModule1();
 
-        $validator = $this->getMockBuilder('Nethgui\System\Validator')
+        $validator = $this->getMockBuilder('\Nethgui\System\Validator')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -28,7 +28,7 @@ class Nethgui\Core\Module\StandardTest extends PHPUnit_Framework_TestCase
             ->method($this->anything())
             ->will($this->returnValue($validator));
 
-        $platform = $this->getMockBuilder('Nethgui\System\PlatformInterface')
+        $platform = $this->getMockBuilder('\Nethgui\System\PlatformInterface')
             ->disableOriginalConstructor()            
             ->getMock();
 
@@ -56,7 +56,7 @@ class Nethgui\Core\Module\StandardTest extends PHPUnit_Framework_TestCase
     {
         $this->assertEquals($this->object->getParent(), NULL);
 
-        $mockModule = $this->getMockBuilder('Nethgui\Core\Module\Composite')
+        $mockModule = $this->getMockBuilder('\Nethgui\Core\Module\Composite')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -66,7 +66,7 @@ class Nethgui\Core\Module\StandardTest extends PHPUnit_Framework_TestCase
 
     public function testPrepareView1()
     {
-        $viewMock = $this->getMockBuilder('Nethgui\Client\View')
+        $viewMock = $this->getMockBuilder('\Nethgui\Client\View')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -74,12 +74,12 @@ class Nethgui\Core\Module\StandardTest extends PHPUnit_Framework_TestCase
             ->method('copyFrom')
             ->with($this->anything());
 
-        $this->object->prepareView($viewMock, Nethgui\Core\Module\Standard::VIEW_CLIENT);
+        $this->object->prepareView($viewMock, \Nethgui\Core\Module\Standard::VIEW_CLIENT);
     }
 
     public function testPrepareView2()
     {
-        $viewMock = $this->getMockBuilder('Nethgui\Client\View')
+        $viewMock = $this->getMockBuilder('\Nethgui\Client\View')
             ->setMethods(array('copyFrom'))
             ->disableOriginalConstructor()
             ->getMock();
@@ -88,7 +88,7 @@ class Nethgui\Core\Module\StandardTest extends PHPUnit_Framework_TestCase
             ->method('copyFrom')
             ->with($this->anything());
 
-        $this->object->prepareView($viewMock, Nethgui\Core\Module\Standard::VIEW_SERVER);
+        $this->object->prepareView($viewMock, \Nethgui\Core\Module\Standard::VIEW_SERVER);
     }
 
     public function testGetLanguageCatalog()
@@ -98,7 +98,7 @@ class Nethgui\Core\Module\StandardTest extends PHPUnit_Framework_TestCase
 
 }
 
-class Test\Unit\ConcreteStandardModule1 extends Nethgui\Core\Module\Standard
+class Test\Unit\ConcreteStandardModule1 extends \Nethgui\Core\Module\Standard
 {
 
     public function initialize()

@@ -16,7 +16,7 @@ namespace Nethgui\Widget\Xhtml;
  * @internal
  * @ignore
  */
-class Nethgui\Widget\Xhtml_RadioButton extends Nethgui\Widget\Xhtml
+class \Nethgui\Widget\Xhtml_RadioButton extends \Nethgui\Widget\Xhtml
 {
 
     public function render()
@@ -34,10 +34,10 @@ class Nethgui\Widget\Xhtml_RadioButton extends Nethgui\Widget\Xhtml
         );
 
         if ($value === $this->view[$name]) {
-            $flags |= Nethgui\Renderer\WidgetFactoryInterface::STATE_CHECKED;
+            $flags |= \Nethgui\Renderer\WidgetFactoryInterface::STATE_CHECKED;
         }
 
-        $flags = $this->applyDefaultLabelAlignment($flags, Nethgui\Renderer\WidgetFactoryInterface::LABEL_RIGHT);
+        $flags = $this->applyDefaultLabelAlignment($flags, \Nethgui\Renderer\WidgetFactoryInterface::LABEL_RIGHT);
 
         $content .= $this->labeledControlTag($label, 'input', $name, $flags, 'RadioButton', $attributes);
 

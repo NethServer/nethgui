@@ -15,15 +15,15 @@ namespace Nethgui\Module\Table;
  * @subpackage Table
  * 
  */
-class Action extends Nethgui\Core\Module\Standard implements ActionInterface, Nethgui\Core\Module\DefaultUiStateInterface
+class Action extends \Nethgui\Core\Module\Standard implements ActionInterface, \Nethgui\Core\Module\DefaultUiStateInterface
 {
     /**
      *
-     * @var Nethgui\Adapter\AdapterInterface
+     * @var \Nethgui\Adapter\AdapterInterface
      */
     protected $tableAdapter;
       
-    public function setTableAdapter(Nethgui\Adapter\AdapterInterface $tableAdapter)
+    public function setTableAdapter(\Nethgui\Adapter\AdapterInterface $tableAdapter)
     {
         if ( ! $this->hasTableAdapter())
         {

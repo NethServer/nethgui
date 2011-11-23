@@ -16,7 +16,7 @@ namespace Nethgui\Renderer;
  * @package Renderer
  * @ignore
  */
-class Xhtml extends Abstract implements WidgetFactoryInterface, Nethgui\Core\GlobalFunctionConsumer, Nethgui\Core\CommandReceiverAggregateInterface
+class Xhtml extends Abstract implements WidgetFactoryInterface, \Nethgui\Core\GlobalFunctionConsumer, \Nethgui\Core\CommandReceiverAggregateInterface
 {
 
     /**
@@ -26,30 +26,30 @@ class Xhtml extends Abstract implements WidgetFactoryInterface, Nethgui\Core\Glo
     protected $inheritFlags = 0;
 
     /**
-     * @var Nethgui\Core\GlobalFunctionWrapper
+     * @var \Nethgui\Core\GlobalFunctionWrapper
      */
     private $globalFunctionWrapper;
 
     /**
-     * @var Nethgui\Core\CommandReceiverInterface
+     * @var \Nethgui\Core\CommandReceiverInterface
      */
     private $commandReceiver;
 
     /**
      *
-     * @param Nethgui\Core\ViewInterface $view
+     * @param \Nethgui\Core\ViewInterface $view
      * @param int $inheritFlags Default flags applied to all widgets created by this renderer
-     * @param Nethgui\Core\CommandReceiverInterface $commandReceiver object where Commands are executed
+     * @param \Nethgui\Core\CommandReceiverInterface $commandReceiver object where Commands are executed
      */
-    public function __construct(Nethgui\Core\ViewInterface $view, $inheritFlags = 0, Nethgui\Core\CommandReceiverInterface $commandReceiver = NULL)
+    public function __construct(\Nethgui\Core\ViewInterface $view, $inheritFlags = 0, \Nethgui\Core\CommandReceiverInterface $commandReceiver = NULL)
     {
         parent::__construct($view);
         $this->inheritFlags = $inheritFlags & NETHGUI_INHERITABLE_FLAGS;
-        $this->globalFunctionWrapper = new Nethgui\Core\GlobalFunctionWrapper();
+        $this->globalFunctionWrapper = new \Nethgui\Core\GlobalFunctionWrapper();
         $this->commandReceiver = new HttpCommandReceiver($this, $commandReceiver);
     }
 
-    public function setGlobalFunctionWrapper(Nethgui\Core\GlobalFunctionWrapper $object)
+    public function setGlobalFunctionWrapper(\Nethgui\Core\GlobalFunctionWrapper $object)
     {
         $this->globalFunctionWrapper = $object;
     }
@@ -67,7 +67,7 @@ class Xhtml extends Abstract implements WidgetFactoryInterface, Nethgui\Core\Glo
 
     protected function createWidget($widgetName, $attributes = array())
     {
-        $className = 'Nethgui\Widget\Xhtml_' . ucfirst($widgetName);
+        $className = '\Nethgui\Widget\Xhtml_' . ucfirst($widgetName);
 
         $o = new $className($this);
 
@@ -122,7 +122,7 @@ class Xhtml extends Abstract implements WidgetFactoryInterface, Nethgui\Core\Glo
          * Search for any non-executed command and invoke execute() on it.
          */
         foreach ($this->view as $command) {
-            if ( ! $command instanceof Nethgui\Core\CommandInterface) {
+            if ( ! $command instanceof \Nethgui\Core\CommandInterface) {
                 continue;
             }
             if ( ! $command->isExecuted() ) {

@@ -20,15 +20,15 @@ namespace Nethgui\Client;
  * Moreover, every module has a View object assigned to it as a parameter during
  * prepareView() operation.
  *
- * @see Nethgui\Core\ModuleInterface::prepareView()
+ * @see \Nethgui\Core\ModuleInterface::prepareView()
  * @package Client
  */
-class View implements Nethgui\Core\ViewInterface, Nethgui\Log\LogConsumerInterface
+class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInterface
 {
 
     /**
      * Reference to associated module
-     * @var Nethgui\Core\ModuleInterface
+     * @var \Nethgui\Core\ModuleInterface
      */
     private $module;
 
@@ -53,11 +53,11 @@ class View implements Nethgui\Core\ViewInterface, Nethgui\Log\LogConsumerInterfa
 
     /**
      *
-     * @var Nethgui\Core\TranslatorInterface;
+     * @var \Nethgui\Core\TranslatorInterface;
      */
     private $translator;
 
-    public function __construct(Nethgui\Core\ModuleInterface $module, Nethgui\Core\TranslatorInterface $translator)
+    public function __construct(\Nethgui\Core\ModuleInterface $module, \Nethgui\Core\TranslatorInterface $translator)
     {
         $this->module = $module;
         $this->translator = $translator;
@@ -84,7 +84,7 @@ class View implements Nethgui\Core\ViewInterface, Nethgui\Log\LogConsumerInterfa
         return $this->template;
     }
 
-    public function spawnView(Nethgui\Core\ModuleInterface $module, $register = FALSE)
+    public function spawnView(\Nethgui\Core\ModuleInterface $module, $register = FALSE)
     {
         $spawnedView = new self($module, $this->translator);
         if ($register === TRUE) {
@@ -245,19 +245,19 @@ class View implements Nethgui\Core\ViewInterface, Nethgui\Log\LogConsumerInterfa
         return $this->buildUrl($path);
     }
 
-    public function setLog(Nethgui\Log\AbstractLog $log)
+    public function setLog(\Nethgui\Log\AbstractLog $log)
     {
         throw new Exception(sprintf('Cannot invoke setLog() on %s', get_class($this)));
     }
 
     public function getLog()
     {
-        if ($this->getModule() instanceof Nethgui\Log\LogConsumerInterface) {
+        if ($this->getModule() instanceof \Nethgui\Log\LogConsumerInterface) {
             return $this->getModule()->getLog();
-        } elseif ($this->translator instanceof Nethgui\Log\LogConsumerInterface) {
+        } elseif ($this->translator instanceof \Nethgui\Log\LogConsumerInterface) {
             return $this->translator->getLog();
         } else {
-            return new Nethgui\Log\Nullog();
+            return new \Nethgui\Log\Nullog();
         }
     }
 

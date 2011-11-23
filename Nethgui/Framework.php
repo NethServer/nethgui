@@ -44,7 +44,7 @@ class Framework
      */
     public function autoloader($className)
     {
-        $className = substr($className, strlen(__NAMESPACE__) + 1);
+        //$className = substr($className, strlen(__NAMESPACE__) + 1);
 
         $nsKey = array_head(explode('\\', $className));
 
@@ -80,13 +80,13 @@ class Framework
         $request = $this->createRequest($arguments);
         $user = $request->getUser();
 
-        $platform = new Nethgui\System\NethPlatform($user);
-        $topModuleDepot = new Nethgui\Core\TopModuleDepot($platform, $user);
+        $platform = new \Nethgui\System\NethPlatform($user);
+        $topModuleDepot = new \Nethgui\Core\TopModuleDepot($platform, $user);
 
         /*
          * TODO: enforce some security policy on Models
          */
-        $pdp = new Nethgui\Authorization\PermissivePolicyDecisionPoint();
+        $pdp = new \Nethgui\Authorization\PermissivePolicyDecisionPoint();
 
         $platform->setPolicyDecisionPoint($pdp);
         $topModuleDepot->setPolicyDecisionPoint($pdp);
@@ -103,31 +103,31 @@ class Framework
         $moduleWakeupList = array_unique($moduleWakeupList);
 
         // Configure the NotificationArea:
-        $notificationManager = new Nethgui\Module\NotificationArea($user);
+        $notificationManager = new \Nethgui\Module\NotificationArea($user);
         $notificationManager->setPlatform($platform);
         $topModuleDepot->registerModule($notificationManager);
 
         // Configure the online Help:
-        $helpModule = new Nethgui\Module\Help($topModuleDepot);
+        $helpModule = new \Nethgui\Module\Help($topModuleDepot);
         $helpModule->setPlatform($platform);
         $topModuleDepot->registerModule($helpModule);
 
         // Configure the module menu
-        $menuModule = new Nethgui\Module\Menu($topModuleDepot->getModules(), $currentModuleIdentifier);
+        $menuModule = new \Nethgui\Module\Menu($topModuleDepot->getModules(), $currentModuleIdentifier);
         $menuModule->setPlatform($platform);
         $topModuleDepot->registerModule($menuModule);
 
         // Configrue The World module:
-        $worldModule = new Nethgui\Module\World();
+        $worldModule = new \Nethgui\Module\World();
         $worldModule->setPlatform($platform);
 
-        $view = new Nethgui\Client\View($worldModule, new Nethgui\Language\Translator($user, $platform->getLog()));
+        $view = new \Nethgui\Client\View($worldModule, new \Nethgui\Language\Translator($user, $platform->getLog()));
 
         try {
             foreach ($moduleWakeupList as $moduleIdentifier) {
                 $module = $topModuleDepot->findModule($moduleIdentifier);
 
-                if ($module instanceof Nethgui\Core\ModuleInterface) {
+                if ($module instanceof \Nethgui\Core\ModuleInterface) {
                     $worldModule->addModule($module);
 
                     // Module initialization
@@ -137,7 +137,7 @@ class Framework
                 }
 
 
-                if ( ! $module instanceof Nethgui\Core\RequestHandlerInterface) {
+                if ( ! $module instanceof \Nethgui\Core\RequestHandlerInterface) {
                     continue;
                 }
 
@@ -158,7 +158,7 @@ class Framework
 
                 $module->process($notificationManager);
             }
-        } catch (Nethgui\Exception\HttpStatusClientError $ex) {
+        } catch (\Nethgui\Exception\HttpStatusClientError $ex) {
             $statusCode = intval($ex->getCode());
             if ($statusCode >= 400 && $statusCode < 600) {
                 $this->httpError($statusCode, $ex->getMessage(), $statusCode . ': ' . $ex->getMessage());
@@ -188,21 +188,21 @@ class Framework
         /*
          * Prepare the views and render into Xhtml or Json
          */
-        if ($request->getContentType() === Nethgui\Client\Request::CONTENT_TYPE_HTML) {
+        if ($request->getContentType() === \Nethgui\Client\Request::CONTENT_TYPE_HTML) {
             $worldModule->addModule($menuModule);
-            $worldModule->prepareView($view, Nethgui\Core\ModuleInterface::VIEW_SERVER);
+            $worldModule->prepareView($view, \Nethgui\Core\ModuleInterface::VIEW_SERVER);
             $redirectUrl = $this->getRedirectUrl($user);
             if ($redirectUrl === FALSE) {
                 header("Content-Type: text/html; charset=UTF-8");
-                echo new Nethgui\Renderer\Xhtml($view, 0, new Nethgui\Core\LoggingCommandReceiver());
+                echo new \Nethgui\Renderer\Xhtml($view, 0, new \Nethgui\Core\LoggingCommandReceiver());
                 $notificationManager->dismissTransientDialogBoxes();
             } else {
                 $this->redirect($redirectUrl);
             }
-        } elseif ($request->getContentType() === Nethgui\Client\Request::CONTENT_TYPE_JSON) {
-            $worldModule->prepareView($view, Nethgui\Core\ModuleInterface::VIEW_CLIENT);
+        } elseif ($request->getContentType() === \Nethgui\Client\Request::CONTENT_TYPE_JSON) {
+            $worldModule->prepareView($view, \Nethgui\Core\ModuleInterface::VIEW_CLIENT);
             header("Content-Type: application/json; charset=UTF-8");
-            echo new Nethgui\Renderer\Json($view);
+            echo new \Nethgui\Renderer\Json($view);
             $notificationManager->dismissTransientDialogBoxes();
         }
     }
@@ -210,16 +210,16 @@ class Framework
     /**
      * Check if a redirect condition has been set and calculate the URL.
      *
-     * @param Nethgui\Client\UserInterface $user
+     * @param \Nethgui\Client\UserInterface $user
      * @return string|bool The URL where to redirect the user
      */
-    private function getRedirectUrl(Nethgui\Client\UserInterface $user)
+    private function getRedirectUrl(\Nethgui\Client\UserInterface $user)
     {
         return FALSE;
     }
 
     /**
-     * Creates a new Nethgui\Client\Request object from current HTTP request.
+     * Creates a new \Nethgui\Client\Request object from current HTTP request.
      * @param string $defaultModuleIdentifier
      * @param array $parameters
      * @return Nethgui_Core_Request
@@ -245,7 +245,7 @@ class Framework
                 $data = json_decode($GLOBALS['HTTP_RAW_POST_DATA'], true);
 
                 if (is_null($data)) {
-                    throw new Nethgui\Exception\HttpStatusClientError('Bad Request', 400);
+                    throw new \Nethgui\Exception\HttpStatusClientError('Bad Request', 400);
                 }
             } else {
                 // Use PHP global:
@@ -257,17 +257,17 @@ class Framework
         $httpAccept = isset($_SERVER['HTTP_ACCEPT']) ? trim(array_shift(explode(',', $_SERVER['HTTP_ACCEPT']))) : FALSE;
 
         if ($httpAccept == 'application/json')
-            $contentType = Nethgui\Client\Request::CONTENT_TYPE_JSON;
+            $contentType = \Nethgui\Client\Request::CONTENT_TYPE_JSON;
         else {
             // Standard  POST request.
-            $contentType = Nethgui\Client\Request::CONTENT_TYPE_HTML;
+            $contentType = \Nethgui\Client\Request::CONTENT_TYPE_HTML;
         }
 
 
         // TODO: retrieve user state from Session
-        $user = new Nethgui\Client\AlwaysAuthenticatedUser();
+        $user = new \Nethgui\Client\AlwaysAuthenticatedUser();
 
-        $instance = new Nethgui\Client\Request($user, $data, $submitted, $arguments, array(
+        $instance = new \Nethgui\Client\Request($user, $data, $submitted, $arguments, array(
                 'XML_HTTP_REQUEST' => $isXmlHttpRequest,
                 'CONTENT_TYPE' => $contentType,
             ));

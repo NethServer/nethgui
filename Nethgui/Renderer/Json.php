@@ -19,13 +19,13 @@ class Json extends Abstract
         foreach ($this as $offset => $value) {
 
             $eventTarget = $this->getClientEventTarget($offset);
-            if ($value instanceof Nethgui\Core\ViewInterface) {
+            if ($value instanceof \Nethgui\Core\ViewInterface) {
                 if ( ! $value instanceof Json) {
                     $value = new Json($value);
                 }
                 $value->deepWalk($events, $commands);
                 continue;
-            } elseif ($value instanceof Nethgui\Core\CommandInterface) {
+            } elseif ($value instanceof \Nethgui\Core\CommandInterface) {
                 $commands[] = $value->setReceiver(new JsonReceiver($this->view, $offset))->execute();
                 continue;
             } elseif ($value instanceof Traversable) {
@@ -73,18 +73,18 @@ class Json extends Abstract
 /**
  * @ignore
  */
-class JsonReceiver implements Nethgui\Core\CommandReceiverInterface
+class JsonReceiver implements \Nethgui\Core\CommandReceiverInterface
 {
 
     private $offset;
 
     /**
      *
-     * @var Nethgui\Core\ViewInterface
+     * @var \Nethgui\Core\ViewInterface
      */
     private $view;
 
-    public function __construct(Nethgui\Core\ViewInterface $view, $offset)
+    public function __construct(\Nethgui\Core\ViewInterface $view, $offset)
     {
         $this->view = $view;
         $this->offset = $offset;
@@ -93,7 +93,7 @@ class JsonReceiver implements Nethgui\Core\CommandReceiverInterface
     public function executeCommand($name, $arguments)
     {
         if ($name == 'delay'
-            && $arguments[0] instanceof Nethgui\Core\CommandInterface) {
+            && $arguments[0] instanceof \Nethgui\Core\CommandInterface) {
             $receiver = '';
             // replace the first argument with the array equivalent
             $arguments[0] = $arguments[0]->setReceiver(clone $this)->execute();

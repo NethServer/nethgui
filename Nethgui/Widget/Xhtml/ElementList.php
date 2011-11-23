@@ -16,7 +16,7 @@ namespace Nethgui\Widget\Xhtml;
  * @internal
  * @ignore
  */
-class Nethgui\Widget\Xhtml_ElementList extends Nethgui\Widget\Xhtml
+class \Nethgui\Widget\Xhtml_ElementList extends \Nethgui\Widget\Xhtml
 {
 
     private $childWrapTag;
@@ -31,7 +31,7 @@ class Nethgui\Widget\Xhtml_ElementList extends Nethgui\Widget\Xhtml
 
         $this->childWrapTag = $wrap[1];
 
-        //if ($flags & Nethgui\Renderer\WidgetFactoryInterface::STATE_DISABLED) {
+        //if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_DISABLED) {
         //    $cssClass .= ' disabled';
         //}
 

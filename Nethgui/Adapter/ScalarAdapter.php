@@ -18,11 +18,11 @@ class ScalarAdapter implements AdapterInterface
     protected $value;
     /**
      *
-     * @var Nethgui\Serializer\SerializerInterface
+     * @var \Nethgui\Serializer\SerializerInterface
      */
     private $serializer;
 
-    public function __construct(Nethgui\Serializer\SerializerInterface $serializer)
+    public function __construct(\Nethgui\Serializer\SerializerInterface $serializer)
     {
         $this->serializer = $serializer;
     }

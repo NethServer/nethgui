@@ -9,11 +9,11 @@
  * @subpackage Unit
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class Nethgui\Client\CommandTest extends PHPUnit_Framework_TestCase
+class \Nethgui\Client\CommandTest extends PHPUnit_Framework_TestCase
 {
 
     /**
-     * @var Nethgui\Client\Command
+     * @var \Nethgui\Client\Command
      */
     protected $object;
 
@@ -23,7 +23,7 @@ class Nethgui\Client\CommandTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new Nethgui\Client\Command('test', array(1, 'A'));
+        $this->object = new \Nethgui\Client\Command('test', array(1, 'A'));
     }
 
     public function testExecuteSuccess()
@@ -47,7 +47,7 @@ class Nethgui\Client\CommandTest extends PHPUnit_Framework_TestCase
 
     private function createReceiverMock()
     {
-        $receiver = $this->getMockBuilder('Nethgui\Core\CommandReceiverInterface')
+        $receiver = $this->getMockBuilder('\Nethgui\Core\CommandReceiverInterface')
             ->setMethods(array('executeCommand'))
             ->getMock();
 
@@ -61,7 +61,7 @@ class Nethgui\Client\CommandTest extends PHPUnit_Framework_TestCase
 
     private function createReceiverAggregateMock()
     {
-        $aggregate = $this->getMockBuilder('Nethgui\Core\CommandReceiverAggregateInterface')
+        $aggregate = $this->getMockBuilder('\Nethgui\Core\CommandReceiverAggregateInterface')
             ->setMethods(array('getCommandReceiver'))
             ->getMock();
 

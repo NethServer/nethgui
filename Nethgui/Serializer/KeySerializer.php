@@ -16,11 +16,11 @@ class KeySerializer implements SerializerInterface
     private $key;
     /**
      *
-     * @var Nethgui\System\ConfigurationDatabase
+     * @var \Nethgui\System\ConfigurationDatabase
      */
     private $database;
 
-    public function __construct(Nethgui\System\ConfigurationDatabase $database, $key)
+    public function __construct(\Nethgui\System\ConfigurationDatabase $database, $key)
     {
         $this->database = $database;
         $this->key = $key;

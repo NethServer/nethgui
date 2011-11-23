@@ -63,7 +63,7 @@ class Modify extends Action
         }
     }
 
-    private function getTheKey(Nethgui\Core\RequestInterface $request, $parameterName)
+    private function getTheKey(\Nethgui\Core\RequestInterface $request, $parameterName)
     {
         if ($request->isSubmitted()) {
             if ($request->hasParameter($parameterName)) {
@@ -103,9 +103,9 @@ class Modify extends Action
     /**
      * We have to declare all the parmeters of parameterSchema here,
      * binding the actual key/row from tableAdapter.
-     * @param Nethgui\Core\RequestInterface $request 
+     * @param \Nethgui\Core\RequestInterface $request 
      */
-    public function bind(Nethgui\Core\RequestInterface $request)
+    public function bind(\Nethgui\Core\RequestInterface $request)
     {
         $key = NULL;
 
@@ -185,7 +185,7 @@ class Modify extends Action
         } elseif ($action == 'update') {
             $this->processUpdate($key);
         } else {
-            throw new Nethgui\Exception\HttpStatusClientError('Not found', 404);
+            throw new \Nethgui\Exception\HttpStatusClientError('Not found', 404);
         }
 
         // Transfer all parameters values into tableAdapter (and DB):
@@ -203,7 +203,7 @@ class Modify extends Action
         if (isset($this->tableAdapter[$key])) {
             unset($this->tableAdapter[$key]);
         } else {
-            throw new Nethgui\Exception\Process('Cannot delete `' . $key . '`');
+            throw new \Nethgui\Exception\Process('Cannot delete `' . $key . '`');
         }
         $this->addUiClientCommand('cancel');
     }
@@ -218,7 +218,7 @@ class Modify extends Action
         $this->addUiClientCommand('cancel');
     }
 
-    public function prepareView(Nethgui\Core\ViewInterface $view, $mode)
+    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
         if ($mode == self::VIEW_SERVER) {

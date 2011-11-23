@@ -8,11 +8,11 @@
  * @package Tests
  *
  */
-class Nethgui\Renderer\HttpCommandReceiverTest extends PHPUnit_Framework_TestCase
+class \Nethgui\Renderer\HttpCommandReceiverTest extends PHPUnit_Framework_TestCase
 {
 
     /**
-     * @var Nethgui\Renderer\HttpCommandReceiver
+     * @var \Nethgui\Renderer\HttpCommandReceiver
      */
     protected $object;
 
@@ -24,12 +24,12 @@ class Nethgui\Renderer\HttpCommandReceiverTest extends PHPUnit_Framework_TestCas
      */
     protected function setUp()
     {
-        $view = $this->getMockBuilder('Nethgui\Client\View')
+        $view = $this->getMockBuilder('\Nethgui\Client\View')
             ->disableOriginalConstructor()
             ->setMethods(array('getModule'))
             ->getMock();
 
-        $moduleMock = $this->getMockBuilder('Nethgui\Core\ModuleInterface')
+        $moduleMock = $this->getMockBuilder('\Nethgui\Core\ModuleInterface')
             ->getMock();
 
         $moduleMock->expects($this->any())
@@ -44,7 +44,7 @@ class Nethgui\Renderer\HttpCommandReceiverTest extends PHPUnit_Framework_TestCas
             ->method('getModule')
             ->will($this->returnValue($moduleMock));
 
-        $this->object = new Nethgui\Renderer\HttpCommandReceiver($view);
+        $this->object = new \Nethgui\Renderer\HttpCommandReceiver($view);
         $this->urlPrefix = NETHGUI_SITEURL . NETHGUI_BASEURL . NETHGUI_CONTROLLER;
     }
 
@@ -80,7 +80,7 @@ class Nethgui\Renderer\HttpCommandReceiverTest extends PHPUnit_Framework_TestCas
 
     private function getGlobalMock($url)
     {
-        $mock = $this->getMockBuilder('Nethgui\Core\GlobalFunctionWrapper')
+        $mock = $this->getMockBuilder('\Nethgui\Core\GlobalFunctionWrapper')
             ->setMethods(array('header', 'ob_get_status', 'ob_end_clean', 'phpExit'))
             ->getMock();
 

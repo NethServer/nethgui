@@ -15,32 +15,32 @@ namespace Nethgui\Renderer;
  * @package Renderer
  * @ignore
  */
-class HttpCommandReceiver implements Nethgui\Core\CommandReceiverInterface, Nethgui\Core\GlobalFunctionConsumer
+class HttpCommandReceiver implements \Nethgui\Core\CommandReceiverInterface, \Nethgui\Core\GlobalFunctionConsumer
 {
 
     /**
      *
-     * @var Nethgui\Core\ViewInterface
+     * @var \Nethgui\Core\ViewInterface
      */
     private $view;
 
     /**
      *
-     * @var Nethgui\Core\CommandReceiverInterface
+     * @var \Nethgui\Core\CommandReceiverInterface
      */
     private $fallbackReceiver;
 
     /**
      *
-     * @var Nethgui\Core\GlobalFunctionWrapper
+     * @var \Nethgui\Core\GlobalFunctionWrapper
      */
     private $globalFunctionWrapper;
 
-    public function __construct(Nethgui\Core\ViewInterface $view, Nethgui\Core\CommandReceiverInterface $fallbackReceiver = NULL)
+    public function __construct(\Nethgui\Core\ViewInterface $view, \Nethgui\Core\CommandReceiverInterface $fallbackReceiver = NULL)
     {
         $this->view = $view;
         $this->fallbackReceiver = $fallbackReceiver;
-        $this->globalFunctionWrapper = new Nethgui\Core\GlobalFunctionWrapper();
+        $this->globalFunctionWrapper = new \Nethgui\Core\GlobalFunctionWrapper();
     }
 
     public function executeCommand($name, $arguments)
@@ -112,7 +112,7 @@ class HttpCommandReceiver implements Nethgui\Core\CommandReceiverInterface, Neth
         $this->globalFunctionWrapper->phpExit(0);
     }
 
-    public function setGlobalFunctionWrapper(Nethgui\Core\GlobalFunctionWrapper $object)
+    public function setGlobalFunctionWrapper(\Nethgui\Core\GlobalFunctionWrapper $object)
     {
         $this->globalFunctionWrapper = $object;
     }

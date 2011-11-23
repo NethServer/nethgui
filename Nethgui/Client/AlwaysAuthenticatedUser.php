@@ -109,7 +109,7 @@ class AlwaysAuthenticatedUser implements UserInterface
         return isset($this->credentials[$credentialName]);
     }
 
-    public function showDialogBox(Nethgui\Core\ModuleInterface $module, $message, $actions = array(), $type = DialogBox::NOTIFY_SUCCESS)
+    public function showDialogBox(\Nethgui\Core\ModuleInterface $module, $message, $actions = array(), $type = DialogBox::NOTIFY_SUCCESS)
     {
         $dialog = new DialogBox($module, $message, $actions, $type);
 
@@ -153,7 +153,7 @@ class AlwaysAuthenticatedUser implements UserInterface
         unset($this->data[$offset]);
     }
 
-    public function traceProcess(Nethgui\System\ProcessInterface $process, $name = NULL)
+    public function traceProcess(\Nethgui\System\ProcessInterface $process, $name = NULL)
     {
         if (is_null($name)) {
             $name = uniqid();

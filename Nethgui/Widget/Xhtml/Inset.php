@@ -16,7 +16,7 @@ namespace Nethgui\Widget\Xhtml;
  * @internal
  * @ignore
  */
-class Nethgui\Widget\Xhtml_Inset extends Nethgui\Widget\Xhtml
+class \Nethgui\Widget\Xhtml_Inset extends \Nethgui\Widget\Xhtml
 {
 
     public function render()
@@ -26,8 +26,8 @@ class Nethgui\Widget\Xhtml_Inset extends Nethgui\Widget\Xhtml
         $value = $this->view->offsetGet($name);
         $content = '';
 
-        if ($value instanceof Nethgui\Core\ViewInterface && $this->view instanceof Nethgui\Core\CommandReceiverAggregateInterface) {
-            $innerRenderer = new Nethgui\Renderer\Xhtml($value, $flags, $this->view->getCommandReceiver());
+        if ($value instanceof \Nethgui\Core\ViewInterface && $this->view instanceof \Nethgui\Core\CommandReceiverAggregateInterface) {
+            $innerRenderer = new \Nethgui\Renderer\Xhtml($value, $flags, $this->view->getCommandReceiver());
             $content = (String) $this->wrapView($innerRenderer);
         } else {
             $content = (String) $this->view->literal($value, $flags);
@@ -36,7 +36,7 @@ class Nethgui\Widget\Xhtml_Inset extends Nethgui\Widget\Xhtml
         return $content;
     }
 
-    private function wrapView(Nethgui\Renderer\Xhtml $inset)
+    private function wrapView(\Nethgui\Renderer\Xhtml $inset)
     {
         $module = $inset->getModule();
 
@@ -44,13 +44,13 @@ class Nethgui\Widget\Xhtml_Inset extends Nethgui\Widget\Xhtml
         $contentWidget = $this->view->literal($content);
 
         // 1. If we have a NOFORMWRAP give up here.
-        if ($module instanceof Nethgui\Core\Module\DefaultUiStateInterface
-            && $module->getDefaultUiStyleFlags() & Nethgui\Core\Module\DefaultUiStateInterface::STYLE_NOFORMWRAP) {
+        if ($module instanceof \Nethgui\Core\Module\DefaultUiStateInterface
+            && $module->getDefaultUiStyleFlags() & \Nethgui\Core\Module\DefaultUiStateInterface::STYLE_NOFORMWRAP) {
             return $contentWidget;
         }
 
         // 2. Wrap automatically a FORM tag only if instancof RequestHandler and no FORM tag has been emitted.
-        if ($module instanceof Nethgui\Core\RequestHandlerInterface
+        if ($module instanceof \Nethgui\Core\RequestHandlerInterface
             && stripos($content, '<form ') === FALSE) {
             // Wrap a simple module into a FORM tag automatically
             $contentWidget = $inset->form()->insert($contentWidget);

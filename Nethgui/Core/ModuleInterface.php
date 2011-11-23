@@ -35,7 +35,7 @@ interface ModuleInterface
     /**
      * Sets the host configuration Model.
      */
-    public function setPlatform(Nethgui\System\PlatformInterface $platform);
+    public function setPlatform(\Nethgui\System\PlatformInterface $platform);
 
     /**
      * The Module Identifier is a string that univocally identifies a Module.

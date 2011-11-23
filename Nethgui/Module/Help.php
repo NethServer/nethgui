@@ -9,16 +9,16 @@ namespace Nethgui\Module;
  * @package Module
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class Help extends Nethgui\Core\Module\Controller
+class Help extends \Nethgui\Core\Module\Controller
 {
 
     /**
      *
-     * @var Nethgui\Core\ModuleSetInterface
+     * @var \Nethgui\Core\ModuleSetInterface
      */
     private $moduleSet;
 
-    public function __construct(Nethgui\Core\ModuleSetInterface $moduleSet)
+    public function __construct(\Nethgui\Core\ModuleSetInterface $moduleSet)
     {
         parent::__construct(NULL);
         $this->moduleSet = $moduleSet;
@@ -35,7 +35,7 @@ class Help extends Nethgui\Core\Module\Controller
         }
     }
 
-    public function prepareView(Nethgui\Core\ViewInterface $view, $mode)
+    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
     {
         if (is_null($this->currentAction)) {
             $view->setTemplate('Nethgui_Template_Help');

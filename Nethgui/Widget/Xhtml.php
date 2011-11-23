@@ -60,20 +60,20 @@ abstract class Xhtml extends Abstract
         $wrapperClass = 'labeled-control';
         $content = '';
 
-        if ($flags & Nethgui\Renderer\WidgetFactoryInterface::LABEL_NONE) {
+        if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::LABEL_NONE) {
             $content .= $this->controlTag($tag, $name, $flags, $cssClass, $attributes, $tagContent);
         } else {
 
-            if ($flags & Nethgui\Renderer\WidgetFactoryInterface::LABEL_RIGHT) {
+            if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::LABEL_RIGHT) {
                 $wrapperClass .= ' label-right';
                 $content .= $this->openTag('div', array('class' => $wrapperClass));
                 $content .= $this->controlTag($tag, $name, $flags, $cssClass, $attributes, $tagContent);
                 $content .= $this->label($label, $controlId);
                 $content .= $this->closeTag('div');
             } else {
-                if ($flags & Nethgui\Renderer\WidgetFactoryInterface::LABEL_ABOVE) {
+                if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::LABEL_ABOVE) {
                     $wrapperClass .= ' label-above';
-                } elseif ($flags & Nethgui\Renderer\WidgetFactoryInterface::LABEL_LEFT) {
+                } elseif ($flags & \Nethgui\Renderer\WidgetFactoryInterface::LABEL_LEFT) {
                     $wrapperClass .= ' label-left';
                 }
                 $content .= $this->openTag('div', array('class' => $wrapperClass));
@@ -112,10 +112,10 @@ abstract class Xhtml extends Abstract
 
         $isCheckable = ($tag == 'input') && isset($attributes['type']) && ($attributes['type'] == 'checkbox' || $attributes['type'] == 'radio');
 
-        if ($flags & Nethgui\Renderer\WidgetFactoryInterface::STATE_CHECKED && $isCheckable) {
+        if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_CHECKED && $isCheckable) {
             $attributes['checked'] = 'checked';
         }
-        if ($flags & Nethgui\Renderer\WidgetFactoryInterface::STATE_READONLY) {
+        if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_READONLY) {
             if ($isCheckable) {
                 // `readonly` attribute is not appliable to checkable controls
                 $attributes['disabled'] = 'disabled';
@@ -131,11 +131,11 @@ abstract class Xhtml extends Abstract
         }
 
         if (in_array($tag, array('input', 'button', 'textarea', 'select', 'optgroup', 'option'))) {
-            if ($flags & Nethgui\Renderer\WidgetFactoryInterface::STATE_DISABLED) {
+            if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_DISABLED) {
                 $attributes['disabled'] = 'disabled';
             }
 
-            if ($flags & Nethgui\Renderer\WidgetFactoryInterface::STATE_VALIDATION_ERROR) {
+            if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_VALIDATION_ERROR) {
                 $cssClass .= ' validation-error ui-state-error';
             }
         }
@@ -159,7 +159,7 @@ abstract class Xhtml extends Abstract
 
     protected function applyDefaultLabelAlignment($flags, $default)
     {
-        return (Nethgui\Renderer\WidgetFactoryInterface::LABEL_NONE | Nethgui\Renderer\WidgetFactoryInterface::LABEL_ABOVE | Nethgui\Renderer\WidgetFactoryInterface::LABEL_LEFT | Nethgui\Renderer\WidgetFactoryInterface::LABEL_RIGHT) & $flags ? $flags : $flags | $default;
+        return (\Nethgui\Renderer\WidgetFactoryInterface::LABEL_NONE | \Nethgui\Renderer\WidgetFactoryInterface::LABEL_ABOVE | \Nethgui\Renderer\WidgetFactoryInterface::LABEL_LEFT | \Nethgui\Renderer\WidgetFactoryInterface::LABEL_RIGHT) & $flags ? $flags : $flags | $default;
     }
 
     /**
@@ -266,7 +266,7 @@ abstract class Xhtml extends Abstract
 
             $command = $this->view[$commandBucket];
 
-            if ($command instanceof Nethgui\Core\CommandInterface
+            if ($command instanceof \Nethgui\Core\CommandInterface
                 && ! $command->isExecuted()) {
                 $command->setReceiver($this)->execute();
             }

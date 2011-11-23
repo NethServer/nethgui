@@ -11,7 +11,7 @@ namespace Nethgui\System;
  *
  * @package System
  */
-class NethPlatform implements PlatformInterface, Nethgui\Authorization\PolicyEnforcementPointInterface, Nethgui\Log\LogConsumerInterface, Nethgui\Core\GlobalFunctionConsumer
+class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEnforcementPointInterface, \Nethgui\Log\LogConsumerInterface, \Nethgui\Core\GlobalFunctionConsumer
 {
 
     /**
@@ -27,30 +27,30 @@ class NethPlatform implements PlatformInterface, Nethgui\Authorization\PolicyEnf
 
     /**
      * Keeps User object acting on host configuration.
-     * @var Nethgui\Client\UserInterface
+     * @var \Nethgui\Client\UserInterface
      */
     private $user;
     private $eventQueue;
 
     /**
-     * @var Nethgui\Log\AbstractLog
+     * @var \Nethgui\Log\AbstractLog
      */
     private $log;
 
     /**
-     * @var Nethgui\Core\GlobalFunctionWrapper
+     * @var \Nethgui\Core\GlobalFunctionWrapper
      */
     private $globalFunctionWrapper;
 
     /**
      * We must specify who acts on host configuration.
-     * @param Nethgui\Client\UserInterface $user
+     * @param \Nethgui\Client\UserInterface $user
      */
-    public function __construct(Nethgui\Client\UserInterface $user)
+    public function __construct(\Nethgui\Client\UserInterface $user)
     {
         $this->user = $user;
         $this->eventQueue = array();
-        $this->log = new Nethgui\Log\Syslog();
+        $this->log = new \Nethgui\Log\Syslog();
     }
 
     /**
@@ -75,9 +75,9 @@ class NethPlatform implements PlatformInterface, Nethgui\Authorization\PolicyEnf
         $serializer = $this->getSerializer($database, $key, $prop);
 
         if (is_null($separator)) {
-            $adapter = new Nethgui\Adapter\ScalarAdapter($serializer);
+            $adapter = new \Nethgui\Adapter\ScalarAdapter($serializer);
         } else {
-            $adapter = new Nethgui\Adapter\ArrayAdapter($separator, $serializer);
+            $adapter = new \Nethgui\Adapter\ArrayAdapter($separator, $serializer);
         }
 
         return $adapter;
@@ -93,7 +93,7 @@ class NethPlatform implements PlatformInterface, Nethgui\Authorization\PolicyEnf
             $serializers[] = call_user_func_array(array($this, 'getSerializer'), $serializerSpec);
         }
 
-        $adapter = new Nethgui\Adapter\MultipleAdapter($readCallback, $writeCallback, $serializers);
+        $adapter = new \Nethgui\Adapter\MultipleAdapter($readCallback, $writeCallback, $serializers);
 
         return $adapter;
     }
@@ -101,12 +101,12 @@ class NethPlatform implements PlatformInterface, Nethgui\Authorization\PolicyEnf
     public function getTableAdapter($database, $typeOrKey, $filterOrProp = NULL, $separators = NULL)
     {
         if (is_null($separators)) {
-            return new Nethgui\Adapter\TableAdapter($this->getDatabase($database), $typeOrKey, $filterOrProp);
+            return new \Nethgui\Adapter\TableAdapter($this->getDatabase($database), $typeOrKey, $filterOrProp);
         }
 
         $innerAdapter = $this->getIdentityAdapter($database, $typeOrKey, $filterOrProp, $separators[0]);
 
-        return new Nethgui\Adapter\TabularValueAdapter($innerAdapter, $separators[1]);
+        return new \Nethgui\Adapter\TabularValueAdapter($innerAdapter, $separators[1]);
     }
 
     /**
@@ -114,17 +114,17 @@ class NethPlatform implements PlatformInterface, Nethgui\Authorization\PolicyEnf
      * @param string $database
      * @param string $key
      * @param string $prop
-     * @return Nethgui\Serializer\SerializerInterface
+     * @return \Nethgui\Serializer\SerializerInterface
      */
     private function getSerializer($database, $key, $prop = NULL)
     {
         if ($database instanceof ArrayAccess) {
-            $serializer = new Nethgui\Serializer\ArrayAccessSerializer($database, $key, $prop);
+            $serializer = new \Nethgui\Serializer\ArrayAccessSerializer($database, $key, $prop);
         } elseif (is_string($database)) {
             if (is_null($prop)) {
-                $serializer = new Nethgui\Serializer\KeySerializer($this->getDatabase($database), $key);
+                $serializer = new \Nethgui\Serializer\KeySerializer($this->getDatabase($database), $key);
             } else {
-                $serializer = new Nethgui\Serializer\PropSerializer($this->getDatabase($database), $key, $prop);
+                $serializer = new \Nethgui\Serializer\PropSerializer($this->getDatabase($database), $key, $prop);
             }
         }
 
@@ -227,7 +227,7 @@ class NethPlatform implements PlatformInterface, Nethgui\Authorization\PolicyEnf
         return $this->policyDecisionPoint;
     }
 
-    public function setPolicyDecisionPoint(Nethgui\Authorization\PolicyDecisionPointInterface $pdp)
+    public function setPolicyDecisionPoint(\Nethgui\Authorization\PolicyDecisionPointInterface $pdp)
     {
         $this->policyDecisionPoint = $pdp;
     }
@@ -253,7 +253,7 @@ class NethPlatform implements PlatformInterface, Nethgui\Authorization\PolicyEnf
         return $this->log;
     }
 
-    public function setLog(Nethgui\Log\AbstractLog $log)
+    public function setLog(\Nethgui\Log\AbstractLog $log)
     {
         $this->log = $log;
     }
@@ -268,7 +268,7 @@ class NethPlatform implements PlatformInterface, Nethgui\Authorization\PolicyEnf
         return 'YYYY-mm-dd';
     }
 
-    public function setGlobalFunctionWrapper(Nethgui\Core\GlobalFunctionWrapper $object)
+    public function setGlobalFunctionWrapper(\Nethgui\Core\GlobalFunctionWrapper $object)
     {
         $this->globalFunctionWrapper = $object;
     }

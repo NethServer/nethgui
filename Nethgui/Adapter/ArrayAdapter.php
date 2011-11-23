@@ -33,11 +33,11 @@ class ArrayAdapter implements AdapterInterface, ArrayAccess, IteratorAggregate, 
     private $data;
     /**
      *
-     * @var Nethgui\Serializer\SerializerInterface
+     * @var \Nethgui\Serializer\SerializerInterface
      */
     private $serializer;
 
-    public function __construct($separator, Nethgui\Serializer\SerializerInterface $serializer)
+    public function __construct($separator, \Nethgui\Serializer\SerializerInterface $serializer)
     {
         $this->separator = $separator;
         $this->serializer = $serializer;
@@ -63,7 +63,7 @@ class ArrayAdapter implements AdapterInterface, ArrayAccess, IteratorAggregate, 
         }
         
         if ( ! is_array($value) ) {
-            throw new Nethgui\Exception\Adapter('Invalid data type. Expected `array` or `EMPTY`, was ' . gettype($value));
+            throw new \Nethgui\Exception\Adapter('Invalid data type. Expected `array` or `EMPTY`, was ' . gettype($value));
         }
 
         if (is_null($this->modified)) {

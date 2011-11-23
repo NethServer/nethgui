@@ -18,10 +18,10 @@ namespace Nethgui\Module;
  * @see Table\Read
  * @package Module
  */
-class TabsController extends Nethgui\Core\Module\Controller
+class TabsController extends \Nethgui\Core\Module\Controller
 {
 
-    public function renderDefault(Nethgui\Renderer\Abstract $view)
+    public function renderDefault(\Nethgui\Renderer\Abstract $view)
     {
         $container = $view->tabs()
             ->setAttribute('class', 'TabsController')

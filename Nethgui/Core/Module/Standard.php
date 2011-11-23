@@ -15,7 +15,7 @@ namespace Nethgui\Core\Module;
  * @package Core
  * @subpackage Module
  */
-abstract class Standard extends Abstract implements Nethgui\Core\RequestHandlerInterface, Nethgui\System\EventObserverInterface
+abstract class Standard extends Abstract implements \Nethgui\Core\RequestHandlerInterface, \Nethgui\System\EventObserverInterface
 {
     /**
      * A valid service status is a 'disabled' or 'enabled' string.
@@ -140,7 +140,7 @@ abstract class Standard extends Abstract implements Nethgui\Core\RequestHandlerI
 
     /**
      * This collection holds the parameter values as primitive datatype or adapter objects.
-     * @var Nethgui\Core\ParameterSet
+     * @var \Nethgui\Core\ParameterSet
      */
     protected $parameters;
 
@@ -170,7 +170,7 @@ abstract class Standard extends Abstract implements Nethgui\Core\RequestHandlerI
 
     /**
      *
-     * @var Nethgui\Core\RequestInterface
+     * @var \Nethgui\Core\RequestInterface
      */
     private $request;
 
@@ -180,7 +180,7 @@ abstract class Standard extends Abstract implements Nethgui\Core\RequestHandlerI
     public function __construct($identifier = NULL)
     {
         parent::__construct($identifier);
-        $this->parameters = new Nethgui\Core\ParameterSet();
+        $this->parameters = new \Nethgui\Core\ParameterSet();
         $this->autosave = TRUE;
     }
 
@@ -197,8 +197,8 @@ abstract class Standard extends Abstract implements Nethgui\Core\RequestHandlerI
      * Host Configuration link is available after initialization only: don't
      * call in class constructor in this case!
      *
-     * @see Nethgui\System\PlatformInterface::getIdentityAdapter()
-     * @see Nethgui\System\PlatformInterface::getMapAdapter()
+     * @see \Nethgui\System\PlatformInterface::getIdentityAdapter()
+     * @see \Nethgui\System\PlatformInterface::getMapAdapter()
      *
      * @param string $parameterName The name of the parameter
      * @param mixed $validator Optional - A regular expression catching the correct value format OR An constant-integer corresponding to a predefined validator OR boolean FALSE for a readonly parameter
@@ -215,16 +215,16 @@ abstract class Standard extends Abstract implements Nethgui\Core\RequestHandlerI
         }
 
         // At this point $validator MUST be an object implementing the right interface
-        if ($validator instanceof Nethgui\Core\ValidatorInterface) {
+        if ($validator instanceof \Nethgui\Core\ValidatorInterface) {
             $this->validators[$parameterName] = $validator;
         } else {
-            throw new Nethgui\Exception\Validation("Invalid validator value for parameter `" . $parameterName . '` in module `' . get_class($this) . '`.');
+            throw new \Nethgui\Exception\Validation("Invalid validator value for parameter `" . $parameterName . '` in module `' . get_class($this) . '`.');
         }
 
         if (is_callable($valueProvider)) {
             // Create a read-only Map Adapter using $valueProvider as read-callback
             $this->parameters->register($this->getPlatform()->getMapAdapter($valueProvider, NULL, array()), $parameterName);
-        } elseif ($valueProvider instanceof Nethgui\Adapter\AdapterInterface) {
+        } elseif ($valueProvider instanceof \Nethgui\Adapter\AdapterInterface) {
             $this->parameters->register($valueProvider, $parameterName);
         } elseif (is_array($valueProvider)) {
             $this->parameters[$parameterName] = $this->getAdapterForParameter($parameterName, $valueProvider);
@@ -244,7 +244,7 @@ abstract class Standard extends Abstract implements Nethgui\Core\RequestHandlerI
      * @see signalAllEventsFinally()
      * @param string $eventName
      * @param array $eventArgs Arguments to the event. You can pass a callback function as argument provider. The callback will be invoked with the event name as first argument.
-     * @param Nethgui\System\EventObserverInterface $observer Optional
+     * @param \Nethgui\System\EventObserverInterface $observer Optional
      */
     protected function requireEvent($eventName, $eventArgs = array(), $observer = NULL)
     {
@@ -264,10 +264,10 @@ abstract class Standard extends Abstract implements Nethgui\Core\RequestHandlerI
         }
 
         if ($exitStatus === FALSE) {
-            $type = Nethgui\Client\DialogBox::NOTIFY_ERROR;
+            $type = \Nethgui\Client\DialogBox::NOTIFY_ERROR;
             $messageTemplate = $eventName . '_failure';
         } else {
-            $type = Nethgui\Client\DialogBox::NOTIFY_SUCCESS;
+            $type = \Nethgui\Client\DialogBox::NOTIFY_SUCCESS;
             $messageTemplate = $eventName . '_success';
         }
 
@@ -280,8 +280,8 @@ abstract class Standard extends Abstract implements Nethgui\Core\RequestHandlerI
      * This method receives the same arguments given to notifyEventCompletion()
      * and should return the action definitions to display a dialog box.
      *
-     * @see Nethgui\System\EventObserverInterface::notifyEventCompletion
-     * @see Nethgui\Client\DialogBox
+     * @see \Nethgui\System\EventObserverInterface::notifyEventCompletion
+     * @see \Nethgui\Client\DialogBox
      * @param string $eventName
      * @param array $args
      * @param boolean $exitStatus
@@ -382,7 +382,7 @@ abstract class Standard extends Abstract implements Nethgui\Core\RequestHandlerI
     }
 
     /**     
-     * @return Nethgui\System\Validator
+     * @return \Nethgui\System\Validator
      */
     protected function createValidator()
     {
@@ -392,7 +392,7 @@ abstract class Standard extends Abstract implements Nethgui\Core\RequestHandlerI
     /**
      * Helps in creation of complex adapters.
      * @param array|callable $args
-     * @return Nethgui\Adapter\AdapterInterface
+     * @return \Nethgui\Adapter\AdapterInterface
      */
     private function getAdapterForParameter($parameterName, $args)
     {
@@ -433,7 +433,7 @@ abstract class Standard extends Abstract implements Nethgui\Core\RequestHandlerI
         return $adapterObject;
     }
 
-    public function bind(Nethgui\Core\RequestInterface $request)
+    public function bind(\Nethgui\Core\RequestInterface $request)
     {
         $this->request = $request;
         foreach ($this->parameters->getKeys() as $parameterName) {
@@ -443,7 +443,7 @@ abstract class Standard extends Abstract implements Nethgui\Core\RequestHandlerI
         }
     }
 
-    public function validate(Nethgui\Core\ValidationReportInterface $report)
+    public function validate(\Nethgui\Core\ValidationReportInterface $report)
     {
         foreach ($this->parameters->getKeys() as $parameterName) {
             if ( ! $this->getRequest()->hasParameter($parameterName)) {
@@ -451,14 +451,14 @@ abstract class Standard extends Abstract implements Nethgui\Core\RequestHandlerI
             }
 
             if ( ! isset($this->validators[$parameterName])) {
-                throw new Nethgui\Exception\Validation("Do not know how to validate `" . $parameterName . "`");
+                throw new \Nethgui\Exception\Validation("Do not know how to validate `" . $parameterName . "`");
             }
 
             $validator = $this->validators[$parameterName];
 
             $isValid = $validator->evaluate($this->parameters[$parameterName]);
             if ($isValid !== TRUE) {
-                $report->addValidationError(new Nethgui\Client\ModuleSurrogate($this), $parameterName, $validator);
+                $report->addValidationError(new \Nethgui\Client\ModuleSurrogate($this), $parameterName, $validator);
                 $this->invalidParameters[] = $parameterName;
             }
         }
@@ -477,7 +477,7 @@ abstract class Standard extends Abstract implements Nethgui\Core\RequestHandlerI
         }
     }
 
-    public function prepareView(Nethgui\Core\ViewInterface $view, $mode)
+    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
         $view->copyFrom($this->parameters);
@@ -488,7 +488,7 @@ abstract class Standard extends Abstract implements Nethgui\Core\RequestHandlerI
 
     /**
      *
-     * @return Nethgui\Core\RequestInterface
+     * @return \Nethgui\Core\RequestInterface
      */
     protected function getRequest()
     {

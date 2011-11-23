@@ -13,7 +13,7 @@ namespace Nethgui\System;
  * @ignore
  * @package System
  */
-class Process implements ProcessInterface, Nethgui\Core\GlobalFunctionConsumer
+class Process implements ProcessInterface, \Nethgui\Core\GlobalFunctionConsumer
 {
 
     /**
@@ -45,13 +45,13 @@ class Process implements ProcessInterface, Nethgui\Core\GlobalFunctionConsumer
 
     /**
      *
-     * @var Nethgui\Core\GlobalFunctionWrapper
+     * @var \Nethgui\Core\GlobalFunctionWrapper
      */
     private $globalFunctionWrapper;
 
     public function __construct($command, $arguments = array())
     {
-        $this->globalFunctionWrapper = new Nethgui\Core\GlobalFunctionWrapper();
+        $this->globalFunctionWrapper = new \Nethgui\Core\GlobalFunctionWrapper();
         $this->arguments = $arguments;
         $this->command = $command;
         $this->state = self::STATE_NEW;
@@ -127,7 +127,7 @@ class Process implements ProcessInterface, Nethgui\Core\GlobalFunctionConsumer
         return $this->state;
     }
 
-    public function setGlobalFunctionWrapper(Nethgui\Core\GlobalFunctionWrapper $object)
+    public function setGlobalFunctionWrapper(\Nethgui\Core\GlobalFunctionWrapper $object)
     {
         $this->globalFunctionWrapper = $object;
     }

@@ -15,7 +15,7 @@ class Test\Tool\ModuleTestEnvironment
     private $request = NULL;
     private $arguments = NULL;
     private $expectedView = NULL;
-    private $viewMode = Nethgui\Core\ModuleInterface::VIEW_SERVER;
+    private $viewMode = \Nethgui\Core\ModuleInterface::VIEW_SERVER;
     private $databases = array();
     private $events = array();
     private $shellCommands = array();

@@ -21,7 +21,7 @@ class Help extends Abstract
 
         if ($whatToDo == 'inset') {
             $renderer = $this->view->offsetGet($this->getAttribute('name'));
-            if ($renderer instanceof Nethgui\Renderer\Help) {
+            if ($renderer instanceof \Nethgui\Renderer\Help) {
                 $renderer->nestingLevel = $this->view->nestingLevel + 1;
             }
 

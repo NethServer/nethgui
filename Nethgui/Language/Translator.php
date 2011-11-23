@@ -10,11 +10,11 @@ namespace Nethgui\Language;
  * @ignore
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class Translator implements Nethgui\Core\TranslatorInterface, Nethgui\Core\GlobalFunctionConsumer, Nethgui\Log\LogConsumerInterface
+class Translator implements \Nethgui\Core\TranslatorInterface, \Nethgui\Core\GlobalFunctionConsumer, \Nethgui\Log\LogConsumerInterface
 {
 
     /**
-     * @var Nethgui\Core\GlobalFunctionWrapper
+     * @var \Nethgui\Core\GlobalFunctionWrapper
      */
     private $globalFunctionWrapper;
     
@@ -28,19 +28,19 @@ class Translator implements Nethgui\Core\TranslatorInterface, Nethgui\Core\Globa
 
     /**
      *
-     * @var Nethgui\Client\UserInterface
+     * @var \Nethgui\Client\UserInterface
      */
     private $user;
 
     /**
      * 
-     * @param Nethgui\Client\UserInterface $user
-     * @param Nethgui\Log\AbstractLog $log
+     * @param \Nethgui\Client\UserInterface $user
+     * @param \Nethgui\Log\AbstractLog $log
      */
-    public function __construct(Nethgui\Client\UserInterface $user, Nethgui\Log\AbstractLog $log)
+    public function __construct(\Nethgui\Client\UserInterface $user, \Nethgui\Log\AbstractLog $log)
     {
-        $this->globalFunctionWrapper = new Nethgui\Core\GlobalFunctionWrapper();        
-        $this->languageCatalogStack = array('Nethgui\Framework', NETHGUI_APPLICATION);
+        $this->globalFunctionWrapper = new \Nethgui\Core\GlobalFunctionWrapper();        
+        $this->languageCatalogStack = array('\Nethgui\Framework', NETHGUI_APPLICATION);
         $this->log = $log;
         $this->user = $user;
     }
@@ -53,13 +53,13 @@ class Translator implements Nethgui\Core\TranslatorInterface, Nethgui\Core\Globa
      *
      * @see strtr()
      *
-     * @param Nethgui\Core\ModuleInterface $module
+     * @param \Nethgui\Core\ModuleInterface $module
      * @param string $string The string to be translated
      * @param array $args Values substituted in output string.
      * @param string $languageCode The language code
      * @return string
      */
-    public function translate(Nethgui\Core\ModuleInterface $module, $string, $args = array(), $languageCode = NULL)
+    public function translate(\Nethgui\Core\ModuleInterface $module, $string, $args = array(), $languageCode = NULL)
     {
         if ( ! is_string($string)) {
             throw new InvalidArgumentException(sprintf("translate(): unexpected `%s` type!", gettype($string)));
@@ -170,12 +170,12 @@ class Translator implements Nethgui\Core\TranslatorInterface, Nethgui\Core\Globa
     }
 
 
-    private function extractLanguageCatalogStack(Nethgui\Core\ModuleInterface $module)
+    private function extractLanguageCatalogStack(\Nethgui\Core\ModuleInterface $module)
     {
         $languageCatalogList = array();
 
         do {
-            if ($module instanceof Nethgui\Core\LanguageCatalogProvider) {
+            if ($module instanceof \Nethgui\Core\LanguageCatalogProvider) {
                 $catalog = $module->getLanguageCatalog();
                 if (is_array($catalog)) {
                     $languageCatalogList = array_merge($languageCatalogList, $catalog);
@@ -190,7 +190,7 @@ class Translator implements Nethgui\Core\TranslatorInterface, Nethgui\Core\Globa
         return $languageCatalogList;
     }
 
-    public function setGlobalFunctionWrapper(Nethgui\Core\GlobalFunctionWrapper $object)
+    public function setGlobalFunctionWrapper(\Nethgui\Core\GlobalFunctionWrapper $object)
     {
         $this->globalFunctionWrapper = $object;
     }
@@ -200,7 +200,7 @@ class Translator implements Nethgui\Core\TranslatorInterface, Nethgui\Core\Globa
         return $this->log;
     }
 
-    public function setLog(Nethgui\Log\AbstractLog $log)
+    public function setLog(\Nethgui\Log\AbstractLog $log)
     {
         $this->log = $log;
         return $this;
