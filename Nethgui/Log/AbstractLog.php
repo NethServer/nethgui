@@ -4,10 +4,12 @@
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
+namespace Nethgui\Log;
+
 /**
  * @package Log
  */
-abstract class Nethgui\Log\AbstractLog implements Nethgui\Core\GlobalFunctionConsumer
+abstract class AbstractLog implements Nethgui\Core\GlobalFunctionConsumer
 {
 
     /**

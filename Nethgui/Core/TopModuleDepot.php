@@ -3,6 +3,8 @@
  * @package Core
  */
 
+namespace Nethgui\Core;
+
 /**
  * TopModuleDepot
  *
@@ -15,7 +17,7 @@
  *
  * @package Core
  */
-class Nethgui\Core\TopModuleDepot implements Nethgui\Core\ModuleSetInterface, Nethgui\Authorization\PolicyEnforcementPointInterface, Nethgui\Log\LogConsumerInterface
+class TopModuleDepot implements ModuleSetInterface, Nethgui\Authorization\PolicyEnforcementPointInterface, Nethgui\Log\LogConsumerInterface
 {
 
     /**
@@ -69,7 +71,7 @@ class Nethgui\Core\TopModuleDepot implements Nethgui\Core\ModuleSetInterface, Ne
                 $classReflector = new ReflectionClass($className);
 
                 if ($classReflector->isInstantiable()
-                    && $classReflector->implementsInterface("Nethgui\Core\TopModuleInterface")
+                    && $classReflector->implementsInterface("TopModuleInterface")
                 ) {
                     $module = $this->createModule($className);
                     $this->registerModule($module);
@@ -90,8 +92,8 @@ class Nethgui\Core\TopModuleDepot implements Nethgui\Core\ModuleSetInterface, Ne
     {
         $module = new $className();
 
-        if ( ! $module instanceof Nethgui\Core\ModuleInterface) {
-            throw new Exception("Class `{$className}` must implement Nethgui\Core\ModuleInterface");
+        if ( ! $module instanceof ModuleInterface) {
+            throw new Exception("Class `{$className}` must implement ModuleInterface");
         }
 
         if (is_null($module->getIdentifier())) {
@@ -110,9 +112,9 @@ class Nethgui\Core\TopModuleDepot implements Nethgui\Core\ModuleSetInterface, Ne
     /**
      * Adds $module to this set. Each member of this set
      * shares the same Policy Decision Point.
-     * @param Nethgui\Core\ModuleInterface $module The module to be attached to this set.
+     * @param ModuleInterface $module The module to be attached to this set.
      */
-    public function registerModule(Nethgui\Core\ModuleInterface $module)
+    public function registerModule(ModuleInterface $module)
     {
         if (isset($this->modules[$module->getIdentifier()])) {
             throw new Exception("Module id `" . $module->getIdentifier() . "` is already registered.");
@@ -120,7 +122,7 @@ class Nethgui\Core\TopModuleDepot implements Nethgui\Core\ModuleSetInterface, Ne
 
         $this->modules[$module->getIdentifier()] = $module;
 
-        if ($module instanceof Nethgui\Core\TopModuleInterface) {
+        if ($module instanceof TopModuleInterface) {
             $parentId = $module->getParentMenuIdentifier();
 
             # if category is NULL, create the category
@@ -174,11 +176,11 @@ class Nethgui\Core\TopModuleDepot implements Nethgui\Core\ModuleSetInterface, Ne
                 $ret[$cat] = array_values($this->menu[$cat]);
             }
         }
-        return new Nethgui\Core\ModuleMenuIterator($this, '__ROOT__', $ret);
+        return new ModuleMenuIterator($this, '__ROOT__', $ret);
     }
 
     /**
-     * @return Nethgui\Core\ModuleInterface
+     * @return ModuleInterface
      */
     public function findModule($moduleIdentifier)
     {

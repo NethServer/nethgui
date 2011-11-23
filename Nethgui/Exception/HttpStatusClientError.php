@@ -3,10 +3,12 @@
  * @package Exception
  */
 
+namespace Nethgui\Exception;
+
 /**
  * @package Exception
  */
-class Nethgui\Exception\HttpStatusClientError extends Exception
+class HttpStatusClientError extends Exception
 {
 
 }

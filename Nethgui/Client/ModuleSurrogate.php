@@ -5,15 +5,17 @@
  * @ignore
  */
 
+namespace Nethgui\Client;
+
 /**
  * A Module surrogate is employed to store module informations into the User session,
  * during DialogBox serialization.
  * 
- * @see Nethgui\Client\DialogBox
+ * @see DialogBox
  * @ignore
  * @package Core
  */
-class Nethgui\Client\ModuleSurrogate implements Nethgui\Core\ModuleInterface, Nethgui\Core\LanguageCatalogProvider, Serializable
+class ModuleSurrogate implements Nethgui\Core\ModuleInterface, Nethgui\Core\LanguageCatalogProvider, Serializable
 {
 
     private $info;

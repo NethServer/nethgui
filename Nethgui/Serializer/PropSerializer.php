@@ -3,12 +3,14 @@
  * @package Serializer
  */
 
+namespace Nethgui\Serializer;
+
 /**
  * Transfers a value to/from a database Prop.
  *
  * @package Serializer
  */
-class Nethgui\Serializer\PropSerializer implements Nethgui\Serializer\SerializerInterface
+class PropSerializer implements SerializerInterface
 {
     private $key;
     private $prop;

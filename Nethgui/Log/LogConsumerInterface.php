@@ -4,15 +4,17 @@
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
+namespace Nethgui\Log;
+
 /**
  * @package Log
  */
-interface Nethgui\Log\LogConsumerInterface
+interface LogConsumerInterface
 {
-    public function setLog(Nethgui\Log\AbstractLog $log);
+    public function setLog(AbstractLog $log);
 
     /**
-     * @return Nethgui\Log\AbstractLog
+     * @return AbstractLog
      */
     public function getLog();
 }

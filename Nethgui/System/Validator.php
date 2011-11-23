@@ -3,12 +3,14 @@
  * @package Core
  */
 
+namespace Nethgui\System;
+
 /**
  * 
  * @author Davide Principi <davide.principi@nethesis.it>
  * @package Core
  */
-class Nethgui\System\Validator implements Nethgui\Core\ValidatorInterface
+class Validator implements Nethgui\Core\ValidatorInterface
 {
 
     private $chain = array();
@@ -16,11 +18,11 @@ class Nethgui\System\Validator implements Nethgui\Core\ValidatorInterface
 
     /**
      *
-     * @var Nethgui\System\PlatformInterface
+     * @var PlatformInterface
      */
     private $platform;
 
-    public function __construct(Nethgui\System\PlatformInterface $platform)
+    public function __construct(PlatformInterface $platform)
     {
         $this->platform = $platform;
     }
@@ -33,7 +35,7 @@ class Nethgui\System\Validator implements Nethgui\Core\ValidatorInterface
      */
     public function orValidator(Nethgui\Core\ValidatorInterface $v1, Nethgui\Core\ValidatorInterface $v2)
     {
-        $this->chain[] = new Nethgui\System\OrValidator($v1, $v2);
+        $this->chain[] = new OrValidator($v1, $v2);
         return $this;
     }
 
@@ -263,12 +265,12 @@ class Nethgui\System\Validator implements Nethgui\Core\ValidatorInterface
 
     /**
      * Check if the value is collection of elements satisfying the given validator
-     * @param Nethgui\System\Validator $v Member validator
-     * @return Nethgui\System\Validator 
+     * @param Validator $v Member validator
+     * @return Validator 
      */
-    public function collectionValidator(Nethgui\System\Validator $v)
+    public function collectionValidator(Validator $v)
     {
-        $this->chain[] = new Nethgui\System\CollectionValidator($v);
+        $this->chain[] = new CollectionValidator($v);
         return $this;
     }
 
@@ -587,7 +589,7 @@ class Nethgui\System\Validator implements Nethgui\Core\ValidatorInterface
  * @internal
  * @package Core
  */
-class Nethgui\System\CollectionValidator implements Nethgui\Core\ValidatorInterface
+class CollectionValidator implements Nethgui\Core\ValidatorInterface
 {
 
     /**
@@ -646,9 +648,9 @@ class Nethgui\System\CollectionValidator implements Nethgui\Core\ValidatorInterf
  * @author Davide Principi <davide.principi@nethesis.it>
  * @package Core
  * @ignore
- * @see Nethgui\System\Validator::orValidator()
+ * @see Validator::orValidator()
  */
-class Nethgui\System\OrValidator implements Nethgui\Core\ValidatorInterface
+class OrValidator implements Nethgui\Core\ValidatorInterface
 {
 
     /**

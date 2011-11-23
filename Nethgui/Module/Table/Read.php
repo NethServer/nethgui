@@ -5,15 +5,17 @@
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
+namespace Nethgui\Module\Table;
+
 /**
  * Treats the table read case.
  * 
- * @see Nethgui\Module\Table\Modify
+ * @see Modify
  * @see Nethgui\Module\TableController
  * @package Module
  * @subpackage Table 
  */
-class Nethgui\Module\Table\Read extends Nethgui\Module\Table\Action
+class Read extends Action
 {
 
     /**
@@ -73,7 +75,7 @@ class Nethgui\Module\Table\Read extends Nethgui\Module\Table\Action
         foreach ($tableActions as $tableAction) {
             $action = $tableAction->getIdentifier();
 
-            if ($tableAction instanceof Nethgui\Module\Table\Help) {
+            if ($tableAction instanceof Help) {
                 $button = $view->button('Help', Nethgui\Renderer\WidgetFactoryInterface::BUTTON_HELP);
             } else {
                 $button = $view

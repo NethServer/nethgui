@@ -3,6 +3,8 @@
  * @package Core
  */
 
+namespace Nethgui\Core;
+
 /**
  * Allows forwarding of command execution to another object
  *
@@ -10,12 +12,12 @@
  * @package Core
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-interface Nethgui\Core\CommandReceiverAggregateInterface
+interface CommandReceiverAggregateInterface
 {
     /**
      *
      *
-     * @return Nethgui\Core\CommandReceiverInterface
+     * @return CommandReceiverInterface
      */
     public function getCommandReceiver();
 }

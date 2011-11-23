@@ -4,10 +4,12 @@
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
+namespace Nethgui\Log;
+
 /**
  * @package Log
  */
-class Nethgui\Log\Syslog extends Nethgui\Log\AbstractLog
+class Syslog extends AbstractLog
 {
     public function message($level, $message)
     {

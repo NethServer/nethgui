@@ -3,6 +3,8 @@
  * @package Adapter
  */
 
+namespace Nethgui\Adapter;
+
 
 /**
  * Array adapter maps a PHP array-like interface to a key or prop value
@@ -10,7 +12,7 @@
  *
  * @package Adapter
  */
-class Nethgui\Adapter\ArrayAdapter implements Nethgui\Adapter\AdapterInterface, ArrayAccess, IteratorAggregate, Countable
+class ArrayAdapter implements AdapterInterface, ArrayAccess, IteratorAggregate, Countable
 {
 
     /**

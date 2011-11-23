@@ -6,18 +6,20 @@
  * @subpackage Module
  */
 
+namespace Nethgui\Core\Module;
+
 /**
  * A composition of modules forwards request handling to its parts.
  * 
  * Inheriting classes must define the composition behaviour.
  * 
  *
- * @see Nethgui\Core\Module\Controller
- * @see Nethgui\Core\Module\List
+ * @see Controller
+ * @see List
  * @package Core
  * @subpackage Module
  */
-abstract class Nethgui\Core\Module\Composite extends Nethgui\Core\Module\Abstract implements Nethgui\Core\ModuleCompositeInterface
+abstract class Composite extends Abstract implements Nethgui\Core\ModuleCompositeInterface
 {
 
     private $children = array();

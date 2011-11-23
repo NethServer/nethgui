@@ -4,14 +4,16 @@
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
+namespace Nethgui\Renderer;
+
 /**
  * Transform a view into a string.
  *
- * @see Nethgui\Renderer\WidgetInterface
+ * @see WidgetInterface
  * @see http://en.wikipedia.org/wiki/Decorator_pattern
  * @package Renderer
  */
-abstract class Nethgui\Renderer\Abstract extends Nethgui\Renderer\ReadonlyView
+abstract class Abstract extends ReadonlyView
 {
 
     abstract protected function render();

@@ -6,21 +6,23 @@
  * @package Authorization
  */
 
+namespace Nethgui\Authorization;
+
 /**
  * AccessControlRequestInterface.
  *
- * An Nethgui\Authorization\AccessControlRequestInterface implementing object encapsulates the authorization
+ * An AccessControlRequestInterface implementing object encapsulates the authorization
  * response that can be ``GRANTED`` or ``NOT GRANTED``.
  *
  * @see AccessControlRequestInterface
  * @package Authorization
  */
-interface Nethgui\Authorization\AccessControlResponseInterface
+interface AccessControlResponseInterface
 {
 
     /**
      * Get a reference to the original Request.
-     * @return Nethgui\Authorization\AccessControlRequestInterface The original Request.
+     * @return AccessControlRequestInterface The original Request.
      */
     public function getRequest();
 

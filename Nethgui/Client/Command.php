@@ -4,11 +4,13 @@
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
+namespace Nethgui\Client;
+
 /**
  * @package Client
  * @ignore
  */
-class Nethgui\Client\Command implements Nethgui\Core\CommandInterface
+class Command implements Nethgui\Core\CommandInterface
 {
 
     /**

@@ -5,15 +5,17 @@
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
+namespace Nethgui\Renderer;
+
 /**
- * Nethgui\Renderer\HttpCommandReceiver
+ * HttpCommandReceiver
  *
  * Implements the command logic as HTTP redirects
  *
  * @package Renderer
  * @ignore
  */
-class Nethgui\Renderer\HttpCommandReceiver implements Nethgui\Core\CommandReceiverInterface, Nethgui\Core\GlobalFunctionConsumer
+class HttpCommandReceiver implements Nethgui\Core\CommandReceiverInterface, Nethgui\Core\GlobalFunctionConsumer
 {
 
     /**

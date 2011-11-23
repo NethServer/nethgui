@@ -3,6 +3,8 @@
  * @package Core
  */
 
+namespace Nethgui\Core;
+
 /**
  * Invoke a Nethgui javascript method on the client-side.
  *
@@ -16,7 +18,7 @@
  * @see http://en.wikipedia.org/wiki/Command_pattern
  * @package Core
  */
-interface Nethgui\Core\CommandInterface
+interface CommandInterface
 {
 
     /**
@@ -33,10 +35,10 @@ interface Nethgui\Core\CommandInterface
     /**
      * Set the command receiver, the object where the command is executed
      *
-     * @param object An object implementing either Nethgui\Core\CommandReceiverInterface or Nethgui\Client\CommandReceiverAggregateInterface
-     * @see Nethgui\Core\CommandReceiverInterface
+     * @param object An object implementing either CommandReceiverInterface or Nethgui\Client\CommandReceiverAggregateInterface
+     * @see CommandReceiverInterface
      * @see Nethgui\Client\CommandReceiverAggregateInterface
-     * @return Nethgui\Core\CommandInterface
+     * @return CommandInterface
      */
     public function setReceiver($receiver);
 

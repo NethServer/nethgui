@@ -6,14 +6,16 @@
  * @subpackage Module
  */
 
+namespace Nethgui\Core\Module;
+
 /**
  * Describe the behaviour to be applied in the user interface
  *
- * @see Nethgui\Core\Module\Controller
+ * @see Controller
  * @package Core
  * @subpackage Module
  */
-interface Nethgui\Core\Module\DefaultUiStateInterface
+interface DefaultUiStateInterface
 {
     const STYLE_DIALOG = 0x1;
     const STYLE_ENABLED = 0x2;

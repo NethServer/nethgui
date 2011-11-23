@@ -3,10 +3,12 @@
  * @package Core
  */
 
+namespace Nethgui\Core;
+
 /**
  * @package Core
  */
-interface Nethgui\Core\CommandReceiverInterface
+interface CommandReceiverInterface
 {
     /**
      * @param string $name

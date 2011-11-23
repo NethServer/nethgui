@@ -6,12 +6,14 @@
  * @package Authorization
  */
 
+namespace Nethgui\Authorization;
+
 /**
  * TODO: describe class
  *
  * @package Authorization
  */
-final class Nethgui\Authorization\AccessControlRequest implements Nethgui\Authorization\AccessControlRequestInterface
+final class AccessControlRequest implements AccessControlRequestInterface
 {
 
     public function __construct(Nethgui\Client\UserInterface $subject, $resource, $action)

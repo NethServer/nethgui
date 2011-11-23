@@ -4,6 +4,8 @@
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
+namespace Nethgui\Client;
+
 /**
  * A Dialog Box object shows a message to the User.
  * 
@@ -17,7 +19,7 @@
  * 
  * @package Client
  */
-class Nethgui\Client\DialogBox implements Serializable
+class DialogBox implements Serializable
 {
     const NOTIFY_SUCCESS = 0x0;
     const NOTIFY_WARNING = 0x1;
@@ -35,8 +37,8 @@ class Nethgui\Client\DialogBox implements Serializable
 
     public function __construct(Nethgui\Core\ModuleInterface $module, $message, $actions = array(), $type = self::NOTIFY_SUCCESS)
     {
-        if ( ! $module instanceof Nethgui\Client\ModuleSurrogate) {
-            $module = new Nethgui\Client\ModuleSurrogate($module);
+        if ( ! $module instanceof ModuleSurrogate) {
+            $module = new ModuleSurrogate($module);
         }
 
         // Sanitize the $message parameter: must be a couple <string, params[]>

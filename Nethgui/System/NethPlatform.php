@@ -4,12 +4,14 @@
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
+namespace Nethgui\System;
+
 /**
  * Implementation of the platform interface for Nethesis products
  *
  * @package System
  */
-class Nethgui\System\NethPlatform implements Nethgui\System\PlatformInterface, Nethgui\Authorization\PolicyEnforcementPointInterface, Nethgui\Log\LogConsumerInterface, Nethgui\Core\GlobalFunctionConsumer
+class NethPlatform implements PlatformInterface, Nethgui\Authorization\PolicyEnforcementPointInterface, Nethgui\Log\LogConsumerInterface, Nethgui\Core\GlobalFunctionConsumer
 {
 
     /**
@@ -54,12 +56,12 @@ class Nethgui\System\NethPlatform implements Nethgui\System\PlatformInterface, N
     /**
      *
      * @param string $database SME database configuration name
-     * @return Nethgui\System\ConfigurationDatabase
+     * @return ConfigurationDatabase
      */
     public function getDatabase($database)
     {
         if ( ! isset($this->databases[$database])) {
-            $object = new Nethgui\System\ConfigurationDatabase($database, $this->user);
+            $object = new ConfigurationDatabase($database, $this->user);
             $object->setPolicyDecisionPoint($this->getPolicyDecisionPoint());
             $this->databases[$database] = $object;
         }
@@ -136,7 +138,7 @@ class Nethgui\System\NethPlatform implements Nethgui\System\PlatformInterface, N
      *
      * @param string $event Event name
      * @param array $arguments Optional arguments array.
-     * @return Nethgui\System\ProcessInterface
+     * @return ProcessInterface
      */
     public function signalEvent($event, $arguments = array())
     {
@@ -157,7 +159,7 @@ class Nethgui\System\NethPlatform implements Nethgui\System\PlatformInterface, N
             );
         }
 
-        if ($observer instanceof Nethgui\System\EventObserverInterface) {
+        if ($observer instanceof EventObserverInterface) {
             $this->eventQueue[$eventId]['objs'][] = $observer;
         }
     }
@@ -209,7 +211,7 @@ class Nethgui\System\NethPlatform implements Nethgui\System\PlatformInterface, N
             }
             $exitInfo = $this->signalEvent($eventData['name'], $args);
             foreach ($eventData['objs'] as $observer) {
-                if ($observer instanceof Nethgui\System\EventObserverInterface) {
+                if ($observer instanceof EventObserverInterface) {
                     $observer->notifyEventCompletion($eventData['name'], $args, $exitInfo->getExitStatus() === 0, $exitInfo->getOutput());
                 }
             }
@@ -233,9 +235,9 @@ class Nethgui\System\NethPlatform implements Nethgui\System\PlatformInterface, N
     public function exec($command, $arguments = array(), $detached = FALSE)
     {
         if ($detached) {
-            $commandObject = new Nethgui\System\ProcessDetached($command, $arguments);
+            $commandObject = new ProcessDetached($command, $arguments);
         } else {
-            $commandObject = new Nethgui\System\Process($command, $arguments);
+            $commandObject = new Process($command, $arguments);
         }
 
         if (isset($this->globalFunctionWrapper)) {
@@ -258,7 +260,7 @@ class Nethgui\System\NethPlatform implements Nethgui\System\PlatformInterface, N
 
     public function createValidator()
     {
-        return new Nethgui\System\Validator($this);
+        return new Validator($this);
     }
 
     public function getDateFormat()

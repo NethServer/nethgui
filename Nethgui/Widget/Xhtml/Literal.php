@@ -7,6 +7,8 @@
  * @ignore
  */
 
+namespace Nethgui\Widget\Xhtml;
+
 /**
  * Renders the given literal string, optionally escaping special html characters
  * through PHP htmlspecialchars() function.

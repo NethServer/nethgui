@@ -6,8 +6,10 @@
  * @package Authorization
  */
 
+namespace Nethgui\Authorization;
+
 /**
- * Nethgui\Authorization\PolicyDecisionPointInterface (PDP)
+ * PolicyDecisionPointInterface (PDP)
  *
  * A PDP implementation is responsible for authorizing access requests coming
  * from PEPs (PolicyEnforcementPointInterfaces).
@@ -15,13 +17,13 @@
  * @see PolicyEnforcementPointInterface
  * @package Authorization
  */
-interface Nethgui\Authorization\PolicyDecisionPointInterface
+interface PolicyDecisionPointInterface
 {
 
     /**
      * Checks if $request is satisfiable.
-     * @return Nethgui\Authorization\AccessControlResponseInterface The response to the request.
+     * @return AccessControlResponseInterface The response to the request.
      */
-    public function authorizeRequest(Nethgui\Authorization\AccessControlRequestInterface $request);
+    public function authorizeRequest(AccessControlRequestInterface $request);
 }
 

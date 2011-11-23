@@ -5,17 +5,19 @@
  * @package System
  */
 
+namespace Nethgui\System;
+
 /**
  * Interface to the underlying platform
  *
  * @package System
  */
-interface Nethgui\System\PlatformInterface
+interface PlatformInterface
 {
 
     /**
      * @var string
-     * @return Nethgui\System\ConfigurationDatabase
+     * @return ConfigurationDatabase
      */
     public function getDatabase($database);
 
@@ -72,7 +74,7 @@ interface Nethgui\System\PlatformInterface
      *
      * @param string $event Event name
      * @param array $argv Optional event arguments
-     * @return Nethgui\System\ProcessInterface
+     * @return ProcessInterface
      */
     public function signalEvent($event, $arguments = array());
 
@@ -82,7 +84,7 @@ interface Nethgui\System\PlatformInterface
      * 
      * @param string $event
      * @param array $argv Optional event arguments
-     * @param Nethgui\System\EventObserverInterface $observer Optional
+     * @param EventObserverInterface $observer Optional
      */
     public function signalEventFinally($eventName, $argv = array(), $observer = NULL);
 
@@ -98,14 +100,14 @@ interface Nethgui\System\PlatformInterface
      * @param string $command
      * @param array $arguments Arguments for the command. Will be shell-escaped.
      * @param boolean $detached If set the command is run in detached from the PHP process.
-     * @return Nethgui\System\ProcessInterface
+     * @return ProcessInterface
      */
     public function exec($command, $arguments = array(), $detached = FALSE);
    
     
     /**
      * Create a system validator object
-     * @return Nethgui\System\Validator
+     * @return Validator
      */
     public function createValidator();
 

@@ -3,22 +3,24 @@
  * @package Language
  */
 
+namespace Nethgui\Core;
+
 /**
  * @package Language
  * @ignore
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-interface Nethgui\Core\TranslatorInterface
+interface TranslatorInterface
 {
 
     /**
-     * @param Nethgui\Core\ModuleInterface $module
+     * @param ModuleInterface $module
      * @param string $string
      * @param array $args
      * @param string $languageCode
      * @return string
      */
-    public function translate(Nethgui\Core\ModuleInterface $module, $string, $args = array(), $languageCode = NULL);
+    public function translate(ModuleInterface $module, $string, $args = array(), $languageCode = NULL);
 
     /**
      * Get the default language code

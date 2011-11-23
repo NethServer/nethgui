@@ -3,12 +3,14 @@
  * @package Serializer
  */
 
+namespace Nethgui\Serializer;
+
 /**
  * Transfer a value to/from a database Key.
  *
  * @package Serializer
  */
-class Nethgui\Serializer\KeySerializer implements Nethgui\Serializer\SerializerInterface
+class KeySerializer implements SerializerInterface
 {
 
     private $key;

@@ -4,16 +4,18 @@
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
+namespace Nethgui\Renderer;
+
 
 /**
  * Create Widget objects applying default widget flags
  *
  * The interface methods create and configure widget objects.
  *
- * @see Nethgui\Renderer\WidgetInterface
+ * @see WidgetInterface
  * @package Renderer
  */
-interface Nethgui\Renderer\WidgetFactoryInterface
+interface WidgetFactoryInterface
 {
     const LABEL_NONE = 0x1;
     const LABEL_LEFT = 0x2;
@@ -52,7 +54,7 @@ interface Nethgui\Renderer\WidgetFactoryInterface
     public function getDefaultFlags();
 
     /**
-     * @return Nethgui\Renderer\WidgetFactoryInterface
+     * @return WidgetFactoryInterface
      */
     public function setDefaultFlags($flags);
 
@@ -60,7 +62,7 @@ interface Nethgui\Renderer\WidgetFactoryInterface
      * Include a view element that is a sub-view
      * @param string $name The view member name
      * @param integer $flags Optional {STATE_DISABLED}
-     * @return Nethgui\Renderer\WidgetInterface
+     * @return WidgetInterface
      */
     public function inset($name, $flags = 0);
 
@@ -68,7 +70,7 @@ interface Nethgui\Renderer\WidgetFactoryInterface
      * Create a text input control
      * @param string $name The view member name
      * @param integer $flags Optional {STATE_DISABLED}
-     * @return Nethgui\Renderer\WidgetInterface
+     * @return WidgetInterface
      */
     public function textInput($name, $flags = 0);
 
@@ -77,7 +79,7 @@ interface Nethgui\Renderer\WidgetFactoryInterface
      *
      * @param string $name The view member name to generate the label contents
      * @param integer $flags Optional {STATE_DISABLED}
-     * @return Nethgui\Renderer\WidgetInterface
+     * @return WidgetInterface
      */
     public function textLabel($name, $flags = 0);
 
@@ -87,7 +89,7 @@ interface Nethgui\Renderer\WidgetFactoryInterface
      * @see textLabel()
      * @param string $name OPTIONAL - The view member passed as argument for the "template" attribute.
      * @param integer $flags OPTIONAL - flags
-     * @return Nethgui\Renderer\WidgetInterface
+     * @return WidgetInterface
      */
     public function fieldset($name = NULL, $flags = 0);
 
@@ -103,7 +105,7 @@ interface Nethgui\Renderer\WidgetFactoryInterface
      * Create an hidden control
      * @param string $name The view member name
      * @param integer $flags Optional {STATE_DISABLED}
-     * @return Nethgui\Renderer\WidgetInterface
+     * @return WidgetInterface
      */
     public function hidden($name, $flags = 0);
 
@@ -112,7 +114,7 @@ interface Nethgui\Renderer\WidgetFactoryInterface
      *
      * @param string $name The view member name holding the selected value(s)
      * @param integer $flags
-     * @return Nethgui\Renderer\WidgetInterface
+     * @return WidgetInterface
      */
     public function selector($name, $flags = 0);
 
@@ -120,7 +122,7 @@ interface Nethgui\Renderer\WidgetFactoryInterface
      * Create a button control
      * @param string $name The view member name
      * @param integer $flags Optional - {DIALOG_*, STATE_ENABLED}
-     * @return Nethgui\Renderer\WidgetInterface
+     * @return WidgetInterface
      */
     public function button($name, $flags = 0);
 
@@ -129,7 +131,7 @@ interface Nethgui\Renderer\WidgetFactoryInterface
      * @param string $name The view member name
      * @param string $value The value assigned to the control, when selected.
      * @param integer $flags Optional {STATE_DISABLED, STATE_CHECKED}
-     * @return Nethgui\Renderer\WidgetInterface
+     * @return WidgetInterface
      */
     public function radioButton($name, $value, $flags = 0);
 
@@ -138,7 +140,7 @@ interface Nethgui\Renderer\WidgetFactoryInterface
      * @param string $name The view member name
      * @param string $value The value assigned to the control, when selected.
      * @param integer $flags Optional {STATE_DISABLED, STATE_CHECKED}
-     * @return Nethgui\Renderer\WidgetInterface
+     * @return WidgetInterface
      */
     public function checkBox($name, $value, $flags = 0);
 
@@ -149,7 +151,7 @@ interface Nethgui\Renderer\WidgetFactoryInterface
      * @param string $name
      * @param string $value
      * @param integer $flags
-     * @return Nethgui\Renderer\WidgetInterface
+     * @return WidgetInterface
      */
     public function fieldsetSwitch($name, $value, $flags = 0);
 
@@ -157,7 +159,7 @@ interface Nethgui\Renderer\WidgetFactoryInterface
      * Create a dialog box container.
      *
      * @param int $flags Render flags: {DIALOG_MODAL, DIALOG_EMBEDDED, STATE_DISABLED, DIALOG_SUCCESS, DIALOG_WARNING, DIALOG_ERROR}
-     * @return Nethgui\Renderer\WidgetInterface
+     * @return WidgetInterface
      */
     public function dialog($name, $flags = 0);
 
@@ -165,14 +167,14 @@ interface Nethgui\Renderer\WidgetFactoryInterface
      * Create a tabs container.
      *
      * @param integer $flags {STATE_DISABLED}
-     * @return Nethgui\Renderer\WidgetInterface
+     * @return WidgetInterface
      */
     public function tabs($flags = 0);
 
     /**
      * Create a simple form container.
      * @param integer $flags Optional - {STATE_DISABLED}
-     * @return Nethgui\Renderer\WidgetInterface
+     * @return WidgetInterface
      */
     public function form($flags = 0);
 
@@ -180,7 +182,7 @@ interface Nethgui\Renderer\WidgetFactoryInterface
      * Create a panel container
      *
      * @param integer $flags
-     * @return Nethgui\Renderer\WidgetInterface
+     * @return WidgetInterface
      */
     public function panel($flags = 0);
 
@@ -190,7 +192,7 @@ interface Nethgui\Renderer\WidgetFactoryInterface
      * Add the actual elements invoking the insert() operation of the returned object.
      *
      * @param integer $flags
-     * @return Nethgui\Renderer\WidgetInterface
+     * @return WidgetInterface
      */
     public function elementList($flags = 0);
 
@@ -200,7 +202,7 @@ interface Nethgui\Renderer\WidgetFactoryInterface
      * Add the actual elements invoking the insert() operation of the returned object.
      *
      * @param integer $flags
-     * @return Nethgui\Renderer\WidgetInterface
+     * @return WidgetInterface
      */
     public function buttonList($flags = 0);
 
@@ -209,7 +211,7 @@ interface Nethgui\Renderer\WidgetFactoryInterface
      * Create literal data - helper.
      *
      * @param string|object|Nethgui\Core\ViewInterface $data Can be a string, any object implementing toString() method, or a View.
-     * @return Nethgui\Renderer\WidgetInterface
+     * @return WidgetInterface
      */
     public function literal($data, $flags = 0);
 
@@ -218,7 +220,7 @@ interface Nethgui\Renderer\WidgetFactoryInterface
      *
      * Add the actual columns through the insert() operation of the returned object
      *
-     * @return Nethgui\Renderer\WidgetInterface
+     * @return WidgetInterface
      */
     public function columns();
 
@@ -270,4 +272,4 @@ interface Nethgui\Renderer\WidgetFactoryInterface
 
 }
 
-define('NETHGUI_INHERITABLE_FLAGS', Nethgui\Renderer\WidgetFactoryInterface::STATE_DISABLED | Nethgui\Renderer\WidgetFactoryInterface::LABEL_ABOVE | Nethgui\Renderer\WidgetFactoryInterface::LABEL_LEFT | Nethgui\Renderer\WidgetFactoryInterface::LABEL_RIGHT | Nethgui\Renderer\WidgetFactoryInterface::LABEL_NONE);
+define('NETHGUI_INHERITABLE_FLAGS', WidgetFactoryInterface::STATE_DISABLED | WidgetFactoryInterface::LABEL_ABOVE | WidgetFactoryInterface::LABEL_LEFT | WidgetFactoryInterface::LABEL_RIGHT | WidgetFactoryInterface::LABEL_NONE);

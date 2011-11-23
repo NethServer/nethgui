@@ -5,6 +5,8 @@
  * @package Module
  */
 
+namespace Nethgui\Module;
+
 /**
  * Carries notification messages to the User.
  * 
@@ -12,7 +14,7 @@
  *
  * @package Module
  */
-class Nethgui\Module\NotificationArea extends Nethgui\Core\Module\Standard implements Nethgui\Core\ValidationReportInterface, Nethgui\Core\Module\DefaultUiStateInterface
+class NotificationArea extends Nethgui\Core\Module\Standard implements Nethgui\Core\ValidationReportInterface, Nethgui\Core\Module\DefaultUiStateInterface
 {
 
     private $errors = array();

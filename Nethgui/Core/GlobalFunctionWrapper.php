@@ -4,10 +4,12 @@
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
+namespace Nethgui\Core;
+
 /**
  * @package Core
  */
-class Nethgui\Core\GlobalFunctionWrapper
+class GlobalFunctionWrapper
 {
 
     public function __call($name, $arguments)

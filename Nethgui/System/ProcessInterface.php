@@ -5,13 +5,15 @@
  * @package System
  */
 
+namespace Nethgui\System;
+
 /**
  * Brings the output and exit status of an external command
  *
  * @see exec()
  * @package System
  */
-interface Nethgui\System\ProcessInterface
+interface ProcessInterface
 {
 
     const STATE_NEW = 0;

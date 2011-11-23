@@ -5,6 +5,8 @@
  * @package Module
  */
 
+namespace Nethgui\Module;
+
 /**
  * A Controller for handling a generic table CRUD scenario, and any other
  * action defined on a table.
@@ -12,11 +14,11 @@
  * - Tracks the actions involving a row
  * - Tracks the actions involving the whole table
  *
- * @see Nethgui\Module\Table\Modify
- * @see Nethgui\Module\Table\Read
+ * @see Table\Modify
+ * @see Table\Read
  * @package Module
  */
-class Nethgui\Module\TableController extends Nethgui\Core\Module\Controller 
+class TableController extends Nethgui\Core\Module\Controller 
 {
 
     /**
@@ -50,7 +52,7 @@ class Nethgui\Module\TableController extends Nethgui\Core\Module\Controller
         /*
          *  Create and add the READ action, that displays the table.
          */
-        $this->addChild(new Nethgui\Module\Table\Read('read', $columns));
+        $this->addChild(new Table\Read('read', $columns));
 
         foreach ($rowActions as $actionArguments) {
             $actionObject = $this->createActionObject($actionArguments);
@@ -71,7 +73,7 @@ class Nethgui\Module\TableController extends Nethgui\Core\Module\Controller
          */
         $tableAdapter = call_user_func_array(array($this->getPlatform(), 'getTableAdapter'), $this->tableAdapterArguments);
         foreach ($this->getChildren() as $action) {
-            if ($action instanceof Nethgui\Module\Table\Action
+            if ($action instanceof Table\Action
                 && ! $action->hasTableAdapter())
             {
                 $action->setTableAdapter($tableAdapter);
@@ -136,10 +138,10 @@ class Nethgui\Module\TableController extends Nethgui\Core\Module\Controller
                 $requireEvents = array($requireEvents);
             }
 
-            $actionObject = new Nethgui\Module\Table\Modify($actionName, $parameterSchema, $requireEvents, $viewTemplate);
+            $actionObject = new Table\Modify($actionName, $parameterSchema, $requireEvents, $viewTemplate);
         }
 
-        if ($actionArguments instanceof Nethgui\Module\Table\Action) {
+        if ($actionArguments instanceof Table\Action) {
             if ( ! is_null($tableAdapter))
             {
                 $actionArguments->setTableAdapter($tableAdapter);
@@ -189,7 +191,7 @@ class Nethgui\Module\TableController extends Nethgui\Core\Module\Controller
     /**
      *
      * @param array $createDefaults
-     * @return Nethgui\Module\TableController
+     * @return TableController
      */
     protected function setCreateDefaults($createDefaults)
     {

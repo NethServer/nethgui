@@ -5,13 +5,15 @@
  * @package Core
  */
 
+namespace Nethgui\Core;
+
 /**
  * Each module has a view attacched to it during prepareView operation. A view
  * contains generic elements such as strings, numbers or other (inner) views.
  *
  * @package Core
  */
-interface Nethgui\Core\ViewInterface extends ArrayAccess, IteratorAggregate
+interface ViewInterface extends ArrayAccess, IteratorAggregate
 {
 
     /**
@@ -43,15 +45,15 @@ interface Nethgui\Core\ViewInterface extends ArrayAccess, IteratorAggregate
 
     /**
      * Create a new view object associated to $module
-     * @param Nethgui\Core\ModuleInterface $module The associated $module
+     * @param ModuleInterface $module The associated $module
      * @param boolean Optional If TRUE the returned view is added to the current object with key equal to the module identifier
-     * @return Nethgui\Core\ViewInterface The new view object, of the same type of the actual.
+     * @return ViewInterface The new view object, of the same type of the actual.
      */
-    public function spawnView(Nethgui\Core\ModuleInterface $module, $register = FALSE);
+    public function spawnView(ModuleInterface $module, $register = FALSE);
 
     /**
      * The module associated to this view.
-     * @return Nethgui\Core\ModuleInterface
+     * @return ModuleInterface
      */
     public function getModule();
 
@@ -59,8 +61,8 @@ interface Nethgui\Core\ViewInterface extends ArrayAccess, IteratorAggregate
      * Gets the array of the current module identifier plus all identifiers of
      * the ancestor modules, starting from the root.   
      *
-     * @see Nethgui\Core\ModuleInterface::getParent()
-     * @see Nethgui\Core\ModuleInterface::getIdentifier()
+     * @see ModuleInterface::getParent()
+     * @see ModuleInterface::getIdentifier()
      * @return array
      */
     public function getModulePath();
@@ -114,7 +116,7 @@ interface Nethgui\Core\ViewInterface extends ArrayAccess, IteratorAggregate
      * @param string $value
      * @param array $args
      * @return string
-     * @see Nethgui\Core\TranslatorInterface::translate()
+     * @see TranslatorInterface::translate()
      * @see getTranslator()
      */
     public function translate($message, $args = array());
@@ -123,14 +125,14 @@ interface Nethgui\Core\ViewInterface extends ArrayAccess, IteratorAggregate
      * Access to the object performing string translations
      *
      * @see translate()
-     * @return Nethgui\Core\TranslatorInterface
+     * @return TranslatorInterface
      */
     public function getTranslator();
 
     /**
      * Create command objects through the returned factory class instance
      * 
-     * @return Nethgui\Core\CommandInterface;
+     * @return CommandInterface;
      */
     public function createUiCommand($methodName, $arguments);
 }

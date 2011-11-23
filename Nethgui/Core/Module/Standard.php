@@ -6,6 +6,8 @@
  * @subpackage Module
  */
 
+namespace Nethgui\Core\Module;
+
 /**
  * A Standard Module connects the Configuration Database and the View layer,
  * performing data validation and processing.
@@ -13,7 +15,7 @@
  * @package Core
  * @subpackage Module
  */
-abstract class Nethgui\Core\Module\Standard extends Nethgui\Core\Module\Abstract implements Nethgui\Core\RequestHandlerInterface, Nethgui\System\EventObserverInterface
+abstract class Standard extends Abstract implements Nethgui\Core\RequestHandlerInterface, Nethgui\System\EventObserverInterface
 {
     /**
      * A valid service status is a 'disabled' or 'enabled' string.

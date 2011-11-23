@@ -3,12 +3,14 @@
  * @package Core
  */
 
+namespace Nethgui\Client;
+
 /**
  * @todo describe class
  *
  * @package Core
  */
-class Nethgui\Client\Request implements Nethgui\Core\RequestInterface
+class Request implements Nethgui\Core\RequestInterface
 {
     const CONTENT_TYPE_JSON = 1;
     const CONTENT_TYPE_HTML = 2;
@@ -35,7 +37,7 @@ class Nethgui\Client\Request implements Nethgui\Core\RequestInterface
     private $arguments;
     private $attributes;
 
-    public function __construct(Nethgui\Client\UserInterface $user, $data, $submitted, $arguments, $attributes)
+    public function __construct(UserInterface $user, $data, $submitted, $arguments, $attributes)
     {
         if (is_null($data)) {
             $data = array();

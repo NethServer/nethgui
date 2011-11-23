@@ -4,12 +4,14 @@
  * @subpackage Help
  */
 
+namespace Nethgui\Module\Help;
+
 /**
  * @package Module
  * @subpackage Help
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class Nethgui\Module\Help\Common extends Nethgui\Core\Module\Standard implements Nethgui\Core\GlobalFunctionConsumer
+class Common extends Nethgui\Core\Module\Standard implements Nethgui\Core\GlobalFunctionConsumer
 {
 
     /**

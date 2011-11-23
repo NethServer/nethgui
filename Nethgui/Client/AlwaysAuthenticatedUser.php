@@ -6,13 +6,15 @@
  *
  */
 
+namespace Nethgui\Client;
+
 /**
  * TODO: describe class
  *
  * @deprecated Substitute with the complete implementation in version Phi.
  * @package Core
  */
-class Nethgui\Client\AlwaysAuthenticatedUser implements Nethgui\Client\UserInterface
+class AlwaysAuthenticatedUser implements UserInterface
 {
 
     /**
@@ -107,9 +109,9 @@ class Nethgui\Client\AlwaysAuthenticatedUser implements Nethgui\Client\UserInter
         return isset($this->credentials[$credentialName]);
     }
 
-    public function showDialogBox(Nethgui\Core\ModuleInterface $module, $message, $actions = array(), $type = Nethgui\Client\DialogBox::NOTIFY_SUCCESS)
+    public function showDialogBox(Nethgui\Core\ModuleInterface $module, $message, $actions = array(), $type = DialogBox::NOTIFY_SUCCESS)
     {
-        $dialog = new Nethgui\Client\DialogBox($module, $message, $actions, $type);
+        $dialog = new DialogBox($module, $message, $actions, $type);
 
         if ( ! array_key_exists($dialog->getId(), $this->dialogs))
         {

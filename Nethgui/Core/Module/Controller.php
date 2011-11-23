@@ -5,6 +5,8 @@
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
+namespace Nethgui\Core\Module;
+
 /**
  * A composition of modules, where only one member receives the request handling calls.
  *
@@ -14,11 +16,11 @@
  * 
  * A a top level Controller renders its parts embedded in a FORM container.
  *
- * @see Nethgui\Core\Module\Composite
+ * @see Composite
  * @package Core
  * @subpackage Module
  */
-class Nethgui\Core\Module\Controller extends Nethgui\Core\Module\Composite implements Nethgui\Core\RequestHandlerInterface, Nethgui\Core\Module\DefaultUiStateInterface
+class Controller extends Composite implements Nethgui\Core\RequestHandlerInterface, DefaultUiStateInterface
 {
 
     /**
@@ -180,12 +182,12 @@ class Nethgui\Core\Module\Controller extends Nethgui\Core\Module\Composite imple
     {
         $containerClass = 'Controller';
 
-        if ($this instanceof Nethgui\Core\Module\DefaultUiStateInterface) {
+        if ($this instanceof DefaultUiStateInterface) {
             if ($this->getDefaultUiStyleFlags()
-                & Nethgui\Core\Module\DefaultUiStateInterface::STYLE_CONTAINER_TABLE) {
+                & DefaultUiStateInterface::STYLE_CONTAINER_TABLE) {
                 $containerClass = 'TableController';
             } elseif ($this->getDefaultUiStyleFlags()
-                & Nethgui\Core\Module\DefaultUiStateInterface::STYLE_CONTAINER_TABS) {
+                & DefaultUiStateInterface::STYLE_CONTAINER_TABS) {
                 $containerClass = 'TabsController';
             }
         }
@@ -193,11 +195,11 @@ class Nethgui\Core\Module\Controller extends Nethgui\Core\Module\Composite imple
         $container = $view->panel()->setAttribute('class', $containerClass);
 
         foreach ($this->getChildren() as $index => $module) {
-            if ($module instanceof Nethgui\Core\Module\DefaultUiStateInterface) {
+            if ($module instanceof DefaultUiStateInterface) {
                 $flagEnabled = $module->getDefaultUiStyleFlags()
-                    & Nethgui\Core\Module\DefaultUiStateInterface::STYLE_ENABLED;
+                    & DefaultUiStateInterface::STYLE_ENABLED;
                 if ($module->getDefaultUiStyleFlags()
-                    & Nethgui\Core\Module\DefaultUiStateInterface::STYLE_DIALOG) {
+                    & DefaultUiStateInterface::STYLE_DIALOG) {
                     $widgetClass = 'Dialog';
                 } else {
                     $widgetClass = 'Action';

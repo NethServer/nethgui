@@ -5,6 +5,8 @@
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
+namespace Nethgui\Renderer;
+
 /**
  * Enanches the abstract renderer with the wiget factory interface
  *
@@ -14,7 +16,7 @@
  * @package Renderer
  * @ignore
  */
-class Nethgui\Renderer\Xhtml extends Nethgui\Renderer\Abstract implements Nethgui\Renderer\WidgetFactoryInterface, Nethgui\Core\GlobalFunctionConsumer, Nethgui\Core\CommandReceiverAggregateInterface
+class Xhtml extends Abstract implements WidgetFactoryInterface, Nethgui\Core\GlobalFunctionConsumer, Nethgui\Core\CommandReceiverAggregateInterface
 {
 
     /**
@@ -44,7 +46,7 @@ class Nethgui\Renderer\Xhtml extends Nethgui\Renderer\Abstract implements Nethgu
         parent::__construct($view);
         $this->inheritFlags = $inheritFlags & NETHGUI_INHERITABLE_FLAGS;
         $this->globalFunctionWrapper = new Nethgui\Core\GlobalFunctionWrapper();
-        $this->commandReceiver = new Nethgui\Renderer\HttpCommandReceiver($this, $commandReceiver);
+        $this->commandReceiver = new HttpCommandReceiver($this, $commandReceiver);
     }
 
     public function setGlobalFunctionWrapper(Nethgui\Core\GlobalFunctionWrapper $object)
@@ -193,19 +195,19 @@ class Nethgui\Renderer\Xhtml extends Nethgui\Renderer\Abstract implements Nethgu
 
         $className = 'dialog';
 
-        if ($flags & Nethgui\Renderer\WidgetFactoryInterface::DIALOG_SUCCESS) {
+        if ($flags & WidgetFactoryInterface::DIALOG_SUCCESS) {
             $className .= ' success';
-        } elseif ($flags & Nethgui\Renderer\WidgetFactoryInterface::DIALOG_WARNING) {
+        } elseif ($flags & WidgetFactoryInterface::DIALOG_WARNING) {
             $className .= ' warning';
-        } elseif ($flags & Nethgui\Renderer\WidgetFactoryInterface::DIALOG_ERROR) {
+        } elseif ($flags & WidgetFactoryInterface::DIALOG_ERROR) {
             $className .= ' error';
         }
 
-        if ($flags & Nethgui\Renderer\WidgetFactoryInterface::DIALOG_MODAL) {
+        if ($flags & WidgetFactoryInterface::DIALOG_MODAL) {
             $className .= ' modal';
         }
 
-        if ($flags & Nethgui\Renderer\WidgetFactoryInterface::STATE_DISABLED) {
+        if ($flags & WidgetFactoryInterface::STATE_DISABLED) {
             $className .= ' disabled';
         }
 

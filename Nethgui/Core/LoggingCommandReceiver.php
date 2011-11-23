@@ -1,6 +1,8 @@
 <?php
 
-class Nethgui\Core\LoggingCommandReceiver implements Nethgui\Core\CommandReceiverInterface
+namespace Nethgui\Core;
+
+class LoggingCommandReceiver implements CommandReceiverInterface
 {
 
     public function executeCommand($name, $arguments)

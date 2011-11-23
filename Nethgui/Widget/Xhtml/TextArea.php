@@ -6,6 +6,8 @@
  * @ignore
  */
 
+namespace Nethgui\Widget\Xhtml;
+
 /**
  * This is a multi-line text input field.
  *

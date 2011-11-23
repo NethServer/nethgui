@@ -3,12 +3,14 @@
  * @package Core
  */
 
+namespace Nethgui\Core;
+
 /**
  * @todo Describe class...
  * @package Core
  * @internal
  */
-final class Nethgui\Core\ModuleMenuIterator implements RecursiveIterator
+final class ModuleMenuIterator implements RecursiveIterator
 {
 
     private $elements;
@@ -20,7 +22,7 @@ final class Nethgui\Core\ModuleMenuIterator implements RecursiveIterator
     private $key;
 
 
-    public function __construct(Nethgui\Core\ModuleSetInterface $moduleSet, $pointer, &$elements = array())
+    public function __construct(ModuleSetInterface $moduleSet, $pointer, &$elements = array())
     {
         $this->elements = $elements;
         $this->pointer = $pointer;

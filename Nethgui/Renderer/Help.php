@@ -3,11 +3,13 @@
  * @package Renderer
  */
 
+namespace Nethgui\Renderer;
+
 /**
  *  @author Davide Principi <davide.principi@nethesis.it>
  * @package Renderer
  */
-class Nethgui\Renderer\Help extends Nethgui\Renderer\Xhtml
+class Help extends Xhtml
 {
 
     public $nestingLevel = 1;
@@ -67,7 +69,7 @@ class Nethgui\Renderer\Help extends Nethgui\Renderer\Xhtml
         $view['description'] = $this->getModule()->getDescription();
         $view['fields'] = $fields;
         $view['titleLevel'] = $this->nestingLevel;
-        $headingRenderer = new Nethgui\Renderer\Xhtml($view);
+        $headingRenderer = new Xhtml($view);
 
         return (String) $headingRenderer . $content;
     }

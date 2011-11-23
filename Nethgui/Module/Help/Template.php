@@ -4,12 +4,14 @@
  * @subpackage Help
  */
 
+namespace Nethgui\Module\Help;
+
 /**
  * @package Module
  * @subpackage Help
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class Nethgui\Module\Help\Template extends Nethgui\Module\Help\Common
+class Template extends Common
 {
     public function prepareView(Nethgui\Core\ViewInterface $rootView, $mode)
     {

@@ -3,12 +3,14 @@
  * @package Language
  */
 
+namespace Nethgui\Language;
+
 /**
  * @package Language
  * @ignore
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class Nethgui\Language\Translator implements Nethgui\Core\TranslatorInterface, Nethgui\Core\GlobalFunctionConsumer, Nethgui\Log\LogConsumerInterface
+class Translator implements Nethgui\Core\TranslatorInterface, Nethgui\Core\GlobalFunctionConsumer, Nethgui\Log\LogConsumerInterface
 {
 
     /**

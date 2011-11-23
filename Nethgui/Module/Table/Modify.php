@@ -5,15 +5,17 @@
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
+namespace Nethgui\Module\Table;
+
 /**
  * Processes the table modification actions: create, update, delete
  *
- * @see Nethgui\Module\Table\Read
+ * @see Read
  * @package Module
  * @subpackage Table
  * 
  */
-class Nethgui\Module\Table\Modify extends Nethgui\Module\Table\Action
+class Modify extends Action
 {
     const KEY = 10;
     const FIELD = 11;
@@ -227,7 +229,7 @@ class Nethgui\Module\Table\Modify extends Nethgui\Module\Table\Action
     /**
      * Set the default parameter values in "create" action
      * @param array $defaultValues
-     * @return Nethgui\Module\Table\Modify
+     * @return Modify
      */
     public function setCreateDefaults($defaultValues)
     {

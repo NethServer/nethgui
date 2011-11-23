@@ -6,16 +6,18 @@
  * @package Authorization
  */
 
+namespace Nethgui\Authorization;
+
 /**
  * AccessControlRequestInterface.
  *
- * An Nethgui\Authorization\AccessControlRequestInterface implementing object represents a request
+ * An AccessControlRequestInterface implementing object represents a request
  * originating from a Subject to perform a specific Action on a given Resource.
  *
  * @see AccessControlResponseInterface
  * @package Authorization
  */
-interface Nethgui\Authorization\AccessControlRequestInterface
+interface AccessControlRequestInterface
 {
 
     /**

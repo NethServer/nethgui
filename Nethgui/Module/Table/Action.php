@@ -5,6 +5,8 @@
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
+namespace Nethgui\Module\Table;
+
 /**
  * A Table Action receives a TableAdapter to modify a table
  * It specifies the dialog rendering style.
@@ -13,7 +15,7 @@
  * @subpackage Table
  * 
  */
-class Nethgui\Module\Table\Action extends Nethgui\Core\Module\Standard implements Nethgui\Module\Table\ActionInterface, Nethgui\Core\Module\DefaultUiStateInterface
+class Action extends Nethgui\Core\Module\Standard implements ActionInterface, Nethgui\Core\Module\DefaultUiStateInterface
 {
     /**
      *

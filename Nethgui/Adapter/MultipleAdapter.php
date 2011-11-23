@@ -3,6 +3,8 @@
  * @package Adapter
  */
 
+namespace Nethgui\Adapter;
+
 /**
  * A Multiple adapter maps a scalar value to multiple keys or props through
  * a "reader" and a "writer" callback function.
@@ -16,7 +18,7 @@
  *
  * @package Adapter
  */
-class Nethgui\Adapter\MultipleAdapter implements Nethgui\Adapter\AdapterInterface
+class MultipleAdapter implements AdapterInterface
 {
 
     private $innerAdapters = array();
@@ -44,7 +46,7 @@ class Nethgui\Adapter\MultipleAdapter implements Nethgui\Adapter\AdapterInterfac
                 throw new Nethgui\Exception\Adapter('Invalid serializer instance. A serializer must implement Nethgui\Serializer\SerializerInterface.');
             }
 
-            $this->innerAdapters[] = new Nethgui\Adapter\ScalarAdapter($serializer);
+            $this->innerAdapters[] = new ScalarAdapter($serializer);
         }
     }
 

@@ -4,14 +4,16 @@
  * @ignore
  */
 
+namespace Nethgui\System;
+
 /**
  * Internal class for exec() return value
  *
- * @see Nethgui\System\NethPlatform::exec()
+ * @see NethPlatform::exec()
  * @ignore
  * @package System
  */
-class Nethgui\System\ProcessDetached implements Nethgui\System\ProcessInterface, Nethgui\Core\GlobalFunctionConsumer, Serializable
+class ProcessDetached implements ProcessInterface, Nethgui\Core\GlobalFunctionConsumer, Serializable
 {
 
     /**
@@ -31,7 +33,7 @@ class Nethgui\System\ProcessDetached implements Nethgui\System\ProcessInterface,
 
     /**
      *
-     * @var Nethgui\System\Process
+     * @var Process
      */
     private $innerCommand;
 
@@ -56,7 +58,7 @@ class Nethgui\System\ProcessDetached implements Nethgui\System\ProcessInterface,
     public function __construct($command, $arguments = array())
     {
         $this->initialize();
-        $this->innerCommand = new Nethgui\System\Process($this->shellBackgroundInvocation($command), $arguments);
+        $this->innerCommand = new Process($this->shellBackgroundInvocation($command), $arguments);
         $this->setGlobalFunctionWrapper(new Nethgui\Core\GlobalFunctionWrapper());        
     }
 

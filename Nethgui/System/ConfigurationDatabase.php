@@ -6,6 +6,8 @@
  * @author Giacomo Sanchietti <giacomo.sanchietti@nethesis.it>
  */
 
+namespace Nethgui\System;
+
 /**
  * Read and write parameters into SME DB
  *
@@ -22,7 +24,7 @@
  * 
  * 
  */
-class Nethgui\System\ConfigurationDatabase implements Nethgui\Authorization\PolicyEnforcementPointInterface, Nethgui\Core\GlobalFunctionConsumer
+class ConfigurationDatabase implements Nethgui\Authorization\PolicyEnforcementPointInterface, Nethgui\Core\GlobalFunctionConsumer
 {
 
     /**
@@ -342,7 +344,7 @@ class Nethgui\System\ConfigurationDatabase implements Nethgui\Authorization\Poli
     {
         // prepend the database name and command
         array_unshift($args, $this->db, $command);
-        $p = new Nethgui\System\Process($this->command . ' ${@}', $args);
+        $p = new Process($this->command . ' ${@}', $args);
         if (isset($this->globalFunctionWrapper)) {
             $p->setGlobalFunctionWrapper($this->globalFunctionWrapper);
         }

@@ -4,6 +4,8 @@
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
+namespace Nethgui\Renderer;
+
 /**
  * Help in the creation of the view output.
  *
@@ -24,21 +26,21 @@
  * @package Renderer
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-interface Nethgui\Renderer\WidgetInterface
+interface WidgetInterface
 {
 
     /**
-     * @param Nethgui\Renderer\WidgetInterface $widget Another widget to be nested inside the current object
-     * @return Nethgui\Renderer\WidgetInterface the current object
+     * @param WidgetInterface $widget Another widget to be nested inside the current object
+     * @return WidgetInterface the current object
      */
-    public function insert(Nethgui\Renderer\WidgetInterface $widget);
+    public function insert(WidgetInterface $widget);
 
     /**
      * Set the given $attribute to $value
      *
      * @param string $attribute The attribute name
      * @param mixed $value Any value to be assigned to the attribute
-     * @return Nethgui\Renderer\WidgetInterface the current object
+     * @return WidgetInterface the current object
      */
     public function setAttribute($attribute, $value);
 

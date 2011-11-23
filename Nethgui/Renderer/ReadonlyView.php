@@ -6,6 +6,8 @@
  * @ignore
  */
 
+namespace Nethgui\Renderer;
+
 /**
  * Disable write access operations of a view.
  *
@@ -14,7 +16,7 @@
  * @author Davide Principi <davide.principi@nethesis.it>
  * @ignore
  */
-class Nethgui\Renderer\ReadonlyView implements Nethgui\Core\ViewInterface, Nethgui\Log\LogConsumerInterface
+class ReadonlyView implements Nethgui\Core\ViewInterface, Nethgui\Log\LogConsumerInterface
 {
 
     /**

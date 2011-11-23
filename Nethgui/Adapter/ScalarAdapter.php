@@ -3,13 +3,15 @@
  * @package Adapter
  */
 
+namespace Nethgui\Adapter;
+
 
 /**
  * Scalar adapter maps a scalar value to a key or prop value through a Serializer.
  *
  * @package Adapter
  */
-class Nethgui\Adapter\ScalarAdapter implements Nethgui\Adapter\AdapterInterface
+class ScalarAdapter implements AdapterInterface
 {
 
     protected $modified;

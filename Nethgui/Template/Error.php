@@ -1,3 +1,5 @@
+
+namespace Nethgui\Template;
 <!DOCTYPE HTML>
 <html>
     <head>

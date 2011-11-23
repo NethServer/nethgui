@@ -5,6 +5,8 @@
  * @package Core
  */
 
+namespace Nethgui\Core;
+
 /**
  * Holds primitive and adapter-embedded values.
  * 
@@ -17,7 +19,7 @@
  *
  * @package Core
  */
-class Nethgui\Core\ParameterSet implements Nethgui\Adapter\AdapterAggregationInterface, ArrayAccess, Iterator, Countable
+class ParameterSet implements Nethgui\Adapter\AdapterAggregationInterface, ArrayAccess, Iterator, Countable
 {
 
     private $data = array();

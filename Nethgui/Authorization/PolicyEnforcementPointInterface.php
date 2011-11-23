@@ -6,8 +6,10 @@
  * @package Authorization
  */
 
+namespace Nethgui\Authorization;
+
 /**
- * Nethgui\Authorization\PolicyEnforcementPointInterface (PEP)
+ * PolicyEnforcementPointInterface (PEP)
  *
  * A PEP interface implementing object authorizes access to its resources
  * depending on the responses of another object, implementing
@@ -16,7 +18,7 @@
  * @see PolicyDecisionPointInterface
  * @package Authorization
  */
-interface Nethgui\Authorization\PolicyEnforcementPointInterface
+interface PolicyEnforcementPointInterface
 {
 
     /**
@@ -25,8 +27,8 @@ interface Nethgui\Authorization\PolicyEnforcementPointInterface
     public function getPolicyDecisionPoint();
 
     /**
-     * @param Nethgui\Authorization\PolicyDecisionPointInterface $pdp
+     * @param PolicyDecisionPointInterface $pdp
      */
-    public function setPolicyDecisionPoint(Nethgui\Authorization\PolicyDecisionPointInterface $pdp);
+    public function setPolicyDecisionPoint(PolicyDecisionPointInterface $pdp);
 }
 

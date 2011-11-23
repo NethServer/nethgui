@@ -3,10 +3,12 @@
  * @package Module
  */
 
+namespace Nethgui\Module;
+
 /**
  * @package Module
  */
-class Nethgui\Module\Menu extends Nethgui\Core\Module\Standard
+class Menu extends Nethgui\Core\Module\Standard
 {
 
     /**

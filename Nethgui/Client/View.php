@@ -3,6 +3,8 @@
  * @package Client
  */
 
+namespace Nethgui\Client;
+
 /**
  * A view object holds output data and references to child views.
  * 
@@ -21,7 +23,7 @@
  * @see Nethgui\Core\ModuleInterface::prepareView()
  * @package Client
  */
-class Nethgui\Client\View implements Nethgui\Core\ViewInterface, Nethgui\Log\LogConsumerInterface
+class View implements Nethgui\Core\ViewInterface, Nethgui\Log\LogConsumerInterface
 {
 
     /**
@@ -261,7 +263,7 @@ class Nethgui\Client\View implements Nethgui\Core\ViewInterface, Nethgui\Log\Log
 
     public function createUiCommand($methodName, $arguments)
     {
-        return new Nethgui\Client\Command($methodName, $arguments);
+        return new Command($methodName, $arguments);
     }
 
 }

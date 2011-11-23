@@ -5,11 +5,13 @@
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
+namespace Nethgui\Renderer;
+
 /**
  * @package Renderer
  * @ignore
  */
-class Nethgui\Renderer\Json extends Nethgui\Renderer\Abstract
+class Json extends Abstract
 {
 
     private function deepWalk(&$events, &$commands)
@@ -18,13 +20,13 @@ class Nethgui\Renderer\Json extends Nethgui\Renderer\Abstract
 
             $eventTarget = $this->getClientEventTarget($offset);
             if ($value instanceof Nethgui\Core\ViewInterface) {
-                if ( ! $value instanceof Nethgui\Renderer\Json) {
-                    $value = new Nethgui\Renderer\Json($value);
+                if ( ! $value instanceof Json) {
+                    $value = new Json($value);
                 }
                 $value->deepWalk($events, $commands);
                 continue;
             } elseif ($value instanceof Nethgui\Core\CommandInterface) {
-                $commands[] = $value->setReceiver(new Nethgui\Renderer\JsonReceiver($this->view, $offset))->execute();
+                $commands[] = $value->setReceiver(new JsonReceiver($this->view, $offset))->execute();
                 continue;
             } elseif ($value instanceof Traversable) {
                 $eventData = $this->traversableToArray($value);
@@ -71,7 +73,7 @@ class Nethgui\Renderer\Json extends Nethgui\Renderer\Abstract
 /**
  * @ignore
  */
-class Nethgui\Renderer\JsonReceiver implements Nethgui\Core\CommandReceiverInterface
+class JsonReceiver implements Nethgui\Core\CommandReceiverInterface
 {
 
     private $offset;

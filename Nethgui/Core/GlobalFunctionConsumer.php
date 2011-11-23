@@ -4,10 +4,12 @@
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
+namespace Nethgui\Core;
+
 /**
  * @package Core
  */
-interface Nethgui\Core\GlobalFunctionConsumer
+interface GlobalFunctionConsumer
 {
-    public function setGlobalFunctionWrapper(Nethgui\Core\GlobalFunctionWrapper $object);
+    public function setGlobalFunctionWrapper(GlobalFunctionWrapper $object);
 }

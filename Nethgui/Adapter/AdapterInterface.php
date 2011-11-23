@@ -3,14 +3,16 @@
  * @package Adapter
  */
 
+namespace Nethgui\Adapter;
+
 /**
  * Adapter Interface allows changing a ConfigurationDatabase key or property value
  * through a simplified interface.
  * 
- * @see Nethgui\Adapter\AdapterAggregationInterface
+ * @see AdapterAggregationInterface
  * @package Adapter
  */
-interface Nethgui\Adapter\AdapterInterface
+interface AdapterInterface
 {
 
     /**

@@ -3,7 +3,9 @@
  * @package Exception
  */
 
+namespace Nethgui\Exception;
+
 /**
  * @package Exception
  */
-class Nethgui\Exception\Process extends Exception {}
+class Process extends Exception {}

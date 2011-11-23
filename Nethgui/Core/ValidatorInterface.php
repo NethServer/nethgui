@@ -3,11 +3,13 @@
  * @package Core
  */
 
+namespace Nethgui\Core;
+
 /**
  * @author Davide Principi <davide.principi@nethesis.it>
  * @package Core
  */
-interface Nethgui\Core\ValidatorInterface {
+interface ValidatorInterface {
 
     /**
      * Evaluate if $value is accepted by this validator.

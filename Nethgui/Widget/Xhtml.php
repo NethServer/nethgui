@@ -5,11 +5,13 @@
  * @ignore
  */
 
+namespace Nethgui\Widget;
+
 /**
  * Abstract Xhtml Widget class
  * @ignore
  */
-abstract class Nethgui\Widget\Xhtml extends Nethgui\Widget\Abstract
+abstract class Xhtml extends Abstract
 {
 
     /**

@@ -3,11 +3,13 @@
  * @package Module
  */
 
+namespace Nethgui\Module;
+
 /**
  * @package Module
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class Nethgui\Module\Help extends Nethgui\Core\Module\Controller
+class Help extends Nethgui\Core\Module\Controller
 {
 
     /**

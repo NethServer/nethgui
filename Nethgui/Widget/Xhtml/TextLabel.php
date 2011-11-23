@@ -7,6 +7,8 @@
  * @ignore
  */
 
+namespace Nethgui\Widget\Xhtml;
+
 /**
  * Attributes:
  *

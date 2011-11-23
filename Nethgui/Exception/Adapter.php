@@ -3,7 +3,9 @@
  * @package Exception
  */
 
+namespace Nethgui\Exception;
+
 /**
  * @package Exception
  */
-class Nethgui\Exception\Adapter extends Exception {}
+class Adapter extends Exception {}

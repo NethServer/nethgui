@@ -3,6 +3,8 @@
  * @package Module
  */
 
+namespace Nethgui\Module;
+
 /**
  * World module.
  *
@@ -10,7 +12,7 @@
  *
  * @package Module
  */
-class Nethgui\Module\World extends Nethgui\Core\Module\Abstract
+class World extends Nethgui\Core\Module\Abstract
 {
 
     private $modules = array();

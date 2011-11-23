@@ -3,6 +3,8 @@
  * @package Core
  */
 
+namespace Nethgui\Core;
+
 /**
  * Core module operations
  *
@@ -11,10 +13,10 @@
  * - prepare view parameters
  * - provide module informations
  *
- * @see Nethgui\Core\RequestHandlerInterface
+ * @see RequestHandlerInterface
  * @package Core
  */
-interface Nethgui\Core\ModuleInterface
+interface ModuleInterface
 {
     /**
      * Prepare the server view
@@ -43,9 +45,9 @@ interface Nethgui\Core\ModuleInterface
 
     /**
      * Sets the reference to the parent Module.
-     * @see Nethgui\Core\ModuleCompositeInterface addChild() operation.
+     * @see ModuleCompositeInterface addChild() operation.
      */
-    public function setParent(Nethgui\Core\ModuleInterface $parentModule);
+    public function setParent(ModuleInterface $parentModule);
 
     /**
      * Gets a reference to the parent Module.
@@ -79,13 +81,13 @@ interface Nethgui\Core\ModuleInterface
     /**
      * Prepare view layer data, putting it into $view.
      *
-     * @param Nethgui\Core\ViewInterface $view The view to put the data into
+     * @param ViewInterface $view The view to put the data into
      * @param integer $mode One of VIEW_CLIENT or VIEW_SERVER values
-     * @see Nethgui\Core\ModuleInterface::VIEW_SERVER
-     * @see Nethgui\Core\ModuleInterface::VIEW_CLIENT
-     * @see Nethgui\Core\ViewInterface
+     * @see ModuleInterface::VIEW_SERVER
+     * @see ModuleInterface::VIEW_CLIENT
+     * @see ViewInterface
      */
-    public function prepareView(Nethgui\Core\ViewInterface $view, $mode);
+    public function prepareView(ViewInterface $view, $mode);
 
 
     /**
@@ -106,7 +108,7 @@ interface Nethgui\Core\ModuleInterface
  * @package Core
  *
  */
-interface Nethgui\Core\TopModuleInterface
+interface TopModuleInterface
 {
 
     /**

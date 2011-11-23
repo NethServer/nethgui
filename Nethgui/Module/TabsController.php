@@ -5,6 +5,8 @@
  * @package Module
  */
 
+namespace Nethgui\Module;
+
 /**
  * A Controller for handling a generic table CRUD scenario, and any other
  * action defined on a table.
@@ -12,11 +14,11 @@
  * - Tracks the actions involving a row
  * - Tracks the actions involving the whole table
  *
- * @see Nethgui\Module\Table\Modify
- * @see Nethgui\Module\Table\Read
+ * @see Table\Modify
+ * @see Table\Read
  * @package Module
  */
-class Nethgui\Module\TabsController extends Nethgui\Core\Module\Controller
+class TabsController extends Nethgui\Core\Module\Controller
 {
 
     public function renderDefault(Nethgui\Renderer\Abstract $view)

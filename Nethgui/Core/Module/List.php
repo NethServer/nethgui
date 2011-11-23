@@ -6,16 +6,18 @@
  * @subpackage Module
  */
 
+namespace Nethgui\Core\Module;
+
 /**
  * A List of modules that forwards request handling to its parts.
  * 
  * A List executes no action. It forwards each call to its subparts. 
  *
- * @see Nethgui\Core\Module\Composite
+ * @see Composite
  * @package Core
  * @subpackage Module
  */
-class Nethgui\Core\Module\List extends Nethgui\Core\Module\Composite implements Nethgui\Core\RequestHandlerInterface
+class List extends Composite implements Nethgui\Core\RequestHandlerInterface
 {
     const TEMPLATE_LIST = 1;
 

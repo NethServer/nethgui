@@ -3,7 +3,9 @@
  * @package Exception
  */
 
+namespace Nethgui\Exception;
+
 /**
  * @package Exception
  */
-class Nethgui\Exception\Validator extends Exception {}
+class Validator extends Exception {}

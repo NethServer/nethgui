@@ -3,13 +3,15 @@
  * @package Serializer
  */
 
+namespace Nethgui\Serializer;
+
 /**
  * Transfers a prop value to/from an object implementing ArrayAccess interface
  *
  * @package Serializer
  * @see Nethgui\Module\Table\Modify
  */
-class Nethgui\Serializer\ArrayAccessSerializer implements Nethgui\Serializer\SerializerInterface
+class ArrayAccessSerializer implements SerializerInterface
 {
 
     private $prop;

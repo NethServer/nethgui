@@ -5,11 +5,13 @@
  * @ignore
  */
 
+namespace Nethgui\Widget;
+
 /**
  * Abstract Widget class
  * @ignore
  */
-abstract class Nethgui\Widget\Abstract implements Nethgui\Renderer\WidgetInterface, Nethgui\Log\LogConsumerInterface
+abstract class Abstract implements Nethgui\Renderer\WidgetInterface, Nethgui\Log\LogConsumerInterface
 {
 
     static private $instance = 0;

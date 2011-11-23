@@ -3,12 +3,14 @@
  * @package Core
  */
 
+namespace Nethgui\Client;
+
 /**
- * Nethgui\Client\UserInterface provides access to the login information of the current user.
+ * UserInterface provides access to the login information of the current user.
  *
  * @package Core
  */
-interface Nethgui\Client\UserInterface extends ArrayAccess
+interface UserInterface extends ArrayAccess
 {
 
     /**
@@ -18,14 +20,14 @@ interface Nethgui\Client\UserInterface extends ArrayAccess
 
     /**
      * @param bool $status
-     * @return Nethgui\Client\UserInterface
+     * @return UserInterface
      */
     public function setAuthenticated($status);
 
     /**
      * @param string $credentialName
      * @param mixed $credentialValue
-     * @return Nethgui\Client\UserInterface
+     * @return UserInterface
      */
     public function setCredential($credentialName, $credentialValue);
 
@@ -52,19 +54,19 @@ interface Nethgui\Client\UserInterface extends ArrayAccess
      * @param string $message
      * @param array $actions
      * @param integer $type
-     * @return Nethgui\Client\UserInterface
+     * @return UserInterface
      */
-    public function showDialogBox(Nethgui\Core\ModuleInterface $module, $message, $actions = array(), $type = Nethgui\Client\DialogBox::NOTIFY_SUCCESS);
+    public function showDialogBox(Nethgui\Core\ModuleInterface $module, $message, $actions = array(), $type = DialogBox::NOTIFY_SUCCESS);
 
     public function getDialogBoxes();
 
     /**
-     * @return Nethgui\Client\UserInterface
+     * @return UserInterface
      */
     public function dismissDialogBox($dialogId);
 
     /**
-     * @return Nethgui\Client\UserInterface
+     * @return UserInterface
      */
     public function traceProcess(Nethgui\System\ProcessInterface $process, $name = NULL);
 

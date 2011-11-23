@@ -3,15 +3,17 @@
  * @package Core
  */
 
+namespace Nethgui\Core;
+
 /**
  * A User Request.
  *
- * A Nethgui\Core\RequestInterface object carries parameters submitted by the
+ * A RequestInterface object carries parameters submitted by the
  * User to a Module (and its submodules).
  *
  * @package Core
  */
-interface Nethgui\Core\RequestInterface
+interface RequestInterface
 {
 
     /**

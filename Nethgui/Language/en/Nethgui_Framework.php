@@ -4,6 +4,8 @@
  * @subpackage Core
  */
 
+namespace Nethgui\Language\en;
+
 $L['status_disabled_label'] = 'Disabled';
 $L['status_enabled_label'] = 'Enabled';
 

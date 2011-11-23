@@ -5,12 +5,14 @@
  * @ignore
  */
 
+namespace Nethgui\Widget;
+
 /**
  * Abstract Help Widget class
  * @package Widget
  * @ignore
  */
-class Nethgui\Widget\Help extends Nethgui\Widget\Abstract
+class Help extends Abstract
 {
 
     public function render()

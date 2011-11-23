@@ -4,14 +4,16 @@
  * @ignore
  */
 
+namespace Nethgui\System;
+
 /**
  * Internal class for exec() return value
  *
- * @see Nethgui\System\NethPlatform::exec()
+ * @see NethPlatform::exec()
  * @ignore
  * @package System
  */
-class Nethgui\System\Process implements Nethgui\System\ProcessInterface, Nethgui\Core\GlobalFunctionConsumer
+class Process implements ProcessInterface, Nethgui\Core\GlobalFunctionConsumer
 {
 
     /**

@@ -4,6 +4,8 @@
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
+namespace Nethgui\Adapter;
+
 /**
  * The TabularValueAdapter provide an array interface to access tabular data 
  * encoded into a value stored in a key or prop.
@@ -11,15 +13,15 @@
  * The encoding uses a separator string to split the logical rows and 
  * another separator string to separate logical columns.
  * 
- * This is implemented applying a decorator pattern to Nethgui\Adapter\ArrayAdapter
+ * This is implemented applying a decorator pattern to ArrayAdapter
  *
  * @package Adapter
  */
-class Nethgui\Adapter\TabularValueAdapter implements Nethgui\Adapter\AdapterInterface, ArrayAccess, IteratorAggregate, Countable
+class TabularValueAdapter implements AdapterInterface, ArrayAccess, IteratorAggregate, Countable
 {
 
     /**
-     * @var Nethgui\Adapter\ArrayAdapter
+     * @var ArrayAdapter
      */
     private $innerAdapter;
     /**
@@ -30,7 +32,7 @@ class Nethgui\Adapter\TabularValueAdapter implements Nethgui\Adapter\AdapterInte
     private $modified;
     private $columnSeparator;
 
-    public function __construct(Nethgui\Adapter\ArrayAdapter $innerAdapter, $columnSeparator)
+    public function __construct(ArrayAdapter $innerAdapter, $columnSeparator)
     {
         $this->innerAdapter = $innerAdapter;
         $this->columnSeparator = $columnSeparator;

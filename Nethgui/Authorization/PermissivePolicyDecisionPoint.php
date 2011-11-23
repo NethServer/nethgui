@@ -6,18 +6,20 @@
  * @package Authorization
  */
 
+namespace Nethgui\Authorization;
+
 /**
  * TODO: describe class
  *
  * @package Authorization
  */
-class Nethgui\Authorization\PermissivePolicyDecisionPoint implements Nethgui\Authorization\PolicyDecisionPointInterface
+class PermissivePolicyDecisionPoint implements PolicyDecisionPointInterface
 {
 
-    public function authorizeRequest(Nethgui\Authorization\AccessControlRequestInterface $request)
+    public function authorizeRequest(AccessControlRequestInterface $request)
     {
         // TODO: log a debug message
-        return new Nethgui\Authorization\AccessControlResponse($request);
+        return new AccessControlResponse($request);
     }
 
 }
