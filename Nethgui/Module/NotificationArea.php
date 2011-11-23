@@ -58,7 +58,7 @@ class NotificationArea extends \Nethgui\Core\Module\Standard implements \Nethgui
     {
         parent::prepareView($view, $mode);
 
-        $view['notifications'] = new ArrayObject();
+        $view['notifications'] = new \ArrayObject();
 
         if ($this->hasValidationErrors()) {
             $this->prepareValidationErrorNotification($view, $mode);
@@ -100,7 +100,7 @@ class NotificationArea extends \Nethgui\Core\Module\Standard implements \Nethgui
         $validationView['type'] = \Nethgui\Client\DialogBox::NOTIFY_ERROR;
         $validationView['dialogId'] = 'dlg' . substr(md5('Validation-' . microtime()), 0, 6);
         $validationView['transient'] = TRUE;
-        $validationView['errors'] = new ArrayObject();
+        $validationView['errors'] = new \ArrayObject();
 
         foreach ($this->errors as $index => $error) {
             list($module, $fieldName, $errorInfo) = $error;
@@ -134,7 +134,7 @@ class NotificationArea extends \Nethgui\Core\Module\Standard implements \Nethgui
 
     private function makeActionViewsForDialog(\Nethgui\Client\DialogBox $dialog, $mode, \Nethgui\Core\ViewInterface $dialogView)
     {
-        $actionViews = new ArrayObject();
+        $actionViews = new \ArrayObject();
 
         foreach ($dialog->getActions() as $action) {
             $view = $dialogView->spawnView($dialog->getModule());

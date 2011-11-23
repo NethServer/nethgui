@@ -25,7 +25,7 @@ class World extends \Nethgui\Core\Module\AbstractModule
             $lang = $view->getTranslator()->getLanguageCode();
             $immutables = array(
                 'lang' => $lang,
-                'js' => new ArrayObject(array(
+                'js' => new \ArrayObject(array(
                     'base' => NETHGUI_BASEURL . 'js/jquery-1.6.2.min.js',
                     'ui' => NETHGUI_BASEURL . 'js/jquery-ui-1.8.16.custom.min.js',
                     'dataTables' => NETHGUI_BASEURL . 'js/jquery.dataTables.min.js',
@@ -34,7 +34,7 @@ class World extends \Nethgui\Core\Module\AbstractModule
                 /* 'switcher' => 'http://jqueryui.com/themeroller/themeswitchertool/', */
                 )),
                 'favicon' => NETHGUI_BASEURL . 'images/favicon.ico',
-                'css' => new ArrayObject(array('0base' => NETHGUI_BASEURL . 'css/base.css')),
+                'css' => new \ArrayObject(array('0base' => NETHGUI_BASEURL . 'css/base.css')),
             );
             if ($lang != 'en') {
                 $immutables['js']['datepicker-regional'] = NETHGUI_BASEURL . sprintf('js/jquery.ui.datepicker-%s.js', $lang);

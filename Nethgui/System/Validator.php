@@ -615,7 +615,7 @@ class CollectionValidator implements \Nethgui\Core\ValidatorInterface
         $this->failureInfo = array();
 
         if (is_array($iterableObject)) {
-            $iterableObject = new ArrayObject($iterableObject);
+            $iterableObject = new \ArrayObject($iterableObject);
             $this->iterator = $iterableObject->getIterator();
         } elseif ($iterableObject instanceof \IteratorAggregate) {
             $this->iterator = $iterableObject->getIterator();

@@ -95,11 +95,11 @@ class Read extends Action
 
     private function prepareRows(\Nethgui\Core\ViewInterface $view, $mode)
     {
-        $rows = new ArrayObject();
+        $rows = new \ArrayObject();
 
         foreach ($this->tableAdapter as $key => $values) {
-            $row = new ArrayObject();
-            $rowMetadata = new ArrayObject(array('rowCssClass' => '', 'columns' => array()));
+            $row = new \ArrayObject();
+            $rowMetadata = new \ArrayObject(array('rowCssClass' => '', 'columns' => array()));
             $row[] = $rowMetadata;
 
             foreach ($this->columns as $columnIndex => $columnInfo) {

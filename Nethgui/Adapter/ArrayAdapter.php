@@ -84,7 +84,7 @@ class ArrayAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
         }
 
         if (is_null($this->data)) {
-            $this->data = new ArrayObject($value);
+            $this->data = new \ArrayObject($value);
             $this->modified = TRUE;
         } elseif ($this->data->getArrayCopy() !== $value) {
             $this->data->exchangeArray($value);
@@ -176,7 +176,7 @@ class ArrayAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
         }
 
         if (is_null($this->data)) {
-            $this->data = new ArrayObject();
+            $this->data = new \ArrayObject();
         }
 
         $this->data[$offset] = $value;
@@ -202,10 +202,10 @@ class ArrayAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
         if (is_null($value)) {
             $this->data = NULL;
         } elseif ($value === '') {
-            $this->data = new ArrayObject();
+            $this->data = new \ArrayObject();
         } else
         {
-            $this->data = new ArrayObject(explode($this->separator, $value));
+            $this->data = new \ArrayObject(explode($this->separator, $value));
         }
 
         $this->modified = FALSE;

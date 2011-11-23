@@ -158,7 +158,7 @@ class Test\Unit\NethguiCoreModuleJsonTest extends \Nethgui\Core\Module\Standard
         parent::initialize();
         $this->parameters['a'] = array('A', 'AA', 'AAA');
         $this->parameters['b'] = '10.2';
-        $this->parameters['c'] = new ArrayObject(array('C', 'CC', 'CCC', 'CCCC', new ArrayObject(array('X'))));
+        $this->parameters['c'] = new \ArrayObject(array('C', 'CC', 'CCC', 'CCCC', new \ArrayObject(array('X'))));
     }
 
     public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)

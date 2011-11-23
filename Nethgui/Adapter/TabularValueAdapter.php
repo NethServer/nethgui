@@ -40,7 +40,7 @@ class TabularValueAdapter implements AdapterInterface, \ArrayAccess, \IteratorAg
 
     private function lazyInitialization()
     {
-        $this->data = new ArrayObject();
+        $this->data = new \ArrayObject();
 
         foreach ($this->innerAdapter as $rawRow) {
             $row = explode($this->columnSeparator, $rawRow);            
@@ -68,7 +68,7 @@ class TabularValueAdapter implements AdapterInterface, \ArrayAccess, \IteratorAg
         
         if (count($this->data) != 0) {
             $this->modified = TRUE;
-            $this->data = new ArrayObject();
+            $this->data = new \ArrayObject();
         }
         
     }
@@ -84,7 +84,7 @@ class TabularValueAdapter implements AdapterInterface, \ArrayAccess, \IteratorAg
 
     public function set($value)
     {
-        $this->data = new ArrayObject();
+        $this->data = new \ArrayObject();
         $this->modified = TRUE;
 
         if ( ! is_array($value) && ! $value instanceof Traversable) {

@@ -32,7 +32,7 @@ class \Nethgui\Serializer\ArrayAccessSerializerTest extends PHPUnit_Framework_Te
             'C' => array('f0' => 'c0', 'f1' => 'c1', 'f2' => 'c2'),
         );
 
-        $this->data = new ArrayObject($a);
+        $this->data = new \ArrayObject($a);
 
         foreach ($a as $rowKey => $row) {
             foreach ($row as $fieldKey => $value) {

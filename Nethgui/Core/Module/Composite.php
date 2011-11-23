@@ -97,10 +97,10 @@ abstract class Composite extends AbstractModule implements \Nethgui\Core\ModuleC
                 throw new InvalidArgumentException('$classList elements must be of type String');
             }
 
-            if ($item[0] == '_') {
-                $childModuleClass = get_class($this) . $item;
-            } else {
+            if ($item[0] == '\\') {
                 $childModuleClass = $item;
+            } else {
+                $childModuleClass = get_class($this) . '\\' . $item;
             }
 
             $childModule = new $childModuleClass();

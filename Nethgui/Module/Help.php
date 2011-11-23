@@ -27,7 +27,7 @@ class Help extends \Nethgui\Core\Module\Controller
     public function initialize()
     {
         parent::initialize();
-        $this->loadChildren(array('_Show', '_Template', '_Read'));
+        $this->loadChildren(array('Show', 'Template', 'Read'));
 
         // Propagate moduleSet to children
         foreach ($this->getChildren() as $child) {

@@ -58,7 +58,7 @@ class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
 
     private function lazyInitialization()
     {
-        $this->data = new ArrayObject();
+        $this->data = new \ArrayObject();
        
         if(is_array($this->filter)) { #apply simple filter only if filter is a string
             $rawData =$this->database->getAll($this->type); 
@@ -78,7 +78,7 @@ class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
 
         }
                 
-        $this->changes = new ArrayObject();
+        $this->changes = new \ArrayObject();
     }
 
     public function count()
@@ -139,7 +139,7 @@ class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
             $saveCount ++;
         }
 
-        $this->changes = new ArrayObject();
+        $this->changes = new \ArrayObject();
         
         $this->modified = FALSE;
 
@@ -157,7 +157,7 @@ class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
 
     public function isModified()
     {
-        return $this->changes instanceof ArrayObject && count($this->changes) > 0;
+        return $this->changes instanceof \ArrayObject && count($this->changes) > 0;
     }
 
     public function offsetExists($offset)
