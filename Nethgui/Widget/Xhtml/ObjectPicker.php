@@ -41,7 +41,7 @@ class ObjectPicker extends \Nethgui\Widget\XhtmlWidget
         foreach ($this->getChildren() as $child) {
             $childName = $child->getAttribute('name');
 
-            if ($this->view[$childName] instanceof Traversable) {
+            if ($this->view[$childName] instanceof \Traversable) {
                 $value = iterator_to_array($this->view[$childName]);
             } elseif (is_array($this->view[$childName])) {
                 $value = $this->view[$childName];
@@ -58,7 +58,7 @@ class ObjectPicker extends \Nethgui\Widget\XhtmlWidget
 
     public function insert(\Nethgui\Renderer\WidgetInterface $child)
     {
-        if ( ! $child instanceof \CheckBox) {
+        if ( ! $child instanceof CheckBox) {
             throw new \Nethgui\Exception\View(sprintf('Unsupported widget class: %s', get_class($child)));
         }
 

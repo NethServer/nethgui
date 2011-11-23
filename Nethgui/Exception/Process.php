@@ -8,4 +8,4 @@ namespace Nethgui\Exception;
 /**
  * @package Exception
  */
-class Process extends Exception {}
+class Process extends \Exception {}

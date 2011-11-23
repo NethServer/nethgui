@@ -15,7 +15,7 @@ class Template extends Common
 {
     public function prepareView(\Nethgui\Core\ViewInterface $rootView, $mode)
     {
-        $rootView->setTemplate('Nethgui_Template_Help_Schema');
+        $rootView->setTemplate('Nethgui\Template\Help\Schema');
 
         $moduleView = $rootView->spawnView($this->module);
         $this->module->prepareView($moduleView, self::VIEW_HELP);

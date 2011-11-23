@@ -64,7 +64,7 @@ class Help extends Xhtml
         }
 
         $view = $this->view->spawnView($this->view->getModule());
-        $view->setTemplate('Nethgui_Template_Help_Section');
+        $view->setTemplate('Nethgui\Template\Help\Section');
         $view['title'] = $this->getModule()->getTitle();
         $view['description'] = $this->getModule()->getDescription();
         $view['fields'] = $fields;

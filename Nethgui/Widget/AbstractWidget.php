@@ -104,8 +104,10 @@ abstract class AbstractWidget implements \Nethgui\Renderer\WidgetInterface, \Net
             return $this->render();
         } catch (Exception $ex) {
             $this->getLog()->exception($ex, TRUE);
-            throw $ex;
+            //throw $ex;
+            return '';
         }
+
     }
 
     protected function getClientEventTarget()

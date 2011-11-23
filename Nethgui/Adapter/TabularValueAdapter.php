@@ -87,7 +87,7 @@ class TabularValueAdapter implements AdapterInterface, \ArrayAccess, \IteratorAg
         $this->data = new \ArrayObject();
         $this->modified = TRUE;
 
-        if ( ! is_array($value) && ! $value instanceof Traversable) {
+        if ( ! is_array($value) && ! $value instanceof \Traversable) {
             throw new InvalidArgumentException('Value must be an array!');
         }
 
@@ -158,7 +158,7 @@ class TabularValueAdapter implements AdapterInterface, \ArrayAccess, \IteratorAg
             $this->lazyInitialization();
         }
 
-        if ( ! is_array($value) && ! $value instanceof Traversable) {
+        if ( ! is_array($value) && ! $value instanceof \Traversable) {
             throw new InvalidArgumentException('Value must be an array!');
         }
 

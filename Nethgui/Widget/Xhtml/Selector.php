@@ -26,7 +26,7 @@ class Selector extends \Nethgui\Widget\XhtmlWidget
         $choices = $this->getAttribute('choices', $name . 'Datasource');
         $value = $this->view[$name];
 
-        if ($value instanceof Traversable) {
+        if ($value instanceof \Traversable) {
             $value = iterator_to_array($value);
         }
 
@@ -47,7 +47,7 @@ class Selector extends \Nethgui\Widget\XhtmlWidget
             $dataSourceName = $name . 'Datasource';
         }
 
-        if ($choices instanceof Traversable) {
+        if ($choices instanceof \Traversable) {
             $choices = iterator_to_array($this->view[$choices]);
         } elseif ( ! is_array($choices)) {
             $choices = array();

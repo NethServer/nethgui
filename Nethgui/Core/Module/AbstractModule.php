@@ -48,7 +48,7 @@ abstract class AbstractModule implements \Nethgui\Core\ModuleInterface, \Nethgui
         if (isset($identifier)) {
             $this->identifier = $identifier;
         } else {
-            $this->identifier = \Nethgui\array_end(explode('\\', get_class($this)), -1, 1);
+            $this->identifier = \Nethgui\array_end(explode('\\', get_class($this)));
         }
     }
 
@@ -89,12 +89,12 @@ abstract class AbstractModule implements \Nethgui\Core\ModuleInterface, \Nethgui
 
     public function getTitle()
     {
-        return array_pop(explode('_', $this->getIdentifier())) . '_Title';
+        return $this->getIdentifier() . '_Title';
     }
 
     public function getDescription()
     {
-        return $this->getTitle() . '_Description';
+        return $this->getIdentifier() . '_Description';
     }
 
     public function setParent(\Nethgui\Core\ModuleInterface $parentModule)
@@ -148,7 +148,7 @@ abstract class AbstractModule implements \Nethgui\Core\ModuleInterface, \Nethgui
      */
     public function getLanguageCatalog()
     {
-        return get_class($this);
+        return strtr(get_class($this), '\\', '_');
     }
 
     public function getTags()

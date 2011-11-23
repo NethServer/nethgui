@@ -13,7 +13,7 @@ namespace Nethgui\System;
  * @ignore
  * @package System
  */
-class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionConsumer, Serializable
+class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionConsumer, \Serializable
 {
 
     /**

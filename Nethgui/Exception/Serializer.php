@@ -8,4 +8,4 @@ namespace Nethgui\Exception;
 /**
  * @package Exception
  */
-class Serializer extends Exception {}
+class Serializer extends \Exception {}

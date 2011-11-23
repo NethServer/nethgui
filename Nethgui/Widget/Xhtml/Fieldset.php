@@ -21,7 +21,7 @@ namespace Nethgui\Widget\Xhtml;
  * @internal
  * @ignore
  */
-class Fieldset extends \Panel
+class Fieldset extends Panel
 {
 
     public function render()

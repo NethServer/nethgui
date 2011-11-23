@@ -28,7 +28,7 @@ class Json extends AbstractRenderer
             } elseif ($value instanceof \Nethgui\Core\CommandInterface) {
                 $commands[] = $value->setReceiver(new JsonReceiver($this->view, $offset))->execute();
                 continue;
-            } elseif ($value instanceof Traversable) {
+            } elseif ($value instanceof \Traversable) {
                 $eventData = $this->traversableToArray($value);
             } else {
                 $eventData = $value;
@@ -39,15 +39,15 @@ class Json extends AbstractRenderer
     }
 
     /**
-     * Convert a Traversable object to a PHP array
-     * @param Traversable $value
+     * Convert a \Traversable object to a PHP array
+     * @param \Traversable $value
      * @return array
      */
-    private function traversableToArray(Traversable $value)
+    private function traversableToArray(\Traversable $value)
     {
         $a = array();
         foreach ($value as $k => $v) {
-            if ($v instanceof Traversable) {
+            if ($v instanceof \Traversable) {
                 $v = $this->traversableToArray($v);
             }
             $a[$k] = $v;

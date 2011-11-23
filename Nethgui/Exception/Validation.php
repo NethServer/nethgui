@@ -8,4 +8,4 @@ namespace Nethgui\Exception;
 /**
  * @package Exception
  */
-class Validation extends Exception {}
+class Validation extends \Exception {}

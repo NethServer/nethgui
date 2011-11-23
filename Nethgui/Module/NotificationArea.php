@@ -72,7 +72,7 @@ class NotificationArea extends \Nethgui\Core\Module\Standard implements \Nethgui
         foreach ($this->user->getDialogBoxes() as $dialog) {
             // Spawn a view associated to the $dialog original module:
             $dialogView = $view->spawnView($dialog->getModule());
-            $dialogView->setTemplate('Nethgui_Template_NotificationAreaDialogBox');
+            $dialogView->setTemplate('Nethgui\Template\NotificationAreaDialogBox');
             $message = $dialog->getMessage();
             $dialogView->copyFrom(
                 array(
@@ -89,7 +89,7 @@ class NotificationArea extends \Nethgui\Core\Module\Standard implements \Nethgui
     private function prepareValidationErrorNotification(\Nethgui\Core\ViewInterface $view, $mode)
     {
         $validationView = $view->spawnView($this);
-        $validationView->setTemplate('Nethgui_Template_ValidationError');
+        $validationView->setTemplate('Nethgui\Template\ValidationError');
 
         if (count($this->errors) == 1) {
             $validationView['message'] = $view->translate('Incorrect value');
@@ -180,7 +180,7 @@ class NotificationArea extends \Nethgui\Core\Module\Standard implements \Nethgui
                 $innerPrefix = $prefix . '/' . $key;
             }
 
-            if ($value instanceof Traversable) {
+            if ($value instanceof \Traversable) {
                 $value = iterator_to_array($value);
             }
 

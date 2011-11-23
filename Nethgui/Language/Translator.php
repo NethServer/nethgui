@@ -40,7 +40,7 @@ class Translator implements \Nethgui\Core\TranslatorInterface, \Nethgui\Core\Glo
     public function __construct(\Nethgui\Client\UserInterface $user, \Nethgui\Log\AbstractLog $log)
     {
         $this->globalFunctionWrapper = new \Nethgui\Core\GlobalFunctionWrapper();        
-        $this->languageCatalogStack = array('\Nethgui\Framework', NETHGUI_APPLICATION);
+        $this->languageCatalogStack = array('Nethgui_Framework', NETHGUI_APPLICATION);
         $this->log = $log;
         $this->user = $user;
     }
@@ -150,11 +150,11 @@ class Translator implements \Nethgui\Core\TranslatorInterface, \Nethgui\Core\Glo
 
     private function loadLanguageCatalog($languageCode, $languageCatalog)
     {
-        if (preg_match('/[a-z][a-z]/', $languageCode) == 0) {
-            throw new InvalidArgumentException('Language code must be a valid ISO 639-1 language code');
+        if (preg_match('/^[a-z][a-z]$/', $languageCode) == 0) {
+            throw new \InvalidArgumentException('Language code must be a valid ISO 639-1 language code');
         }
-        if (preg_match('/[a-z_A-Z0-9]+/', $languageCatalog) == 0) {
-            throw new InvalidArgumentException("Language catalog name can contain only alphanumeric or `_` characters. It was `$languageCatalog`.");
+        if (preg_match('/^[a-z_A-Z0-9]+$/', $languageCatalog) == 0) {
+            throw new \InvalidArgumentException("Language catalog name can contain only alphanumeric or `_` characters. It was `$languageCatalog`.");
         }
         $prefix = array_shift(explode('_', $languageCatalog));
         $filePath = NETHGUI_ROOTDIR . '/' . $prefix . '/Language/' . $languageCode . '/' . $languageCatalog . '.php';

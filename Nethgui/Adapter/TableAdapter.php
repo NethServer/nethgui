@@ -116,7 +116,7 @@ class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
             $this->lazyInitialization();
         }
 
-        if ( ! is_array($value) && ! $value instanceof Traversable) {
+        if ( ! is_array($value) && ! $value instanceof \Traversable) {
             throw new InvalidArgumentException('Value must be an array!');
         }
 
@@ -184,7 +184,7 @@ class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
             $this->lazyInitialization();
         }
 
-        if ( ! is_array($value) && ! $value instanceof Traversable) {
+        if ( ! is_array($value) && ! $value instanceof \Traversable) {
             throw new InvalidArgumentException('Value must be an array!');
         }
 

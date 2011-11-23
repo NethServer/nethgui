@@ -16,7 +16,7 @@ namespace Nethgui\Widget\Xhtml;
  * @internal
  * @ignore
  */
-class Columns extends \Panel
+class Columns extends Panel
 {
     public function render()
     {

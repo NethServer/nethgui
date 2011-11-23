@@ -38,7 +38,7 @@ class Help extends \Nethgui\Core\Module\Controller
     public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
     {
         if (is_null($this->currentAction)) {
-            $view->setTemplate('Nethgui_Template_Help');
+            $view->setTemplate('Nethgui\Template\Help');
         } else {
             parent::prepareView($view, $mode);
         }
