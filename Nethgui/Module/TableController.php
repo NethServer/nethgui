@@ -12,11 +12,11 @@
  * - Tracks the actions involving a row
  * - Tracks the actions involving the whole table
  *
- * @see Nethgui_Module_Table_Modify
- * @see Nethgui_Module_Table_Read
+ * @see Nethgui\Module\Table\Modify
+ * @see Nethgui\Module\Table\Read
  * @package Module
  */
-class Nethgui_Module_TableController extends Nethgui_Core_Module_Controller 
+class Nethgui\Module\TableController extends Nethgui\Core\Module\Controller 
 {
 
     /**
@@ -50,7 +50,7 @@ class Nethgui_Module_TableController extends Nethgui_Core_Module_Controller
         /*
          *  Create and add the READ action, that displays the table.
          */
-        $this->addChild(new Nethgui_Module_Table_Read('read', $columns));
+        $this->addChild(new Nethgui\Module\Table\Read('read', $columns));
 
         foreach ($rowActions as $actionArguments) {
             $actionObject = $this->createActionObject($actionArguments);
@@ -71,7 +71,7 @@ class Nethgui_Module_TableController extends Nethgui_Core_Module_Controller
          */
         $tableAdapter = call_user_func_array(array($this->getPlatform(), 'getTableAdapter'), $this->tableAdapterArguments);
         foreach ($this->getChildren() as $action) {
-            if ($action instanceof Nethgui_Module_Table_Action
+            if ($action instanceof Nethgui\Module\Table\Action
                 && ! $action->hasTableAdapter())
             {
                 $action->setTableAdapter($tableAdapter);
@@ -89,7 +89,7 @@ class Nethgui_Module_TableController extends Nethgui_Core_Module_Controller
      * A column action is executed in a row context (i.e. row updating, deletion...)
      * @see getRowActions()
      */
-    public function addRowAction(Nethgui_Core_ModuleInterface $a)
+    public function addRowAction(Nethgui\Core\ModuleInterface $a)
     {
         $this->rowActions[] = $a;
         $this->addChild($a);
@@ -109,7 +109,7 @@ class Nethgui_Module_TableController extends Nethgui_Core_Module_Controller
      * print the table...)
      * @see getTableActions()
      */
-    public function addTableAction(Nethgui_Core_ModuleInterface $a)
+    public function addTableAction(Nethgui\Core\ModuleInterface $a)
     {
         $this->tableActions[] = $a;
         $this->addChild($a);
@@ -136,16 +136,16 @@ class Nethgui_Module_TableController extends Nethgui_Core_Module_Controller
                 $requireEvents = array($requireEvents);
             }
 
-            $actionObject = new Nethgui_Module_Table_Modify($actionName, $parameterSchema, $requireEvents, $viewTemplate);
+            $actionObject = new Nethgui\Module\Table\Modify($actionName, $parameterSchema, $requireEvents, $viewTemplate);
         }
 
-        if ($actionArguments instanceof Nethgui_Module_Table_Action) {
+        if ($actionArguments instanceof Nethgui\Module\Table\Action) {
             if ( ! is_null($tableAdapter))
             {
                 $actionArguments->setTableAdapter($tableAdapter);
             }
             $actionObject = $actionArguments;
-        } elseif ($actionArguments instanceof Nethgui_Core_Module_Standard) {
+        } elseif ($actionArguments instanceof Nethgui\Core\Module\Standard) {
             $actionObject = $actionArguments;
         }
 
@@ -170,7 +170,7 @@ class Nethgui_Module_TableController extends Nethgui_Core_Module_Controller
     /**
      * @todo refactor into parent class
      */
-    public function prepareView(Nethgui_Core_ViewInterface $view, $mode)
+    public function prepareView(Nethgui\Core\ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
 
@@ -189,7 +189,7 @@ class Nethgui_Module_TableController extends Nethgui_Core_Module_Controller
     /**
      *
      * @param array $createDefaults
-     * @return Nethgui_Module_TableController
+     * @return Nethgui\Module\TableController
      */
     protected function setCreateDefaults($createDefaults)
     {

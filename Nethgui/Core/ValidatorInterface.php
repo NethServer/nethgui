@@ -7,7 +7,7 @@
  * @author Davide Principi <davide.principi@nethesis.it>
  * @package Core
  */
-interface Nethgui_Core_ValidatorInterface {
+interface Nethgui\Core\ValidatorInterface {
 
     /**
      * Evaluate if $value is accepted by this validator.

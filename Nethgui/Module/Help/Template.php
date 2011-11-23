@@ -9,9 +9,9 @@
  * @subpackage Help
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class Nethgui_Module_Help_Template extends Nethgui_Module_Help_Common
+class Nethgui\Module\Help\Template extends Nethgui\Module\Help\Common
 {
-    public function prepareView(Nethgui_Core_ViewInterface $rootView, $mode)
+    public function prepareView(Nethgui\Core\ViewInterface $rootView, $mode)
     {
         $rootView->setTemplate('Nethgui_Template_Help_Schema');
 
@@ -24,7 +24,7 @@ class Nethgui_Module_Help_Template extends Nethgui_Module_Help_Common
         $rootView['url'] = NETHGUI_SITEURL . $rootView->getModuleUrl($this->module->getIdentifier() . '.html');
 
         $this->globalFunctions->header("Content-Type: text/html; charset=UTF-8");
-        echo (String) new Nethgui_Renderer_Xhtml($rootView);
+        echo (String) new Nethgui\Renderer\Xhtml($rootView);
         exit;
     }
 }

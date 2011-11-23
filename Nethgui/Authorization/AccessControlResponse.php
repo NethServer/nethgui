@@ -11,10 +11,10 @@
  *
  * @package Authorization
  */
-final class Nethgui_Authorization_AccessControlResponse implements Nethgui_Authorization_AccessControlResponseInterface
+final class Nethgui\Authorization\AccessControlResponse implements Nethgui\Authorization\AccessControlResponseInterface
 {
 
-    public function __construct(Nethgui_Authorization_AccessControlRequestInterface $originalRequest, $granted = TRUE, $message = '')
+    public function __construct(Nethgui\Authorization\AccessControlRequestInterface $originalRequest, $granted = TRUE, $message = '')
     {
         $this->originalRequest = $originalRequest;
         $this->message = $message;

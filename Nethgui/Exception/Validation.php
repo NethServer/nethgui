@@ -6,4 +6,4 @@
 /**
  * @package Exception
  */
-class Nethgui_Exception_Validation extends Exception {}
+class Nethgui\Exception\Validation extends Exception {}

@@ -11,21 +11,21 @@
  * @package Tests
  * @subpackage Unit
  */
-class Nethgui_Serializer_PropSerializerTest extends PHPUnit_Framework_TestCase
+class Nethgui\Serializer\PropSerializerTest extends PHPUnit_Framework_TestCase
 {
 
     /**
-     * @var Nethgui_Serializer_PropSerializer
+     * @var Nethgui\Serializer\PropSerializer
      */
     protected $object;
 
     protected function setUp()
     {
-        $this->database = $this->getMockBuilder('Nethgui_System_ConfigurationDatabase')
+        $this->database = $this->getMockBuilder('Nethgui\System\ConfigurationDatabase')
                 ->disableOriginalConstructor()
                 ->getMock();
 
-        $this->object = new Nethgui_Serializer_PropSerializer($this->database, 'TestKey', 'TestProp');
+        $this->object = new Nethgui\Serializer\PropSerializer($this->database, 'TestKey', 'TestProp');
     }
 
     public function testRead()

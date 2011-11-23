@@ -7,11 +7,11 @@
 /**
  * Transform a view into a string.
  *
- * @see Nethgui_Renderer_WidgetInterface
+ * @see Nethgui\Renderer\WidgetInterface
  * @see http://en.wikipedia.org/wiki/Decorator_pattern
  * @package Renderer
  */
-abstract class Nethgui_Renderer_Abstract extends Nethgui_Renderer_ReadonlyView
+abstract class Nethgui\Renderer\Abstract extends Nethgui\Renderer\ReadonlyView
 {
 
     abstract protected function render();

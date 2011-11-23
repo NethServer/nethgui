@@ -11,11 +11,11 @@
  * @package Tests
  * @subpackage Unit
  */
-class Nethgui_Serializer_ArrayAccessSerializerTest extends PHPUnit_Framework_TestCase
+class Nethgui\Serializer\ArrayAccessSerializerTest extends PHPUnit_Framework_TestCase
 {
 
     /**
-     * @var Nethgui_Serializer_ArrayAccessSerializer
+     * @var Nethgui\Serializer\ArrayAccessSerializer
      */
     protected $tests = array();
     protected $data;
@@ -40,7 +40,7 @@ class Nethgui_Serializer_ArrayAccessSerializerTest extends PHPUnit_Framework_Tes
                     $rowKey,
                     $fieldKey,
                     $value,
-                    new Nethgui_Serializer_ArrayAccessSerializer($this->data, $rowKey, $fieldKey)
+                    new Nethgui\Serializer\ArrayAccessSerializer($this->data, $rowKey, $fieldKey)
                 );
             }
         }
@@ -56,13 +56,13 @@ class Nethgui_Serializer_ArrayAccessSerializerTest extends PHPUnit_Framework_Tes
 
     public function testReadNonExistingRow()
     {
-        $object = new Nethgui_Serializer_ArrayAccessSerializer($this->data, 'X', 'f0');        
+        $object = new Nethgui\Serializer\ArrayAccessSerializer($this->data, 'X', 'f0');        
         $this->assertNull($object->read());
     }
 
     public function testReadNonExistingField()
     {
-        $object = new Nethgui_Serializer_ArrayAccessSerializer($this->data, 'A', 'x0');        
+        $object = new Nethgui\Serializer\ArrayAccessSerializer($this->data, 'A', 'x0');        
         $this->assertNull($object->read());
     }
         
@@ -78,7 +78,7 @@ class Nethgui_Serializer_ArrayAccessSerializerTest extends PHPUnit_Framework_Tes
 
     public function testWriteAppend()
     {
-        $object = new Nethgui_Serializer_ArrayAccessSerializer($this->data, 'D', 'f0');
+        $object = new Nethgui\Serializer\ArrayAccessSerializer($this->data, 'D', 'f0');
         $object->write('AA');
         $this->assertEquals('AA', $this->data['D']['f0']);
         $this->assertEquals(array('f0'=>'AA'), $this->data['D']);

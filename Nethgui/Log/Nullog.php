@@ -7,7 +7,7 @@
 /**
  * @package Log
  */
-class Nethgui_Log_Nullog extends Nethgui_Log_AbstractLog
+class Nethgui\Log\Nullog extends Nethgui\Log\AbstractLog
 {
 
     public function message($level, $message)

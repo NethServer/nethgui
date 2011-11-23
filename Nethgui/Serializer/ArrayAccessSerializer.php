@@ -7,9 +7,9 @@
  * Transfers a prop value to/from an object implementing ArrayAccess interface
  *
  * @package Serializer
- * @see Nethgui_Module_Table_Modify
+ * @see Nethgui\Module\Table\Modify
  */
-class Nethgui_Serializer_ArrayAccessSerializer implements Nethgui_Serializer_SerializerInterface
+class Nethgui\Serializer\ArrayAccessSerializer implements Nethgui\Serializer\SerializerInterface
 {
 
     private $prop;
@@ -48,7 +48,7 @@ class Nethgui_Serializer_ArrayAccessSerializer implements Nethgui_Serializer_Ser
     public function write($value)
     {
         if ( ! isset($this->key)) {
-            throw new Nethgui_Exception_Serializer('The TablePropSerializer `key` is not missing.');
+            throw new Nethgui\Exception\Serializer('The TablePropSerializer `key` is not missing.');
         }
 
         // update or append ?

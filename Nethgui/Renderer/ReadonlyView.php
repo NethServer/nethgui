@@ -14,15 +14,15 @@
  * @author Davide Principi <davide.principi@nethesis.it>
  * @ignore
  */
-class Nethgui_Renderer_ReadonlyView implements Nethgui_Core_ViewInterface, Nethgui_Log_LogConsumerInterface
+class Nethgui\Renderer\ReadonlyView implements Nethgui\Core\ViewInterface, Nethgui\Log\LogConsumerInterface
 {
 
     /**
-     * @var Nethgui_Core_ViewInterface
+     * @var Nethgui\Core\ViewInterface
      */
     protected $view;
 
-    public function __construct(Nethgui_Core_ViewInterface $view)
+    public function __construct(Nethgui\Core\ViewInterface $view)
     {
         if ($view instanceof self) {
             // Prevent re-wrapping of a read-only view instance:
@@ -34,7 +34,7 @@ class Nethgui_Renderer_ReadonlyView implements Nethgui_Core_ViewInterface, Nethg
 
     public function copyFrom($data)
     {
-        throw new Nethgui_Exception_View('Cannot change the view values');
+        throw new Nethgui\Exception\View('Cannot change the view values');
     }
 
     public function getIterator()
@@ -59,17 +59,17 @@ class Nethgui_Renderer_ReadonlyView implements Nethgui_Core_ViewInterface, Nethg
 
     public function offsetSet($offset, $value)
     {
-        throw new Nethgui_Exception_View('Cannot change the view value');
+        throw new Nethgui\Exception\View('Cannot change the view value');
     }
 
     public function offsetUnset($offset)
     {
-        throw new Nethgui_Exception_View('Cannot unset a view value');
+        throw new Nethgui\Exception\View('Cannot unset a view value');
     }
 
     public function setTemplate($template)
     {
-        throw new Nethgui_Exception_View('Cannot change the view template');
+        throw new Nethgui\Exception\View('Cannot change the view template');
     }
 
     public function getTemplate()
@@ -77,9 +77,9 @@ class Nethgui_Renderer_ReadonlyView implements Nethgui_Core_ViewInterface, Nethg
         return $this->view->getTemplate();
     }
 
-    public function spawnView(Nethgui_Core_ModuleInterface $module, $register = FALSE)
+    public function spawnView(Nethgui\Core\ModuleInterface $module, $register = FALSE)
     {
-        throw new Nethgui_Exception_View('Readonly view: cannot spawn another view!');
+        throw new Nethgui\Exception\View('Readonly view: cannot spawn another view!');
     }
 
     public function translate($message, $args = array())
@@ -112,17 +112,17 @@ class Nethgui_Renderer_ReadonlyView implements Nethgui_Core_ViewInterface, Nethg
         return $this->view->getModuleUrl($path);
     }
 
-    public function setLog(Nethgui_Log_AbstractLog $log)
+    public function setLog(Nethgui\Log\AbstractLog $log)
     {
         throw new Exception(sprintf('Cannot invoke setLog() on %s', get_class($this)));
     }
 
     public function getLog()
     {
-        if ($this->view instanceof Nethgui_Log_LogConsumerInterface) {
+        if ($this->view instanceof Nethgui\Log\LogConsumerInterface) {
             return $this->view->getLog();
         } else {
-            return new Nethgui_Log_Nullog();
+            return new Nethgui\Log\Nullog();
         }
     }
 

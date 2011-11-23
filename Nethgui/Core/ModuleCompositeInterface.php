@@ -8,19 +8,19 @@
  *
  * @package Core
  */
-interface Nethgui_Core_ModuleCompositeInterface
+interface Nethgui\Core\ModuleCompositeInterface
 {
 
     /**
-     * @return array An array of Nethgui_Core_ModuleInterface implementing objects.
+     * @return array An array of Nethgui\Core\ModuleInterface implementing objects.
      */
     public function getChildren();
 
     /**
      * Adds a child to this Composite. Implementations must send a setParent()
      * message to $module.
-     * @param Nethgui_Core_ModuleInterface $module The child module.
+     * @param Nethgui\Core\ModuleInterface $module The child module.
      */
-    public function addChild(Nethgui_Core_ModuleInterface $module);
+    public function addChild(Nethgui\Core\ModuleInterface $module);
 }
 

@@ -15,7 +15,7 @@
  *
  * @package Core
  */
-class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Nethgui_Authorization_PolicyEnforcementPointInterface, Nethgui_Log_LogConsumerInterface
+class Nethgui\Core\TopModuleDepot implements Nethgui\Core\ModuleSetInterface, Nethgui\Authorization\PolicyEnforcementPointInterface, Nethgui\Log\LogConsumerInterface
 {
 
     /**
@@ -34,18 +34,18 @@ class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Ne
     private $policyDecisionPoint;
 
     /**
-     * @var Nethgui_Client_UserInterface
+     * @var Nethgui\Client\UserInterface
      */
     private $user;
 
     /**
-     * @var Nethgui_System_PlatformInterface
+     * @var Nethgui\System\PlatformInterface
      */
     private $platform;
 
 
 
-    public function __construct(Nethgui_System_PlatformInterface $platform, Nethgui_Client_UserInterface $user)
+    public function __construct(Nethgui\System\PlatformInterface $platform, Nethgui\Client\UserInterface $user)
     {
         $this->platform = $platform;
         $this->user = $user;
@@ -69,7 +69,7 @@ class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Ne
                 $classReflector = new ReflectionClass($className);
 
                 if ($classReflector->isInstantiable()
-                    && $classReflector->implementsInterface("Nethgui_Core_TopModuleInterface")
+                    && $classReflector->implementsInterface("Nethgui\Core\TopModuleInterface")
                 ) {
                     $module = $this->createModule($className);
                     $this->registerModule($module);
@@ -90,8 +90,8 @@ class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Ne
     {
         $module = new $className();
 
-        if ( ! $module instanceof Nethgui_Core_ModuleInterface) {
-            throw new Exception("Class `{$className}` must implement Nethgui_Core_ModuleInterface");
+        if ( ! $module instanceof Nethgui\Core\ModuleInterface) {
+            throw new Exception("Class `{$className}` must implement Nethgui\Core\ModuleInterface");
         }
 
         if (is_null($module->getIdentifier())) {
@@ -110,9 +110,9 @@ class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Ne
     /**
      * Adds $module to this set. Each member of this set
      * shares the same Policy Decision Point.
-     * @param Nethgui_Core_ModuleInterface $module The module to be attached to this set.
+     * @param Nethgui\Core\ModuleInterface $module The module to be attached to this set.
      */
-    public function registerModule(Nethgui_Core_ModuleInterface $module)
+    public function registerModule(Nethgui\Core\ModuleInterface $module)
     {
         if (isset($this->modules[$module->getIdentifier()])) {
             throw new Exception("Module id `" . $module->getIdentifier() . "` is already registered.");
@@ -120,7 +120,7 @@ class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Ne
 
         $this->modules[$module->getIdentifier()] = $module;
 
-        if ($module instanceof Nethgui_Core_TopModuleInterface) {
+        if ($module instanceof Nethgui\Core\TopModuleInterface) {
             $parentId = $module->getParentMenuIdentifier();
 
             # if category is NULL, create the category
@@ -135,15 +135,15 @@ class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Ne
     /**
      * Use $pdp as Policy Decision Point for each member of the set
      * that implements PolicyEnforcementPointInterface.
-     * @param Nethgui_Authorization_PolicyDecisionPointInterface $pdp
+     * @param Nethgui\Authorization\PolicyDecisionPointInterface $pdp
      * @return void
      */
-    public function setPolicyDecisionPoint(Nethgui_Authorization_PolicyDecisionPointInterface $pdp)
+    public function setPolicyDecisionPoint(Nethgui\Authorization\PolicyDecisionPointInterface $pdp)
     {
         $this->policyDecisionPoint = $pdp;
 
         foreach ($this->modules as $module) {
-            if ($module instanceof Nethgui_Authorization_PolicyEnforcementPointInterface) {
+            if ($module instanceof Nethgui\Authorization\PolicyEnforcementPointInterface) {
                 $module->setPolicyDecisionPoint($pdp);
             }
         }
@@ -174,11 +174,11 @@ class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Ne
                 $ret[$cat] = array_values($this->menu[$cat]);
             }
         }
-        return new Nethgui_Core_ModuleMenuIterator($this, '__ROOT__', $ret);
+        return new Nethgui\Core\ModuleMenuIterator($this, '__ROOT__', $ret);
     }
 
     /**
-     * @return Nethgui_Core_ModuleInterface
+     * @return Nethgui\Core\ModuleInterface
      */
     public function findModule($moduleIdentifier)
     {
@@ -189,14 +189,14 @@ class Nethgui_Core_TopModuleDepot implements Nethgui_Core_ModuleSetInterface, Ne
         return $this->modules[$moduleIdentifier];
     }
 
-    public function setLog(Nethgui_Log_AbstractLog $log)
+    public function setLog(Nethgui\Log\AbstractLog $log)
     {
         throw new Exception(sprintf('Cannot invoke setLog() on %s', get_class($this)));
     }
 
     public function getLog()
     {
-        if ($this->platform instanceof Nethgui_Log_LogConsumerInterface) {
+        if ($this->platform instanceof Nethgui\Log\LogConsumerInterface) {
             return $this->platform->getLog();
         }
 

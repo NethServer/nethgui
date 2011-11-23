@@ -14,7 +14,7 @@
  * @internal
  * @ignore
  */
-class Nethgui_Widget_Xhtml_Hidden extends Nethgui_Widget_Xhtml
+class Nethgui\Widget\Xhtml_Hidden extends Nethgui\Widget\Xhtml
 {
 
     public function render()

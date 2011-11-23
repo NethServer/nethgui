@@ -25,7 +25,7 @@
  * @internal
  * @ignore
  */
-class Nethgui_Widget_Xhtml_TextLabel extends Nethgui_Widget_Xhtml
+class Nethgui\Widget\Xhtml_TextLabel extends Nethgui\Widget\Xhtml
 {
 
     public function render()
@@ -43,7 +43,7 @@ class Nethgui_Widget_Xhtml_TextLabel extends Nethgui_Widget_Xhtml
         }
 
 
-        if ($flags & Nethgui_Renderer_WidgetFactoryInterface::STATE_DISABLED) {
+        if ($flags & Nethgui\Renderer\WidgetFactoryInterface::STATE_DISABLED) {
             $cssClass .= ' disabled';
             $stateDisabled = TRUE;
         } else {

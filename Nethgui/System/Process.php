@@ -7,11 +7,11 @@
 /**
  * Internal class for exec() return value
  *
- * @see Nethgui_System_NethPlatform::exec()
+ * @see Nethgui\System\NethPlatform::exec()
  * @ignore
  * @package System
  */
-class Nethgui_System_Process implements Nethgui_System_ProcessInterface, Nethgui_Core_GlobalFunctionConsumer
+class Nethgui\System\Process implements Nethgui\System\ProcessInterface, Nethgui\Core\GlobalFunctionConsumer
 {
 
     /**
@@ -43,13 +43,13 @@ class Nethgui_System_Process implements Nethgui_System_ProcessInterface, Nethgui
 
     /**
      *
-     * @var Nethgui_Core_GlobalFunctionWrapper
+     * @var Nethgui\Core\GlobalFunctionWrapper
      */
     private $globalFunctionWrapper;
 
     public function __construct($command, $arguments = array())
     {
-        $this->globalFunctionWrapper = new Nethgui_Core_GlobalFunctionWrapper();
+        $this->globalFunctionWrapper = new Nethgui\Core\GlobalFunctionWrapper();
         $this->arguments = $arguments;
         $this->command = $command;
         $this->state = self::STATE_NEW;
@@ -125,7 +125,7 @@ class Nethgui_System_Process implements Nethgui_System_ProcessInterface, Nethgui
         return $this->state;
     }
 
-    public function setGlobalFunctionWrapper(Nethgui_Core_GlobalFunctionWrapper $object)
+    public function setGlobalFunctionWrapper(Nethgui\Core\GlobalFunctionWrapper $object)
     {
         $this->globalFunctionWrapper = $object;
     }

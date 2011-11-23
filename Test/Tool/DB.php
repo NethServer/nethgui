@@ -8,9 +8,9 @@
  * @package Test
  * @subpackage Tool
  * @author Davide Principi <davide.principi@nethesis.it>
- * @see Test_Tool_ModuleTestCase
+ * @see Test\Tool\ModuleTestCase
  */
-class Test_Tool_DB extends Test_Tool_MockState
+class Test\Tool\DB extends Test\Tool\MockState
 {
 
     public static function getType($key)

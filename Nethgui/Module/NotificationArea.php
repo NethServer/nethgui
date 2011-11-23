@@ -12,18 +12,18 @@
  *
  * @package Module
  */
-class Nethgui_Module_NotificationArea extends Nethgui_Core_Module_Standard implements Nethgui_Core_ValidationReportInterface, Nethgui_Core_Module_DefaultUiStateInterface
+class Nethgui\Module\NotificationArea extends Nethgui\Core\Module\Standard implements Nethgui\Core\ValidationReportInterface, Nethgui\Core\Module\DefaultUiStateInterface
 {
 
     private $errors = array();
 
     /**
      *
-     * @var Nethgui_Client_UserInterface;
+     * @var Nethgui\Client\UserInterface;
      */
     private $user;
 
-    public function __construct(Nethgui_Client_UserInterface $user)
+    public function __construct(Nethgui\Client\UserInterface $user)
     {
         parent::__construct(NULL);
         $this->user = $user;
@@ -35,7 +35,7 @@ class Nethgui_Module_NotificationArea extends Nethgui_Core_Module_Standard imple
         $this->declareParameter('dismissDialog', '/^[a-zA-Z0-9]+$/');
     }
 
-    public function bind(Nethgui_Core_RequestInterface $request)
+    public function bind(Nethgui\Core\RequestInterface $request)
     {
         parent::bind($request);
         if ( ! $request->hasParameter('dismissDialog') && isset($_GET['dismissDialog'])) {
@@ -52,7 +52,7 @@ class Nethgui_Module_NotificationArea extends Nethgui_Core_Module_Standard imple
         }
     }
 
-    public function prepareView(Nethgui_Core_ViewInterface $view, $mode)
+    public function prepareView(Nethgui\Core\ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
 
@@ -65,7 +65,7 @@ class Nethgui_Module_NotificationArea extends Nethgui_Core_Module_Standard imple
         $this->prepareDialogBoxesNotification($view, $mode);
     }
 
-    private function prepareDialogBoxesNotification(Nethgui_Core_ViewInterface $view, $mode)
+    private function prepareDialogBoxesNotification(Nethgui\Core\ViewInterface $view, $mode)
     {
         foreach ($this->user->getDialogBoxes() as $dialog) {
             // Spawn a view associated to the $dialog original module:
@@ -84,7 +84,7 @@ class Nethgui_Module_NotificationArea extends Nethgui_Core_Module_Standard imple
         }
     }
 
-    private function prepareValidationErrorNotification(Nethgui_Core_ViewInterface $view, $mode)
+    private function prepareValidationErrorNotification(Nethgui\Core\ViewInterface $view, $mode)
     {
         $validationView = $view->spawnView($this);
         $validationView->setTemplate('Nethgui_Template_ValidationError');
@@ -95,7 +95,7 @@ class Nethgui_Module_NotificationArea extends Nethgui_Core_Module_Standard imple
             $validationView['message'] = $view->translate('Incorrect values');
         }
 
-        $validationView['type'] = Nethgui_Client_DialogBox::NOTIFY_ERROR;
+        $validationView['type'] = Nethgui\Client\DialogBox::NOTIFY_ERROR;
         $validationView['dialogId'] = 'dlg' . substr(md5('Validation-' . microtime()), 0, 6);
         $validationView['transient'] = TRUE;
         $validationView['errors'] = new ArrayObject();
@@ -114,7 +114,7 @@ class Nethgui_Module_NotificationArea extends Nethgui_Core_Module_Standard imple
         $view['notifications'][] = $validationView;
     }
 
-    private function prepareErrorMessage(Nethgui_Core_ViewInterface $eV, $errorInfo)
+    private function prepareErrorMessage(Nethgui\Core\ViewInterface $eV, $errorInfo)
     {
         $parts = array();
         foreach($errorInfo as $error) {
@@ -123,14 +123,14 @@ class Nethgui_Module_NotificationArea extends Nethgui_Core_Module_Standard imple
         return implode(' ' . $eV->translate("valid_OR") . ' ', $parts);
     }
 
-    public function renderValidationError(Nethgui_Renderer_Abstract $view)
+    public function renderValidationError(Nethgui\Renderer\Abstract $view)
     {
-        return $view->button($view['fieldName'], Nethgui_Renderer_WidgetFactoryInterface::BUTTON_LINK)
+        return $view->button($view['fieldName'], Nethgui\Renderer\WidgetFactoryInterface::BUTTON_LINK)
                 ->setAttribute('value', '#' . $view['fieldId'])
                 ->setAttribute('title', str_replace("\n", " ", $view['errorInfo']));
     }
 
-    private function makeActionViewsForDialog(Nethgui_Client_DialogBox $dialog, $mode, Nethgui_Core_ViewInterface $dialogView)
+    private function makeActionViewsForDialog(Nethgui\Client\DialogBox $dialog, $mode, Nethgui\Core\ViewInterface $dialogView)
     {
         $actionViews = new ArrayObject();
 
@@ -167,7 +167,7 @@ class Nethgui_Module_NotificationArea extends Nethgui_Core_Module_Standard imple
         return $actionViews;
     }
 
-    private function prepareDialogDataForClient(Nethgui_Core_ViewInterface $view, $data, $prefix='')
+    private function prepareDialogDataForClient(Nethgui\Core\ViewInterface $view, $data, $prefix='')
     {
         $output = array();
 
@@ -193,29 +193,29 @@ class Nethgui_Module_NotificationArea extends Nethgui_Core_Module_Standard imple
         return $output;
     }
 
-    public function renderDialogAction(Nethgui_Renderer_Abstract $view)
+    public function renderDialogAction(Nethgui\Renderer\Abstract $view)
     {
         if ($view['transient'] && count($view['data']) == 0) {
             // render as link
-            $widget = $view->button($view['name'], Nethgui_Renderer_WidgetFactoryInterface::BUTTON_LINK)->setAttribute('value', $view['location']);
+            $widget = $view->button($view['name'], Nethgui\Renderer\WidgetFactoryInterface::BUTTON_LINK)->setAttribute('value', $view['location']);
         } else {
             // render as form
             $widget = $view->form()
                 ->setAttribute('action', $view['location'])
                 ->setAttribute('name', 'NotificationDialogAction_' . $view['name'])
                 ->insert($view->hidden('data'))
-                ->insert($view->button($view['name'], Nethgui_Renderer_WidgetFactoryInterface::BUTTON_SUBMIT));
+                ->insert($view->button($view['name'], Nethgui\Renderer\WidgetFactoryInterface::BUTTON_SUBMIT));
         }
 
         return $widget;
     }
 
-    public function addValidationErrorMessage(Nethgui_Core_ModuleInterface $module, $parameterName, $message, $args = array())
+    public function addValidationErrorMessage(Nethgui\Core\ModuleInterface $module, $parameterName, $message, $args = array())
     {
         $this->errors[] = array($module, $parameterName, array(array($message, $args)));
     }
 
-    public function addValidationError(Nethgui_Core_ModuleInterface $module, $parameterName, Nethgui_Core_ValidatorInterface $validator)
+    public function addValidationError(Nethgui\Core\ModuleInterface $module, $parameterName, Nethgui\Core\ValidatorInterface $validator)
     {
         $this->errors[] = array($module, $parameterName, $validator->getFailureInfo());
     }

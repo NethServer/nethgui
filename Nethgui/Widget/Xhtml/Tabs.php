@@ -14,7 +14,7 @@
  * @internal
  * @ignore
  */
-class Nethgui_Widget_Xhtml_Tabs extends Nethgui_Widget_Xhtml
+class Nethgui\Widget\Xhtml_Tabs extends Nethgui\Widget\Xhtml
 {
 
     public function render()
@@ -45,13 +45,13 @@ class Nethgui_Widget_Xhtml_Tabs extends Nethgui_Widget_Xhtml
         return $content;
     }
 
-    public function insert(Nethgui_Renderer_WidgetInterface $widget)
+    public function insert(Nethgui\Renderer\WidgetInterface $widget)
     {
-        if ($widget instanceof Nethgui_Widget_Xhtml_Panel) {
+        if ($widget instanceof Nethgui\Widget\Xhtml_Panel) {
             $widget->setAttribute('class', $widget->getAttribute('class', '') . ' ' . $this->getAttribute('tabClass', 'TabPanel tab-panel'));
             parent::insert($widget);            
         } else {
-            $panel = new Nethgui_Widget_Xhtml_Panel($this->view);
+            $panel = new Nethgui\Widget\Xhtml_Panel($this->view);
             parent::insert($panel);
             $panel
                 ->setAttribute('name', $widget->getAttribute('name'))

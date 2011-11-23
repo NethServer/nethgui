@@ -6,7 +6,7 @@
 /**
  * @package Module
  */
-class Nethgui_Module_Menu extends Nethgui_Core_Module_Standard
+class Nethgui\Module\Menu extends Nethgui\Core\Module\Standard
 {
 
     /**
@@ -33,7 +33,7 @@ class Nethgui_Module_Menu extends Nethgui_Core_Module_Standard
      * @param RecursiveIterator $rootModule
      * @return string
      */
-    private function iteratorToHtml(RecursiveIterator $menuIterator, Nethgui_Renderer_Abstract $view, Nethgui_Renderer_WidgetInterface $widget, $level = 0)
+    private function iteratorToHtml(RecursiveIterator $menuIterator, Nethgui\Renderer\Abstract $view, Nethgui\Renderer\WidgetInterface $widget, $level = 0)
     {
         if ($level > 4) {
             return $widget;
@@ -59,9 +59,9 @@ class Nethgui_Module_Menu extends Nethgui_Core_Module_Standard
         return $widget;
     }
 
-    private function makeModuleAnchor(Nethgui_Renderer_Abstract $view, Nethgui_Core_ModuleInterface $module)
+    private function makeModuleAnchor(Nethgui\Renderer\Abstract $view, Nethgui\Core\ModuleInterface $module)
     {
-        $moduleView = new Nethgui_Client_View($module, $view->getTranslator());
+        $moduleView = new Nethgui\Client\View($module, $view->getTranslator());
 
         $placeholders = array(
             '%HREF' => htmlspecialchars($moduleView->getModuleUrl()),
@@ -78,7 +78,7 @@ class Nethgui_Module_Menu extends Nethgui_Core_Module_Standard
         return $view->literal(strtr($tpl, $placeholders))->setAttribute('hsc', FALSE);
     }
 
-    public function renderModuleMenu(Nethgui_Renderer_Abstract $view)
+    public function renderModuleMenu(Nethgui\Renderer\Abstract $view)
     {
         $rootList = $view->elementList()->setAttribute('wrap', '/');
 
@@ -130,7 +130,7 @@ class Nethgui_Module_Menu extends Nethgui_Core_Module_Standard
         return $tags;
     }
 
-    public function prepareView(Nethgui_Core_ViewInterface $view, $mode)
+    public function prepareView(Nethgui\Core\ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
 

@@ -4,14 +4,14 @@
  */
 
 /**
- * A Nethgui_Core_ModuleSetInterface implementation contains all known modules.
+ * A Nethgui\Core\ModuleSetInterface implementation contains all known modules.
  * 
  * It allows finding a module and iterating over root modules,
  * arranged in a hierarchical structure.
  *
  * @package Core
  */
-interface Nethgui_Core_ModuleSetInterface
+interface Nethgui\Core\ModuleSetInterface
 {
 
     /**

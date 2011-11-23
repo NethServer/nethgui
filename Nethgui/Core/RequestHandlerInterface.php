@@ -11,23 +11,23 @@
  * - validate,
  * - perform process()-ing.
  *
- * @see Nethgui_Core_ModuleInterface
+ * @see Nethgui\Core\ModuleInterface
  * @see http://en.wikipedia.org/wiki/Template_method_pattern
  * @package Core
  */
-interface Nethgui_Core_RequestHandlerInterface {
+interface Nethgui\Core\RequestHandlerInterface {
 
     /**
      * Put the request into the object internal state.
-     * @param Nethgui_Core_RequestInterface $request
+     * @param Nethgui\Core\RequestInterface $request
      */
-    public function bind(Nethgui_Core_RequestInterface $request);
+    public function bind(Nethgui\Core\RequestInterface $request);
 
     /**
      * Validate object state. Errors are sent to $report.
      * @return void
      */
-    public function validate(Nethgui_Core_ValidationReportInterface $report);
+    public function validate(Nethgui\Core\ValidationReportInterface $report);
 
     /**
      * Module behaviour implementation. Executed only if no validation errors has occurred.

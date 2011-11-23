@@ -11,10 +11,10 @@
  * - prepare view parameters
  * - provide module informations
  *
- * @see Nethgui_Core_RequestHandlerInterface
+ * @see Nethgui\Core\RequestHandlerInterface
  * @package Core
  */
-interface Nethgui_Core_ModuleInterface
+interface Nethgui\Core\ModuleInterface
 {
     /**
      * Prepare the server view
@@ -33,7 +33,7 @@ interface Nethgui_Core_ModuleInterface
     /**
      * Sets the host configuration Model.
      */
-    public function setPlatform(Nethgui_System_PlatformInterface $platform);
+    public function setPlatform(Nethgui\System\PlatformInterface $platform);
 
     /**
      * The Module Identifier is a string that univocally identifies a Module.
@@ -43,9 +43,9 @@ interface Nethgui_Core_ModuleInterface
 
     /**
      * Sets the reference to the parent Module.
-     * @see Nethgui_Core_ModuleCompositeInterface addChild() operation.
+     * @see Nethgui\Core\ModuleCompositeInterface addChild() operation.
      */
-    public function setParent(Nethgui_Core_ModuleInterface $parentModule);
+    public function setParent(Nethgui\Core\ModuleInterface $parentModule);
 
     /**
      * Gets a reference to the parent Module.
@@ -79,13 +79,13 @@ interface Nethgui_Core_ModuleInterface
     /**
      * Prepare view layer data, putting it into $view.
      *
-     * @param Nethgui_Core_ViewInterface $view The view to put the data into
+     * @param Nethgui\Core\ViewInterface $view The view to put the data into
      * @param integer $mode One of VIEW_CLIENT or VIEW_SERVER values
-     * @see Nethgui_Core_ModuleInterface::VIEW_SERVER
-     * @see Nethgui_Core_ModuleInterface::VIEW_CLIENT
-     * @see Nethgui_Core_ViewInterface
+     * @see Nethgui\Core\ModuleInterface::VIEW_SERVER
+     * @see Nethgui\Core\ModuleInterface::VIEW_CLIENT
+     * @see Nethgui\Core\ViewInterface
      */
-    public function prepareView(Nethgui_Core_ViewInterface $view, $mode);
+    public function prepareView(Nethgui\Core\ViewInterface $view, $mode);
 
 
     /**
@@ -106,7 +106,7 @@ interface Nethgui_Core_ModuleInterface
  * @package Core
  *
  */
-interface Nethgui_Core_TopModuleInterface
+interface Nethgui\Core\TopModuleInterface
 {
 
     /**

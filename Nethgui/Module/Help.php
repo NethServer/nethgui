@@ -7,16 +7,16 @@
  * @package Module
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class Nethgui_Module_Help extends Nethgui_Core_Module_Controller
+class Nethgui\Module\Help extends Nethgui\Core\Module\Controller
 {
 
     /**
      *
-     * @var Nethgui_Core_ModuleSetInterface
+     * @var Nethgui\Core\ModuleSetInterface
      */
     private $moduleSet;
 
-    public function __construct(Nethgui_Core_ModuleSetInterface $moduleSet)
+    public function __construct(Nethgui\Core\ModuleSetInterface $moduleSet)
     {
         parent::__construct(NULL);
         $this->moduleSet = $moduleSet;
@@ -33,7 +33,7 @@ class Nethgui_Module_Help extends Nethgui_Core_Module_Controller
         }
     }
 
-    public function prepareView(Nethgui_Core_ViewInterface $view, $mode)
+    public function prepareView(Nethgui\Core\ViewInterface $view, $mode)
     {
         if (is_null($this->currentAction)) {
             $view->setTemplate('Nethgui_Template_Help');

@@ -11,7 +11,7 @@
  *
  * @package Core
  */
-interface Nethgui_Core_ViewInterface extends ArrayAccess, IteratorAggregate
+interface Nethgui\Core\ViewInterface extends ArrayAccess, IteratorAggregate
 {
 
     /**
@@ -43,15 +43,15 @@ interface Nethgui_Core_ViewInterface extends ArrayAccess, IteratorAggregate
 
     /**
      * Create a new view object associated to $module
-     * @param Nethgui_Core_ModuleInterface $module The associated $module
+     * @param Nethgui\Core\ModuleInterface $module The associated $module
      * @param boolean Optional If TRUE the returned view is added to the current object with key equal to the module identifier
-     * @return Nethgui_Core_ViewInterface The new view object, of the same type of the actual.
+     * @return Nethgui\Core\ViewInterface The new view object, of the same type of the actual.
      */
-    public function spawnView(Nethgui_Core_ModuleInterface $module, $register = FALSE);
+    public function spawnView(Nethgui\Core\ModuleInterface $module, $register = FALSE);
 
     /**
      * The module associated to this view.
-     * @return Nethgui_Core_ModuleInterface
+     * @return Nethgui\Core\ModuleInterface
      */
     public function getModule();
 
@@ -59,8 +59,8 @@ interface Nethgui_Core_ViewInterface extends ArrayAccess, IteratorAggregate
      * Gets the array of the current module identifier plus all identifiers of
      * the ancestor modules, starting from the root.   
      *
-     * @see Nethgui_Core_ModuleInterface::getParent()
-     * @see Nethgui_Core_ModuleInterface::getIdentifier()
+     * @see Nethgui\Core\ModuleInterface::getParent()
+     * @see Nethgui\Core\ModuleInterface::getIdentifier()
      * @return array
      */
     public function getModulePath();
@@ -114,7 +114,7 @@ interface Nethgui_Core_ViewInterface extends ArrayAccess, IteratorAggregate
      * @param string $value
      * @param array $args
      * @return string
-     * @see Nethgui_Core_TranslatorInterface::translate()
+     * @see Nethgui\Core\TranslatorInterface::translate()
      * @see getTranslator()
      */
     public function translate($message, $args = array());
@@ -123,14 +123,14 @@ interface Nethgui_Core_ViewInterface extends ArrayAccess, IteratorAggregate
      * Access to the object performing string translations
      *
      * @see translate()
-     * @return Nethgui_Core_TranslatorInterface
+     * @return Nethgui\Core\TranslatorInterface
      */
     public function getTranslator();
 
     /**
      * Create command objects through the returned factory class instance
      * 
-     * @return Nethgui_Core_CommandInterface;
+     * @return Nethgui\Core\CommandInterface;
      */
     public function createUiCommand($methodName, $arguments);
 }

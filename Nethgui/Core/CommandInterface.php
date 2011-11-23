@@ -16,7 +16,7 @@
  * @see http://en.wikipedia.org/wiki/Command_pattern
  * @package Core
  */
-interface Nethgui_Core_CommandInterface
+interface Nethgui\Core\CommandInterface
 {
 
     /**
@@ -33,10 +33,10 @@ interface Nethgui_Core_CommandInterface
     /**
      * Set the command receiver, the object where the command is executed
      *
-     * @param object An object implementing either Nethgui_Core_CommandReceiverInterface or Nethgui_Client_CommandReceiverAggregateInterface
-     * @see Nethgui_Core_CommandReceiverInterface
-     * @see Nethgui_Client_CommandReceiverAggregateInterface
-     * @return Nethgui_Core_CommandInterface
+     * @param object An object implementing either Nethgui\Core\CommandReceiverInterface or Nethgui\Client\CommandReceiverAggregateInterface
+     * @see Nethgui\Core\CommandReceiverInterface
+     * @see Nethgui\Client\CommandReceiverAggregateInterface
+     * @return Nethgui\Core\CommandInterface
      */
     public function setReceiver($receiver);
 

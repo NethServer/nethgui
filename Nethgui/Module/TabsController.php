@@ -12,14 +12,14 @@
  * - Tracks the actions involving a row
  * - Tracks the actions involving the whole table
  *
- * @see Nethgui_Module_Table_Modify
- * @see Nethgui_Module_Table_Read
+ * @see Nethgui\Module\Table\Modify
+ * @see Nethgui\Module\Table\Read
  * @package Module
  */
-class Nethgui_Module_TabsController extends Nethgui_Core_Module_Controller
+class Nethgui\Module\TabsController extends Nethgui\Core\Module\Controller
 {
 
-    public function renderDefault(Nethgui_Renderer_Abstract $view)
+    public function renderDefault(Nethgui\Renderer\Abstract $view)
     {
         $container = $view->tabs()
             ->setAttribute('class', 'TabsController')

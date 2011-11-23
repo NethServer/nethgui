@@ -7,7 +7,7 @@
  *  @author Davide Principi <davide.principi@nethesis.it>
  * @package Renderer
  */
-class Nethgui_Renderer_Help extends Nethgui_Renderer_Xhtml
+class Nethgui\Renderer\Help extends Nethgui\Renderer\Xhtml
 {
 
     public $nestingLevel = 1;
@@ -15,7 +15,7 @@ class Nethgui_Renderer_Help extends Nethgui_Renderer_Xhtml
 
     protected function createWidget($widgetName, $attributes = array())
     {
-        $o = new Nethgui_Widget_Help($this);
+        $o = new Nethgui\Widget\Help($this);
 
         foreach ($attributes as $aname => $avalue) {
             $o->setAttribute($aname, $avalue);
@@ -67,7 +67,7 @@ class Nethgui_Renderer_Help extends Nethgui_Renderer_Xhtml
         $view['description'] = $this->getModule()->getDescription();
         $view['fields'] = $fields;
         $view['titleLevel'] = $this->nestingLevel;
-        $headingRenderer = new Nethgui_Renderer_Xhtml($view);
+        $headingRenderer = new Nethgui\Renderer\Xhtml($view);
 
         return (String) $headingRenderer . $content;
     }

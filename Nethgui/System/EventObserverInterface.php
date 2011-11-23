@@ -11,7 +11,7 @@
  * @package System
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-interface Nethgui_System_EventObserverInterface
+interface Nethgui\System\EventObserverInterface
 {
 
     /**

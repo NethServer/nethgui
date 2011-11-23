@@ -8,12 +8,12 @@
 /**
  * Processes the table modification actions: create, update, delete
  *
- * @see Nethgui_Module_Table_Read
+ * @see Nethgui\Module\Table\Read
  * @package Module
  * @subpackage Table
  * 
  */
-class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
+class Nethgui\Module\Table\Modify extends Nethgui\Module\Table\Action
 {
     const KEY = 10;
     const FIELD = 11;
@@ -61,7 +61,7 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
         }
     }
 
-    private function getTheKey(Nethgui_Core_RequestInterface $request, $parameterName)
+    private function getTheKey(Nethgui\Core\RequestInterface $request, $parameterName)
     {
         if ($request->isSubmitted()) {
             if ($request->hasParameter($parameterName)) {
@@ -101,9 +101,9 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
     /**
      * We have to declare all the parmeters of parameterSchema here,
      * binding the actual key/row from tableAdapter.
-     * @param Nethgui_Core_RequestInterface $request 
+     * @param Nethgui\Core\RequestInterface $request 
      */
-    public function bind(Nethgui_Core_RequestInterface $request)
+    public function bind(Nethgui\Core\RequestInterface $request)
     {
         $key = NULL;
 
@@ -183,7 +183,7 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
         } elseif ($action == 'update') {
             $this->processUpdate($key);
         } else {
-            throw new Nethgui_Exception_HttpStatusClientError('Not found', 404);
+            throw new Nethgui\Exception\HttpStatusClientError('Not found', 404);
         }
 
         // Transfer all parameters values into tableAdapter (and DB):
@@ -201,7 +201,7 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
         if (isset($this->tableAdapter[$key])) {
             unset($this->tableAdapter[$key]);
         } else {
-            throw new Nethgui_Exception_Process('Cannot delete `' . $key . '`');
+            throw new Nethgui\Exception\Process('Cannot delete `' . $key . '`');
         }
         $this->addUiClientCommand('cancel');
     }
@@ -216,7 +216,7 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
         $this->addUiClientCommand('cancel');
     }
 
-    public function prepareView(Nethgui_Core_ViewInterface $view, $mode)
+    public function prepareView(Nethgui\Core\ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
         if ($mode == self::VIEW_SERVER) {
@@ -227,7 +227,7 @@ class Nethgui_Module_Table_Modify extends Nethgui_Module_Table_Action
     /**
      * Set the default parameter values in "create" action
      * @param array $defaultValues
-     * @return Nethgui_Module_Table_Modify
+     * @return Nethgui\Module\Table\Modify
      */
     public function setCreateDefaults($defaultValues)
     {

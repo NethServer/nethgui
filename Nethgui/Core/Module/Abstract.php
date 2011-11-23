@@ -8,7 +8,7 @@
  * @package Core
  * @subpackage Module
  */
-abstract class Nethgui_Core_Module_Abstract implements Nethgui_Core_ModuleInterface, Nethgui_Core_LanguageCatalogProvider, Nethgui_Log_LogConsumerInterface
+abstract class Nethgui\Core\Module\Abstract implements Nethgui\Core\ModuleInterface, Nethgui\Core\LanguageCatalogProvider, Nethgui\Log\LogConsumerInterface
 {
 
     /**
@@ -27,14 +27,14 @@ abstract class Nethgui_Core_Module_Abstract implements Nethgui_Core_ModuleInterf
     private $initialized = FALSE;
 
     /**
-     * @var Nethgui_System_PlatformInterface
+     * @var Nethgui\System\PlatformInterface
      */
     private $platform;
 
     /**
      * Template applied to view, if different from NULL
      *
-     * @see Nethgui_Core_ViewInterface::setTemplate()
+     * @see Nethgui\Core\ViewInterface::setTemplate()
      * @var string|callable
      */
     private $viewTemplate;
@@ -50,13 +50,13 @@ abstract class Nethgui_Core_Module_Abstract implements Nethgui_Core_ModuleInterf
         }
     }
 
-    public function setPlatform(Nethgui_System_PlatformInterface $platform)
+    public function setPlatform(Nethgui\System\PlatformInterface $platform)
     {
         $this->platform = $platform;
     }
 
     /**
-     * @return Nethgui_System_PlatformInterface
+     * @return Nethgui\System\PlatformInterface
      */
     protected function getPlatform()
     {
@@ -95,7 +95,7 @@ abstract class Nethgui_Core_Module_Abstract implements Nethgui_Core_ModuleInterf
         return $this->getTitle() . '_Description';
     }
 
-    public function setParent(Nethgui_Core_ModuleInterface $parentModule)
+    public function setParent(Nethgui\Core\ModuleInterface $parentModule)
     {
         $this->parent = $parentModule;
     }
@@ -105,7 +105,7 @@ abstract class Nethgui_Core_Module_Abstract implements Nethgui_Core_ModuleInterf
         return $this->parent;
     }
 
-    public function prepareView(Nethgui_Core_ViewInterface $view, $mode)
+    public function prepareView(Nethgui\Core\ViewInterface $view, $mode)
     {
         $template = $this->getViewTemplate();
         if ( ! is_null($template)) {
@@ -154,7 +154,7 @@ abstract class Nethgui_Core_Module_Abstract implements Nethgui_Core_ModuleInterf
         return array();
     }
 
-    public function setLog(Nethgui_Log_AbstractLog $log)
+    public function setLog(Nethgui\Log\AbstractLog $log)
     {
         throw new Exception(sprintf('Cannot invoke setLog() on %s', get_class($this)));
     }
@@ -163,10 +163,10 @@ abstract class Nethgui_Core_Module_Abstract implements Nethgui_Core_ModuleInterf
     {
         $platform = $this->getPlatform();
 
-        if($platform instanceof Nethgui_Log_LogConsumerInterface) {
+        if($platform instanceof Nethgui\Log\LogConsumerInterface) {
             return $platform->getLog();
         }
-        return new Nethgui_Log_Nullog;
+        return new Nethgui\Log\Nullog;
     }
 
 }

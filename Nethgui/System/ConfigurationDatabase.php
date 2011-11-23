@@ -22,12 +22,12 @@
  * 
  * 
  */
-class Nethgui_System_ConfigurationDatabase implements Nethgui_Authorization_PolicyEnforcementPointInterface, Nethgui_Core_GlobalFunctionConsumer
+class Nethgui\System\ConfigurationDatabase implements Nethgui\Authorization\PolicyEnforcementPointInterface, Nethgui\Core\GlobalFunctionConsumer
 {
 
     /**
      *
-     * @var Nethgui_Core_GlobalFunctionWrapper
+     * @var Nethgui\Core\GlobalFunctionWrapper
      */
     private $globalFunctionWrapper;
 
@@ -58,18 +58,18 @@ class Nethgui_System_ConfigurationDatabase implements Nethgui_Authorization_Poli
 
     /**
      * Keeps User object acting on this database. 
-     * @var Nethgui_Client_UserInterface
+     * @var Nethgui\Client\UserInterface
      */
     private $user;
 
     /**
      * setPolicyDecisionPoint 
      * 
-     * @param Nethgui_Authorization_PolicyDecisionPointInterface $pdp 
+     * @param Nethgui\Authorization\PolicyDecisionPointInterface $pdp 
      * @access public
      * @return void
      */
-    public function setPolicyDecisionPoint(Nethgui_Authorization_PolicyDecisionPointInterface $pdp)
+    public function setPolicyDecisionPoint(Nethgui\Authorization\PolicyDecisionPointInterface $pdp)
     {
         $this->policyDecisionPoint = $pdp;
         $this->authorizeDbAccess();
@@ -92,7 +92,7 @@ class Nethgui_System_ConfigurationDatabase implements Nethgui_Authorization_Poli
      * 
      * @param string $database Database name
      */
-    public function __construct($database, Nethgui_Client_UserInterface $user)
+    public function __construct($database, Nethgui\Client\UserInterface $user)
     {
         if ( ! $database)
             throw new Exception("You must provide a valid database name.");
@@ -103,13 +103,13 @@ class Nethgui_System_ConfigurationDatabase implements Nethgui_Authorization_Poli
 
     private function authorizeDbAccess()
     {
-        $requestRead = new Nethgui_Authorization_AccessControlRequest($this->user, $this->db, 'READ');
+        $requestRead = new Nethgui\Authorization\AccessControlRequest($this->user, $this->db, 'READ');
         $responseRead = $this->policyDecisionPoint->authorizeRequest($requestRead);
         if ($responseRead) {
             $this->canRead = TRUE;
         }
 
-        $requestWrite = new Nethgui_Authorization_AccessControlRequest($this->user, $this->db, 'WRITE');
+        $requestWrite = new Nethgui\Authorization\AccessControlRequest($this->user, $this->db, 'WRITE');
         $responseWrite = $this->policyDecisionPoint->authorizeRequest($requestWrite);
         if ($responseWrite) {
             $this->canWrite = TRUE;
@@ -333,7 +333,7 @@ class Nethgui_System_ConfigurationDatabase implements Nethgui_Authorization_Poli
         return ($ret == 0);
     }
 
-    public function setGlobalFunctionWrapper(Nethgui_Core_GlobalFunctionWrapper $object)
+    public function setGlobalFunctionWrapper(Nethgui\Core\GlobalFunctionWrapper $object)
     {
         $this->globalFunctionWrapper = $object;
     }
@@ -342,7 +342,7 @@ class Nethgui_System_ConfigurationDatabase implements Nethgui_Authorization_Poli
     {
         // prepend the database name and command
         array_unshift($args, $this->db, $command);
-        $p = new Nethgui_System_Process($this->command . ' ${@}', $args);
+        $p = new Nethgui\System\Process($this->command . ' ${@}', $args);
         if (isset($this->globalFunctionWrapper)) {
             $p->setGlobalFunctionWrapper($this->globalFunctionWrapper);
         }

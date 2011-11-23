@@ -14,7 +14,7 @@
  * @internal
  * @ignore
  */
-class Nethgui_Widget_Xhtml_Columns extends Nethgui_Widget_Xhtml_Panel
+class Nethgui\Widget\Xhtml_Columns extends Nethgui\Widget\Xhtml_Panel
 {
     public function render()
     {

@@ -9,16 +9,16 @@
  * A Module surrogate is employed to store module informations into the User session,
  * during DialogBox serialization.
  * 
- * @see Nethgui_Client_DialogBox
+ * @see Nethgui\Client\DialogBox
  * @ignore
  * @package Core
  */
-class Nethgui_Client_ModuleSurrogate implements Nethgui_Core_ModuleInterface, Nethgui_Core_LanguageCatalogProvider, Serializable
+class Nethgui\Client\ModuleSurrogate implements Nethgui\Core\ModuleInterface, Nethgui\Core\LanguageCatalogProvider, Serializable
 {
 
     private $info;
 
-    public function __construct(Nethgui_Core_ModuleInterface $originalModule)
+    public function __construct(Nethgui\Core\ModuleInterface $originalModule)
     {
         $this->info = array();
 
@@ -28,7 +28,7 @@ class Nethgui_Client_ModuleSurrogate implements Nethgui_Core_ModuleInterface, Ne
         $this->info['getLanguageCatalog'] = $originalModule->getLanguageCatalog();
 
         $parent = $originalModule->getParent();
-        if ($parent instanceof Nethgui_Core_ModuleInterface) {
+        if ($parent instanceof Nethgui\Core\ModuleInterface) {
             $this->info['getParent'] = new self($parent);
         } else {
             $this->info['getParent'] = NULL;
@@ -70,17 +70,17 @@ class Nethgui_Client_ModuleSurrogate implements Nethgui_Core_ModuleInterface, Ne
         throw new Exception('Not implemented ' . __METHOD__);
     }
 
-    public function prepareView(Nethgui_Core_ViewInterface $view, $mode)
+    public function prepareView(Nethgui\Core\ViewInterface $view, $mode)
     {
         throw new Exception('Not implemented ' . __METHOD__);
     }
 
-    public function setPlatform(Nethgui_System_PlatformInterface $platform)
+    public function setPlatform(Nethgui\System\PlatformInterface $platform)
     {
         throw new Exception('Not implemented ' . __METHOD__);
     }
 
-    public function setParent(Nethgui_Core_ModuleInterface $parentModule)
+    public function setParent(Nethgui\Core\ModuleInterface $parentModule)
     {
         throw new Exception('Not implemented ' . __METHOD__);
     }

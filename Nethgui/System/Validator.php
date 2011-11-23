@@ -8,7 +8,7 @@
  * @author Davide Principi <davide.principi@nethesis.it>
  * @package Core
  */
-class Nethgui_System_Validator implements Nethgui_Core_ValidatorInterface
+class Nethgui\System\Validator implements Nethgui\Core\ValidatorInterface
 {
 
     private $chain = array();
@@ -16,24 +16,24 @@ class Nethgui_System_Validator implements Nethgui_Core_ValidatorInterface
 
     /**
      *
-     * @var Nethgui_System_PlatformInterface
+     * @var Nethgui\System\PlatformInterface
      */
     private $platform;
 
-    public function __construct(Nethgui_System_PlatformInterface $platform)
+    public function __construct(Nethgui\System\PlatformInterface $platform)
     {
         $this->platform = $platform;
     }
 
     /**
      *
-     * @param Nethgui_Core_ValidatorInterface $v1
-     * @param Nethgui_Core_ValidatorInterface $v2
+     * @param Nethgui\Core\ValidatorInterface $v1
+     * @param Nethgui\Core\ValidatorInterface $v2
      * @return Nethgui_Core_Validator
      */
-    public function orValidator(Nethgui_Core_ValidatorInterface $v1, Nethgui_Core_ValidatorInterface $v2)
+    public function orValidator(Nethgui\Core\ValidatorInterface $v1, Nethgui\Core\ValidatorInterface $v2)
     {
-        $this->chain[] = new Nethgui_System_OrValidator($v1, $v2);
+        $this->chain[] = new Nethgui\System\OrValidator($v1, $v2);
         return $this;
     }
 
@@ -263,12 +263,12 @@ class Nethgui_System_Validator implements Nethgui_Core_ValidatorInterface
 
     /**
      * Check if the value is collection of elements satisfying the given validator
-     * @param Nethgui_System_Validator $v Member validator
-     * @return Nethgui_System_Validator 
+     * @param Nethgui\System\Validator $v Member validator
+     * @return Nethgui\System\Validator 
      */
-    public function collectionValidator(Nethgui_System_Validator $v)
+    public function collectionValidator(Nethgui\System\Validator $v)
     {
-        $this->chain[] = new Nethgui_System_CollectionValidator($v);
+        $this->chain[] = new Nethgui\System\CollectionValidator($v);
         return $this;
     }
 
@@ -322,7 +322,7 @@ class Nethgui_System_Validator implements Nethgui_Core_ValidatorInterface
                     $this->failureInfo[] = $expression[3];
                     return FALSE;
                 }
-            } elseif ($expression instanceof Nethgui_Core_ValidatorInterface) {
+            } elseif ($expression instanceof Nethgui\Core\ValidatorInterface) {
                 $isValid = $expression->evaluate($value);
                 if (($isValid XOR $notFlag) === FALSE) {
                     $this->failureInfo = array_merge($this->failureInfo, $expression->getFailureInfo());
@@ -352,7 +352,7 @@ class Nethgui_System_Validator implements Nethgui_Core_ValidatorInterface
      */
     private function notImplemented($method)
     {
-        throw new Nethgui_Exception_Validation($method . ' is not implemented.');
+        throw new Nethgui\Exception\Validation($method . ' is not implemented.');
     }
 
     /**
@@ -486,7 +486,7 @@ class Nethgui_System_Validator implements Nethgui_Core_ValidatorInterface
     private function evalMinLength($s, $min)
     {
         if ( ! is_string($s)) {
-            throw new Nethgui_Exception_Validator(sprintf("Invalid type `%s`. Value must be a string.", gettype($s)));
+            throw new Nethgui\Exception\Validator(sprintf("Invalid type `%s`. Value must be a string.", gettype($s)));
         }
         return strlen($s) >= $min;
     }
@@ -494,7 +494,7 @@ class Nethgui_System_Validator implements Nethgui_Core_ValidatorInterface
     private function evalMaxLength($s, $max)
     {
         if ( ! is_string($s)) {
-            throw new Nethgui_Exception_Validator(sprintf("Invalid type `%s`. Value must be a string.", gettype($s)));
+            throw new Nethgui\Exception\Validator(sprintf("Invalid type `%s`. Value must be a string.", gettype($s)));
         }
         return strlen($s) <= $max;
     }
@@ -529,7 +529,7 @@ class Nethgui_System_Validator implements Nethgui_Core_ValidatorInterface
         } elseif ($format == 'YYYY-mm-dd') {
             list($year, $month, $day) = explode('-', $value) + array(0, 0, 0);
         } else {
-            throw new Nethgui_Exception_Validator(sprintf("Unknown date format `%s`", $format));
+            throw new Nethgui\Exception\Validator(sprintf("Unknown date format `%s`", $format));
         }
 
         return checkdate(intval($month), intval($day), intval($year));
@@ -573,7 +573,7 @@ class Nethgui_System_Validator implements Nethgui_Core_ValidatorInterface
     {
         $process = $this->platform->exec('/usr/bin/sudo /sbin/e-smith/validate ${@}', array($validatorName, $value));
 
-        if ($process->getExitStatus() !== 0 && $this->platform instanceof Nethgui_Log_LogConsumerInterface) {
+        if ($process->getExitStatus() !== 0 && $this->platform instanceof Nethgui\Log\LogConsumerInterface) {
             $this->platform->getLog()->error(sprintf('platformValidator: %s', strtr($process->getOutput(), "\n", " ")));
         }
 
@@ -587,12 +587,12 @@ class Nethgui_System_Validator implements Nethgui_Core_ValidatorInterface
  * @internal
  * @package Core
  */
-class Nethgui_System_CollectionValidator implements Nethgui_Core_ValidatorInterface
+class Nethgui\System\CollectionValidator implements Nethgui\Core\ValidatorInterface
 {
 
     /**
      *
-     * @var Nethgui_Core_ValidatorInterface
+     * @var Nethgui\Core\ValidatorInterface
      */
     private $memberValidator;
     private $failureInfo;
@@ -603,7 +603,7 @@ class Nethgui_System_CollectionValidator implements Nethgui_Core_ValidatorInterf
      */
     private $iterator;
 
-    public function __construct(Nethgui_Core_ValidatorInterface $memberValidator)
+    public function __construct(Nethgui\Core\ValidatorInterface $memberValidator)
     {
         $this->memberValidator = $memberValidator;
     }
@@ -646,25 +646,25 @@ class Nethgui_System_CollectionValidator implements Nethgui_Core_ValidatorInterf
  * @author Davide Principi <davide.principi@nethesis.it>
  * @package Core
  * @ignore
- * @see Nethgui_System_Validator::orValidator()
+ * @see Nethgui\System\Validator::orValidator()
  */
-class Nethgui_System_OrValidator implements Nethgui_Core_ValidatorInterface
+class Nethgui\System\OrValidator implements Nethgui\Core\ValidatorInterface
 {
 
     /**
      *
-     * @var Nethgui_Core_ValidatorInterface
+     * @var Nethgui\Core\ValidatorInterface
      */
     private $v1;
 
     /**
      *
-     * @var Nethgui_Core_ValidatorInterface
+     * @var Nethgui\Core\ValidatorInterface
      */
     private $v2;
     private $failureInfo;
 
-    public function __construct(Nethgui_Core_ValidatorInterface $v1, Nethgui_Core_ValidatorInterface $v2)
+    public function __construct(Nethgui\Core\ValidatorInterface $v1, Nethgui\Core\ValidatorInterface $v2)
     {
         $this->v1 = $v1;
         $this->v2 = $v2;

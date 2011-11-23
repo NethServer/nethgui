@@ -13,15 +13,15 @@
  * @subpackage Table
  * 
  */
-class Nethgui_Module_Table_Action extends Nethgui_Core_Module_Standard implements Nethgui_Module_Table_ActionInterface, Nethgui_Core_Module_DefaultUiStateInterface
+class Nethgui\Module\Table\Action extends Nethgui\Core\Module\Standard implements Nethgui\Module\Table\ActionInterface, Nethgui\Core\Module\DefaultUiStateInterface
 {
     /**
      *
-     * @var Nethgui_Adapter_AdapterInterface
+     * @var Nethgui\Adapter\AdapterInterface
      */
     protected $tableAdapter;
       
-    public function setTableAdapter(Nethgui_Adapter_AdapterInterface $tableAdapter)
+    public function setTableAdapter(Nethgui\Adapter\AdapterInterface $tableAdapter)
     {
         if ( ! $this->hasTableAdapter())
         {

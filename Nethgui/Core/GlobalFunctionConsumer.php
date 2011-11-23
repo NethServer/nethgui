@@ -7,7 +7,7 @@
 /**
  * @package Core
  */
-interface Nethgui_Core_GlobalFunctionConsumer
+interface Nethgui\Core\GlobalFunctionConsumer
 {
-    public function setGlobalFunctionWrapper(Nethgui_Core_GlobalFunctionWrapper $object);
+    public function setGlobalFunctionWrapper(Nethgui\Core\GlobalFunctionWrapper $object);
 }

@@ -11,15 +11,15 @@
  * The encoding uses a separator string to split the logical rows and 
  * another separator string to separate logical columns.
  * 
- * This is implemented applying a decorator pattern to Nethgui_Adapter_ArrayAdapter
+ * This is implemented applying a decorator pattern to Nethgui\Adapter\ArrayAdapter
  *
  * @package Adapter
  */
-class Nethgui_Adapter_TabularValueAdapter implements Nethgui_Adapter_AdapterInterface, ArrayAccess, IteratorAggregate, Countable
+class Nethgui\Adapter\TabularValueAdapter implements Nethgui\Adapter\AdapterInterface, ArrayAccess, IteratorAggregate, Countable
 {
 
     /**
-     * @var Nethgui_Adapter_ArrayAdapter
+     * @var Nethgui\Adapter\ArrayAdapter
      */
     private $innerAdapter;
     /**
@@ -30,7 +30,7 @@ class Nethgui_Adapter_TabularValueAdapter implements Nethgui_Adapter_AdapterInte
     private $modified;
     private $columnSeparator;
 
-    public function __construct(Nethgui_Adapter_ArrayAdapter $innerAdapter, $columnSeparator)
+    public function __construct(Nethgui\Adapter\ArrayAdapter $innerAdapter, $columnSeparator)
     {
         $this->innerAdapter = $innerAdapter;
         $this->columnSeparator = $columnSeparator;

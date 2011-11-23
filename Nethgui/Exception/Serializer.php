@@ -6,4 +6,4 @@
 /**
  * @package Exception
  */
-class Nethgui_Exception_Serializer extends Exception {}
+class Nethgui\Exception\Serializer extends Exception {}

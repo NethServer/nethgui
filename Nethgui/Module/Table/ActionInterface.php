@@ -11,8 +11,8 @@
  * @package Module
  * @subpackage Table
  */
-interface Nethgui_Module_Table_ActionInterface
+interface Nethgui\Module\Table\ActionInterface
 {
-    public function setTableAdapter(Nethgui_Adapter_AdapterInterface $tableAdapter);
+    public function setTableAdapter(Nethgui\Adapter\AdapterInterface $tableAdapter);
     public function hasTableAdapter();
 }

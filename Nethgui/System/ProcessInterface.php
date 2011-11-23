@@ -11,7 +11,7 @@
  * @see exec()
  * @package System
  */
-interface Nethgui_System_ProcessInterface
+interface Nethgui\System\ProcessInterface
 {
 
     const STATE_NEW = 0;

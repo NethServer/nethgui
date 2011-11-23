@@ -12,12 +12,12 @@
  * Inheriting classes must define the composition behaviour.
  * 
  *
- * @see Nethgui_Core_Module_Controller
- * @see Nethgui_Core_Module_List
+ * @see Nethgui\Core\Module\Controller
+ * @see Nethgui\Core\Module\List
  * @package Core
  * @subpackage Module
  */
-abstract class Nethgui_Core_Module_Composite extends Nethgui_Core_Module_Abstract implements Nethgui_Core_ModuleCompositeInterface
+abstract class Nethgui\Core\Module\Composite extends Nethgui\Core\Module\Abstract implements Nethgui\Core\ModuleCompositeInterface
 {
 
     private $children = array();
@@ -41,9 +41,9 @@ abstract class Nethgui_Core_Module_Composite extends Nethgui_Core_Module_Abstrac
      * Adds a child to Composite, initializing it, if current Composite is
      * initialized.
      * 
-     * @param Nethgui_Core_ModuleInterface $childModule
+     * @param Nethgui\Core\ModuleInterface $childModule
      */
-    public function addChild(Nethgui_Core_ModuleInterface $childModule)
+    public function addChild(Nethgui\Core\ModuleInterface $childModule)
     {
         if ( ! isset($this->children[$childModule->getIdentifier()])) {
             $this->children[$childModule->getIdentifier()] = $childModule;
@@ -68,7 +68,7 @@ abstract class Nethgui_Core_Module_Composite extends Nethgui_Core_Module_Abstrac
         return array_values($this->children);
     }
 
-    public function setPlatform(Nethgui_System_PlatformInterface $platform)
+    public function setPlatform(Nethgui\System\PlatformInterface $platform)
     {
         parent::setPlatform($platform);
         foreach ($this->getChildren() as $childModule) {

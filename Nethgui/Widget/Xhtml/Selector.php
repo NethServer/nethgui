@@ -14,7 +14,7 @@
  * @internal
  * @ignore
  */
-class Nethgui_Widget_Xhtml_Selector extends Nethgui_Widget_Xhtml
+class Nethgui\Widget\Xhtml_Selector extends Nethgui\Widget\Xhtml
 {
 
     public function render()
@@ -29,7 +29,7 @@ class Nethgui_Widget_Xhtml_Selector extends Nethgui_Widget_Xhtml
         }
 
         if (is_null($value)) {
-            if ($flags & Nethgui_Renderer_WidgetFactoryInterface::SELECTOR_MULTIPLE) {
+            if ($flags & Nethgui\Renderer\WidgetFactoryInterface::SELECTOR_MULTIPLE) {
                 $value = array();
             } else {
                 $value = '';
@@ -52,7 +52,7 @@ class Nethgui_Widget_Xhtml_Selector extends Nethgui_Widget_Xhtml
         }
 
         $cssClass = 'Selector '
-            . ($flags & Nethgui_Renderer_WidgetFactoryInterface::SELECTOR_MULTIPLE ? 'multiple ' : '')
+            . ($flags & Nethgui\Renderer\WidgetFactoryInterface::SELECTOR_MULTIPLE ? 'multiple ' : '')
             . ' '
             . $this->getAttribute('class')
             . ' '
@@ -64,7 +64,7 @@ class Nethgui_Widget_Xhtml_Selector extends Nethgui_Widget_Xhtml
         // Render the choices list
         $attributes = array('class' => $cssClass, 'id' => $this->view->getUniqueId($name));
 
-        if ($flags & Nethgui_Renderer_WidgetFactoryInterface::SELECTOR_DROPDOWN) {
+        if ($flags & Nethgui\Renderer\WidgetFactoryInterface::SELECTOR_DROPDOWN) {
             return $this->renderDropdown($value, $choices, $attributes);
         } else {
             return $this->renderWidgetList($value, $choices, $attributes);
@@ -76,7 +76,7 @@ class Nethgui_Widget_Xhtml_Selector extends Nethgui_Widget_Xhtml
         $name = $this->getAttribute('name');
         $flags = $this->getAttribute('flags');
         $label = $this->getAttribute('label', $name . '_label');
-        $flags = $this->applyDefaultLabelAlignment($flags, Nethgui_Renderer_WidgetFactoryInterface::LABEL_ABOVE);
+        $flags = $this->applyDefaultLabelAlignment($flags, Nethgui\Renderer\WidgetFactoryInterface::LABEL_ABOVE);
         if (count($choices) == 0) {
             $tagContent = '<option selected="selected" value=""/>';
         } else {
@@ -91,23 +91,23 @@ class Nethgui_Widget_Xhtml_Selector extends Nethgui_Widget_Xhtml
         $name = $this->getAttribute('name');
         $flags = $this->getAttribute('flags');
 
-        $hiddenWidget = new Nethgui_Widget_Xhtml_Hidden($this->view);
+        $hiddenWidget = new Nethgui\Widget\Xhtml_Hidden($this->view);
         $hiddenWidget->setAttribute('flags', $flags)
             ->setAttribute('value', '')
             ->setAttribute('class', 'Hidden')
             ->setAttribute('name', $name);
 
-        $contentWidget = new Nethgui_Widget_Xhtml_Literal($this->view);
+        $contentWidget = new Nethgui\Widget\Xhtml_Literal($this->view);
         $contentWidget->setAttribute('data', $this->generateSelectorContentWidgetList($name, $value, $choices, $flags));
 
-        $panelWidget = new Nethgui_Widget_Xhtml_Panel($this->view);
+        $panelWidget = new Nethgui\Widget\Xhtml_Panel($this->view);
         $panelWidget
             ->setAttribute('class', $attributes['class'])
             ->setAttribute('name', $name)
             ->insert($hiddenWidget)
             ->insert($contentWidget);
 
-        $fieldsetWidget = new Nethgui_Widget_Xhtml_Fieldset($this->view);
+        $fieldsetWidget = new Nethgui\Widget\Xhtml_Fieldset($this->view);
         $fieldsetWidget->setAttribute('template', $this->getAttribute('label', $name . '_label'))
             ->setAttribute('flags', $this->getAttribute('flags'));
         if ($this->hasAttribute('icon-before')) {
@@ -136,13 +136,13 @@ class Nethgui_Widget_Xhtml_Selector extends Nethgui_Widget_Xhtml
         foreach (array_values($choices) as $index => $choice) {
 
             $content .= $this->openTag('li');
-            $choiceFlags = ($flags & ~(Nethgui_Renderer_WidgetFactoryInterface::LABEL_LEFT | Nethgui_Renderer_WidgetFactoryInterface::LABEL_NONE))  | Nethgui_Renderer_WidgetFactoryInterface::LABEL_RIGHT;
+            $choiceFlags = ($flags & ~(Nethgui\Renderer\WidgetFactoryInterface::LABEL_LEFT | Nethgui\Renderer\WidgetFactoryInterface::LABEL_NONE))  | Nethgui\Renderer\WidgetFactoryInterface::LABEL_RIGHT;
 
-            if ($flags & Nethgui_Renderer_WidgetFactoryInterface::SELECTOR_MULTIPLE) {
+            if ($flags & Nethgui\Renderer\WidgetFactoryInterface::SELECTOR_MULTIPLE) {
                 $choiceName = $name . '/' . $index;
 
                 if (in_array($choice[0], $value)) {
-                    $choiceFlags |= Nethgui_Renderer_WidgetFactoryInterface::STATE_CHECKED;
+                    $choiceFlags |= Nethgui\Renderer\WidgetFactoryInterface::STATE_CHECKED;
                 }
 
                 $attributes = array(
@@ -153,7 +153,7 @@ class Nethgui_Widget_Xhtml_Selector extends Nethgui_Widget_Xhtml
                 $choiceName = $name;
 
                 if ($choice[0] == $value) {
-                    $choiceFlags |= Nethgui_Renderer_WidgetFactoryInterface::STATE_CHECKED;
+                    $choiceFlags |= Nethgui\Renderer\WidgetFactoryInterface::STATE_CHECKED;
                 }
 
                 $attributes = array(

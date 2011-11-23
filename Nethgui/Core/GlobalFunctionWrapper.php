@@ -7,7 +7,7 @@
 /**
  * @package Core
  */
-class Nethgui_Core_GlobalFunctionWrapper
+class Nethgui\Core\GlobalFunctionWrapper
 {
 
     public function __call($name, $arguments)

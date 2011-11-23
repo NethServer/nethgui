@@ -8,7 +8,7 @@
  * @package Client
  * @ignore
  */
-class Nethgui_Client_Command implements Nethgui_Core_CommandInterface
+class Nethgui\Client\Command implements Nethgui\Core\CommandInterface
 {
 
     /**
@@ -48,12 +48,12 @@ class Nethgui_Client_Command implements Nethgui_Core_CommandInterface
             throw new LogicException(sprintf('%s: command was already executed', get_class($this)));
         }
 
-        if ($this->receiver instanceof Nethgui_Core_CommandReceiverInterface) {
+        if ($this->receiver instanceof Nethgui\Core\CommandReceiverInterface) {
             $this->executed = TRUE;
             return $this->receiver->executeCommand($this->methodName, $this->arguments);
         }
 
-        if ($this->receiver instanceof Nethgui_Core_CommandReceiverAggregateInterface) {
+        if ($this->receiver instanceof Nethgui\Core\CommandReceiverAggregateInterface) {
             $this->executed = TRUE;
             return $this->receiver->getCommandReceiver()->executeCommand($this->methodName, $this->arguments);
         }

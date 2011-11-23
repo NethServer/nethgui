@@ -6,4 +6,4 @@
 /**
  * @package Exception
  */
-class Nethgui_Exception_View extends Exception {}
+class Nethgui\Exception\View extends Exception {}

@@ -21,7 +21,7 @@
  * @subpackage Xhtml
  * @ignore
  */
-class Nethgui_Widget_Xhtml_TextArea extends Nethgui_Widget_Xhtml
+class Nethgui\Widget\Xhtml_TextArea extends Nethgui\Widget\Xhtml
 {
 
     public function render()

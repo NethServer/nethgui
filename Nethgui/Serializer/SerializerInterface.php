@@ -8,7 +8,7 @@
  *
  * @package Serializer
  */
-interface Nethgui_Serializer_SerializerInterface {
+interface Nethgui\Serializer\SerializerInterface {
     public function read();
     public function write($value);
 }

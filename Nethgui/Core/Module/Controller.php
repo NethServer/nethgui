@@ -14,11 +14,11 @@
  * 
  * A a top level Controller renders its parts embedded in a FORM container.
  *
- * @see Nethgui_Core_Module_Composite
+ * @see Nethgui\Core\Module\Composite
  * @package Core
  * @subpackage Module
  */
-class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite implements Nethgui_Core_RequestHandlerInterface, Nethgui_Core_Module_DefaultUiStateInterface
+class Nethgui\Core\Module\Controller extends Nethgui\Core\Module\Composite implements Nethgui\Core\RequestHandlerInterface, Nethgui\Core\Module\DefaultUiStateInterface
 {
 
     /**
@@ -30,7 +30,7 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
 
     /**
      *
-     * @return Nethgui_Core_RequestInterface
+     * @return Nethgui\Core\RequestInterface
      */
     protected function getRequest()
     {
@@ -41,9 +41,9 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
      * Overrides Composite bind() method, defining what is the current action
      * and forwarding the call to it.
      *
-     * @param Nethgui_Core_RequestInterface $request 
+     * @param Nethgui\Core\RequestInterface $request 
      */
-    public function bind(Nethgui_Core_RequestInterface $request)
+    public function bind(Nethgui\Core\RequestInterface $request)
     {
         $this->request = $request;
         $actionId = $this->establishCurrentActionId();
@@ -53,7 +53,7 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
         }
 
         $this->currentAction = $this->getAction($actionId);
-        if ($this->currentAction instanceof Nethgui_Core_RequestHandlerInterface) {
+        if ($this->currentAction instanceof Nethgui\Core\RequestHandlerInterface) {
             $this->currentAction->bind($request->getParameterAsInnerRequest($actionId, Nethgui\array_rest($request->getArguments())));
         }
     }
@@ -69,7 +69,7 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
             $actionId = $arguments[0];
             if ( ! $this->hasAction($actionId)) {
                 // a NULL action at this point results in a "not found" condition:
-                throw new Nethgui_Exception_HttpStatusClientError('Not Found', 404);
+                throw new Nethgui\Exception\HttpStatusClientError('Not Found', 404);
             }
         }
 
@@ -82,7 +82,7 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
      * If the child is not found it returns NULL.
      * 
      * @param string $identifier 
-     * @return Nethgui_Core_ModuleInterface
+     * @return Nethgui\Core\ModuleInterface
      */
     public function getAction($identifier = NULL)
     {
@@ -102,16 +102,16 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
 
     /**
      * Implements validate() method, forwarding the call to current action only.
-     * @param Nethgui_Core_ValidationReportInterface $report
+     * @param Nethgui\Core\ValidationReportInterface $report
      * @return void 
      */
-    public function validate(Nethgui_Core_ValidationReportInterface $report)
+    public function validate(Nethgui\Core\ValidationReportInterface $report)
     {
         if (is_null($this->currentAction)) {
             return;
         }
 
-        if ($this->currentAction instanceof Nethgui_Core_RequestHandlerInterface) {
+        if ($this->currentAction instanceof Nethgui\Core\RequestHandlerInterface) {
             $this->currentAction->validate($report);
         }
     }
@@ -127,7 +127,7 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
             return;
         }
 
-        if ($this->currentAction instanceof Nethgui_Core_RequestHandlerInterface) {
+        if ($this->currentAction instanceof Nethgui\Core\RequestHandlerInterface) {
             $this->currentAction->process();
         }
     }
@@ -137,10 +137,10 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
      * state (index) if current action is not defined, or to display the 
      * current action.
      * 
-     * @param Nethgui_Core_ViewInterface $view
+     * @param Nethgui\Core\ViewInterface $view
      * @param type $mode 
      */
-    public function prepareView(Nethgui_Core_ViewInterface $view, $mode)
+    public function prepareView(Nethgui\Core\ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
 
@@ -168,24 +168,24 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
      * Note: The current action template is wrapped inside a DIV.Action tag.
      *
      * @internal Actually called by the framework.
-     * @param Nethgui_Renderer_Abstract $view The view
+     * @param Nethgui\Renderer\Abstract $view The view
      * @return string
      */
-    public function renderCurrentAction(Nethgui_Renderer_Abstract $view)
+    public function renderCurrentAction(Nethgui\Renderer\Abstract $view)
     {
         return $view->inset($this->currentAction->getIdentifier());
     }
 
-    public function renderDefault(Nethgui_Renderer_Abstract $view)
+    public function renderDefault(Nethgui\Renderer\Abstract $view)
     {
         $containerClass = 'Controller';
 
-        if ($this instanceof Nethgui_Core_Module_DefaultUiStateInterface) {
+        if ($this instanceof Nethgui\Core\Module\DefaultUiStateInterface) {
             if ($this->getDefaultUiStyleFlags()
-                & Nethgui_Core_Module_DefaultUiStateInterface::STYLE_CONTAINER_TABLE) {
+                & Nethgui\Core\Module\DefaultUiStateInterface::STYLE_CONTAINER_TABLE) {
                 $containerClass = 'TableController';
             } elseif ($this->getDefaultUiStyleFlags()
-                & Nethgui_Core_Module_DefaultUiStateInterface::STYLE_CONTAINER_TABS) {
+                & Nethgui\Core\Module\DefaultUiStateInterface::STYLE_CONTAINER_TABS) {
                 $containerClass = 'TabsController';
             }
         }
@@ -193,11 +193,11 @@ class Nethgui_Core_Module_Controller extends Nethgui_Core_Module_Composite imple
         $container = $view->panel()->setAttribute('class', $containerClass);
 
         foreach ($this->getChildren() as $index => $module) {
-            if ($module instanceof Nethgui_Core_Module_DefaultUiStateInterface) {
+            if ($module instanceof Nethgui\Core\Module\DefaultUiStateInterface) {
                 $flagEnabled = $module->getDefaultUiStyleFlags()
-                    & Nethgui_Core_Module_DefaultUiStateInterface::STYLE_ENABLED;
+                    & Nethgui\Core\Module\DefaultUiStateInterface::STYLE_ENABLED;
                 if ($module->getDefaultUiStyleFlags()
-                    & Nethgui_Core_Module_DefaultUiStateInterface::STYLE_DIALOG) {
+                    & Nethgui\Core\Module\DefaultUiStateInterface::STYLE_DIALOG) {
                     $widgetClass = 'Dialog';
                 } else {
                     $widgetClass = 'Action';

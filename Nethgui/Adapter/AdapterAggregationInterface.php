@@ -6,7 +6,7 @@
 /**
  * @package Adapter
  */
-interface Nethgui_Adapter_AdapterAggregationInterface {
+interface Nethgui\Adapter\AdapterAggregationInterface {
 
     /**
      * Return the list of registered parameter names
@@ -15,13 +15,13 @@ interface Nethgui_Adapter_AdapterAggregationInterface {
     public function getKeys();
     
     /**
-     * @param Nethgui_Adapter_AdapterInterface $adapter
+     * @param Nethgui\Adapter\AdapterInterface $adapter
      * @param string $key
      */
-    public function register(Nethgui_Adapter_AdapterInterface $adapter, $key);
+    public function register(Nethgui\Adapter\AdapterInterface $adapter, $key);
     
     /**
-     * @return Nethgui_Adapter_AdapterInterface
+     * @return Nethgui\Adapter\AdapterInterface
      */
     public function query($key);
     

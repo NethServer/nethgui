@@ -9,23 +9,23 @@
  * @subpackage Tool
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class Test_Tool_MockObject implements PHPUnit_Framework_MockObject_Stub
+class Test\Tool\MockObject implements PHPUnit_Framework_MockObject_Stub
 {
 
     /**
      *
-     * @var Test_Tool_MockState
+     * @var Test\Tool\MockState
      */
     private $state = NULL;
 
-    public function __construct(Test_Tool_MockState $state)
+    public function __construct(Test\Tool\MockState $state)
     {
         $this->state = $state;
     }
 
     /**
      *
-     * @return Test_Tool_MockState
+     * @return Test\Tool\MockState
      */
     public function getState()
     {

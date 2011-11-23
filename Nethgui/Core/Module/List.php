@@ -11,11 +11,11 @@
  * 
  * A List executes no action. It forwards each call to its subparts. 
  *
- * @see Nethgui_Core_Module_Composite
+ * @see Nethgui\Core\Module\Composite
  * @package Core
  * @subpackage Module
  */
-class Nethgui_Core_Module_List extends Nethgui_Core_Module_Composite implements Nethgui_Core_RequestHandlerInterface
+class Nethgui\Core\Module\List extends Nethgui\Core\Module\Composite implements Nethgui\Core\RequestHandlerInterface
 {
     const TEMPLATE_LIST = 1;
 
@@ -29,7 +29,7 @@ class Nethgui_Core_Module_List extends Nethgui_Core_Module_Composite implements 
         }
     }
 
-    public function bind(Nethgui_Core_RequestInterface $request)
+    public function bind(Nethgui\Core\RequestInterface $request)
     {
         $arguments = $request->getArguments();
         $submodule = array_shift($arguments);
@@ -44,7 +44,7 @@ class Nethgui_Core_Module_List extends Nethgui_Core_Module_Composite implements 
         }
     }
 
-    public function validate(Nethgui_Core_ValidationReportInterface $report)
+    public function validate(Nethgui\Core\ValidationReportInterface $report)
     {
         foreach ($this->getChildren() as $module) {
             $module->validate($report);
@@ -58,7 +58,7 @@ class Nethgui_Core_Module_List extends Nethgui_Core_Module_Composite implements 
         }
     }
 
-    public function prepareView(Nethgui_Core_ViewInterface $view, $mode)
+    public function prepareView(Nethgui\Core\ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
         foreach ($this->getChildren() as $child) {
@@ -67,7 +67,7 @@ class Nethgui_Core_Module_List extends Nethgui_Core_Module_Composite implements 
         }
     }
 
-    public function renderList(Nethgui_Renderer_Abstract $view)
+    public function renderList(Nethgui\Renderer\Abstract $view)
     {
         $widget = $view->panel();
         foreach ($this->getChildren() as $child) {

@@ -9,12 +9,12 @@
  *
  * @package Adapter
  */
-class Nethgui_Adapter_TableAdapter implements Nethgui_Adapter_AdapterInterface, ArrayAccess, IteratorAggregate, Countable
+class Nethgui\Adapter\TableAdapter implements Nethgui\Adapter\AdapterInterface, ArrayAccess, IteratorAggregate, Countable
 {
 
     /**
      *
-     * @var Nethgui_System_ConfigurationDatabase
+     * @var Nethgui\System\ConfigurationDatabase
      */
     private $database;
     private $type;
@@ -37,7 +37,7 @@ class Nethgui_Adapter_TableAdapter implements Nethgui_Adapter_AdapterInterface, 
     * @filter mixed Can be a string or an associative array. When using a string, filter is a fulltext search on db keys, otherwise it's an array in the form ('prop1'=>'val1',...,'propN'=>'valN') where valN it's a regexp. In this case, the adapter will return only rows where all props match all associated regexp.
     *
     **/
-    public function __construct(Nethgui_System_ConfigurationDatabase $db, $type, $filter = FALSE)
+    public function __construct(Nethgui\System\ConfigurationDatabase $db, $type, $filter = FALSE)
     {
         $this->database = $db;
         $this->type = $type;

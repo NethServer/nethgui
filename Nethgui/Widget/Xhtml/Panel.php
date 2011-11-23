@@ -14,7 +14,7 @@
  * @internal
  * @ignore
  */
-class Nethgui_Widget_Xhtml_Panel extends Nethgui_Widget_Xhtml
+class Nethgui\Widget\Xhtml_Panel extends Nethgui\Widget\Xhtml
 {
 
     public function render()
@@ -24,7 +24,7 @@ class Nethgui_Widget_Xhtml_Panel extends Nethgui_Widget_Xhtml
         $tag = $this->getAttribute('tag', 'div');
 
         $flags = $this->getAttribute('flags');
-        if ($cssClass && ($flags & Nethgui_Renderer_WidgetFactoryInterface::STATE_DISABLED)) {
+        if ($cssClass && ($flags & Nethgui\Renderer\WidgetFactoryInterface::STATE_DISABLED)) {
             $cssClass .= ' disabled';
         }
 

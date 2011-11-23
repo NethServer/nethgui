@@ -10,12 +10,12 @@
  * @package Core
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-interface Nethgui_Core_CommandReceiverAggregateInterface
+interface Nethgui\Core\CommandReceiverAggregateInterface
 {
     /**
      *
      *
-     * @return Nethgui_Core_CommandReceiverInterface
+     * @return Nethgui\Core\CommandReceiverInterface
      */
     public function getCommandReceiver();
 }

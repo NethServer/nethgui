@@ -10,7 +10,7 @@
  * @package Widget
  * @ignore
  */
-class Nethgui_Widget_Help extends Nethgui_Widget_Abstract
+class Nethgui\Widget\Help extends Nethgui\Widget\Abstract
 {
 
     public function render()
@@ -19,7 +19,7 @@ class Nethgui_Widget_Help extends Nethgui_Widget_Abstract
 
         if ($whatToDo == 'inset') {
             $renderer = $this->view->offsetGet($this->getAttribute('name'));
-            if ($renderer instanceof Nethgui_Renderer_Help) {
+            if ($renderer instanceof Nethgui\Renderer\Help) {
                 $renderer->nestingLevel = $this->view->nestingLevel + 1;
             }
 

@@ -8,12 +8,12 @@
 /**
  * Treats the table read case.
  * 
- * @see Nethgui_Module_Table_Modify
- * @see Nethgui_Module_TableController
+ * @see Nethgui\Module\Table\Modify
+ * @see Nethgui\Module\TableController
  * @package Module
  * @subpackage Table 
  */
-class Nethgui_Module_Table_Read extends Nethgui_Module_Table_Action
+class Nethgui\Module\Table\Read extends Nethgui\Module\Table\Action
 {
 
     /**
@@ -25,7 +25,7 @@ class Nethgui_Module_Table_Read extends Nethgui_Module_Table_Action
     /**
      *
      * @param string $identifier Module identifier
-     * @param Nethgui_Adapter_AdapterInterface $tableAdapter Data source
+     * @param Nethgui\Adapter\AdapterInterface $tableAdapter Data source
      * @param array $columns The columns of the table
      * @param array $actions A list of actions that apply on the whole table
      * @param array $viewTemplate Optional
@@ -45,7 +45,7 @@ class Nethgui_Module_Table_Read extends Nethgui_Module_Table_Action
         }
     }
 
-    public function prepareView(Nethgui_Core_ViewInterface $view, $mode)
+    public function prepareView(Nethgui\Core\ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
         $view['rows'] = $this->prepareRows($view, $mode);
@@ -63,7 +63,7 @@ class Nethgui_Module_Table_Read extends Nethgui_Module_Table_Action
         }
     }
 
-    public function renderTableActions(Nethgui_Renderer_Abstract $view)
+    public function renderTableActions(Nethgui\Renderer\Abstract $view)
     {
         $tableActions = $view->getModule()->getTableActions();
         $buttonList = $view->elementList()
@@ -73,11 +73,11 @@ class Nethgui_Module_Table_Read extends Nethgui_Module_Table_Action
         foreach ($tableActions as $tableAction) {
             $action = $tableAction->getIdentifier();
 
-            if ($tableAction instanceof Nethgui_Module_Table_Help) {
-                $button = $view->button('Help', Nethgui_Renderer_WidgetFactoryInterface::BUTTON_HELP);
+            if ($tableAction instanceof Nethgui\Module\Table\Help) {
+                $button = $view->button('Help', Nethgui\Renderer\WidgetFactoryInterface::BUTTON_HELP);
             } else {
                 $button = $view
-                    ->button($action, Nethgui_Renderer_WidgetFactoryInterface::BUTTON_LINK)
+                    ->button($action, Nethgui\Renderer\WidgetFactoryInterface::BUTTON_LINK)
                     ->setAttribute('value', array($action, '#' . $view->getUniqueId($action)));
             }
 
@@ -86,12 +86,12 @@ class Nethgui_Module_Table_Read extends Nethgui_Module_Table_Action
         return $buttonList;
     }
 
-    protected function getActionIdentifier(Nethgui_Core_ModuleInterface $m)
+    protected function getActionIdentifier(Nethgui\Core\ModuleInterface $m)
     {
         return $m->getIdentifier();
     }
 
-    private function prepareRows(Nethgui_Core_ViewInterface $view, $mode)
+    private function prepareRows(Nethgui\Core\ViewInterface $view, $mode)
     {
         $rows = new ArrayObject();
 
@@ -110,7 +110,7 @@ class Nethgui_Module_Table_Read extends Nethgui_Module_Table_Action
         return $rows;
     }
 
-    private function prepareColumn(Nethgui_Core_ViewInterface $view, $mode, $columnIndex, $column, $key, $values, &$rowMetadata)
+    private function prepareColumn(Nethgui\Core\ViewInterface $view, $mode, $columnIndex, $column, $key, $values, &$rowMetadata)
     {
         $methodName = 'prepareViewForColumn' . ucfirst($column);
 
@@ -125,21 +125,21 @@ class Nethgui_Module_Table_Read extends Nethgui_Module_Table_Action
         return $columnValue;
     }
 
-    public function prepareViewForColumnKey(Nethgui_Core_ViewInterface $view, $mode, $key, $values, &$rowMetadata)
+    public function prepareViewForColumnKey(Nethgui\Core\ViewInterface $view, $mode, $key, $values, &$rowMetadata)
     {
         return strval($key);
     }
 
     /**
      *
-     * @param Nethgui_Core_ViewInterface $view
+     * @param Nethgui\Core\ViewInterface $view
      * @param int $mode
      * @param string $key The data row key
      * @param array $values The data row values
      * @param array &$rowMetadata The metadadata row values, like css classes
-     * @return Nethgui_Core_ViewInterface 
+     * @return Nethgui\Core\ViewInterface 
      */
-    public function prepareViewForColumnActions(Nethgui_Core_ViewInterface $view, $mode, $key, $values, &$rowMetadata)
+    public function prepareViewForColumnActions(Nethgui\Core\ViewInterface $view, $mode, $key, $values, &$rowMetadata)
     {
         $cellView = $view->spawnView($this->getParent());
         $cellView->setTemplate(array($this, 'renderColumnActions'));
@@ -161,14 +161,14 @@ class Nethgui_Module_Table_Read extends Nethgui_Module_Table_Action
         return $cellView;
     }
 
-    public function renderColumnActions(Nethgui_Renderer_Abstract $view)
+    public function renderColumnActions(Nethgui\Renderer\Abstract $view)
     {
-        $elementList = $view->elementList(Nethgui_Renderer_WidgetFactoryInterface::BUTTONSET)
+        $elementList = $view->elementList(Nethgui\Renderer\WidgetFactoryInterface::BUTTONSET)
             ->setAttribute('maxElements', 1);
 
         foreach ($view as $actionId => $actionInfo) {
             $button = $view
-                ->button($actionId, Nethgui_Renderer_WidgetFactoryInterface::BUTTON_LINK)
+                ->button($actionId, Nethgui\Renderer\WidgetFactoryInterface::BUTTON_LINK)
                 ->setAttribute('value', $actionInfo[1]);
             $elementList->insert($button);
         }

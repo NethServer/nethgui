@@ -9,13 +9,13 @@
 /**
  * AccessControlRequestInterface.
  *
- * An Nethgui_Authorization_AccessControlRequestInterface implementing object represents a request
+ * An Nethgui\Authorization\AccessControlRequestInterface implementing object represents a request
  * originating from a Subject to perform a specific Action on a given Resource.
  *
  * @see AccessControlResponseInterface
  * @package Authorization
  */
-interface Nethgui_Authorization_AccessControlRequestInterface
+interface Nethgui\Authorization\AccessControlRequestInterface
 {
 
     /**

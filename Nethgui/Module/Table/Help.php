@@ -13,7 +13,7 @@
  * @subpackage Table
  *
  */
-class Nethgui_Module_Table_Help extends Nethgui_Module_Table_Action
+class Nethgui\Module\Table\Help extends Nethgui\Module\Table\Action
 {
     //put your code here
 }

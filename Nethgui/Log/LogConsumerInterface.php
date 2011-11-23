@@ -7,12 +7,12 @@
 /**
  * @package Log
  */
-interface Nethgui_Log_LogConsumerInterface
+interface Nethgui\Log\LogConsumerInterface
 {
-    public function setLog(Nethgui_Log_AbstractLog $log);
+    public function setLog(Nethgui\Log\AbstractLog $log);
 
     /**
-     * @return Nethgui_Log_AbstractLog
+     * @return Nethgui\Log\AbstractLog
      */
     public function getLog();
 }

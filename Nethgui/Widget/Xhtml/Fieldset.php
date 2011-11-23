@@ -19,7 +19,7 @@
  * @internal
  * @ignore
  */
-class Nethgui_Widget_Xhtml_Fieldset extends Nethgui_Widget_Xhtml_Panel
+class Nethgui\Widget\Xhtml_Fieldset extends Nethgui\Widget\Xhtml_Panel
 {
 
     public function render()
@@ -28,13 +28,13 @@ class Nethgui_Widget_Xhtml_Fieldset extends Nethgui_Widget_Xhtml_Panel
         $this->setAttribute('tag', 'fieldset');
         $flags = $this->getAttribute('flags', 0);
 
-        if ($flags & Nethgui_Renderer_WidgetFactoryInterface::FIELDSET_EXPANDABLE) {
+        if ($flags & Nethgui\Renderer\WidgetFactoryInterface::FIELDSET_EXPANDABLE) {
             $this->setAttribute('class', 'Fieldset expandable');
         } else {
             $this->setAttribute('class', 'Fieldset');
         }
 
-        $legendWidget = new Nethgui_Widget_Xhtml_TextLabel($this->view);
+        $legendWidget = new Nethgui\Widget\Xhtml_TextLabel($this->view);
         $legendWidget->setAttribute('tag', 'legend');
         $renderLegend = FALSE;
 
@@ -48,7 +48,7 @@ class Nethgui_Widget_Xhtml_Fieldset extends Nethgui_Widget_Xhtml_Panel
             $renderLegend = TRUE;
         }
 
-        if ($renderLegend && ! ($flags & Nethgui_Renderer_WidgetFactoryInterface::LABEL_NONE)) {
+        if ($renderLegend && ! ($flags & Nethgui\Renderer\WidgetFactoryInterface::LABEL_NONE)) {
             $legendWidget->setAttribute('icon-before', $this->getAttribute('icon-before', FALSE));
             $this->prepend($legendWidget);
         }

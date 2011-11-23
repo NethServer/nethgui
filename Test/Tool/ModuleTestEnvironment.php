@@ -9,19 +9,19 @@
  * @subpackage Tool
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class Test_Tool_ModuleTestEnvironment
+class Test\Tool\ModuleTestEnvironment
 {
 
     private $request = NULL;
     private $arguments = NULL;
     private $expectedView = NULL;
-    private $viewMode = Nethgui_Core_ModuleInterface::VIEW_SERVER;
+    private $viewMode = Nethgui\Core\ModuleInterface::VIEW_SERVER;
     private $databases = array();
     private $events = array();
     private $shellCommands = array();
     public $fullViewOutput = NULL;
 
-    public function setDatabase($dbName, Test_Tool_MockState $state)
+    public function setDatabase($dbName, Test\Tool\MockState $state)
     {
         $this->databases[$dbName] = $state;
         return $this;
@@ -34,7 +34,7 @@ class Test_Tool_ModuleTestEnvironment
 
     /**
      * @param string $name
-     * @return Test_Tool_MockState
+     * @return Test\Tool\MockState
      */
     public function getDatabase($name)
     {

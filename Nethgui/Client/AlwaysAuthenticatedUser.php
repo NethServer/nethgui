@@ -12,7 +12,7 @@
  * @deprecated Substitute with the complete implementation in version Phi.
  * @package Core
  */
-class Nethgui_Client_AlwaysAuthenticatedUser implements Nethgui_Client_UserInterface
+class Nethgui\Client\AlwaysAuthenticatedUser implements Nethgui\Client\UserInterface
 {
 
     /**
@@ -107,9 +107,9 @@ class Nethgui_Client_AlwaysAuthenticatedUser implements Nethgui_Client_UserInter
         return isset($this->credentials[$credentialName]);
     }
 
-    public function showDialogBox(Nethgui_Core_ModuleInterface $module, $message, $actions = array(), $type = Nethgui_Client_DialogBox::NOTIFY_SUCCESS)
+    public function showDialogBox(Nethgui\Core\ModuleInterface $module, $message, $actions = array(), $type = Nethgui\Client\DialogBox::NOTIFY_SUCCESS)
     {
-        $dialog = new Nethgui_Client_DialogBox($module, $message, $actions, $type);
+        $dialog = new Nethgui\Client\DialogBox($module, $message, $actions, $type);
 
         if ( ! array_key_exists($dialog->getId(), $this->dialogs))
         {
@@ -151,7 +151,7 @@ class Nethgui_Client_AlwaysAuthenticatedUser implements Nethgui_Client_UserInter
         unset($this->data[$offset]);
     }
 
-    public function traceProcess(Nethgui_System_ProcessInterface $process, $name = NULL)
+    public function traceProcess(Nethgui\System\ProcessInterface $process, $name = NULL)
     {
         if (is_null($name)) {
             $name = uniqid();

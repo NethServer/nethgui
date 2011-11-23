@@ -8,18 +8,18 @@
  *
  * @package Serializer
  */
-class Nethgui_Serializer_PropSerializer implements Nethgui_Serializer_SerializerInterface
+class Nethgui\Serializer\PropSerializer implements Nethgui\Serializer\SerializerInterface
 {
     private $key;
     private $prop;
 
     /**
      *
-     * @var Nethgui_System_ConfigurationDatabase
+     * @var Nethgui\System\ConfigurationDatabase
      */
     private $database;
 
-    public function __construct(Nethgui_System_ConfigurationDatabase $database, $key, $prop)
+    public function __construct(Nethgui\System\ConfigurationDatabase $database, $key, $prop)
     {
         $this->database = $database;
         $this->key = $key;

@@ -9,18 +9,18 @@
  * @subpackage Tool
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-abstract class Test_Tool_ModuleTestCase extends PHPUnit_Framework_TestCase
+abstract class Test\Tool\ModuleTestCase extends PHPUnit_Framework_TestCase
 {
 
     private $dbObjectCheckList = array();
 
-    protected function runModuleTest(Nethgui_Core_ModuleInterface $module, Test_Tool_ModuleTestEnvironment $env)
+    protected function runModuleTest(Nethgui\Core\ModuleInterface $module, Test\Tool\ModuleTestEnvironment $env)
     {
         $platform = $this->createPlatformMock($env);
         $module->setPlatform($platform);
         $module->initialize();
 
-        if ($module instanceof Nethgui_Core_RequestHandlerInterface) {
+        if ($module instanceof Nethgui\Core\RequestHandlerInterface) {
             $request = $this->createRequestMock($env);
             $validationReport = $this->createValidationReportMock($env);
             $module->bind($request);
@@ -44,9 +44,9 @@ abstract class Test_Tool_ModuleTestCase extends PHPUnit_Framework_TestCase
         }
     }
 
-    protected function createPlatformMock(Test_Tool_ModuleTestEnvironment $env)
+    protected function createPlatformMock(Test\Tool\ModuleTestEnvironment $env)
     {
-        $platformMock = $this->getMockBuilder('Nethgui_System_NethPlatform')
+        $platformMock = $this->getMockBuilder('Nethgui\System\NethPlatform')
             ->disableOriginalConstructor()
             ->setMethods(array('getDatabase', 'signalEvent', 'exec'))
             ->getMock()
@@ -65,11 +65,11 @@ abstract class Test_Tool_ModuleTestCase extends PHPUnit_Framework_TestCase
             'getType' => FALSE,
         );
 
-        $platformStub = new Test_Tool_MockState();
+        $platformStub = new Test\Tool\MockState();
 
         foreach ($env->getDatabaseNames() as $database) {
             $dbStub = $env->getDatabase($database);
-            $dbMock = $this->getMockBuilder('Nethgui_System_ConfigurationDatabase')
+            $dbMock = $this->getMockBuilder('Nethgui\System\ConfigurationDatabase')
                 ->disableOriginalConstructor()
                 ->setMethods(array_keys($databaseMethods))
                 ->getMock();
@@ -98,9 +98,9 @@ abstract class Test_Tool_ModuleTestCase extends PHPUnit_Framework_TestCase
                 $eventExp = array($eventExp, array());
             }
 
-            $systemCommandMockForSignalEvent = $this->getMock('Nethgui_System_ProcessInterface', $processInterfaceMethods);
+            $systemCommandMockForSignalEvent = $this->getMock('Nethgui\System\ProcessInterface', $processInterfaceMethods);
 
-            // return a Nethgui_System_ProcessInterface object
+            // return a Nethgui\System\ProcessInterface object
             $platformStub->set(array('signalEvent', array($eventExp[0], $eventExp[1])), $systemCommandMockForSignalEvent);
         }
 
@@ -112,17 +112,17 @@ abstract class Test_Tool_ModuleTestCase extends PHPUnit_Framework_TestCase
             ->method('signalEvent')
             ->will($this->returnMockObject($platformStub));
 
-        $systemCommandMock = $this->getMock('Nethgui_System_ProcessInterface', $processInterfaceMethods);
+        $systemCommandMock = $this->getMock('Nethgui\System\ProcessInterface', $processInterfaceMethods);
         $platformMock->expects($this->any())
             ->method('exec')
-            ->will(new Test_Tool_SystemCommandExecution($env->getCommands(), $systemCommandMock));
+            ->will(new Test\Tool\SystemCommandExecution($env->getCommands(), $systemCommandMock));
 
         return $platformMock;
     }
 
-    protected function createViewMock(Nethgui_Core_ModuleInterface $module, Test_Tool_ModuleTestEnvironment $env)
+    protected function createViewMock(Nethgui\Core\ModuleInterface $module, Test\Tool\ModuleTestEnvironment $env)
     {
-        $translator = $this->getMockBuilder('Nethgui_Language_Translator')
+        $translator = $this->getMockBuilder('Nethgui\Language\Translator')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -135,17 +135,17 @@ abstract class Test_Tool_ModuleTestCase extends PHPUnit_Framework_TestCase
             ->method('getLanguageCode')
             ->will($this->returnValue('en'));
 
-        return new Nethgui_Client_View($module, $translator);
+        return new Nethgui\Client\View($module, $translator);
     }
 
     /**
      *
-     * @param Test_Tool_MockState $state
+     * @param Test\Tool\MockState $state
      * @return PHPUnit_Framework_MockObject_Stub
      */
-    protected function returnMockObject(Test_Tool_MockState $state)
+    protected function returnMockObject(Test\Tool\MockState $state)
     {
-        return new Test_Tool_MockObject($state);
+        return new Test\Tool\MockObject($state);
     }
 
     /**
@@ -155,7 +155,7 @@ abstract class Test_Tool_ModuleTestCase extends PHPUnit_Framework_TestCase
      */
     protected function returnArrayKeyExists($a)
     {
-        return new Test_Tool_ArrayKeyExists($a);
+        return new Test\Tool\ArrayKeyExists($a);
     }
 
     /**
@@ -165,7 +165,7 @@ abstract class Test_Tool_ModuleTestCase extends PHPUnit_Framework_TestCase
      */
     protected function returnArrayKeyGetRegexp($a)
     {
-        return new Test_Tool_ArrayKeyGetRegexp($a);
+        return new Test\Tool\ArrayKeyGetRegexp($a);
     }
 
     /**
@@ -175,7 +175,7 @@ abstract class Test_Tool_ModuleTestCase extends PHPUnit_Framework_TestCase
      */
     protected function returnArrayKeyGet($a)
     {
-        return new Test_Tool_ArrayKeyGet($a);
+        return new Test\Tool\ArrayKeyGet($a);
     }
 
     /**
@@ -184,25 +184,25 @@ abstract class Test_Tool_ModuleTestCase extends PHPUnit_Framework_TestCase
      * @param type $request
      * @param type $arguments
      * @param type $isSubmitted
-     * @return Nethgui_Core_RequestInterface
+     * @return Nethgui\Core\RequestInterface
      */
-    protected function createRequestMock(Test_Tool_ModuleTestEnvironment $env)
+    protected function createRequestMock(Test\Tool\ModuleTestEnvironment $env)
     {
         $data = $env->getRequest();
         $arguments = $env->getArguments();
         $submitted = $env->isSubmitted();
         $user = $this->createUserMock($env);
-        return new Nethgui_Client_Request($user, $data, $submitted, $arguments, array());
+        return new Nethgui\Client\Request($user, $data, $submitted, $arguments, array());
     }
 
-    protected function createUserMock(Test_Tool_ModuleTestEnvironment $env)
+    protected function createUserMock(Test\Tool\ModuleTestEnvironment $env)
     {
-        return $this->getMock('Nethgui_Client_UserInterface');
+        return $this->getMock('Nethgui\Client\UserInterface');
     }
 
-    protected function createValidationReportMock(Test_Tool_ModuleTestEnvironment $env)
+    protected function createValidationReportMock(Test\Tool\ModuleTestEnvironment $env)
     {
-        $reportMock = $this->getMockBuilder('Nethgui_Module_NotificationArea')
+        $reportMock = $this->getMockBuilder('Nethgui\Module\NotificationArea')
             ->setConstructorArgs(array($this->createUserMock($env)))
             ->setMethods(array('addValidationError'))
             ->getMock();
@@ -223,7 +223,7 @@ abstract class Test_Tool_ModuleTestCase extends PHPUnit_Framework_TestCase
  * @ignore
  *
  */
-class Test_Tool_ArrayKeyGetRegexp implements PHPUnit_Framework_MockObject_Stub
+class Test\Tool\ArrayKeyGetRegexp implements PHPUnit_Framework_MockObject_Stub
 {
 
     /**
@@ -261,7 +261,7 @@ class Test_Tool_ArrayKeyGetRegexp implements PHPUnit_Framework_MockObject_Stub
  * @ignore
  *
  */
-class Test_Tool_ArrayKeyGet implements PHPUnit_Framework_MockObject_Stub
+class Test\Tool\ArrayKeyGet implements PHPUnit_Framework_MockObject_Stub
 {
 
     /**
@@ -297,7 +297,7 @@ class Test_Tool_ArrayKeyGet implements PHPUnit_Framework_MockObject_Stub
  * @ignore
  *
  */
-class Test_Tool_ArrayKeyExists implements PHPUnit_Framework_MockObject_Stub
+class Test\Tool\ArrayKeyExists implements PHPUnit_Framework_MockObject_Stub
 {
 
     /**
@@ -331,9 +331,9 @@ class Test_Tool_ArrayKeyExists implements PHPUnit_Framework_MockObject_Stub
 
 /**
  * @ignore
- * @see Nethgui_System_ProcessInterface
+ * @see Nethgui\System\ProcessInterface
  */
-class Test_Tool_SystemCommandExecution extends Test_Tool_ArrayKeyGetRegexp
+class Test\Tool\SystemCommandExecution extends Test\Tool\ArrayKeyGetRegexp
 {
 
     /**

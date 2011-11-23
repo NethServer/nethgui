@@ -9,7 +9,7 @@
  * Abstract Widget class
  * @ignore
  */
-abstract class Nethgui_Widget_Abstract implements Nethgui_Renderer_WidgetInterface, Nethgui_Log_LogConsumerInterface
+abstract class Nethgui\Widget\Abstract implements Nethgui\Renderer\WidgetInterface, Nethgui\Log\LogConsumerInterface
 {
 
     static private $instance = 0;
@@ -17,11 +17,11 @@ abstract class Nethgui_Widget_Abstract implements Nethgui_Renderer_WidgetInterfa
     private $attributes = array();
 
     /**
-     * @var Nethgui_Renderer_Abstract
+     * @var Nethgui\Renderer\Abstract
      */
     protected $view;
 
-    public function __construct(Nethgui_Renderer_Abstract $view)
+    public function __construct(Nethgui\Renderer\Abstract $view)
     {
         $this->view = $view;
         self::$instance ++;
@@ -51,13 +51,13 @@ abstract class Nethgui_Widget_Abstract implements Nethgui_Renderer_WidgetInterfa
         return self::$instance;
     }
 
-    protected function prepend(Nethgui_Renderer_WidgetInterface $widget)
+    protected function prepend(Nethgui\Renderer\WidgetInterface $widget)
     {
         array_unshift($this->children, $widget);
         return $this;
     }
 
-    public function insert(Nethgui_Renderer_WidgetInterface $widget)
+    public function insert(Nethgui\Renderer\WidgetInterface $widget)
     {
         $this->children[] = $widget;
         return $this;
@@ -109,13 +109,13 @@ abstract class Nethgui_Widget_Abstract implements Nethgui_Renderer_WidgetInterfa
     protected function getClientEventTarget()
     {
         if ( ! $this->hasAttribute('name')) {
-            throw new Nethgui_Exception_View('Missing `name` attribute');
+            throw new Nethgui\Exception\View('Missing `name` attribute');
         }
 
         return $this->view->getClientEventTarget($this->getAttribute('name'));
     }
 
-    public function setLog(Nethgui_Log_AbstractLog $log)
+    public function setLog(Nethgui\Log\AbstractLog $log)
     {
         throw new Exception(sprintf('Cannot invoke setLog() on %s', get_class($this)));
     }

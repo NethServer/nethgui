@@ -9,7 +9,7 @@
  *
  * @package System
  */
-class Nethgui_System_NethPlatform implements Nethgui_System_PlatformInterface, Nethgui_Authorization_PolicyEnforcementPointInterface, Nethgui_Log_LogConsumerInterface, Nethgui_Core_GlobalFunctionConsumer
+class Nethgui\System\NethPlatform implements Nethgui\System\PlatformInterface, Nethgui\Authorization\PolicyEnforcementPointInterface, Nethgui\Log\LogConsumerInterface, Nethgui\Core\GlobalFunctionConsumer
 {
 
     /**
@@ -25,41 +25,41 @@ class Nethgui_System_NethPlatform implements Nethgui_System_PlatformInterface, N
 
     /**
      * Keeps User object acting on host configuration.
-     * @var Nethgui_Client_UserInterface
+     * @var Nethgui\Client\UserInterface
      */
     private $user;
     private $eventQueue;
 
     /**
-     * @var Nethgui_Log_AbstractLog
+     * @var Nethgui\Log\AbstractLog
      */
     private $log;
 
     /**
-     * @var Nethgui_Core_GlobalFunctionWrapper
+     * @var Nethgui\Core\GlobalFunctionWrapper
      */
     private $globalFunctionWrapper;
 
     /**
      * We must specify who acts on host configuration.
-     * @param Nethgui_Client_UserInterface $user
+     * @param Nethgui\Client\UserInterface $user
      */
-    public function __construct(Nethgui_Client_UserInterface $user)
+    public function __construct(Nethgui\Client\UserInterface $user)
     {
         $this->user = $user;
         $this->eventQueue = array();
-        $this->log = new Nethgui_Log_Syslog();
+        $this->log = new Nethgui\Log\Syslog();
     }
 
     /**
      *
      * @param string $database SME database configuration name
-     * @return Nethgui_System_ConfigurationDatabase
+     * @return Nethgui\System\ConfigurationDatabase
      */
     public function getDatabase($database)
     {
         if ( ! isset($this->databases[$database])) {
-            $object = new Nethgui_System_ConfigurationDatabase($database, $this->user);
+            $object = new Nethgui\System\ConfigurationDatabase($database, $this->user);
             $object->setPolicyDecisionPoint($this->getPolicyDecisionPoint());
             $this->databases[$database] = $object;
         }
@@ -73,9 +73,9 @@ class Nethgui_System_NethPlatform implements Nethgui_System_PlatformInterface, N
         $serializer = $this->getSerializer($database, $key, $prop);
 
         if (is_null($separator)) {
-            $adapter = new Nethgui_Adapter_ScalarAdapter($serializer);
+            $adapter = new Nethgui\Adapter\ScalarAdapter($serializer);
         } else {
-            $adapter = new Nethgui_Adapter_ArrayAdapter($separator, $serializer);
+            $adapter = new Nethgui\Adapter\ArrayAdapter($separator, $serializer);
         }
 
         return $adapter;
@@ -91,7 +91,7 @@ class Nethgui_System_NethPlatform implements Nethgui_System_PlatformInterface, N
             $serializers[] = call_user_func_array(array($this, 'getSerializer'), $serializerSpec);
         }
 
-        $adapter = new Nethgui_Adapter_MultipleAdapter($readCallback, $writeCallback, $serializers);
+        $adapter = new Nethgui\Adapter\MultipleAdapter($readCallback, $writeCallback, $serializers);
 
         return $adapter;
     }
@@ -99,12 +99,12 @@ class Nethgui_System_NethPlatform implements Nethgui_System_PlatformInterface, N
     public function getTableAdapter($database, $typeOrKey, $filterOrProp = NULL, $separators = NULL)
     {
         if (is_null($separators)) {
-            return new Nethgui_Adapter_TableAdapter($this->getDatabase($database), $typeOrKey, $filterOrProp);
+            return new Nethgui\Adapter\TableAdapter($this->getDatabase($database), $typeOrKey, $filterOrProp);
         }
 
         $innerAdapter = $this->getIdentityAdapter($database, $typeOrKey, $filterOrProp, $separators[0]);
 
-        return new Nethgui_Adapter_TabularValueAdapter($innerAdapter, $separators[1]);
+        return new Nethgui\Adapter\TabularValueAdapter($innerAdapter, $separators[1]);
     }
 
     /**
@@ -112,17 +112,17 @@ class Nethgui_System_NethPlatform implements Nethgui_System_PlatformInterface, N
      * @param string $database
      * @param string $key
      * @param string $prop
-     * @return Nethgui_Serializer_SerializerInterface
+     * @return Nethgui\Serializer\SerializerInterface
      */
     private function getSerializer($database, $key, $prop = NULL)
     {
         if ($database instanceof ArrayAccess) {
-            $serializer = new Nethgui_Serializer_ArrayAccessSerializer($database, $key, $prop);
+            $serializer = new Nethgui\Serializer\ArrayAccessSerializer($database, $key, $prop);
         } elseif (is_string($database)) {
             if (is_null($prop)) {
-                $serializer = new Nethgui_Serializer_KeySerializer($this->getDatabase($database), $key);
+                $serializer = new Nethgui\Serializer\KeySerializer($this->getDatabase($database), $key);
             } else {
-                $serializer = new Nethgui_Serializer_PropSerializer($this->getDatabase($database), $key, $prop);
+                $serializer = new Nethgui\Serializer\PropSerializer($this->getDatabase($database), $key, $prop);
             }
         }
 
@@ -136,7 +136,7 @@ class Nethgui_System_NethPlatform implements Nethgui_System_PlatformInterface, N
      *
      * @param string $event Event name
      * @param array $arguments Optional arguments array.
-     * @return Nethgui_System_ProcessInterface
+     * @return Nethgui\System\ProcessInterface
      */
     public function signalEvent($event, $arguments = array())
     {
@@ -157,7 +157,7 @@ class Nethgui_System_NethPlatform implements Nethgui_System_PlatformInterface, N
             );
         }
 
-        if ($observer instanceof Nethgui_System_EventObserverInterface) {
+        if ($observer instanceof Nethgui\System\EventObserverInterface) {
             $this->eventQueue[$eventId]['objs'][] = $observer;
         }
     }
@@ -209,7 +209,7 @@ class Nethgui_System_NethPlatform implements Nethgui_System_PlatformInterface, N
             }
             $exitInfo = $this->signalEvent($eventData['name'], $args);
             foreach ($eventData['objs'] as $observer) {
-                if ($observer instanceof Nethgui_System_EventObserverInterface) {
+                if ($observer instanceof Nethgui\System\EventObserverInterface) {
                     $observer->notifyEventCompletion($eventData['name'], $args, $exitInfo->getExitStatus() === 0, $exitInfo->getOutput());
                 }
             }
@@ -225,7 +225,7 @@ class Nethgui_System_NethPlatform implements Nethgui_System_PlatformInterface, N
         return $this->policyDecisionPoint;
     }
 
-    public function setPolicyDecisionPoint(Nethgui_Authorization_PolicyDecisionPointInterface $pdp)
+    public function setPolicyDecisionPoint(Nethgui\Authorization\PolicyDecisionPointInterface $pdp)
     {
         $this->policyDecisionPoint = $pdp;
     }
@@ -233,9 +233,9 @@ class Nethgui_System_NethPlatform implements Nethgui_System_PlatformInterface, N
     public function exec($command, $arguments = array(), $detached = FALSE)
     {
         if ($detached) {
-            $commandObject = new Nethgui_System_ProcessDetached($command, $arguments);
+            $commandObject = new Nethgui\System\ProcessDetached($command, $arguments);
         } else {
-            $commandObject = new Nethgui_System_Process($command, $arguments);
+            $commandObject = new Nethgui\System\Process($command, $arguments);
         }
 
         if (isset($this->globalFunctionWrapper)) {
@@ -251,14 +251,14 @@ class Nethgui_System_NethPlatform implements Nethgui_System_PlatformInterface, N
         return $this->log;
     }
 
-    public function setLog(Nethgui_Log_AbstractLog $log)
+    public function setLog(Nethgui\Log\AbstractLog $log)
     {
         $this->log = $log;
     }
 
     public function createValidator()
     {
-        return new Nethgui_System_Validator($this);
+        return new Nethgui\System\Validator($this);
     }
 
     public function getDateFormat()
@@ -266,7 +266,7 @@ class Nethgui_System_NethPlatform implements Nethgui_System_PlatformInterface, N
         return 'YYYY-mm-dd';
     }
 
-    public function setGlobalFunctionWrapper(Nethgui_Core_GlobalFunctionWrapper $object)
+    public function setGlobalFunctionWrapper(Nethgui\Core\GlobalFunctionWrapper $object)
     {
         $this->globalFunctionWrapper = $object;
     }

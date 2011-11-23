@@ -10,7 +10,7 @@
  *
  * @package Adapter
  */
-class Nethgui_Adapter_ArrayAdapter implements Nethgui_Adapter_AdapterInterface, ArrayAccess, IteratorAggregate, Countable
+class Nethgui\Adapter\ArrayAdapter implements Nethgui\Adapter\AdapterInterface, ArrayAccess, IteratorAggregate, Countable
 {
 
     /**
@@ -31,11 +31,11 @@ class Nethgui_Adapter_ArrayAdapter implements Nethgui_Adapter_AdapterInterface, 
     private $data;
     /**
      *
-     * @var Nethgui_Serializer_SerializerInterface
+     * @var Nethgui\Serializer\SerializerInterface
      */
     private $serializer;
 
-    public function __construct($separator, Nethgui_Serializer_SerializerInterface $serializer)
+    public function __construct($separator, Nethgui\Serializer\SerializerInterface $serializer)
     {
         $this->separator = $separator;
         $this->serializer = $serializer;
@@ -61,7 +61,7 @@ class Nethgui_Adapter_ArrayAdapter implements Nethgui_Adapter_AdapterInterface, 
         }
         
         if ( ! is_array($value) ) {
-            throw new Nethgui_Exception_Adapter('Invalid data type. Expected `array` or `EMPTY`, was ' . gettype($value));
+            throw new Nethgui\Exception\Adapter('Invalid data type. Expected `array` or `EMPTY`, was ' . gettype($value));
         }
 
         if (is_null($this->modified)) {

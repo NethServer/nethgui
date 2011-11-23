@@ -9,7 +9,7 @@
  * @package Renderer
  * @ignore
  */
-class Nethgui_Renderer_Json extends Nethgui_Renderer_Abstract
+class Nethgui\Renderer\Json extends Nethgui\Renderer\Abstract
 {
 
     private function deepWalk(&$events, &$commands)
@@ -17,14 +17,14 @@ class Nethgui_Renderer_Json extends Nethgui_Renderer_Abstract
         foreach ($this as $offset => $value) {
 
             $eventTarget = $this->getClientEventTarget($offset);
-            if ($value instanceof Nethgui_Core_ViewInterface) {
-                if ( ! $value instanceof Nethgui_Renderer_Json) {
-                    $value = new Nethgui_Renderer_Json($value);
+            if ($value instanceof Nethgui\Core\ViewInterface) {
+                if ( ! $value instanceof Nethgui\Renderer\Json) {
+                    $value = new Nethgui\Renderer\Json($value);
                 }
                 $value->deepWalk($events, $commands);
                 continue;
-            } elseif ($value instanceof Nethgui_Core_CommandInterface) {
-                $commands[] = $value->setReceiver(new Nethgui_Renderer_JsonReceiver($this->view, $offset))->execute();
+            } elseif ($value instanceof Nethgui\Core\CommandInterface) {
+                $commands[] = $value->setReceiver(new Nethgui\Renderer\JsonReceiver($this->view, $offset))->execute();
                 continue;
             } elseif ($value instanceof Traversable) {
                 $eventData = $this->traversableToArray($value);
@@ -71,18 +71,18 @@ class Nethgui_Renderer_Json extends Nethgui_Renderer_Abstract
 /**
  * @ignore
  */
-class Nethgui_Renderer_JsonReceiver implements Nethgui_Core_CommandReceiverInterface
+class Nethgui\Renderer\JsonReceiver implements Nethgui\Core\CommandReceiverInterface
 {
 
     private $offset;
 
     /**
      *
-     * @var Nethgui_Core_ViewInterface
+     * @var Nethgui\Core\ViewInterface
      */
     private $view;
 
-    public function __construct(Nethgui_Core_ViewInterface $view, $offset)
+    public function __construct(Nethgui\Core\ViewInterface $view, $offset)
     {
         $this->view = $view;
         $this->offset = $offset;
@@ -91,7 +91,7 @@ class Nethgui_Renderer_JsonReceiver implements Nethgui_Core_CommandReceiverInter
     public function executeCommand($name, $arguments)
     {
         if ($name == 'delay'
-            && $arguments[0] instanceof Nethgui_Core_CommandInterface) {
+            && $arguments[0] instanceof Nethgui\Core\CommandInterface) {
             $receiver = '';
             // replace the first argument with the array equivalent
             $arguments[0] = $arguments[0]->setReceiver(clone $this)->execute();

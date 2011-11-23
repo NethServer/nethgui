@@ -16,7 +16,7 @@
  *
  * @package Adapter
  */
-class Nethgui_Adapter_MultipleAdapter implements Nethgui_Adapter_AdapterInterface
+class Nethgui\Adapter\MultipleAdapter implements Nethgui\Adapter\AdapterInterface
 {
 
     private $innerAdapters = array();
@@ -25,10 +25,10 @@ class Nethgui_Adapter_MultipleAdapter implements Nethgui_Adapter_AdapterInterfac
     private $modified;
 
     /**
-     * @see Nethgui_Serializer_SerializerInterface
+     * @see Nethgui\Serializer\SerializerInterface
      * @param callback $readerCallback The reader PHP callback function: (p1, ..., pN) -> V
      * @param callback $writerCallback The writer PHP callback function: V -> (p1, ..., pN)
-     * @param array $serializers An array of Nethgui_Serializer_SerializerInterface objects
+     * @param array $serializers An array of Nethgui\Serializer\SerializerInterface objects
      */
     public function __construct($readerCallback, $writerCallback = NULL, $serializers = array())
     {
@@ -40,11 +40,11 @@ class Nethgui_Adapter_MultipleAdapter implements Nethgui_Adapter_AdapterInterfac
         $this->writerCallback = $writerCallback;
 
         foreach ($serializers as $serializer) {
-            if ( ! $serializer instanceof Nethgui_Serializer_SerializerInterface) {
-                throw new Nethgui_Exception_Adapter('Invalid serializer instance. A serializer must implement Nethgui_Serializer_SerializerInterface.');
+            if ( ! $serializer instanceof Nethgui\Serializer\SerializerInterface) {
+                throw new Nethgui\Exception\Adapter('Invalid serializer instance. A serializer must implement Nethgui\Serializer\SerializerInterface.');
             }
 
-            $this->innerAdapters[] = new Nethgui_Adapter_ScalarAdapter($serializer);
+            $this->innerAdapters[] = new Nethgui\Adapter\ScalarAdapter($serializer);
         }
     }
 

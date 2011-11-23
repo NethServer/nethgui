@@ -10,12 +10,12 @@
  *
  * @package Module
  */
-class Nethgui_Module_World extends Nethgui_Core_Module_Abstract
+class Nethgui\Module\World extends Nethgui\Core\Module\Abstract
 {
 
     private $modules = array();
 
-    public function prepareView(Nethgui_Core_ViewInterface $view, $mode)
+    public function prepareView(Nethgui\Core\ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
         
@@ -67,7 +67,7 @@ class Nethgui_Module_World extends Nethgui_Core_Module_Abstract
 
     }
 
-    public function addModule(Nethgui_Core_ModuleInterface $module)
+    public function addModule(Nethgui\Core\ModuleInterface $module)
     {
         $this->modules[] = $module;
     }

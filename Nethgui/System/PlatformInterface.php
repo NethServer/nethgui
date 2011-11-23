@@ -10,12 +10,12 @@
  *
  * @package System
  */
-interface Nethgui_System_PlatformInterface
+interface Nethgui\System\PlatformInterface
 {
 
     /**
      * @var string
-     * @return Nethgui_System_ConfigurationDatabase
+     * @return Nethgui\System\ConfigurationDatabase
      */
     public function getDatabase($database);
 
@@ -27,13 +27,13 @@ interface Nethgui_System_PlatformInterface
      * is enhanced with an ArrayAccess interface, and the value is stored
      * imploding its elements on that $separator.
      *
-     * @see Nethgui_Adapter_AdapterAggregationInterface
+     * @see Nethgui\Adapter\AdapterAggregationInterface
      * @see getMapAdapter()
      * @param string|ArrayAccess $database Database name or ArrayAccess object
      * @param string $key Key connected to the adapter.
      * @param string $prop Optional - Set to a prop name to connect a prop instead of a key.
      * @param string $separator Optional - Specify a single character string to obtain an ArrayAccess and Countable interface.
-     * @return Nethgui_Adapter_AdapterInterface
+     * @return Nethgui\Adapter\AdapterInterface
      */
     public function getIdentityAdapter($database, $key, $prop = NULL, $separator = NULL);
 
@@ -44,12 +44,12 @@ interface Nethgui_System_PlatformInterface
      * converter method. Values are specified through $args parameter.
      *
      * @see getIdentityAdapter()
-     * @see Nethgui_Adapter_AdapterAggregationInterface
+     * @see Nethgui\Adapter\AdapterAggregationInterface
      * @param callback $readCallback If $args has N elements $readCallback must accept N parameters and return a value.
      * @param callback $writeCallback If $args has N elements $writeCallback must accept a parameter and return an array of N elements.
      * @param array $args An array of arrays in the form ($database, $key, $prop). $prop is optional.
      *
-     * @return Nethgui_Adapter_AdapterInterface
+     * @return Nethgui\Adapter\AdapterInterface
      */
     public function getMapAdapter($readCallback, $writeCallback, $args);
 
@@ -63,7 +63,7 @@ interface Nethgui_System_PlatformInterface
      * @param string $typeOrKey The type of the keys to read from database or the key value where the data is stored
      * @param string $filterOrProp The string to filter the table data or set to a prop name to connect a prop instead of a key.
      * @param array $separators An array of one or two separator strings. The first is for the rows, the second for the columns. Set to NULL if $typeOrKey is a TYPE!
-     * @return Nethgui_Adapter_AdapterInterface An adapter with array and countable interfaces.
+     * @return Nethgui\Adapter\AdapterInterface An adapter with array and countable interfaces.
      */
     public function getTableAdapter($database, $typeOrKey, $filterOrProp = NULL, $separators = NULL);
 
@@ -72,7 +72,7 @@ interface Nethgui_System_PlatformInterface
      *
      * @param string $event Event name
      * @param array $argv Optional event arguments
-     * @return Nethgui_System_ProcessInterface
+     * @return Nethgui\System\ProcessInterface
      */
     public function signalEvent($event, $arguments = array());
 
@@ -82,7 +82,7 @@ interface Nethgui_System_PlatformInterface
      * 
      * @param string $event
      * @param array $argv Optional event arguments
-     * @param Nethgui_System_EventObserverInterface $observer Optional
+     * @param Nethgui\System\EventObserverInterface $observer Optional
      */
     public function signalEventFinally($eventName, $argv = array(), $observer = NULL);
 
@@ -98,14 +98,14 @@ interface Nethgui_System_PlatformInterface
      * @param string $command
      * @param array $arguments Arguments for the command. Will be shell-escaped.
      * @param boolean $detached If set the command is run in detached from the PHP process.
-     * @return Nethgui_System_ProcessInterface
+     * @return Nethgui\System\ProcessInterface
      */
     public function exec($command, $arguments = array(), $detached = FALSE);
    
     
     /**
      * Create a system validator object
-     * @return Nethgui_System_Validator
+     * @return Nethgui\System\Validator
      */
     public function createValidator();
 

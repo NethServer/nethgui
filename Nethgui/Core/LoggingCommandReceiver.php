@@ -1,11 +1,11 @@
 <?php
 
-class Nethgui_Core_LoggingCommandReceiver implements Nethgui_Core_CommandReceiverInterface
+class Nethgui\Core\LoggingCommandReceiver implements Nethgui\Core\CommandReceiverInterface
 {
 
     public function executeCommand($name, $arguments)
     {
-        $log = new Nethgui_Log_Syslog();
+        $log = new Nethgui\Log\Syslog();
         $log->info('TODO: executeCommand ' . $name . '(' . strtr(print_r($arguments, 1), "\n", " ") . ')');
     }
 

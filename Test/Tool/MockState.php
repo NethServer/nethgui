@@ -9,7 +9,7 @@
  * @subpackage Tool
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class Test_Tool_MockState
+class Test\Tool\MockState
 {
 
     // FIXME: substitute with a state-chain hash
@@ -43,7 +43,7 @@ class Test_Tool_MockState
      *
      * @param mixed $cond
      * @param mixed $v The return value of the $cond call
-     * @return Test_Tool_MockState The new state
+     * @return Test\Tool\MockState The new state
      */
     public function transition($cond, $v = NULL)
     {
@@ -63,7 +63,7 @@ class Test_Tool_MockState
      * 
      * @param mixed $cond
      * @param mixed $v
-     * @return Test_Tool_MockState The current state
+     * @return Test\Tool\MockState The current state
      */
     public function set($cond, $v)
     {
@@ -85,7 +85,7 @@ class Test_Tool_MockState
      *
      * @param mixed $exp
      * @param mixed $output
-     * @return Test_Tool_MockState The next object state, or the object itself.
+     * @return Test\Tool\MockState The next object state, or the object itself.
      */
     public function exec($exp, &$output)
     {

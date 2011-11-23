@@ -6,7 +6,7 @@
 /**
  * @package Core
  */
-interface Nethgui_Core_CommandReceiverInterface
+interface Nethgui\Core\CommandReceiverInterface
 {
     /**
      * @param string $name

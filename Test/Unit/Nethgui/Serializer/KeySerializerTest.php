@@ -11,21 +11,21 @@
  * @package Tests
  * @subpackage Unit
  */
-class Nethgui_Serializer_KeySerializerTest extends PHPUnit_Framework_TestCase
+class Nethgui\Serializer\KeySerializerTest extends PHPUnit_Framework_TestCase
 {
 
     /**
-     * @var Nethgui_Serializer_KeySerializer
+     * @var Nethgui\Serializer\KeySerializer
      */
     protected $object;
 
     protected function setUp()
     {
-        $this->database = $this->getMockBuilder('Nethgui_System_ConfigurationDatabase')
+        $this->database = $this->getMockBuilder('Nethgui\System\ConfigurationDatabase')
                 ->disableOriginalConstructor()
                 ->getMock();
 
-        $this->object = new Nethgui_Serializer_KeySerializer($this->database, 'TestKey');
+        $this->object = new Nethgui\Serializer\KeySerializer($this->database, 'TestKey');
     }
 
     public function testRead()

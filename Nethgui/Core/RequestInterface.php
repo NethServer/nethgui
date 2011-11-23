@@ -6,12 +6,12 @@
 /**
  * A User Request.
  *
- * A Nethgui_Core_RequestInterface object carries parameters submitted by the
+ * A Nethgui\Core\RequestInterface object carries parameters submitted by the
  * User to a Module (and its submodules).
  *
  * @package Core
  */
-interface Nethgui_Core_RequestInterface
+interface Nethgui\Core\RequestInterface
 {
 
     /**
@@ -69,7 +69,7 @@ interface Nethgui_Core_RequestInterface
 
     /**
      * The User that has sent the request.
-     * @return Nethgui_Client_UserInterface
+     * @return Nethgui\Client\UserInterface
      */
     public function getUser();
 }

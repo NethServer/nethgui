@@ -6,7 +6,7 @@
 /**
  * @package Exception
  */
-class Nethgui_Exception_HttpStatusClientError extends Exception
+class Nethgui\Exception\HttpStatusClientError extends Exception
 {
 
 }

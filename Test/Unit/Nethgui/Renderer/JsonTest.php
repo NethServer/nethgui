@@ -8,25 +8,25 @@
  * @package Tests
  *
  */
-class Nethgui_Renderer_JsonTest extends PHPUnit_Framework_TestCase
+class Nethgui\Renderer\JsonTest extends PHPUnit_Framework_TestCase
 {
 
     /**
-     * @var Nethgui_Renderer_Json
+     * @var Nethgui\Renderer\Json
      */
     protected $object;
 
     protected function setUp()
     {
-        $view = $this->getMockBuilder('Nethgui_Core_ViewInterface')
+        $view = $this->getMockBuilder('Nethgui\Core\ViewInterface')
             ->getMock();
 
-        $innerModule = $this->getMockBuilder('Nethgui_Core_ModuleInterface')
+        $innerModule = $this->getMockBuilder('Nethgui\Core\ModuleInterface')
             // ->setMethods(array('getParent', 'getIdentifier'))
             ->getMock();
 
 
-        $module = new Test_Unit_NethguiCoreModuleJsonTest($innerModule, 'ID');
+        $module = new Test\Unit\NethguiCoreModuleJsonTest($innerModule, 'ID');
 
         $innerModule->expects($this->once())
             ->method('getParent')
@@ -38,7 +38,7 @@ class Nethgui_Renderer_JsonTest extends PHPUnit_Framework_TestCase
 
         $module->initialize();
 
-        $translator = $this->getMockBuilder('Nethgui_Core_TranslatorInterface')
+        $translator = $this->getMockBuilder('Nethgui\Core\TranslatorInterface')
             ->getMock();
 
         $translator->expects($this->any())
@@ -47,11 +47,11 @@ class Nethgui_Renderer_JsonTest extends PHPUnit_Framework_TestCase
         $translator->expects($this->any())
             ->method('getLanguageCode')->will($this->returnValue('en'));
 
-        $view = new Nethgui_Client_View($module, $translator);
+        $view = new Nethgui\Client\View($module, $translator);
 
         $module->prepareView($view, 0);
 
-        $this->object = new Nethgui_Renderer_Json($view);
+        $this->object = new Nethgui\Renderer\Json($view);
     }
 
     public function testRender()
@@ -138,16 +138,16 @@ class Nethgui_Renderer_JsonTest extends PHPUnit_Framework_TestCase
 /**
  * @ignore
  */
-class Test_Unit_NethguiCoreModuleJsonTest extends Nethgui_Core_Module_Standard
+class Test\Unit\NethguiCoreModuleJsonTest extends Nethgui\Core\Module\Standard
 {
 
     /**
-     * @var Nethgui_Core_ModuleInterface
+     * @var Nethgui\Core\ModuleInterface
      * 
      */
     private $innerModule;
 
-    public function __construct(Nethgui_Core_ModuleInterface $innerModule, $identifier = NULL)
+    public function __construct(Nethgui\Core\ModuleInterface $innerModule, $identifier = NULL)
     {
         parent::__construct($identifier);
         $this->innerModule = $innerModule;
@@ -161,7 +161,7 @@ class Test_Unit_NethguiCoreModuleJsonTest extends Nethgui_Core_Module_Standard
         $this->parameters['c'] = new ArrayObject(array('C', 'CC', 'CCC', 'CCCC', new ArrayObject(array('X'))));
     }
 
-    public function prepareView(Nethgui_Core_ViewInterface $view, $mode)
+    public function prepareView(Nethgui\Core\ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
         $view['VIEW'] = $view->spawnView($this->innerModule);

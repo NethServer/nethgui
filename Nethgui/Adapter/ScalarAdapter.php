@@ -9,18 +9,18 @@
  *
  * @package Adapter
  */
-class Nethgui_Adapter_ScalarAdapter implements Nethgui_Adapter_AdapterInterface
+class Nethgui\Adapter\ScalarAdapter implements Nethgui\Adapter\AdapterInterface
 {
 
     protected $modified;
     protected $value;
     /**
      *
-     * @var Nethgui_Serializer_SerializerInterface
+     * @var Nethgui\Serializer\SerializerInterface
      */
     private $serializer;
 
-    public function __construct(Nethgui_Serializer_SerializerInterface $serializer)
+    public function __construct(Nethgui\Serializer\SerializerInterface $serializer)
     {
         $this->serializer = $serializer;
     }

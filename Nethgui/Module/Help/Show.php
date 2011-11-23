@@ -9,10 +9,10 @@
  * @subpackage Help
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class Nethgui_Module_Help_Show extends Nethgui_Module_Help_Common
+class Nethgui\Module\Help\Show extends Nethgui\Module\Help\Common
 {
 
-    public function prepareView(Nethgui_Core_ViewInterface $view, $mode)
+    public function prepareView(Nethgui\Core\ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
 
