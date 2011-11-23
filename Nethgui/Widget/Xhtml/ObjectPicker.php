@@ -135,7 +135,7 @@ class \Nethgui\Widget\Xhtml_ObjectPicker extends \Nethgui\Widget\Xhtml
 
         $content = $this->openTag('div', $attributes);
 
-        if ((is_array($objects) || $objects instanceof Countable) && count($objects) > 0) {
+        if ((is_array($objects) || $objects instanceof \Countable) && count($objects) > 0) {
             $content .= '<ul>';
 
             foreach ($objects as $index => $object) {

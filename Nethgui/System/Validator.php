@@ -601,7 +601,7 @@ class CollectionValidator implements \Nethgui\Core\ValidatorInterface
 
     /**
      *
-     * @var Iterator
+     * @var \Iterator
      */
     private $iterator;
 
@@ -617,9 +617,9 @@ class CollectionValidator implements \Nethgui\Core\ValidatorInterface
         if (is_array($iterableObject)) {
             $iterableObject = new ArrayObject($iterableObject);
             $this->iterator = $iterableObject->getIterator();
-        } elseif ($iterableObject instanceof IteratorAggregate) {
+        } elseif ($iterableObject instanceof \IteratorAggregate) {
             $this->iterator = $iterableObject->getIterator();
-        } elseif ($iterableObject instanceof Iterator) {
+        } elseif ($iterableObject instanceof \Iterator) {
             $this->iterator = $iterableObject;
         } else {
             $this->failureInfo[] = array("Not a collection", array());

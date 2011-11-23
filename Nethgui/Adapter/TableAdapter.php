@@ -11,7 +11,7 @@ namespace Nethgui\Adapter;
  *
  * @package Adapter
  */
-class TableAdapter implements AdapterInterface, ArrayAccess, IteratorAggregate, Countable
+class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate, \Countable
 {
 
     /**

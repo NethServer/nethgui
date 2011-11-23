@@ -18,11 +18,11 @@ class ArrayAccessSerializer implements SerializerInterface
     private $key;
     /**
      *
-     * @var ArrayAccess
+     * @var \ArrayAccess
      */
     private $table;
 
-    public function __construct(ArrayAccess $table, $key, $prop)
+    public function __construct(\ArrayAccess $table, $key, $prop)
     {
         $this->table = $table;
         $this->key = $key;

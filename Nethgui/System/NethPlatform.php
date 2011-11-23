@@ -118,7 +118,7 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
      */
     private function getSerializer($database, $key, $prop = NULL)
     {
-        if ($database instanceof ArrayAccess) {
+        if ($database instanceof \ArrayAccess) {
             $serializer = new \Nethgui\Serializer\ArrayAccessSerializer($database, $key, $prop);
         } elseif (is_string($database)) {
             if (is_null($prop)) {

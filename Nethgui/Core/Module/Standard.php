@@ -409,7 +409,7 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
              *
              * If first argument is a string, it contains the $database name.
              */
-            if (is_array($args) && isset($args[0]) && (is_string($args[0]) || $args[0] instanceof ArrayAccess)) {
+            if (is_array($args) && isset($args[0]) && (is_string($args[0]) || $args[0] instanceof \ArrayAccess)) {
                 $args = array($args);
             }
 

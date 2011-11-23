@@ -12,7 +12,7 @@ namespace Nethgui\Adapter;
  *
  * @package Adapter
  */
-class ArrayAdapter implements AdapterInterface, ArrayAccess, IteratorAggregate, Countable
+class ArrayAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate, \Countable
 {
 
     /**

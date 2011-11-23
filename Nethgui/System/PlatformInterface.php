@@ -34,7 +34,7 @@ interface PlatformInterface
      * @param string|ArrayAccess $database Database name or ArrayAccess object
      * @param string $key Key connected to the adapter.
      * @param string $prop Optional - Set to a prop name to connect a prop instead of a key.
-     * @param string $separator Optional - Specify a single character string to obtain an ArrayAccess and Countable interface.
+     * @param string $separator Optional - Specify a single character string to obtain an ArrayAccess and \Countable interface.
      * @return \Nethgui\Adapter\AdapterInterface
      */
     public function getIdentityAdapter($database, $key, $prop = NULL, $separator = NULL);
