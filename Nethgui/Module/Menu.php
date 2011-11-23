@@ -35,7 +35,7 @@ class Menu extends \Nethgui\Core\Module\Standard
      * @param RecursiveIterator $rootModule
      * @return string
      */
-    private function iteratorToHtml(RecursiveIterator $menuIterator, \Nethgui\Renderer\Abstract $view, \Nethgui\Renderer\WidgetInterface $widget, $level = 0)
+    private function iteratorToHtml(RecursiveIterator $menuIterator, \Nethgui\Renderer\Xhtml $view, \Nethgui\Renderer\WidgetInterface $widget, $level = 0)
     {
         if ($level > 4) {
             return $widget;
@@ -61,7 +61,7 @@ class Menu extends \Nethgui\Core\Module\Standard
         return $widget;
     }
 
-    private function makeModuleAnchor(\Nethgui\Renderer\Abstract $view, \Nethgui\Core\ModuleInterface $module)
+    private function makeModuleAnchor(\Nethgui\Renderer\Xhtml $view, \Nethgui\Core\ModuleInterface $module)
     {
         $moduleView = new \Nethgui\Client\View($module, $view->getTranslator());
 
@@ -80,7 +80,7 @@ class Menu extends \Nethgui\Core\Module\Standard
         return $view->literal(strtr($tpl, $placeholders))->setAttribute('hsc', FALSE);
     }
 
-    public function renderModuleMenu(\Nethgui\Renderer\Abstract $view)
+    public function renderModuleMenu(\Nethgui\Renderer\Xhtml $view)
     {
         $rootList = $view->elementList()->setAttribute('wrap', '/');
 

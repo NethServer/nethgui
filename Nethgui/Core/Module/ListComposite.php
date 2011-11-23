@@ -69,7 +69,7 @@ class ListComposite extends Composite implements \Nethgui\Core\RequestHandlerInt
         }
     }
 
-    public function renderList(\Nethgui\Renderer\Abstract $view)
+    public function renderList(\Nethgui\Renderer\Xhtml $view)
     {
         $widget = $view->panel();
         foreach ($this->getChildren() as $child) {

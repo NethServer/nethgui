@@ -125,7 +125,7 @@ class NotificationArea extends \Nethgui\Core\Module\Standard implements \Nethgui
         return implode(' ' . $eV->translate("valid_OR") . ' ', $parts);
     }
 
-    public function renderValidationError(\Nethgui\Renderer\Abstract $view)
+    public function renderValidationError(\Nethgui\Renderer\Xhtml $view)
     {
         return $view->button($view['fieldName'], \Nethgui\Renderer\WidgetFactoryInterface::BUTTON_LINK)
                 ->setAttribute('value', '#' . $view['fieldId'])
@@ -195,7 +195,7 @@ class NotificationArea extends \Nethgui\Core\Module\Standard implements \Nethgui
         return $output;
     }
 
-    public function renderDialogAction(\Nethgui\Renderer\Abstract $view)
+    public function renderDialogAction(\Nethgui\Renderer\Xhtml $view)
     {
         if ($view['transient'] && count($view['data']) == 0) {
             // render as link

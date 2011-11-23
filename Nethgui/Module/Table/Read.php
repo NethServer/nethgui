@@ -65,7 +65,7 @@ class Read extends Action
         }
     }
 
-    public function renderTableActions(\Nethgui\Renderer\Abstract $view)
+    public function renderTableActions(\Nethgui\Renderer\Xhtml $view)
     {
         $tableActions = $view->getModule()->getTableActions();
         $buttonList = $view->elementList()
@@ -163,7 +163,7 @@ class Read extends Action
         return $cellView;
     }
 
-    public function renderColumnActions(\Nethgui\Renderer\Abstract $view)
+    public function renderColumnActions(\Nethgui\Renderer\Xhtml $view)
     {
         $elementList = $view->elementList(\Nethgui\Renderer\WidgetFactoryInterface::BUTTONSET)
             ->setAttribute('maxElements', 1);

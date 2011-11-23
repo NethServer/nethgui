@@ -13,7 +13,7 @@ namespace Nethgui\Renderer;
  * @see http://en.wikipedia.org/wiki/Decorator_pattern
  * @package Renderer
  */
-abstract class Abstract extends ReadonlyView
+abstract class AbstractRenderer extends ReadonlyView
 {
 
     abstract protected function render();

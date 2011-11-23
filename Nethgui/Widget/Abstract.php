@@ -19,11 +19,11 @@ abstract class Abstract implements \Nethgui\Renderer\WidgetInterface, \Nethgui\L
     private $attributes = array();
 
     /**
-     * @var \Nethgui\Renderer\Abstract
+     * @var \Nethgui\Renderer\Xhtml
      */
     protected $view;
 
-    public function __construct(\Nethgui\Renderer\Abstract $view)
+    public function __construct(\Nethgui\Renderer\Xhtml $view)
     {
         $this->view = $view;
         self::$instance ++;
