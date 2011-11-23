@@ -1,5 +1,3 @@
-
-namespace Nethgui\Template\Help;
 <h<?php echo $view['titleLevel']; ?>><?php echo htmlspecialchars($view->translate($view['title'])) ?></h<?php echo $view['titleLevel']; ?>>
 <p><?php echo htmlspecialchars($view->translate($view['description'])) ?></p>
 <?php if(count($view['fields']) == 0) return; ?>

@@ -11,7 +11,7 @@ namespace Nethgui\Widget;
  * Abstract Widget class
  * @ignore
  */
-abstract class Abstract implements \Nethgui\Renderer\WidgetInterface, \Nethgui\Log\LogConsumerInterface
+abstract class AbstractWidget implements \Nethgui\Renderer\WidgetInterface, \Nethgui\Log\LogConsumerInterface
 {
 
     static private $instance = 0;

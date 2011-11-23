@@ -48,7 +48,7 @@ abstract class AbstractModule implements \Nethgui\Core\ModuleInterface, \Nethgui
         if (isset($identifier)) {
             $this->identifier = $identifier;
         } else {
-            $this->identifier = \Nethgui\array_end(explode('_', get_class($this)), -1, 1);
+            $this->identifier = \Nethgui\array_end(explode('\\', get_class($this)), -1, 1);
         }
     }
 

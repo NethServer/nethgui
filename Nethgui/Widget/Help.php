@@ -12,7 +12,7 @@ namespace Nethgui\Widget;
  * @package Widget
  * @ignore
  */
-class Help extends Abstract
+class Help extends AbstractWidget
 {
 
     public function render()

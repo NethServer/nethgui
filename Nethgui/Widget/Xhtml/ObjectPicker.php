@@ -16,7 +16,7 @@ namespace Nethgui\Widget\Xhtml;
  * @internal
  * @ignore
  */
-class ObjectPicker extends \Nethgui\Widget\Xhtml
+class ObjectPicker extends \Nethgui\Widget\XhtmlWidget
 {
 
     private $metadata;

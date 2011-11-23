@@ -67,7 +67,7 @@ class Xhtml extends AbstractRenderer implements WidgetFactoryInterface, \Nethgui
 
     protected function createWidget($widgetName, $attributes = array())
     {
-        $className = '\\Nethgui\\Widget\\Xhtml\\' . ucfirst($widgetName);
+        $className = 'Nethgui\\Widget\\Xhtml\\' . ucfirst($widgetName);
 
         $o = new $className($this);
 

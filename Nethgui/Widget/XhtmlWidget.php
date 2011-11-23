@@ -11,7 +11,7 @@ namespace Nethgui\Widget;
  * Abstract Xhtml Widget class
  * @ignore
  */
-abstract class Xhtml extends Abstract
+abstract class XhtmlWidget extends AbstractWidget
 {
 
     /**

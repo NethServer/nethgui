@@ -23,7 +23,7 @@ namespace Nethgui\Widget\Xhtml;
  * @subpackage Xhtml
  * @ignore
  */
-class TextArea extends \Nethgui\Widget\Xhtml
+class TextArea extends \Nethgui\Widget\XhtmlWidget
 {
 
     public function render()

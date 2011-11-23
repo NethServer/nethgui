@@ -16,7 +16,7 @@ namespace Nethgui\Widget\Xhtml;
  * @internal
  * @ignore
  */
-class ElementList extends \Nethgui\Widget\Xhtml
+class ElementList extends \Nethgui\Widget\XhtmlWidget
 {
 
     private $childWrapTag;

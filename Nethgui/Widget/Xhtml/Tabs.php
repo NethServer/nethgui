@@ -16,7 +16,7 @@ namespace Nethgui\Widget\Xhtml;
  * @internal
  * @ignore
  */
-class Tabs extends \Nethgui\Widget\Xhtml
+class Tabs extends \Nethgui\Widget\XhtmlWidget
 {
 
     public function render()

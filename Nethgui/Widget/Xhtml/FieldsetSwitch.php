@@ -16,7 +16,7 @@ namespace Nethgui\Widget\Xhtml;
  * @internal
  * @ignore
  */
-class FieldsetSwitch extends \Nethgui\Widget\Xhtml
+class FieldsetSwitch extends \Nethgui\Widget\XhtmlWidget
 {
 
     public function render()

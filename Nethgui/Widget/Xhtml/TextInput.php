@@ -16,7 +16,7 @@ namespace Nethgui\Widget\Xhtml;
  * @internal
  * @ignore
  */
-class TextInput extends \Nethgui\Widget\Xhtml
+class TextInput extends \Nethgui\Widget\XhtmlWidget
 {
 
     public function render()

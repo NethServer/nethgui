@@ -1,5 +1,3 @@
-
-namespace Nethgui\Template;
 <div id="dlgValidation" class="Notification warning ui-state-error">
     <span class='NotificationIcon ui-icon ui-icon-info'></span><?php echo $view->textLabel('message') ?>:
     <?php

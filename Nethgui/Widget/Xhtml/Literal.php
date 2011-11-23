@@ -22,7 +22,7 @@ namespace Nethgui\Widget\Xhtml;
  * @internal
  * @ignore
  */
-class Literal extends \Nethgui\Widget\Xhtml
+class Literal extends \Nethgui\Widget\XhtmlWidget
 {
 
     public function render()

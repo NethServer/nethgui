@@ -1,3 +1,1 @@
-
-namespace Nethgui\Template;
 <p>This is the Help module. Please select one of <code>Show</code>, <code>Read</code>, <code>Template</code> actions.</p>

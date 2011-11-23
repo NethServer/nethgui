@@ -22,7 +22,7 @@ namespace Nethgui\Widget\Xhtml;
  * @internal
  * @ignore
  */
-class Button extends \Nethgui\Widget\Xhtml implements \Nethgui\Core\CommandReceiverInterface
+class Button extends \Nethgui\Widget\XhtmlWidget implements \Nethgui\Core\CommandReceiverInterface
 {
 
     public function render()

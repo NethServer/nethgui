@@ -16,7 +16,7 @@ namespace Nethgui\Widget\Xhtml;
  * @internal
  * @ignore
  */
-class Selector extends \Nethgui\Widget\Xhtml
+class Selector extends \Nethgui\Widget\XhtmlWidget
 {
 
     public function render()
