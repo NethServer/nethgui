@@ -123,6 +123,7 @@ if (NETHGUI_APPLICATION == 'Test') {
             $parts = explode('/', $suffix);
 
             $FW = new Nethgui\Framework();
+            $FW->registerApplication(NETHGUI_ROOTDIR . NETHGUI_APPLICATION);
             $FW->dispatch(empty($parts[0]) ? 'index' : $parts[0], array_slice($parts, 1));
         };
 

@@ -3,11 +3,16 @@
  * @package Nethgui
  */
 
+namespace Nethgui;
+
 /**
  * @package Nethgui
  */
-class Nethgui\Framework 
+class Framework
 {
+
+    private $namespaceMap = array();
+    private $applications = array();
 
     /**
      * Sends a 303 status redirect to $url.
@@ -15,7 +20,17 @@ class Nethgui\Framework
      */
     public function __construct()
     {
+        $this->namespaceMap['Nethgui'] = dirname(__DIR__);
         spl_autoload_register(array($this, 'autoloader'));
+    }
+
+    public function registerApplication($applicationPath)
+    {
+        $appRoot = dirname($applicationPath);
+        $appName = basename($applicationPath);
+
+        $this->applications[] = $appName;
+        $this->namespaceMap[$appName] = $appRoot;
     }
 
     /**
@@ -29,12 +44,14 @@ class Nethgui\Framework
      */
     public function autoloader($className)
     {
-        /* Skip CodeIgniter namespace, and "configuration" */
-        if (substr($className, 0, 3) == 'CI_' || $className === 'configuration') {
-            return;
+        $className = substr($className, strlen(__NAMESPACE__) + 1);
+
+        $nsKey = array_head(explode('\\', $className));
+
+        if (isset($this->namespaceMap[$nsKey])) {
+            $filePath = $this->namespaceMap[$nsKey] . '/' . str_replace('\\', '/', $className) . '.php';
+            include $filePath;
         }
-        $classPath = NETHGUI_ROOTDIR . '/' . str_replace("_", "/", $className) . '.php';
-        include $classPath;
     }
 
     private function redirect($url)
