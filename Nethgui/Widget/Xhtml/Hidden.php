@@ -16,7 +16,7 @@ namespace Nethgui\Widget\Xhtml;
  * @internal
  * @ignore
  */
-class \Nethgui\Widget\Xhtml_Hidden extends \Nethgui\Widget\Xhtml
+class Hidden extends \Nethgui\Widget\Xhtml
 {
 
     public function render()

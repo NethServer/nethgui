@@ -16,7 +16,7 @@ namespace Nethgui\Widget\Xhtml;
  * @internal
  * @ignore
  */
-class \Nethgui\Widget\Xhtml_CheckBox extends \Nethgui\Widget\Xhtml
+class CheckBox extends \Nethgui\Widget\Xhtml
 {
 
     public function render()

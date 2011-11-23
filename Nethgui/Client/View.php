@@ -63,7 +63,7 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
         $this->translator = $translator;
 
         // XXX: trying to guess view name
-        $this->template = str_replace('_Module_', '_Template_', get_class($module));
+        $this->template = str_replace('\\Module\\', '\\Template\\', get_class($module));
         $this->data = array();
     }
 

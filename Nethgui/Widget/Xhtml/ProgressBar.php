@@ -16,7 +16,7 @@ namespace Nethgui\Widget\Xhtml;
  * @internal
  * @ignore
  */
-class \Nethgui\Widget\Xhtml_ProgressBar extends \Nethgui\Widget\Xhtml
+class ProgressBar extends \Nethgui\Widget\Xhtml
 {
 
     public function render()

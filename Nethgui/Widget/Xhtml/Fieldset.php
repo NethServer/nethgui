@@ -21,7 +21,7 @@ namespace Nethgui\Widget\Xhtml;
  * @internal
  * @ignore
  */
-class \Nethgui\Widget\Xhtml_Fieldset extends \Nethgui\Widget\Xhtml_Panel
+class Fieldset extends \Panel
 {
 
     public function render()
@@ -36,7 +36,7 @@ class \Nethgui\Widget\Xhtml_Fieldset extends \Nethgui\Widget\Xhtml_Panel
             $this->setAttribute('class', 'Fieldset');
         }
 
-        $legendWidget = new \Nethgui\Widget\Xhtml_TextLabel($this->view);
+        $legendWidget = new TextLabel($this->view);
         $legendWidget->setAttribute('tag', 'legend');
         $renderLegend = FALSE;
 

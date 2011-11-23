@@ -16,7 +16,7 @@ namespace Nethgui\Widget\Xhtml;
  * @internal
  * @ignore
  */
-class \Nethgui\Widget\Xhtml_ObjectPicker extends \Nethgui\Widget\Xhtml
+class ObjectPicker extends \Nethgui\Widget\Xhtml
 {
 
     private $metadata;
@@ -58,7 +58,7 @@ class \Nethgui\Widget\Xhtml_ObjectPicker extends \Nethgui\Widget\Xhtml
 
     public function insert(\Nethgui\Renderer\WidgetInterface $child)
     {
-        if ( ! $child instanceof \Nethgui\Widget\Xhtml_CheckBox) {
+        if ( ! $child instanceof \CheckBox) {
             throw new \Nethgui\Exception\View(sprintf('Unsupported widget class: %s', get_class($child)));
         }
 
@@ -105,7 +105,7 @@ class \Nethgui\Widget\Xhtml_ObjectPicker extends \Nethgui\Widget\Xhtml
         $content .= $this->closeTag('div');
 
         if ($this->hasAttribute('template')) {
-            $fieldsetWidget = new \Nethgui\Widget\Xhtml_Fieldset($this->view);
+            $fieldsetWidget = new Fieldset($this->view);
             $fieldsetWidget
                 ->setAttribute('template', $this->getAttribute('template'))
                 ->setAttribute('icon-before', $this->getAttribute('icon-before'))

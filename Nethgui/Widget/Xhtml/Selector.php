@@ -16,7 +16,7 @@ namespace Nethgui\Widget\Xhtml;
  * @internal
  * @ignore
  */
-class \Nethgui\Widget\Xhtml_Selector extends \Nethgui\Widget\Xhtml
+class Selector extends \Nethgui\Widget\Xhtml
 {
 
     public function render()
@@ -93,23 +93,23 @@ class \Nethgui\Widget\Xhtml_Selector extends \Nethgui\Widget\Xhtml
         $name = $this->getAttribute('name');
         $flags = $this->getAttribute('flags');
 
-        $hiddenWidget = new \Nethgui\Widget\Xhtml_Hidden($this->view);
+        $hiddenWidget = new Hidden($this->view);
         $hiddenWidget->setAttribute('flags', $flags)
             ->setAttribute('value', '')
             ->setAttribute('class', 'Hidden')
             ->setAttribute('name', $name);
 
-        $contentWidget = new \Nethgui\Widget\Xhtml_Literal($this->view);
+        $contentWidget = new Literal($this->view);
         $contentWidget->setAttribute('data', $this->generateSelectorContentWidgetList($name, $value, $choices, $flags));
 
-        $panelWidget = new \Nethgui\Widget\Xhtml_Panel($this->view);
+        $panelWidget = new Panel($this->view);
         $panelWidget
             ->setAttribute('class', $attributes['class'])
             ->setAttribute('name', $name)
             ->insert($hiddenWidget)
             ->insert($contentWidget);
 
-        $fieldsetWidget = new \Nethgui\Widget\Xhtml_Fieldset($this->view);
+        $fieldsetWidget = new Fieldset($this->view);
         $fieldsetWidget->setAttribute('template', $this->getAttribute('label', $name . '_label'))
             ->setAttribute('flags', $this->getAttribute('flags'));
         if ($this->hasAttribute('icon-before')) {

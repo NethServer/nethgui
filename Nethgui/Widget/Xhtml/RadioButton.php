@@ -16,7 +16,7 @@ namespace Nethgui\Widget\Xhtml;
  * @internal
  * @ignore
  */
-class \Nethgui\Widget\Xhtml_RadioButton extends \Nethgui\Widget\Xhtml
+class RadioButton extends \Nethgui\Widget\Xhtml
 {
 
     public function render()

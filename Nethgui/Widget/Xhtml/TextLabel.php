@@ -27,7 +27,7 @@ namespace Nethgui\Widget\Xhtml;
  * @internal
  * @ignore
  */
-class \Nethgui\Widget\Xhtml_TextLabel extends \Nethgui\Widget\Xhtml
+class TextLabel extends \Nethgui\Widget\Xhtml
 {
 
     public function render()

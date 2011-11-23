@@ -67,7 +67,7 @@ class Xhtml extends AbstractRenderer implements WidgetFactoryInterface, \Nethgui
 
     protected function createWidget($widgetName, $attributes = array())
     {
-        $className = '\Nethgui\Widget\Xhtml_' . ucfirst($widgetName);
+        $className = '\\Nethgui\\Widget\\Xhtml\\' . ucfirst($widgetName);
 
         $o = new $className($this);
 
@@ -104,7 +104,7 @@ class Xhtml extends AbstractRenderer implements WidgetFactoryInterface, \Nethgui
             // Rendered by callback function
             $viewOutput = (string) call_user_func_array($viewName, $viewState);
         } else {
-            $absoluteViewPath = realpath(NETHGUI_ROOTDIR . '/' . str_replace('_', '/', $viewName) . '.php');
+            $absoluteViewPath = realpath(NETHGUI_ROOTDIR . '/' . str_replace('\\', '/', $viewName) . '.php');
 
             if ( ! $absoluteViewPath) {
                 $this->getLog()->warning("Unable to load `{$viewName}`.");

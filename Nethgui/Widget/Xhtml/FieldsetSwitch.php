@@ -16,7 +16,7 @@ namespace Nethgui\Widget\Xhtml;
  * @internal
  * @ignore
  */
-class \Nethgui\Widget\Xhtml_FieldsetSwitch extends \Nethgui\Widget\Xhtml
+class FieldsetSwitch extends \Nethgui\Widget\Xhtml
 {
 
     public function render()
@@ -28,7 +28,7 @@ class \Nethgui\Widget\Xhtml_FieldsetSwitch extends \Nethgui\Widget\Xhtml
 
         $content .= $this->openTag('div', array('class' => 'FieldsetSwitch'));
 
-        $chooser = new \Nethgui\Widget\Xhtml_RadioButton($this->view);
+        $chooser = new RadioButton($this->view);
         $chooser
             ->setAttribute('name', $name)
             ->setAttribute('value', $value)

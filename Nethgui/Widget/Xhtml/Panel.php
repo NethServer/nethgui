@@ -16,7 +16,7 @@ namespace Nethgui\Widget\Xhtml;
  * @internal
  * @ignore
  */
-class \Nethgui\Widget\Xhtml_Panel extends \Nethgui\Widget\Xhtml
+class Panel extends \Nethgui\Widget\Xhtml
 {
 
     public function render()

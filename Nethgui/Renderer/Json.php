@@ -11,7 +11,7 @@ namespace Nethgui\Renderer;
  * @package Renderer
  * @ignore
  */
-class Json extends Abstract
+class Json extends AbstractRenderer
 {
 
     private function deepWalk(&$events, &$commands)

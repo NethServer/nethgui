@@ -16,7 +16,7 @@ namespace Nethgui\Widget\Xhtml;
  * @internal
  * @ignore
  */
-class \Nethgui\Widget\Xhtml_Inset extends \Nethgui\Widget\Xhtml
+class Inset extends \Nethgui\Widget\Xhtml
 {
 
     public function render()

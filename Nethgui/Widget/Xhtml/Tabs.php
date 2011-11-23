@@ -16,7 +16,7 @@ namespace Nethgui\Widget\Xhtml;
  * @internal
  * @ignore
  */
-class \Nethgui\Widget\Xhtml_Tabs extends \Nethgui\Widget\Xhtml
+class Tabs extends \Nethgui\Widget\Xhtml
 {
 
     public function render()
@@ -49,11 +49,11 @@ class \Nethgui\Widget\Xhtml_Tabs extends \Nethgui\Widget\Xhtml
 
     public function insert(\Nethgui\Renderer\WidgetInterface $widget)
     {
-        if ($widget instanceof \Nethgui\Widget\Xhtml_Panel) {
+        if ($widget instanceof \Panel) {
             $widget->setAttribute('class', $widget->getAttribute('class', '') . ' ' . $this->getAttribute('tabClass', 'TabPanel tab-panel'));
             parent::insert($widget);            
         } else {
-            $panel = new \Nethgui\Widget\Xhtml_Panel($this->view);
+            $panel = new Panel($this->view);
             parent::insert($panel);
             $panel
                 ->setAttribute('name', $widget->getAttribute('name'))
