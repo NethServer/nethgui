@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Serializer
  */
 
 namespace Nethgui\Serializer;
@@ -8,7 +7,6 @@ namespace Nethgui\Serializer;
 /**
  * Transfer a value to/from a database Key.
  *
- * @package Serializer
  */
 class KeySerializer implements SerializerInterface
 {

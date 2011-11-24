@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Core
  */
 
 namespace Nethgui\Client;
@@ -8,7 +7,6 @@ namespace Nethgui\Client;
 /**
  * UserInterface provides access to the login information of the current user.
  *
- * @package Core
  */
 interface UserInterface extends \ArrayAccess
 {

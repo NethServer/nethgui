@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Renderer
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
@@ -11,7 +10,6 @@ namespace Nethgui\Renderer;
  *
  * @see WidgetInterface
  * @see http://en.wikipedia.org/wiki/Decorator_pattern
- * @package Renderer
  */
 abstract class AbstractRenderer extends ReadonlyView
 {

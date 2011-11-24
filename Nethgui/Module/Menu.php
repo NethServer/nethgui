@@ -1,12 +1,10 @@
 <?php
 /**
- * @package Module
  */
 
 namespace Nethgui\Module;
 
 /**
- * @package Module
  */
 class Menu extends \Nethgui\Core\Module\Standard
 {

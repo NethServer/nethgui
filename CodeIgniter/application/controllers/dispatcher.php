@@ -2,14 +2,11 @@
 /**
  * Nethgui
  *
- * @package NethguiFramework
  */
 
 /**
  * TODO: describe class
  *
- * @package NethguiFramework
- * @subpackage CodeIgniter
  */
 class Dispatcher extends CI_Controller
 {

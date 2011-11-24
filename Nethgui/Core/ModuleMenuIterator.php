@@ -1,13 +1,11 @@
 <?php
 /**
- * @package Core
  */
 
 namespace Nethgui\Core;
 
 /**
  * @todo Describe class...
- * @package Core
  * @internal
  */
 final class ModuleMenuIterator implements \RecursiveIterator

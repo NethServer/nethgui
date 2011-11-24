@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Core
  */
 
 namespace Nethgui\Core;
@@ -16,7 +15,6 @@ namespace Nethgui\Core;
  * - Receiver, a Widget or the client-side javascript components.
  *
  * @see http://en.wikipedia.org/wiki/Command_pattern
- * @package Core
  */
 interface CommandInterface
 {

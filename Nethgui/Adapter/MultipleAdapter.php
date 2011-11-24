@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Adapter
  */
 
 namespace Nethgui\Adapter;
@@ -16,7 +15,6 @@ namespace Nethgui\Adapter;
  * If the adapter has an empty set of serializers the callback function will 
  * still be called with no arguments.
  *
- * @package Adapter
  */
 class MultipleAdapter implements AdapterInterface
 {

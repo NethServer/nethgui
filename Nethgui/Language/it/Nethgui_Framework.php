@@ -1,7 +1,5 @@
 <?php
 /**
- * @package Language
- * @subpackage Core
  */
 
 namespace Nethgui\Language\it;

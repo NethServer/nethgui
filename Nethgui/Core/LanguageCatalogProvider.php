@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Core
  */
 
 namespace Nethgui\Core;
@@ -11,7 +10,6 @@ namespace Nethgui\Core;
  *
  * @see ViewInterface
  * @author Davide Principi <davide.principi@nethesis.it>
- * @package Core
  */
 interface LanguageCatalogProvider {
     /**

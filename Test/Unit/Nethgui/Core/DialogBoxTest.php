@@ -1,11 +1,9 @@
 <?php
 /**
- * @package Tests
  * 
  */
 
 /**
- * @package Tests
  * 
  */
 class \Nethgui\Client\DialogBoxTest extends PHPUnit_Framework_TestCase

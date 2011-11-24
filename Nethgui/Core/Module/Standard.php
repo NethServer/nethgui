@@ -2,8 +2,6 @@
 /**
  * Nethgui
  *
- * @package Core
- * @subpackage Module
  */
 
 namespace Nethgui\Core\Module;
@@ -12,8 +10,6 @@ namespace Nethgui\Core\Module;
  * A Standard Module connects the Configuration Database and the View layer,
  * performing data validation and processing.
  *
- * @package Core
- * @subpackage Module
  */
 abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestHandlerInterface, \Nethgui\System\EventObserverInterface
 {

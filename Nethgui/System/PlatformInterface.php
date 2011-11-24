@@ -2,7 +2,6 @@
 /**
  * Nethgui
  *
- * @package System
  */
 
 namespace Nethgui\System;
@@ -10,7 +9,6 @@ namespace Nethgui\System;
 /**
  * Interface to the underlying platform
  *
- * @package System
  */
 interface PlatformInterface
 {

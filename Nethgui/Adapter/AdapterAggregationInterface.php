@@ -1,12 +1,10 @@
 <?php
 /**
- * @package Adapter
  */
 
 namespace Nethgui\Adapter;
 
 /**
- * @package Adapter
  */
 interface AdapterAggregationInterface {
 

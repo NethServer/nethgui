@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Renderer
  * @ignore
  * @author Davide Principi <davide.principi@nethesis.it>
  */
@@ -13,7 +12,6 @@ namespace Nethgui\Renderer;
  * Fragments of the view string representation can be generated through the widget objects
  * returned by the factory interface.
  *
- * @package Renderer
  * @ignore
  */
 class Xhtml extends AbstractRenderer implements WidgetFactoryInterface, \Nethgui\Core\GlobalFunctionConsumer, \Nethgui\Core\CommandReceiverAggregateInterface

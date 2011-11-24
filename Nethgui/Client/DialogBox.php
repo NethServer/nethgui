@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Client
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
@@ -17,7 +16,6 @@ namespace Nethgui\Client;
  * 
  * 
  * 
- * @package Client
  */
 class DialogBox implements Serializable
 {

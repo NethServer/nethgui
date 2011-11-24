@@ -2,8 +2,6 @@
 /**
  * Nethgui
  *
- * @package Core
- * @subpackage Module
  */
 
 namespace Nethgui\Core\Module;
@@ -12,8 +10,6 @@ namespace Nethgui\Core\Module;
  * Describe the behaviour to be applied in the user interface
  *
  * @see Controller
- * @package Core
- * @subpackage Module
  */
 interface DefaultUiStateInterface
 {

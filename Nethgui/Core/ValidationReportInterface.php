@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Core
  */
 
 namespace Nethgui\Core;
@@ -9,7 +8,6 @@ namespace Nethgui\Core;
  * UNSTABLE
  * @todo describe interface
  *
- * @package Core
  */
 interface ValidationReportInterface
 {

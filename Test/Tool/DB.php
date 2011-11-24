@@ -1,12 +1,8 @@
 <?php
 /**
- * @package Test
- * @subpackage Tool
  */
 
 /**
- * @package Test
- * @subpackage Tool
  * @author Davide Principi <davide.principi@nethesis.it>
  * @see Test\Tool\ModuleTestCase
  */

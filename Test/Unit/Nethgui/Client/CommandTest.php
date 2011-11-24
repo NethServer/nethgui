@@ -1,12 +1,8 @@
 <?php
 /**
- * @package Test
- * @subpackage Unit
  */
 
 /**
- * @package Test
- * @subpackage Unit
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 class \Nethgui\Client\CommandTest extends PHPUnit_Framework_TestCase

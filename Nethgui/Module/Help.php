@@ -1,12 +1,10 @@
 <?php
 /**
- * @package Module
  */
 
 namespace Nethgui\Module;
 
 /**
- * @package Module
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 class Help extends \Nethgui\Core\Module\Controller

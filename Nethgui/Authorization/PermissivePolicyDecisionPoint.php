@@ -3,7 +3,6 @@
 /**
  * Nethgui
  *
- * @package Authorization
  */
 
 namespace Nethgui\Authorization;
@@ -11,7 +10,6 @@ namespace Nethgui\Authorization;
 /**
  * TODO: describe class
  *
- * @package Authorization
  */
 class PermissivePolicyDecisionPoint implements PolicyDecisionPointInterface
 {

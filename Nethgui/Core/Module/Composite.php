@@ -2,8 +2,6 @@
 /**
  * Nethgui
  *
- * @package Core
- * @subpackage Module
  */
 
 namespace Nethgui\Core\Module;
@@ -16,8 +14,6 @@ namespace Nethgui\Core\Module;
  *
  * @see Controller
  * @see List
- * @package Core
- * @subpackage Module
  */
 abstract class Composite extends AbstractModule implements \Nethgui\Core\ModuleCompositeInterface
 {

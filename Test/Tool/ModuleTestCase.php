@@ -1,12 +1,8 @@
 <?php
 /**
- * @package Test
- * @subpackage Tool
  */
 
 /**
- * @package Test
- * @subpackage Tool
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 abstract class Test\Tool\ModuleTestCase extends PHPUnit_Framework_TestCase

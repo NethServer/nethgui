@@ -1,7 +1,5 @@
 <?php
 /**
- * @package Module
- * @subpackage Table
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
@@ -12,8 +10,6 @@ namespace Nethgui\Module\Table;
  * 
  * @see Modify
  * @see \Nethgui\Module\TableController
- * @package Module
- * @subpackage Table 
  */
 class Read extends Action
 {

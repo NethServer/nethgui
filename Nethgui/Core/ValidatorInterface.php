@@ -1,13 +1,11 @@
 <?php
 /**
- * @package Core
  */
 
 namespace Nethgui\Core;
 
 /**
  * @author Davide Principi <davide.principi@nethesis.it>
- * @package Core
  */
 interface ValidatorInterface {
 

@@ -2,7 +2,6 @@
 /**
  * Nethgui
  *
- * @package Module
  */
 
 namespace Nethgui\Module;
@@ -12,7 +11,6 @@ namespace Nethgui\Module;
  * 
  * Keeps persistent messages into User session.
  *
- * @package Module
  */
 class NotificationArea extends \Nethgui\Core\Module\Standard implements \Nethgui\Core\ValidationReportInterface, \Nethgui\Core\Module\DefaultUiStateInterface
 {

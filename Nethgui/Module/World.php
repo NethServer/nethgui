@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Module
  */
 
 namespace Nethgui\Module;
@@ -10,7 +9,6 @@ namespace Nethgui\Module;
  *
  * Puts modules into the World View for rendering.
  *
- * @package Module
  */
 class World extends \Nethgui\Core\Module\AbstractModule
 {

@@ -1,7 +1,5 @@
 <?php
 /**
- * @package Core
- * @subpackage Module
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
@@ -17,8 +15,6 @@ namespace Nethgui\Core\Module;
  * A a top level Controller renders its parts embedded in a FORM container.
  *
  * @see Composite
- * @package Core
- * @subpackage Module
  */
 class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterface, DefaultUiStateInterface
 {

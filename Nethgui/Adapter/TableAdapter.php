@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Adapter
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
@@ -9,7 +8,6 @@ namespace Nethgui\Adapter;
 /**
  * Table adapter provide an array like access to all database keys of a given type
  *
- * @package Adapter
  */
 class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate, \Countable
 {

@@ -1,13 +1,11 @@
 <?php
 /**
- * @package Log
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
 namespace Nethgui\Log;
 
 /**
- * @package Log
  */
 abstract class AbstractLog implements \Nethgui\Core\GlobalFunctionConsumer
 {

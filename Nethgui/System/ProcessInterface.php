@@ -2,7 +2,6 @@
 /**
  * Nethgui
  *
- * @package System
  */
 
 namespace Nethgui\System;
@@ -11,7 +10,6 @@ namespace Nethgui\System;
  * Brings the output and exit status of an external command
  *
  * @see exec()
- * @package System
  */
 interface ProcessInterface
 {

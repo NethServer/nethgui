@@ -1,7 +1,5 @@
 <?php
 /**
- * @package Module
- * @subpackage Table
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
@@ -11,8 +9,6 @@ namespace Nethgui\Module\Table;
  * Processes the table modification actions: create, update, delete
  *
  * @see Read
- * @package Module
- * @subpackage Table
  * 
  */
 class Modify extends Action

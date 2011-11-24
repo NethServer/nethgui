@@ -1,13 +1,11 @@
 <?php
 /**
- * @package Client
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
 namespace Nethgui\Client;
 
 /**
- * @package Client
  * @ignore
  */
 class Command implements \Nethgui\Core\CommandInterface

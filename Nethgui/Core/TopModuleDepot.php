@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Core
  */
 
 namespace Nethgui\Core;
@@ -15,7 +14,6 @@ namespace Nethgui\Core;
  *    - accessing  "Top" Modules
  *    - filtering access to "Top" Modules depending on User's credentials
  *
- * @package Core
  */
 class TopModuleDepot implements ModuleSetInterface, \Nethgui\Authorization\PolicyEnforcementPointInterface, \Nethgui\Log\LogConsumerInterface
 {

@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Core
  */
 
 namespace Nethgui\System;
@@ -8,7 +7,6 @@ namespace Nethgui\System;
 /**
  * 
  * @author Davide Principi <davide.principi@nethesis.it>
- * @package Core
  */
 class Validator implements \Nethgui\Core\ValidatorInterface
 {
@@ -587,7 +585,6 @@ class Validator implements \Nethgui\Core\ValidatorInterface
 /**
  * @author Davide Principi <davide.principi@nethesis.it>
  * @internal
- * @package Core
  */
 class CollectionValidator implements \Nethgui\Core\ValidatorInterface
 {
@@ -646,7 +643,6 @@ class CollectionValidator implements \Nethgui\Core\ValidatorInterface
 
 /**
  * @author Davide Principi <davide.principi@nethesis.it>
- * @package Core
  * @ignore
  * @see Validator::orValidator()
  */

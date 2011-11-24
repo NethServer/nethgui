@@ -1,6 +1,5 @@
 <?php
 /**
- * @package System
  * @ignore
  */
 
@@ -11,7 +10,6 @@ namespace Nethgui\System;
  *
  * @see NethPlatform::exec()
  * @ignore
- * @package System
  */
 class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionConsumer, \Serializable
 {

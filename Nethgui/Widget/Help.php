@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Widget
  * @author Davide Principi <davide.principi@nethesis.it>
  * @ignore
  */
@@ -9,7 +8,6 @@ namespace Nethgui\Widget;
 
 /**
  * Abstract Help Widget class
- * @package Widget
  * @ignore
  */
 class Help extends AbstractWidget

@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Adapter
  */
 
 namespace Nethgui\Adapter;
@@ -9,7 +8,6 @@ namespace Nethgui\Adapter;
 /**
  * Scalar adapter maps a scalar value to a key or prop value through a Serializer.
  *
- * @package Adapter
  */
 class ScalarAdapter implements AdapterInterface
 {

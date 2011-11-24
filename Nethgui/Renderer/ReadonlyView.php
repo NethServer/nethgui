@@ -1,7 +1,5 @@
 <?php
 /**
- * @package Nethgui
- * @subpackage Core
  * @author Davide Principi <davide.principi@nethesis.it>
  * @ignore
  */
@@ -11,8 +9,6 @@ namespace Nethgui\Renderer;
 /**
  * Disable write access operations of a view.
  *
- * @package Nethgui
- * @subpackage Core
  * @author Davide Principi <davide.principi@nethesis.it>
  * @ignore
  */

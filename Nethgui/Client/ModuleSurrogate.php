@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Core
  * @author Davide Principi <davide.principi@nethesis.it>
  * @ignore
  */
@@ -13,7 +12,6 @@ namespace Nethgui\Client;
  * 
  * @see DialogBox
  * @ignore
- * @package Core
  */
 class ModuleSurrogate implements \Nethgui\Core\ModuleInterface, \Nethgui\Core\LanguageCatalogProvider, Serializable
 {

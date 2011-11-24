@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Core
  */
 
 namespace Nethgui\Client;
@@ -8,7 +7,6 @@ namespace Nethgui\Client;
 /**
  * @todo describe class
  *
- * @package Core
  */
 class Request implements \Nethgui\Core\RequestInterface
 {

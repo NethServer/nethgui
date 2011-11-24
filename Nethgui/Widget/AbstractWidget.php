@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Widget
  * @author Davide Principi <davide.principi@nethesis.it>
  * @ignore
  */

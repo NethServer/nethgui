@@ -3,7 +3,6 @@
 /**
  * Nethgui
  *
- * @package Authorization
  */
 
 namespace Nethgui\Authorization;
@@ -15,7 +14,6 @@ namespace Nethgui\Authorization;
  * from PEPs (PolicyEnforcementPointInterfaces).
  *
  * @see PolicyEnforcementPointInterface
- * @package Authorization
  */
 interface PolicyDecisionPointInterface
 {

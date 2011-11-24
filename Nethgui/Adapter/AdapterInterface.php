@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Adapter
  */
 
 namespace Nethgui\Adapter;
@@ -10,7 +9,6 @@ namespace Nethgui\Adapter;
  * through a simplified interface.
  * 
  * @see AdapterAggregationInterface
- * @package Adapter
  */
 interface AdapterInterface
 {

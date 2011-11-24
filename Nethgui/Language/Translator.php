@@ -1,12 +1,10 @@
 <?php
 /**
- * @package Language
  */
 
 namespace Nethgui\Language;
 
 /**
- * @package Language
  * @ignore
  * @author Davide Principi <davide.principi@nethesis.it>
  */

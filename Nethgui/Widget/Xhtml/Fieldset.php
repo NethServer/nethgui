@@ -1,7 +1,5 @@
 <?php
 /**
- * @package Widget
- * @subpackage Xhtml
  * @author Davide Principi <davide.principi@nethesis.it>
  * @internal
  * @ignore
@@ -16,8 +14,6 @@ namespace Nethgui\Widget\Xhtml;
  * - template, see TextLabel
  * - flags
  *
- * @package Widget
- * @subpackage Xhtml
  * @internal
  * @ignore
  */

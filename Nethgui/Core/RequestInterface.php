@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Core
  */
 
 namespace Nethgui\Core;
@@ -11,7 +10,6 @@ namespace Nethgui\Core;
  * A RequestInterface object carries parameters submitted by the
  * User to a Module (and its submodules).
  *
- * @package Core
  */
 interface RequestInterface
 {

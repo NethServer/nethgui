@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Serializer
  */
 
 namespace Nethgui\Serializer;
@@ -8,7 +7,6 @@ namespace Nethgui\Serializer;
 /**
  * Transfers a prop value to/from an object implementing ArrayAccess interface
  *
- * @package Serializer
  * @see \Nethgui\Module\Table\Modify
  */
 class ArrayAccessSerializer implements SerializerInterface

@@ -1,14 +1,10 @@
 <?php
 /**
- * @package Module
- * @subpackage Help
  */
 
 namespace Nethgui\Module\Help;
 
 /**
- * @package Module
- * @subpackage Help
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 class Template extends Common

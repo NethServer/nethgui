@@ -1,7 +1,5 @@
 <?php
 /**
- * @package Widget
- * @subpackage Xhtml
  * @author Davide Principi <davide.principi@nethesis.it>
  * @internal
  * @ignore
@@ -17,8 +15,6 @@ namespace Nethgui\Widget\Xhtml;
  * - `data` any string or object with string representation
  * - `hsc` boolean
  *
- * @package Widget
- * @subpackage Xhtml
  * @internal
  * @ignore
  */

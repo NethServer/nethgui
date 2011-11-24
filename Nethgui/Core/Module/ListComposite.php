@@ -2,8 +2,6 @@
 /**
  * Nethgui
  *
- * @package Core
- * @subpackage Module
  */
 
 namespace Nethgui\Core\Module;
@@ -14,8 +12,6 @@ namespace Nethgui\Core\Module;
  * A List executes no action. It forwards each call to its subparts. 
  *
  * @see Composite
- * @package Core
- * @subpackage Module
  */
 class ListComposite extends Composite implements \Nethgui\Core\RequestHandlerInterface
 {

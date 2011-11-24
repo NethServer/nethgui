@@ -3,7 +3,6 @@
 /**
  * Nethgui
  *
- * @package Authorization
  */
 
 namespace Nethgui\Authorization;
@@ -15,7 +14,6 @@ namespace Nethgui\Authorization;
  * originating from a Subject to perform a specific Action on a given Resource.
  *
  * @see AccessControlResponseInterface
- * @package Authorization
  */
 interface AccessControlRequestInterface
 {

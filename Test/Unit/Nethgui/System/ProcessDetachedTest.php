@@ -1,13 +1,9 @@
 <?php
 /**
- * @package Tests
- * @subpackage Unit
  */
 
 /**
  * Test class for \Nethgui\System\ProcessTest.
- * @package Tests
- * @subpackage Unit
  */
 class \Nethgui\System\ProcessDetachedTest extends PHPUnit_Framework_TestCase
 {

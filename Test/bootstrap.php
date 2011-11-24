@@ -6,7 +6,6 @@
  *
  * phpunit --bootstrap <path-to-this-file> ...
  *
- * @package Test
  */
 
 

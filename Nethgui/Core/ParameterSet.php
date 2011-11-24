@@ -2,7 +2,6 @@
 /**
  * Nethgui
  *
- * @package Core
  */
 
 namespace Nethgui\Core;
@@ -17,7 +16,6 @@ namespace Nethgui\Core;
  * - Adapter objects
  * - Other objects implementing AdapterAggregationInterface
  *
- * @package Core
  */
 class ParameterSet implements \Nethgui\Adapter\AdapterAggregationInterface, \ArrayAccess, \Iterator, \Countable
 {

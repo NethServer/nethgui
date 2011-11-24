@@ -1,13 +1,11 @@
 <?php
 /**
- * @package Renderer
  */
 
 namespace Nethgui\Renderer;
 
 /**
  *  @author Davide Principi <davide.principi@nethesis.it>
- * @package Renderer
  */
 class Help extends Xhtml
 {

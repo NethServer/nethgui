@@ -1,7 +1,5 @@
 <?php
 /**
- * @package Widget
- * @subpackage Xhtml
  * @author Davide Principi <davide.principi@nethesis.it>
  * @ignore
  */
@@ -19,8 +17,6 @@ namespace Nethgui\Widget\Xhtml;
  * - appendOnly
  * - data
  *
- * @package Widget
- * @subpackage Xhtml
  * @ignore
  */
 class TextArea extends \Nethgui\Widget\XhtmlWidget

@@ -2,7 +2,6 @@
 /**
  * Nethgui
  *
- * @package Module
  */
 
 namespace Nethgui\Module;
@@ -16,7 +15,6 @@ namespace Nethgui\Module;
  *
  * @see Table\Modify
  * @see Table\Read
- * @package Module
  */
 class TabsController extends \Nethgui\Core\Module\Controller
 {

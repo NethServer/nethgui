@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Core
  */
 
 namespace Nethgui\Core;
@@ -15,7 +14,6 @@ namespace Nethgui\Core;
  *
  * @see ModuleInterface
  * @see http://en.wikipedia.org/wiki/Template_method_pattern
- * @package Core
  */
 interface RequestHandlerInterface {
 

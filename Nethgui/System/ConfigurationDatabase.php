@@ -2,7 +2,6 @@
 /**
  * Nethgui
  *
- * @package System
  * @author Giacomo Sanchietti <giacomo.sanchietti@nethesis.it>
  */
 
@@ -20,7 +19,6 @@ namespace Nethgui\System;
  *
  * Before use any method in the class, the method st($db) must be called. 
  *
- * @package System
  * 
  * 
  */

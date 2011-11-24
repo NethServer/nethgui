@@ -2,7 +2,6 @@
 /**
  * Nethgui
  *
- * @package Core
  */
 
 namespace Nethgui\Core;
@@ -11,7 +10,6 @@ namespace Nethgui\Core;
  * Each module has a view attacched to it during prepareView operation. A view
  * contains generic elements such as strings, numbers or other (inner) views.
  *
- * @package Core
  */
 interface ViewInterface extends \ArrayAccess, \IteratorAggregate
 {

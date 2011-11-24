@@ -1,14 +1,10 @@
 <?php
 /**
- * @package Core
- * @subpackage Module
  */
 
 namespace Nethgui\Core\Module;
 
 /**
- * @package Core
- * @subpackage Module
  */
 abstract class AbstractModule implements \Nethgui\Core\ModuleInterface, \Nethgui\Core\LanguageCatalogProvider, \Nethgui\Log\LogConsumerInterface
 {

@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Renderer
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
@@ -23,7 +22,6 @@ namespace Nethgui\Renderer;
  *
  * Implementations can extend the attribute list with their own semantics.
  *
- * @package Renderer
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 interface WidgetInterface

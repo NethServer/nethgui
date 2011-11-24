@@ -1,12 +1,10 @@
 <?php
 /**
- * @package Core
  */
 
 namespace Nethgui\Core;
 
 /**
- * @package Core
  */
 interface CommandReceiverInterface
 {

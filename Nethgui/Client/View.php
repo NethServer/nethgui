@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Client
  */
 
 namespace Nethgui\Client;
@@ -21,7 +20,6 @@ namespace Nethgui\Client;
  * prepareView() operation.
  *
  * @see \Nethgui\Core\ModuleInterface::prepareView()
- * @package Client
  */
 class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInterface
 {

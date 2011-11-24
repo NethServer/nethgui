@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Adapter
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
@@ -15,7 +14,6 @@ namespace Nethgui\Adapter;
  * 
  * This is implemented applying a decorator pattern to ArrayAdapter
  *
- * @package Adapter
  */
 class TabularValueAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate, \Countable
 {

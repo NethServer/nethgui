@@ -1,12 +1,10 @@
 <?php
 /**
- * @package Nethgui
  */
 
 namespace Nethgui;
 
 /**
- * @package Nethgui
  */
 class Framework
 {

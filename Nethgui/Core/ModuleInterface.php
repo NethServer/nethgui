@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Core
  */
 
 namespace Nethgui\Core;
@@ -14,7 +13,6 @@ namespace Nethgui\Core;
  * - provide module informations
  *
  * @see RequestHandlerInterface
- * @package Core
  */
 interface ModuleInterface
 {
@@ -105,7 +103,6 @@ interface ModuleInterface
  *
  * Also a "Top" Module is reachable with a specific URL, unlike other Modules.
  *
- * @package Core
  *
  */
 interface TopModuleInterface

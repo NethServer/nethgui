@@ -2,7 +2,6 @@
 /**
  * Nethgui
  *
- * @package Core
  *
  */
 
@@ -12,7 +11,6 @@ namespace Nethgui\Client;
  * TODO: describe class
  *
  * @deprecated Substitute with the complete implementation in version Phi.
- * @package Core
  */
 class AlwaysAuthenticatedUser implements UserInterface
 {

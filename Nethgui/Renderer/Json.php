@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Renderer
  * @ignore
  * @author Davide Principi <davide.principi@nethesis.it>
  */
@@ -8,7 +7,6 @@
 namespace Nethgui\Renderer;
 
 /**
- * @package Renderer
  * @ignore
  */
 class Json extends AbstractRenderer

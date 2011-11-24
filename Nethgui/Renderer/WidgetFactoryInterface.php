@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Renderer
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
@@ -13,7 +12,6 @@ namespace Nethgui\Renderer;
  * The interface methods create and configure widget objects.
  *
  * @see WidgetInterface
- * @package Renderer
  */
 interface WidgetFactoryInterface
 {

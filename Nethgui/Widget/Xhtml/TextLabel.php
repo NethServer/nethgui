@@ -1,7 +1,5 @@
 <?php
 /**
- * @package Widget
- * @subpackage Xhtml
  * @author Davide Principi <davide.principi@nethesis.it>
  * @internal
  * @ignore
@@ -22,8 +20,6 @@ namespace Nethgui\Widget\Xhtml;
  * - icon-after
  * - class
  *
- * @package Widget
- * @subpackage Xhtml
  * @internal
  * @ignore
  */

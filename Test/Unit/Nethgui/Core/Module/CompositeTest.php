@@ -1,12 +1,8 @@
 <?php
 /**
- * @package Tests
- * @subpackage Unit
  */
 
 /**
- * @package Tests
- * @subpackage Unit
  */
 class \Nethgui\Core\Module\CompositeTest extends PHPUnit_Framework_TestCase
 {

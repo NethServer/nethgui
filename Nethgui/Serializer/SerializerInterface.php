@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Serializer
  */
 
 namespace Nethgui\Serializer;
@@ -8,7 +7,6 @@ namespace Nethgui\Serializer;
 /**
  * A Serializer object transfers a value to/from the configuration database.
  *
- * @package Serializer
  */
 interface SerializerInterface {
     public function read();

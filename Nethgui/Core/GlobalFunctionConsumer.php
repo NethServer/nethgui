@@ -1,13 +1,11 @@
 <?php
 /**
- * @package Core
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
 namespace Nethgui\Core;
 
 /**
- * @package Core
  */
 interface GlobalFunctionConsumer
 {

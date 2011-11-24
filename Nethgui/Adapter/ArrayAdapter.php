@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Adapter
  */
 
 namespace Nethgui\Adapter;
@@ -10,7 +9,6 @@ namespace Nethgui\Adapter;
  * Array adapter maps a PHP array-like interface to a key or prop value
  * where values are separated by a separator character.
  *
- * @package Adapter
  */
 class ArrayAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate, \Countable
 {

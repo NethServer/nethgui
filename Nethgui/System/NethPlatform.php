@@ -1,6 +1,5 @@
 <?php
 /**
- * @package System
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 
@@ -9,7 +8,6 @@ namespace Nethgui\System;
 /**
  * Implementation of the platform interface for Nethesis products
  *
- * @package System
  */
 class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEnforcementPointInterface, \Nethgui\Log\LogConsumerInterface, \Nethgui\Core\GlobalFunctionConsumer
 {

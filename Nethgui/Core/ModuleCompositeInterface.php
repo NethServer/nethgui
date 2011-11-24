@@ -1,6 +1,5 @@
 <?php
 /**
- * @package Core
  */
 
 namespace Nethgui\Core;
@@ -8,7 +7,6 @@ namespace Nethgui\Core;
 /**
  * A complex module, composed by other modules, must implement this interface.
  *
- * @package Core
  */
 interface ModuleCompositeInterface
 {
