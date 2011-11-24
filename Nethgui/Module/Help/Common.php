@@ -60,7 +60,7 @@ class Common extends \Nethgui\Core\Module\Standard implements \Nethgui\Core\Glob
 
     protected function getHelpDocumentPath(\Nethgui\Core\ModuleInterface $module)
     {
-        $fileName = get_class($module) . '.html';
+        $fileName = strtr(get_class($module), '\\', '_') . '.html';
         $appPath = realpath(NETHGUI_ROOTDIR . '/' . NETHGUI_APPLICATION);
         $lang = $this->getRequest()->getUser()->getLanguageCode();
 

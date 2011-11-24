@@ -37,7 +37,7 @@ class Show extends Common
 
     private function readHelpDocumentContent($filePath)
     {
-        $document = new XMLReader();
+        $document = new \XMLReader();
         if ( $document->open('file://' . $filePath, 'utf-8', LIBXML_NOENT) !== TRUE) {
             return FALSE;
         }
