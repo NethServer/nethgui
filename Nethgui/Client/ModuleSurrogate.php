@@ -75,27 +75,27 @@ class ModuleSurrogate implements \Nethgui\Core\ModuleInterface, \Nethgui\Core\La
 
     public function initialize()
     {
-        throw new Exception('Not implemented ' . __METHOD__);
+        throw new \Exception('Not implemented ' . __METHOD__);
     }
 
     public function isInitialized()
     {
-        throw new Exception('Not implemented ' . __METHOD__);
+        throw new \Exception('Not implemented ' . __METHOD__);
     }
 
     public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
     {
-        throw new Exception('Not implemented ' . __METHOD__);
+        throw new \Exception('Not implemented ' . __METHOD__);
     }
 
     public function setPlatform(\Nethgui\System\PlatformInterface $platform)
     {
-        throw new Exception('Not implemented ' . __METHOD__);
+        throw new \Exception('Not implemented ' . __METHOD__);
     }
 
     public function setParent(\Nethgui\Core\ModuleInterface $parentModule)
     {
-        throw new Exception('Not implemented ' . __METHOD__);
+        throw new \Exception('Not implemented ' . __METHOD__);
     }
 
     public function serialize()

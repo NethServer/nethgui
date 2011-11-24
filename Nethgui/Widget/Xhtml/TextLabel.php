@@ -64,7 +64,7 @@ class TextLabel extends \Nethgui\Widget\XhtmlWidget
         if ($this->hasAttribute('args')) {
             $args = array();
             if ( ! is_array($this->getAttribute('args'))) {
-                throw new InvalidArgumentException('`args` attribute must be an array!');
+                throw new \InvalidArgumentException(sprintf('%s: `args` attribute must be an array!', get_class($this)), 1322149926);
             }
             $i = 1;
             foreach ($this->getAttribute('args') as $arg) {

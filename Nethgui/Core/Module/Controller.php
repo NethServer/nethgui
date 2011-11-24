@@ -82,7 +82,7 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
             $actionId = $arguments[0];
             if ( ! $this->hasAction($actionId)) {
                 // a NULL action at this point results in a "not found" condition:
-                throw new \Nethgui\Exception\HttpStatusClientError('Not Found', 404);
+                throw new \Nethgui\Exception\HttpException('Not Found', 404, 1322148401);
             }
         }
 

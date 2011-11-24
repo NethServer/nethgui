@@ -75,7 +75,7 @@ class ArrayAdapterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Nethgui\Exception\Adapter
+     * @expectedException InvalidArgumentException
      */
     public function testSetFail()
     {

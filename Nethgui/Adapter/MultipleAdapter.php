@@ -49,7 +49,7 @@ class MultipleAdapter implements AdapterInterface
     public function __construct($readerCallback, $writerCallback = NULL, $serializers = array())
     {
         if ( ! is_callable($readerCallback)) {
-            throw new InvalidArgumentException('Must provide a Reader callback function');
+            throw new \InvalidArgumentException(sprintf('%s: Must provide a Reader callback function', get_class($this)), 1322149372);
         }
 
         $this->readerCallback = $readerCallback;
@@ -57,7 +57,7 @@ class MultipleAdapter implements AdapterInterface
 
         foreach ($serializers as $serializer) {
             if ( ! $serializer instanceof \Nethgui\Serializer\SerializerInterface) {
-                throw new \Nethgui\Exception\Adapter('Invalid serializer instance. A serializer must implement \Nethgui\Serializer\SerializerInterface.');
+                throw new \InvalidArgumentException(sprintf('%s: Invalid serializer instance. A serializer must implement \Nethgui\Serializer\SerializerInterface.', get_class($this)), 1322149373);
             }
 
             $this->innerAdapters[] = new ScalarAdapter($serializer);

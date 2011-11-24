@@ -167,7 +167,7 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
 
             while ( ! (is_null($module))) {
                 if ( ++ $watchdog > 20) {
-                    throw new Exception("Too many nested modules or cyclic module structure.");
+                    throw new \RuntimeException(sprintf("%s: Too many nested modules or cyclic module structure.", get_class($this)), 1322150445);
                 }
                 array_unshift($this->modulePath, $module->getIdentifier());
                 $module = $module->getParent();
@@ -180,7 +180,7 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
     public function resolvePath($path)
     {
         if (is_array($path) || is_object($path)) {
-            throw new InvalidArgumentException(sprintf('%s(): $path argument must be a string, %s given.', __FUNCTION__, gettype($path)));
+            throw new \InvalidArgumentException(sprintf('%s: $path argument must be a string, `%s` given.', get_class($this), gettype($path)), 1322150499);
         }
 
         $path = strval($path);
@@ -226,7 +226,7 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
     private function buildUrl($path, $parameters = array())
     {
         if (is_array($path) || is_object($path)) {
-            throw new InvalidArgumentException(sprintf('%s(): $path argument must be a string, %s given.', __FUNCTION__, gettype($path)));
+            throw new \InvalidArgumentException(sprintf('%s: $path argument must be a string, `%s` given.', get_class($this), gettype($path)), 1322150500);
         }
 
         $path = strval($path);
@@ -261,7 +261,7 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
 
     public function setLog(\Nethgui\Log\AbstractLog $log)
     {
-        throw new Exception(sprintf('Cannot invoke setLog() on %s', get_class($this)));
+        throw new \LogicException(sprintf('Cannot invoke setLog() on %s', get_class($this)));
     }
 
     public function getLog()

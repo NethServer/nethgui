@@ -48,7 +48,7 @@ class Modify extends Action
     public function __construct($identifier, $parameterSchema, $requireEvents, $viewTemplate = NULL)
     {
         if ( ! in_array($identifier, array('create', 'delete', 'update'))) {
-            throw new InvalidArgumentException('Module identifier must be one of `create`, `delete`, `update` values.');
+            throw new \InvalidArgumentException(sprintf('%s: Module identifier must be one of `create`, `delete`, `update` values.', get_class($this)), 1322149372);
         }
 
         parent::__construct($identifier);
@@ -196,7 +196,7 @@ class Modify extends Action
         } elseif ($action == 'update') {
             $this->processUpdate($key);
         } else {
-            throw new \Nethgui\Exception\HttpStatusClientError('Not found', 404);
+            throw new \Nethgui\Exception\HttpException('Not found', 404, 1322148408);
         }
 
         // Transfer all parameters values into tableAdapter (and DB):
@@ -206,7 +206,7 @@ class Modify extends Action
         $changes += $this->tableAdapter->save();
         if ($changes > 0) {
             $this->signalAllEventsFinally();
-        }               
+        }
     }
 
     protected function processDelete($key)
@@ -214,7 +214,7 @@ class Modify extends Action
         if (isset($this->tableAdapter[$key])) {
             unset($this->tableAdapter[$key]);
         } else {
-            throw new \Nethgui\Exception\Process('Cannot delete `' . $key . '`');
+            throw new \RuntimeException(sprintf('%s: Cannot delete `%s`.', get_class($this), $key), 1322148216);
         }
         $this->addUiClientCommand('cancel');
     }

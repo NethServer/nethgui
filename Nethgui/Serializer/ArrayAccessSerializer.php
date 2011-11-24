@@ -38,13 +38,16 @@ class ArrayAccessSerializer implements SerializerInterface
 
     public function __construct(\ArrayAccess $table, $key, $prop)
     {
-        $this->table = $table;
-        $this->key = $key;
-
-        if (is_null($prop) || $prop == '' || $prop === FALSE) {
-            throw new InvalidArgumentException('The `prop` argument is invalid');
+        if ( is_null($key)) {
+            throw new \InvalidArgumentException(sprintf('%s: $key parameter must be set', get_class($this)), 1322148741);
         }
 
+        if (is_null($prop) || $prop == '' || $prop === FALSE) {
+            throw new \InvalidArgumentException(sprintf('%s: The `prop` argument is invalid', get_class($this)), 1322148742);
+        }
+
+        $this->table = $table;
+        $this->key = $key;
         $this->prop = strval($prop);
     }
 
@@ -63,10 +66,6 @@ class ArrayAccessSerializer implements SerializerInterface
 
     public function write($value)
     {
-        if ( ! isset($this->key)) {
-            throw new \Nethgui\Exception\Serializer('The TablePropSerializer `key` is not missing.');
-        }
-
         // update or append ?
         if ($this->table->offsetExists($this->key)) {
             $record = $this->table->offsetGet($this->key);

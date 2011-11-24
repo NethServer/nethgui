@@ -22,4 +22,27 @@ namespace Nethgui\Exception;
 
 /**
  */
-class View extends \Exception {}
+class HttpException extends \RuntimeException
+{
+
+    private $httpStatusCode;
+
+    public function getHttpStatusCode()
+    {
+        return $this->httpStatusCode;
+    }
+
+    /**
+     *
+     * @param string $message
+     * @param integer $httpStatusCode Valid HTTP 1.1 status code
+     * @param integer $code Unique Unix timestamp identifier of the exception
+     * @param Exception $previous Optional
+     */
+    public function __construct($message, $httpStatusCode, $code, $previous = NULL)
+    {
+        parent::__construct($message, $code, $previous);
+        $this->httpStatusCode = $httpStatusCode;
+    }
+
+}

@@ -22,7 +22,4 @@ namespace Nethgui\Exception;
 
 /**
  */
-class HttpStatusClientError extends \Exception
-{
-
-}
+class AuthorizationException extends \RuntimeException {}

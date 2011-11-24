@@ -37,6 +37,7 @@ class TabularValueAdapter implements AdapterInterface, \ArrayAccess, \IteratorAg
      * @var ArrayAdapter
      */
     private $innerAdapter;
+
     /**
      *
      * @var ArrayObject
@@ -56,8 +57,8 @@ class TabularValueAdapter implements AdapterInterface, \ArrayAccess, \IteratorAg
         $this->data = new \ArrayObject();
 
         foreach ($this->innerAdapter as $rawRow) {
-            $row = explode($this->columnSeparator, $rawRow);            
-            $key = array_shift($row);            
+            $row = explode($this->columnSeparator, $rawRow);
+            $key = array_shift($row);
             $this->data[$key] = $row;
         }
 
@@ -78,12 +79,11 @@ class TabularValueAdapter implements AdapterInterface, \ArrayAccess, \IteratorAg
         if ( ! isset($this->data)) {
             $this->lazyInitialization();
         }
-        
+
         if (count($this->data) != 0) {
             $this->modified = TRUE;
             $this->data = new \ArrayObject();
         }
-        
     }
 
     public function get()
@@ -101,12 +101,12 @@ class TabularValueAdapter implements AdapterInterface, \ArrayAccess, \IteratorAg
         $this->modified = TRUE;
 
         if ( ! is_array($value) && ! $value instanceof \Traversable) {
-            throw new InvalidArgumentException('Value must be an array!');
+            throw new \InvalidArgumentException(sprintf('%s: Value must be an array!', get_class($this)), 1322149790);
         }
 
         foreach ($value as $key => $row) {
             if ( ! is_array($row)) {
-                throw new InvalidArgumentException('Value must be composed of arrays!');
+                throw new \InvalidArgumentException(sprintf('%s: Value must be an array of arrays!', get_class($this)), 1322149791);
             }
             $this[$key] = $row;
         }
@@ -119,13 +119,13 @@ class TabularValueAdapter implements AdapterInterface, \ArrayAccess, \IteratorAg
         }
 
         $value = array();
-        
-        foreach($this->data as $key => $row) {
+
+        foreach ($this->data as $key => $row) {
             $value[] = implode($this->columnSeparator, array_merge(array($key), $row));
         }
-        
+
         $this->innerAdapter->set($value);
-        
+
         $saveCount = $this->innerAdapter->save();
 
         $this->modified = FALSE;
@@ -172,7 +172,7 @@ class TabularValueAdapter implements AdapterInterface, \ArrayAccess, \IteratorAg
         }
 
         if ( ! is_array($value) && ! $value instanceof \Traversable) {
-            throw new InvalidArgumentException('Value must be an array!');
+            throw new \InvalidArgumentException(sprintf('%s: Value must be an array!', get_class($this)), 1322149888);
         }
 
         $this->modified = TRUE;

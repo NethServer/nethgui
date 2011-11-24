@@ -35,7 +35,7 @@ class Read extends Common
         $filePath = $this->getHelpDocumentPath($this->module);
 
         if ( ! $this->globalFunctions->is_readable($filePath)) {
-            throw new \Nethgui\Exception\HttpStatusClientError('File not found', 404);
+            throw new \Nethgui\Exception\HttpException('File not found', 404, 1322148407);
         }
 
         $this->globalFunctions->header("Content-Type: text/html; charset=UTF-8");

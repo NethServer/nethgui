@@ -107,11 +107,11 @@ class TopModuleDepot implements ModuleSetInterface, \Nethgui\Authorization\Polic
         $module = new $className();
 
         if ( ! $module instanceof ModuleInterface) {
-            throw new \Exception("Class `{$className}` must implement ModuleInterface");
+            throw new \RuntimeException(sprintf("%s: Class `%s` must implement ModuleInterface", get_class($this), $className), 1322150029);
         }
 
         if (is_null($module->getIdentifier())) {
-            throw new \Exception("Each module must provide an unique identifier.");
+            throw new \RuntimeException(sprintf("%s: Each module must provide an unique identifier.", get_class($this)), 1322150030);
         }
 
         $module->setPlatform($this->platform);
@@ -131,7 +131,7 @@ class TopModuleDepot implements ModuleSetInterface, \Nethgui\Authorization\Polic
     public function registerModule(ModuleInterface $module)
     {
         if (isset($this->modules[$module->getIdentifier()])) {
-            throw new \Exception("Module id `" . $module->getIdentifier() . "` is already registered.");
+            throw new \RuntimeException(sprintf("%s: Module id `%s` is already registered.", get_class($this), $module->getIdentifier()), 1322150107);
         }
 
         $this->modules[$module->getIdentifier()] = $module;
@@ -207,7 +207,7 @@ class TopModuleDepot implements ModuleSetInterface, \Nethgui\Authorization\Polic
 
     public function setLog(\Nethgui\Log\AbstractLog $log)
     {
-        throw new Exception(sprintf('Cannot invoke setLog() on %s', get_class($this)));
+        throw new \LogicException(sprintf('Cannot invoke setLog() on %s', get_class($this)), 1322150108);
     }
 
     public function getLog()

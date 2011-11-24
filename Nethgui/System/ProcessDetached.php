@@ -45,7 +45,7 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionC
 
     /**
      *
-     * @var Process
+     * @var ProcessInterface
      */
     private $innerCommand;
 

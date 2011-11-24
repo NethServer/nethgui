@@ -85,7 +85,7 @@ abstract class AbstractModule implements \Nethgui\Core\ModuleInterface, \Nethgui
         if ($this->initialized === FALSE) {
             $this->initialized = TRUE;
         } else {
-            throw new Exception("Double Module initialization is forbidden.");
+            throw new \Exception("Double Module initialization is forbidden.", 1322148737);
         }
     }
 
@@ -170,7 +170,7 @@ abstract class AbstractModule implements \Nethgui\Core\ModuleInterface, \Nethgui
 
     public function setLog(\Nethgui\Log\AbstractLog $log)
     {
-        throw new Exception(sprintf('Cannot invoke setLog() on %s', get_class($this)));
+        throw new \Exception(sprintf('Cannot invoke setLog() on %s', get_class($this)), 1322148738);
     }
 
     public function getLog()

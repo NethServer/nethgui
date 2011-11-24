@@ -104,7 +104,7 @@ abstract class Composite extends AbstractModule implements \Nethgui\Core\ModuleC
     {
         foreach ($classList as $item) {
             if ( ! is_string($item)) {
-                throw new InvalidArgumentException('$classList elements must be of type String');
+                throw new \InvalidArgumentException(sprintf('%s: $classList elements must be of type String', get_class($this)), 1322148900);
             }
 
             if ($item[0] == '\\') {
@@ -120,7 +120,7 @@ abstract class Composite extends AbstractModule implements \Nethgui\Core\ModuleC
 
     protected function loadChildrenFromPath($path)
     {
-        throw new Exception(sprintf('%s() is not Implemented'), __FUNCTION__);
+        throw new \LogicException(sprintf('%s: %s() is not Implemented', get_class($this),  __FUNCTION__), 1322148901);
     }
 
 

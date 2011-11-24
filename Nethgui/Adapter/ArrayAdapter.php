@@ -77,7 +77,7 @@ class ArrayAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
         }
         
         if ( ! is_array($value) ) {
-            throw new \Nethgui\Exception\Adapter('Invalid data type. Expected `array` or `EMPTY`, was ' . gettype($value));
+            throw new \InvalidArgumentException(sprintf('%s: Invalid data type. Expected `array` or `EMPTY`, was `%s`', get_class($this), gettype($value)), 1322148826);
         }
 
         if (is_null($this->modified)) {

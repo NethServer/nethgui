@@ -14,7 +14,7 @@ class MockStateTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new Test\Tool\MockState;
+        $this->object = new \Test\Tool\MockState;
     }
 
     /**

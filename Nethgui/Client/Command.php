@@ -59,7 +59,7 @@ class Command implements \Nethgui\Core\CommandInterface
     public function execute()
     {
         if ($this->executed === TRUE) {
-            throw new \LogicException(sprintf('%s: command was already executed', get_class($this)));
+            throw new \LogicException(sprintf('%s: command was already executed', get_class($this)), 1322148828);
         }
 
         if ($this->receiver instanceof \Nethgui\Core\CommandReceiverInterface) {
@@ -72,7 +72,7 @@ class Command implements \Nethgui\Core\CommandInterface
             return $this->receiver->getCommandReceiver()->executeCommand($this->methodName, $this->arguments);
         }
 
-        throw new \LogicException(sprintf('%s: invalid receiver object', get_class($this)));
+        throw new \LogicException(sprintf('%s: invalid receiver object', get_class($this)), 1322148830);
     }
 
     public function setReceiver($receiver)

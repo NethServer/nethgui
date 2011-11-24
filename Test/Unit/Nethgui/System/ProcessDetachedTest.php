@@ -220,7 +220,7 @@ class GlobalFunctionWrapperTimedForDetachedCommand extends \Nethgui\Core\GlobalF
             }
         }
 
-        throw new InvalidArgumentException(sprintf('Command `%s` not defined at instant "%s"', $command, $this->getInstantName()));
+        throw new \InvalidArgumentException(sprintf('%s: Command `%s` not defined at instant "%s"', get_class($this), $command, $this->getInstantName()), 1322149476);
     }
 
     public function is_readable($file)

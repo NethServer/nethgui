@@ -57,14 +57,14 @@ class Common extends \Nethgui\Core\Module\Standard implements \Nethgui\Core\Glob
         $arguments = $request->getArguments();
 
         if (empty($arguments) || preg_match('/[a-z][a-z0-9]+(.html)/i', $arguments[0]) == 0) {
-            throw new \Nethgui\Exception\HttpStatusClientError('Not found', 404);
+            throw new \Nethgui\Exception\HttpException('Not found', 404, 1322148405);
         }
 
         // Now assuming a trailing ".html" suffix.
         $this->module = $this->moduleSet->findModule(substr($arguments[0], 0, -5));
 
         if (is_null($this->module)) {
-            throw new \Nethgui\Exception\HttpStatusClientError('Not found', 404);
+            throw new \Nethgui\Exception\HttpException('Not found', 404, 1322148406);
         }
         $this->module->initialize();
         $this->module->bind($request->getParameterAsInnerRequest('', array_slice($arguments, 1)));

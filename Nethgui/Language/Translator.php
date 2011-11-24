@@ -75,7 +75,7 @@ class Translator implements \Nethgui\Core\TranslatorInterface, \Nethgui\Core\Glo
     public function translate(\Nethgui\Core\ModuleInterface $module, $string, $args = array(), $languageCode = NULL)
     {
         if ( ! is_string($string)) {
-            throw new InvalidArgumentException(sprintf("translate(): unexpected `%s` type!", gettype($string)));
+            throw new \InvalidArgumentException(sprintf("%s: in translate(); unexpected `%s` type!", get_class($this), gettype($string)), 1322150166);
         }
 
         if ( ! isset($languageCode)) {
@@ -164,10 +164,10 @@ class Translator implements \Nethgui\Core\TranslatorInterface, \Nethgui\Core\Glo
     private function loadLanguageCatalog($languageCode, $languageCatalog)
     {
         if (preg_match('/^[a-z][a-z]$/', $languageCode) == 0) {
-            throw new \InvalidArgumentException('Language code must be a valid ISO 639-1 language code');
+            throw new \InvalidArgumentException(sprintf('%s: Language code must be a valid ISO 639-1 language code', get_class($this)), 1322150170);
         }
         if (preg_match('/^[a-z_A-Z0-9]+$/', $languageCatalog) == 0) {
-            throw new \InvalidArgumentException("Language catalog name can contain only alphanumeric or `_` characters. It was `$languageCatalog`.");
+            throw new \InvalidArgumentException(sprintf("%s: Language catalog name can contain only alphanumeric or `_` characters. It was `%s`.", get_class($this), $languageCatalog), 1322150265);
         }
         $prefix = array_shift(explode('_', $languageCatalog));
         $filePath = NETHGUI_ROOTDIR . '/' . $prefix . '/Language/' . $languageCode . '/' . $languageCatalog . '.php';

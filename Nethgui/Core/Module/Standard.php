@@ -138,7 +138,7 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
      * Alias for VALID_IPv4_NETMASK
      */
     const VALID_NETMASK = 207;
-    
+
     /**
      * A valid mac address like 00:16:3E:78:7A:7B 
      */
@@ -148,7 +148,7 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
 
 
 
-    /**
+      /**
      * This collection holds the parameter values as primitive datatype or adapter objects.
      * @var \Nethgui\Core\ParameterSet
      */
@@ -225,11 +225,11 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
         }
 
         // At this point $validator MUST be an object implementing the right interface
-        if ($validator instanceof \Nethgui\Core\ValidatorInterface) {
-            $this->validators[$parameterName] = $validator;
-        } else {
-            throw new \Nethgui\Exception\Validation("Invalid validator value for parameter `" . $parameterName . '` in module `' . get_class($this) . '`.');
+        if ( ! $validator instanceof \Nethgui\Core\ValidatorInterface) {
+            throw new \InvalidArgumentException(sprintf('%s: Invalid validator value for parameter `%s`', get_class($this), $parameterName), 1322149486);
         }
+
+        $this->validators[$parameterName] = $validator;
 
         if (is_callable($valueProvider)) {
             // Create a read-only Map Adapter using $valueProvider as read-callback
@@ -241,7 +241,7 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
         } elseif (is_null($valueProvider)) {
             $this->parameters[$parameterName] = NULL;
         } else {
-            throw new InvalidArgumentException('Invalid `valueProvider` argument');
+            throw new \InvalidArgumentException(sprintf('%s: Invalid `valueProvider` argument', get_class($this)), 1322149487);
         }
     }
 
@@ -258,8 +258,7 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
      */
     protected function requireEvent($eventName, $eventArgs = array(), $observer = NULL)
     {
-        if (is_string($eventName))
-        {
+        if (is_string($eventName)) {
             $this->requiredEvents[] = array($eventName, $eventArgs, is_null($observer) ? $this : $observer);
         }
     }
@@ -366,7 +365,7 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
             case self::VALID_NETMASK:
             case self::VALID_IPv4_NETMASK:
                 return $validator->ipV4Netmask();
-            
+
             case self::VALID_MACADDRESS:
                 return $validator->macAddress();
 
@@ -382,16 +381,15 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
             case self::VALID_IP_OR_EMPTY:
             case self::VALID_IPv4_OR_EMPTY:
                 return $validator->orValidator($this->createValidator()->ipV4Address(), $this->createValidator()->isEmpty());
-            
+
             case self::VALID_YES_NO:
                 return $validator->memberOf('yes', 'no');
-
         }
 
-        throw new InvalidArgumentException('Unknown standard validator code: ' . $ruleCode);
+        throw new \InvalidArgumentException(sprintf('%s: Unknown standard validator code: %s', get_class($this), $ruleCode), 1322149658);
     }
 
-    /**     
+    /**
      * @return \Nethgui\System\Validator
      */
     protected function createValidator()
@@ -437,7 +435,7 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
         }
 
         if (is_null($adapterObject)) {
-            throw new Exception("Cannot create an adapter for parameter `" . $parameterName . "`");
+            throw new \InvalidArgumentException(sprintf('%s: Cannot create an adapter for parameter `%s`', get_class($this), $parameterName), 1322149696);
         }
 
         return $adapterObject;
@@ -461,7 +459,7 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
             }
 
             if ( ! isset($this->validators[$parameterName])) {
-                throw new \Nethgui\Exception\Validation("Do not know how to validate `" . $parameterName . "`");
+                throw new \Nethgui\Exception\HttpException(sprintf('%s: Do not know how to validate `%s`', get_class($this), $parameterName), 400, 1322148402);
             }
 
             $validator = $this->validators[$parameterName];
@@ -504,8 +502,6 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
     {
         return $this->request;
     }
-
-
 
 }
 

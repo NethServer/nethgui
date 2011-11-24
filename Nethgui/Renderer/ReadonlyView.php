@@ -45,7 +45,7 @@ class ReadonlyView implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsu
 
     public function copyFrom($data)
     {
-        throw new \Nethgui\Exception\View('Cannot change the view values');
+        throw new \LogicException('Cannot change the view values', 1322149480);
     }
 
     public function getIterator()
@@ -70,17 +70,17 @@ class ReadonlyView implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsu
 
     public function offsetSet($offset, $value)
     {
-        throw new \Nethgui\Exception\View('Cannot change the view value');
+        throw new \LogicException('Cannot change the view value', 1322149481);
     }
 
     public function offsetUnset($offset)
     {
-        throw new \Nethgui\Exception\View('Cannot unset a view value');
+        throw new \LogicException('Cannot unset a view value', 1322149482);
     }
 
     public function setTemplate($template)
     {
-        throw new \Nethgui\Exception\View('Cannot change the view template');
+        throw new \LogicException('Cannot change the view template', 1322149483);
     }
 
     public function getTemplate()
@@ -90,7 +90,7 @@ class ReadonlyView implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsu
 
     public function spawnView(\Nethgui\Core\ModuleInterface $module, $register = FALSE)
     {
-        throw new \Nethgui\Exception\View('Readonly view: cannot spawn another view!');
+        throw new \LogicException('Readonly view: cannot spawn another view!', 1322149484);
     }
 
     public function translate($message, $args = array())
@@ -125,7 +125,7 @@ class ReadonlyView implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsu
 
     public function setLog(\Nethgui\Log\AbstractLog $log)
     {
-        throw new Exception(sprintf('Cannot invoke setLog() on %s', get_class($this)));
+        throw new \LogicException(sprintf('Cannot invoke setLog() on %s', get_class($this)), 1322149485);
     }
 
     public function getLog()

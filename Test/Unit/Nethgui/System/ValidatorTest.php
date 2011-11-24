@@ -267,7 +267,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->object->evaluate('AAA'));
         $this->assertTrue($this->object->evaluate('AAAA'));
 
-        $this->setExpectedException('\Nethgui\Exception\Validator');
+        $this->setExpectedException('InvalidArgumentException');
         $this->object->evaluate(array('a'));
     }
 
@@ -280,7 +280,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->object->evaluate('AAA'));
         $this->assertFalse($this->object->evaluate('AAAA'));
 
-        $this->setExpectedException('\Nethgui\Exception\Validator');
+        $this->setExpectedException('InvalidArgumentException');
         $this->object->evaluate(10);
     }
 
@@ -349,7 +349,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testDateUnknownFormat()
     {
-        $this->setExpectedException('\Nethgui\Exception\Validator');
+        $this->setExpectedException('InvalidArgumentException');
         $this->object->date('mm.dd.yyyy');
         $this->object->evaluate('1999-12-31');
     }

@@ -125,7 +125,7 @@ abstract class AbstractWidget implements \Nethgui\Renderer\WidgetInterface, \Net
     protected function getClientEventTarget()
     {
         if ( ! $this->hasAttribute('name')) {
-            throw new \Nethgui\Exception\View('Missing `name` attribute');
+            throw new \LogicException(sprintf('%s: Missing `name` attribute', get_class($this)), 1322148739);
         }
 
         return $this->view->getClientEventTarget($this->getAttribute('name'));
@@ -133,7 +133,7 @@ abstract class AbstractWidget implements \Nethgui\Renderer\WidgetInterface, \Net
 
     public function setLog(\Nethgui\Log\AbstractLog $log)
     {
-        throw new Exception(sprintf('Cannot invoke setLog() on %s', get_class($this)));
+        throw new \LogicException(sprintf('Cannot invoke setLog() on %s', get_class($this)), 1322148740);
     }
 
     public function getLog()

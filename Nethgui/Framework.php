@@ -172,8 +172,8 @@ class Framework
 
                 $module->process($notificationManager);
             }
-        } catch (\Nethgui\Exception\HttpStatusClientError $ex) {
-            $statusCode = intval($ex->getCode());
+        } catch (\Nethgui\Exception\HttpException $ex) {
+            $statusCode = intval($ex->getHttpStatusCode());
             if ($statusCode >= 400 && $statusCode < 600) {
                 $this->httpError($statusCode, $ex->getMessage(), $statusCode . ': ' . $ex->getMessage());
             } else {
@@ -259,7 +259,7 @@ class Framework
                 $data = json_decode($GLOBALS['HTTP_RAW_POST_DATA'], true);
 
                 if (is_null($data)) {
-                    throw new \Nethgui\Exception\HttpStatusClientError('Bad Request', 400);
+                    throw new \Nethgui\Exception\HttpException('Bad Request', 400, 1322148404);
                 }
             } else {
                 // Use PHP global:

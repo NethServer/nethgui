@@ -55,7 +55,7 @@ class ObjectPicker extends \Nethgui\Widget\XhtmlWidget
             } elseif (empty($this->view[$childName])) {
                 $value = array();
             } else {
-                throw new \Nethgui\Exception\View(sprintf('Invalid value type for %s: %s', $childName, var_export($this->view[$childName], TRUE)));
+                throw new \UnexpectedValueException(sprintf('%s: Invalid value type in view key `%s`: %s. Must be one of Traversable, array or an empty value.', get_class($this), $childName, var_export($this->view[$childName], TRUE)), 1322149475);
             }
 
             $this->values[$childName] = $value;
@@ -66,7 +66,7 @@ class ObjectPicker extends \Nethgui\Widget\XhtmlWidget
     public function insert(\Nethgui\Renderer\WidgetInterface $child)
     {
         if ( ! $child instanceof CheckBox) {
-            throw new \Nethgui\Exception\View(sprintf('Unsupported widget class: %s', get_class($child)));
+            throw new \InvalidArgumentException(sprintf('%s: Unsupported widget class: %s', get_class($this), get_class($child)), 1322149476);
         }
 
         if ( ! $child->hasAttribute('uncheckedValue')) {

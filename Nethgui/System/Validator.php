@@ -368,7 +368,7 @@ class Validator implements \Nethgui\Core\ValidatorInterface
      */
     private function notImplemented($method)
     {
-        throw new \Nethgui\Exception\Validation($method . ' is not implemented.');
+        throw new \LogicException(sprintf('%s: %s() is not implemented.', get_class($this), $method), 1322150359);
     }
 
     /**
@@ -502,7 +502,7 @@ class Validator implements \Nethgui\Core\ValidatorInterface
     private function evalMinLength($s, $min)
     {
         if ( ! is_string($s)) {
-            throw new \Nethgui\Exception\Validator(sprintf("Invalid type `%s`. Value must be a string.", gettype($s)));
+            throw new \InvalidArgumentException(sprintf("%s: Invalid type `%s`. Value must be a string.", get_class($this), gettype($s)), 1322150360);
         }
         return strlen($s) >= $min;
     }
@@ -510,7 +510,7 @@ class Validator implements \Nethgui\Core\ValidatorInterface
     private function evalMaxLength($s, $max)
     {
         if ( ! is_string($s)) {
-            throw new \Nethgui\Exception\Validator(sprintf("Invalid type `%s`. Value must be a string.", gettype($s)));
+            throw new \InvalidArgumentException(sprintf("%s: Invalid type `%s`. Value must be a string.", get_class($this), gettype($s)), 1322150361);
         }
         return strlen($s) <= $max;
     }
@@ -545,7 +545,7 @@ class Validator implements \Nethgui\Core\ValidatorInterface
         } elseif ($format == 'YYYY-mm-dd') {
             list($year, $month, $day) = explode('-', $value) + array(0, 0, 0);
         } else {
-            throw new \Nethgui\Exception\Validator(sprintf("Unknown date format `%s`", $format));
+            throw new \InvalidArgumentException(sprintf("%s: Unknown date format `%s`", get_class($this), $format), 1322150419);
         }
 
         return checkdate(intval($month), intval($day), intval($year));

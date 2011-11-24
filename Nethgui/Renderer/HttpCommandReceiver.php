@@ -104,7 +104,7 @@ class HttpCommandReceiver implements \Nethgui\Core\CommandReceiverInterface, \Ne
         if (isset($messages[strval($code)])) {
             $codeMessage = $messages[strval($code)];
         } else {
-            throw new DomainException('Unknown status code for redirection: ' . intval($code));
+            throw new \DomainException(sprintf('Unknown status code for redirection: %d',  intval($code)), 1322149333);
         }
 
         if ( ! in_array(parse_url($location, PHP_URL_SCHEME), array('http', 'https'))) {
