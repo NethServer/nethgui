@@ -1,11 +1,12 @@
 <?php
 namespace Test\Tool;
+
 class ModuleTestCase extends \PHPUnit_Framework_TestCase
 {
 
     private $dbObjectCheckList = array();
 
-    protected function runModuleTest(\Nethgui\Core\ModuleInterface $module, Test\Tool\ModuleTestEnvironment $env)
+    protected function runModuleTest(\Nethgui\Core\ModuleInterface $module, ModuleTestEnvironment $env)
     {
         $platform = $this->createPlatformMock($env);
         $module->setPlatform($platform);
@@ -35,9 +36,9 @@ class ModuleTestCase extends \PHPUnit_Framework_TestCase
         }
     }
 
-    protected function createPlatformMock(Test\Tool\ModuleTestEnvironment $env)
+    protected function createPlatformMock(ModuleTestEnvironment $env)
     {
-        $platformMock = $this->getMockBuilder('\Nethgui\System\NethPlatform')
+        $platformMock = $this->getMockBuilder('Nethgui\System\NethPlatform')
             ->disableOriginalConstructor()
             ->setMethods(array('getDatabase', 'signalEvent', 'exec'))
             ->getMock()
@@ -56,11 +57,11 @@ class ModuleTestCase extends \PHPUnit_Framework_TestCase
             'getType' => FALSE,
         );
 
-        $platformStub = new Test\Tool\MockState();
+        $platformStub = new MockState();
 
         foreach ($env->getDatabaseNames() as $database) {
             $dbStub = $env->getDatabase($database);
-            $dbMock = $this->getMockBuilder('\Nethgui\System\ConfigurationDatabase')
+            $dbMock = $this->getMockBuilder('Nethgui\System\ConfigurationDatabase')
                 ->disableOriginalConstructor()
                 ->setMethods(array_keys($databaseMethods))
                 ->getMock();
@@ -89,7 +90,7 @@ class ModuleTestCase extends \PHPUnit_Framework_TestCase
                 $eventExp = array($eventExp, array());
             }
 
-            $systemCommandMockForSignalEvent = $this->getMock('\Nethgui\System\ProcessInterface', $processInterfaceMethods);
+            $systemCommandMockForSignalEvent = $this->getMock('Nethgui\System\ProcessInterface', $processInterfaceMethods);
 
             // return a \Nethgui\System\ProcessInterface object
             $platformStub->set(array('signalEvent', array($eventExp[0], $eventExp[1])), $systemCommandMockForSignalEvent);
@@ -103,17 +104,17 @@ class ModuleTestCase extends \PHPUnit_Framework_TestCase
             ->method('signalEvent')
             ->will($this->returnMockObject($platformStub));
 
-        $systemCommandMock = $this->getMock('\Nethgui\System\ProcessInterface', $processInterfaceMethods);
+        $systemCommandMock = $this->getMock('Nethgui\System\ProcessInterface', $processInterfaceMethods);
         $platformMock->expects($this->any())
             ->method('exec')
-            ->will(new Test\Tool\SystemCommandExecution($env->getCommands(), $systemCommandMock));
+            ->will(new SystemCommandExecution($env->getCommands(), $systemCommandMock));
 
         return $platformMock;
     }
 
-    protected function createViewMock(\Nethgui\Core\ModuleInterface $module, Test\Tool\ModuleTestEnvironment $env)
+    protected function createViewMock(\Nethgui\Core\ModuleInterface $module, ModuleTestEnvironment $env)
     {
-        $translator = $this->getMockBuilder('\Nethgui\Language\Translator')
+        $translator = $this->getMockBuilder('Nethgui\Language\Translator')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -131,12 +132,12 @@ class ModuleTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      *
-     * @param Test\Tool\MockState $state
+     * @param MockState $state
      * @return PHPUnit_Framework_MockObject_Stub
      */
-    protected function returnMockObject(Test\Tool\MockState $state)
+    protected function returnMockObject(MockState $state)
     {
-        return new Test\Tool\MockObject($state);
+        return new MockObject($state);
     }
 
     /**
@@ -146,7 +147,7 @@ class ModuleTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function returnArrayKeyExists($a)
     {
-        return new Test\Tool\ArrayKeyExists($a);
+        return new ArrayKeyExists($a);
     }
 
     /**
@@ -156,7 +157,7 @@ class ModuleTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function returnArrayKeyGetRegexp($a)
     {
-        return new Test\Tool\ArrayKeyGetRegexp($a);
+        return new ArrayKeyGetRegexp($a);
     }
 
     /**
@@ -166,7 +167,7 @@ class ModuleTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function returnArrayKeyGet($a)
     {
-        return new Test\Tool\ArrayKeyGet($a);
+        return new ArrayKeyGet($a);
     }
 
     /**
@@ -177,7 +178,7 @@ class ModuleTestCase extends \PHPUnit_Framework_TestCase
      * @param type $isSubmitted
      * @return \Nethgui\Core\RequestInterface
      */
-    protected function createRequestMock(Test\Tool\ModuleTestEnvironment $env)
+    protected function createRequestMock(ModuleTestEnvironment $env)
     {
         $data = $env->getRequest();
         $arguments = $env->getArguments();
@@ -186,14 +187,14 @@ class ModuleTestCase extends \PHPUnit_Framework_TestCase
         return new \Nethgui\Client\Request($user, $data, $submitted, $arguments, array());
     }
 
-    protected function createUserMock(Test\Tool\ModuleTestEnvironment $env)
+    protected function createUserMock(ModuleTestEnvironment $env)
     {
-        return $this->getMock('\Nethgui\Client\UserInterface');
+        return $this->getMock('Nethgui\Client\UserInterface');
     }
 
-    protected function createValidationReportMock(Test\Tool\ModuleTestEnvironment $env)
+    protected function createValidationReportMock(ModuleTestEnvironment $env)
     {
-        $reportMock = $this->getMockBuilder('\Nethgui\Module\NotificationArea')
+        $reportMock = $this->getMockBuilder('Nethgui\Module\NotificationArea')
             ->setConstructorArgs(array($this->createUserMock($env)))
             ->setMethods(array('addValidationError'))
             ->getMock();
@@ -214,7 +215,7 @@ class ModuleTestCase extends \PHPUnit_Framework_TestCase
  * @ignore
  *
  */
-class Test\Tool\ArrayKeyGetRegexp implements PHPUnit_Framework_MockObject_Stub
+class ArrayKeyGetRegexp implements \PHPUnit_Framework_MockObject_Stub
 {
 
     /**
@@ -228,7 +229,7 @@ class Test\Tool\ArrayKeyGetRegexp implements PHPUnit_Framework_MockObject_Stub
         $this->a = $a;
     }
 
-    public function invoke(PHPUnit_Framework_MockObject_Invocation $invocation)
+    public function invoke(\PHPUnit_Framework_MockObject_Invocation $invocation)
     {
         $parameterName = array_shift($invocation->parameters);
 
@@ -238,12 +239,12 @@ class Test\Tool\ArrayKeyGetRegexp implements PHPUnit_Framework_MockObject_Stub
             }
         }
 
-        throw new PHPUnit_Framework_ExpectationFailedException("The requested key `{$parameterName}` does not match any given pattern!");
+        throw new \PHPUnit_Framework_ExpectationFailedException("The requested key `{$parameterName}` does not match any given pattern!");
     }
 
     public function toString()
     {
-        return PHPUnit_Util_Type::toString($this);
+        return \PHPUnit_Util_Type::toString($this);
     }
 
 }
@@ -252,7 +253,7 @@ class Test\Tool\ArrayKeyGetRegexp implements PHPUnit_Framework_MockObject_Stub
  * @ignore
  *
  */
-class Test\Tool\ArrayKeyGet implements PHPUnit_Framework_MockObject_Stub
+class ArrayKeyGet implements \PHPUnit_Framework_MockObject_Stub
 {
 
     /**
@@ -266,7 +267,7 @@ class Test\Tool\ArrayKeyGet implements PHPUnit_Framework_MockObject_Stub
         $this->a = $a;
     }
 
-    public function invoke(PHPUnit_Framework_MockObject_Invocation $invocation)
+    public function invoke(\PHPUnit_Framework_MockObject_Invocation $invocation)
     {
         $parameterName = array_shift($invocation->parameters);
 
@@ -274,12 +275,12 @@ class Test\Tool\ArrayKeyGet implements PHPUnit_Framework_MockObject_Stub
             return $this->a[$parameterName];
         }
 
-        throw new PHPUnit_Framework_ExpectationFailedException("The requested key `{$parameterName}` does not exist!");
+        throw new \PHPUnit_Framework_ExpectationFailedException("The requested key `{$parameterName}` does not exist!");
     }
 
     public function toString()
     {
-        return PHPUnit_Util_Type::toString($this);
+        return \PHPUnit_Util_Type::toString($this);
     }
 
 }
@@ -288,7 +289,7 @@ class Test\Tool\ArrayKeyGet implements PHPUnit_Framework_MockObject_Stub
  * @ignore
  *
  */
-class Test\Tool\ArrayKeyExists implements PHPUnit_Framework_MockObject_Stub
+class ArrayKeyExists implements \PHPUnit_Framework_MockObject_Stub
 {
 
     /**
@@ -302,7 +303,7 @@ class Test\Tool\ArrayKeyExists implements PHPUnit_Framework_MockObject_Stub
         $this->a = $a;
     }
 
-    public function invoke(PHPUnit_Framework_MockObject_Invocation $invocation)
+    public function invoke(\PHPUnit_Framework_MockObject_Invocation $invocation)
     {
         $parameterName = array_shift($invocation->parameters);
 
@@ -315,7 +316,7 @@ class Test\Tool\ArrayKeyExists implements PHPUnit_Framework_MockObject_Stub
 
     public function toString()
     {
-        return PHPUnit_Util_Type::toString($this);
+        return \PHPUnit_Util_Type::toString($this);
     }
 
 }
@@ -324,7 +325,7 @@ class Test\Tool\ArrayKeyExists implements PHPUnit_Framework_MockObject_Stub
  * @ignore
  * @see \Nethgui\System\ProcessInterface
  */
-class Test\Tool\SystemCommandExecution extends Test\Tool\ArrayKeyGetRegexp
+class SystemCommandExecution extends ArrayKeyGetRegexp
 {
 
     /**
@@ -339,7 +340,7 @@ class Test\Tool\SystemCommandExecution extends Test\Tool\ArrayKeyGetRegexp
         $this->mock = $mock;
     }
 
-    public function invoke(PHPUnit_Framework_MockObject_Invocation $invocation)
+    public function invoke(\PHPUnit_Framework_MockObject_Invocation $invocation)
     {
         $returnData = parent::invoke($invocation);
 
@@ -349,36 +350,36 @@ class Test\Tool\SystemCommandExecution extends Test\Tool\ArrayKeyGetRegexp
 
         $mock = clone $this->mock;
 
-        if ($mock instanceof PHPUnit_Framework_MockObject_MockObject) {
-            $mock->expects(PHPUnit_Framework_TestCase::any())
+        if ($mock instanceof \PHPUnit_Framework_MockObject_MockObject) {
+            $mock->expects(\PHPUnit_Framework_TestCase::any())
                 ->method('getOutput')
-                ->will(PHPUnit_Framework_TestCase::returnValue($returnData[1]));
+                ->will(\PHPUnit_Framework_TestCase::returnValue($returnData[1]));
 
-            $mock->expects(PHPUnit_Framework_TestCase::any())
+            $mock->expects(\PHPUnit_Framework_TestCase::any())
                 ->method('getOutputArray')
-                ->will(PHPUnit_Framework_TestCase::returnValue(explode("\n", $returnData[1])));
+                ->will(\PHPUnit_Framework_TestCase::returnValue(explode("\n", $returnData[1])));
 
-            $mock->expects(PHPUnit_Framework_TestCase::any())
+            $mock->expects(\PHPUnit_Framework_TestCase::any())
                 ->method('isExecuted')
-                ->will(PHPUnit_Framework_TestCase::returnValue(TRUE));
+                ->will(\PHPUnit_Framework_TestCase::returnValue(TRUE));
 
-            $mock->expects(PHPUnit_Framework_TestCase::any())
+            $mock->expects(\PHPUnit_Framework_TestCase::any())
                 ->method('getExitStatus')
-                ->will(PHPUnit_Framework_TestCase::returnValue($returnData[0]));
+                ->will(\PHPUnit_Framework_TestCase::returnValue($returnData[0]));
 
-            $mock->expects(PHPUnit_Framework_TestCase::never())
+            $mock->expects(\PHPUnit_Framework_TestCase::never())
                 ->method('exec');
 
-            $mock->expects(PHPUnit_Framework_TestCase::never())
+            $mock->expects(\PHPUnit_Framework_TestCase::never())
                 ->method('addArgument');
 
-            $mock->expects(PHPUnit_Framework_TestCase::never())
+            $mock->expects(\PHPUnit_Framework_TestCase::never())
                 ->method('readOutput');
 
-            $mock->expects(PHPUnit_Framework_TestCase::never())
+            $mock->expects(\PHPUnit_Framework_TestCase::never())
                 ->method('kill');
 
-            $mock->expects(PHPUnit_Framework_TestCase::never())
+            $mock->expects(\PHPUnit_Framework_TestCase::never())
                 ->method('readExecutionState');
         }
         return $mock;

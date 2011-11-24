@@ -78,7 +78,7 @@ class HttpCommandReceiverTest extends \PHPUnit_Framework_TestCase
 
         $mock->expects($this->at(0))
             ->method('header')
-            ->with(new PHPUnit_Framework_Constraint_StringStartsWith('HTTP/1.1 302'));
+            ->with(new \PHPUnit_Framework_Constraint_StringStartsWith('HTTP/1.1 302'));
 
         $mock->expects($this->at(1))
             ->method('header')

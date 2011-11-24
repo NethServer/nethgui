@@ -14,21 +14,11 @@ class DialogBoxTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $userMock = $this->getMockBuilder('\Nethgui\Core\Module\Standard')
+        $userMock = $this->getMockBuilder('Nethgui\Core\Module\Standard')
             ->disableOriginalConstructor()
             ->getMock();
         $this->object = new \Nethgui\Client\DialogBox($userMock, 'message');
     }
-
-    /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
-     */
-    protected function tearDown()
-    {
-        
-    }
-
     
     public function testGetActions()
     {

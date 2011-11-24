@@ -31,7 +31,7 @@ class CommandTest extends \PHPUnit_Framework_TestCase
         $this->testExecuteSuccess();
         try {
             $this->object->execute();
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             $this->assertInstanceOf('LogicException', $ex);
         }
     }
@@ -67,7 +67,7 @@ class CommandTest extends \PHPUnit_Framework_TestCase
     {
         try {
             $this->object->execute();
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             $this->assertInstanceOf('LogicException', $ex);
         }
     }

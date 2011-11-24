@@ -24,7 +24,7 @@ class ProcessDetachedTest extends \PHPUnit_Framework_TestCase
         $this->arguments = array('arg; ls1', 'arg&2', 'a(r)g3');
         $this->outputFile = tempnam('/tmp', 'ngtest-');
         $this->object = new \Nethgui\System\ProcessDetached('${1} ${2} ${3} ${@}', $this->arguments);
-        $this->simulation = new Test\Tool\GlobalFunctionWrapperTimedForDetachedCommand();
+        $this->simulation = new GlobalFunctionWrapperTimedForDetachedCommand();
         $this->object->setGlobalFunctionWrapper($this->simulation);
     }
 
@@ -170,7 +170,7 @@ class ProcessDetachedTest extends \PHPUnit_Framework_TestCase
 
 }
 
-class Test\Tool\GlobalFunctionWrapperTimedForDetachedCommand extends \Nethgui\Core\GlobalFunctionWrapper
+class GlobalFunctionWrapperTimedForDetachedCommand extends \Nethgui\Core\GlobalFunctionWrapper
 {
 
     private $instantNames = array('START', 'COMMAND_RUNNING', 'COMMAND_COMPLETED');

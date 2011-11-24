@@ -1,5 +1,7 @@
 <?php
+
 namespace Test\Unit\Nethgui\System;
+
 class ConfigurationDatabaseTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -35,7 +37,7 @@ class ConfigurationDatabaseTest extends \PHPUnit_Framework_TestCase
 
         $expected = array();
         for ($i = 0; $i < 5; $i ++ ) {
-            $expected['K' . $i] = array('type' => ($i==3 ? 'F' : 'T'), 'PA' . $i => 'VA' . $i, 'PB' . $i => 'VB' . $i, 'PC' . $i => 'VC' . $i);
+            $expected['K' . $i] = array('type' => ($i == 3 ? 'F' : 'T'), 'PA' . $i => 'VA' . $i, 'PB' . $i => 'VB' . $i, 'PC' . $i => 'VC' . $i);
         }
 
         $ret = $this->object->getAll();
@@ -62,7 +64,7 @@ class ConfigurationDatabaseTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Currently the $filter argument is not implemented
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      */
     public function testGetAll3()
     {
@@ -239,7 +241,7 @@ class ConfigurationDatabaseTest extends \PHPUnit_Framework_TestCase
     {
         array_unshift($args, 'MOCKDB', $command);
         $commandLine = "/usr/bin/sudo /sbin/e-smith/db " . implode(' ', array_map('escapeshellarg', $args));
-        return new PHPUnit_Framework_Constraint_StringMatches($commandLine);
+        return new \PHPUnit_Framework_Constraint_StringMatches($commandLine);
     }
 
 }

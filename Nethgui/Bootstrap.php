@@ -115,6 +115,8 @@ require_once('Framework.php');
 
 if (NETHGUI_APPLICATION == 'Test') {
     $FW = new \Nethgui\Framework();
+    $FW->registerApplication(NETHGUI_ROOTDIR . '/Test');
+    $FW->registerApplication(NETHGUI_ROOTDIR . '/NethServer');   
     return;
 } elseif (NETHGUI_NATIVE) {
     $_nethgui_app = function() {

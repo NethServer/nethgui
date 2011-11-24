@@ -18,7 +18,7 @@ class JsonTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
 
-        $module = new Test\Unit\NethguiCoreModuleJsonTest($innerModule, 'ID');
+        $module = new NethguiCoreModuleJsonTest($innerModule, 'ID');
 
         $innerModule->expects($this->once())
             ->method('getParent')
@@ -130,7 +130,7 @@ class JsonTest extends \PHPUnit_Framework_TestCase
 /**
  * @ignore
  */
-class Test\Unit\NethguiCoreModuleJsonTest extends \Nethgui\Core\Module\Standard
+class NethguiCoreModuleJsonTest extends \Nethgui\Core\Module\Standard
 {
 
     /**

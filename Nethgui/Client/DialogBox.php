@@ -32,7 +32,7 @@ namespace Nethgui\Client;
  * 
  * 
  */
-class DialogBox implements Serializable
+class DialogBox implements \Serializable
 {
     const NOTIFY_SUCCESS = 0x0;
     const NOTIFY_WARNING = 0x1;

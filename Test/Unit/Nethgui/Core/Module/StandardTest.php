@@ -12,7 +12,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
     {
         $this->object = new ConcreteStandardModule1();
 
-        $validator = $this->getMockBuilder('\Nethgui\System\Validator')
+        $validator = $this->getMockBuilder('Nethgui\System\Validator')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -20,7 +20,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
             ->method($this->anything())
             ->will($this->returnValue($validator));
 
-        $platform = $this->getMockBuilder('\Nethgui\System\PlatformInterface')
+        $platform = $this->getMockBuilder('Nethgui\System\PlatformInterface')
             ->disableOriginalConstructor()            
             ->getMock();
 
@@ -48,7 +48,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals($this->object->getParent(), NULL);
 
-        $mockModule = $this->getMockBuilder('\Nethgui\Core\Module\Composite')
+        $mockModule = $this->getMockBuilder('Nethgui\Core\Module\Composite')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -58,7 +58,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 
     public function testPrepareView1()
     {
-        $viewMock = $this->getMockBuilder('\Nethgui\Client\View')
+        $viewMock = $this->getMockBuilder('Nethgui\Client\View')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -85,7 +85,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 
     public function testGetLanguageCatalog()
     {
-        $this->assertEquals(get_class($this->object), $this->object->getLanguageCatalog());
+        $this->assertEquals(strtr(get_class($this->object), '\\', '_'), $this->object->getLanguageCatalog());
     }
 
 }

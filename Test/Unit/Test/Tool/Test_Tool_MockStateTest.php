@@ -1,6 +1,6 @@
 <?php
 namespace Test\Unit\Test\Tool;
-class Test_Tool_MockStateTest extends \PHPUnit_Framework_TestCase
+class MockStateTest extends \PHPUnit_Framework_TestCase
 {
 
     /**

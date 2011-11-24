@@ -14,11 +14,11 @@ class ViewGenericTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $parentModule = $this->getMockBuilder('\Nethgui\Core\Module\List')
+        $parentModule = $this->getMockBuilder('Nethgui\Core\Module\ListComposite')
             ->setConstructorArgs(array('Parent'))
             ->getMock();
                
-        $module = $this->getMockBuilder('\Nethgui\Core\Module\Standard')
+        $module = $this->getMockBuilder('Nethgui\Core\Module\Standard')
             ->setConstructorArgs(array('TestingModule'))
             ->getMock();
 
@@ -30,7 +30,7 @@ class ViewGenericTest extends \PHPUnit_Framework_TestCase
             ->method('getParent')
             ->will($this->returnValue($parentModule));
 
-        $translator = $this->getMockBuilder('\Nethgui\Core\TranslatorInterface')
+        $translator = $this->getMockBuilder('Nethgui\Core\TranslatorInterface')
             ->getMock();
         
         $translator->expects($this->any())
@@ -66,7 +66,7 @@ class ViewGenericTest extends \PHPUnit_Framework_TestCase
 
     public function testSpawnView()
     {
-        $module = $this->getMockBuilder('\Nethgui\Core\Module\Standard')
+        $module = $this->getMockBuilder('Nethgui\Core\Module\Standard')
             ->setConstructorArgs(array('InnerModule'))
             ->setMethods(array())
             ->getMock();
@@ -78,8 +78,8 @@ class ViewGenericTest extends \PHPUnit_Framework_TestCase
         $innerView1 = $this->object->spawnView($module, TRUE);
         $innerView2 = $this->object->spawnView($module, 'View2');
         
-        $this->assertInstanceOf('\Nethgui\Core\ViewInterface', $innerView1);
-        $this->assertInstanceOf('\Nethgui\Core\ViewInterface', $innerView2);
+        $this->assertInstanceOf('Nethgui\Core\ViewInterface', $innerView1);
+        $this->assertInstanceOf('Nethgui\Core\ViewInterface', $innerView2);
         $this->assertEquals($innerView1, $this->object['InnerModule']);
         $this->assertEquals($innerView2, $this->object['View2']);
     }

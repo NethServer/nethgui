@@ -1,5 +1,6 @@
 <?php
 namespace Test\Tool;
+
 class ModuleTestEnvironment
 {
 
@@ -12,7 +13,7 @@ class ModuleTestEnvironment
     private $shellCommands = array();
     public $fullViewOutput = NULL;
 
-    public function setDatabase($dbName, Test\Tool\MockState $state)
+    public function setDatabase($dbName, \Test\Tool\MockState $state)
     {
         $this->databases[$dbName] = $state;
         return $this;

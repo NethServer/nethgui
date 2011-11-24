@@ -76,7 +76,7 @@ class MockState
      *
      * @param mixed $exp
      * @param mixed $output
-     * @return Test\Tool\MockState The next object state, or the object itself.
+     * @return \Test\Tool\MockState The next object state, or the object itself.
      */
     public function exec($exp, &$output)
     {
@@ -95,7 +95,7 @@ class MockState
             return $this->transitions[$signature];
         } elseif ($stateFound === FALSE) {
             $info = $this->format($exp);
-            throw new PHPUnit_Framework_ExpectationFailedException("State {$this->id}. Neither state nor transition found for condition {$info}.");
+            throw new \PHPUnit_Framework_ExpectationFailedException("State {$this->id}. Neither state nor transition found for condition {$info}.");
         }
 
         return $this;
@@ -105,7 +105,7 @@ class MockState
     {
         $args = func_get_args();
         if (count($args) == 0) {
-            throw new InvalidArgumentException('Provide at least one parameter');
+            throw new \InvalidArgumentException('Provide at least one parameter');
         }
         $methodName = array_shift($args);
         return array($methodName, $args);

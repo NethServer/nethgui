@@ -9,7 +9,7 @@ class NethPlatformTest extends \PHPUnit_Framework_TestCase
     protected $object;
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject
+     * @var \PHPUnit_Framework_MockObject_MockObject
      */
     private $globalsMock;
 
@@ -58,7 +58,7 @@ class NethPlatformTest extends \PHPUnit_Framework_TestCase
         $this->globalsMock
             ->expects($this->once())
             ->method('exec')
-            ->with(new PHPUnit_Framework_Constraint_StringEndsWith("'myEventName'"))
+            ->with(new \PHPUnit_Framework_Constraint_StringEndsWith("'myEventName'"))
             ->will($this->returnCallBack(array($this, 'exec_successCallback')));
 
         $exitStatusInfo = $this->object->signalEvent("myEventName");
@@ -70,7 +70,7 @@ class NethPlatformTest extends \PHPUnit_Framework_TestCase
         $this->globalsMock
             ->expects($this->once())
             ->method('exec')
-            ->with(new PHPUnit_Framework_Constraint_StringEndsWith("'myEventName'"))
+            ->with(new \PHPUnit_Framework_Constraint_StringEndsWith("'myEventName'"))
             ->will($this->returnCallBack(array($this, 'exec_failureCallback')));
 
         $exitStatusInfo = $this->object->signalEvent("myEventName");

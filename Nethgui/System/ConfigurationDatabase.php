@@ -140,11 +140,11 @@ class ConfigurationDatabase implements \Nethgui\Authorization\PolicyEnforcementP
     public function getAll($type = NULL, $filter = NULL)
     {
         if ( ! $this->canRead) {
-            throw new Exception("Permission Denied");
+            throw new \Exception("Permission Denied");
         }
 
         if ( ! is_null($filter)) {
-            throw new InvalidArgumentException(sprintf('%s: $filter argument must be NULL!', get_class($this)));
+            throw new \InvalidArgumentException(sprintf('%s: $filter argument must be NULL!', get_class($this)));
         }
 
         $output = NULL;

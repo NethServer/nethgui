@@ -156,7 +156,7 @@ class ArrayAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
         }
 
         if (is_null($this->data)) {
-            return new ArrayIterator(array());
+            return new \ArrayIterator(array());
         }
 
         return $this->data->getIterator();

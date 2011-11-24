@@ -9,7 +9,7 @@ class MockObject implements \PHPUnit_Framework_MockObject_Stub
      */
     private $state = NULL;
 
-    public function __construct(Test\Tool\MockState $state)
+    public function __construct(\Test\Tool\MockState $state)
     {
         $this->state = $state;
     }
@@ -23,7 +23,7 @@ class MockObject implements \PHPUnit_Framework_MockObject_Stub
         return $this->state;
     }
 
-    public function invoke(PHPUnit_Framework_MockObject_Invocation $invocation)
+    public function invoke(\PHPUnit_Framework_MockObject_Invocation $invocation)
     {
         $methodName = $invocation->methodName;
         $parameters = $invocation->parameters;
@@ -35,7 +35,7 @@ class MockObject implements \PHPUnit_Framework_MockObject_Stub
 
     public function toString()
     {
-        return PHPUnit_Util_Type::toString($this->state);
+        return \PHPUnit_Util_Type::toString($this->state);
     }
 
 }
