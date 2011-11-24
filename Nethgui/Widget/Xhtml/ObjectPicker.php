@@ -22,8 +22,6 @@ namespace Nethgui\Widget\Xhtml;
 
 /**
  *
- * @internal
- * @ignore
  */
 class ObjectPicker extends \Nethgui\Widget\XhtmlWidget
 {

@@ -21,7 +21,6 @@ namespace Nethgui\Client;
  */
 
 /**
- * @ignore
  */
 class Command implements \Nethgui\Core\CommandInterface
 {

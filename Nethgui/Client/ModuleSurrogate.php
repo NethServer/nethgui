@@ -25,7 +25,6 @@ namespace Nethgui\Client;
  * during DialogBox serialization.
  * 
  * @see DialogBox
- * @ignore
  */
 class ModuleSurrogate implements \Nethgui\Core\ModuleInterface, \Nethgui\Core\LanguageCatalogProvider, \Serializable
 {

@@ -22,8 +22,6 @@ namespace Nethgui\Widget\Xhtml;
 
 /**
  *
- * @internal
- * @ignore
  */
 class Hidden extends \Nethgui\Widget\XhtmlWidget
 {

@@ -22,7 +22,6 @@ namespace Nethgui\Core;
 
 /**
  * @todo Describe class...
- * @internal
  */
 final class ModuleMenuIterator implements \RecursiveIterator
 {

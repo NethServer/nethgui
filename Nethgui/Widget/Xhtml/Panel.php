@@ -22,8 +22,6 @@ namespace Nethgui\Widget\Xhtml;
 
 /**
  *
- * @internal
- * @ignore
  */
 class Panel extends \Nethgui\Widget\XhtmlWidget
 {

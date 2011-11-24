@@ -31,7 +31,6 @@ namespace Nethgui\Widget\Xhtml;
  * - appendOnly
  * - data
  *
- * @ignore
  */
 class TextArea extends \Nethgui\Widget\XhtmlWidget
 {

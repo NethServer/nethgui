@@ -22,8 +22,6 @@ namespace Nethgui\Widget\Xhtml;
 
 /**
  * Wrap FORM tag around a Panel object
- * @internal
- * @ignore
  */
 class Form extends Panel
 {

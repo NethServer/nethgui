@@ -26,7 +26,6 @@ namespace Nethgui\Renderer;
  * Fragments of the view string representation can be generated through the widget objects
  * returned by the factory interface.
  *
- * @ignore
  */
 class Xhtml extends AbstractRenderer implements WidgetFactoryInterface, \Nethgui\Core\GlobalFunctionConsumer, \Nethgui\Core\CommandReceiverAggregateInterface
 {

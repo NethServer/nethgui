@@ -6,7 +6,6 @@
  *
  * Common config values to bootstrap CodeIgniter and Nethgui 
  *
- * @ignore
  */
 date_default_timezone_set('UTC');
 

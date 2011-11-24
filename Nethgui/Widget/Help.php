@@ -22,7 +22,6 @@ namespace Nethgui\Widget;
 
 /**
  * Abstract Help Widget class
- * @ignore
  */
 class Help extends AbstractWidget
 {

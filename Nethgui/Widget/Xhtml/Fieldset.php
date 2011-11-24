@@ -27,8 +27,6 @@ namespace Nethgui\Widget\Xhtml;
  * - template, see TextLabel
  * - flags
  *
- * @internal
- * @ignore
  */
 class Fieldset extends Panel
 {

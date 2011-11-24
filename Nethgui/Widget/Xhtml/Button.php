@@ -28,8 +28,6 @@ namespace Nethgui\Widget\Xhtml;
  * - flags
  * - label
  *
- * @internal
- * @ignore
  */
 class Button extends \Nethgui\Widget\XhtmlWidget implements \Nethgui\Core\CommandReceiverInterface
 {

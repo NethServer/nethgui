@@ -33,8 +33,6 @@ namespace Nethgui\Widget\Xhtml;
  * - icon-after
  * - class
  *
- * @internal
- * @ignore
  */
 class TextLabel extends \Nethgui\Widget\XhtmlWidget
 {

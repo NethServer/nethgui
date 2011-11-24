@@ -28,8 +28,6 @@ namespace Nethgui\Widget\Xhtml;
  * - `data` any string or object with string representation
  * - `hsc` boolean
  *
- * @internal
- * @ignore
  */
 class Literal extends \Nethgui\Widget\XhtmlWidget
 {

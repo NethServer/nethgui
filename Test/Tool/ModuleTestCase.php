@@ -212,7 +212,6 @@ class ModuleTestCase extends \PHPUnit_Framework_TestCase
 }
 
 /**
- * @ignore
  *
  */
 class ArrayKeyGetRegexp implements \PHPUnit_Framework_MockObject_Stub
@@ -250,7 +249,6 @@ class ArrayKeyGetRegexp implements \PHPUnit_Framework_MockObject_Stub
 }
 
 /**
- * @ignore
  *
  */
 class ArrayKeyGet implements \PHPUnit_Framework_MockObject_Stub
@@ -286,7 +284,6 @@ class ArrayKeyGet implements \PHPUnit_Framework_MockObject_Stub
 }
 
 /**
- * @ignore
  *
  */
 class ArrayKeyExists implements \PHPUnit_Framework_MockObject_Stub
@@ -322,7 +319,6 @@ class ArrayKeyExists implements \PHPUnit_Framework_MockObject_Stub
 }
 
 /**
- * @ignore
  * @see \Nethgui\System\ProcessInterface
  */
 class SystemCommandExecution extends ArrayKeyGetRegexp

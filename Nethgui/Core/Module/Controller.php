@@ -180,7 +180,6 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
      *
      * Note: The current action template is wrapped inside a DIV.Action tag.
      *
-     * @internal Actually called by the framework.
      * @param \Nethgui\Renderer\Xhtml $view The view
      * @return string
      */

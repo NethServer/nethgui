@@ -21,7 +21,6 @@ namespace Nethgui\Language;
  */
 
 /**
- * @ignore
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 class Translator implements \Nethgui\Core\TranslatorInterface, \Nethgui\Core\GlobalFunctionConsumer, \Nethgui\Log\LogConsumerInterface

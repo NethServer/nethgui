@@ -25,7 +25,6 @@ namespace Nethgui\Renderer;
  *
  * Implements the command logic as HTTP redirects
  *
- * @ignore
  */
 class HttpCommandReceiver implements \Nethgui\Core\CommandReceiverInterface, \Nethgui\Core\GlobalFunctionConsumer
 {

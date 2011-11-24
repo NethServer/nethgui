@@ -24,7 +24,6 @@ namespace Nethgui\System;
  * Internal class for exec() return value
  *
  * @see NethPlatform::exec()
- * @ignore
  */
 class Process implements ProcessInterface, \Nethgui\Core\GlobalFunctionConsumer
 {

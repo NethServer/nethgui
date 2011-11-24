@@ -128,7 +128,6 @@ class JsonTest extends \PHPUnit_Framework_TestCase
 }
 
 /**
- * @ignore
  */
 class NethguiCoreModuleJsonTest extends \Nethgui\Core\Module\Standard
 {
