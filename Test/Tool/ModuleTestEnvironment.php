@@ -1,11 +1,6 @@
 <?php
-/**
- */
-
-/**
- * @author Davide Principi <davide.principi@nethesis.it>
- */
-class Test\Tool\ModuleTestEnvironment
+namespace Test\Tool;
+class ModuleTestEnvironment
 {
 
     private $request = NULL;

@@ -1,12 +1,6 @@
 <?php
-/**
- * 
- */
-
-/**
- * 
- */
-class \Nethgui\Client\DialogBoxTest extends PHPUnit_Framework_TestCase
+namespace Test\Unit\Nethgui\Core;
+class DialogBoxTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
@@ -92,4 +86,3 @@ class \Nethgui\Client\DialogBoxTest extends PHPUnit_Framework_TestCase
 
 }
 
-?>

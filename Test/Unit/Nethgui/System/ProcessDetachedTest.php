@@ -1,11 +1,6 @@
 <?php
-/**
- */
-
-/**
- * Test class for \Nethgui\System\ProcessTest.
- */
-class \Nethgui\System\ProcessDetachedTest extends PHPUnit_Framework_TestCase
+namespace Test\Unit\Nethgui\System;
+class ProcessDetachedTest extends \PHPUnit_Framework_TestCase
 {
 
     /**

@@ -1,11 +1,6 @@
 <?php
-/**
- */
-
-/**
- * @author Davide Principi <davide.principi@nethesis.it>
- */
-class \Nethgui\Client\CommandTest extends PHPUnit_Framework_TestCase
+namespace Test\Unit\Nethgui\Client;
+class CommandTest extends \PHPUnit_Framework_TestCase
 {
 
     /**

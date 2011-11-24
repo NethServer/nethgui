@@ -1,11 +1,6 @@
 <?php
-/**
- */
-
-/**
- * @author Davide Principi <davide.principi@nethesis.it>
- */
-abstract class Test\Tool\ModuleTestCase extends PHPUnit_Framework_TestCase
+namespace Test\Tool;
+class ModuleTestCase extends \PHPUnit_Framework_TestCase
 {
 
     private $dbObjectCheckList = array();

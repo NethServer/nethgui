@@ -1,10 +1,6 @@
 <?php
-/**
- */
-
-/**
- */
-class \Nethgui\Core\Module\StandardTest extends PHPUnit_Framework_TestCase
+namespace Test\Unit\Nethgui\Core\Module;
+class StandardTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
@@ -14,7 +10,7 @@ class \Nethgui\Core\Module\StandardTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->object = new Test\Unit\ConcreteStandardModule1();
+        $this->object = new ConcreteStandardModule1();
 
         $validator = $this->getMockBuilder('\Nethgui\System\Validator')
             ->disableOriginalConstructor()
@@ -94,7 +90,7 @@ class \Nethgui\Core\Module\StandardTest extends PHPUnit_Framework_TestCase
 
 }
 
-class Test\Unit\ConcreteStandardModule1 extends \Nethgui\Core\Module\Standard
+class ConcreteStandardModule1 extends \Nethgui\Core\Module\Standard
 {
 
     public function initialize()
@@ -106,4 +102,3 @@ class Test\Unit\ConcreteStandardModule1 extends \Nethgui\Core\Module\Standard
 
 }
 
-?>

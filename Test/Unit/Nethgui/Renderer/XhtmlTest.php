@@ -1,12 +1,6 @@
 <?php
-/**
- *
- */
-
-/**
- *
- */
-class \Nethgui\Renderer\XhtmlTest extends PHPUnit_Framework_TestCase
+namespace Test\Unit\Nethgui\Renderer;
+class XhtmlTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
@@ -212,4 +206,3 @@ class \Nethgui\Renderer\XhtmlTest extends PHPUnit_Framework_TestCase
 
 }
 
-?>

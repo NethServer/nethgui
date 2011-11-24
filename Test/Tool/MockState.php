@@ -1,11 +1,6 @@
 <?php
-/**
- */
-
-/**
- * @author Davide Principi <davide.principi@nethesis.it>
- */
-class Test\Tool\MockState
+namespace Test\Tool;
+class MockState
 {
 
     // FIXME: substitute with a state-chain hash

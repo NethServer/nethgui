@@ -1,12 +1,6 @@
 <?php
-/**
- *
- */
-
-/**
- *
- */
-class \Nethgui\Renderer\JsonTest extends PHPUnit_Framework_TestCase
+namespace Test\Unit\Nethgui\Renderer;
+class JsonTest extends \PHPUnit_Framework_TestCase
 {
 
     /**

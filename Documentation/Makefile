@@ -17,7 +17,7 @@ PDEPEND_OUTPUT=Metrics/pyramid.svg Metrics/jdepend.svg Metrics/summary.xml
 all: ${HTMLFILES} ${PDEPEND_OUTPUT} 
 
 api: 
-	phpuml -f htmlnew --pure-object -n Nethgui -o Api ../Nethgui
+	phpuml -f htmlnew --pure-object -n 'Nethgui framework' -o Api ../Nethgui
 
 
 clean:

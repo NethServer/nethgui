@@ -1,12 +1,6 @@
 <?php
-/**
- */
-
-/**
- * @author Davide Principi <davide.principi@nethesis.it>
- * @see Test\Tool\ModuleTestCase
- */
-class Test\Tool\DB extends Test\Tool\MockState
+namespace Test\Tool;
+class DB extends \Test\Tool\MockState
 {
 
     public static function getType($key)

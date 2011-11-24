@@ -1,10 +1,6 @@
 <?php
-/**
- */
-
-/**
- */
-class \Nethgui\Core\Module\CompositeTest extends PHPUnit_Framework_TestCase
+namespace Test\Unit\Nethgui\Core\Module;
+class CompositeTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
@@ -130,4 +126,3 @@ class ConcreteCompositeModule1 extends \Nethgui\Core\Module\Composite
     
 }
 
-?>

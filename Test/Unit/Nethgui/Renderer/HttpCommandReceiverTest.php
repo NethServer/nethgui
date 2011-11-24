@@ -1,12 +1,6 @@
 <?php
-/**
- *
- */
-
-/**
- *
- */
-class \Nethgui\Renderer\HttpCommandReceiverTest extends PHPUnit_Framework_TestCase
+namespace Test\Unit\Nethgui\Renderer;
+class HttpCommandReceiverTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
@@ -105,4 +99,3 @@ class \Nethgui\Renderer\HttpCommandReceiverTest extends PHPUnit_Framework_TestCa
 
 }
 
-?>
