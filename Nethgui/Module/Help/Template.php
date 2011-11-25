@@ -35,7 +35,7 @@ class Template extends Common
         $rootView['title'] = $this->module->getTitle();
         $rootView['lang'] = $this->getRequest()->getUser()->getLanguageCode();
         $rootView['content'] = $moduleView;
-        $rootView['url'] = NETHGUI_SITEURL . $rootView->getModuleUrl($this->module->getIdentifier() . '.html');
+        $rootView['url'] = $rootView->getSiteUrl() . $rootView->getModuleUrl($this->module->getIdentifier() . '.html');
 
         $this->globalFunctions->header("Content-Type: text/html; charset=UTF-8");
         echo (String) new \Nethgui\Renderer\Xhtml($rootView);

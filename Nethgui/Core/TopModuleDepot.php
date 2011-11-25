@@ -42,7 +42,7 @@ class TopModuleDepot implements ModuleSetInterface, \Nethgui\Authorization\Polic
     private $categories = array();
 
     /**
-     * Policy Decision Point is applied to all attached modules and panels
+     * Policy Decision Point is applied to all attached modules
      * that implement PolicyEnforcementPointInterface.
      *
      * @var PolicyDecisionPointInterface
@@ -50,6 +50,9 @@ class TopModuleDepot implements ModuleSetInterface, \Nethgui\Authorization\Polic
     private $policyDecisionPoint;
 
     /**
+     * This is the subject of authorization requests
+     * 
+     * @see $policyDecisionPoint
      * @var \Nethgui\Client\UserInterface
      */
     private $user;
@@ -59,13 +62,11 @@ class TopModuleDepot implements ModuleSetInterface, \Nethgui\Authorization\Polic
      */
     private $platform;
 
-
-
     public function __construct(\Nethgui\System\PlatformInterface $platform, \Nethgui\Client\UserInterface $user)
     {
         $this->platform = $platform;
         $this->user = $user;
-        $this->createTopModules();
+        // $this->createTopModules();
     }
 
     /**
@@ -85,12 +86,12 @@ class TopModuleDepot implements ModuleSetInterface, \Nethgui\Authorization\Polic
                 $classReflector = new \ReflectionClass($className);
 
                 if ($classReflector->isInstantiable()
-                    && $classReflector->implementsInterface("\Nethgui\Core\TopModuleInterface")
+                    && $classReflector->implementsInterface('Nethgui\Core\TopModuleInterface')
                 ) {
                     $module = $this->createModule($className);
                     $this->registerModule($module);
                 } else {
-                    // TODO: log a warning+
+                    // TODO: log a warning
                 }
             }
         }
@@ -203,6 +204,11 @@ class TopModuleDepot implements ModuleSetInterface, \Nethgui\Authorization\Polic
             return NULL;
         }
         return $this->modules[$moduleIdentifier];
+    }
+
+    public function registerNamespace($nsName, $nsPath)
+    {
+        ;
     }
 
     public function setLog(\Nethgui\Log\AbstractLog $log)

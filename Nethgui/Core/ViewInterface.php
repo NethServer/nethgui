@@ -32,7 +32,7 @@ interface ViewInterface extends \ArrayAccess, \IteratorAggregate
      * Set the template to be applied to this object.
      *
      * - If a string is given, it identifies a PHP Template script
-     *   (ie. Nethgui_View_MyTemplate);
+     *   (ie. Nethgui_Template_World);
      *
      * - If a callback function is given, it is invoked with an array
      *   representing the view state as argument and is expected to return
@@ -102,6 +102,20 @@ interface ViewInterface extends \ArrayAccess, \IteratorAggregate
      * @return string
      */
     public function getModuleUrl($path = '');
+
+    /**
+     * The web site URL without trailing slash
+     * @example http://www.example.org:8080
+     * @return string
+     */
+    public function getSiteUrl();
+
+    /**
+     * The path component of an URL with a trailing slash
+     * @example /my/path/to/the/app
+     * @return string
+     */
+    public function getPathUrl();
 
     /**
      * Generate a unique identifier for the given $path. If no parts are given

@@ -30,8 +30,8 @@ class XhtmlTest extends \PHPUnit_Framework_TestCase
             ->method('getModule')
             ->will($this->returnValue($moduleMock));
 
-        $this->object = new \Nethgui\Renderer\Xhtml($view);
-    }
+        $this->object = new \Nethgui\Renderer\Xhtml($view, array($this, 'failResolver'));
+    }    
 
     public function testGetDefaultFlags()
     {

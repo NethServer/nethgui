@@ -30,7 +30,7 @@ class Translator implements \Nethgui\Core\TranslatorInterface, \Nethgui\Core\Glo
      * @var \Nethgui\Core\GlobalFunctionWrapper
      */
     private $globalFunctionWrapper;
-    
+
     /**
      * This is a stack of catalog names. Current catalog is the last element
      * of the array.
@@ -46,16 +46,29 @@ class Translator implements \Nethgui\Core\TranslatorInterface, \Nethgui\Core\Glo
     private $user;
 
     /**
+     *
+     * @var callable
+     */
+    private $catalogResolver;
+
+    /**
      * 
      * @param \Nethgui\Client\UserInterface $user
      * @param \Nethgui\Log\AbstractLog $log
+     * @param callable $catalogResolver
+     * @param array $initialCatalogStack 
      */
-    public function __construct(\Nethgui\Client\UserInterface $user, \Nethgui\Log\AbstractLog $log)
+    public function __construct(\Nethgui\Client\UserInterface $user, \Nethgui\Log\AbstractLog $log, $catalogResolver, $initialCatalogStack = array())
     {
-        $this->globalFunctionWrapper = new \Nethgui\Core\GlobalFunctionWrapper();        
-        $this->languageCatalogStack = array('Nethgui_Framework', NETHGUI_APPLICATION);
+        if ( ! is_callable($catalogResolver)) {
+            throw new \InvalidArgumentException(sprintf('%s: $catalogResolver must be a valid callback function.', get_class($this)), 1322240722);
+        }
+
+        $this->globalFunctionWrapper = new \Nethgui\Core\GlobalFunctionWrapper();
+        $this->languageCatalogStack = $initialCatalogStack;
         $this->log = $log;
         $this->user = $user;
+        $this->catalogResolver = $catalogResolver;
     }
 
     /**
@@ -153,9 +166,7 @@ class Translator implements \Nethgui\Core\TranslatorInterface, \Nethgui\Core\Glo
         if ($translation === NULL) {
             // By default prepare an identity-translation
             $translation = $key;
-            if (NETHGUI_ENVIRONMENT == 'development') {
-                $this->getLog()->warning("Missing `$languageCode` translation for `$key`. Catalogs: " . implode(', ', $attempts), 'debug');
-            }
+            $this->getLog()->warning(sprintf("%s: `%s` translation not found for `%s`. Catalogs: [%s]", get_class($this), $languageCode, $key, implode(', ', $attempts)));
         }
 
         return $translation;
@@ -169,19 +180,19 @@ class Translator implements \Nethgui\Core\TranslatorInterface, \Nethgui\Core\Glo
         if (preg_match('/^[a-z_A-Z0-9]+$/', $languageCatalog) == 0) {
             throw new \InvalidArgumentException(sprintf("%s: Language catalog name can contain only alphanumeric or `_` characters. It was `%s`.", get_class($this), $languageCatalog), 1322150265);
         }
-        $prefix = array_shift(explode('_', $languageCatalog));
-        $filePath = NETHGUI_ROOTDIR . '/' . $prefix . '/Language/' . $languageCode . '/' . $languageCatalog . '.php';
+        $prefix = \Nethgui\array_head(explode('_', $languageCatalog));
+       
+        $filePath = call_user_func($this->catalogResolver, sprintf('%s\Language\%s\%s', $prefix, $languageCode, $languageCatalog));
         $L = array();
 
         $included = @$this->globalFunctionWrapper->phpInclude($filePath, array('L' => &$L));
         if ($included) {
-            $this->getLog()->notice(sprintf('Loaded catalog %s (%s)', $languageCatalog, $languageCode));
+            //$this->getLog()->notice(sprintf('%s: Loaded language catalog `%s` [%s].', get_class($this), $languageCatalog, $languageCode));
         } else {
-             $this->getLog()->notice(sprintf('Missing catalog %s (%s)', $languageCatalog, $languageCode));
+            $this->getLog()->warning(sprintf('%s: Missing language catalog `%s` [%s].', get_class($this), $languageCatalog, $languageCode));
         }
         $this->catalogs[$languageCode][$languageCatalog] = &$L;
     }
-
 
     private function extractLanguageCatalogStack(\Nethgui\Core\ModuleInterface $module)
     {

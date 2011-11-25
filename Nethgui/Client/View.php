@@ -71,10 +71,31 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
      */
     private $translator;
 
-    public function __construct(\Nethgui\Core\ModuleInterface $module, \Nethgui\Core\TranslatorInterface $translator)
+    /**
+     *
+     * @var string
+     */
+    private $siteUrl;
+
+    /**
+     *
+     * @var string
+     */
+    private $controllerPath;
+
+    /**
+     * @see getPathUrl()
+     * @var string
+     */
+    private $pathUrl;
+
+    public function __construct(\Nethgui\Core\ModuleInterface $module, \Nethgui\Core\TranslatorInterface $translator, $siteUrl = '', $pathUrl = '/', $controllerPath = '')
     {
         $this->module = $module;
         $this->translator = $translator;
+        $this->siteUrl = $siteUrl;
+        $this->controllerPath = $controllerPath;
+        $this->pathUrl = $pathUrl;
 
         // XXX: trying to guess view name
         $this->template = str_replace('\\Module\\', '\\Template\\', get_class($module));
@@ -100,7 +121,7 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
 
     public function spawnView(\Nethgui\Core\ModuleInterface $module, $register = FALSE)
     {
-        $spawnedView = new self($module, $this->translator);
+        $spawnedView = new self($module, $this->translator, $this->siteUrl, $this->pathUrl, $this->controllerPath);
         if ($register === TRUE) {
             $this[$module->getIdentifier()] = $spawnedView;
         } elseif (is_string($register)) {
@@ -213,10 +234,10 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
 
     public function getClientEventTarget($name)
     {
-        if (NETHGUI_ENVIRONMENT === 'production') {
-            return substr(md5($this->getUniqueId($name)), 0, 8);
+        if (NETHGUI_ENABLE_TARGET_HASH === FALSE) {
+            return $this->getUniqueId($name);
         }
-        return $this->getUniqueId($name);
+        return substr(md5($this->getUniqueId($name)), 0, 8);
     }
 
     /**
@@ -241,14 +262,14 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
         $segments = $this->resolvePath($path);
 
         // FIXME: skip controller segments if url rewriting is active:
-        if (NETHGUI_CONTROLLER) {
-            array_unshift($segments, NETHGUI_CONTROLLER);
+        if ($this->controllerPath !== '') {
+            array_unshift($segments, $this->controllerPath);
         }
 
         if ( ! empty($parameters)) {
-            $url = NETHGUI_BASEURL . implode('/', $segments) . '?' . http_build_query($parameters);
+            $url = $this->pathUrl . implode('/', $segments) . '?' . http_build_query($parameters);
         } else {
-            $url = NETHGUI_BASEURL . implode('/', $segments);
+            $url = $this->pathUrl . implode('/', $segments);
         }
 
         return $url . $fragment;
@@ -257,6 +278,16 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
     public function getModuleUrl($path = '')
     {
         return $this->buildUrl($path);
+    }
+
+    public function getSiteUrl()
+    {
+        return $this->siteUrl;
+    }
+
+    public function getPathUrl()
+    {
+        return $this->pathUrl;
     }
 
     public function setLog(\Nethgui\Log\AbstractLog $log)

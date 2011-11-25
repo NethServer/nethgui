@@ -26,9 +26,6 @@ namespace Nethgui\Client;
  */
 class Request implements \Nethgui\Core\RequestInterface
 {
-    const CONTENT_TYPE_JSON = 1;
-    const CONTENT_TYPE_HTML = 2;
-
     /**
      * @var array
      */

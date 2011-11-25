@@ -146,4 +146,14 @@ class ReadonlyView implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsu
     {
         return $this->view->resolvePath($path);
     }
+
+    public function getPathUrl()
+    {
+        return $this->view->getPathUrl();
+    }
+
+    public function getSiteUrl()
+    {
+        return $this->view->getSiteUrl();
+    }
 }

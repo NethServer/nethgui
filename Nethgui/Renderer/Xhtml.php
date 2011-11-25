@@ -48,16 +48,33 @@ class Xhtml extends AbstractRenderer implements WidgetFactoryInterface, \Nethgui
 
     /**
      *
+     * @var callable
+     */
+    private $templateResolver;
+
+    /**
+     *
      * @param \Nethgui\Core\ViewInterface $view
+     * @param callback $templateResolver A function that takes the template name as argument and returns the corresponding PHP script absolute path
      * @param int $inheritFlags Default flags applied to all widgets created by this renderer
      * @param \Nethgui\Core\CommandReceiverInterface $commandReceiver object where Commands are executed
      */
-    public function __construct(\Nethgui\Core\ViewInterface $view, $inheritFlags = 0, \Nethgui\Core\CommandReceiverInterface $commandReceiver = NULL)
+    public function __construct(\Nethgui\Core\ViewInterface $view, $templateResolver, $inheritFlags = 0, \Nethgui\Core\CommandReceiverInterface $commandReceiver = NULL)
     {
+        if ( ! is_callable($templateResolver)) {
+            throw new \InvalidArgumentException(sprintf('%s: $templateResolver must be a valid callback function.', get_class($this)), 1322238847);
+        }
+
         parent::__construct($view);
         $this->inheritFlags = $inheritFlags & NETHGUI_INHERITABLE_FLAGS;
         $this->globalFunctionWrapper = new \Nethgui\Core\GlobalFunctionWrapper();
         $this->commandReceiver = new HttpCommandReceiver($this, $commandReceiver);
+        $this->templateResolver = $templateResolver;
+    }
+
+    public function getTemplateResolver()
+    {
+        return $this->templateResolver;
     }
 
     public function setGlobalFunctionWrapper(\Nethgui\Core\GlobalFunctionWrapper $object)
@@ -78,7 +95,7 @@ class Xhtml extends AbstractRenderer implements WidgetFactoryInterface, \Nethgui
 
     protected function createWidget($widgetName, $attributes = array())
     {
-        $className = 'Nethgui\\Widget\\Xhtml\\' . ucfirst($widgetName);
+        $className = 'Nethgui\Widget\Xhtml\\' . ucfirst($widgetName);
 
         $o = new $className($this);
 
@@ -115,7 +132,7 @@ class Xhtml extends AbstractRenderer implements WidgetFactoryInterface, \Nethgui
             // Rendered by callback function
             $viewOutput = (string) call_user_func_array($viewName, $viewState);
         } else {
-            $absoluteViewPath = realpath(NETHGUI_ROOTDIR . '/' . str_replace('\\', '/', $viewName) . '.php');
+            $absoluteViewPath = call_user_func($this->templateResolver, $viewName);
 
             if ( ! $absoluteViewPath) {
                 $this->getLog()->warning("Unable to load `{$viewName}`.");
@@ -136,7 +153,7 @@ class Xhtml extends AbstractRenderer implements WidgetFactoryInterface, \Nethgui
             if ( ! $command instanceof \Nethgui\Core\CommandInterface) {
                 continue;
             }
-            if ( ! $command->isExecuted() ) {
+            if ( ! $command->isExecuted()) {
                 $command->setReceiver($this)->execute();
             }
         }

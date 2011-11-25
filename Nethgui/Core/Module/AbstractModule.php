@@ -67,6 +67,7 @@ abstract class AbstractModule implements \Nethgui\Core\ModuleInterface, \Nethgui
     public function setPlatform(\Nethgui\System\PlatformInterface $platform)
     {
         $this->platform = $platform;
+        return $this;
     }
 
     /**

@@ -107,8 +107,9 @@ class HttpCommandReceiver implements \Nethgui\Core\CommandReceiverInterface, \Ne
             throw new \DomainException(sprintf('Unknown status code for redirection: %d',  intval($code)), 1322149333);
         }
 
+        // Prefix the site URL to $location:
         if ( ! in_array(parse_url($location, PHP_URL_SCHEME), array('http', 'https'))) {
-            $location = NETHGUI_SITEURL . $location;
+            $location = $this->view->getSiteUrl() . $location;
         }
 
         $this->globalFunctionWrapper->header(sprintf('HTTP/1.1 %d %s', $code, $codeMessage));

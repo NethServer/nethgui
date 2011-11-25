@@ -22,7 +22,7 @@ namespace Nethgui\Client;
 
 /**
  * UserInterface provides access to the login information of the current user.
- *
+ * @todo Move into Core package
  */
 interface UserInterface extends \ArrayAccess
 {

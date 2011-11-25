@@ -34,7 +34,7 @@ class Inset extends \Nethgui\Widget\XhtmlWidget
         $content = '';
 
         if ($value instanceof \Nethgui\Core\ViewInterface && $this->view instanceof \Nethgui\Core\CommandReceiverAggregateInterface) {
-            $innerRenderer = new \Nethgui\Renderer\Xhtml($value, $flags, $this->view->getCommandReceiver());
+            $innerRenderer = new \Nethgui\Renderer\Xhtml($value, $this->view->getTemplateResolver(), $flags, $this->view->getCommandReceiver());
             $content = (String) $this->wrapView($innerRenderer);
         } else {
             $content = (String) $this->view->literal($value, $flags);

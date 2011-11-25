@@ -28,7 +28,11 @@ namespace Nethgui\Module\Table;
  */
 class Help extends Action
 {
-    //put your code here
+    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
+    {
+        parent::prepareView($view, $mode);
+        $view->setTemplate(FALSE);
+    }
 }
 
 ?>

@@ -8,14 +8,19 @@
  *
  */
 
+// Some PHP settings:
+date_default_timezone_set('UTC');
+error_reporting(E_ALL | E_STRICT);
 
-define('NETHGUI_ENVIRONMENT', 'test');
-define('NETHGUI_APPLICATION', 'Test');
-define('NETHGUI_FILE', __FILE__);
-define('NETHGUI_NATIVE', TRUE);
-define('NETHGUI_SITEURL', 'http://localhost:8080');
 
-require_once(realpath(dirname(__FILE__) . '/../') . '/Nethgui/Bootstrap.php');
+require_once(realpath(dirname(__FILE__) . '/../') . '/Nethgui/Framework.php');
+
+$FW = new \Nethgui\Framework();
+$FW
+    ->registerNamespace('Test')
+    ->registerNamespace('NethServer')
+    ->setSiteUrl('http://localhost:8080');
+
 
 
 

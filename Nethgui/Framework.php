@@ -25,8 +25,38 @@ namespace Nethgui;
 class Framework
 {
 
+    /**
+     * Associate each namespace root name to a filesystem directory where
+     * the namespace resides.
+     * 
+     * @var array
+     */
     private $namespaceMap = array();
-    private $applications = array();
+
+    /**
+     * The complete URL to the web-root without trailing slash
+     *
+     * @example http://www.example.com:8080
+     *
+     * @var string
+     */
+    private $siteUrl;
+
+    /**
+     * The URL part from the web-root to the app-root with trailing slash
+     *
+     * @example /path/to/app-root/
+     *
+     * @var string
+     */
+    private $basePath;
+
+    /**
+     * If no module identifier is provided fall back to this value
+     *
+     * @var string
+     */
+    private $defaultModuleIdentifier;
 
     /**
      * Sends a 303 status redirect to $url.
@@ -34,17 +64,72 @@ class Framework
      */
     public function __construct()
     {
-        $this->namespaceMap['Nethgui'] = dirname(__DIR__);
+        if (basename(__DIR__) !== __NAMESPACE__) {
+            throw new \LogicException(sprintf('%s: `%s` is an invalid framework filesystem directory! Must be `%s`.', get_class($this), basename(__DIR__), __NAMESPACE__), 1322213425);
+        }
+        $this->siteUrl = $this->guessSiteUrl();
+        $this->basePath = $this->guessBasePath();
         spl_autoload_register(array($this, 'autoloader'));
+
+        $this->registerNamespace(__DIR__);
     }
 
-    public function registerApplication($applicationPath)
+    /**
+     * Add a namespace to the framework, where to search for Modules.
+     *
+     * Note: classes and interfaces from a registered namespace are autoloaded.
+     * 
+     * @api
+     * @see autoloader()
+     * @param string $namespacePath The absolute path to the namespace root directory
+     * @return Framework
+     */
+    public function registerNamespace($namespacePath)
     {
-        $appRoot = dirname($applicationPath);
-        $appName = basename($applicationPath);
+        $nsRoot = dirname($namespacePath);
+        $nsName = basename($namespacePath);
+        $this->namespaceMap[$nsName] = $nsRoot;
+        return $this;
+    }
 
-        $this->applications[] = $appName;
-        $this->namespaceMap[$appName] = $appRoot;
+    private function guessSiteUrl()
+    {
+        $tmpSiteUrl = empty($_SERVER['HTTPS']) ? 'http://' : 'https://';
+        $tmpSiteUrl .= $_SERVER['SERVER_NAME'];
+        if (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] != '80') {
+            $tmpSiteUrl .= ':' . $_SERVER['SERVER_PORT'];
+        }
+        return $tmpSiteUrl;
+    }
+
+    private function guessBasePath()
+    {
+        $parts = array_values(array_filter(explode('/', $_SERVER['SCRIPT_NAME'])));
+        $lastPart = $parts[max(0, count($parts) - 1)];
+        $nethguiFile = basename($_SERVER['SCRIPT_FILENAME']);
+
+        if ($lastPart == $nethguiFile) {
+            array_pop($parts);
+        }
+        return '/' . implode('/', $parts) . '/';
+    }
+
+    public function setSiteUrl($url)
+    {
+        $this->siteUrl = $url;
+        return $this;
+    }
+
+    public function setBasePath($basePath)
+    {
+        $this->basePath = $basePath;
+        return $this;
+    }
+
+    public function setDefaultModule($moduleIdentifier)
+    {
+        $this->defaultModuleIdentifier = $moduleIdentifier;
+        return $this;
     }
 
     /**
@@ -58,8 +143,6 @@ class Framework
      */
     public function autoloader($className)
     {
-        //$className = substr($className, strlen(__NAMESPACE__) + 1);
-
         $nsKey = array_head(explode('\\', $className));
 
         if (isset($this->namespaceMap[$nsKey])) {
@@ -68,42 +151,65 @@ class Framework
         }
     }
 
-    private function redirect($url)
+    /**
+     * This is equivalent to the autoloader() function
+     *
+     * @example Nethgui_Template_Help
+     * @param string $symbol A "namespace" script file name (without .php extension)
+     * @return string The absolute script path of $symbol
+     */
+    public function absoluteScriptPath($symbol)
     {
-        header(sprintf("HTTP/1.1 %d %s", 303, 'See other'));
-        header('Location: ' . NETHGUI_BASEURL . NETHGUI_CONTROLLER . '/' . $url);
+        $nsKey = array_head(explode('\\', $symbol));
+
+        if (isset($this->namespaceMap[$nsKey])) {
+            return $this->namespaceMap[$nsKey] . '/' . str_replace('\\', '/', $symbol) . '.php';
+        }
+
+        return FALSE;
+    }
+
+    /**
+     * @deprecated
+     * @param type $errorCode
+     * @param type $title
+     * @param type $text 
+     */
+    private function httpError($errorCode, $title, $text)
+    {
+        header(sprintf("HTTP/1.1 %d %s", $errorCode, $title));
+        header("Content-Type: text/plain; charset=UTF-8");
+        echo $text;
         exit;
     }
 
     /**
      * Forwards control to Modules and creates output views.
      *
+     * @api
      * @param string $currentModuleIdentifier
      * @param array $arguments
      */
-    public function dispatch($currentModuleIdentifier, $arguments = array())
+    public function dispatch(Core\RequestInterface $request)
     {
-        if ($currentModuleIdentifier == 'index') {
-            if (NETHGUI_INDEX) {
-                $this->redirect(NETHGUI_INDEX);
-            } else {
-                $this->httpError(500, 'Server error', 'Missing NETHGUI_INDEX constant');
-            }
-        }
-
-        $request = $this->createRequest($arguments);
-        $user = $request->getUser();
-
-        $platform = new \Nethgui\System\NethPlatform($user);
-        $topModuleDepot = new \Nethgui\Core\TopModuleDepot($platform, $user);
-
         /*
          * TODO: enforce some security policy on Models
          */
-        $pdp = new \Nethgui\Authorization\PermissivePolicyDecisionPoint();
+        $pdp = new Authorization\PermissivePolicyDecisionPoint();
 
+        $currentModuleIdentifier = array_head($request->getArguments());
+
+        if (empty($currentModuleIdentifier)) {
+            $currentModuleIdentifier = $this->defaultModuleIdentifier;
+        }
+
+        $user = $request->getUser();
+
+        $platform = new System\NethPlatform($user);
         $platform->setPolicyDecisionPoint($pdp);
-        $topModuleDepot->setPolicyDecisionPoint($pdp);
+
+
+        $modules = array();
 
         if ($request->isSubmitted()) {
             // Multiple modules can be called in the same POST request.
@@ -117,62 +223,47 @@ class Framework
         $moduleWakeupList = array_unique($moduleWakeupList);
 
         // Configure the NotificationArea:
-        $notificationManager = new \Nethgui\Module\NotificationArea($user);
+        $notificationManager = new Module\NotificationArea($user);
         $notificationManager->setPlatform($platform);
-        $topModuleDepot->registerModule($notificationManager);
-
-        // Configure the online Help:
-        $helpModule = new \Nethgui\Module\Help($topModuleDepot);
-        $helpModule->setPlatform($platform);
-        $topModuleDepot->registerModule($helpModule);
-
-        // Configure the module menu
-        $menuModule = new \Nethgui\Module\Menu($topModuleDepot->getModules(), $currentModuleIdentifier);
-        $menuModule->setPlatform($platform);
-        $topModuleDepot->registerModule($menuModule);
 
         // Configrue The World module:
-        $worldModule = new \Nethgui\Module\World();
+        $worldModule = new Module\World();
         $worldModule->setPlatform($platform);
 
-        $view = new \Nethgui\Client\View($worldModule, new \Nethgui\Language\Translator($user, $platform->getLog()));
+
+        $translator = new Language\Translator($user, $platform->getLog(), array($this, 'absoluteScriptPath'), array_keys($this->namespaceMap));
+        $view = new Client\View($worldModule, $translator, $this->siteUrl, $this->basePath, 'index.php');
 
         try {
             foreach ($moduleWakeupList as $moduleIdentifier) {
-                $module = $topModuleDepot->findModule($moduleIdentifier);
+                $module = $this->getModuleInstance($moduleIdentifier);
+                $module->setPlatform($platform);
+                $module->initialize();
 
-                if ($module instanceof \Nethgui\Core\ModuleInterface) {
-                    $worldModule->addModule($module);
+                $worldModule->addModule($module);
 
-                    // Module initialization
-                    $module->initialize();
-                } else {
-                    $this->httpError(404, 'Not found', 'Resource not found');
-                }
-
-
-                if ( ! $module instanceof \Nethgui\Core\RequestHandlerInterface) {
+                if ( ! $module instanceof Core\RequestHandlerInterface) {
                     continue;
                 }
 
                 // Pass request parameters to the handler
                 $module->bind(
                     $request->getParameterAsInnerRequest(
-                        $moduleIdentifier, ($moduleIdentifier === $currentModuleIdentifier) ? $request->getArguments() : array()
+                        $moduleIdentifier, ($moduleIdentifier === $currentModuleIdentifier) ? array_rest($request->getArguments()) : array()
                     )
                 );
 
                 // Validate request
                 $module->validate($notificationManager);
 
-                // Skip process() step, if $module has added some validation errors:
+                // From now on, skip process() step, if any $module has added some validation errors.
                 if ($notificationManager->hasValidationErrors()) {
                     continue;
                 }
 
-                $module->process($notificationManager);
+                $module->process();
             }
-        } catch (\Nethgui\Exception\HttpException $ex) {
+        } catch (Exception\HttpException $ex) {
             $statusCode = intval($ex->getHttpStatusCode());
             if ($statusCode >= 400 && $statusCode < 600) {
                 $this->httpError($statusCode, $ex->getMessage(), $statusCode . ': ' . $ex->getMessage());
@@ -199,47 +290,106 @@ class Framework
             header("HTTP/1.1 400 Request validation error");
         }
 
+        $nsMap = $this->namespaceMap;
+        $resolver = function ($symbol) use ($nsMap) {
+                $nsKey = array_head(explode('\\', $symbol));
+
+                if (isset($nsMap[$nsKey])) {
+                    $filePath = $nsMap[$nsKey] . '/' . str_replace('\\', '/', $symbol) . '.php';
+                    include $filePath;
+                }
+
+                return FALSE;
+            };
+
         /*
          * Prepare the views and render into Xhtml or Json
          */
-        if ($request->getContentType() === \Nethgui\Client\Request::CONTENT_TYPE_HTML) {
-            $worldModule->addModule($menuModule);
-            $worldModule->prepareView($view, \Nethgui\Core\ModuleInterface::VIEW_SERVER);
-            $redirectUrl = $this->getRedirectUrl($user);
-            if ($redirectUrl === FALSE) {
-                header("Content-Type: text/html; charset=UTF-8");
-                echo new \Nethgui\Renderer\Xhtml($view, 0, new \Nethgui\Core\LoggingCommandReceiver());
-                $notificationManager->dismissTransientDialogBoxes();
-            } else {
-                $this->redirect($redirectUrl);
-            }
-        } elseif ($request->getContentType() === \Nethgui\Client\Request::CONTENT_TYPE_JSON) {
-            $worldModule->prepareView($view, \Nethgui\Core\ModuleInterface::VIEW_CLIENT);
+        if ($request->getContentType() === Core\RequestInterface::CONTENT_TYPE_HTML) {
+            $worldModule->prepareView($view, Core\ModuleInterface::VIEW_SERVER);
+            header("Content-Type: text/html; charset=UTF-8");
+            echo new Renderer\Xhtml($view, array($this, 'absoluteScriptPath'), 0, new Core\LoggingCommandReceiver());
+        } elseif ($request->getContentType() === Core\RequestInterface::CONTENT_TYPE_JSON) {
+            $worldModule->prepareView($view, Core\ModuleInterface::VIEW_CLIENT);
             header("Content-Type: application/json; charset=UTF-8");
-            echo new \Nethgui\Renderer\Json($view);
-            $notificationManager->dismissTransientDialogBoxes();
+            echo new Renderer\Json($view);
         }
+        $notificationManager->dismissTransientDialogBoxes();
     }
 
     /**
-     * Check if a redirect condition has been set and calculate the URL.
+     * Create an instance of $className, checking for valid identifier.
      *
-     * @param \Nethgui\Client\UserInterface $user
-     * @return string|bool The URL where to redirect the user
+     * @param string $className
+     * @return Core\ModuleInterface
      */
-    private function getRedirectUrl(\Nethgui\Client\UserInterface $user)
+    private function getModuleInstance($identifier)
     {
-        return FALSE;
+        static $instanceCache = array();
+
+        // Module is already instantiated, return it:
+        if (isset($instanceCache[$identifier])) {
+            return $instanceCache[$identifier];
+        }
+
+        $namespaces = array_keys($this->namespaceMap);
+
+        // Resolve module class namespaces LIFO
+        while ($nsName = array_pop($namespaces)) {
+            $className = $nsName . '\Module\\' . $identifier;
+
+            if ( ! @class_exists($className)) {
+                continue;
+            }
+            
+            $moduleInstance = new $className();
+
+            if ($moduleInstance instanceof Core\TopModuleInterface) {
+                $instanceCache[$identifier] = $moduleInstance;
+                return $moduleInstance;
+            }
+        }
+
+        throw new \RuntimeException(sprintf("%s: `%s` is an unknown module identifier", get_class($this), $identifier), 1322231262);
     }
 
     /**
-     * Creates a new \Nethgui\Client\Request object from current HTTP request.
-     * @param string $defaultModuleIdentifier
-     * @param array $parameters
-     * @return Nethgui_Core_Request
+     * Create a default Request object for dispatch()
+     *
+     * @see disparch()
+     * @param integer $type - Not used
+     * @return Core\RequestInterface
+     * @api
      */
-    private function createRequest($arguments)
+    public function createRequest($type = NULL)
     {
+        return $this->createRequestModApache();
+    }
+
+    /**
+     * Creates a new Client\Request object from current HTTP request.
+     *
+     * 
+     *
+     * @param array $parameters
+     * @return Core\RequestInterface
+     */
+    private function createRequestModApache()
+    {
+        $pathInfo = array();
+
+        if (isset($_SERVER['PATH_INFO']) && $_SERVER['PATH_INFO'] != '/') {
+            $pathInfo = array_rest(explode('/', $_SERVER['PATH_INFO']));
+
+            foreach ($pathInfo as $pathPart) {
+                if ($pathPart === '.'
+                    || $pathPart === '..'
+                    || $pathPart === '') {
+                    throw new Exception\HttpException('Bad Request', 400, 1322217901);
+                }
+            }
+        }
+
         if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
             && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') {
             $isXmlHttpRequest = TRUE;
@@ -259,7 +409,7 @@ class Framework
                 $data = json_decode($GLOBALS['HTTP_RAW_POST_DATA'], true);
 
                 if (is_null($data)) {
-                    throw new \Nethgui\Exception\HttpException('Bad Request', 400, 1322148404);
+                    throw new Exception\HttpException('Bad Request', 400, 1322148404);
                 }
             } else {
                 // Use PHP global:
@@ -271,17 +421,17 @@ class Framework
         $httpAccept = isset($_SERVER['HTTP_ACCEPT']) ? trim(array_shift(explode(',', $_SERVER['HTTP_ACCEPT']))) : FALSE;
 
         if ($httpAccept == 'application/json')
-            $contentType = \Nethgui\Client\Request::CONTENT_TYPE_JSON;
+            $contentType = Core\RequestInterface::CONTENT_TYPE_JSON;
         else {
             // Standard  POST request.
-            $contentType = \Nethgui\Client\Request::CONTENT_TYPE_HTML;
+            $contentType = Core\RequestInterface::CONTENT_TYPE_HTML;
         }
 
 
         // TODO: retrieve user state from Session
-        $user = new \Nethgui\Client\AlwaysAuthenticatedUser();
+        $user = new Client\AlwaysAuthenticatedUser();
 
-        $instance = new \Nethgui\Client\Request($user, $data, $submitted, $arguments, array(
+        $instance = new Client\Request($user, $data, $submitted, $pathInfo, array(
                 'XML_HTTP_REQUEST' => $isXmlHttpRequest,
                 'CONTENT_TYPE' => $contentType,
             ));
@@ -294,13 +444,27 @@ class Framework
         return $instance;
     }
 
-    private function httpError($errorCode, $title, $text)
-    {
-        header(sprintf("HTTP/1.1 %d %s", $errorCode, $title));
-        header("Content-Type: text/plain; charset=UTF-8");
-        echo $text;
-        exit;
-    }
-
 }
 
+/*
+ * NETHGUI_ENABLE_TARGET_HASH: if set to TRUE pass client names through an hash function
+ */
+if ( ! defined('NETHGUI_ENABLE_TARGET_HASH')) {
+    define('NETHGUI_ENABLE_TARGET_HASH', FALSE);
+}
+
+function array_head($arr)
+{
+    return reset($arr);
+}
+
+function array_end($arr)
+{
+    return end($arr);
+}
+
+function array_rest($arr)
+{
+    array_shift($arr);
+    return $arr;
+}

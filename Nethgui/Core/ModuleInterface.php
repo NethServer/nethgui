@@ -48,6 +48,7 @@ interface ModuleInterface
 
     /**
      * Sets the host configuration Model.
+     * @return ModuleInterface
      */
     public function setPlatform(\Nethgui\System\PlatformInterface $platform);
 

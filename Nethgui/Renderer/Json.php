@@ -21,6 +21,7 @@ namespace Nethgui\Renderer;
  */
 
 /**
+ * Transform a view in a json string
  */
 class Json extends AbstractRenderer
 {
@@ -82,6 +83,7 @@ class Json extends AbstractRenderer
 }
 
 /**
+ * Prepare Command invocations for the client-side framework
  */
 class JsonReceiver implements \Nethgui\Core\CommandReceiverInterface
 {

@@ -40,5 +40,24 @@ interface ModuleSetInterface
      * @return ModuleInterface
      */
     public function findModule($moduleIdentifier);
+
+    /**
+     * Declare that the given namespace is a Nethgui extension. It must have a "Module"
+     * subpackage.
+     *
+     * For instance, a namespace should have the following directory/package structure
+     *
+     * <pre>
+     * Acme
+     *   Module
+     *   Template
+     *   Language
+     *   Help
+     * </pre>
+     *
+     * @param string $nsName
+     * @param string $nsPath
+     */
+    public function registerNamespace($nsName, $nsPath);
 }
 

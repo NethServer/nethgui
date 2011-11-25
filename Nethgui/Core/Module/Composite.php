@@ -86,6 +86,7 @@ abstract class Composite extends AbstractModule implements \Nethgui\Core\ModuleC
         foreach ($this->getChildren() as $childModule) {
             $childModule->setPlatform($platform);
         }
+        return $this;
     }
 
     /**

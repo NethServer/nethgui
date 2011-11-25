@@ -26,14 +26,18 @@ namespace Nethgui\Core;
  * A RequestInterface object carries parameters submitted by the
  * User to a Module (and its submodules).
  *
+ * @api
  */
 interface RequestInterface
 {
-
+    const CONTENT_TYPE_JSON = 1;
+    const CONTENT_TYPE_HTML = 2;
+    
     /**
      * Get a parameter value
      * @param string $parameterName
      * @return mixed
+     * @api
      */
     public function getParameter($parameterName);
 
@@ -44,12 +48,14 @@ interface RequestInterface
      *
      * @param string $parameterName
      * @return RequestInterface
+     * @api
      */
     public function getParameterAsInnerRequest($parameterName, $arguments = array());
 
     /**
      * Checks if $parameterName exists.
      * @return bool
+     * @api
      */
     public function hasParameter($parameterName);
 
@@ -59,6 +65,7 @@ interface RequestInterface
      * Values submitted by the User are called "parameters".
      * @see getModuleArguments()
      * @return array
+     * @api
      */
     public function getParameters();
 
@@ -68,24 +75,28 @@ interface RequestInterface
      * 
      * @see getParameters()
      * @return array
+     * @api
      */
     public function getArguments();
 
     /**
      * Indicates whether the request contains any parameter or no.
      * @return bool
+     * @api
      */
     public function isEmpty();
 
     /**
      * Indicates whether the request comes from a POST method or no.
      * @return bool
+     * @api
      */
     public function isSubmitted();
 
     /**
      * The User that has sent the request.
      * @return \Nethgui\Client\UserInterface
+     * @api
      */
     public function getUser();
 }

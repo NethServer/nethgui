@@ -77,12 +77,12 @@ class Menu extends \Nethgui\Core\Module\Standard
 
     private function makeModuleAnchor(\Nethgui\Renderer\Xhtml $view, \Nethgui\Core\ModuleInterface $module)
     {
-        $moduleView = new \Nethgui\Client\View($module, $view->getTranslator());
+        $translator = $view->getTranslator();
 
         $placeholders = array(
-            '%HREF' => htmlspecialchars($moduleView->getModuleUrl()),
-            '%CONTENT' => htmlspecialchars($moduleView->translate($module->getTitle())),
-            '%TITLE' => htmlspecialchars($moduleView->translate($module->getDescription())),
+            '%HREF' => htmlspecialchars($view->getModuleUrl('../' . $module->getIdentifier())),
+            '%CONTENT' => htmlspecialchars($translator->translate($module, $module->getTitle())),
+            '%TITLE' => htmlspecialchars($translator->translate($module, $module->getDescription())),
         );
 
         if ($module->getIdentifier() == $this->currentItem) {

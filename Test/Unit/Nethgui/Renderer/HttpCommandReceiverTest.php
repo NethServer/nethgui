@@ -37,7 +37,7 @@ class HttpCommandReceiverTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($moduleMock));
 
         $this->object = new \Nethgui\Renderer\HttpCommandReceiver($view);
-        $this->urlPrefix = NETHGUI_SITEURL . NETHGUI_BASEURL . NETHGUI_CONTROLLER;
+        $this->urlPrefix = 'http://localhost:8080/my/test/will/fail.php';
     }
 
     public function testCancel()
