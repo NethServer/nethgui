@@ -287,7 +287,7 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
         return $this->pathUrl;
     }
 
-    public function setLog(\Nethgui\Log\AbstractLog $log)
+    public function setLog(\Nethgui\Log\LogInterface $log)
     {
         throw new \LogicException(sprintf('Cannot invoke setLog() on %s', get_class($this)));
     }

@@ -367,12 +367,9 @@ class Framework
                 continue;
             }
 
-            $moduleInstance = new $className();
-
-            if ($moduleInstance instanceof Core\TopModuleInterface) {
-                $instanceCache[$identifier] = $moduleInstance;
-                return $moduleInstance;
-            }
+            $moduleInstance = new $className();            
+            $instanceCache[$identifier] = $moduleInstance;
+            return $moduleInstance;            
         }
 
         throw new \RuntimeException(sprintf("%s: `%s` is an unknown module identifier", get_class($this), $identifier), 1322231262);

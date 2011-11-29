@@ -54,11 +54,11 @@ class Translator implements \Nethgui\Core\TranslatorInterface, \Nethgui\Core\Glo
     /**
      * 
      * @param \Nethgui\Client\UserInterface $user
-     * @param \Nethgui\Log\AbstractLog $log
+     * @param \Nethgui\Log\LogInterface $log
      * @param callable $catalogResolver
      * @param array $initialCatalogStack 
      */
-    public function __construct(\Nethgui\Client\UserInterface $user, \Nethgui\Log\AbstractLog $log, $catalogResolver, $initialCatalogStack = array())
+    public function __construct(\Nethgui\Client\UserInterface $user, \Nethgui\Log\LogInterface $log, $catalogResolver, $initialCatalogStack = array())
     {
         if ( ! is_callable($catalogResolver)) {
             throw new \InvalidArgumentException(sprintf('%s: $catalogResolver must be a valid callback function.', get_class($this)), 1322240722);
@@ -181,7 +181,7 @@ class Translator implements \Nethgui\Core\TranslatorInterface, \Nethgui\Core\Glo
             throw new \InvalidArgumentException(sprintf("%s: Language catalog name can contain only alphanumeric or `_` characters. It was `%s`.", get_class($this), $languageCatalog), 1322150265);
         }
         $prefix = \Nethgui\array_head(explode('_', $languageCatalog));
-       
+
         $filePath = call_user_func($this->catalogResolver, sprintf('%s\Language\%s\%s', $prefix, $languageCode, $languageCatalog));
         $L = array();
 
@@ -199,15 +199,12 @@ class Translator implements \Nethgui\Core\TranslatorInterface, \Nethgui\Core\Glo
         $languageCatalogList = array();
 
         do {
-            if ($module instanceof \Nethgui\Core\LanguageCatalogProvider) {
-                $catalog = $module->getLanguageCatalog();
-                if (is_array($catalog)) {
-                    $languageCatalogList = array_merge($languageCatalogList, $catalog);
-                } elseif (is_string($catalog)) {
-                    $languageCatalogList[] = $catalog;
-                }
+            $catalog = $module->getAttributesProvider()->getLanguageCatalog();
+            if (is_array($catalog)) {
+                $languageCatalogList = array_merge($languageCatalogList, $catalog);
+            } elseif (is_string($catalog)) {
+                $languageCatalogList[] = $catalog;
             }
-
             $module = $module->getParent();
         } while ( ! is_null($module));
 
@@ -224,7 +221,7 @@ class Translator implements \Nethgui\Core\TranslatorInterface, \Nethgui\Core\Glo
         return $this->log;
     }
 
-    public function setLog(\Nethgui\Log\AbstractLog $log)
+    public function setLog(\Nethgui\Log\LogInterface $log)
     {
         $this->log = $log;
         return $this;

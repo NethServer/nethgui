@@ -131,7 +131,7 @@ abstract class AbstractWidget implements \Nethgui\Renderer\WidgetInterface, \Net
         return $this->view->getClientEventTarget($this->getAttribute('name'));
     }
 
-    public function setLog(\Nethgui\Log\AbstractLog $log)
+    public function setLog(\Nethgui\Log\LogInterface $log)
     {
         throw new \LogicException(sprintf('Cannot invoke setLog() on %s', get_class($this)), 1322148740);
     }

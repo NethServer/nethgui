@@ -26,7 +26,7 @@ namespace Nethgui\Client;
  * 
  * @see DialogBox
  */
-class ModuleSurrogate implements \Nethgui\Core\ModuleInterface, \Nethgui\Core\LanguageCatalogProvider, \Serializable
+class ModuleSurrogate implements \Nethgui\Core\ModuleInterface, \Serializable
 {
 
     private $info;
@@ -36,9 +36,7 @@ class ModuleSurrogate implements \Nethgui\Core\ModuleInterface, \Nethgui\Core\La
         $this->info = array();
 
         $this->info['getIdentifier'] = $originalModule->getIdentifier();
-        $this->info['getTitle'] = $originalModule->getTitle();
-        $this->info['getDescription'] = $originalModule->getDescription();
-        $this->info['getLanguageCatalog'] = $originalModule->getLanguageCatalog();
+        $this->info['getAttributesProvider'] = $originalModule->getAttributesProvider();
 
         $parent = $originalModule->getParent();
         if ($parent instanceof \Nethgui\Core\ModuleInterface) {
@@ -48,9 +46,9 @@ class ModuleSurrogate implements \Nethgui\Core\ModuleInterface, \Nethgui\Core\La
         }
     }
 
-    public function getDescription()
+    public function getAttributesProvider()
     {
-        return $this->info['getDescription'];
+        return $this->info['getAttributesProvider'];
     }
 
     public function getIdentifier()
@@ -63,15 +61,6 @@ class ModuleSurrogate implements \Nethgui\Core\ModuleInterface, \Nethgui\Core\La
         return $this->info['getParent'];
     }
 
-    public function getTitle()
-    {
-        return $this->info['getTitle'];
-    }
-
-    public function getLanguageCatalog()
-    {
-        return $this->info['getLanguageCatalog'];
-    }
 
     public function initialize()
     {
@@ -106,11 +95,6 @@ class ModuleSurrogate implements \Nethgui\Core\ModuleInterface, \Nethgui\Core\La
     public function unserialize($serialized)
     {
         $this->info = unserialize($serialized);
-    }
-
-    public function getTags()
-    {
-        return array();
     }
 
 }

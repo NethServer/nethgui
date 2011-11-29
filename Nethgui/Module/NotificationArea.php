@@ -26,7 +26,7 @@ namespace Nethgui\Module;
  * Keeps persistent messages into User session.
  *
  */
-class NotificationArea extends \Nethgui\Core\Module\Standard implements \Nethgui\Core\ValidationReportInterface, \Nethgui\Core\Module\DefaultUiStateInterface
+class NotificationArea extends \Nethgui\Core\Module\Standard implements \Nethgui\Core\ValidationReportInterface
 {
 
     private $errors = array();

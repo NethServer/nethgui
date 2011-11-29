@@ -20,9 +20,13 @@ namespace Nethgui\Core\Module;
  * along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Nethgui\Core\ModuleInterface;
+use Nethgui\Core\ModuleDescriptorInterface;
+use Nethgui\Log\LogConsumerInterface;
+
 /**
  */
-abstract class AbstractModule implements \Nethgui\Core\ModuleInterface, \Nethgui\Core\LanguageCatalogProvider, \Nethgui\Log\LogConsumerInterface
+abstract class AbstractModule implements ModuleInterface, LogConsumerInterface, DefaultUiStateInterface
 {
 
     /**
@@ -46,6 +50,18 @@ abstract class AbstractModule implements \Nethgui\Core\ModuleInterface, \Nethgui
     private $platform;
 
     /**
+     *
+     * @var \Nethgui\Log\LogInterface
+     */
+    private $log;
+
+    /**
+     *
+     * @var \Nethgui\Core\SimpleModuleAttributesProvider
+     */
+    private $descriptor;
+
+    /**
      * Template applied to view, if different from NULL
      *
      * @see \Nethgui\Core\ViewInterface::setTemplate()
@@ -67,6 +83,14 @@ abstract class AbstractModule implements \Nethgui\Core\ModuleInterface, \Nethgui
     public function setPlatform(\Nethgui\System\PlatformInterface $platform)
     {
         $this->platform = $platform;
+
+        if (is_null($this->log) && $platform instanceof LogConsumerInterface) {
+            $log = $platform->getLog();
+            if ($log instanceof \Nethgui\Log\LogInterface) {
+                $this->setLog($log);
+            }
+        }
+
         return $this;
     }
 
@@ -98,16 +122,6 @@ abstract class AbstractModule implements \Nethgui\Core\ModuleInterface, \Nethgui
     public function getIdentifier()
     {
         return $this->identifier;
-    }
-
-    public function getTitle()
-    {
-        return $this->getIdentifier() . '_Title';
-    }
-
-    public function getDescription()
-    {
-        return $this->getIdentifier() . '_Description';
     }
 
     public function setParent(\Nethgui\Core\ModuleInterface $parentModule)
@@ -155,33 +169,42 @@ abstract class AbstractModule implements \Nethgui\Core\ModuleInterface, \Nethgui
         return $this->viewTemplate;
     }
 
-    /**
-     * @param string $languageCode
-     * @return string
-     */
-    public function getLanguageCatalog()
+    public function setLog(\Nethgui\Log\LogInterface $log)
     {
-        return strtr(get_class($this), '\\', '_');
-    }
-
-    public function getTags()
-    {
-        return array();
-    }
-
-    public function setLog(\Nethgui\Log\AbstractLog $log)
-    {
-        throw new \Exception(sprintf('Cannot invoke setLog() on %s', get_class($this)), 1322148738);
+        $this->log = $log;
     }
 
     public function getLog()
     {
-        $platform = $this->getPlatform();
-
-        if($platform instanceof \Nethgui\Log\LogConsumerInterface) {
-            return $platform->getLog();
+        if ( ! isset($this->log)) {
+            return new \Nethgui\Log\Nullog;
         }
-        return new \Nethgui\Log\Nullog;
+        return $this->log;
+    }
+
+    /**
+     * Called after a default attributes provider object is created
+     *
+     * @see getAttributesProvider()
+     * @param \Nethgui\Core\SimpleModuleAttributesProvider $descriptor
+     * @return \Nethgui\Core\ModuleAttributesInterface
+     */
+    protected function initializeAttributes(\Nethgui\Core\SimpleModuleAttributesProvider $descriptor)
+    {
+        return $descriptor;
+    }
+
+    public function getAttributesProvider()
+    {
+        if ( ! isset($this->descriptor)) {
+            $this->descriptor = $this->initializeAttributes(new \Nethgui\Core\SimpleModuleAttributesProvider($this));
+        }
+        return $this->descriptor;
+    }
+
+    public function getDefaultUiStyleFlags()
+    {
+        return 0;
     }
 
 }

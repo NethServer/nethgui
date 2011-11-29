@@ -21,9 +21,19 @@ namespace Nethgui\Log;
  */
 
 /**
+ * Provides message formatting capabilities without specify the log message destination
+ *
  */
-abstract class AbstractLog implements \Nethgui\Core\GlobalFunctionConsumerInterface
+abstract class AbstractLog implements LogInterface, \Nethgui\Core\GlobalFunctionConsumerInterface
 {
+    /**
+     * Implementors must send the given message and level strings to the log facility
+     *
+     * @param string $level
+     * @param string $message
+     * @return void
+     */
+    abstract public function message($level, $message);
 
     /**
      * @var \Nethgui\Core\GlobalFunctionWrapper
@@ -73,8 +83,6 @@ abstract class AbstractLog implements \Nethgui\Core\GlobalFunctionConsumerInterf
     {
         return $this->message(__FUNCTION__, $message);
     }
-
-    abstract public function message($level, $message);
 
     public function setGlobalFunctionWrapper(\Nethgui\Core\GlobalFunctionWrapper $object)
     {

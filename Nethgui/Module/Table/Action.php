@@ -26,7 +26,7 @@ namespace Nethgui\Module\Table;
  *
  * 
  */
-class Action extends \Nethgui\Core\Module\Standard implements ActionInterface, \Nethgui\Core\Module\DefaultUiStateInterface
+class Action extends \Nethgui\Core\Module\Standard implements ActionInterface
 {
     /**
      *

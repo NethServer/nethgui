@@ -26,7 +26,7 @@ namespace Nethgui\Renderer;
  * @see WidgetInterface
  * @see http://en.wikipedia.org/wiki/Decorator_pattern
  */
-abstract class AbstractRenderer extends ReadonlyView
+abstract class AbstractRenderer extends ReadonlyView implements \Nethgui\Core\ModuleAttributesInterface
 {
 
     abstract protected function render();
@@ -61,6 +61,36 @@ abstract class AbstractRenderer extends ReadonlyView
         }
 
         return $D;
+    }
+
+    public function getCategory()
+    {
+        return $this->translate($this->getModule()->getAttributesProvider()->getCategory());
+    }
+
+    public function getDescription()
+    {
+        return $this->translate($this->getModule()->getAttributesProvider()->getDescription());
+    }
+
+    public function getLanguageCatalog()
+    {
+        return $this->getModule()->getAttributesProvider()->getLanguageCatalog();
+    }
+
+    public function getMenuPosition()
+    {
+        return $this->getModule()->getAttributesProvider()->getMenuPosition();
+    }
+
+    public function getTags()
+    {
+        return $this->translate($this->getModule()->getAttributesProvider()->getTags());
+    }
+
+    public function getTitle()
+    {
+        return $this->translate($this->getModule()->getAttributesProvider()->getTitle());
     }
 
 }

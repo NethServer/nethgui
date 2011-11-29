@@ -21,6 +21,7 @@ namespace Nethgui\Log;
  */
 
 /**
+ * A log that sends message to the system log
  */
 class Syslog extends AbstractLog
 {

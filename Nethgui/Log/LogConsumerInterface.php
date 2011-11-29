@@ -21,13 +21,18 @@ namespace Nethgui\Log;
  */
 
 /**
+ * Implement in any object that logs something
  */
 interface LogConsumerInterface
 {
-    public function setLog(AbstractLog $log);
+    /**
+     * @param LogInterface $log
+     * @return void
+     */
+    public function setLog(LogInterface $log);
 
     /**
-     * @return AbstractLog
+     * @return LogInterface
      */
     public function getLog();
 }

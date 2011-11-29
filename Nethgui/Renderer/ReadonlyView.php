@@ -123,7 +123,7 @@ class ReadonlyView implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsu
         return $this->view->getModuleUrl($path);
     }
 
-    public function setLog(\Nethgui\Log\AbstractLog $log)
+    public function setLog(\Nethgui\Log\LogInterface $log)
     {
         throw new \LogicException(sprintf('Cannot invoke setLog() on %s', get_class($this)), 1322149485);
     }

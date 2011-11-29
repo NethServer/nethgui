@@ -1,4 +1,8 @@
-<?php $moduleTitle = $view['CurrentModule']->translate($view['CurrentModule']->getModule()->getTitle()); $pageTitle = $view['company']." - ".$moduleTitle; ?><!DOCTYPE html>
+<?php
+    $currentModule =  $view['CurrentModule']->getModule();
+    $moduleTitle = $view->getTranslator()->translate($currentModule, $currentModule->getAttributesProvider()->getTitle());
+    $pageTitle = $view['company'] . " - " . $moduleTitle;
+?><!DOCTYPE html>
 <html lang="<?php echo $view['lang'] ?>">
     <head>
         <title><?php echo $pageTitle ?></title>

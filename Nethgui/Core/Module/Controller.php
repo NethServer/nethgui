@@ -31,7 +31,7 @@ namespace Nethgui\Core\Module;
  *
  * @see Composite
  */
-class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterface, DefaultUiStateInterface
+class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterface
 {
 
     /**

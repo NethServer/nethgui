@@ -85,7 +85,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 
     public function testGetLanguageCatalog()
     {
-        $this->assertEquals(strtr(get_class($this->object), '\\', '_'), $this->object->getLanguageCatalog());
+        $this->assertEquals(strtr(get_class($this->object), '\\', '_'), $this->object->getAttributesProvider()->getLanguageCatalog());
     }
 
 }

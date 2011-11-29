@@ -46,7 +46,7 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
     private $eventQueue;
 
     /**
-     * @var \Nethgui\Log\AbstractLog
+     * @var \Nethgui\Log\LogInterface
      */
     private $log;
 
@@ -266,7 +266,7 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
         return $this->log;
     }
 
-    public function setLog(\Nethgui\Log\AbstractLog $log)
+    public function setLog(\Nethgui\Log\LogInterface $log)
     {
         $this->log = $log;
     }
