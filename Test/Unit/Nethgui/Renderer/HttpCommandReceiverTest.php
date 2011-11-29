@@ -1,5 +1,6 @@
 <?php
 namespace Test\Unit\Nethgui\Renderer;
+
 class HttpCommandReceiverTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -7,7 +8,6 @@ class HttpCommandReceiverTest extends \PHPUnit_Framework_TestCase
      * @var \Nethgui\Renderer\HttpCommandReceiver
      */
     protected $object;
-
     private $urlPrefix;
 
     /**
@@ -16,10 +16,6 @@ class HttpCommandReceiverTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $view = $this->getMockBuilder('\Nethgui\Client\View')
-            ->disableOriginalConstructor()
-            ->setMethods(array('getModule'))
-            ->getMock();
 
         $moduleMock = $this->getMockBuilder('\Nethgui\Core\ModuleInterface')
             ->getMock();
@@ -32,12 +28,10 @@ class HttpCommandReceiverTest extends \PHPUnit_Framework_TestCase
             ->method('getParent')
             ->will($this->returnValue(NULL));
 
-        $view->expects($this->any())
-            ->method('getModule')
-            ->will($this->returnValue($moduleMock));
+        $view = new \Nethgui\Client\View($moduleMock, $this->getMock('\Nethgui\Language\Translator', array(), array(), '', FALSE), 'http://localhost:8080', '/my', 'test.php');
 
         $this->object = new \Nethgui\Renderer\HttpCommandReceiver($view);
-        $this->urlPrefix = 'http://localhost:8080/my/test/will/fail.php';
+        $this->urlPrefix = 'http://localhost:8080/my/test.php';
     }
 
     public function testCancel()
@@ -46,7 +40,6 @@ class HttpCommandReceiverTest extends \PHPUnit_Framework_TestCase
         $this->object->cancel();
     }
 
-
     public function testActivateAction()
     {
         $url = '/OtherModule/a/b#c';
@@ -54,14 +47,12 @@ class HttpCommandReceiverTest extends \PHPUnit_Framework_TestCase
         $this->object->activateAction('../OtherModule/a/b#c');
     }
 
-
     public function testEnable()
     {
         $url = '/ModuleId';
         $this->object->setGlobalFunctionWrapper($this->getGlobalMock($this->urlPrefix . $url));
         $this->object->enable();
     }
-
 
     public function testRedirect()
     {

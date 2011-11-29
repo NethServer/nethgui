@@ -1,5 +1,6 @@
 <?php
 namespace Test\Unit\Nethgui\Renderer;
+
 class XhtmlTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -30,8 +31,13 @@ class XhtmlTest extends \PHPUnit_Framework_TestCase
             ->method('getModule')
             ->will($this->returnValue($moduleMock));
 
-        $this->object = new \Nethgui\Renderer\Xhtml($view, array($this, 'failResolver'));
-    }    
+        $this->object = new \Nethgui\Renderer\Xhtml($view, array($this, 'templateResolverCallback'));
+    }
+
+    public function templateResolverCallback($templateName)
+    {
+        throw new \RuntimeException('Not expected to be called');
+    }
 
     public function testGetDefaultFlags()
     {

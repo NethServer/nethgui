@@ -96,9 +96,7 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
         $this->siteUrl = $siteUrl;
         $this->controllerPath = $controllerPath;
         $this->pathUrl = $pathUrl;
-
-        // XXX: trying to guess view name
-        $this->template = str_replace('\\Module\\', '\\Template\\', get_class($module));
+        $this->template = str_replace('\Module\\', '\Template\\', get_class($module));
         $this->data = array();
     }
 
@@ -188,7 +186,7 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
 
             while ( ! (is_null($module))) {
                 if ( ++ $watchdog > 20) {
-                    throw new \RuntimeException(sprintf("%s: Too many nested modules or cyclic module structure.", get_class($this)), 1322150445);
+                    throw new \LogicException(sprintf("%s: Too many nested modules or cyclic module structure.", get_class($this)), 1322150445);
                 }
                 array_unshift($this->modulePath, $module->getIdentifier());
                 $module = $module->getParent();
@@ -261,16 +259,15 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
 
         $segments = $this->resolvePath($path);
 
-        // FIXME: skip controller segments if url rewriting is active:
         if ($this->controllerPath !== '') {
             array_unshift($segments, $this->controllerPath);
         }
 
+        $url = $this->pathUrl . '/' . implode('/', $segments);
+
         if ( ! empty($parameters)) {
-            $url = $this->pathUrl . implode('/', $segments) . '?' . http_build_query($parameters);
-        } else {
-            $url = $this->pathUrl . implode('/', $segments);
-        }
+            $url .= '?' . http_build_query($parameters);
+        } 
 
         return $url . $fragment;
     }

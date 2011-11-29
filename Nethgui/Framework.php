@@ -95,7 +95,7 @@ class Framework
     private function guessSiteUrl()
     {
         $tmpSiteUrl = empty($_SERVER['HTTPS']) ? 'http://' : 'https://';
-        $tmpSiteUrl .= $_SERVER['SERVER_NAME'];
+        $tmpSiteUrl .= isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : 'localhost';
         if (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] != '80') {
             $tmpSiteUrl .= ':' . $_SERVER['SERVER_PORT'];
         }
@@ -111,21 +111,43 @@ class Framework
         if ($lastPart == $nethguiFile) {
             array_pop($parts);
         }
-        return '/' . implode('/', $parts) . '/';
+        return '/' . implode('/', $parts);
     }
 
+    /**
+     * The web site URL without trailing slash
+     *
+     * @example http://www.example.org:8080
+     * @api
+     * @param string $url
+     * @return Framework
+     */
     public function setSiteUrl($url)
     {
         $this->siteUrl = $url;
         return $this;
     }
 
+    /**
+     * The path component of an URL with a leading slash
+     *
+     * @example /my/path/to/the/app
+     * @api
+     * @param type $basePath
+     * @return Framework
+     */
     public function setBasePath($basePath)
     {
         $this->basePath = $basePath;
         return $this;
     }
 
+    /**
+     *
+     * @api
+     * @param type $moduleIdentifier
+     * @return Framework
+     */
     public function setDefaultModule($moduleIdentifier)
     {
         $this->defaultModuleIdentifier = $moduleIdentifier;
@@ -185,6 +207,9 @@ class Framework
 
     /**
      * Forwards control to Modules and creates output views.
+     *
+     * This is the framework "main()" function / entry point. Any output produced
+     * is sent to stdout. Use output-buffering to catch it.
      *
      * @api
      * @param string $currentModuleIdentifier
@@ -341,7 +366,7 @@ class Framework
             if ( ! @class_exists($className)) {
                 continue;
             }
-            
+
             $moduleInstance = new $className();
 
             if ($moduleInstance instanceof Core\TopModuleInterface) {
