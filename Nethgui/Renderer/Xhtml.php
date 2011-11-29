@@ -27,7 +27,7 @@ namespace Nethgui\Renderer;
  * returned by the factory interface.
  *
  */
-class Xhtml extends AbstractRenderer implements WidgetFactoryInterface, \Nethgui\Core\GlobalFunctionConsumer, \Nethgui\Core\CommandReceiverAggregateInterface
+class Xhtml extends AbstractRenderer implements WidgetFactoryInterface, \Nethgui\Core\GlobalFunctionConsumerInterface, \Nethgui\Core\CommandReceiverAggregateInterface
 {
 
     /**

@@ -25,7 +25,7 @@ namespace Nethgui\System;
  *
  * @see NethPlatform::exec()
  */
-class Process implements ProcessInterface, \Nethgui\Core\GlobalFunctionConsumer
+class Process implements ProcessInterface, \Nethgui\Core\GlobalFunctionConsumerInterface
 {
 
     /**

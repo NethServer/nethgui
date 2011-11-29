@@ -22,7 +22,7 @@ namespace Nethgui\Core;
 
 /**
  */
-interface GlobalFunctionConsumer
+interface GlobalFunctionConsumerInterface
 {
     public function setGlobalFunctionWrapper(GlobalFunctionWrapper $object);
 }

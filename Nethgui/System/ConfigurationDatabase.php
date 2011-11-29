@@ -37,7 +37,7 @@ use Nethgui\Exception\AuthorizationException;
  * 
  * 
  */
-class ConfigurationDatabase implements \Nethgui\Authorization\PolicyEnforcementPointInterface, \Nethgui\Core\GlobalFunctionConsumer
+class ConfigurationDatabase implements \Nethgui\Authorization\PolicyEnforcementPointInterface, \Nethgui\Core\GlobalFunctionConsumerInterface
 {
 
     /**

@@ -25,7 +25,7 @@ namespace Nethgui\System;
  *
  * @see NethPlatform::exec()
  */
-class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionConsumer, \Serializable
+class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionConsumerInterface, \Serializable
 {
 
     /**

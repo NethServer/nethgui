@@ -22,7 +22,7 @@ namespace Nethgui\Log;
 
 /**
  */
-abstract class AbstractLog implements \Nethgui\Core\GlobalFunctionConsumer
+abstract class AbstractLog implements \Nethgui\Core\GlobalFunctionConsumerInterface
 {
 
     /**
