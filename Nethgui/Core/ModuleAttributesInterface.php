@@ -20,16 +20,19 @@ namespace Nethgui\Core;
  * along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * All values returned from these operations are invariants.
+ */
 interface ModuleAttributesInterface
 {
     /**
-     * Gets the Module ``title`` attribute.
+     * Gets the Module `title` attribute.
      * @return string
      */
     public function getTitle();
 
     /**
-     * Gets the Module ``description`` attribute.
+     * Gets the Module `description` attribute.
      *
      * @return string
      */
@@ -37,9 +40,10 @@ interface ModuleAttributesInterface
 
     /**
      * Get module tags for search implementation.
+     *
      * Any composite module must take care of getTags children's call.
      *
-     * @return array 
+     * @return string
      */
     public function getTags();
 
