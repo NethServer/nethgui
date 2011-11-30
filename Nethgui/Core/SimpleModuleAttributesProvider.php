@@ -34,7 +34,7 @@ class SimpleModuleAttributesProvider implements ModuleAttributesInterface
     {
         $i = $module->getIdentifier();
         $this->category = $category;
-        $this->menuPosition = $menuPosition;
+        $this->setMenuPosition($menuPosition);
 
         $this->title = $i . '_Title';
         $this->description = $i . '_Description';
@@ -50,7 +50,7 @@ class SimpleModuleAttributesProvider implements ModuleAttributesInterface
 
     public function setMenuPosition($menuPosition)
     {
-        $this->menuPosition = $menuPosition;
+        $this->menuPosition = is_numeric($menuPosition) ? sprintf('%05d', $menuPosition) : strval($menuPosition);
         return $this;
     }
 
