@@ -26,6 +26,7 @@ namespace Nethgui\Log;
  */
 abstract class AbstractLog implements LogInterface, \Nethgui\Core\GlobalFunctionConsumerInterface
 {
+
     /**
      * Implementors must send the given message and level strings to the log facility
      *
@@ -39,14 +40,30 @@ abstract class AbstractLog implements LogInterface, \Nethgui\Core\GlobalFunction
      * @var \Nethgui\Core\GlobalFunctionWrapper
      */
     protected $globalFunctionWrapper;
+    private $level;
 
-    public function __construct()
+    public function __construct($level = E_ALL)
     {
+        $this->level = $level;
         $this->globalFunctionWrapper = new \Nethgui\Core\GlobalFunctionWrapper();
+    }
+
+    public function getLevel()
+    {
+        return $this->level;
+    }
+
+    public function setLevel($level)
+    {
+        $this->level = $level;
     }
 
     public function exception(Exception $ex, $stackTrace = FALSE)
     {
+        if ( ! $this->level & E_ERROR) {
+            return;
+        }
+
         $message = sprintf('%s : file %s; line %d', $ex->getMessage(), $ex->getFile(), $ex->getLine());
         $retval = $this->message(__FUNCTION__, $message);
 
@@ -61,26 +78,46 @@ abstract class AbstractLog implements LogInterface, \Nethgui\Core\GlobalFunction
 
     public function debug($message)
     {
+        if ( ! $this->level & E_NOTICE) {
+            return;
+        }
+
         return $this->message(__FUNCTION__, $message);
     }
 
     public function notice($message)
     {
+        if ( ! $this->level & E_NOTICE) {
+            return;
+        }
+
         return $this->message(__FUNCTION__, $message);
     }
 
     public function info($message)
     {
+        if ( ! $this->level & E_NOTICE) {
+            return;
+        }
+
         return $this->notice($message);
     }
 
     public function error($message)
     {
+        if ( ! $this->level & E_ERROR) {
+            return;
+        }
+
         return $this->message(__FUNCTION__, $message);
     }
 
     public function warning($message)
     {
+        if ( ! $this->level & E_WARNING) {
+            return;
+        }
+
         return $this->message(__FUNCTION__, $message);
     }
 

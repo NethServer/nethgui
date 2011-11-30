@@ -29,7 +29,7 @@ interface LogConsumerInterface
      * @param LogInterface $log
      * @return void
      */
-    public function setLog(LogInterface $log);
+    public function setLog(\Nethgui\Log\LogInterface $log);
 
     /**
      * @return LogInterface
