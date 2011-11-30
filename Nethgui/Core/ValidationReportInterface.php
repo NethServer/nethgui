@@ -21,9 +21,7 @@ namespace Nethgui\Core;
  */
 
 /**
- * UNSTABLE
  * @todo describe interface
- *
  */
 interface ValidationReportInterface
 {

@@ -127,6 +127,7 @@ abstract class AbstractModule implements ModuleInterface, LogConsumerInterface, 
     public function setParent(\Nethgui\Core\ModuleInterface $parentModule)
     {
         $this->parent = $parentModule;
+        return $this;
     }
 
     public function getParent()

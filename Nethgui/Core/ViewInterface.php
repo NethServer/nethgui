@@ -158,9 +158,7 @@ interface ViewInterface extends \ArrayAccess, \IteratorAggregate
     /**
      * Create command objects through the returned factory class instance
      * 
-     * @return CommandInterface;
+     * @return \Nethgui\Core\CommandInterface
      */
     public function createUiCommand($methodName, $arguments);
 }
-
-?>

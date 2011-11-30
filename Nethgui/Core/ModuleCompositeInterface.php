@@ -37,6 +37,6 @@ interface ModuleCompositeInterface
      * message to $module.
      * @param ModuleInterface $module The child module.
      */
-    public function addChild(ModuleInterface $module);
+    public function addChild(\Nethgui\Core\ModuleInterface $module);
 }
 

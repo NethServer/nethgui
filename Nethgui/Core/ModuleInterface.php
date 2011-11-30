@@ -59,6 +59,7 @@ interface ModuleInterface
     /**
      * Sets the reference to the parent Module.
      * @see ModuleCompositeInterface addChild() operation.
+     * @return ModuleInterface
      */
     public function setParent(ModuleInterface $parentModule);
 
@@ -91,7 +92,7 @@ interface ModuleInterface
     public function prepareView(ViewInterface $view, $mode);
 
     /**
-     * @return ModuleDescriptorInterface
+     * @return ModuleAttributesInterface
      */
     public function getAttributesProvider();
 }
