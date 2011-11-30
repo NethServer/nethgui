@@ -23,41 +23,16 @@ namespace Nethgui\Core;
 /**
  * A ModuleSetInterface implementation contains all known modules.
  * 
- * It allows finding a module and iterating over root modules,
- * arranged in a hierarchical structure.
- *
+ * It caches module instances and allows iterating over all known modules,
  */
-interface ModuleSetInterface
+interface ModuleSetInterface extends \IteratorAggregate
 {
-
-    /**
-     * @return \RecursiveIterator A \RecursiveIterator to iterate over all accessible Modules
-     */
-    public function getModules();
-
     /**
      * @param string $moduleIdentifier
-     * @return ModuleInterface
+     * @return \Nethgui\Core\ModuleInterface The module instance
      */
-    public function findModule($moduleIdentifier);
+    public function getModule($moduleIdentifier);
 
-    /**
-     * Declare that the given namespace is a Nethgui extension. It must have a "Module"
-     * subpackage.
-     *
-     * For instance, a namespace should have the following directory/package structure
-     *
-     * <pre>
-     * Acme
-     *   Module
-     *   Template
-     *   Language
-     *   Help
-     * </pre>
-     *
-     * @param string $nsName
-     * @param string $nsPath
-     */
-    public function registerNamespace($nsName, $nsPath);
+
 }
 

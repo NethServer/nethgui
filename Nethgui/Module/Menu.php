@@ -27,149 +27,163 @@ class Menu extends \Nethgui\Core\Module\Standard
 
     /**
      *
-     * @var \RecursiveIterator
-     */
-    private $menuIterator;
-
-    /**
-     *
      * @var string Current menu item identifier
+     * @return Menu
      */
     private $currentItem;
 
-    public function __construct(\RecursiveIterator $menuIterator, $currentItem)
+    /**
+     *
+     * @var \Nethgui\Core\ModuleSetInterface
+     */
+    private $moduleSet;
+
+    /**
+     *
+     * @param string $currentModuleIdentifier
+     * @return Menu
+     */
+    public function setCurrentModuleIdentifier($currentModuleIdentifier)
     {
-        parent::__construct();
-        $this->menuIterator = $menuIterator;
-        $this->currentItem = $currentItem;
+        $this->currentItem = $currentModuleIdentifier;
+        return $this;
     }
 
     /**
-     * TODO
-     * @param \RecursiveIterator $rootModule
-     * @return string
+     *
+     * @param \Nethgui\Core\ModuleSetInterface $moduleSet
+     * @return Menu
      */
-    private function iteratorToHtml(\RecursiveIterator $menuIterator, \Nethgui\Renderer\Xhtml $view, \Nethgui\Renderer\WidgetInterface $widget, $level = 0)
+    public function setModuleSet(\Nethgui\Core\ModuleSetInterface $moduleSet)
     {
-        if ($level > 4) {
-            return $widget;
-        }
-
-        $menuIterator->rewind();
-
-        while ($menuIterator->valid()) {
-
-            $module = $menuIterator->current();
-
-            $widget->insert($this->makeModuleAnchor($view, $module));
-
-            if ($menuIterator->hasChildren()) {
-                $childWidget = $view->elementList()->setAttribute('class', FALSE);
-                $this->iteratorToHtml($menuIterator->getChildren(), $view, $childWidget, $level + 1);
-                $widget->insert($childWidget);
-            }
-
-            $menuIterator->next();
-        }
-
-        return $widget;
-    }
-
-    private function makeModuleAnchor(\Nethgui\Renderer\Xhtml $view, \Nethgui\Core\ModuleInterface $module)
-    {
-        $translator = $view->getTranslator();
-
-        $placeholders = array(
-            '%HREF' => htmlspecialchars($view->getModuleUrl('../' . $module->getIdentifier())),
-            '%CONTENT' => htmlspecialchars($translator->translate($module, $module->getTitle())),
-            '%TITLE' => htmlspecialchars($translator->translate($module, $module->getDescription())),
-        );
-
-        if ($module->getIdentifier() == $this->currentItem) {
-            $placeholders['%CLASS'] = 'currentMenuItem';
-            $tpl = '<a href="%HREF" title="%TITLE" class="%CLASS">%CONTENT</a>';
-        } else {
-            $tpl = '<a href="%HREF" title="%TITLE">%CONTENT</a>';
-        }
-        return $view->literal(strtr($tpl, $placeholders))->setAttribute('hsc', FALSE);
-    }
-
-    public function renderModuleMenu(\Nethgui\Renderer\Xhtml $view)
-    {
-        $rootList = $view->elementList()->setAttribute('wrap', '/');
-
-        $this->menuIterator->rewind();
-
-        while ($this->menuIterator->valid()) {
-
-            if ($this->menuIterator->hasChildren()) {
-                // Add category title with fake module
-                $rootList->insert(
-                    $view->panel()
-                        ->setAttribute('class', 'moduleTitle')
-                        ->insert($view->literal($view->translate($this->menuIterator->current()->getTitle()))->setAttribute('hsc', TRUE))
-                );
-
-                // Add category contents:
-                $childWidget = $view->elementList()->setAttribute('class', FALSE);
-                $this->iteratorToHtml($this->menuIterator->getChildren(), $view, $childWidget);
-                $rootList->insert($childWidget);
-            }
-
-            $this->menuIterator->next();
-        }
-
-        $form = $view->form()->setAttribute('method', 'get')->insert($view->textInput("search", $view::LABEL_NONE)->setAttribute('placeholder', $view->translate('Search') . "..."))->insert($view->button("submit", $view::BUTTON_SUBMIT))->insert($rootList);
-
-        return "<div class=\"Navigation Flat " . $view->getClientEventTarget("tags") . "\">$form</div>";
-    }
-
-    private function iteratorToSearch(\RecursiveIterator $menuIterator, &$tags = array())
-    {
-        $menuIterator->rewind();
-
-        while ($menuIterator->valid()) {
-
-            $module = $menuIterator->current();
-
-            list($key, $value) = @each($module->getTags());
-            if ($key) {
-                $tags[$key] = $value;
-            }
-
-            if ($menuIterator->hasChildren()) {
-                $this->iteratorToSearch($menuIterator->getChildren(), $tags);
-            }
-
-            $menuIterator->next();
-        }
-        return $tags;
+        $this->moduleSet = $moduleSet;
+        return $this;
     }
 
     public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
+        $view->setTemplate(array($this, 'renderModuleMenu'));
 
-        if ($mode === self::VIEW_SERVER) {
-            $view->setTemplate(array($this, 'renderModuleMenu'));
-        } elseif ($mode === self::VIEW_CLIENT) {
-            $request = $this->getRequest();
-            if (is_null($request)) {
-                return;
+        $categories = array();
+        $translator = $view->getTranslator();
+
+        foreach ($this->moduleSet as $moduleIdentifier => $moduleInstance) {
+            if ( ! $moduleInstance instanceof \Nethgui\Core\ModuleInterface) {
+                continue;
             }
-            $action = \Nethgui\array_head($request->getArguments());
-            if ( ! $action) { //search
-                $tmp2 = array();
-                $tmp = $this->iteratorToSearch($this->menuIterator);
-                foreach ($tmp as $url => $tags) {
-                    $it = new \RecursiveIteratorIterator(new RecursiveArrayIterator($tags));
-                    foreach ($it as $v) {
-                        $tmp2[$url][] = $v;
-                    }
-                }
-                $view['tags'] = $tmp2;
+
+            $attributes = $moduleInstance->getAttributesProvider();
+
+            $category = $attributes->getCategory();
+            $title = $translator->translate($moduleInstance, $attributes->getTitle());
+            $tags = $translator->translate($moduleInstance, $attributes->getTags());
+            $description = $translator->translate($moduleInstance, $attributes->getDescription());
+            $href = $view->spawnView($moduleInstance)->getModuleUrl();
+            $position = $attributes->getMenuPosition();
+
+            // skip elements without any category
+            if (is_null($category)) {
+                continue;
+            }
+
+            // initialize category:
+            if ( ! isset($categories[$category])) {
+                $categories[$category] = array(
+                    'key' => $category,
+                    'title' => $translator->translate($moduleInstance, $category),
+                    'items' => array()
+                );
+            }
+
+            // add item to category
+            if ( ! isset($categories[$category]['items'][$moduleIdentifier])) {
+                $categories[$category]['items'][$moduleIdentifier] = array(
+                    'identifier' => $moduleIdentifier,
+                    'title' => $title,
+                    'description' => $description,
+                    'href' => $href,
+                    'tags' => $tags,
+                    'position' => $position
+                );
             }
         }
+
+
+        foreach ($categories as &$category) {
+            usort($category['items'], array($this, 'sortItems'));
+        }
+
+        usort($categories, array($this, 'sortCategories'));
+
+        $view['categories'] = $categories;
+    }
+
+    public function sortCategories($c, $d)
+    {
+        return strcmp($c['title'], $d['title']);
+    }
+
+    public function sortItems($a, $b)
+    {
+        $position = strcmp($a['position'], $b['position']);
+
+        if ($position !== 0) {
+            return $position;
+        }
+
+        return strcmp($a['title'], $b['title']);
+    }
+
+    public function renderModuleMenu(\Nethgui\Renderer\Xhtml $view)
+    {
+        $rootList = $view->elementList()->setAttribute('wrap', '/');
+        foreach ($view['categories'] as $category) {
+            // Add category title with fake module
+            $rootList->insert(
+                $view->panel()
+                    ->setAttribute('class', 'moduleTitle')
+                    ->insert($view->literal($category['title'])->setAttribute('hsc', TRUE))
+            );
+
+            // Add category contents:
+            $el = $view->elementList()->setAttribute('class', FALSE);
+
+            foreach ($category['items'] as $item) {
+                $el->insert($this->renderMenuItem($view, $item));
+            }
+
+            $rootList->insert($el);
+        }
+
+        $searchPanel = $view->panel()
+            ->setAttribute('class', 'searchPanel')
+            ->insert($view->textInput("search", $view::LABEL_NONE)->setAttribute('placeholder', $view->translate('Search') . "..."))
+            ->insert($view->button("Find", $view::BUTTON_SUBMIT));
+
+        $form = $view->form()
+            ->setAttribute('method', 'get')
+            ->insert($searchPanel)
+            ->insert($rootList);
+
+        return "<div class=\"Navigation Flat " . $view->getClientEventTarget("tags") . "\">$form</div>";
+    }
+
+    protected function renderMenuItem(\Nethgui\Renderer\Xhtml $view, $item)
+    {
+        $placeholders = array(
+            '%HREF' => htmlspecialchars($item['href']),
+            '%CONTENT' => htmlspecialchars($item['title']),
+            '%TITLE' => htmlspecialchars($item['description']),
+        );
+
+        if ($item['identifier'] === $this->currentItem) {
+            $tpl = '<a href="%HREF" title="%TITLE" class="currentMenuItem">%CONTENT</a>';
+        } else {
+            $tpl = '<a href="%HREF" title="%TITLE">%CONTENT</a>';
+        }
+
+        return $view->literal(strtr($tpl, $placeholders))->setAttribute('hsc', FALSE);
     }
 
 }

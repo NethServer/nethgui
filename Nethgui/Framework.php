@@ -21,6 +21,14 @@ namespace Nethgui;
  */
 
 /**
+ * This is the external interface of the whole framework.
+ *
+ * Embed Nethgui Framework into any application by instantiating this
+ * class, invoking the setter methods and catching the output from the dispatch()
+ * method.
+ *
+ * @see dispatch()
+ * @api
  */
 class Framework
 {
@@ -32,6 +40,13 @@ class Framework
      * @var array
      */
     private $namespaceMap = array();
+
+    /**
+     * The list of namespaces containing top modules. 
+     * 
+     * @var array
+     */
+    private $topModuleNamespaces = array();
 
     /**
      * The complete URL to the web-root without trailing slash
@@ -59,36 +74,81 @@ class Framework
     private $defaultModuleIdentifier;
 
     /**
+     * Identifier of the layout decorator module
+     *
+     * @see setDecoratorModule()
+     * @var string
+     */
+    private $decoratorTemplate;
+
+    /**
      * Sends a 303 status redirect to $url.
      * @param type $url
      */
     public function __construct()
     {
+        spl_autoload_register(array($this, 'autoloader'));
         if (basename(__DIR__) !== __NAMESPACE__) {
             throw new \LogicException(sprintf('%s: `%s` is an invalid framework filesystem directory! Must be `%s`.', get_class($this), basename(__DIR__), __NAMESPACE__), 1322213425);
         }
+        $this->registerNamespace(__DIR__);
+
         $this->siteUrl = $this->guessSiteUrl();
         $this->basePath = $this->guessBasePath();
-        spl_autoload_register(array($this, 'autoloader'));
+        $this->decoratorTemplate = 'Nethgui\Template\World';
+    }
 
-        $this->registerNamespace(__DIR__);
+    /**
+     * Simple class autoloader
+     *
+     * This function is registered as SPL class autoloader.
+     *
+     * @todo XXX Check for class names cheating!
+     * @param string $className
+     * @return void
+     */
+    public function autoloader($className)
+    {
+        $nsKey = array_head(explode('\\', $className));
+
+        if (isset($this->namespaceMap[$nsKey])) {
+            $filePath = $this->namespaceMap[$nsKey] . '/' . str_replace('\\', '/', $className) . '.php';
+            include $filePath;
+        }
     }
 
     /**
      * Add a namespace to the framework, where to search for Modules.
+     *
+     * Declare that the given namespace is a Nethgui extension. It must have a "Module"
+     * subpackage.
+     *
+     * For instance, an "Acme" namespace should have the following directory/package structure
+     *
+     * <pre>
+     * Acme
+     *   Module
+     *   Template
+     *   Language
+     *   Help
+     * </pre>
      *
      * Note: classes and interfaces from a registered namespace are autoloaded.
      * 
      * @api
      * @see autoloader()
      * @param string $namespacePath The absolute path to the namespace root directory
+     * @param bool $loadInMenu If set to TRUE use Modules sub-namespace as top-module repository
      * @return Framework
      */
-    public function registerNamespace($namespacePath)
+    public function registerNamespace($namespacePath, $loadInMenu = FALSE)
     {
         $nsRoot = dirname($namespacePath);
         $nsName = basename($namespacePath);
         $this->namespaceMap[$nsName] = $nsRoot;
+        if ($loadInMenu === TRUE) {
+            $this->topModuleNamespaces[] = $nsName;
+        }
         return $this;
     }
 
@@ -155,22 +215,18 @@ class Framework
     }
 
     /**
-     * Simple class autoloader
+     * Set the identifier of the module acting as layout decorator
      *
-     * This function is registered as SPL class autoloader.
+     * Default value: "World"
      *
-     * @todo XXX Check for class names cheating!
-     * @param string $className
-     * @return void
+     * @api
+     * @param string $template
+     * @return Framework
      */
-    public function autoloader($className)
+    public function setDecoratorTemplate($template)
     {
-        $nsKey = array_head(explode('\\', $className));
-
-        if (isset($this->namespaceMap[$nsKey])) {
-            $filePath = $this->namespaceMap[$nsKey] . '/' . str_replace('\\', '/', $className) . '.php';
-            include $filePath;
-        }
+        $this->decoratorTemplate = $template;
+        return $this;
     }
 
     /**
@@ -205,6 +261,19 @@ class Framework
         exit;
     }
 
+    private function getTopModuleNamespaces()
+    {
+        $nsMap = array();
+
+        foreach ($this->topModuleNamespaces as $nsName) {
+            if (isset($this->namespaceMap[$nsName])) {
+                $nsMap[$nsName] = $this->namespaceMap[$nsName];
+            }
+        }
+
+        return $nsMap;
+    }
+
     /**
      * Forwards control to Modules and creates output views.
      *
@@ -217,6 +286,8 @@ class Framework
      */
     public function dispatch(Core\RequestInterface $request)
     {
+        $moduleLoader = new Core\ModuleLoader($this->namespaceMap);
+
         /*
          * TODO: enforce some security policy on Models
          */
@@ -233,7 +304,6 @@ class Framework
         $platform = new System\NethPlatform($user);
         $platform->setPolicyDecisionPoint($pdp);
 
-
         $modules = array();
 
         if ($request->isSubmitted()) {
@@ -247,25 +317,27 @@ class Framework
         array_unshift($moduleWakeupList, $currentModuleIdentifier);
         $moduleWakeupList = array_unique($moduleWakeupList);
 
-        // Configure the NotificationArea:
+        // Instantiate the NotificationArea:
         $notificationManager = new Module\NotificationArea($user);
         $notificationManager->setPlatform($platform);
+        $notificationManager->initialize();
 
-        // Configrue The World module:
+        // Instantiate the decorator module:
         $worldModule = new Module\World();
         $worldModule->setPlatform($platform);
-
 
         $translator = new Language\Translator($user, $platform->getLog(), array($this, 'absoluteScriptPath'), array_keys($this->namespaceMap));
         $view = new Client\View($worldModule, $translator, $this->siteUrl, $this->basePath, 'index.php');
 
         try {
             foreach ($moduleWakeupList as $moduleIdentifier) {
-                $module = $this->getModuleInstance($moduleIdentifier);
+                $module = $moduleLoader->getModule($moduleIdentifier);
                 $module->setPlatform($platform);
-                $module->initialize();
+                if ( ! $module->isInitialized()) {
+                    $module->initialize();
+                }
 
-                $worldModule->addModule($module);
+                $worldModule->addChild($module);
 
                 if ( ! $module instanceof Core\RequestHandlerInterface) {
                     continue;
@@ -300,37 +372,30 @@ class Framework
             throw $ex;
         }
 
-        $worldModule->addModule($notificationManager);
+        $worldModule->addChild($notificationManager);
 
         // Finally, signal "final" events (see #506)
         $platform->signalFinalEvents();
 
-        /**
-         * Validation error http status.
-         * See RFC2616, section 10.4 "Client Error 4xx"
-         */
+        // Validation error http status.
+        // See RFC2616, section 10.4 "Client Error 4xx"
         if ($notificationManager->hasValidationErrors()) {
             // FIXME: check if we are in FAST-CGI module:
             // @see http://php.net/manual/en/function.header.php
             header("HTTP/1.1 400 Request validation error");
         }
 
-        $nsMap = $this->namespaceMap;
-        $resolver = function ($symbol) use ($nsMap) {
-                $nsKey = array_head(explode('\\', $symbol));
-
-                if (isset($nsMap[$nsKey])) {
-                    $filePath = $nsMap[$nsKey] . '/' . str_replace('\\', '/', $symbol) . '.php';
-                    include $filePath;
-                }
-
-                return FALSE;
-            };
-
-        /*
-         * Prepare the views and render into Xhtml or Json
-         */
+        // Prepare the views and render into Xhtml or Json
         if ($request->getContentType() === Core\RequestInterface::CONTENT_TYPE_HTML) {
+            $menuModule = new Module\Menu();
+            $menuModule
+                ->setPlatform($platform)
+                ->setCurrentModuleIdentifier($currentModuleIdentifier)
+                ->setModuleSet($moduleLoader)
+                ->initialize();
+
+            $worldModule->addChild($menuModule);
+
             $worldModule->prepareView($view, Core\ModuleInterface::VIEW_SERVER);
             header("Content-Type: text/html; charset=UTF-8");
             echo new Renderer\Xhtml($view, array($this, 'absoluteScriptPath'), 0, new Core\LoggingCommandReceiver());
@@ -340,39 +405,6 @@ class Framework
             echo new Renderer\Json($view);
         }
         $notificationManager->dismissTransientDialogBoxes();
-    }
-
-    /**
-     * Create an instance of $className, checking for valid identifier.
-     *
-     * @param string $className
-     * @return Core\ModuleInterface
-     */
-    private function getModuleInstance($identifier)
-    {
-        static $instanceCache = array();
-
-        // Module is already instantiated, return it:
-        if (isset($instanceCache[$identifier])) {
-            return $instanceCache[$identifier];
-        }
-
-        $namespaces = array_keys($this->namespaceMap);
-
-        // Resolve module class namespaces LIFO
-        while ($nsName = array_pop($namespaces)) {
-            $className = $nsName . '\Module\\' . $identifier;
-
-            if ( ! @class_exists($className)) {
-                continue;
-            }
-
-            $moduleInstance = new $className();            
-            $instanceCache[$identifier] = $moduleInstance;
-            return $moduleInstance;            
-        }
-
-        throw new \RuntimeException(sprintf("%s: `%s` is an unknown module identifier", get_class($this), $identifier), 1322231262);
     }
 
     /**
@@ -440,7 +472,7 @@ class Framework
         }
 
         // XXX: This is a non-compliant HTTP Accept-header parsing:
-        $httpAccept = isset($_SERVER['HTTP_ACCEPT']) ? trim(array_shift(explode(',', $_SERVER['HTTP_ACCEPT']))) : FALSE;
+        $httpAccept = isset($_SERVER['HTTP_ACCEPT']) ? trim(array_head(explode(',', $_SERVER['HTTP_ACCEPT']))) : FALSE;
 
         if ($httpAccept == 'application/json')
             $contentType = Core\RequestInterface::CONTENT_TYPE_JSON;
