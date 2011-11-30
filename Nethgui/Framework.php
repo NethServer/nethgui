@@ -42,13 +42,6 @@ class Framework
     private $namespaceMap = array();
 
     /**
-     * The list of namespaces containing top modules. 
-     * 
-     * @var array
-     */
-    private $topModuleNamespaces = array();
-
-    /**
      * The complete URL to the web-root without trailing slash
      *
      * @example http://www.example.com:8080
@@ -138,17 +131,13 @@ class Framework
      * @api
      * @see autoloader()
      * @param string $namespacePath The absolute path to the namespace root directory
-     * @param bool $loadInMenu If set to TRUE use Modules sub-namespace as top-module repository
      * @return Framework
      */
-    public function registerNamespace($namespacePath, $loadInMenu = FALSE)
+    public function registerNamespace($namespacePath)
     {
         $nsRoot = dirname($namespacePath);
         $nsName = basename($namespacePath);
         $this->namespaceMap[$nsName] = $nsRoot;
-        if ($loadInMenu === TRUE) {
-            $this->topModuleNamespaces[] = $nsName;
-        }
         return $this;
     }
 
@@ -259,19 +248,6 @@ class Framework
         header("Content-Type: text/plain; charset=UTF-8");
         echo $text;
         exit;
-    }
-
-    private function getTopModuleNamespaces()
-    {
-        $nsMap = array();
-
-        foreach ($this->topModuleNamespaces as $nsName) {
-            if (isset($this->namespaceMap[$nsName])) {
-                $nsMap[$nsName] = $this->namespaceMap[$nsName];
-            }
-        }
-
-        return $nsMap;
     }
 
     /**
