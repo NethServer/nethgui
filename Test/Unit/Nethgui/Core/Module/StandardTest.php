@@ -1,5 +1,9 @@
 <?php
 namespace Test\Unit\Nethgui\Core\Module;
+
+/**
+ * @covers \Nethgui\Core\Module\Standard
+ */
 class StandardTest extends \PHPUnit_Framework_TestCase
 {
 

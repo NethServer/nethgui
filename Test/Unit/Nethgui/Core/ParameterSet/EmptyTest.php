@@ -1,5 +1,9 @@
 <?php
 namespace Test\Unit\Nethgui\Core\ParameterSet;
+
+/**
+ * @covers \Nethgui\Core\ParameterSet
+ */
 class EmptyTest extends \PHPUnit_Framework_TestCase
 {
 

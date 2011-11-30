@@ -1,5 +1,9 @@
 <?php
 namespace Test\Unit\Nethgui\Core\Module;
+
+/**
+ * @covers \Nethgui\Core\Module\Composite
+ */
 class CompositeTest extends \PHPUnit_Framework_TestCase
 {
 

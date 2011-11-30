@@ -1,5 +1,9 @@
 <?php
-namespace Test\Unit\Nethgui\Core;
+namespace Test\Unit\Nethgui\Client;
+
+/**
+ * @covers \Nethgui\Client\View
+ */
 class ViewGenericTest extends \PHPUnit_Framework_TestCase
 {
 

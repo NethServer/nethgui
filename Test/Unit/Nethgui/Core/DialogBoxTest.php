@@ -1,5 +1,9 @@
 <?php
 namespace Test\Unit\Nethgui\Core;
+
+/**
+ * @covers \Nethgui\Client\DialogBox
+ */
 class DialogBoxTest extends \PHPUnit_Framework_TestCase
 {
 

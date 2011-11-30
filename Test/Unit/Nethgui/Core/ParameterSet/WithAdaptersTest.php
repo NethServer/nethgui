@@ -1,5 +1,9 @@
 <?php
 namespace Test\Unit\Nethgui\Core\ParameterSet;
+
+/**
+ * @covers \Nethgui\Core\ParameterSet
+ */
 class WithAdaptersTest extends \PHPUnit_Framework_TestCase
 {
 
