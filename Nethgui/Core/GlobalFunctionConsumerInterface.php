@@ -21,8 +21,10 @@ namespace Nethgui\Core;
  */
 
 /**
+ * Classes that interacts with the global environment should wrap global operations
+ * into a GlobalFunctionWrapper object to facilitate unit testing.
  */
 interface GlobalFunctionConsumerInterface
 {
-    public function setGlobalFunctionWrapper(GlobalFunctionWrapper $object);
+    public function setGlobalFunctionWrapper(\Nethgui\Core\GlobalFunctionWrapper $object);
 }

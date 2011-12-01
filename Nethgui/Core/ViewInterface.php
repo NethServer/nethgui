@@ -21,9 +21,12 @@ namespace Nethgui\Core;
  */
 
 /**
- * Each module has a view attacched to it during prepareView operation. A view
+ * Each module receives a view object in prepareView() operation. A view
  * contains generic elements such as strings, numbers or other (inner) views.
  *
+ * @api
+ * @since 1.0
+ * @see \Nethgui\Core\ModuleInterface::prepareView()
  */
 interface ViewInterface extends \ArrayAccess, \IteratorAggregate
 {
@@ -138,7 +141,6 @@ interface ViewInterface extends \ArrayAccess, \IteratorAggregate
     /**
      * A method to translate a message according to the user language preferences.
      *
-     *
      * @param string $value
      * @param array $args
      * @return string
@@ -156,9 +158,10 @@ interface ViewInterface extends \ArrayAccess, \IteratorAggregate
     public function getTranslator();
 
     /**
-     * Create command objects through the returned factory class instance
-     * 
-     * @return \Nethgui\Core\CommandInterface
+     * Objects returned by the factory methods can be added to the view element
+     * collection.
+     *
+     * @return \Nethgui\Core\CommandFactoryInterface
      */
-    public function createUiCommand($methodName, $arguments);
+    public function getCommandFactory();
 }

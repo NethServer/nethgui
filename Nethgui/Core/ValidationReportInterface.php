@@ -21,7 +21,12 @@ namespace Nethgui\Core;
  */
 
 /**
- * @todo describe interface
+ * Collect validation errors
+ * 
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @see \Nethgui\Core\RequestHandlerInterface::validate()
+ * @since 1.0
+ * @api
  */
 interface ValidationReportInterface
 {
@@ -31,14 +36,14 @@ interface ValidationReportInterface
      * @param string The error message template
      * @param array Optional - Arguments to the error message. ${0}, ${1}, ${2}
      */
-    public function addValidationErrorMessage(ModuleInterface $module, $parameterName, $message, $args = array());
+    public function addValidationErrorMessage(\Nethgui\Core\ModuleInterface $module, $parameterName, $message, $args = array());
 
     /**
      * @param ModuleInterface $module
      * @param string $parameterName
      * @param ValidatorInterface $validator
      */
-    public function addValidationError(ModuleInterface $module, $parameterName, ValidatorInterface $validator);
+    public function addValidationError(\Nethgui\Core\ModuleInterface $module, $parameterName, \Nethgui\Core\ValidatorInterface $validator);
 
     /**
      * Check if a validation error has been added.

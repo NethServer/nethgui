@@ -80,6 +80,28 @@ interface ProcessInterface
      * @return integer
      */
     public function readExecutionState();
+
+    /**
+     * Give an identity to the process object to retrieve it later.
+     *
+     * @param string Unique identifier of the process when stored in a hash table
+     * @return ProcessInterface
+     */
+    public function setIdentifier($identifier);
+
+    /**
+     * Obtain the process identifier.
+     *
+     * If the identifier has not been set this method returns a random string
+     *
+     * @return string The process unique identifier
+     */
+    public function getIdentifier();
+
+    /**
+     * @return array Timing informations
+     */
+    public function getTimes();
 }
 
 

@@ -29,8 +29,6 @@ namespace Nethgui\Core;
 interface CommandReceiverAggregateInterface
 {
     /**
-     *
-     *
      * @return CommandReceiverInterface
      */
     public function getCommandReceiver();

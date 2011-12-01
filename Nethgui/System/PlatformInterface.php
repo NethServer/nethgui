@@ -111,12 +111,11 @@ interface PlatformInterface
      *
      * @param string $command
      * @param array $arguments Arguments for the command. Will be shell-escaped.
-     * @param boolean $detached If set the command is run in detached from the PHP process.
+     * @param boolean $detached If set the command is run detached from the PHP system process and traced
      * @return ProcessInterface
      */
     public function exec($command, $arguments = array(), $detached = FALSE);
-   
-    
+
     /**
      * Create a system validator object
      * @return Validator
@@ -128,6 +127,17 @@ interface PlatformInterface
      * @return string
      */
     public function getDateFormat();
-}
 
+    /**
+     * @return array An array of \Nethgui\System\ProcessInterface traced objects
+     * @see \Nethgui\System\ProcessInterface
+     */
+    public function getDetachedProcesses();
+
+    /**
+     * @param string $name The identifier of the process
+     * @return \Nethgui\System\ProcessInterface
+     */
+    public function getDetachedProcess($identifier);
+}
 
