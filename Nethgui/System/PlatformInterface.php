@@ -22,14 +22,16 @@ namespace Nethgui\System;
 
 /**
  * Interface to the underlying platform
- *
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @api
  */
 interface PlatformInterface
 {
 
     /**
      * @var string
-     * @return ConfigurationDatabase
+     * @return \Nethgui\System\DatabaseInterface
      */
     public function getDatabase($database);
 

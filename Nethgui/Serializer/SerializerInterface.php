@@ -22,7 +22,10 @@ namespace Nethgui\Serializer;
 
 /**
  * A Serializer object transfers a value to/from the configuration database.
- *
+ * 
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @internal
  */
 interface SerializerInterface {
     public function read();

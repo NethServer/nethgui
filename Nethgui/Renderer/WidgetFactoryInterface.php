@@ -26,7 +26,10 @@ namespace Nethgui\Renderer;
  *
  * The interface methods create and configure widget objects.
  *
+ * @author Davide Principi <davide.principi@nethesis.it>
  * @see WidgetInterface
+ * @since 1.0
+ * @api
  */
 interface WidgetFactoryInterface
 {

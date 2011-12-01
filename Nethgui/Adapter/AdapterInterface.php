@@ -25,6 +25,9 @@ namespace Nethgui\Adapter;
  * through a simplified interface.
  * 
  * @see AdapterAggregationInterface
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @api 
  */
 interface AdapterInterface
 {

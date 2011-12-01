@@ -23,6 +23,9 @@ namespace Nethgui\Core;
 /**
  * A complex module, composed by other modules, must implement this interface.
  *
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @api
  */
 interface ModuleCompositeInterface
 {

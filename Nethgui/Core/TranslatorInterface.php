@@ -21,7 +21,11 @@ namespace Nethgui\Core;
  */
 
 /**
+ * 
+ *
  * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @api
  */
 interface TranslatorInterface
 {

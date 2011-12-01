@@ -23,11 +23,13 @@ namespace Nethgui\System;
 /**
  * Brings the output and exit status of an external command
  *
- * @see exec()
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @see \Nethgui\System\PlatformInterface::exec()
+ * @since 1.0
+ * @api 
  */
 interface ProcessInterface
 {
-
     const STATE_NEW = 0;
     const STATE_RUNNING = 1;
     const STATE_EXITED = 2;
@@ -43,7 +45,6 @@ interface ProcessInterface
      * @return array
      */
     public function getOutputArray();
-
 
     /**
      * @return string|bool An output chunk, if more data is available, FALSE otherwise.
@@ -103,5 +104,4 @@ interface ProcessInterface
      */
     public function getTimes();
 }
-
 

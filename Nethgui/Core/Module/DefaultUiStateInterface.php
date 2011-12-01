@@ -24,6 +24,9 @@ namespace Nethgui\Core\Module;
  * Describe the behaviour to be applied in the user interface
  *
  * @see Controller
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @api
  */
 interface DefaultUiStateInterface
 {

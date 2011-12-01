@@ -23,8 +23,9 @@ namespace Nethgui\Core;
 /**
  * Access to the session storage
  *
- * @api
  * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @api
  */
 interface SessionInterface
 {

@@ -22,7 +22,7 @@ namespace Nethgui\Core;
 
 /**
  * Request handlers executes Module logics.
- * 
+ *
  * A request handler is delegated to
  * - receive input parameters (parameter binding),
  * - validate,
@@ -30,8 +30,12 @@ namespace Nethgui\Core;
  *
  * @see ModuleInterface
  * @see http://en.wikipedia.org/wiki/Template_method_pattern
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @api
  */
-interface RequestHandlerInterface {
+interface RequestHandlerInterface
+{
 
     /**
      * Put the request into the object internal state.
@@ -51,5 +55,4 @@ interface RequestHandlerInterface {
      * @return void
      */
     public function process();
-    
 }

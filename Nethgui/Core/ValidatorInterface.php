@@ -23,9 +23,9 @@ namespace Nethgui\Core;
 /**
  * Test if an input value is grammatically and/or logically valid
  *
- * @api
- * @since 1.0
  * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @api
  */
 interface ValidatorInterface {
 

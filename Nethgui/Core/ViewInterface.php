@@ -24,9 +24,9 @@ namespace Nethgui\Core;
  * Each module receives a view object in prepareView() operation. A view
  * contains generic elements such as strings, numbers or other (inner) views.
  *
- * @api
+ * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
- * @see \Nethgui\Core\ModuleInterface::prepareView()
+ * @api
  */
 interface ViewInterface extends \ArrayAccess, \IteratorAggregate
 {
@@ -44,31 +44,44 @@ interface ViewInterface extends \ArrayAccess, \IteratorAggregate
      * - If a boolean FALSE, is given the view is rendered as an empty string.
      *
      * @param string|callback|boolean $template The template converting the view state to a string
+     * @return ViewInterface
+     * @api
      */
     public function setTemplate($template);
 
     /**
+     * TODO
+     *
      * @see setTemplate()
+     * @return string|callback|boolean
+     * @api
      */
     public function getTemplate();
 
     /**
      * Assign data to the View state.
+     *
      * @param $data
+     * @return void
+     * @api
      */
     public function copyFrom($data);
 
     /**
      * Create a new view object associated to $module
+     *
      * @param ModuleInterface $module The associated $module
      * @param boolean Optional If TRUE the returned view is added to the current object with key equal to the module identifier
      * @return ViewInterface The new view object, of the same type of the actual.
+     * @api
      */
     public function spawnView(ModuleInterface $module, $register = FALSE);
 
     /**
      * The module associated to this view.
+     *
      * @return ModuleInterface
+     * @api
      */
     public function getModule();
 
@@ -79,6 +92,7 @@ interface ViewInterface extends \ArrayAccess, \IteratorAggregate
      * @see ModuleInterface::getParent()
      * @see ModuleInterface::getIdentifier()
      * @return array
+     * @api
      */
     public function getModulePath();
 
@@ -94,6 +108,7 @@ interface ViewInterface extends \ArrayAccess, \IteratorAggregate
      *
      * @param string $path The path
      * @return array The path parts, starting from root
+     * @api
      */
     public function resolvePath($path);
 
@@ -103,20 +118,25 @@ interface ViewInterface extends \ArrayAccess, \IteratorAggregate
      * @see resolvePath()
      * @param string $path Relative to the current module
      * @return string
+     * @api
      */
     public function getModuleUrl($path = '');
 
     /**
      * The web site URL without trailing slash
+     * 
      * @example http://www.example.org:8080
      * @return string
+     * @api
      */
     public function getSiteUrl();
 
     /**
      * The path component of an URL with a leading slash
+     * 
      * @example /my/path/to/the/app
      * @return string
+     * @api
      */
     public function getPathUrl();
 
@@ -126,6 +146,7 @@ interface ViewInterface extends \ArrayAccess, \IteratorAggregate
      *
      * @param string $path Relative to the current module
      * @return string
+     * @api
      */
     public function getUniqueId($path = '');
 
@@ -135,6 +156,7 @@ interface ViewInterface extends \ArrayAccess, \IteratorAggregate
      * @see #358
      * @param string $name
      * @return string
+     * @api
      */
     public function getClientEventTarget($name);
 
@@ -146,6 +168,7 @@ interface ViewInterface extends \ArrayAccess, \IteratorAggregate
      * @return string
      * @see TranslatorInterface::translate()
      * @see getTranslator()
+     * @api
      */
     public function translate($message, $args = array());
 
@@ -154,6 +177,7 @@ interface ViewInterface extends \ArrayAccess, \IteratorAggregate
      *
      * @see translate()
      * @return TranslatorInterface
+     * @api
      */
     public function getTranslator();
 
@@ -162,6 +186,7 @@ interface ViewInterface extends \ArrayAccess, \IteratorAggregate
      * collection.
      *
      * @return \Nethgui\Core\CommandFactoryInterface
+     * @api
      */
     public function getCommandFactory();
 }

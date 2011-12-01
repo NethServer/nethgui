@@ -22,19 +22,26 @@ namespace Nethgui\Client;
 
 /**
  * UserInterface provides access to the login information of the current user.
+ *
  * @todo Move into Core package
+ *
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @api
  */
 interface UserInterface 
 {
 
     /**
      * @return boolean
+     * @api
      */
     public function isAuthenticated();
 
     /**
      * @param bool $status
      * @return UserInterface
+     * @api
      */
     public function setAuthenticated($status);
 
@@ -42,30 +49,39 @@ interface UserInterface
      * @param string $credentialName
      * @param mixed $credentialValue
      * @return UserInterface
+     * @api
      */
     public function setCredential($credentialName, $credentialValue);
 
     /**
      * @param string $credentialName
      * @return mixed
+     * @api
      */
     public function getCredential($credentialName);
 
     /**
      * @return array
+     * @api
      */
     public function getCredentials();
 
+    /**
+     * @return boolean
+     * @api
+     */
     public function hasCredential($credentialName);
 
     /**
      * Get the current language code
      * @return string ISO 639-1 language code (2 characters).
+     * @api
      */
     public function getLanguageCode();
 
     /**
      * @return \Nethgui\Core\SessionInterface
+     * @api
      */
     public function getSession();
 

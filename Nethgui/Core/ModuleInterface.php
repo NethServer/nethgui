@@ -28,55 +28,75 @@ namespace Nethgui\Core;
  * - prepare view parameters
  *
  * @see RequestHandlerInterface
+ * @since 1.0
+ * @api
  */
 interface ModuleInterface
 {
     /**
      * Prepare the server view
+     *
+     * @api
      */
     const VIEW_SERVER = 0;
     /**
      * Prepare the client view
+     *
+     * @api
      */
     const VIEW_CLIENT = 1;
     /**
      * Prepare an help template
+     *
+     * @api
      */
     const VIEW_HELP = 2;
 
     /**
      * Sets the host configuration Model.
      * @return ModuleInterface
+     * @api
      */
     public function setPlatform(\Nethgui\System\PlatformInterface $platform);
 
     /**
      * The Module Identifier is a string that univocally identifies a Module.
+     *
      * @return string Returns the unique module identifier
+     * @api
      */
     public function getIdentifier();
 
     /**
      * Sets the reference to the parent Module.
+     *
      * @see ModuleCompositeInterface addChild() operation.
      * @return ModuleInterface
+     * @api
      */
     public function setParent(ModuleInterface $parentModule);
 
     /**
      * Gets a reference to the parent Module.
+     *
      * @return ModuleInterface
+     * @api
      */
     public function getParent();
 
     /**
      * After initialization a module...
+     *
+     * @return void
+     * @api
      */
     public function initialize();
 
     /**
      * Prevents double initialization.
+     *
      * @return bool FALSE, if not yet initialized, TRUE otherwise.
+     * @api
      */
     public function isInitialized();
 
@@ -88,11 +108,16 @@ interface ModuleInterface
      * @see ModuleInterface::VIEW_SERVER
      * @see ModuleInterface::VIEW_CLIENT
      * @see ViewInterface
+     * @return void
+     * @api
      */
     public function prepareView(ViewInterface $view, $mode);
 
     /**
+     * Gain access to the attributes of this module
+     *
      * @return ModuleAttributesInterface
+     * @api
      */
     public function getAttributesProvider();
 }

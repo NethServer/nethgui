@@ -23,7 +23,11 @@ namespace Nethgui\Core;
 /**
  * A ModuleSetInterface implementation contains all known modules.
  * 
- * It caches module instances and allows iterating over all known modules,
+ * It caches module instances and allows iterating over all known modules
+ *
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @internal
  */
 interface ModuleSetInterface extends \IteratorAggregate
 {

@@ -23,6 +23,9 @@ namespace Nethgui\Module\Table;
 /**
  * A table action is provided with an adapter to access the underlying database table
  *
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @api
  */
 interface ActionInterface
 {

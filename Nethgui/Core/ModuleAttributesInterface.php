@@ -22,38 +22,54 @@ namespace Nethgui\Core;
 
 /**
  * All values returned from these operations are invariants.
+ *
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @api
  */
 interface ModuleAttributesInterface
 {
     /**
-     * Gets the Module `title` attribute.
+     * Gets the Module title
+     *
      * @return string
+     * @api
      */
     public function getTitle();
 
     /**
-     * Gets the Module `description` attribute.
+     * Gets the Module description
      *
      * @return string
+     * @api
      */
     public function getDescription();
 
     /**
-     * Get module tags for search implementation.
+     * Gets module tags.
      *
      * Any composite module must take care of getTags children's call.
      *
+     * Tags are used to search a module among the others
+     *
      * @return string
+     * @api
      */
     public function getTags();
 
     /**
+     * The category of the aggregated module
+     *
      * @return string Unique parent module identifier
+     * @api
      */
     public function getCategory();
     
     /**
+     * The menu position of the aggregated module
+     *
      * @return string
+     * @api
      */
     public function getMenuPosition();
 
@@ -61,6 +77,7 @@ interface ModuleAttributesInterface
      * The name of the language catalog where to search the translated strings
      * 
      * @return string|array The language catalog name, or catalog name list
+     * @api
      */
     public function getLanguageCatalog();
 }

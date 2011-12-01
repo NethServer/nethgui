@@ -22,6 +22,10 @@ namespace Nethgui\Log;
 
 /**
  * Implement in any object that logs something
+ *
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @api 
  */
 interface LogConsumerInterface
 {

@@ -24,6 +24,8 @@ namespace Nethgui\System;
  * Describes an object that will be notified of a signal-event call completion
  * 
  * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @api 
  */
 interface EventObserverInterface
 {
