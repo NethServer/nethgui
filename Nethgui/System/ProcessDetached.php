@@ -63,6 +63,19 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionC
 
     /**
      *
+     * @var string
+     */
+    private $identifier;
+
+    /**
+     *
+     * @var array
+     */
+    private $times;
+
+
+    /**
+     *
      * @var \Nethgui\Core\GlobalFunctionWrapper
      */
     protected $globalFunctionWrapper;
@@ -125,6 +138,7 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionC
 
     private function setExecutionState($newState)
     {
+        $this->times[$newState] = microtime();
         $this->state = $newState;
         if ($newState === self::STATE_EXITED) {
             $this->exitStatus = $this->processId > 0 ? 0 : 1;
@@ -236,4 +250,19 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionC
         return $buffer;
     }
 
+    public function getIdentifier()
+    {
+        return $this->identifier;
+    }
+
+    public function getTimes()
+    {
+        return $this->times;
+    }
+
+    public function setIdentifier($identifier)
+    {
+        $this->identifier = $identifier;
+        return $this;
+    }
 }

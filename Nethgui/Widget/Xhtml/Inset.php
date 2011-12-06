@@ -33,8 +33,8 @@ class Inset extends \Nethgui\Widget\XhtmlWidget
         $value = $this->view->offsetGet($name);
         $content = '';
 
-        if ($value instanceof \Nethgui\Core\ViewInterface && $this->view instanceof \Nethgui\Core\CommandReceiverAggregateInterface) {
-            $innerRenderer = new \Nethgui\Renderer\Xhtml($value, $this->view->getTemplateResolver(), $flags, $this->view->getCommandReceiver());
+        if ($value instanceof \Nethgui\Core\ViewInterface && $this->view instanceof \Nethgui\Core\DelegatingCommandReceiverInterface) {
+            $innerRenderer = new \Nethgui\Renderer\Xhtml($value, $this->view->getTemplateResolver(), $flags, $this->view->getDelegatedCommandReceiver());
             $content = (String) $this->wrapView($innerRenderer);
         } else {
             $content = (String) $this->view->literal($value, $flags);
@@ -63,7 +63,7 @@ class Inset extends \Nethgui\Widget\XhtmlWidget
             $contentWidget = $inset->form()->insert($contentWidget);
 
             // Re-wrap a simple root-module into an Action div
-            if ($module->getParent() === NULL) {
+            if ($module->getParent()->getIdentifier() === FALSE) {
                 $contentWidget = $inset->panel()->setAttribute('class', 'Action')->insert($contentWidget);
             }
         }

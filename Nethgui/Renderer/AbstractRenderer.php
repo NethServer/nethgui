@@ -25,6 +25,10 @@ namespace Nethgui\Renderer;
  *
  * @see WidgetInterface
  * @see http://en.wikipedia.org/wiki/Decorator_pattern
+ *
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @api
  */
 abstract class AbstractRenderer extends ReadonlyView implements \Nethgui\Core\ModuleAttributesInterface
 {

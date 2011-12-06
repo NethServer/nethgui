@@ -30,7 +30,11 @@ class HttpCommandReceiverTest extends \PHPUnit_Framework_TestCase
 
         $view = new \Nethgui\Client\View($moduleMock, $this->getMock('\Nethgui\Language\Translator', array(), array(), '', FALSE), 'http://localhost:8080', '/my', 'test.php');
 
-        $this->object = new \Nethgui\Renderer\HttpCommandReceiver($view);
+        $delegatedCommandReceiver = $this->getMockBuilder('\Nethgui\Core\CommandReceiverInterface')
+            ->setMethods(array('executeCommand'))
+            ->getMock();
+
+        $this->object = new \Nethgui\Renderer\HttpCommandReceiver($view, $delegatedCommandReceiver);
         $this->urlPrefix = 'http://localhost:8080/my/test.php';
     }
 

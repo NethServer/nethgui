@@ -26,8 +26,11 @@ namespace Nethgui\Renderer;
  * Fragments of the view string representation can be generated through the widget objects
  * returned by the factory interface.
  *
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @api
  */
-class Xhtml extends AbstractRenderer implements WidgetFactoryInterface, \Nethgui\Core\GlobalFunctionConsumerInterface, \Nethgui\Core\CommandReceiverAggregateInterface
+class Xhtml extends AbstractRenderer implements WidgetFactoryInterface, \Nethgui\Core\GlobalFunctionConsumerInterface, \Nethgui\Core\DelegatingCommandReceiverInterface
 {
 
     /**
@@ -57,9 +60,9 @@ class Xhtml extends AbstractRenderer implements WidgetFactoryInterface, \Nethgui
      * @param \Nethgui\Core\ViewInterface $view
      * @param callback $templateResolver A function that takes the template name as argument and returns the corresponding PHP script absolute path
      * @param int $inheritFlags Default flags applied to all widgets created by this renderer
-     * @param \Nethgui\Core\CommandReceiverInterface $commandReceiver object where Commands are executed
+     * @param \Nethgui\Core\CommandReceiverInterface $delegatedCommandReceiver object where Commands are executed
      */
-    public function __construct(\Nethgui\Core\ViewInterface $view, $templateResolver, $inheritFlags = 0, \Nethgui\Core\CommandReceiverInterface $commandReceiver = NULL)
+    public function __construct(\Nethgui\Core\ViewInterface $view, $templateResolver, $inheritFlags = 0, \Nethgui\Core\CommandReceiverInterface $delegatedCommandReceiver)
     {
         if ( ! is_callable($templateResolver)) {
             throw new \InvalidArgumentException(sprintf('%s: $templateResolver must be a valid callback function.', get_class($this)), 1322238847);
@@ -68,7 +71,7 @@ class Xhtml extends AbstractRenderer implements WidgetFactoryInterface, \Nethgui
         parent::__construct($view);
         $this->inheritFlags = $inheritFlags & NETHGUI_INHERITABLE_FLAGS;
         $this->globalFunctionWrapper = new \Nethgui\Core\GlobalFunctionWrapper();
-        $this->commandReceiver = new HttpCommandReceiver($this, $commandReceiver);
+        $this->commandReceiver = new HttpCommandReceiver($this->view, $delegatedCommandReceiver);
         $this->templateResolver = $templateResolver;
     }
 
@@ -377,9 +380,13 @@ class Xhtml extends AbstractRenderer implements WidgetFactoryInterface, \Nethgui
         return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags, 'icon-before' => 'ui-icon-triangle-1-s'));
     }
 
-    public function getCommandReceiver()
-    {
+    public function getDelegatedCommandReceiver()
+    {        
         return $this->commandReceiver;
     }
 
+    public function executeCommand($name, $arguments)
+    {
+        return $this->getDelegatedCommandReceiver()->executeCommand($name, $arguments);
+    }
 }

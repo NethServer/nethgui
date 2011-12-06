@@ -34,8 +34,7 @@ interface CommandFactoryInterface
     const NOTIFY_ERROR = 0x2;
     const MASK_SEVERITY = 0x3;
     const NOTIFY_MODAL = 0x4;
-    
-
+  
     /**
      * Create command objects through the returned factory class instance
      *
@@ -52,4 +51,5 @@ interface CommandFactoryInterface
      * @return \Nethgui\Core\CommandInterface
      */
     public function showDialogBox($message, $actions = array(), $type = \Nethgui\Core\CommandFactoryInterface::NOTIFY_SUCCESS);
+
 }

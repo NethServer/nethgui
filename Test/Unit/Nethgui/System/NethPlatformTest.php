@@ -18,8 +18,33 @@ class NethPlatformTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
+        $mockUser = $this->getMockBuilder('\Nethgui\Client\UserInterface')
+            ->disableOriginalConstructor()
+            ->setMethods(array('getSession','isAuthenticated','setAuthenticated','setCredential', 'getCredential', 'getCredentials', 'hasCredential', 'getLanguageCode'))
+            ->getMock();
+
+        $mockSession = $this->getMockBuilder('\Nethgui\Core\SessionInterface')
+            ->disableOriginalConstructor()
+            ->setMethods(array('retrieve', 'hasElement', 'store', 'getSessionIdentifier'))
+            ->getMock();
+
+        $mockSession->expects($this->atLeastOnce())
+            ->method('hasElement')
+            ->with('Nethgui\System\NethPlatform')
+            ->will($this->returnValue(TRUE));
+
+        $mockSession->expects($this->atLeastOnce())
+            ->method('retrieve')
+            ->with('Nethgui\System\NethPlatform')
+            ->will($this->returnValue(new \ArrayObject()));
+
+        $mockUser->expects($this->atLeastOnce())
+            ->method('getSession')
+            ->will($this->returnValue($mockSession));
+
+
         $this->globalsMock = $this->getMock('\Nethgui\Core\GlobalFunctionWrapper', array('exec'));
-        $this->object = new \Nethgui\System\NethPlatform($this->getMock('\Nethgui\Client\UserInterface'));
+        $this->object = new \Nethgui\System\NethPlatform($mockUser);
         $this->object->setGlobalFunctionWrapper($this->globalsMock);
         $this->object->setPolicyDecisionPoint(new \Nethgui\Authorization\PermissivePolicyDecisionPoint());
     }

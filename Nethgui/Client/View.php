@@ -37,7 +37,7 @@ namespace Nethgui\Client;
  *
  * @see \Nethgui\Core\ModuleInterface::prepareView()
  */
-class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInterface
+class View implements \Nethgui\Core\ViewInterface, \Nethgui\Core\CommandFactoryInterface, \Nethgui\Log\LogConsumerInterface
 {
 
     /**
@@ -188,7 +188,11 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
                 if ( ++ $watchdog > 20) {
                     throw new \LogicException(sprintf("%s: Too many nested modules or cyclic module structure.", get_class($this)), 1322150445);
                 }
-                array_unshift($this->modulePath, $module->getIdentifier());
+
+                $moduleIdentifier = $module->getIdentifier();
+                if (strlen($moduleIdentifier) > 0) {
+                    array_unshift($this->modulePath, $moduleIdentifier);
+                }
                 $module = $module->getParent();
             }
         }
@@ -213,7 +217,7 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
         }
 
         foreach (explode('/', $path) as $part) {
-            if ($part == '' || $part == '.') {
+            if ($part === '' || $part === '.') {
                 continue; // skip empty parts
             } elseif ($part == '..') {
                 array_pop($pathSegments); // backreference
@@ -267,7 +271,7 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
 
         if ( ! empty($parameters)) {
             $url .= '?' . http_build_query($parameters);
-        } 
+        }
 
         return $url . $fragment;
     }
@@ -303,9 +307,20 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
         }
     }
 
+    public function getCommandFactory()
+    {
+        return $this;
+    }
+
     public function createUiCommand($methodName, $arguments)
     {
         return new Command($methodName, $arguments);
+    }
+
+    public function showDialogBox($message, $actions = array(), $type = \Nethgui\Core\CommandFactoryInterface::NOTIFY_SUCCESS)
+    {
+        $dialog = new \Nethgui\Client\DialogBox($this->getModule(), $message, $actions, $type);
+        return $this->createUiCommand('showDialogBox', array($dialog));
     }
 
 }

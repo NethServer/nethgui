@@ -32,20 +32,14 @@ class Help extends \Nethgui\Core\Module\Controller
      */
     private $moduleSet;
 
-    public function __construct(\Nethgui\Core\ModuleSetInterface $moduleSet)
-    {
-        parent::__construct(NULL);
-        $this->moduleSet = $moduleSet;
-    }
-
     public function initialize()
     {
         parent::initialize();
         $this->loadChildren(array('Show', 'Template', 'Read'));
 
-        // Propagate moduleSet to children
+        // XXX Propagate moduleSet to children
         foreach ($this->getChildren() as $child) {
-            $child->moduleSet = $this->moduleSet;
+            // $child->moduleSet = $this->moduleSet;
         }
     }
 

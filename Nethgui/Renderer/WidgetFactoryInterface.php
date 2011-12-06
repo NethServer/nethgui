@@ -76,9 +76,11 @@ interface WidgetFactoryInterface
 
     /**
      * Include a view element that is a sub-view
+     *
      * @param string $name The view member name
      * @param integer $flags Optional {STATE_DISABLED}
      * @return WidgetInterface
+     * @api
      */
     public function inset($name, $flags = 0);
 
@@ -96,6 +98,7 @@ interface WidgetFactoryInterface
      * @param string $name The view member name to generate the label contents
      * @param integer $flags Optional {STATE_DISABLED}
      * @return WidgetInterface
+     * @api
      */
     public function textLabel($name, $flags = 0);
 
@@ -106,6 +109,7 @@ interface WidgetFactoryInterface
      * @param string $name OPTIONAL - The view member passed as argument for the "template" attribute.
      * @param integer $flags OPTIONAL - flags
      * @return WidgetInterface
+     * @api
      */
     public function fieldset($name = NULL, $flags = 0);
 
@@ -114,14 +118,18 @@ interface WidgetFactoryInterface
      *
      * @see textLabel()
      * @param string $name OPTIONAL - The view member passed as argument for the "template" attribute.
+     * @return WidgetInterface
+     * @api
      */
     public function header($name = NULL, $flags = 0);
 
     /**
      * Create an hidden control
+     *
      * @param string $name The view member name
      * @param integer $flags Optional {STATE_DISABLED}
      * @return WidgetInterface
+     * @api
      */
     public function hidden($name, $flags = 0);
 
@@ -131,32 +139,39 @@ interface WidgetFactoryInterface
      * @param string $name The view member name holding the selected value(s)
      * @param integer $flags
      * @return WidgetInterface
+     * @api
      */
     public function selector($name, $flags = 0);
 
     /**
      * Create a button control
+     * 
      * @param string $name The view member name
      * @param integer $flags Optional - {DIALOG_*, STATE_ENABLED}
      * @return WidgetInterface
+     * @api
      */
     public function button($name, $flags = 0);
 
     /**
      * Create a radio button control
+     * 
      * @param string $name The view member name
      * @param string $value The value assigned to the control, when selected.
      * @param integer $flags Optional {STATE_DISABLED, STATE_CHECKED}
      * @return WidgetInterface
+     * @api
      */
     public function radioButton($name, $value, $flags = 0);
 
     /**
      * Create a checkbox control
+     * 
      * @param string $name The view member name
      * @param string $value The value assigned to the control, when selected.
      * @param integer $flags Optional {STATE_DISABLED, STATE_CHECKED}
      * @return WidgetInterface
+     * @api
      */
     public function checkBox($name, $value, $flags = 0);
 
@@ -168,6 +183,7 @@ interface WidgetFactoryInterface
      * @param string $value
      * @param integer $flags
      * @return WidgetInterface
+     * @api
      */
     public function fieldsetSwitch($name, $value, $flags = 0);
 
@@ -176,6 +192,7 @@ interface WidgetFactoryInterface
      *
      * @param int $flags Render flags: {DIALOG_MODAL, DIALOG_EMBEDDED, STATE_DISABLED, DIALOG_SUCCESS, DIALOG_WARNING, DIALOG_ERROR}
      * @return WidgetInterface
+     * @api
      */
     public function dialog($name, $flags = 0);
 
@@ -184,13 +201,16 @@ interface WidgetFactoryInterface
      *
      * @param integer $flags {STATE_DISABLED}
      * @return WidgetInterface
+     * @api
      */
     public function tabs($flags = 0);
 
     /**
      * Create a simple form container.
+     * 
      * @param integer $flags Optional - {STATE_DISABLED}
      * @return WidgetInterface
+     * @api
      */
     public function form($flags = 0);
 
@@ -199,6 +219,7 @@ interface WidgetFactoryInterface
      *
      * @param integer $flags
      * @return WidgetInterface
+     * @api
      */
     public function panel($flags = 0);
 
@@ -209,6 +230,7 @@ interface WidgetFactoryInterface
      *
      * @param integer $flags
      * @return WidgetInterface
+     * @api
      */
     public function elementList($flags = 0);
 
@@ -219,6 +241,7 @@ interface WidgetFactoryInterface
      *
      * @param integer $flags
      * @return WidgetInterface
+     * @api
      */
     public function buttonList($flags = 0);
 
@@ -228,6 +251,7 @@ interface WidgetFactoryInterface
      *
      * @param string|object|\Nethgui\Core\ViewInterface $data Can be a string, any object implementing toString() method, or a View.
      * @return WidgetInterface
+     * @api
      */
     public function literal($data, $flags = 0);
 
@@ -237,26 +261,31 @@ interface WidgetFactoryInterface
      * Add the actual columns through the insert() operation of the returned object
      *
      * @return WidgetInterface
+     * @api
      */
     public function columns();
 
     /**
      * Create a progress bar
-     *
-     * Refs #554.
-     *
+     * 
      * - name View member holding the percent value Int range [0, 100]
+     *
+     * @see #554
+     * @return WidgetInterface
+     * @api
      */
     public function progressBar($name, $flags = 0);
 
     /**
      * Create a text area
      *
-     * Refs #556
-     *
      * Attributes:
      * - dimensions
      * - appendOnly
+     *
+     * @see #556
+     * @return WidgetInterface
+     * @api
      */
     public function textArea($name, $flags = 0);
 
@@ -265,23 +294,32 @@ interface WidgetFactoryInterface
      * Create a console-like text area
      *
      * @see textArea()
+     *
+     * @return WidgetInterface
+     * @api
      */
     public function console($name, $flags = 0);
 
     /**
      * Create a date picker widget:
      *
-     * Refs #474
      *
      * Attributes:
      * - class (string) "Date " plus one of "be" (default), "me", "le".
+     *
+     * @see 474
+     * @return WidgetInterface
+     * @api
      */
     public function dateInput($name, $flags);
 
 
-    /*
+    /**
      * Pick/selects objects from a collection
-     * @see selector()
+     *
+     * @see WidgetFactoryInterface::selector()
+     * @return WidgetInterface
+     * @api
      */
     public function objectPicker($name = NULL, $flags = 0);
 

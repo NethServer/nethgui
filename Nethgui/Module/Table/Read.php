@@ -25,6 +25,9 @@ namespace Nethgui\Module\Table;
  * 
  * @see Modify
  * @see \Nethgui\Module\TableController
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @api
  */
 class Read extends Action
 {

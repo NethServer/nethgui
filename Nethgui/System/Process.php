@@ -57,6 +57,18 @@ class Process implements ProcessInterface, \Nethgui\Core\GlobalFunctionConsumerI
 
     /**
      *
+     * @var string
+     */
+    private $identifier;
+
+    /**
+     *
+     * @var array
+     */
+    private $times;
+
+    /**
+     *
      * @var \Nethgui\Core\GlobalFunctionWrapper
      */
     private $globalFunctionWrapper;
@@ -66,10 +78,12 @@ class Process implements ProcessInterface, \Nethgui\Core\GlobalFunctionConsumerI
         $this->globalFunctionWrapper = new \Nethgui\Core\GlobalFunctionWrapper();
         $this->arguments = $arguments;
         $this->command = $command;
-        $this->state = self::STATE_NEW;
+        $this->changeState(self::STATE_NEW);
         $this->output = array();
         $this->exitStatus = FALSE;
         $this->outputRed = FALSE;
+        $this->identifier = uniqid();
+        $this->times = array();
     }
 
     public function addArgument($arg)
@@ -96,13 +110,15 @@ class Process implements ProcessInterface, \Nethgui\Core\GlobalFunctionConsumerI
             return FALSE;
         }
 
-        $this->globalFunctionWrapper->exec($this->prepareEscapedCommand(), $this->output, $this->exitStatus);        
+        $this->changeState(self::STATE_RUNNING);
+        $this->globalFunctionWrapper->exec($this->prepareEscapedCommand(), $this->output, $this->exitStatus);
         $this->changeState(self::STATE_EXITED);
         return $this->readExecutionState();
     }
 
     private function changeState($newState)
     {
+        $this->times[$newState] = microtime();
         $this->state = $newState;
     }
 
@@ -152,6 +168,22 @@ class Process implements ProcessInterface, \Nethgui\Core\GlobalFunctionConsumerI
         }
 
         return FALSE;
+    }
+
+    public function getIdentifier()
+    {
+        return $this->identifier;
+    }
+
+    public function getTimes()
+    {
+        return $this->times;
+    }
+
+    public function setIdentifier($identifier)
+    {
+        $this->identifier = $identifier;
+        return $this;
     }
 
 }

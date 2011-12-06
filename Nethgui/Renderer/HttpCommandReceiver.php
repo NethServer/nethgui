@@ -26,7 +26,7 @@ namespace Nethgui\Renderer;
  * Implements the command logic as HTTP redirects
  *
  */
-class HttpCommandReceiver implements \Nethgui\Core\CommandReceiverInterface, \Nethgui\Core\GlobalFunctionConsumerInterface
+class HttpCommandReceiver implements \Nethgui\Core\CommandReceiverInterface, \Nethgui\Core\GlobalFunctionConsumerInterface, \Nethgui\Core\DelegatingCommandReceiverInterface
 {
 
     /**
@@ -39,7 +39,7 @@ class HttpCommandReceiver implements \Nethgui\Core\CommandReceiverInterface, \Ne
      *
      * @var \Nethgui\Core\CommandReceiverInterface
      */
-    private $fallbackReceiver;
+    private $delegatedCommandReceiver;
 
     /**
      *
@@ -47,17 +47,22 @@ class HttpCommandReceiver implements \Nethgui\Core\CommandReceiverInterface, \Ne
      */
     private $globalFunctionWrapper;
 
-    public function __construct(\Nethgui\Core\ViewInterface $view, \Nethgui\Core\CommandReceiverInterface $fallbackReceiver = NULL)
+    public function __construct(\Nethgui\Core\ViewInterface $view, \Nethgui\Core\CommandReceiverInterface $delegatedCommandReceiver)
     {
         $this->view = $view;
-        $this->fallbackReceiver = $fallbackReceiver;
+        $this->delegatedCommandReceiver = $delegatedCommandReceiver;
         $this->globalFunctionWrapper = new \Nethgui\Core\GlobalFunctionWrapper();
+    }
+
+    public function getDelegatedCommandReceiver()
+    {
+        return $this->delegatedCommandReceiver;
     }
 
     public function executeCommand($name, $arguments)
     {
-        if ( ! method_exists($this, $name) && isset($this->fallbackReceiver)) {
-            return $this->fallbackReceiver->executeCommand($name, $arguments);
+        if ( ! method_exists($this, $name) && isset($this->delegatedCommandReceiver)) {
+            return $this->delegatedCommandReceiver->executeCommand($name, $arguments);
         }
         return call_user_func_array(array($this, $name), $arguments);
     }
@@ -95,6 +100,7 @@ class HttpCommandReceiver implements \Nethgui\Core\CommandReceiverInterface, \Ne
     {
         $messages = array(
             '201' => 'Created',
+            '205' => 'Reset Content',
             '301' => 'Moved Permanently',
             '302' => 'Found',
             '303' => 'See Other',

@@ -34,10 +34,12 @@ use Nethgui\Exception\AuthorizationException;
  *
  * Before use any method in the class, the method st($db) must be called. 
  *
- * 
- * 
+ * @author Giacomo Sanchietti <giacomo.sanchietti@nethesis.it>
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @internal
  */
-class ConfigurationDatabase implements \Nethgui\Authorization\PolicyEnforcementPointInterface, \Nethgui\Core\GlobalFunctionConsumerInterface
+class ConfigurationDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Authorization\PolicyEnforcementPointInterface, \Nethgui\Core\GlobalFunctionConsumerInterface
 {
 
     /**
@@ -131,14 +133,6 @@ class ConfigurationDatabase implements \Nethgui\Authorization\PolicyEnforcementP
         }
     }
 
-    /**
-     * Retrieve all keys from the database. If needed, you can use filter the results by type and key name. 
-     *
-     * @param string $type (optional) type of the key
-     * @param string $filter (optional) case insensitive fulltext search on key value
-     * @access public
-     * @return array associative array in the form "[KeyName] => array( [type] => [TypeValue], [PropName1] => [PropValue1], [PropName2] => [PropValue2], ...) 
-     */
     public function getAll($type = NULL, $filter = NULL)
     {
         if ( ! is_null($filter)) {
@@ -178,14 +172,6 @@ class ConfigurationDatabase implements \Nethgui\Authorization\PolicyEnforcementP
         return $result;
     }
 
-    /**
-     * Retrieve a key from the database. 
-     * Act like : /sbin/e-smith/db dbfile get key
-     *
-     * @param string $key the key to read
-     * @access public
-     * @return array associative array in the form [PropName] => [PropValue]
-     */
     public function getKey($key)
     {
         if ( ! $this->canRead) {
@@ -207,17 +193,6 @@ class ConfigurationDatabase implements \Nethgui\Authorization\PolicyEnforcementP
         return $result;
     }
 
-    /**
-     * Set a database key with type and properties.
-     * Act like: /sbin/e-smith/db dbfile set key type [prop1 val1] [prop2 val2] ... 
-     * 
-     * @param string $key Key to write
-     * @param string $type Type of the key
-     * @param string $props Array of properties in the form [PropName] => [PropValue]
-     * @access public
-     * @return bool TRUE on success, FALSE otherwise
-     *
-     */
     public function setKey($key, $type, $props)
     {
         if ( ! $this->canWrite) {
@@ -229,14 +204,6 @@ class ConfigurationDatabase implements \Nethgui\Authorization\PolicyEnforcementP
         return ($ret == 0);
     }
 
-    /**
-     * Delete a key and all its properties 
-     * Act like: /sbin/e-smith/db dbfile delete key
-     * 
-     * @param mixed $key 
-     * @access public
-     * @return void
-     */
     public function deleteKey($key)
     {
         if ( ! $this->canWrite) {
@@ -288,15 +255,6 @@ class ConfigurationDatabase implements \Nethgui\Authorization\PolicyEnforcementP
         return ($ret == 0);
     }
 
-    /**
-     * Read the value of the given property
-     * Act like: /sbin/e-smith/db dbfile getprop key prop
-     * 
-     * @param string $key the parent property key
-     * @param string $prop the name of the property
-     * @access public
-     * @return string the value of the property
-     */
     public function getProp($key, $prop)
     {
         if ( ! $this->canRead) {
@@ -308,15 +266,6 @@ class ConfigurationDatabase implements \Nethgui\Authorization\PolicyEnforcementP
         return trim($output);
     }
 
-    /**
-     * Set one or more properties under the given key
-     * Act like: /sbin/e-smith/db dbfile setprop key prop1 val1 [prop2 val2] [prop3 val3] ...
-     * 
-     * @param string $key the property parent key
-     * @param array $props an associative array in the form [PropName] => [PropValue]  
-     * @access public
-     * @return bool TRUE on success, FALSE otherwise
-     */
     public function setProp($key, $props)
     {
         if ( ! $this->canWrite) {
@@ -328,15 +277,6 @@ class ConfigurationDatabase implements \Nethgui\Authorization\PolicyEnforcementP
         return ($ret == 0);
     }
 
-    /**
-     * Delete one or more properties under the given key 
-     * Act like: sbin/e-smith/db dbfile delprop key prop1 [prop2] [prop3] ...
-     * 
-     * @param string $key the property parent key
-     * @param array $props a simple array containg the properties to be deleted
-     * @access public
-     * @return bool TRUE on success, FALSE otherwise
-     */
     public function delProp($key, $props)
     {
         if ( ! $this->canWrite) {

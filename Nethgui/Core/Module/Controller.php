@@ -29,6 +29,9 @@ namespace Nethgui\Core\Module;
  * 
  * A a top level Controller renders its parts embedded in a FORM container.
  *
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @api
  * @see Composite
  */
 class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterface
@@ -100,8 +103,7 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
     public function getAction($identifier = NULL)
     {
         foreach ($this->getChildren() as $child) {
-            if ($child->getIdentifier() == $identifier || is_null($identifier))
-            {
+            if ($child->getIdentifier() == $identifier || is_null($identifier)) {
                 return $child;
             }
         }

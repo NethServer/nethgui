@@ -62,6 +62,11 @@ class ModuleLoader implements ModuleSetInterface, GlobalFunctionConsumerInterfac
     private function fillCache()
     {
         foreach ($this->namespaceMap as $namespaceName => $namespaceRootPath) {
+            // XXX skip Nethgui modules - must be explicitly picked by getModule() ???
+            if ($namespaceName === 'Nethgui') {
+                continue;
+            }
+
             $path = $namespaceRootPath . '/' . $namespaceName . '/Module';
 
             $files = $this->globalFunctionWrapper->scandir($path);

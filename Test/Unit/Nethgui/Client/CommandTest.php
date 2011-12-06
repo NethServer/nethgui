@@ -1,5 +1,6 @@
 <?php
 namespace Test\Unit\Nethgui\Client;
+
 class CommandTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -38,7 +39,7 @@ class CommandTest extends \PHPUnit_Framework_TestCase
 
     private function createReceiverMock()
     {
-        $receiver = $this->getMockBuilder('\Nethgui\Core\CommandReceiverInterface')
+        $receiver = $this->getMockBuilder('Nethgui\Core\CommandReceiverInterface')
             ->setMethods(array('executeCommand'))
             ->getMock();
 
@@ -48,19 +49,6 @@ class CommandTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue('success'));
 
         return $receiver;
-    }
-
-    private function createReceiverAggregateMock()
-    {
-        $aggregate = $this->getMockBuilder('\Nethgui\Core\CommandReceiverAggregateInterface')
-            ->setMethods(array('getCommandReceiver'))
-            ->getMock();
-
-        $aggregate->expects($this->once())
-            ->method('getCommandReceiver')
-            ->will($this->returnValue($this->createReceiverMock()));
-
-        return $aggregate;
     }
 
     public function testExecuteFail()
@@ -74,9 +62,10 @@ class CommandTest extends \PHPUnit_Framework_TestCase
 
     public function testSetReceiver()
     {
-        $retval = $this->object->setReceiver($this->createReceiverAggregateMock());
+        $retval = $this->object->setReceiver($this->createReceiverMock());
         $this->assertSame($this->object, $retval);
-        $this->object->execute();
+        $v = $this->object->execute();
+        $this->assertEquals('success', $v);
     }
 
     public function testIsExecuted1()
@@ -89,6 +78,17 @@ class CommandTest extends \PHPUnit_Framework_TestCase
     {
         $this->testExecuteFail();
         $this->assertFalse($this->object->isExecuted());
+    }
+
+    public function testIsExecuted3()
+    {
+        $this->testExecuteSuccess();
+        $this->assertTrue($this->object->isExecuted());
+        try {
+            $this->object->execute();
+        } catch (\Exception $ex) {
+            $this->assertInstanceOf('LogicException', $ex);
+        }
     }
 
 }

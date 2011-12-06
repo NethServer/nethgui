@@ -24,7 +24,9 @@ namespace Nethgui\Module\Table;
  * Processes the table modification actions: create, update, delete
  *
  * @see Read
- * 
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @api
  */
 class Modify extends Action
 {

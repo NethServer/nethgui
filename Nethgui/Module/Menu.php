@@ -62,6 +62,10 @@ class Menu extends \Nethgui\Core\Module\Standard
 
     public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
     {
+        if ($mode === self::VIEW_CLIENT) {
+            return;
+        }
+
         parent::prepareView($view, $mode);
         $view->setTemplate(array($this, 'renderModuleMenu'));
 

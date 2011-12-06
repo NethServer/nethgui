@@ -21,14 +21,9 @@ namespace Nethgui\Module;
  */
 
 /**
- * A Controller for handling a generic table CRUD scenario, and any other
- * action defined on a table.
- *
- * - Tracks the actions involving a row
- * - Tracks the actions involving the whole table
- *
- * @see Table\Modify
- * @see Table\Read
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @api
  */
 class TabsController extends \Nethgui\Core\Module\Controller
 {

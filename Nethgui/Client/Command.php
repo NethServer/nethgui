@@ -27,7 +27,7 @@ class Command implements \Nethgui\Core\CommandInterface
 
     /**
      *
-     * @var object
+     * @var \Nethgui\Core\CommandReceiverInterface
      */
     private $receiver;
 
@@ -62,20 +62,15 @@ class Command implements \Nethgui\Core\CommandInterface
             throw new \LogicException(sprintf('%s: command was already executed', get_class($this)), 1322148828);
         }
 
-        if ($this->receiver instanceof \Nethgui\Core\CommandReceiverInterface) {
-            $this->executed = TRUE;
-            return $this->receiver->executeCommand($this->methodName, $this->arguments);
+        if ( ! $this->receiver instanceof \Nethgui\Core\CommandReceiverInterface) {
+            throw new \LogicException(sprintf('%s: invalid receiver object', get_class($this)), 1323170262);
         }
 
-        if ($this->receiver instanceof \Nethgui\Core\CommandReceiverAggregateInterface) {
-            $this->executed = TRUE;
-            return $this->receiver->getCommandReceiver()->executeCommand($this->methodName, $this->arguments);
-        }
-
-        throw new \LogicException(sprintf('%s: invalid receiver object', get_class($this)), 1322148830);
+        $this->executed = TRUE;
+        return $this->receiver->executeCommand($this->methodName, $this->arguments);
     }
 
-    public function setReceiver($receiver)
+    public function setReceiver(\Nethgui\Core\CommandReceiverInterface $receiver)
     {
         $this->receiver = $receiver;
         return $this;

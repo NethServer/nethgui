@@ -31,7 +31,11 @@ class XhtmlTest extends \PHPUnit_Framework_TestCase
             ->method('getModule')
             ->will($this->returnValue($moduleMock));
 
-        $this->object = new \Nethgui\Renderer\Xhtml($view, array($this, 'templateResolverCallback'));
+       $delegatedCommandReceiver = $this->getMockBuilder('\Nethgui\Core\CommandReceiverInterface')
+            ->setMethods(array('executeCommand'))
+            ->getMock();
+
+        $this->object = new \Nethgui\Renderer\Xhtml($view, array($this, 'templateResolverCallback'), 0, $delegatedCommandReceiver);
     }
 
     public function templateResolverCallback($templateName)
@@ -206,7 +210,7 @@ class XhtmlTest extends \PHPUnit_Framework_TestCase
     public function testGetCommandReceiver()
     {
         $type = 'Nethgui\Core\CommandReceiverInterface';
-        $o = $this->object->getCommandReceiver();
+        $o = $this->object->getDelegatedCommandReceiver();
         $this->assertInstanceOf($type, $o);
     }
 

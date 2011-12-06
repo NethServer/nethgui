@@ -46,4 +46,28 @@ class GlobalFunctionWrapper
         exit($code);
     }
 
+    public function phpCreateInstance($className, $constructorArgs)
+    {
+        $r = new \ReflectionClass($className);
+        return $r->newInstanceArgs($constructorArgs);
+    }
+
+    public function phpReadGlobalVariable($varName, $varIndex = NULL)
+    {        
+        if (isset($varIndex)) {
+            return isset($GLOBALS[$varName], $GLOBALS[$varName][$varIndex]) ? $GLOBALS[$varName][$varIndex] : NULL;
+        }
+
+        return isset($GLOBALS[$varName]) ? $GLOBALS[$varName] : NULL;
+    }
+
+    public function phpWriteGlobalVariable($value, $varName, $varIndex = NULL)
+    {
+        if (isset($varIndex)) {
+            $GLOBALS[$varName][$varIndex] = $value;
+        } else {
+            $GLOBALS[$varName] = $value;
+        }
+    }
+
 }

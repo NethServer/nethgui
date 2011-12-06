@@ -2,6 +2,9 @@
     $currentModule =  $view['CurrentModule']->getModule();
     $moduleTitle = $view->getTranslator()->translate($currentModule, $currentModule->getAttributesProvider()->getTitle());
     $pageTitle = $view['company'] . " - " . $moduleTitle;
+
+    // Must render CurrentModule before NotificationArea to catch notifications
+    $currentModuleOutput = (String) $view->inset('CurrentModule');
 ?><!DOCTYPE html>
 <html lang="<?php echo $view['lang'] ?>">
     <head>
@@ -18,8 +21,8 @@
 
             <div id="pageContent">
                 <div class="primaryContent" role="mainTask">
-                    <div class="<?php echo $view['CurrentModule']->getModule()->getIdentifier(); ?> CurrentModule"><?php echo $view->inset('CurrentModule') ?></div>
-                    <div id='footer'><?php echo htmlspecialchars($view['company']." - ".$view['address']); ?></div>
+                    <div class="<?php echo $currentModule->getIdentifier(); ?> CurrentModule"><?php echo $currentModuleOutput ?></div>
+                    <div id='footer'><?php echo htmlspecialchars($view['company'] . " - " . $view['address']); ?></div>
                 </div>
 
                 <div class="secondaryContent" role="otherTask">
@@ -34,6 +37,7 @@
                     <div id="HelpAreaInnerDocument"></div>
                 </div>
             </div>
+            
         </div>       
     </body>
 </html>

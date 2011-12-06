@@ -30,6 +30,10 @@ namespace Nethgui\Core;
  * - Adapter objects
  * - Other objects implementing AdapterAggregationInterface
  *
+ * @todo Move into \Nethgui\Adapter namespace
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @internal
  */
 class ParameterSet implements \Nethgui\Adapter\AdapterAggregationInterface, \ArrayAccess, \Iterator, \Countable
 {

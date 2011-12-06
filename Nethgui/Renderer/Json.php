@@ -23,8 +23,20 @@ namespace Nethgui\Renderer;
 /**
  * Transform a view in a json string
  */
-class Json extends AbstractRenderer
+class Json extends AbstractRenderer implements \Nethgui\Core\DelegatingCommandReceiverInterface
 {
+
+    /**
+     *
+     * @var \Nethgui\Core\CommandReceiverInterface
+     */
+    private $receiverDelegate;
+
+    public function __construct(\Nethgui\Core\ViewInterface $view, \Nethgui\Core\CommandReceiverInterface $receiverDelegate)
+    {
+        parent::__construct($view);
+        $this->receiverDelegate = $receiverDelegate;
+    }
 
     private function deepWalk(&$events, &$commands)
     {
@@ -33,12 +45,13 @@ class Json extends AbstractRenderer
             $eventTarget = $this->getClientEventTarget($offset);
             if ($value instanceof \Nethgui\Core\ViewInterface) {
                 if ( ! $value instanceof Json) {
-                    $value = new Json($value);
+                    $value = new Json($value, $this);
                 }
                 $value->deepWalk($events, $commands);
                 continue;
             } elseif ($value instanceof \Nethgui\Core\CommandInterface) {
-                $commands[] = $value->setReceiver(new JsonReceiver($this->view, $offset))->execute();
+                $receiver = new JsonReceiver($this->view, $offset, $this);
+                $commands[] = $value->setReceiver($receiver)->execute();
                 continue;
             } elseif ($value instanceof \Traversable) {
                 $eventData = $this->traversableToArray($value);
@@ -80,12 +93,22 @@ class Json extends AbstractRenderer
         return json_encode($events);
     }
 
+    public function executeCommand($name, $arguments)
+    {
+        return $this->getDelegatedCommandReceiver()->executeCommand($name, $arguments);
+    }
+
+    public function getDelegatedCommandReceiver()
+    {
+        return $this->receiverDelegate;
+    }
+
 }
 
 /**
  * Prepare Command invocations for the client-side framework
  */
-class JsonReceiver implements \Nethgui\Core\CommandReceiverInterface
+class JsonReceiver implements \Nethgui\Core\DelegatingCommandReceiverInterface
 {
 
     private $offset;
@@ -96,10 +119,21 @@ class JsonReceiver implements \Nethgui\Core\CommandReceiverInterface
      */
     private $view;
 
-    public function __construct(\Nethgui\Core\ViewInterface $view, $offset)
+    /**
+     * @var \Nethgui\Core\CommandReceiverInterface
+     */
+    private $delegatedReceiver;
+
+    public function __construct(\Nethgui\Core\ViewInterface $view, $offset, \Nethgui\Core\CommandReceiverInterface $delegatedReceiver)
     {
         $this->view = $view;
         $this->offset = $offset;
+        $this->delegatedReceiver = $delegatedReceiver;
+    }
+
+    public function getDelegatedCommandReceiver()
+    {
+        return $this->delegatedReceiver;
     }
 
     public function executeCommand($name, $arguments)
@@ -130,6 +164,31 @@ class JsonReceiver implements \Nethgui\Core\CommandReceiverInterface
             }
 
             $arguments = $tmp;
+        } elseif ($name == 'showDialogBox') {
+            $receiver = '#NotificationArea';
+            $name = 'addNotification';
+
+            $dialogBox = $arguments[0];
+            $arguments = array();
+
+            if ($dialogBox instanceof \Nethgui\Client\DialogBox) {
+                $message = $dialogBox->getMessage();
+                $arguments[0] = array(
+                    'message' => $this->view->getTranslator()->translate($dialogBox->getModule(), $message[0], $message[1]),
+                    'actions' => $dialogBox->getActions(),
+                    'transient' => $dialogBox->isTransient(),
+                    'type' => $dialogBox->getType(),
+                    'dialogId' => $dialogBox->getId(),
+                    'errors' => array(),
+                );
+            }
+
+            $this->getDelegatedCommandReceiver()->executeCommand($name, $arguments);
+
+        } elseif ($name == 'dismissDialogBox') {
+
+            $this->getDelegatedCommandReceiver()->executeCommand($name, $arguments);
+
         } elseif ($name == 'debug' || $name == 'alert') {
             $receiver = '';
         } else {
@@ -138,6 +197,9 @@ class JsonReceiver implements \Nethgui\Core\CommandReceiverInterface
 
         return $this->commandForClient($receiver, $name, $arguments);
     }
+
+
+
 
     private function commandForClient($receiver, $name, $arguments)
     {

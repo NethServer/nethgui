@@ -21,6 +21,11 @@ namespace Nethgui\Core;
  */
 
 /**
+ * Implement command(s) semantics
+ *
+ * @see http://en.wikipedia.org/wiki/Command_pattern
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
  */
 interface CommandReceiverInterface
 {

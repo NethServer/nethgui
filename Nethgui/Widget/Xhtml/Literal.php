@@ -46,8 +46,8 @@ class Literal extends \Nethgui\Widget\XhtmlWidget
             $valueFlags = 0;
         }
 
-        if ($value instanceof \Nethgui\Core\ViewInterface && $this->view instanceof \Nethgui\Core\CommandReceiverAggregateInterface) {
-            $value = new \Nethgui\Renderer\Xhtml($value, $this->view->getTemplateResolver(), $valueFlags, $this->view->getCommandReceiver());
+        if ($value instanceof \Nethgui\Core\ViewInterface && $this->view instanceof \Nethgui\Core\CommandReceiverInterface) {
+            $value = new \Nethgui\Renderer\Xhtml($value, $this->view->getTemplateResolver(), $valueFlags, $this->view);
         }
 
         $content = (String) $value;

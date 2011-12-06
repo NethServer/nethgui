@@ -25,6 +25,10 @@ use Nethgui\Core\ModuleDescriptorInterface;
 use Nethgui\Log\LogConsumerInterface;
 
 /**
+ *
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @api
  */
 abstract class AbstractModule implements ModuleInterface, LogConsumerInterface, DefaultUiStateInterface
 {
@@ -163,6 +167,7 @@ abstract class AbstractModule implements ModuleInterface, LogConsumerInterface, 
     protected function setViewTemplate($template)
     {
         $this->viewTemplate = $template;
+        return $this;
     }
 
     protected function getViewTemplate()

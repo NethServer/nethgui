@@ -22,7 +22,13 @@ namespace Nethgui\Core;
 
 /**
  * Each module receives a view object in prepareView() operation. A view
- * contains generic elements such as strings, numbers or other (inner) views.
+ * contains three types of elements:
+ *
+ * - primitive types (int, string, array, boolean..)
+ *
+ * - ViewInterface
+ *
+ * - CommandInterface
  *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0

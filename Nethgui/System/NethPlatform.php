@@ -56,7 +56,15 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
     private $globalFunctionWrapper;
 
     /**
-     * We must specify who acts on host configuration.
+     * Traced processes
+     * @var \ArrayObject
+     */
+    private $processes;
+
+    /**
+     * We must specify who acts on host configuration for authorization purposes
+     * and to track the processes (s)he starts.
+     *
      * @param \Nethgui\Client\UserInterface $user
      */
     public function __construct(\Nethgui\Client\UserInterface $user)
@@ -64,6 +72,17 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
         $this->user = $user;
         $this->eventQueue = array();
         $this->log = new \Nethgui\Log\Syslog();
+
+        $session = $user->getSession();
+
+        $key = get_class($this);
+
+        // check for process session storage initialization:
+        if ( ! $session->hasElement($key)) {
+            $session->store($key, new \ArrayObject());
+        }
+
+        $this->processes = $session->retrieve($key);
     }
 
     /**
@@ -155,7 +174,7 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
      */
     public function signalEvent($event, $arguments = array())
     {
-        array_unshift($arguments, $event);        
+        array_unshift($arguments, $event);
         return $this->exec('/usr/bin/sudo /sbin/e-smith/signal-event ${@}', $arguments);
     }
 
@@ -249,6 +268,7 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
     {
         if ($detached) {
             $commandObject = new ProcessDetached($command, $arguments);
+            $this->traceProcess($commandObject);
         } else {
             $commandObject = new Process($command, $arguments);
         }
@@ -285,4 +305,32 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
     {
         $this->globalFunctionWrapper = $object;
     }
+
+    private function traceProcess(\Nethgui\System\ProcessInterface $process)
+    {
+        $this->processes[] = $process;
+        return $this;
+    }
+
+    public function getDetachedProcesses()
+    {
+        return $this->processes->getArrayCopy();
+    }
+
+    public function getDetachedProcess($identifier)
+    {
+        // scan the process list 
+        foreach ($this->processes as $process) {
+            if ($process->getIdentifier() == $identifier) {
+                return $process;
+            }
+        }
+        return FALSE;
+    }
+
+    public function __destruct()
+    {
+        // TODO: scan the process list and remove long-exited processes.
+    }
+
 }

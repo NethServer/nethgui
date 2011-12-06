@@ -83,7 +83,7 @@ class ModuleTestCase extends \PHPUnit_Framework_TestCase
         }
 
 
-        $processInterfaceMethods = array('getOutput', 'getExitStatus', 'getOutputArray', 'isExecuted', 'exec', 'addArgument', 'kill', 'readOutput', 'readExecutionState');
+        $processInterfaceMethods = array('getOutput', 'getExitStatus', 'getOutputArray', 'isExecuted', 'exec', 'addArgument', 'kill', 'readOutput', 'readExecutionState', 'setIdentifier', 'getIdentifier', 'getTimes');
 
         foreach ($env->getEvents() as $eventExp) {
             if (is_string($eventExp)) {
@@ -194,9 +194,9 @@ class ModuleTestCase extends \PHPUnit_Framework_TestCase
 
     protected function createValidationReportMock(ModuleTestEnvironment $env)
     {
-        $reportMock = $this->getMockBuilder('Nethgui\Module\NotificationArea')
+        $reportMock = $this->getMockBuilder('Nethgui\Core\ValidationReportInterface')
             ->setConstructorArgs(array($this->createUserMock($env)))
-            ->setMethods(array('addValidationError'))
+            ->setMethods(array('addValidationError', 'addValidationErrorMessage', 'hasValidationErrors'))
             ->getMock();
 
         // Check addError() is never called.
@@ -205,6 +205,11 @@ class ModuleTestCase extends \PHPUnit_Framework_TestCase
         $reportMock->expects($this->never())
             ->method('addValidationError')
             ->withAnyParameters();
+
+        $reportMock->expects($this->any())
+            ->method('hasValidationErrors')
+            ->withAnyParameters()
+            ->will($this->returnValue(FALSE));
 
         return $reportMock;
     }

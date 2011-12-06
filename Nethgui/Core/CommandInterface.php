@@ -21,7 +21,7 @@ namespace Nethgui\Core;
  */
 
 /**
- * Invoke a Nethgui javascript method on the client-side.
+ * Execute some code on an unknown/unspecified object
  *
  * Applies Command pattern
  *
@@ -31,6 +31,9 @@ namespace Nethgui\Core;
  * - Receiver, a Widget or the client-side javascript components.
  *
  * @see http://en.wikipedia.org/wiki/Command_pattern
+ *
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
  */
 interface CommandInterface
 {
@@ -50,11 +53,10 @@ interface CommandInterface
      * Set the command receiver, the object where the command is executed
      *
      * @param object An object implementing either CommandReceiverInterface or \Nethgui\Client\CommandReceiverAggregateInterface
-     * @see CommandReceiverInterface
-     * @see \Nethgui\Client\CommandReceiverAggregateInterface
+     * @see \Nethgui\Core\CommandReceiverInterface
      * @return CommandInterface
      */
-    public function setReceiver($receiver);
+    public function setReceiver(\Nethgui\Core\CommandReceiverInterface $receiver);
 
     /**
      * @see execute()

@@ -25,7 +25,9 @@ namespace Nethgui\Core\Module;
  * 
  * Inheriting classes must define the composition behaviour.
  * 
- *
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @api
  * @see Controller
  * @see List
  */
@@ -57,15 +59,19 @@ abstract class Composite extends AbstractModule implements \Nethgui\Core\ModuleC
      */
     public function addChild(\Nethgui\Core\ModuleInterface $childModule)
     {
-        if ( ! isset($this->children[$childModule->getIdentifier()])) {
-            $this->children[$childModule->getIdentifier()] = $childModule;
-            $childModule->setParent($this);
-            if ($this->getPlatform() !== NULL) {
-                $childModule->setPlatform($this->getPlatform());
-            }
-            if ($this->isInitialized() && ! $childModule->isInitialized()) {
-                $childModule->initialize();
-            }
+        if (isset($this->children[$childModule->getIdentifier()])) {
+            throw new \LogicException(sprintf('%s: the module identifier "%s" is already registered as child!', get_class($this), $childModule->getIdentifier()), 1322818691);
+        }
+        
+        $this->children[$childModule->getIdentifier()] = $childModule;
+
+        $childModule->setParent($this);
+        if ($this->getPlatform() !== NULL) {
+            $childModule->setPlatform($this->getPlatform());
+        }
+        
+        if ($this->isInitialized() && ! $childModule->isInitialized()) {
+            $childModule->initialize();
         }
     }
 
@@ -121,10 +127,8 @@ abstract class Composite extends AbstractModule implements \Nethgui\Core\ModuleC
 
     protected function loadChildrenFromPath($path)
     {
-        throw new \LogicException(sprintf('%s: %s() is not Implemented', get_class($this),  __FUNCTION__), 1322148901);
+        throw new \LogicException(sprintf('%s: %s() is not Implemented', get_class($this), __FUNCTION__), 1322148901);
     }
-
-
 
 }
 

@@ -43,7 +43,11 @@ class JsonTest extends \PHPUnit_Framework_TestCase
 
         $module->prepareView($view, 0);
 
-        $this->object = new \Nethgui\Renderer\Json($view);
+       $delegatedCommandReceiver = $this->getMockBuilder('\Nethgui\Core\CommandReceiverInterface')
+            ->setMethods(array('executeCommand'))
+            ->getMock();
+
+        $this->object = new \Nethgui\Renderer\Json($view, $delegatedCommandReceiver);
     }
 
     public function testRender()

@@ -23,7 +23,10 @@ namespace Nethgui\Core\Module;
 /**
  * A Standard Module connects the Configuration Database and the View layer,
  * performing data validation and processing.
- *
+ * 
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @api
  */
 abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestHandlerInterface, \Nethgui\System\EventObserverInterface
 {
@@ -185,6 +188,12 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
     private $request;
 
     /**
+     * Keeps arguments to show dialog boxes in prepareView
+     * @var array
+     */
+    private $dialogBoxes = array();
+
+    /**
      * @param string $identifier
      */
     public function __construct($identifier = NULL)
@@ -273,34 +282,14 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
         }
 
         if ($exitStatus === FALSE) {
-            $type = \Nethgui\Client\DialogBox::NOTIFY_ERROR;
+            $type = \Nethgui\Core\CommandFactoryInterface::NOTIFY_ERROR;
             $messageTemplate = $eventName . '_failure';
         } else {
-            $type = \Nethgui\Client\DialogBox::NOTIFY_SUCCESS;
+            $type = \Nethgui\Core\CommandFactoryInterface::NOTIFY_SUCCESS;
             $messageTemplate = $eventName . '_success';
         }
 
-        $actions = $this->prepareDialogBoxActions($eventName, $args, $exitStatus, $output, $type);
-
-        $this->getRequest()->getUser()->showDialogBox($this, array($messageTemplate, $messageArgs), $actions, $type);
-    }
-
-    /**
-     * This method receives the same arguments given to notifyEventCompletion()
-     * and should return the action definitions to display a dialog box.
-     *
-     * @see \Nethgui\System\EventObserverInterface::notifyEventCompletion
-     * @see \Nethgui\Client\DialogBox
-     * @param string $eventName
-     * @param array $args
-     * @param boolean $exitStatus
-     * @param array $output
-     * @param &integer $type Output parameter to change the dialog box type
-     * @return array
-     */
-    protected function prepareDialogBoxActions($eventName, $args, $exitStatus, $output, &$type)
-    {
-        return array();
+        $this->dialogBoxes[] = array(array($messageTemplate, $messageArgs), array(), $type);
     }
 
     /**
@@ -394,6 +383,9 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
      */
     protected function createValidator()
     {
+        if ( ! $this->getPlatform() instanceof \Nethgui\System\PlatformInterface) {
+            throw new \UnexpectedValueException(sprintf('%s: the platform instance has not been set!', get_class($this)), 1322822430);
+        }
         return $this->getPlatform()->createValidator();
     }
 
@@ -489,6 +481,9 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
     {
         parent::prepareView($view, $mode);
         $view->copyFrom($this->parameters);
+        foreach ($this->dialogBoxes as $dialogArgs) {
+            $view[] = $view->getCommandFactory()->showDialogBox($dialogArgs[0], $dialogArgs[1], $dialogArgs[2]);
+        }
         if ($mode === self::VIEW_SERVER) {
             $view['__invalidParameters'] = $this->invalidParameters;
         }

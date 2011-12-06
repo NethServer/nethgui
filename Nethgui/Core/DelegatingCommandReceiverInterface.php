@@ -21,15 +21,16 @@ namespace Nethgui\Core;
  */
 
 /**
- * Allows forwarding of command execution to another object
+ * An object can delegate another object to receive commands
  *
- * @see getCommandReceiver()
+ * @see http://en.wikipedia.org/wiki/Command_pattern
+ * @see \Nethgui\Core\CommandReceiverInterface
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-interface CommandReceiverAggregateInterface
+interface DelegatingCommandReceiverInterface extends CommandReceiverInterface
 {
     /**
-     * @return CommandReceiverInterface
+     * @return \Nethgui\Core\CommandReceiverInterface
      */
-    public function getCommandReceiver();
+    public function getDelegatedCommandReceiver();
 }

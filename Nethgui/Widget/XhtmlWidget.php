@@ -25,6 +25,14 @@ namespace Nethgui\Widget;
  */
 abstract class XhtmlWidget extends AbstractWidget
 {
+    /**
+     *
+     * @return \Nethgui\Renderer\Xhtml
+     */
+    protected function getRenderer()
+    {
+        return $this->view;
+    }
 
     /**
      * Push a LABEL tag

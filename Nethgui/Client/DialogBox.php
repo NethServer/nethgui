@@ -34,69 +34,68 @@ namespace Nethgui\Client;
  */
 class DialogBox implements \Serializable
 {
-    const NOTIFY_SUCCESS = 0x0;
-    const NOTIFY_WARNING = 0x1;
-    const NOTIFY_ERROR = 0x2;
-    const MASK_SEVERITY = 0x3;
 
-    const NOTIFY_MODAL = 0x4;
-   
     private $message;
     private $type;
     private $actions;
     private $module;
     private $id;
     private $transient;
+    private $dismissed;
 
-    public function __construct(\Nethgui\Core\ModuleInterface $module, $message, $actions = array(), $type = self::NOTIFY_SUCCESS)
+    public function __construct(\Nethgui\Core\ModuleInterface $module, $message, $actions = array(), $type = \Nethgui\Core\CommandFactoryInterface::NOTIFY_SUCCESS)
     {
         if ( ! $module instanceof ModuleSurrogate) {
             $module = new ModuleSurrogate($module);
         }
 
         // Sanitize the $message parameter: must be a couple <string, params[]>
-        if(!is_array($message)) {
+        if ( ! is_array($message)) {
             $message = array($message, array());
         }
 
         $this->module = $module;
         $this->actions = $this->sanitizeActions($actions);
         $this->message = $message;
-        $this->type = $type;        
+        $this->type = $type;
+        $this->dismissed = FALSE;
     }
 
-    private function sanitizeActions($actions) {
+    private function sanitizeActions($actions)
+    {
         $sanitizedActions = array();
-        
-        foreach($actions as $action) {
-            if(is_string($action)) {
+
+        foreach ($actions as $action) {
+            if (is_string($action)) {
                 $action = array($action, '', array());
             }
-            
-            if(!isset($action[1])) {
+
+            if ( ! isset($action[1])) {
                 $action[1] = '';
             }
-            
-            if(!isset($action[2])) {
+
+            if ( ! isset($action[2])) {
                 $action[2] = array();
             }
 
             // An action with submit data causes the dialog to be persistent
-            if(!empty($action[2]) && is_null($this->transient)) {
+            if ( ! empty($action[2]) && is_null($this->transient)) {
                 $this->transient = FALSE;
             }
-            
+
             $sanitizedActions[] = $action;
         }
-        
+
         return $sanitizedActions;
     }
 
-    public function getModule() {
+    public function getModule()
+    {
         return $this->module;
     }
-    
-    public function getActions() {        
+
+    public function getActions()
+    {
         return $this->actions;
     }
 
@@ -117,8 +116,8 @@ class DialogBox implements \Serializable
 
     public function getId()
     {
-        if (is_null($this->id)) {            
-            $this->id = 'dlg' . substr(md5($this->serialize()), 0, 6);
+        if (is_null($this->id)) {
+            $this->id = 'dlg' . substr(md5($this->serialize() . microtime()), 0, 6);
         }
 
         return $this->id;
@@ -126,13 +125,36 @@ class DialogBox implements \Serializable
 
     public function serialize()
     {
-        return serialize(array($this->message, $this->actions, $this->type, $this->module, $this->id, $this->transient));
+        return serialize(array($this->message, $this->actions, $this->type, $this->module, $this->id, $this->transient, $this->dismissed));
     }
 
     public function unserialize($serialized)
     {
         $args = unserialize($serialized);
-        list($this->message, $this->actions, $this->type, $this->module, $this->id, $this->transient) = $args;
+        list($this->message, $this->actions, $this->type, $this->module, $this->id, $this->transient, $this->dismissed) = $args;
     }
 
+    public function dismiss()
+    {
+        $this->dismissed = TRUE;
+    }
+
+    public function isDismissed()
+    {
+        return $this->dismissed === TRUE;
+    }
+
+//    public function asArray(\Nethgui\Core\TranslatorInterface $translator)
+//    {
+//        $a = array();
+//
+//        $a['dialogId'] = $this->getId();
+//        $a['type'] = $this->getType();
+//        $a['transient'] = $this->isTransient();
+//        $message = $this->getMessage();
+//        $a['message'] = $translator->translate($this->getModule(), $message[0], $message[1]);
+//        $a['actions'] = $this->getActions();
+//
+//        return $a;
+//    }
 }

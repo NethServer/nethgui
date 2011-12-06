@@ -27,7 +27,7 @@ namespace Nethgui;
  * class, invoking the setter methods and catching the output from the dispatch()
  * method.
  *
- * @see dispatch()
+ * @see #dispatch(Core\RequestInterface $request)
  * @api
  */
 class Framework
@@ -118,13 +118,11 @@ class Framework
      *
      * For instance, an "Acme" namespace should have the following directory/package structure
      *
-     * <pre>
-     * Acme
-     *   Module
-     *   Template
-     *   Language
-     *   Help
-     * </pre>
+     * - Acme
+     *   - Module
+     *   - Template
+     *   - Language
+     *   - Help
      *
      * Note: classes and interfaces from a registered namespace are autoloaded.
      * 
@@ -219,10 +217,13 @@ class Framework
     }
 
     /**
+     * Translate a namespaced classifier (interface, class) or a namespaced-script-name
+     * into a filesystem path.
+     *
      * This is equivalent to the autoloader() function
      *
-     * @example Nethgui_Template_Help
-     * @param string $symbol A "namespace" script file name (without .php extension)
+     * @example Nethgui_Template_Help is converted into /abs/path/Nethgui/Template/Help.php
+     * @param string $symbol A "namespace" classifier or script file name (without .php extension)
      * @return string The absolute script path of $symbol
      */
     public function absoluteScriptPath($symbol)
@@ -261,97 +262,30 @@ class Framework
      * @param array $arguments
      */
     public function dispatch(Core\RequestInterface $request)
-    {
-        $moduleLoader = new Core\ModuleLoader($this->namespaceMap);
-
+    {        
         /*
-         * TODO: enforce some security policy on Models
+         * TODO: redirect
          */
-        $pdp = new Authorization\PermissivePolicyDecisionPoint();
-
-        $currentModuleIdentifier = array_head($request->getArguments());
-
-        if (empty($currentModuleIdentifier)) {
-            $currentModuleIdentifier = $this->defaultModuleIdentifier;
+        if (array_head($request->getArguments()) === FALSE) {
+            die("TODO: redirect to default module");
         }
 
+        // TODO: enforce some security policy on Models
+        $pdp = new Authorization\PermissivePolicyDecisionPoint();
         $user = $request->getUser();
+        $session = $user->getSession();
+        $moduleLoader = new Core\ModuleLoader($this->namespaceMap);
 
         $platform = new System\NethPlatform($user);
         $platform->setPolicyDecisionPoint($pdp);
+      
+        $notificationManager = new Core\NotificationManager($session);
 
-        $modules = array();
-
-        if ($request->isSubmitted()) {
-            // Multiple modules can be called in the same POST request.
-            $moduleWakeupList = $request->getParameters();
-        } else {
-            $moduleWakeupList = array();
-        }
-
-        // Ensure the current module is the first of the list (as required by World Module):
-        array_unshift($moduleWakeupList, $currentModuleIdentifier);
-        $moduleWakeupList = array_unique($moduleWakeupList);
-
-        // Instantiate the NotificationArea:
-        $notificationManager = new Module\NotificationArea($user);
-        $notificationManager->setPlatform($platform);
-        $notificationManager->initialize();
-
-        // Instantiate the decorator module:
-        $worldModule = new Module\World();
-        $worldModule->setPlatform($platform);
-
-        $translator = new Language\Translator($user, $platform->getLog(), array($this, 'absoluteScriptPath'), array_keys($this->namespaceMap));
-        $view = new Client\View($worldModule, $translator, $this->siteUrl, $this->basePath, 'index.php');
-
-        try {
-            foreach ($moduleWakeupList as $moduleIdentifier) {
-                $module = $moduleLoader->getModule($moduleIdentifier);
-                $module->setPlatform($platform);
-                if ( ! $module->isInitialized()) {
-                    $module->initialize();
-                }
-
-                $worldModule->addChild($module);
-
-                if ( ! $module instanceof Core\RequestHandlerInterface) {
-                    continue;
-                }
-
-                // Pass request parameters to the handler
-                $module->bind(
-                    $request->getParameterAsInnerRequest(
-                        $moduleIdentifier, ($moduleIdentifier === $currentModuleIdentifier) ? array_rest($request->getArguments()) : array()
-                    )
-                );
-
-                // Validate request
-                $module->validate($notificationManager);
-
-                // From now on, skip process() step, if any $module has added some validation errors.
-                if ($notificationManager->hasValidationErrors()) {
-                    continue;
-                }
-
-                $module->process();
-            }
-        } catch (Exception\HttpException $ex) {
-            $statusCode = intval($ex->getHttpStatusCode());
-            if ($statusCode >= 400 && $statusCode < 600) {
-                $this->httpError($statusCode, $ex->getMessage(), $statusCode . ': ' . $ex->getMessage());
-            } else {
-                $this->httpError(500, 'Server error', sprintf('Original status %d, %s', $statusCode, $ex->getMessage()));
-            }
-        } catch (Exception $ex) {
-            // TODO - validate $ex->getCode(): is it a valid HTTP status code?
-            throw $ex;
-        }
-
-        $worldModule->addChild($notificationManager);
-
-        // Finally, signal "final" events (see #506)
-        $platform->signalFinalEvents();
+        $mainModule = new Module\Main($this->decoratorTemplate, $moduleLoader, $notificationManager);
+        $mainModule->setPlatform($platform);
+        $mainModule->initialize();
+        $mainModule->bind($request);
+        $mainModule->validate($notificationManager);
 
         // Validation error http status.
         // See RFC2616, section 10.4 "Client Error 4xx"
@@ -359,28 +293,33 @@ class Framework
             // FIXME: check if we are in FAST-CGI module:
             // @see http://php.net/manual/en/function.header.php
             header("HTTP/1.1 400 Request validation error");
+        } else {
+            $mainModule->process();
+            // Finally, signal "final" events (see #506)
+            $platform->signalFinalEvents();
         }
+
+        // Instantiate the string language translator:
+        $translator = new Language\Translator($user, $platform->getLog(), array($this, 'absoluteScriptPath'), array_keys($this->namespaceMap));
+
+        // Instantiate the MAIN view:
+        $mainView = new Client\View($mainModule, $translator, $this->siteUrl, $this->basePath, 'index.php');
 
         // Prepare the views and render into Xhtml or Json
         if ($request->getContentType() === Core\RequestInterface::CONTENT_TYPE_HTML) {
-            $menuModule = new Module\Menu();
-            $menuModule
-                ->setPlatform($platform)
-                ->setCurrentModuleIdentifier($currentModuleIdentifier)
-                ->setModuleSet($moduleLoader)
-                ->initialize();
-
-            $worldModule->addChild($menuModule);
-
-            $worldModule->prepareView($view, Core\ModuleInterface::VIEW_SERVER);
-            header("Content-Type: text/html; charset=UTF-8");
-            echo new Renderer\Xhtml($view, array($this, 'absoluteScriptPath'), 0, new Core\LoggingCommandReceiver());
+            $mainModule->prepareView($mainView, Core\ModuleInterface::VIEW_SERVER);
+            $output = strval(new Renderer\Xhtml($mainView, array($this, 'absoluteScriptPath'), 0, $notificationManager));
+            $contentType = "Content-Type: text/html; charset=UTF-8";
+            
         } elseif ($request->getContentType() === Core\RequestInterface::CONTENT_TYPE_JSON) {
-            $worldModule->prepareView($view, Core\ModuleInterface::VIEW_CLIENT);
-            header("Content-Type: application/json; charset=UTF-8");
-            echo new Renderer\Json($view);
+            $mainModule->prepareView($mainView, Core\ModuleInterface::VIEW_CLIENT);           
+            $output = strval(new Renderer\Json($mainView, $notificationManager));
+            $contentType = "Content-Type: application/json; charset=UTF-8";
         }
-        $notificationManager->dismissTransientDialogBoxes();
+
+        header("HTTP/1.1 200 Success");
+        header($contentType);
+        echo $output;
     }
 
     /**
@@ -457,9 +396,8 @@ class Framework
             $contentType = Core\RequestInterface::CONTENT_TYPE_HTML;
         }
 
-
         // TODO: retrieve user state from Session
-        $user = new Client\AlwaysAuthenticatedUser();
+        $user = new Client\AlwaysAuthenticatedUser(new Client\Session());
 
         $instance = new Client\Request($user, $data, $submitted, $pathInfo, array(
                 'XML_HTTP_REQUEST' => $isXmlHttpRequest,
@@ -477,22 +415,41 @@ class Framework
 }
 
 /*
+ * Framework global symbols
+ */
+
+/*
  * NETHGUI_ENABLE_TARGET_HASH: if set to TRUE pass client names through an hash function
  */
 if ( ! defined('NETHGUI_ENABLE_TARGET_HASH')) {
     define('NETHGUI_ENABLE_TARGET_HASH', FALSE);
 }
 
+/**
+ *
+ * @param array $arr
+ * @return mixed The first element of the array or FALSE if the array is empty
+ */
 function array_head($arr)
 {
     return reset($arr);
 }
 
+/**
+ *
+ * @param array $arr
+ * @return mixed The last element of the array or FALSE if the array is empty
+ */
 function array_end($arr)
 {
     return end($arr);
 }
 
+/**
+ *
+ * @param array $arr
+ * @return array A new array corresponding to the original without the head element
+ */
 function array_rest($arr)
 {
     array_shift($arr);

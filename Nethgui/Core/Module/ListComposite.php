@@ -26,6 +26,9 @@ namespace Nethgui\Core\Module;
  * A List executes no action. It forwards each call to its subparts. 
  *
  * @see Composite
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @api
  */
 class ListComposite extends Composite implements \Nethgui\Core\RequestHandlerInterface
 {
@@ -44,14 +47,14 @@ class ListComposite extends Composite implements \Nethgui\Core\RequestHandlerInt
     public function bind(\Nethgui\Core\RequestInterface $request)
     {
         $arguments = $request->getArguments();
-        $submodule = array_shift($arguments);
+        $submodule = \Nethgui\array_head($arguments);
         foreach ($this->getChildren() as $module) {
 
             if ($submodule == $module->getIdentifier()) {
                 // Forward arguments to submodule:
-                $module->bind($request->getParameterAsInnerRequest($submodule, $arguments));
+                $module->bind($request->getParameterAsInnerRequest($submodule, \Nethgui\array_rest($arguments)));
             } else {
-                $module->bind($request->getParameterAsInnerRequest($module->getIdentifier()));
+                $module->bind($request->getParameterAsInnerRequest($submodule));
             }
         }
     }

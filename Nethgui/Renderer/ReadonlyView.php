@@ -156,4 +156,9 @@ class ReadonlyView implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsu
     {
         return $this->view->getSiteUrl();
     }
+
+    public function getCommandFactory()
+    {
+        return $this->view->getCommandFactory();
+    }
 }

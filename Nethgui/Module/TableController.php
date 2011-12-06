@@ -29,6 +29,9 @@ namespace Nethgui\Module;
  *
  * @see Table\Modify
  * @see Table\Read
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @api
  */
 class TableController extends \Nethgui\Core\Module\Controller 
 {

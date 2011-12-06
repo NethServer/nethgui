@@ -31,11 +31,11 @@ abstract class AbstractWidget implements \Nethgui\Renderer\WidgetInterface, \Net
     private $attributes = array();
 
     /**
-     * @var \Nethgui\Renderer\Xhtml
+     * @var \Nethgui\Core\ViewInterface
      */
     protected $view;
 
-    public function __construct(\Nethgui\Renderer\Xhtml $view)
+    public function __construct(\Nethgui\Core\ViewInterface $view)
     {
         $this->view = $view;
         self::$instance ++;
