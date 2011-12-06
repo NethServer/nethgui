@@ -72,6 +72,8 @@ class Menu extends \Nethgui\Core\Module\Standard
         $categories = array();
         $translator = $view->getTranslator();
 
+        $categoryOrder = array_flip(array_map('trim', explode(',', $view->translate('Category_Order'))));
+
         foreach ($this->moduleSet as $moduleIdentifier => $moduleInstance) {
             if ( ! $moduleInstance instanceof \Nethgui\Core\ModuleInterface) {
                 continue;
@@ -118,14 +120,16 @@ class Menu extends \Nethgui\Core\Module\Standard
             usort($category['items'], array($this, 'sortItems'));
         }
 
-        usort($categories, array($this, 'sortCategories'));
+        usort($categories, function($c, $d) use ($categoryOrder) {
+
+                if (isset($categoryOrder[$c['key']], $categoryOrder[$d['key']])) {
+                    return $categoryOrder[$c['key']] - $categoryOrder[$d['key']];
+                }
+
+                return strcmp($c['title'], $d['title']);
+            });
 
         $view['categories'] = $categories;
-    }
-
-    public function sortCategories($c, $d)
-    {
-        return strcmp($c['title'], $d['title']);
     }
 
     public function sortItems($a, $b)
