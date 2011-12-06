@@ -60,9 +60,51 @@ class Menu extends \Nethgui\Core\Module\Standard
         return $this;
     }
 
+    public function initialize()
+    {
+        parent::initialize();
+        $this->declareParameter('search', self::VALID_ANYTHING);
+    }
+
+    private function searchTags(\Nethgui\Core\ViewInterface $view, $query)
+    {
+        if (is_null($this->moduleSet)) {
+            return array();
+        }
+
+        $translator = $view->getTranslator();
+        $results = array();
+
+        foreach ($this->moduleSet as $module) {
+            if ( ! $module instanceof \Nethgui\Core\ModuleInterface) {
+                continue;
+            }
+
+            if ( ! $module->isInitialized()) {
+                $module->setPlatform($this->getPlatform());
+                $module->initialize();
+            }
+
+            $tags = array_map('trim', explode(' ', $module->getAttributesProvider()->getTags()));
+
+            foreach ($tags as $tag) {
+                $tagTranslated = $translator->translate($module, $tag);
+                if (stripos($tagTranslated, $query) !== FALSE) {
+                    $results[] = $view->getModuleUrl('/' . $module->getIdentifier());
+                }
+            }
+        }
+
+        return $results;
+    }
+
     public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
     {
         if ($mode === self::VIEW_CLIENT) {
+            if (is_null($this->getRequest()) || ! $this->getRequest()->isSubmitted()) {
+                return;
+            }
+            $view['tags'] = $this->searchTags($view, $this->parameters['search']);
             return;
         }
 
@@ -150,7 +192,7 @@ class Menu extends \Nethgui\Core\Module\Standard
             // Add category title with fake module
             $rootList->insert(
                 $view->panel()
-                    ->setAttribute('class', 'moduleTitle')
+                    ->setAttribute('class', 'category')
                     ->insert($view->literal($category['title'])->setAttribute('hsc', TRUE))
             );
 

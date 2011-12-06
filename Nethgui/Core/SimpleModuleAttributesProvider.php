@@ -21,38 +21,54 @@ namespace Nethgui\Core;
  */
 
 /**
- * 
  *
- * @api
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
  */
 class SimpleModuleAttributesProvider implements ModuleAttributesInterface
 {
 
-    private $title, $category, $description, $languageCatalog, $tags, $menuPosition;
+    protected $title, $category, $description, $languageCatalog, $tags, $menuPosition;
 
-    public function __construct(ModuleInterface $module, $category = NULL, $menuPosition = NULL)
+    /**
+     * Create a new instance from basic module informations
+     * 
+     * @param \Nethgui\Core\ModuleInterface $module
+     * @return SimpleModuleAttributesProvider 
+     */
+    public function initializeFromModule(\Nethgui\Core\ModuleInterface $module)
     {
         $i = $module->getIdentifier();
-        $this->category = $category;
-        $this->setMenuPosition($menuPosition);
-
         $this->title = $i . '_Title';
         $this->description = $i . '_Description';
         $this->languageCatalog = strtr(get_class($module), '\\', '_');
         $this->tags = $i . '_Tags';
-    }
 
-    public function setCategory($category)
-    {
-        $this->category = $category;
         return $this;
     }
 
-    public function setMenuPosition($menuPosition)
+    /**
+     * Set category and menuPosition values
+     * 
+     * @param \Nethgui\Core\ModuleAttributesInterface $base
+     * @param string $category
+     * @param string $menuPosition
+     * @return SimpleModuleAttributesProvider
+     */
+    public static function extendModuleAttributes(\Nethgui\Core\ModuleAttributesInterface $base, $category = NULL, $menuPosition = NULL)
     {
-        $this->menuPosition = is_numeric($menuPosition) ? sprintf('%05d', $menuPosition) : strval($menuPosition);
-        return $this;
+        $o = new static();
+
+        $o->title = $base->getTitle();
+        $o->description = $base->getDescription();
+        $o->languageCatalog = $base->getLanguageCatalog();
+        $o->tags = $base->getTags();
+        $o->category = $category;
+        $o->menuPosition = is_numeric($menuPosition) ? sprintf('%05d', $menuPosition) : strval($menuPosition);
+
+        return $o;
     }
+
 
     public function getCategory()
     {

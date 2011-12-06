@@ -192,18 +192,19 @@ abstract class AbstractModule implements ModuleInterface, LogConsumerInterface, 
      * Called after a default attributes provider object is created
      *
      * @see getAttributesProvider()
-     * @param \Nethgui\Core\SimpleModuleAttributesProvider $descriptor
+     * @param \Nethgui\Core\ModuleAttributesInterface $descriptor
      * @return \Nethgui\Core\ModuleAttributesInterface
      */
-    protected function initializeAttributes(\Nethgui\Core\SimpleModuleAttributesProvider $descriptor)
+    protected function initializeAttributes(\Nethgui\Core\ModuleAttributesInterface $attributes)
     {
-        return $descriptor;
+        return $attributes;
     }
 
     public function getAttributesProvider()
     {
         if ( ! isset($this->descriptor)) {
-            $this->descriptor = $this->initializeAttributes(new \Nethgui\Core\SimpleModuleAttributesProvider($this));
+            $attributes = new \Nethgui\Core\SimpleModuleAttributesProvider();
+            $this->descriptor = $this->initializeAttributes($attributes->initializeFromModule($this));
         }
         return $this->descriptor;
     }
