@@ -136,11 +136,6 @@ class ReadonlyView implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsu
             return new \Nethgui\Log\Nullog();
         }
     }
-
-    public function createUiCommand($methodName, $arguments)
-    {
-        return $this->view->createUiCommand($methodName, $arguments);
-    }
     
     public function resolvePath($path)
     {

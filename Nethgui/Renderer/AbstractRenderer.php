@@ -35,6 +35,11 @@ namespace Nethgui\Renderer;
 abstract class AbstractRenderer extends ReadonlyView implements \Nethgui\Core\ModuleAttributesInterface
 {
 
+    /**
+     * Render the object as a string
+     *
+     * @return string
+     */
     abstract protected function render();
 
     public function __toString()

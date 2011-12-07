@@ -25,6 +25,7 @@ namespace Nethgui\Renderer;
  *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
+ * @api
  */
 abstract class TemplateRenderer extends AbstractRenderer implements \Nethgui\Core\GlobalFunctionConsumerInterface, WidgetFactoryInterface
 {
@@ -33,7 +34,7 @@ abstract class TemplateRenderer extends AbstractRenderer implements \Nethgui\Cor
      *
      * @var integer
      */
-    protected $inheritFlags = 0;
+    private $inheritFlags = 0;
 
     /**
      *
@@ -59,7 +60,7 @@ abstract class TemplateRenderer extends AbstractRenderer implements \Nethgui\Cor
         $this->globalFunctionWrapper = new \Nethgui\Core\GlobalFunctionWrapper();
     }
 
-    public function getTemplateResolver()
+    protected function getTemplateResolver()
     {
         return $this->templateResolver;
     }

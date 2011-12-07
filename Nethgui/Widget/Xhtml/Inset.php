@@ -21,7 +21,10 @@ namespace Nethgui\Widget\Xhtml;
  */
 
 /**
- *
+ * 
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @internal
  */
 class Inset extends \Nethgui\Widget\XhtmlWidget
 {
@@ -33,8 +36,8 @@ class Inset extends \Nethgui\Widget\XhtmlWidget
         $value = $this->view->offsetGet($name);
         $content = '';
 
-        if ($value instanceof \Nethgui\Core\ViewInterface && $this->view instanceof \Nethgui\Core\DelegatingCommandReceiverInterface) {
-            $innerRenderer = new \Nethgui\Renderer\Xhtml($value, $this->view->getTemplateResolver(), $flags, $this->view->getDelegatedCommandReceiver());
+        if ($value instanceof \Nethgui\Core\ViewInterface) {
+            $innerRenderer = $this->getRenderer()->spawnRenderer($value)->setDefaultFlags($flags);
             $content = (String) $this->wrapView($innerRenderer);
         } else {
             $content = (String) $this->view->literal($value, $flags);

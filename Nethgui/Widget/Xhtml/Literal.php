@@ -27,7 +27,10 @@ namespace Nethgui\Widget\Xhtml;
  * Attributes:
  * - `data` any string or object with string representation
  * - `hsc` boolean
- *
+ * 
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @internal
  */
 class Literal extends \Nethgui\Widget\XhtmlWidget
 {
@@ -46,8 +49,8 @@ class Literal extends \Nethgui\Widget\XhtmlWidget
             $valueFlags = 0;
         }
 
-        if ($value instanceof \Nethgui\Core\ViewInterface && $this->view instanceof \Nethgui\Core\CommandReceiverInterface) {
-            $value = new \Nethgui\Renderer\Xhtml($value, $this->view->getTemplateResolver(), $valueFlags, $this->view);
+        if ($value instanceof \Nethgui\Core\ViewInterface) {
+            $value = $this->getRenderer()->spawnRenderer($value)->setDefaultFlags($valueFlags);
         }
 
         $content = (String) $value;

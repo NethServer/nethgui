@@ -51,6 +51,16 @@ class Xhtml extends TemplateRenderer implements \Nethgui\Core\DelegatingCommandR
         $this->commandReceiver = new HttpCommandReceiver($this->view, $delegatedCommandReceiver);
     }
 
+    /**
+     *
+     * @param \Nethgui\Core\ViewInterface $view
+     * @return \Nethgui\Renderer\Xhtml
+     */
+    public function spawnRenderer(\Nethgui\Core\ViewInterface $view)
+    {
+        return new static($view, $this->getTemplateResolver(), $this->getDefaultFlags(), $this->commandReceiver);
+    }
+    
     protected function render()
     {
         $output = parent::render();
