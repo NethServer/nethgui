@@ -21,7 +21,10 @@ namespace Nethgui\Renderer;
  */
 
 /**
- * Transform a view in a json string
+ * Transform a view in a JSON string
+ * 
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
  */
 class Json extends AbstractRenderer implements \Nethgui\Core\DelegatingCommandReceiverInterface
 {
@@ -44,6 +47,10 @@ class Json extends AbstractRenderer implements \Nethgui\Core\DelegatingCommandRe
 
             $eventTarget = $this->getClientEventTarget($offset);
             if ($value instanceof \Nethgui\Core\ViewInterface) {
+                if ($value->getTemplate() === FALSE) {
+                    // honor the ViewInterface contract: if template is FALSE skip rendering
+                    continue;
+                }
                 if ( ! $value instanceof Json) {
                     $value = new Json($value, $this);
                 }
@@ -184,11 +191,9 @@ class JsonReceiver implements \Nethgui\Core\DelegatingCommandReceiverInterface
             }
 
             $this->getDelegatedCommandReceiver()->executeCommand($name, $arguments);
-
         } elseif ($name == 'dismissDialogBox') {
 
             $this->getDelegatedCommandReceiver()->executeCommand($name, $arguments);
-
         } elseif ($name == 'debug' || $name == 'alert') {
             $receiver = '';
         } else {
@@ -197,9 +202,6 @@ class JsonReceiver implements \Nethgui\Core\DelegatingCommandReceiverInterface
 
         return $this->commandForClient($receiver, $name, $arguments);
     }
-
-
-
 
     private function commandForClient($receiver, $name, $arguments)
     {

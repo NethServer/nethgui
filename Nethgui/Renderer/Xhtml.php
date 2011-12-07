@@ -30,7 +30,7 @@ namespace Nethgui\Renderer;
  * @since 1.0
  * @api
  */
-class Xhtml extends AbstractRenderer implements WidgetFactoryInterface, \Nethgui\Core\GlobalFunctionConsumerInterface, \Nethgui\Core\DelegatingCommandReceiverInterface
+class Xhtml extends TemplateRenderer implements WidgetFactoryInterface, \Nethgui\Core\DelegatingCommandReceiverInterface
 {
 
     /**
@@ -40,20 +40,9 @@ class Xhtml extends AbstractRenderer implements WidgetFactoryInterface, \Nethgui
     protected $inheritFlags = 0;
 
     /**
-     * @var \Nethgui\Core\GlobalFunctionWrapper
-     */
-    private $globalFunctionWrapper;
-
-    /**
      * @var \Nethgui\Core\CommandReceiverInterface
      */
     private $commandReceiver;
-
-    /**
-     *
-     * @var callable
-     */
-    private $templateResolver;
 
     /**
      *
@@ -62,28 +51,33 @@ class Xhtml extends AbstractRenderer implements WidgetFactoryInterface, \Nethgui
      * @param int $inheritFlags Default flags applied to all widgets created by this renderer
      * @param \Nethgui\Core\CommandReceiverInterface $delegatedCommandReceiver object where Commands are executed
      */
-    public function __construct(\Nethgui\Core\ViewInterface $view, $templateResolver, $inheritFlags = 0, \Nethgui\Core\CommandReceiverInterface $delegatedCommandReceiver)
+    public function __construct(\Nethgui\Core\ViewInterface $view, $templateResolver, $inheritFlags, \Nethgui\Core\CommandReceiverInterface $delegatedCommandReceiver)
     {
-        if ( ! is_callable($templateResolver)) {
-            throw new \InvalidArgumentException(sprintf('%s: $templateResolver must be a valid callback function.', get_class($this)), 1322238847);
+        parent::__construct($view, $templateResolver);
+        $this->inheritFlags = $inheritFlags & NETHGUI_INHERITABLE_FLAGS;
+        $this->commandReceiver = new HttpCommandReceiver($this->view, $delegatedCommandReceiver);
+    }
+
+    protected function render()
+    {
+        $output = parent::render();
+
+        /**
+         * Search for any non-executed command and invoke execute() on it.
+         */
+        foreach ($this->view as $command) {
+            if ( ! $command instanceof \Nethgui\Core\CommandInterface) {
+                continue;
+            }
+            if ( ! $command->isExecuted()) {
+                $command->setReceiver($this)->execute();
+            }
         }
 
-        parent::__construct($view);
-        $this->inheritFlags = $inheritFlags & NETHGUI_INHERITABLE_FLAGS;
-        $this->globalFunctionWrapper = new \Nethgui\Core\GlobalFunctionWrapper();
-        $this->commandReceiver = new HttpCommandReceiver($this->view, $delegatedCommandReceiver);
-        $this->templateResolver = $templateResolver;
+        return $output;
     }
 
-    public function getTemplateResolver()
-    {
-        return $this->templateResolver;
-    }
 
-    public function setGlobalFunctionWrapper(\Nethgui\Core\GlobalFunctionWrapper $object)
-    {
-        $this->globalFunctionWrapper = $object;
-    }
 
     public function getDefaultFlags()
     {
@@ -107,61 +101,6 @@ class Xhtml extends AbstractRenderer implements WidgetFactoryInterface, \Nethgui
         }
 
         return $o;
-    }
-
-    protected function render()
-    {
-        return $this->renderView($this->getTemplate(), array('view' => $this));
-    }
-
-    /**
-     * Renders a view passing $viewState as view parameters.
-     *
-     * If specified, this function sets the default language catalog used
-     * by T() translation function.
-     *
-     * @param string|callable $view Full view name that follows class naming convention or function callback
-     * @param array $viewState Array of view parameters.
-     * @param string|array $languageCatalog Name of language strings catalog.
-     * @return string
-     */
-    private function renderView($viewName, $viewState)
-    {
-        if ($viewName === FALSE) {
-            return '';
-        }
-
-        if (is_callable($viewName)) {
-            // Rendered by callback function
-            $viewOutput = (string) call_user_func_array($viewName, $viewState);
-        } else {
-            $absoluteViewPath = call_user_func($this->templateResolver, $viewName);
-
-            if ( ! $absoluteViewPath) {
-                $this->getLog()->warning("Unable to load `{$viewName}`.");
-                return '';
-            }
-
-            // Rendered by PHP script
-            ob_start();
-            $this->globalFunctionWrapper->phpInclude($absoluteViewPath, $viewState);
-            $viewOutput = ob_get_contents();
-            ob_end_clean();
-        }
-
-        /**
-         * Search for any non-executed command and invoke execute() on it.
-         */
-        foreach ($this->view as $command) {
-            if ( ! $command instanceof \Nethgui\Core\CommandInterface) {
-                continue;
-            }
-            if ( ! $command->isExecuted()) {
-                $command->setReceiver($this)->execute();
-            }
-        }
-
-        return $viewOutput;
     }
 
     public function elementList($flags = 0)

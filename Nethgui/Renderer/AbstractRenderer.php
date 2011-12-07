@@ -23,6 +23,8 @@ namespace Nethgui\Renderer;
 /**
  * Transform a view into a string.
  *
+ * Module attributes are exposed as translated strings through the usual interface.
+ *
  * @see WidgetInterface
  * @see http://en.wikipedia.org/wiki/Decorator_pattern
  *
