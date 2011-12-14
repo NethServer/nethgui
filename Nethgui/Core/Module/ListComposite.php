@@ -47,28 +47,36 @@ class ListComposite extends Composite implements \Nethgui\Core\RequestHandlerInt
     public function bind(\Nethgui\Core\RequestInterface $request)
     {
         $arguments = $request->getArguments();
-        $submodule = \Nethgui\array_head($arguments);
-        foreach ($this->getChildren() as $module) {
-
-            if ($submodule == $module->getIdentifier()) {
+        $currentModuleIdentifier = \Nethgui\array_head($arguments);
+        $wakedModules = $request->getParameters();
+        foreach ($this->getChildren() as $childModule) {
+            if ( ! $childModule instanceof \Nethgui\Core\RequestHandlerInterface) {
+                continue;
+            } elseif ($currentModuleIdentifier === $childModule->getIdentifier()) {
                 // Forward arguments to submodule:
-                $module->bind($request->getParameterAsInnerRequest($submodule, \Nethgui\array_rest($arguments)));
+                $childModule->bind($request->getParameterAsInnerRequest($currentModuleIdentifier, \Nethgui\array_rest($arguments)));
             } else {
-                $module->bind($request->getParameterAsInnerRequest($submodule));
-            }
+                $childModule->bind($request->getParameterAsInnerRequest($childModule->getIdentifier()));
+            } 
         }
     }
 
     public function validate(\Nethgui\Core\ValidationReportInterface $report)
     {
-        foreach ($this->getChildren() as $module) {
-            $module->validate($report);
+        foreach ($this->getChildren() as $childModule) {
+            if ( ! $childModule instanceof \Nethgui\Core\RequestHandlerInterface) {
+                continue;
+            }
+            $childModule->validate($report);
         }
     }
 
     public function process()
     {
         foreach ($this->getChildren() as $childModule) {
+            if ( ! $childModule instanceof \Nethgui\Core\RequestHandlerInterface) {
+                continue;
+            }
             $childModule->process();
         }
     }
