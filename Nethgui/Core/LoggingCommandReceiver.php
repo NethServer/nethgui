@@ -20,13 +20,17 @@ namespace Nethgui\Core;
  * along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class LoggingCommandReceiver implements CommandReceiverInterface
+/**
+ * Log unhandled commands to syslog.
+ *
+ * @since 1.0
+ * @internal
+ */
+class LoggingCommandReceiver implements \Nethgui\Core\CommandReceiverInterface
 {
-
-    public function executeCommand($name, $arguments)
+    public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
     {
         $log = new \Nethgui\Log\Syslog();
-        $log->notice('TODO: executeCommand ' . $name . '(' . strtr(print_r($arguments, 1), "\n", " ") . ')');
+        $log->warning(sprintf('uncaught command: %s(%s)', $name, strtr(print_r($arguments, 1), "\n", " ")));
     }
-
 }
