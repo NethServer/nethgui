@@ -192,7 +192,7 @@ class TableController extends \Nethgui\Core\Module\Controller
         parent::prepareView($view, $mode);
 
         if (is_object($this->currentAction)
-            && $mode == self::VIEW_CLIENT
+            && $mode == $view::TARGET_JSON
             && $this->getRequest()->isSubmitted()
             && $this->hasAction('read')) {
             // Load 'read' action when some other action has occurred,

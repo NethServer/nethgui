@@ -34,18 +34,13 @@ class Main extends \Nethgui\Core\Module\ListComposite
      */
     private $moduleLoader;
     private $currentModuleIdentifier;
+//    private $finalModules;
 
-    /**
-     *
-     * @var \Nethgui\Core\NotificationManager
-     */
-    private $notificationManager;
-
-    public function __construct($template, \Nethgui\Core\ModuleLoader $moduleLoader, \Nethgui\Core\NotificationManager $notificationManager)
+    public function __construct($template, \Nethgui\Core\ModuleLoader $moduleLoader)
     {
         parent::__construct(FALSE, $template);
         $this->moduleLoader = $moduleLoader;
-        $this->notificationManager = $notificationManager;
+//        $this->finalModules = array();
     }
 
     public function bind(\Nethgui\Core\RequestInterface $request)
@@ -59,38 +54,49 @@ class Main extends \Nethgui\Core\Module\ListComposite
         }
 
         foreach ($idList as $moduleIdentifier) {
+            if (in_array($moduleIdentifier, array('Menu', 'Notification'))) {
+                continue;
+            }
             $this->addChild($this->moduleLoader->getModule($moduleIdentifier));
         }
 
         $menuModule = $this->moduleLoader->getModule('Menu');
         $menuModule->setModuleSet($this->moduleLoader)->setCurrentModuleIdentifier($this->currentModuleIdentifier);
+        $this->addChild($menuModule);
 
-        if ( ! in_array('Menu', $idList)) {
-            $this->addChild($menuModule);
-        }
-
-        $notificationArea = $this->moduleLoader->getModule('NotificationArea');
-        $notificationArea->setNotificationManager($this->notificationManager);
-        
-        if ( ! in_array('NotificationArea', $idList)) {
-            $this->addChild($notificationArea);
-        }
+        $notificationModule = $this->moduleLoader->getModule('Notification');
+        $this->addChild($notificationModule);
 
         parent::bind($request);
     }
 
+//    public function prepareFinalView(\Nethgui\Core\ViewInterface $view)
+//    {
+//        foreach ($this->finalModules as $child) {
+//            $child->prepareView($view->spawnView($child, TRUE));
+//        }
+//    }
+
     public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
     {
+//        foreach ($this->getChildren() as $child) {
+//            if ($child instanceof \Nethgui\Core\CommandReceiverInterface) {
+//                // postpone prepareView for command receivers:
+//                $this->finalModules[] = $child;
+//                continue;
+//            }
+//            $innerView = $view->spawnView($child, TRUE);
+//            $child->prepareView($innerView, $mode);
+//        }
         parent::prepareView($view, $mode);
 
-        if ($mode !== self::VIEW_SERVER) {
+        if ($view->getTargetFormat() !== $view::TARGET_XHTML) {
             return;
         }
-        
+
         $pathUrl = $view->getPathUrl() . '/';
 
         $view['CurrentModule'] = $view[$this->currentModuleIdentifier];
-        //$view->setTemplate(array($this, 'renderWorldDecoration'));
 
         $lang = $view->getTranslator()->getLanguageCode();
         $immutables = array(

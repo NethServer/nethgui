@@ -74,10 +74,6 @@ class Framework
      */
     private $decoratorTemplate;
 
-    /**
-     * Sends a 303 status redirect to $url.
-     * @param type $url
-     */
     public function __construct()
     {
         spl_autoload_register(array($this, 'autoloader'));
@@ -238,31 +234,21 @@ class Framework
     }
 
     /**
-     * @deprecated
-     * @param type $errorCode
-     * @param type $title
-     * @param type $text 
-     */
-    private function httpError($errorCode, $title, $text)
-    {
-        header(sprintf("HTTP/1.1 %d %s", $errorCode, $title));
-        header("Content-Type: text/plain; charset=UTF-8");
-        echo $text;
-        exit;
-    }
-
-    /**
      * Forwards control to Modules and creates output views.
      *
-     * This is the framework "main()" function / entry point. Any output produced
-     * is sent to stdout. Use output-buffering to catch it.
+     * This is the framework "main()" function / entry point. 
      *
      * @api
      * @param string $currentModuleIdentifier
      * @param array $arguments
+     * @return integer
      */
-    public function dispatch(Core\RequestInterface $request)
-    {        
+    public function dispatch(Core\RequestInterface $request, &$output = NULL)
+    {
+        $httpStatus = "HTTP/1.1 200 Success";
+        $fileNameResolver = array($this, 'absoluteScriptPath');
+        $urlParts = array($this->siteUrl, $this->basePath, 'index.php');
+
         /*
          * TODO: redirect
          */
@@ -278,48 +264,116 @@ class Framework
 
         $platform = new System\NethPlatform($user);
         $platform->setPolicyDecisionPoint($pdp);
-      
-        $notificationManager = new Core\NotificationManager($session);
 
-        $mainModule = new Module\Main($this->decoratorTemplate, $moduleLoader, $notificationManager);
+        // Instantiate the string language translator:
+        $translator = new Language\Translator($user, $platform->getLog(), $fileNameResolver, array_keys($this->namespaceMap));
+
+        $validationErrorsNotification = new Client\ValidationErrorsNotification($translator);
+
+        $moduleLoader->getModule('Notification')->setSession($session);
+
+        $mainModule = new Module\Main($this->decoratorTemplate, $moduleLoader);
         $mainModule->setPlatform($platform);
         $mainModule->initialize();
         $mainModule->bind($request);
-        $mainModule->validate($notificationManager);
+        $mainModule->validate($validationErrorsNotification);
 
         // Validation error http status.
         // See RFC2616, section 10.4 "Client Error 4xx"
-        if ($notificationManager->hasValidationErrors()) {
+        if ($validationErrorsNotification->hasValidationErrors()) {
             // FIXME: check if we are in FAST-CGI module:
             // @see http://php.net/manual/en/function.header.php
-            header("HTTP/1.1 400 Request validation error");
+            $httpStatus = "HTTP/1.1 400 Request validation error";
         } else {
             $mainModule->process();
             // Finally, signal "final" events (see #506)
             $platform->signalFinalEvents();
         }
 
-        // Instantiate the string language translator:
-        $translator = new Language\Translator($user, $platform->getLog(), array($this, 'absoluteScriptPath'), array_keys($this->namespaceMap));
 
-        // Instantiate the MAIN view:
-        $mainView = new Client\View($mainModule, $translator, $this->siteUrl, $this->basePath, 'index.php');
 
-        // Prepare the views and render into Xhtml or Json
         if ($request->getContentType() === Core\RequestInterface::CONTENT_TYPE_HTML) {
-            $mainModule->prepareView($mainView, Core\ModuleInterface::VIEW_SERVER);
-            $output = strval(new Renderer\Xhtml($mainView, array($this, 'absoluteScriptPath'), 0, $notificationManager));
-            $contentType = "Content-Type: text/html; charset=UTF-8";
-            
+            $targetFormat = Core\ViewInterface::TARGET_XHTML;
+            $httpContentType = "Content-Type: text/html; charset=UTF-8";
+
+            $httpReceiver = new Renderer\HttpCommandReceiver();
+            $marshallingReceiver = Core\NullReceiver::getNullInstance();
+
+            $rootView = new Client\View($targetFormat, $mainModule, $translator, $urlParts);
+            $rootView->setNextReceiver($httpReceiver);
         } elseif ($request->getContentType() === Core\RequestInterface::CONTENT_TYPE_JSON) {
-            $mainModule->prepareView($mainView, Core\ModuleInterface::VIEW_CLIENT);           
-            $output = strval(new Renderer\Json($mainView, $notificationManager));
-            $contentType = "Content-Type: application/json; charset=UTF-8";
+            $targetFormat = Core\ViewInterface::TARGET_JSON;
+            $httpContentType = "Content-Type: application/json; charset=UTF-8";
+
+            $marshallingReceiver = new Renderer\MarshallingReceiver();
+            $httpReceiver = Core\NullReceiver::getNullInstance();
+
+            $rootView = new Client\View($targetFormat, $mainModule, $translator, $urlParts);
+            $rootView->setNextReceiver($marshallingReceiver);
         }
 
-        header("HTTP/1.1 200 Success");
-        header($contentType);
-        echo $output;
+        // ..transfer contents and commands into the MAIN view:
+        $mainModule->prepareView($rootView, $targetFormat);
+
+        if ($validationErrorsNotification->hasValidationErrors()) {
+            $rootView->getCommandListFor('/Notification')->showNotification($validationErrorsNotification);
+        }
+
+        // ..Execute commands sent to views. These do not include commands sent to widgets:
+        $this->executeViewCommands($rootView);
+
+        if ($httpReceiver instanceof Renderer\HttpCommandReceiver && $httpReceiver->hasRedirect()) {
+            $content = '';
+            $headers = $httpReceiver->getHttpRedirectHeaders();
+        } else {
+            // Render the view as Xhtml or Json
+            if ($request->getContentType() === Core\RequestInterface::CONTENT_TYPE_JSON) {
+                $renderer = new Renderer\Json($rootView, $marshallingReceiver);
+            } else {
+                $renderer = new Renderer\Xhtml($rootView, $fileNameResolver, 0);
+            }
+
+            $content = $renderer->render();
+            $headers = array($httpStatus, $httpContentType);
+        }
+
+        if (is_array($output)) {
+            // put HTTP response into the output array:
+            $output['content'] = $content;
+            $output['headers'] = $headers;
+        } else {
+            // send HTTP response to stdout:
+            array_map('header', $headers);
+            echo $content;
+        }
+
+        return 0;
+    }
+
+    /**
+     * Vist all sub-views and execute view commands
+     * 
+     * @param Client\View $view
+     */
+    private function executeViewCommands(Client\View $view)
+    {
+        $q = array($view);
+
+        while (count($q) > 0) {
+            $view = array_pop($q);
+
+            foreach ($view as $key => $value) {
+                if ($value instanceof Client\View) {
+                    $q[] = $value;
+                }
+            }
+
+            $command = $view->getCommandList();
+
+            if ( ! $command->isExecuted()) {
+                $command->setReceiver($view)->execute();
+            }
+        }
     }
 
     /**
@@ -455,3 +509,21 @@ function array_rest($arr)
     array_shift($arr);
     return $arr;
 }
+
+/**
+ * Convert a \Traversable object to a PHP array
+ * @param \Traversable|array $value
+ * @return array
+ */
+function traversable_to_array($value)
+{
+    $a = array();
+    foreach ($value as $k => $v) {
+        if ($v instanceof \Traversable || is_array($v)) {
+            $v = traversable_to_array($v);
+        }
+        $a[$k] = $v;
+    }
+    return $a;
+}
+

@@ -100,8 +100,8 @@ class Menu extends \Nethgui\Core\Module\Standard
 
     public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
     {
-        if ($mode === self::VIEW_CLIENT) {
-            if (is_null($this->getRequest()) || ! $this->getRequest()->isSubmitted()) {
+        if ($view->getTargetFormat() === $view::TARGET_JSON) {
+            if (is_null($this->getRequest()) || ! $this->getRequest()->isSubmitted() || $this->getRequest()->isEmpty()) {
                 return;
             }
             $view['tags'] = $this->searchTags($view, $this->parameters['search']);

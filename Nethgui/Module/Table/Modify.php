@@ -218,17 +218,14 @@ class Modify extends Action
         } else {
             throw new \RuntimeException(sprintf('%s: Cannot delete `%s`.', get_class($this), $key), 1322148216);
         }
-        $this->addUiClientCommand('cancel');
     }
 
     protected function processCreate($key)
     {
-        $this->addUiClientCommand('cancel');
     }
 
     protected function processUpdate($key)
     {
-        $this->addUiClientCommand('cancel');
     }
 
     public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
