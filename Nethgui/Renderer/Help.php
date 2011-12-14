@@ -46,7 +46,7 @@ class Help extends Xhtml
         return $o;
     }
 
-    protected function render()
+    public function render()
     {
         $fields = array();
 

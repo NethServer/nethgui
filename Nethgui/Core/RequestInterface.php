@@ -30,6 +30,7 @@ namespace Nethgui\Core;
  */
 interface RequestInterface
 {
+    const CONTENT_TYPE_UNSPECIFIED = 0;
     const CONTENT_TYPE_JSON = 1;
     const CONTENT_TYPE_HTML = 2;
     

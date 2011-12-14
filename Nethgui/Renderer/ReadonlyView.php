@@ -21,9 +21,10 @@ namespace Nethgui\Renderer;
  */
 
 /**
- * Disable write access operations of a view.
+ * Boilerplate stuff to disable write access operations of a view.
  *
  * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
  */
 class ReadonlyView implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInterface
 {
@@ -35,7 +36,7 @@ class ReadonlyView implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsu
 
     public function __construct(\Nethgui\Core\ViewInterface $view)
     {
-        if ($view instanceof self) {
+        if ($view instanceof ReadonlyView) {
             // Prevent re-wrapping of a read-only view instance:
             $this->view = $view->view;
         } else {
@@ -136,7 +137,7 @@ class ReadonlyView implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsu
             return new \Nethgui\Log\Nullog();
         }
     }
-    
+
     public function resolvePath($path)
     {
         return $this->view->resolvePath($path);
@@ -152,8 +153,29 @@ class ReadonlyView implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsu
         return $this->view->getSiteUrl();
     }
 
-    public function getCommandFactory()
+    public function getTargetFormat()
     {
-        return $this->view->getCommandFactory();
+        return $this->view->getTargetFormat();
     }
+
+    public function createCommand($name, $arguments, $selector = '')
+    {
+        return $this->view->createCommand($name, $arguments, $selector);
+    }
+
+    public function getCommandList()
+    {
+        return $this->view->getCommandList();
+    }
+
+    public function getCommandListFor($selector)
+    {
+        return $this->view->getCommandListFor($selector);
+    }
+
+    public function hasCommandListFor($selector)
+    {
+        return $this->view->hasCommandListFor($selector);
+    }
+
 }

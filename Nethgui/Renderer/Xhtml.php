@@ -30,26 +30,8 @@ namespace Nethgui\Renderer;
  * @since 1.0
  * @api
  */
-class Xhtml extends TemplateRenderer implements \Nethgui\Core\DelegatingCommandReceiverInterface
+class Xhtml extends TemplateRenderer
 {
-
-    /**
-     * @var \Nethgui\Core\CommandReceiverInterface
-     */
-    private $commandReceiver;
-
-    /**
-     *
-     * @param \Nethgui\Core\ViewInterface $view
-     * @param callback $templateResolver A function that takes the template name as argument and returns the corresponding PHP script absolute path
-     * @param int $inheritFlags Default flags applied to all widgets created by this renderer
-     * @param \Nethgui\Core\CommandReceiverInterface $delegatedCommandReceiver object where Commands are executed
-     */
-    public function __construct(\Nethgui\Core\ViewInterface $view, $templateResolver, $inheritFlags, \Nethgui\Core\CommandReceiverInterface $delegatedCommandReceiver)
-    {
-        parent::__construct($view, $templateResolver, $inheritFlags);
-        $this->commandReceiver = new HttpCommandReceiver($this->view, $delegatedCommandReceiver);
-    }
 
     /**
      *
@@ -58,26 +40,7 @@ class Xhtml extends TemplateRenderer implements \Nethgui\Core\DelegatingCommandR
      */
     public function spawnRenderer(\Nethgui\Core\ViewInterface $view)
     {
-        return new static($view, $this->getTemplateResolver(), $this->getDefaultFlags(), $this->commandReceiver);
-    }
-    
-    protected function render()
-    {
-        $output = parent::render();
-
-        /**
-         * Search for any non-executed command and invoke execute() on it.
-         */
-        foreach ($this->view as $command) {
-            if ( ! $command instanceof \Nethgui\Core\CommandInterface) {
-                continue;
-            }
-            if ( ! $command->isExecuted()) {
-                $command->setReceiver($this)->execute();
-            }
-        }
-
-        return $output;
+        return new static($view, $this->getTemplateResolver(), $this->getDefaultFlags());
     }
 
     protected function createWidget($widgetType, $attributes = array())
@@ -91,16 +54,6 @@ class Xhtml extends TemplateRenderer implements \Nethgui\Core\DelegatingCommandR
         }
 
         return $o;
-    }
-
-    public function getDelegatedCommandReceiver()
-    {
-        return $this->commandReceiver;
-    }
-
-    public function executeCommand($name, $arguments)
-    {
-        return $this->getDelegatedCommandReceiver()->executeCommand($name, $arguments);
     }
 
 }

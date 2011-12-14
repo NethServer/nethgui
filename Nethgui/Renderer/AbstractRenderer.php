@@ -40,17 +40,7 @@ abstract class AbstractRenderer extends ReadonlyView implements \Nethgui\Core\Mo
      *
      * @return string
      */
-    abstract protected function render();
-
-    public function __toString()
-    {
-        try {
-            return $this->render();
-        } catch (Exception $ex) {
-            $this->getLog()->exception($ex, TRUE);
-        }
-        return '';
-    }
+    abstract public function render();
 
     /**
      * Convert the given hash to the array format accepted from UI widgets as

@@ -26,47 +26,60 @@ namespace Nethgui\Renderer;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Json extends AbstractRenderer implements \Nethgui\Core\DelegatingCommandReceiverInterface
+class Json extends AbstractRenderer implements \Nethgui\Core\CommandReceiverInterface
 {
 
     /**
      *
-     * @var \Nethgui\Core\CommandReceiverInterface
+     * @var \Nethgui\Renderer\MarshallingReceiver
      */
-    private $receiverDelegate;
+    private $receiver;
+    private $commands;
 
-    public function __construct(\Nethgui\Core\ViewInterface $view, \Nethgui\Core\CommandReceiverInterface $receiverDelegate)
+    public function __construct(\Nethgui\Client\View $view, \Nethgui\Renderer\MarshallingReceiver $receiver)
     {
         parent::__construct($view);
-        $this->receiverDelegate = $receiverDelegate;
+        $this->commands = $view->getCommands();
+        $this->receiver = $receiver;
     }
 
-    private function deepWalk(&$events, &$commands)
+    private function deepWalk(&$events)
     {
-        foreach ($this as $offset => $value) {
+        // iterative tree walk - $q is the node queue:
+        $q = array($this->view);
 
-            $eventTarget = $this->getClientEventTarget($offset);
-            if ($value instanceof \Nethgui\Core\ViewInterface) {
-                if ($value->getTemplate() === FALSE) {
-                    // honor the ViewInterface contract: if template is FALSE skip rendering
+        while ($view = array_shift($q)) {
+
+            foreach ($view as $offset => $value) {
+
+                $eventTarget = $view->getClientEventTarget($offset);
+
+                if ($value instanceof \Nethgui\Core\ViewInterface) {
+                    // honor the ViewInterface contract: if template is FALSE
+                    // skip rendering, otherwise enqueue:
+                    if ($value->getTemplate() !== FALSE) {
+                        $q[] = $value;
+                    }
                     continue;
                 }
-                if ( ! $value instanceof Json) {
-                    $value = new Json($value, $this);
+
+                if ($value instanceof \Traversable) {
+                    $eventData = $this->traversableToArray($value);
+                } else {
+                    $eventData = $value;
                 }
-                $value->deepWalk($events, $commands);
+
+                $events[] = array($eventTarget, $eventData);
+            }
+        }
+
+        foreach ($this->commands as $command) {
+            if ( ! $command instanceof \Nethgui\Core\CommandInterface || $command->isExecuted()) {
                 continue;
-            } elseif ($value instanceof \Nethgui\Core\CommandInterface) {
-                $receiver = new JsonReceiver($this->view, $offset, $this);
-                $commands[] = $value->setReceiver($receiver)->execute();
-                continue;
-            } elseif ($value instanceof \Traversable) {
-                $eventData = $this->traversableToArray($value);
-            } else {
-                $eventData = $value;
             }
 
-            $events[] = array($eventTarget, $eventData);
+            // Execute all still-unexecuted commands sent to widgets:
+            $command->setReceiver($this)->execute();
         }
     }
 
@@ -75,7 +88,7 @@ class Json extends AbstractRenderer implements \Nethgui\Core\DelegatingCommandRe
      * @param \Traversable $value
      * @return array
      */
-    private function traversableToArray(\Traversable $value)
+    function traversableToArray(\Traversable $value)
     {
         $a = array();
         foreach ($value as $k => $v) {
@@ -87,129 +100,36 @@ class Json extends AbstractRenderer implements \Nethgui\Core\DelegatingCommandRe
         return $a;
     }
 
-    protected function render()
+    public function render()
     {
         $events = array();
-        $commands = array();
+        $output = array();
 
-        $this->deepWalk($events, $commands);
+        $this->deepWalk($events);
+
+        if (count($events) > 0) {
+            $output = $events;
+        }
+
+        $commands = $this->receiver->getMarshalledCommands();
+
         if (count($commands) > 0) {
-            $events[] = array('ClientCommandHandler', $commands);
+            $output[] = array('ClientCommandHandler', $commands);
         }
 
-        return json_encode($events);
+        return json_encode($output);
     }
 
-    public function executeCommand($name, $arguments)
-    {
-        return $this->getDelegatedCommandReceiver()->executeCommand($name, $arguments);
-    }
-
-    public function getDelegatedCommandReceiver()
-    {
-        return $this->receiverDelegate;
-    }
-
-}
-
-/**
- * Prepare Command invocations for the client-side framework
- */
-class JsonReceiver implements \Nethgui\Core\DelegatingCommandReceiverInterface
-{
-
-    private $offset;
-
-    /**
-     *
-     * @var \Nethgui\Core\ViewInterface
+    /*
+     * Commands dispatched to widgets fall here. 
      */
-    private $view;
 
-    /**
-     * @var \Nethgui\Core\CommandReceiverInterface
-     */
-    private $delegatedReceiver;
-
-    public function __construct(\Nethgui\Core\ViewInterface $view, $offset, \Nethgui\Core\CommandReceiverInterface $delegatedReceiver)
+    public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
     {
-        $this->view = $view;
-        $this->offset = $offset;
-        $this->delegatedReceiver = $delegatedReceiver;
-    }
-
-    public function getDelegatedCommandReceiver()
-    {
-        return $this->delegatedReceiver;
-    }
-
-    public function executeCommand($name, $arguments)
-    {
-        if ($name == 'delay'
-            && $arguments[0] instanceof \Nethgui\Core\CommandInterface) {
-            $receiver = '';
-            // replace the first argument with the array equivalent
-            $arguments[0] = $arguments[0]->setReceiver(clone $this)->execute();
-        } elseif ($name == 'redirect' || $name == 'queryUrl') {
-            $receiver = '';
-            $arguments[0] = $this->view->getModuleUrl($arguments[0]);
-        } elseif ($name == 'activateAction') {
-            $receiver = '';
-
-            $tmp = array(
-                $this->view->getUniqueId($arguments[0]),
-                $this->view->getModuleUrl($arguments[0]),
-                $this->view->getUniqueId()
-            );
-
-            if (isset($arguments[1])) {
-                $tmp[1] = $this->view->getModuleUrl($arguments[1]);
-            }
-
-            if (isset($arguments[2])) {
-                $tmp[2] = $this->view->getUniqueId($arguments[2]);
-            }
-
-            $arguments = $tmp;
-        } elseif ($name == 'showDialogBox') {
-            $receiver = '#NotificationArea';
-            $name = 'addNotification';
-
-            $dialogBox = $arguments[0];
-            $arguments = array();
-
-            if ($dialogBox instanceof \Nethgui\Client\DialogBox) {
-                $message = $dialogBox->getMessage();
-                $arguments[0] = array(
-                    'message' => $this->view->getTranslator()->translate($dialogBox->getModule(), $message[0], $message[1]),
-                    'actions' => $dialogBox->getActions(),
-                    'transient' => $dialogBox->isTransient(),
-                    'type' => $dialogBox->getType(),
-                    'dialogId' => $dialogBox->getId(),
-                    'errors' => array(),
-                );
-            }
-
-            $this->getDelegatedCommandReceiver()->executeCommand($name, $arguments);
-        } elseif ($name == 'dismissDialogBox') {
-
-            $this->getDelegatedCommandReceiver()->executeCommand($name, $arguments);
-        } elseif ($name == 'debug' || $name == 'alert') {
-            $receiver = '';
-        } else {
-            $receiver = is_numeric($this->offset) ? '#' . $this->view->getUniqueId() : '.' . $this->view->getClientEventTarget($this->offset);
+        if ($name === 'setLabel') {
+            $arguments[0] = $origin->translate($arguments[0]);
         }
-
-        return $this->commandForClient($receiver, $name, $arguments);
-    }
-
-    private function commandForClient($receiver, $name, $arguments)
-    {
-        return array(
-            'receiver' => $receiver,
-            'methodName' => $name,
-            'arguments' => $arguments,
-        );
+        $this->receiver->executeCommand($origin, $selector, $name, $arguments);
     }
 
 }

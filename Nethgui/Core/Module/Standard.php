@@ -282,10 +282,10 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
         }
 
         if ($exitStatus === FALSE) {
-            $type = \Nethgui\Core\CommandFactoryInterface::NOTIFY_ERROR;
+            $type = \Nethgui\Client\AbstractNotification::NOTIFY_ERROR;
             $messageTemplate = $eventName . '_failure';
         } else {
-            $type = \Nethgui\Core\CommandFactoryInterface::NOTIFY_SUCCESS;
+            $type = \Nethgui\Client\AbstractNotification::NOTIFY_SUCCESS;
             $messageTemplate = $eventName . '_success';
         }
 
@@ -482,7 +482,7 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
         parent::prepareView($view, $mode);
         $view->copyFrom($this->parameters);
         foreach ($this->dialogBoxes as $dialogArgs) {
-            $view[] = $view->getCommandFactory()->showDialogBox($dialogArgs[0], $dialogArgs[1], $dialogArgs[2]);
+           // TODO invoke showNotification command
         }
         if ($mode === self::VIEW_SERVER) {
             $view['__invalidParameters'] = $this->invalidParameters;

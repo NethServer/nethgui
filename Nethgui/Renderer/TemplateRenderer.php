@@ -23,6 +23,8 @@ namespace Nethgui\Renderer;
 /**
  * Renders through a template script or callback method
  *
+ * Enanches the abstract renderer with the wiget factory interface.
+ *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  * @api
@@ -65,7 +67,7 @@ abstract class TemplateRenderer extends AbstractRenderer implements \Nethgui\Cor
         return $this->templateResolver;
     }
 
-    protected function render()
+    public function render()
     {
         return $this->renderView($this->getTemplate(), array('view' => $this));
     }
@@ -81,7 +83,7 @@ abstract class TemplateRenderer extends AbstractRenderer implements \Nethgui\Cor
      * @param string|array $languageCatalog Name of language strings catalog.
      * @return string
      */
-    private function renderView($viewName, $viewState)
+    protected function renderView($viewName, $viewState)
     {
         if ($viewName === FALSE) {
             return '';

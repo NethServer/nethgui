@@ -25,70 +25,61 @@ namespace Nethgui\Renderer;
  *
  * Implements the command logic as HTTP redirects
  *
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
  */
-class HttpCommandReceiver implements \Nethgui\Core\CommandReceiverInterface, \Nethgui\Core\GlobalFunctionConsumerInterface, \Nethgui\Core\DelegatingCommandReceiverInterface
+class HttpCommandReceiver extends \Nethgui\Core\AbstractReceiverChain
 {
 
-    /**
-     *
-     * @var \Nethgui\Core\ViewInterface
-     */
-    private $view;
+    private $headers;
 
-    /**
-     *
-     * @var \Nethgui\Core\CommandReceiverInterface
-     */
-    private $delegatedCommandReceiver;
-
-    /**
-     *
-     * @var \Nethgui\Core\GlobalFunctionWrapper
-     */
-    private $globalFunctionWrapper;
-
-    public function __construct(\Nethgui\Core\ViewInterface $view, \Nethgui\Core\CommandReceiverInterface $delegatedCommandReceiver)
+    public function __construct(\Nethgui\Core\CommandReceiverInterface $nextReceiver = NULL)
     {
-        $this->view = $view;
-        $this->delegatedCommandReceiver = $delegatedCommandReceiver;
-        $this->globalFunctionWrapper = new \Nethgui\Core\GlobalFunctionWrapper();
+        parent::__construct($nextReceiver);
+        $this->headers = array();
     }
 
-    public function getDelegatedCommandReceiver()
+    public function hasRedirect()
     {
-        return $this->delegatedCommandReceiver;
+        return count($this->headers) > 0;
     }
 
-    public function executeCommand($name, $arguments)
+    public function getHttpRedirectHeaders()
     {
-        if ( ! method_exists($this, $name) && isset($this->delegatedCommandReceiver)) {
-            return $this->delegatedCommandReceiver->executeCommand($name, $arguments);
+        return $this->headers;
+    }
+
+    public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
+    {
+        if ( ! method_exists($this, $name)) {
+            return parent::executeCommand($origin, $selector, $name, $arguments);
         }
+        array_unshift($arguments, $origin, $selector);
         return call_user_func_array(array($this, $name), $arguments);
     }
 
-    public function cancel()
+    protected function cancel(\Nethgui\Core\ViewInterface $origin, $selector)
     {
-        $this->httpRedirection(302, $this->view->getModuleUrl('..'));
+        $this->httpRedirection($origin, $selector, 302, $origin->getModuleUrl('..'));
     }
 
-    public function activateAction($actionId, $path = NULL, $prevComponent = NULL)
+    protected function activateAction(\Nethgui\Core\ViewInterface $origin, $selector, $actionId, $path = NULL, $prevComponent = NULL)
     {
         if (is_null($path)) {
             $path = $actionId;
         }
 
-        $this->httpRedirection(302, $this->view->getModuleUrl($path));
+        $this->httpRedirection($origin, $selector, 302, $origin->getModuleUrl($path));
     }
 
-    public function enable()
+    protected function enable(\Nethgui\Core\ViewInterface $origin, $selector)
     {
-        $this->httpRedirection(302, $this->view->getModuleUrl());
+        $this->httpRedirection($origin, $selector, 302, $origin->getModuleUrl());
     }
 
-    public function redirect($url)
+    protected function redirect(\Nethgui\Core\ViewInterface $origin, $selector, $url)
     {
-        $this->httpRedirection(302, $url);
+        $this->httpRedirection($origin, $selector, 302, $url);
     }
 
     /**
@@ -96,7 +87,7 @@ class HttpCommandReceiver implements \Nethgui\Core\CommandReceiverInterface, \Ne
      * @param integer $code
      * @param string $location
      */
-    private function httpRedirection($code, $location)
+    private function httpRedirection(\Nethgui\Core\ViewInterface $origin, $selector, $code, $location)
     {
         $messages = array(
             '201' => 'Created',
@@ -110,29 +101,18 @@ class HttpCommandReceiver implements \Nethgui\Core\CommandReceiverInterface, \Ne
         if (isset($messages[strval($code)])) {
             $codeMessage = $messages[strval($code)];
         } else {
-            throw new \DomainException(sprintf('Unknown status code for redirection: %d',  intval($code)), 1322149333);
+            throw new \DomainException(sprintf('Unknown status code for redirection: %d', intval($code)), 1322149333);
         }
 
         // Prefix the site URL to $location:
         if ( ! in_array(parse_url($location, PHP_URL_SCHEME), array('http', 'https'))) {
-            $location = $this->view->getSiteUrl() . $location;
+            $location = $origin->getSiteUrl() . $location;
         }
 
-        $this->globalFunctionWrapper->header(sprintf('HTTP/1.1 %d %s', $code, $codeMessage));
-        $this->globalFunctionWrapper->header('Location: ' . $location);
-
-        $ob_status = $this->globalFunctionWrapper->ob_get_status();
-
-        if ( ! empty($ob_status)) {
-            $this->globalFunctionWrapper->ob_end_clean();
+        if ( ! $this->hasRedirect()) {
+            $this->headers[] = sprintf('HTTP/1.1 %d %s', $code, $codeMessage);
+            $this->headers[] = 'Location: ' . $location;
         }
-
-        $this->globalFunctionWrapper->phpExit(0);
-    }
-
-    public function setGlobalFunctionWrapper(\Nethgui\Core\GlobalFunctionWrapper $object)
-    {
-        $this->globalFunctionWrapper = $object;
     }
 
 }

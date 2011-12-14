@@ -79,7 +79,7 @@ interface WidgetFactoryInterface
      *
      * @param string $name The view member name
      * @param integer $flags Optional {STATE_DISABLED}
-     * @return WidgetInterface
+     * @return \Nethgui\Renderer\WidgetInterface
      * @api
      */
     public function inset($name, $flags = 0);
@@ -88,7 +88,7 @@ interface WidgetFactoryInterface
      * Create a text input control
      * @param string $name The view member name
      * @param integer $flags Optional {STATE_DISABLED}
-     * @return WidgetInterface
+     * @return \Nethgui\Renderer\WidgetInterface
      */
     public function textInput($name, $flags = 0);
 
@@ -97,7 +97,7 @@ interface WidgetFactoryInterface
      *
      * @param string $name The view member name to generate the label contents
      * @param integer $flags Optional {STATE_DISABLED}
-     * @return WidgetInterface
+     * @return \Nethgui\Renderer\WidgetInterface
      * @api
      */
     public function textLabel($name, $flags = 0);
@@ -108,7 +108,7 @@ interface WidgetFactoryInterface
      * @see textLabel()
      * @param string $name OPTIONAL - The view member passed as argument for the "template" attribute.
      * @param integer $flags OPTIONAL - flags
-     * @return WidgetInterface
+     * @return \Nethgui\Renderer\WidgetInterface
      * @api
      */
     public function fieldset($name = NULL, $flags = 0);
@@ -118,7 +118,7 @@ interface WidgetFactoryInterface
      *
      * @see textLabel()
      * @param string $name OPTIONAL - The view member passed as argument for the "template" attribute.
-     * @return WidgetInterface
+     * @return \Nethgui\Renderer\WidgetInterface
      * @api
      */
     public function header($name = NULL, $flags = 0);
@@ -128,7 +128,7 @@ interface WidgetFactoryInterface
      *
      * @param string $name The view member name
      * @param integer $flags Optional {STATE_DISABLED}
-     * @return WidgetInterface
+     * @return \Nethgui\Renderer\WidgetInterface
      * @api
      */
     public function hidden($name, $flags = 0);
@@ -138,7 +138,7 @@ interface WidgetFactoryInterface
      *
      * @param string $name The view member name holding the selected value(s)
      * @param integer $flags
-     * @return WidgetInterface
+     * @return \Nethgui\Renderer\WidgetInterface
      * @api
      */
     public function selector($name, $flags = 0);
@@ -148,7 +148,7 @@ interface WidgetFactoryInterface
      * 
      * @param string $name The view member name
      * @param integer $flags Optional - {DIALOG_*, STATE_ENABLED}
-     * @return WidgetInterface
+     * @return \Nethgui\Renderer\WidgetInterface
      * @api
      */
     public function button($name, $flags = 0);
@@ -159,7 +159,7 @@ interface WidgetFactoryInterface
      * @param string $name The view member name
      * @param string $value The value assigned to the control, when selected.
      * @param integer $flags Optional {STATE_DISABLED, STATE_CHECKED}
-     * @return WidgetInterface
+     * @return \Nethgui\Renderer\WidgetInterface
      * @api
      */
     public function radioButton($name, $value, $flags = 0);
@@ -170,7 +170,7 @@ interface WidgetFactoryInterface
      * @param string $name The view member name
      * @param string $value The value assigned to the control, when selected.
      * @param integer $flags Optional {STATE_DISABLED, STATE_CHECKED}
-     * @return WidgetInterface
+     * @return \Nethgui\Renderer\WidgetInterface
      * @api
      */
     public function checkBox($name, $value, $flags = 0);
@@ -182,7 +182,7 @@ interface WidgetFactoryInterface
      * @param string $name
      * @param string $value
      * @param integer $flags
-     * @return WidgetInterface
+     * @return \Nethgui\Renderer\WidgetInterface
      * @api
      */
     public function fieldsetSwitch($name, $value, $flags = 0);
@@ -191,7 +191,7 @@ interface WidgetFactoryInterface
      * Create a dialog box container.
      *
      * @param int $flags Render flags: {DIALOG_MODAL, DIALOG_EMBEDDED, STATE_DISABLED, DIALOG_SUCCESS, DIALOG_WARNING, DIALOG_ERROR}
-     * @return WidgetInterface
+     * @return \Nethgui\Renderer\WidgetInterface
      * @api
      */
     public function dialog($name, $flags = 0);
@@ -200,7 +200,7 @@ interface WidgetFactoryInterface
      * Create a tabs container.
      *
      * @param integer $flags {STATE_DISABLED}
-     * @return WidgetInterface
+     * @return \Nethgui\Renderer\WidgetInterface
      * @api
      */
     public function tabs($flags = 0);
@@ -209,7 +209,7 @@ interface WidgetFactoryInterface
      * Create a simple form container.
      * 
      * @param integer $flags Optional - {STATE_DISABLED}
-     * @return WidgetInterface
+     * @return \Nethgui\Renderer\WidgetInterface
      * @api
      */
     public function form($flags = 0);
@@ -218,7 +218,7 @@ interface WidgetFactoryInterface
      * Create a panel container
      *
      * @param integer $flags
-     * @return WidgetInterface
+     * @return \Nethgui\Renderer\WidgetInterface
      * @api
      */
     public function panel($flags = 0);
@@ -229,7 +229,7 @@ interface WidgetFactoryInterface
      * Add the actual elements invoking the insert() operation of the returned object.
      *
      * @param integer $flags
-     * @return WidgetInterface
+     * @return \Nethgui\Renderer\WidgetInterface
      * @api
      */
     public function elementList($flags = 0);
@@ -240,7 +240,7 @@ interface WidgetFactoryInterface
      * Add the actual elements invoking the insert() operation of the returned object.
      *
      * @param integer $flags
-     * @return WidgetInterface
+     * @return \Nethgui\Renderer\WidgetInterface
      * @api
      */
     public function buttonList($flags = 0);
@@ -250,7 +250,7 @@ interface WidgetFactoryInterface
      * Create literal data - helper.
      *
      * @param string|object|\Nethgui\Core\ViewInterface $data Can be a string, any object implementing toString() method, or a View.
-     * @return WidgetInterface
+     * @return \Nethgui\Renderer\WidgetInterface
      * @api
      */
     public function literal($data, $flags = 0);
@@ -260,7 +260,7 @@ interface WidgetFactoryInterface
      *
      * Add the actual columns through the insert() operation of the returned object
      *
-     * @return WidgetInterface
+     * @return \Nethgui\Renderer\WidgetInterface
      * @api
      */
     public function columns();
@@ -271,7 +271,7 @@ interface WidgetFactoryInterface
      * - name View member holding the percent value Int range [0, 100]
      *
      * @see #554
-     * @return WidgetInterface
+     * @return \Nethgui\Renderer\WidgetInterface
      * @api
      */
     public function progressBar($name, $flags = 0);
@@ -284,7 +284,7 @@ interface WidgetFactoryInterface
      * - appendOnly
      *
      * @see #556
-     * @return WidgetInterface
+     * @return \Nethgui\Renderer\WidgetInterface
      * @api
      */
     public function textArea($name, $flags = 0);
@@ -295,7 +295,7 @@ interface WidgetFactoryInterface
      *
      * @see textArea()
      *
-     * @return WidgetInterface
+     * @return \Nethgui\Renderer\WidgetInterface
      * @api
      */
     public function console($name, $flags = 0);
@@ -308,7 +308,7 @@ interface WidgetFactoryInterface
      * - class (string) "Date " plus one of "be" (default), "me", "le".
      *
      * @see 474
-     * @return WidgetInterface
+     * @return \Nethgui\Renderer\WidgetInterface
      * @api
      */
     public function dateInput($name, $flags);
@@ -318,7 +318,7 @@ interface WidgetFactoryInterface
      * Pick/selects objects from a collection
      *
      * @see WidgetFactoryInterface::selector()
-     * @return WidgetInterface
+     * @return \Nethgui\Renderer\WidgetInterface
      * @api
      */
     public function objectPicker($name = NULL, $flags = 0);

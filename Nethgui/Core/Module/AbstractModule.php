@@ -72,7 +72,6 @@ abstract class AbstractModule implements ModuleInterface, LogConsumerInterface, 
      * @var string|callable
      */
     private $viewTemplate;
-    private $uiClientCommands = array();
 
     public function __construct($identifier = NULL)
     {
@@ -145,23 +144,6 @@ abstract class AbstractModule implements ModuleInterface, LogConsumerInterface, 
         if ( ! is_null($template)) {
             $view->setTemplate($template);
         }
-
-        foreach ($this->uiClientCommands as $commandArgs) {
-            list($methodName, $arguments, $bucketName) = $commandArgs;
-            $command = $view->createUiCommand($methodName, $arguments);
-            $view->offsetSet($bucketName, $command);
-        }
-    }
-
-    /**
-     *
-     * @param string $methodName
-     * @param array $arguments
-     * @param string|object $receiver
-     */
-    protected function addUiClientCommand($methodName, $arguments = array(), $bucketName = NULL)
-    {
-        $this->uiClientCommands[] = array($methodName, $arguments, $bucketName);
     }
 
     protected function setViewTemplate($template)
