@@ -21,6 +21,9 @@ namespace Nethgui\Client;
  */
 
 /**
+ *
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
  */
 class Command implements \Nethgui\Core\CommandInterface
 {
@@ -49,9 +52,29 @@ class Command implements \Nethgui\Core\CommandInterface
      */
     private $executed;
 
-    public function __construct($methodName, $arguments = array())
+    /**
+     *
+     * @var \Nethgui\Core\ViewInterface
+     */
+    private $origin;
+
+    /**
+     *
+     * @var string
+     */
+    private $selector;
+
+    /**
+     *
+     * @param \Nethgui\Core\ViewInterface $origin
+     * @param string $name
+     * @param array $arguments
+     */
+    public function __construct(\Nethgui\Core\ViewInterface $origin, $name, $arguments, $selector = '')
     {
-        $this->methodName = $methodName;
+        $this->origin = $origin;
+        $this->selector = $selector;
+        $this->methodName = $name;
         $this->arguments = $arguments;
         $this->executed = FALSE;
     }
@@ -67,7 +90,23 @@ class Command implements \Nethgui\Core\CommandInterface
         }
 
         $this->executed = TRUE;
-        return $this->receiver->executeCommand($this->methodName, $this->arguments);
+
+        return $this->receiver->executeCommand($this->origin, $this->selector, $this->methodName, $this->arguments);
+    }
+
+    public function getOrigin()
+    {
+        return $this->origin;
+    }
+
+    public function getSelector()
+    {
+        return $this->selector;
+    }
+
+    public function setSelector($selector)
+    {
+        $this->selector = $selector;
     }
 
     public function setReceiver(\Nethgui\Core\CommandReceiverInterface $receiver)

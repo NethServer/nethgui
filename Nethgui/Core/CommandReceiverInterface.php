@@ -30,10 +30,12 @@ namespace Nethgui\Core;
 interface CommandReceiverInterface
 {
     /**
+     * @param \Nethgui\Core\ViewInterface $origin
+     * @param string $selector
      * @param string $name
      * @param array $arguments
      * @return mixed
      */
-    public function executeCommand($name, $arguments);
+    public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments);
 }
 

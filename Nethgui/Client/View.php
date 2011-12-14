@@ -35,9 +35,12 @@ namespace Nethgui\Client;
  * Moreover, every module has a View object assigned to it as a parameter during
  * prepareView() operation.
  *
+ * @author Davide Principi <davide.principi@nethesis.it>
  * @see \Nethgui\Core\ModuleInterface::prepareView()
+ * @since 1.0
+
  */
-class View implements \Nethgui\Core\ViewInterface, \Nethgui\Core\CommandFactoryInterface, \Nethgui\Log\LogConsumerInterface
+class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInterface, \Nethgui\Core\ReceiverChainInterface
 {
 
     /**
@@ -89,15 +92,44 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Core\CommandFactoryI
      */
     private $pathUrl;
 
-    public function __construct(\Nethgui\Core\ModuleInterface $module, \Nethgui\Core\TranslatorInterface $translator, $siteUrl = '', $pathUrl = '/', $controllerPath = '')
+    /**
+     *
+     * @var \Nethgui\Core\CommandReceiverInterface
+     */
+    private $nextReceiver;
+
+    /**
+     *
+     * @var \ArrayAccess
+     */
+    private $commands;
+
+    /**
+     *
+     * @param integer $targetFormat The target format code of the final view output
+     * @param \Nethgui\Core\ModuleInterface $module
+     * @param \Nethgui\Core\TranslatorInterface $translator
+     * @param array $urlParts An array of three strings corresponding to <siteUrl, pathUrl, controllerPath>
+     */
+    public function __construct($targetFormat, \Nethgui\Core\ModuleInterface $module, \Nethgui\Core\TranslatorInterface $translator, $urlParts = array())
     {
         $this->module = $module;
         $this->translator = $translator;
-        $this->siteUrl = $siteUrl;
-        $this->controllerPath = $controllerPath;
-        $this->pathUrl = $pathUrl;
+        $this->nextReceiver = \Nethgui\Core\NullReceiver::getNullInstance();
+
+        $this->siteUrl = array_shift($urlParts); // 0
+        $this->pathUrl = array_shift($urlParts); // 1
+        $this->controllerPath = array_shift($urlParts); // 2
+
         $this->template = str_replace('\Module\\', '\Template\\', get_class($module));
         $this->data = array();
+        $this->targetFormat = $targetFormat;
+        $this->commands = new \ArrayObject();
+    }
+
+    public function getTargetFormat()
+    {
+        return $this->targetFormat;
     }
 
     public function copyFrom($data)
@@ -119,7 +151,9 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Core\CommandFactoryI
 
     public function spawnView(\Nethgui\Core\ModuleInterface $module, $register = FALSE)
     {
-        $spawnedView = new self($module, $this->translator, $this->siteUrl, $this->pathUrl, $this->controllerPath);
+        $spawnedView = new static($this->targetFormat, $module, $this->translator, array($this->siteUrl, $this->pathUrl, $this->controllerPath));
+        $spawnedView->setNextReceiver($this->nextReceiver);
+        $spawnedView->commands = $this->commands;
         if ($register === TRUE) {
             $this[$module->getIdentifier()] = $spawnedView;
         } elseif (is_string($register)) {
@@ -239,7 +273,7 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Core\CommandFactoryI
         if (NETHGUI_ENABLE_TARGET_HASH === FALSE) {
             return $this->getUniqueId($name);
         }
-        return substr(md5($this->getUniqueId($name)), 0, 8);
+        return 'T' . substr(md5($this->getUniqueId($name)), 0, 8);
     }
 
     /**
@@ -307,21 +341,49 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Core\CommandFactoryI
         }
     }
 
-    public function getCommandFactory()
+    public function setNextReceiver(\Nethgui\Core\CommandReceiverInterface $receiver)
     {
+        $this->nextReceiver = $receiver;
         return $this;
     }
 
-    public function createUiCommand($methodName, $arguments)
+    public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
     {
-        return new Command($methodName, $arguments);
+        $module = $this->getModule();
+        if ($module instanceof \Nethgui\Core\CommandReceiverInterface) {
+            $module->executeCommand($origin, $selector, $name, $arguments);
+        }
+
+        $this->nextReceiver->executeCommand($origin, $selector, $name, $arguments);
     }
 
-    public function showDialogBox($message, $actions = array(), $type = \Nethgui\Core\CommandFactoryInterface::NOTIFY_SUCCESS)
+    public function createCommand($name, $arguments, $selector = '')
     {
-        $dialog = new \Nethgui\Client\DialogBox($this->getModule(), $message, $actions, $type);
-        return $this->createUiCommand('showDialogBox', array($dialog));
+        return new \Nethgui\Client\Command($this, $name, $arguments, $selector);
+    }
+
+    public function getCommandList()
+    {
+        return $this->getCommandListFor('');
+    }
+
+    public function getCommandListFor($selector)
+    {
+        $fullSelector = $this->getUniqueId($selector);
+        if ( ! isset($this->commands[$fullSelector])) {
+            $this->commands[$fullSelector] = new \Nethgui\Client\ViewCommandSequence($this, $selector);
+        }
+        return $this->commands[$fullSelector];
+    }
+
+    public function hasCommandListFor($selector)
+    {
+        return isset($this->commands[$this->getUniqueId($selector)]);
+    }
+
+    public function getCommands()
+    {
+        return $this->commands;
     }
 
 }
-

@@ -29,21 +29,17 @@ namespace Nethgui\Client;
  * until they are dismissed. A transient dialog box disappears after a UI update.
  * Persistent ones disappear after the User clicks on a button.
  * 
- * 
- * 
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
  */
-class DialogBox implements \Serializable
+class DialogBox extends \Nethgui\Client\AbstractNotification
 {
 
     private $message;
-    private $type;
     private $actions;
     private $module;
-    private $id;
-    private $transient;
-    private $dismissed;
 
-    public function __construct(\Nethgui\Core\ModuleInterface $module, $message, $actions = array(), $type = \Nethgui\Core\CommandFactoryInterface::NOTIFY_SUCCESS)
+    public function __construct(\Nethgui\Core\ModuleInterface $module, $message, $actions = array(), $style = self::NOTIFY_SUCCESS)
     {
         if ( ! $module instanceof ModuleSurrogate) {
             $module = new ModuleSurrogate($module);
@@ -57,8 +53,8 @@ class DialogBox implements \Serializable
         $this->module = $module;
         $this->actions = $this->sanitizeActions($actions);
         $this->message = $message;
-        $this->type = $type;
-        $this->dismissed = FALSE;
+
+        parent::__construct($style, NULL, count($this->actions) === 0);
     }
 
     private function sanitizeActions($actions)
@@ -76,11 +72,6 @@ class DialogBox implements \Serializable
 
             if ( ! isset($action[2])) {
                 $action[2] = array();
-            }
-
-            // An action with submit data causes the dialog to be persistent
-            if ( ! empty($action[2]) && is_null($this->transient)) {
-                $this->transient = FALSE;
             }
 
             $sanitizedActions[] = $action;
@@ -104,57 +95,14 @@ class DialogBox implements \Serializable
         return $this->message;
     }
 
-    public function getType()
+    public function asArray()
     {
-        return $this->type;
+        return array(
+            'p' => parent::asArray(),
+            'm' => $this->message,
+            'a' => $this->actions,
+            'M' => $this->module->getIdentifier()
+        );
     }
 
-    public function isTransient()
-    {
-        return $this->transient !== FALSE;
-    }
-
-    public function getId()
-    {
-        if (is_null($this->id)) {
-            $this->id = 'dlg' . substr(md5($this->serialize() . microtime()), 0, 6);
-        }
-
-        return $this->id;
-    }
-
-    public function serialize()
-    {
-        return serialize(array($this->message, $this->actions, $this->type, $this->module, $this->id, $this->transient, $this->dismissed));
-    }
-
-    public function unserialize($serialized)
-    {
-        $args = unserialize($serialized);
-        list($this->message, $this->actions, $this->type, $this->module, $this->id, $this->transient, $this->dismissed) = $args;
-    }
-
-    public function dismiss()
-    {
-        $this->dismissed = TRUE;
-    }
-
-    public function isDismissed()
-    {
-        return $this->dismissed === TRUE;
-    }
-
-//    public function asArray(\Nethgui\Core\TranslatorInterface $translator)
-//    {
-//        $a = array();
-//
-//        $a['dialogId'] = $this->getId();
-//        $a['type'] = $this->getType();
-//        $a['transient'] = $this->isTransient();
-//        $message = $this->getMessage();
-//        $a['message'] = $translator->translate($this->getModule(), $message[0], $message[1]);
-//        $a['actions'] = $this->getActions();
-//
-//        return $a;
-//    }
 }

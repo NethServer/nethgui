@@ -44,19 +44,32 @@ interface CommandInterface
      * Called by Invoker
      *
      * @see setReceiver()
-     * @param object $context
-     * @return mixed.
+     * @return void
      */
     public function execute();
 
     /**
      * Set the command receiver, the object where the command is executed
      *
-     * @param object An object implementing either CommandReceiverInterface or \Nethgui\Client\CommandReceiverAggregateInterface
-     * @see \Nethgui\Core\CommandReceiverInterface
+     * @see \Nethgui\Core\ReceiverChainInterface
+     * @param \Nethgui\Core\CommandReceiverInterface $receiver The object where the command is executed
      * @return CommandInterface
      */
     public function setReceiver(\Nethgui\Core\CommandReceiverInterface $receiver);
+
+    /**
+     * The string that matches the appointed receiver
+     *
+     * @return string
+     */
+    public function getSelector();
+
+    /**
+     * The view that created the command
+     *
+     * @return \Nethgui\Core\ViewInterface
+     */
+    public function getOrigin();
 
     /**
      * @see execute()
@@ -64,4 +77,5 @@ interface CommandInterface
      */
     public function isExecuted();
 }
+
 
