@@ -81,7 +81,8 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
         if ( ! $session->hasElement($key)) {
             $session->store($key, new \ArrayObject());
         }
-
+        
+        // TODO: scan the process list and remove long-exited processes.
         $this->processes = $session->retrieve($key);
     }
 
@@ -326,11 +327,6 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
             }
         }
         return FALSE;
-    }
-
-    public function __destruct()
-    {
-        // TODO: scan the process list and remove long-exited processes.
     }
 
 }
