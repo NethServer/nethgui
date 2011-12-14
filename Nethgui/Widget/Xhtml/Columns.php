@@ -25,13 +25,13 @@ namespace Nethgui\Widget\Xhtml;
  */
 class Columns extends Panel
 {
-    public function render()
+    protected function renderContent()
     {
         $childCountClass = ' c' . count($this->getChildren());
         
         $this->setAttribute('class', $this->getAttribute('class', 'columns') . $childCountClass);
 
-        return parent::render();
+        return parent::renderContent();
     }
 
     protected function wrapChild($childOutput)

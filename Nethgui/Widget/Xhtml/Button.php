@@ -29,10 +29,10 @@ namespace Nethgui\Widget\Xhtml;
  * - label
  *
  */
-class Button extends \Nethgui\Widget\XhtmlWidget implements \Nethgui\Core\CommandReceiverInterface
+class Button extends \Nethgui\Widget\XhtmlWidget
 {
 
-    public function render()
+    protected function renderContent()
     {
         $name = $this->getAttribute('name');
         $flags = $this->getAttribute('flags');
@@ -70,7 +70,7 @@ class Button extends \Nethgui\Widget\XhtmlWidget implements \Nethgui\Core\Comman
             $attributes['title'] = $this->getAttribute('title', FALSE);
 
             $content .= $this->openTag('a', $attributes);
-            $content .= $this->view->translate($label);
+            $content .= htmlspecialchars($this->view->translate($label));
             $content .= $this->closeTag('a');
         } else {
             if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::BUTTON_SUBMIT) {
@@ -116,12 +116,14 @@ class Button extends \Nethgui\Widget\XhtmlWidget implements \Nethgui\Core\Comman
         return $this->view->getModuleUrl($value);
     }
 
-    public function executeCommand($name, $arguments)
+    public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
     {
         switch ($name) {
             case 'setLabel':
                 $this->setAttribute('label', $arguments[0]);
                 break;
+            default:
+                parent::executeCommand($origin, $selector, $name, $arguments);
         }
     }
 

@@ -90,7 +90,7 @@ class ObjectPicker extends \Nethgui\Widget\XhtmlWidget
         return parent::insert($child);
     }
 
-    public function render()
+    protected function renderContent()
     {
         $this->initializeRendering();
 
@@ -194,7 +194,7 @@ class ObjectPicker extends \Nethgui\Widget\XhtmlWidget
             $childClone->setAttribute('label', $child->getAttribute('label', $child->getAttribute('name') . '_label'));
             $childClone->setAttribute('value', $object[$this->metadata['value']]);
 
-            $content .= $childClone->render();
+            $content .= $childClone->renderContent();
         }
         $content .= '</div>';
 

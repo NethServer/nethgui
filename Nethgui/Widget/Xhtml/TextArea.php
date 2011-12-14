@@ -35,7 +35,7 @@ namespace Nethgui\Widget\Xhtml;
 class TextArea extends \Nethgui\Widget\XhtmlWidget
 {
 
-    public function render()
+    protected function renderContent()
     {
         $name = $this->getAttribute('name');
         $flags = $this->getAttribute('flags', 0);        

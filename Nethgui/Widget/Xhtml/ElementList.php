@@ -28,7 +28,7 @@ class ElementList extends \Nethgui\Widget\XhtmlWidget
 
     private $childWrapTag;
 
-    public function render()
+    protected function renderContent()
     {
         $name = $this->getAttribute('name');
         $value = $this->getAttribute('value');

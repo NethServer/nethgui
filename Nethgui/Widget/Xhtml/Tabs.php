@@ -26,7 +26,7 @@ namespace Nethgui\Widget\Xhtml;
 class Tabs extends \Nethgui\Widget\XhtmlWidget
 {
 
-    public function render()
+    protected function renderContent()
     {
         $content = '';
 

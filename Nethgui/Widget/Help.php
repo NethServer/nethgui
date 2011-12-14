@@ -26,7 +26,7 @@ namespace Nethgui\Widget;
 class Help extends AbstractWidget
 {
 
-    public function render()
+    protected function renderContent()
     {
         $whatToDo = $this->getAttribute('do');
 
@@ -40,7 +40,7 @@ class Help extends AbstractWidget
             return (String) $renderer;
         }
 
-        return parent::render();
+        return parent::renderContent();
     }
 
 }

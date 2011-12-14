@@ -31,7 +31,7 @@ namespace Nethgui\Widget\Xhtml;
 class Fieldset extends Panel
 {
 
-    public function render()
+    protected function renderContent()
     {
         // force container tag to FIELDSET:
         $this->setAttribute('tag', 'fieldset');
@@ -62,7 +62,7 @@ class Fieldset extends Panel
             $this->prepend($legendWidget);
         }
 
-        return parent::render();
+        return parent::renderContent();
     }
 
 }

@@ -35,7 +35,7 @@ namespace Nethgui\Widget\Xhtml;
 class Literal extends \Nethgui\Widget\XhtmlWidget
 {
 
-    public function render()
+    protected function renderContent()
     {
         $value = $this->getAttribute('data', '');
 
@@ -50,10 +50,10 @@ class Literal extends \Nethgui\Widget\XhtmlWidget
         }
 
         if ($value instanceof \Nethgui\Core\ViewInterface) {
-            $value = $this->getRenderer()->spawnRenderer($value)->setDefaultFlags($valueFlags);
+            $content = $this->getRenderer()->spawnRenderer($value)->setDefaultFlags($valueFlags)->render();
+        } else {
+            $content = (String) $value;
         }
-
-        $content = (String) $value;
 
         if ($this->getAttribute('hsc', FALSE) === TRUE) {
             $content = htmlspecialchars($content);

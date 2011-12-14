@@ -26,7 +26,7 @@ namespace Nethgui\Widget\Xhtml;
 class FieldsetSwitch extends \Nethgui\Widget\XhtmlWidget
 {
 
-    public function render()
+    protected function renderContent()
     {
         $name = $this->getAttribute('name');
         $value = $this->getAttribute('value');
@@ -42,7 +42,7 @@ class FieldsetSwitch extends \Nethgui\Widget\XhtmlWidget
             ->setAttribute('flags', $flags)
         ;
 
-        $content .= $chooser->render();
+        $content .= $chooser->renderContent();
         $content .= $this->openTag('fieldset', array('class' => 'FieldsetSwitchPanel'));
         $content .= $this->renderChildren();        
         $content .= $this->closeTag('fieldset');

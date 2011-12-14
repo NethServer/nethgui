@@ -29,7 +29,7 @@ namespace Nethgui\Widget\Xhtml;
 class Inset extends \Nethgui\Widget\XhtmlWidget
 {
 
-    public function render()
+    protected function renderContent()
     {
         $name = $this->getAttribute('name');
         $flags = $this->getAttribute('flags', 0);
@@ -50,7 +50,7 @@ class Inset extends \Nethgui\Widget\XhtmlWidget
     {
         $module = $inset->getModule();
 
-        $content = (String) $inset;
+        $content = $inset->render();
         $contentWidget = $this->view->literal($content);
 
         // 1. If we have a NOFORMWRAP give up here.

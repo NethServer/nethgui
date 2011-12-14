@@ -77,7 +77,7 @@ abstract class AbstractWidget implements \Nethgui\Renderer\WidgetInterface, \Net
         return $this;
     }
 
-    public function render()
+    protected function renderContent()
     {
         return $this->renderChildren();
     }
@@ -90,7 +90,7 @@ abstract class AbstractWidget implements \Nethgui\Renderer\WidgetInterface, \Net
             if ($child->hasAttribute('flags')) {
                 $child->setAttribute('flags', $flags | $child->getAttribute('flags'));
             }
-            $output .= $this->wrapChild($child->render());
+            $output .= $this->wrapChild($child->renderContent());
         }
         return $output;
     }
@@ -119,7 +119,11 @@ abstract class AbstractWidget implements \Nethgui\Renderer\WidgetInterface, \Net
             //throw $ex;
             return '';
         }
+    }
 
+    public function render()
+    {
+        return $this->renderContent();
     }
 
     protected function getClientEventTarget()

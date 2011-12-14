@@ -23,8 +23,9 @@ namespace Nethgui\Widget;
 /**
  * Abstract Xhtml Widget class
  */
-abstract class XhtmlWidget extends AbstractWidget
+abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\Core\CommandReceiverInterface
 {
+
     /**
      *
      * @return \Nethgui\Renderer\Xhtml
@@ -264,11 +265,11 @@ abstract class XhtmlWidget extends AbstractWidget
     {
         /*
          * Refs #620
-         * Client commands are applied to the designed widget to keep the view consistent
+         * Client commands are applied to the appointed widget to keep the view consistent
          * in both CLIENT and SERVER modes.
          */
         $this->invokeCommands();
-        parent::render();
+        return parent::render();
     }
 
     private function invokeCommands()
@@ -277,17 +278,16 @@ abstract class XhtmlWidget extends AbstractWidget
             return;
         }
 
-        $commandBuckets = array_map('trim', explode(',', $this->getAttribute('receiver')));
+        $commandTargets = array_map('trim', explode(',', $this->getAttribute('receiver')));
 
-        foreach ($commandBuckets as $commandBucket) {
-            if ( ! isset($this->view[$commandBucket])) {
+        foreach ($commandTargets as $targetName) {
+            if ( ! $this->view->hasCommandListFor($targetName)) {
                 continue;
             }
 
-            $command = $this->view[$commandBucket];
+            $command = $this->view->getCommandListFor($targetName);
 
-            if ($command instanceof \Nethgui\Core\CommandInterface
-                && ! $command->isExecuted()) {
+            if (! $command->isExecuted()) {
                 $command->setReceiver($this)->execute();
             }
         }
@@ -300,6 +300,11 @@ abstract class XhtmlWidget extends AbstractWidget
         }
 
         return $cssClass;
+    }
+
+    public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
+    {
+        // PASS.. please override.
     }
 
 }

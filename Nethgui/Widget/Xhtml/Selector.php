@@ -26,7 +26,7 @@ namespace Nethgui\Widget\Xhtml;
 class Selector extends \Nethgui\Widget\XhtmlWidget
 {
 
-    public function render()
+    protected function renderContent()
     {
         $name = $this->getAttribute('name');
         $flags = $this->getAttribute('flags');
@@ -123,7 +123,7 @@ class Selector extends \Nethgui\Widget\XhtmlWidget
             $fieldsetWidget->setAttribute('icon-before', $this->getAttribute('icon-before'));
         }
         $fieldsetWidget->insert($panelWidget);
-        return $fieldsetWidget->render();
+        return $fieldsetWidget->renderContent();
     }
 
     /**

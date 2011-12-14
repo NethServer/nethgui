@@ -26,7 +26,7 @@ namespace Nethgui\Widget\Xhtml;
 class CheckBox extends \Nethgui\Widget\XhtmlWidget
 {
 
-    public function render()
+    protected function renderContent()
     {
         $name = $this->getAttribute('name');
         $value = $this->getAttribute('value');

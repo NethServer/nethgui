@@ -26,7 +26,7 @@ namespace Nethgui\Widget\Xhtml;
 class Panel extends \Nethgui\Widget\XhtmlWidget
 {
 
-    public function render()
+    protected function renderContent()
     {
         $content = '';
         $cssClass = $this->getAttribute('class', FALSE);
@@ -42,6 +42,8 @@ class Panel extends \Nethgui\Widget\XhtmlWidget
         } else {
             $id = FALSE;
         }
+
+        $cssClass = $this->appendReceiverName($cssClass);
 
         $attributes = array(
             'class' => empty($cssClass) ? FALSE : trim($cssClass),

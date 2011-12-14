@@ -26,7 +26,7 @@ namespace Nethgui\Widget\Xhtml;
 class Form extends Panel
 {
 
-    public function render()
+    protected function renderContent()
     {                       
         $action = $this->getAttribute('action', '');
         $this->setAttribute('class', $this->getAttribute('class', FALSE));
@@ -34,7 +34,7 @@ class Form extends Panel
 
         $content = '';
         $content .= $this->openTag('form', array('method' => 'post', 'action' => $this->view->getModuleUrl($action)));
-        $content .= parent::render();
+        $content .= parent::renderContent();
         $content .= $this->closeTag('form');
 
         return $content;
