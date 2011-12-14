@@ -1,6 +1,5 @@
 <?php
 namespace Nethgui\Core;
-
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
  *
@@ -21,12 +20,20 @@ namespace Nethgui\Core;
  */
 
 /**
- * Gain access to the notification messages
+ * Records a sequence of method calls through the PHP magic method __call.
  *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-interface NotificationManagerInterface
-{    
-    public function getNotifications();
+interface ViewCommandInterface extends \Nethgui\Core\CommandSequenceInterface
+{
+    /**
+     * A magic method that creates and appends a Command object to the command
+     * sequence.
+     *
+     * @param string $name
+     * @param array $arguments
+     * @return \Nethgui\Core\ViewCommandInterface
+     */
+    public function __call($name, $arguments);
 }

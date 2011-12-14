@@ -36,6 +36,8 @@ namespace Nethgui\Core;
  */
 interface ViewInterface extends \ArrayAccess, \IteratorAggregate
 {
+    const TARGET_XHTML = 0;
+    const TARGET_JSON = 1;
 
     /**
      * Set the template to be applied to this object.
@@ -67,7 +69,7 @@ interface ViewInterface extends \ArrayAccess, \IteratorAggregate
     /**
      * Assign data to the View state.
      *
-     * @param $data
+     * @param Traversable $data
      * @return void
      * @api
      */
@@ -188,11 +190,43 @@ interface ViewInterface extends \ArrayAccess, \IteratorAggregate
     public function getTranslator();
 
     /**
-     * Objects returned by the factory methods can be added to the view element
-     * collection.
+     * Create a new command object for later execution.
      *
-     * @return \Nethgui\Core\CommandFactoryInterface
-     * @api
+     * The command will be executed on the receiver object appointed by the $selector argument.
+     *
+     * The view is recorded as "origin" into the command object.
+     *
+     * @param string $name The method name to execute
+     * @param array $arguments Arguments applied to the method
+     * @param string $selector Routes the command to the receiver. By default the appointed receiver is the creator view itself.
+     * @return \Nethgui\Core\CommandInterface
      */
-    public function getCommandFactory();
+    public function createCommand($name, $arguments, $selector = '');
+
+    /**
+     * Get a command list for the current view
+     *
+     * @return \Nethgui\Core\ViewCommandInterface
+     */
+    public function getCommandList();
+
+    /**
+     * Get a command list for the given selector
+     *
+     * @param string $selector Routes the command list to the receiver appointed by this parameter.
+     * @return \Nethgui\Core\ViewCommandInterface
+     */
+    public function getCommandListFor($selector);
+
+    /**
+     * Check if one or more commands has been added to the selected command list
+     *
+     * @return boolean TRUE, if some command has been added to the list
+     */
+    public function hasCommandListFor($selector);
+
+    /**
+     * @return integer
+     */
+    public function getTargetFormat();
 }
