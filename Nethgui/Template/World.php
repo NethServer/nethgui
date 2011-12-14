@@ -17,7 +17,7 @@
     </head>
     <body>
         <div id="allWrapper">
-            <div id="pageHeader"><?php echo $view->inset('NotificationArea') ?><a id="product" href="Dashboard" title='NethServer'></a><h1 id="ModuleTitle"><?php echo $moduleTitle ?></h1><h2>NethServer</h2></div>
+            <div id="pageHeader"><?php echo $view->inset('Notification') ?><a id="product" href="Dashboard" title='NethServer'></a><h1 id="ModuleTitle"><?php echo $moduleTitle ?></h1><h2>NethServer</h2></div>
 
             <div id="pageContent">
                 <div class="primaryContent" role="mainTask">
