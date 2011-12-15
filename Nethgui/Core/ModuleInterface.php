@@ -101,19 +101,6 @@ interface ModuleInterface
     public function isInitialized();
 
     /**
-     * Prepare view layer data, putting it into $view.
-     *
-     * @param ViewInterface $view The view to put the data into
-     * @param integer $mode One of VIEW_CLIENT or VIEW_SERVER values
-     * @see ModuleInterface::VIEW_SERVER
-     * @see ModuleInterface::VIEW_CLIENT
-     * @see ViewInterface
-     * @return void
-     * @api
-     */
-    public function prepareView(ViewInterface $view, $mode);
-
-    /**
      * Gain access to the attributes of this module
      *
      * @return ModuleAttributesInterface

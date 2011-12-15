@@ -20,17 +20,13 @@ namespace Nethgui\Core\Module;
  * along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Nethgui\Core\ModuleInterface;
-use Nethgui\Core\ModuleDescriptorInterface;
-use Nethgui\Log\LogConsumerInterface;
-
 /**
  *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  * @api
  */
-abstract class AbstractModule implements ModuleInterface, LogConsumerInterface, DefaultUiStateInterface
+abstract class AbstractModule implements \Nethgui\Core\ModuleInterface, \Nethgui\Core\ViewableInterface, \Nethgui\Log\LogConsumerInterface, DefaultUiStateInterface
 {
 
     /**
@@ -40,7 +36,7 @@ abstract class AbstractModule implements ModuleInterface, LogConsumerInterface, 
 
     /**
      *
-     * @var ModuleInterface;
+     * @var \Nethgui\Core\ModuleInterface;
      */
     private $parent;
     /*
@@ -87,7 +83,7 @@ abstract class AbstractModule implements ModuleInterface, LogConsumerInterface, 
     {
         $this->platform = $platform;
 
-        if (is_null($this->log) && $platform instanceof LogConsumerInterface) {
+        if (is_null($this->log) && $platform instanceof \Nethgui\Log\LogConsumerInterface) {
             $log = $platform->getLog();
             if ($log instanceof \Nethgui\Log\LogInterface) {
                 $this->setLog($log);
