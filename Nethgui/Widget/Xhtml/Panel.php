@@ -50,9 +50,13 @@ class Panel extends \Nethgui\Widget\XhtmlWidget
             'id' => $id
         );
 
-        $content .= $this->openTag($tag, $attributes);
-        $content .= $this->renderChildren();
-        $content .= $this->closeTag($tag);
+        if ($tag) {
+            $content .= $this->openTag($tag, $attributes);
+            $content .= $this->renderChildren();
+            $content .= $this->closeTag($tag);
+        } else {
+            $content .= $this->renderChildren();
+        }
 
         return $content;
     }

@@ -26,7 +26,7 @@ namespace Nethgui\Client;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-abstract class AbstractNotification implements \IteratorAggregate, \Serializable
+abstract class AbstractNotification implements \Serializable, \Nethgui\Core\ViewableInterface
 {
     const NOTIFY_SUCCESS = 0x0;
     const NOTIFY_WARNING = 0x1;
@@ -93,15 +93,26 @@ abstract class AbstractNotification implements \IteratorAggregate, \Serializable
         list($this->identifier, $this->dismissed, $this->style, $this->type, $this->transient) = unserialize($serialized);
     }
 
-    public function asArray()
+    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
     {
-        return array(
-            'i' => $this->identifier,
-            'd' => $this->dismissed,
-            's' => $this->style,
-            'T' => $this->type,
-            'r' => $this->transient
-        );
+        $view->setTemplate(array($this, 'renderXhtml'));
+        $view['identifier'] = $this->identifier;
+        $view['dismissed'] = $this->dismissed;
+        $view['style'] = $this->style;
+        $view['type'] = $this->type;
+        $view['transient'] = $this->transient;
+        $view['message'] = '';
+    }
+
+    public function renderXhtml(\Nethgui\Renderer\Xhtml $renderer)
+    {
+        if ($this->getStyle() & (\Nethgui\Client\AbstractNotification::NOTIFY_ERROR | \Nethgui\Client\AbstractNotification::NOTIFY_WARNING)) {
+            $styleClass = 'ui-state-error';
+        } else {
+            $styleClass = 'ui-state-success';
+        }
+
+        return $renderer->panel()->setAttribute('class', sprintf('%s %s', $this->getType(), $styleClass))->setAttribute('name', $this->getIdentifier());
     }
 
 }

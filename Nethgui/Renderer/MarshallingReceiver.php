@@ -41,53 +41,17 @@ class MarshallingReceiver extends \Nethgui\Core\AbstractReceiverChain
     public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
     {
         parent::executeCommand($origin, $selector, $name, $arguments);
-
         $receiver = $origin->getClientEventTarget($selector);
-
-//        if ($selector === '/Notification'
-//            && $name === 'showNotification'
-//            && $arguments[0] instanceof \Nethgui\Client\AbstractNotification) {
-//            // Replace the abstract notification object with its identifier:
-//            $arguments[0] = $arguments[0]->getIdentifier();
-//        }
-
-        $this->addCommand($receiver, $name, $arguments);
-        
-//        if ($name == 'activateAction') {
-//            $receiver = '';
-//            $tmp = array(
-//                $origin->getUniqueId($arguments[0]),
-//                $origin->getModuleUrl($arguments[0]),
-//                $origin->getUniqueId()
-//            );
-//
-//            if (isset($arguments[1])) {
-//                $tmp[1] = $origin->getModuleUrl($arguments[1]);
-//            }
-//
-//            if (isset($arguments[2])) {
-//                $tmp[2] = $origin->getUniqueId($arguments[2]);
-//            }
-//
-//            $arguments = $tmp;
-//        } elseif ($name == 'redirect' || $name == 'queryUrl') {
-//            $receiver = '';
-//            $arguments[0] = $origin->getModuleUrl($arguments[0]);
-//        } elseif ($name == 'delay'
-//            && $arguments[0] instanceof \Nethgui\Core\CommandInterface) {
-//            // replace the first argument with the array equivalent
-//            $arguments[0] = $arguments[0]->setReceiver($this)->execute();
-//        } else {
-//
-//        }
+        $argsArray = $this->prepareArguments($origin, $arguments);
+        $this->addCommand($receiver, $name, $argsArray);
     }
 
     private function addCommand($receiver, $name, $arguments)
     {
         $this->commands[] = array(
-            'receiver' => '.' . $receiver,
-            'methodName' => $name,
-            'arguments' => \Nethgui\traversable_to_array($arguments),
+            'R' => '.' . $receiver,
+            'M' => $name,
+            'A' => $arguments,
         );
     }
 
@@ -98,6 +62,27 @@ class MarshallingReceiver extends \Nethgui\Core\AbstractReceiverChain
     public function getMarshalledCommands()
     {
         return $this->commands;
+    }
+
+    /**
+     * Convert various object formats into a PHP array
+     * @param mixed $value
+     * @return array
+     */
+    private function prepareArguments(\Nethgui\Core\ViewInterface $view, $value)
+    {
+        $a = array();
+        foreach ($value as $k => $v) {
+            if ($v instanceof \Nethgui\Core\ViewableInterface) {
+                $innerView = $view->spawnView($view->getModule());
+                $v->prepareView($innerView, $view->getTargetFormat());
+                $v = $this->prepareArguments($view, $innerView);
+            } elseif ($v instanceof \Traversable || is_array($v)) {
+                $v = $this->prepareArguments($view, $v);
+            }
+            $a[$k] = $v;
+        }
+        return $a;
     }
 
 }

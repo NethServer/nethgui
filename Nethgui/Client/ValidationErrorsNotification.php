@@ -52,10 +52,10 @@ class ValidationErrorsNotification extends AbstractNotification implements \Neth
     public function addValidationErrorMessage(\Nethgui\Core\ModuleInterface $module, $parameterName, $message, $args = array())
     {
         $this->errors[] = array(
-            $module,
-            $parameterName,
-            $this->translator->translate($module, $message, $args),
-            self::NOTIFY_ERROR
+            'module' => new ModuleSurrogate($module),
+            'parameter' => $parameterName,
+            'message' => $message,
+            'args' => $args
         );
     }
 
@@ -86,12 +86,41 @@ class ValidationErrorsNotification extends AbstractNotification implements \Neth
         return count($this->errors) > 0;
     }
 
-    public function asArray()
+    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
     {
-        return array(
-            'p' => parent::asArray(),
-            'e' => $this->errors
-        );
+        parent::prepareView($view, $mode);
+        $view['title'] = count($this->errors) > 1 ? $view->translate('Invalid parameters') : $view->translate('Invalid parameter');
+        $errors = array();
+        foreach ($this->errors as $error) {
+            $innerView = $view->spawnView($error['module']);
+            $errors[] = array(
+                'label' => $innerView->translate($error['parameter'] . '_label'),
+                'message' => $innerView->translate($error['message'], $error['args']),
+                'widgetId' => $innerView->getUniqueId($error['parameter'])
+            );
+        }
+        $view['errors'] = $errors;
+    }
+
+    public function renderXhtml(\Nethgui\Renderer\Xhtml $renderer)
+    {
+        $panel = parent::renderXhtml($renderer);
+
+        $title = $renderer->textLabel('title')
+            ->setAttribute('icon-before', 'ui-icon-alert')
+            ->setAttribute('template', '${0}: ');
+
+        $elementList = $renderer->elementList()
+            ->setAttribute('wrap', 'ol/li')
+            ->setAttribute('class', 'flatList');
+
+        foreach ($renderer['errors'] as $error) {
+            $elementList->insert($renderer->literal($error['label']));
+        }
+
+        return $panel
+            ->insert($title)
+            ->insert($elementList);
     }
 
 }

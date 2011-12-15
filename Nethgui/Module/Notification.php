@@ -30,6 +30,7 @@ namespace Nethgui\Module;
  */
 class Notification extends \Nethgui\Core\Module\Standard implements \Nethgui\Core\CommandReceiverInterface
 {
+
     public function __construct($identifier = NULL)
     {
         parent::__construct($identifier);
@@ -85,15 +86,25 @@ class Notification extends \Nethgui\Core\Module\Standard implements \Nethgui\Cor
             $view->getCommandList()->dismissNotification($this->parameters['dismiss']);
         }
 
-        $view['notifications'] = $this->notifications;
+        $this->view = $view;
+
+        // Transfer notification attributes into the view
+        foreach ($this->notifications as $notification) {
+            $this->updateViewData($notification);
+        }
     }
 
     public function render(\Nethgui\Renderer\Xhtml $renderer)
     {
         $panel = $renderer->panel()->setAttribute('name', 'Pane')->setAttribute('receiver', '');
 
-        foreach ($renderer['notifications'] as $offset => $notification) {
-            $panel->insert($renderer->literal($offset));
+        foreach ($renderer as $offset => $innerView) {
+            if ( ! $innerView instanceof \Nethgui\Core\ViewInterface
+                || $innerView['dismissed'] === TRUE) {
+                continue;
+            }
+
+            $panel->insert($renderer->inset($offset));
         }
 
         return (String) $panel;
@@ -109,7 +120,10 @@ class Notification extends \Nethgui\Core\Module\Standard implements \Nethgui\Cor
         if ($name === 'showNotification') {
             $this->showNotification($arguments[0]);
         } elseif ($name === 'showMessage') {
-            $this->showNotification(new \Nethgui\Client\DialogBox($origin->getModule(), $arguments[0]));
+            if ( ! isset($arguments[1])) {
+                $arguments[1] = \Nethgui\Client\AbstractNotification::NOTIFY_SUCCESS;
+            }
+            $this->showNotification(new \Nethgui\Client\DialogBox($origin->getModule(), $arguments[0], array(), $arguments[1]));
         } elseif ($name === 'dismissNotification') {
             $this->dismissNotification($arguments[0]);
         }
@@ -119,6 +133,7 @@ class Notification extends \Nethgui\Core\Module\Standard implements \Nethgui\Cor
     {
         if (isset($this->notifications[$notificationId])) {
             $this->notifications[$notificationId]->dismiss();
+            $this->updateViewData($this->notifications[$notificationId]);
         }
     }
 
@@ -126,6 +141,17 @@ class Notification extends \Nethgui\Core\Module\Standard implements \Nethgui\Cor
     {
         $id = $notification->getIdentifier();
         $this->notifications[$id] = $notification;
+        $this->updateViewData($notification);
+    }
+
+    protected function updateViewData(\Nethgui\Client\AbstractNotification $notification)
+    {
+        if ( ! isset($this->view)) {
+            return;
+        }
+        $innerView = $this->view->spawnView($this);
+        $notification->prepareView($innerView, $this->view->getTargetFormat());
+        $this->view[$notification->getIdentifier()] = $innerView;
     }
 
 }

@@ -39,7 +39,7 @@ class DialogBox extends \Nethgui\Client\AbstractNotification
     private $actions;
     private $module;
 
-    public function __construct(\Nethgui\Core\ModuleInterface $module, $message, $actions = array(), $style = self::NOTIFY_SUCCESS)
+    public function __construct(\Nethgui\Core\ModuleInterface $module, $message, $actions = array(), $style)
     {
         if ( ! $module instanceof ModuleSurrogate) {
             $module = new ModuleSurrogate($module);
@@ -54,7 +54,7 @@ class DialogBox extends \Nethgui\Client\AbstractNotification
         $this->actions = $this->sanitizeActions($actions);
         $this->message = $message;
 
-        parent::__construct($style, NULL, count($this->actions) === 0);
+        parent::__construct($style, 'Message', count($this->actions) === 0);
     }
 
     private function sanitizeActions($actions)
@@ -95,14 +95,18 @@ class DialogBox extends \Nethgui\Client\AbstractNotification
         return $this->message;
     }
 
-    public function asArray()
+    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
     {
-        return array(
-            'p' => parent::asArray(),
-            'm' => $this->message,
-            'a' => $this->actions,
-            'M' => $this->module->getIdentifier()
-        );
+        parent::prepareView($view, $mode);
+        $view['title'] = $view->translate($this->message[0], $this->message[1]);
+        $view['actions'] = $this->actions;
     }
 
+    public function renderXhtml(\Nethgui\Renderer\Xhtml $renderer)
+    {
+        $panel = parent::renderXhtml($renderer);
+        $message = $renderer->textLabel('title')->setAttribute('icon-before', 'ui-icon-info');
+        return $panel->insert($message);
+    }
+    
 }

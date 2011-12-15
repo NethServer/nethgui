@@ -510,20 +510,5 @@ function array_rest($arr)
     return $arr;
 }
 
-/**
- * Convert a \Traversable object to a PHP array
- * @param \Traversable|array $value
- * @return array
- */
-function traversable_to_array($value)
-{
-    $a = array();
-    foreach ($value as $k => $v) {
-        if ($v instanceof \Traversable || is_array($v)) {
-            $v = traversable_to_array($v);
-        }
-        $a[$k] = $v;
-    }
-    return $a;
-}
+
 

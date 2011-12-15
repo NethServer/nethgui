@@ -120,10 +120,9 @@ class Json extends AbstractRenderer implements \Nethgui\Core\CommandReceiverInte
         return json_encode($output);
     }
 
-    /*
+    /**
      * Commands dispatched to widgets fall here. 
      */
-
     public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
     {
         if ($name === 'setLabel') {
