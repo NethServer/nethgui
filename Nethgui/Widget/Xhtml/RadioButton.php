@@ -31,7 +31,7 @@ class RadioButton extends \Nethgui\Widget\XhtmlWidget
         $name = $this->getAttribute('name');
         $value = $this->getAttribute('value');
         $flags = $this->getAttribute('flags');
-        $label = $this->getAttribute('label', $name . '_' . $value . '_label');
+        $label = $this->getAttribute('label', $this->getTranslateClosure($name . '_' . $value . '_label'));
         $content = '';
 
         $attributes = array(

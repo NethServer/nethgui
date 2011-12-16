@@ -32,7 +32,7 @@ class CheckBox extends \Nethgui\Widget\XhtmlWidget
         $value = $this->getAttribute('value');
         $uncheckedValue = $this->getAttribute('uncheckedValue', '');
         $flags = $this->getAttribute('flags');
-        $label = $this->getAttribute('label', $name . '_label');
+        $label = $this->getAttribute('label', $this->getTranslateClosure($name . '_label'));
         $content = '';
 
         $flags = $this->applyDefaultLabelAlignment($flags, \Nethgui\Renderer\WidgetFactoryInterface::LABEL_RIGHT);

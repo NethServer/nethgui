@@ -42,7 +42,7 @@ class TextArea extends \Nethgui\Widget\XhtmlWidget
         $dimensions = explode('x', $this->getAttribute('dimensions', '20x30'));
         $rows = intval($dimensions[0]);
         $cols = intval($dimensions[1]);
-        $label = $this->getAttribute('label', $name . '_label');
+        $label = $this->getAttribute('label', $this->getTranslateClosure($name . '_label'));
         $value = htmlspecialchars($this->view[$name]);
 
         $tagContent = '';

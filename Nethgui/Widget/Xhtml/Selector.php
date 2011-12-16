@@ -84,7 +84,7 @@ class Selector extends \Nethgui\Widget\XhtmlWidget
     {
         $name = $this->getAttribute('name');
         $flags = $this->getAttribute('flags');
-        $label = $this->getAttribute('label', $name . '_label');
+        $label = $this->getAttribute('label', $this->getTranslateClosure($name . '_label'));
         $flags = $this->applyDefaultLabelAlignment($flags, \Nethgui\Renderer\WidgetFactoryInterface::LABEL_ABOVE);
         if (count($choices) == 0) {
             $tagContent = '<option selected="selected" value=""/>';
@@ -117,7 +117,7 @@ class Selector extends \Nethgui\Widget\XhtmlWidget
             ->insert($contentWidget);
 
         $fieldsetWidget = new Fieldset($this->view);
-        $fieldsetWidget->setAttribute('template', $this->getAttribute('label', $name . '_label'))
+        $fieldsetWidget->setAttribute('template', $this->getAttribute('label', $this->getTranslateClosure($name . '_label')))
             ->setAttribute('flags', $this->getAttribute('flags'));
         if ($this->hasAttribute('icon-before')) {
             $fieldsetWidget->setAttribute('icon-before', $this->getAttribute('icon-before'));

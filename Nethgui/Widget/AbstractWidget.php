@@ -44,7 +44,10 @@ abstract class AbstractWidget implements \Nethgui\Renderer\WidgetInterface, \Net
     public function getAttribute($attribute, $default = NULL)
     {
         if ( ! $this->hasAttribute($attribute)) {
-            return $default;
+            if (is_callable($default)) {
+                return call_user_func($default, $attribute);
+            }
+            return strval($default);
         }
         return $this->attributes[$attribute];
     }

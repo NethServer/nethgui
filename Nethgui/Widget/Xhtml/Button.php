@@ -36,7 +36,7 @@ class Button extends \Nethgui\Widget\XhtmlWidget
     {
         $name = $this->getAttribute('name');
         $flags = $this->getAttribute('flags');
-        $label = $this->getAttribute('label', $name . '_label');
+        $label = $this->getAttribute('label', $this->getTranslateClosure($name . '_label'));
         $content = '';
 
         $attributes = array();
@@ -70,7 +70,7 @@ class Button extends \Nethgui\Widget\XhtmlWidget
             $attributes['title'] = $this->getAttribute('title', FALSE);
 
             $content .= $this->openTag('a', $attributes);
-            $content .= htmlspecialchars($this->view->translate($label));
+            $content .= htmlspecialchars($label);
             $content .= $this->closeTag('a');
         } else {
             if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::BUTTON_SUBMIT) {
@@ -92,7 +92,7 @@ class Button extends \Nethgui\Widget\XhtmlWidget
                 $childContent = $this->renderChildren();
             }
 
-            $attributes['value'] = $this->view->translate($label);
+            $attributes['value'] = $label;
 
             $content .= $this->controlTag('button', $name, $flags, $this->appendReceiverName($cssClass), $attributes);
             if (isset($childContent)) {

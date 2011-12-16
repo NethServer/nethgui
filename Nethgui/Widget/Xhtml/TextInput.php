@@ -31,7 +31,7 @@ class TextInput extends \Nethgui\Widget\XhtmlWidget
         $name = $this->getAttribute('name');
         $value = $this->getAttribute('value');
         $flags = $this->getAttribute('flags');
-        $label = $this->getAttribute('label', $name . '_label');
+        $label = $this->getAttribute('label', $this->getTranslateClosure($name . '_label'));
         $cssClass = $this->getAttribute('class', '');
         $cssClass = trim('TextInput ' . $cssClass);
         $content ='';

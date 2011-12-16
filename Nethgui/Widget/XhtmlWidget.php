@@ -52,7 +52,7 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\Core\Comma
 
         $content = '';
         $content .= $this->openTag('label', $attributes);
-        $content .= htmlspecialchars($this->view->translate($text));
+        $content .= htmlspecialchars($text);
         $content .= $this->closeTag('label');
         return $content;
     }
@@ -287,7 +287,7 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\Core\Comma
 
             $command = $this->view->getCommandListFor($targetName);
 
-            if (! $command->isExecuted()) {
+            if ( ! $command->isExecuted()) {
                 $command->setReceiver($this)->execute();
             }
         }
@@ -305,6 +305,22 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\Core\Comma
     public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
     {
         // PASS.. please override.
+    }
+
+    /**
+     * Get a closure that provides a default value for an attribute
+     * 
+     * @param string $message
+     * @param array $args
+     * @return closure
+     */
+    protected function getTranslateClosure($message, $args = array())
+    {
+        $view = $this->view;
+        $f = function($attributeName) use ($view, $message, $args) {
+            return $view->translate($message, $args);
+        };
+        return $f;
     }
 
 }

@@ -169,9 +169,9 @@ class ObjectPicker extends \Nethgui\Widget\XhtmlWidget
         $contentProperties = '';
 
         if ($this->metadata['url'] && isset($object[$this->metadata['url']])) {
-            $content .= $this->openTag('a', array('class' => 'label', 'href' => $object[$this->metadata['url']])) . htmlspecialchars($this->view->translate($object[$this->metadata['label']], array())) . $this->closeTag('a');
+            $content .= $this->openTag('a', array('class' => 'label', 'href' => $object[$this->metadata['url']])) . htmlspecialchars($object[$this->metadata['label']]) . $this->closeTag('a');
         } else {
-            $content .= $this->openTag('span', array('class' => 'label')) . htmlspecialchars($this->view->translate($object[$this->metadata['label']], array())) . $this->closeTag('span');
+            $content .= $this->openTag('span', array('class' => 'label')) . htmlspecialchars($object[$this->metadata['label']]) . $this->closeTag('span');
         }
 
         $content .= '<div class="checkboxset">';
@@ -191,7 +191,7 @@ class ObjectPicker extends \Nethgui\Widget\XhtmlWidget
 
             $childClone->setAttribute('flags', $childFlags);
             $childClone->setAttribute('name', $child->getAttribute('name') . '/' . $index);
-            $childClone->setAttribute('label', $child->getAttribute('label', $child->getAttribute('name') . '_label'));
+            $childClone->setAttribute('label', $child->getAttribute('label', $this->getTranslateClosure($child->getAttribute('name') . '_label')));
             $childClone->setAttribute('value', $object[$this->metadata['value']]);
 
             $content .= $childClone->renderContent();

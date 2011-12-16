@@ -73,7 +73,7 @@ class TextLabel extends \Nethgui\Widget\XhtmlWidget
             }
         }
 
-        $text = $this->view->translate($template, $args);
+        $text = strtr($template, $args);
 
         if ($hsc) {
             $text = htmlspecialchars($text);
