@@ -100,7 +100,7 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
 
     /**
      *
-     * @var \ArrayAccess
+     * @var \ArrayObject
      */
     private $commands;
 
@@ -384,6 +384,17 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
     public function getCommands()
     {
         return $this->commands;
+    }
+
+    /**
+     * Remove all enqueued commands without executing them
+     * 
+     * @return View
+     */
+    public function clearAllCommands()
+    {
+        $this->commands->exchangeArray(array());
+        return $this;
     }
 
 }

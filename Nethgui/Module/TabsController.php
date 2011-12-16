@@ -31,7 +31,7 @@ class TabsController extends \Nethgui\Core\Module\Controller
     public function renderDefault(\Nethgui\Renderer\Xhtml $view)
     {
         $container = $view->tabs()
-            ->setAttribute('class', 'TabsController')
+            ->setAttribute('class', 'TabsController ' . $view->getClientEventTarget(''))
             ->setAttribute('tabClass', 'TabAction')
         ;
 

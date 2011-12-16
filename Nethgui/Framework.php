@@ -316,6 +316,9 @@ class Framework
         $mainModule->prepareView($rootView, $targetFormat);
 
         if ($validationErrorsNotification->hasValidationErrors()) {
+            // Only validation errors notification has to be shown: clear
+            // all enqueued commands.
+            $rootView->clearAllCommands();
             $rootView->getCommandListFor('/Notification')->showNotification($validationErrorsNotification);
         }
 

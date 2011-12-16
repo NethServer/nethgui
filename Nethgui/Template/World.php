@@ -21,7 +21,7 @@
 
             <div id="pageContent">
                 <div class="primaryContent" role="mainTask">
-                    <div class="<?php echo $currentModule->getIdentifier(); ?> CurrentModule"><?php echo $currentModuleOutput ?></div>
+                    <div id="CurrentModule"><?php echo $currentModuleOutput ?></div>
                     <div id='footer'><?php echo htmlspecialchars($view['company'] . " - " . $view['address']); ?></div>
                 </div>
 

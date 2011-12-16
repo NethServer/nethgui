@@ -105,15 +105,11 @@ class Button extends \Nethgui\Widget\XhtmlWidget
 
     private function prepareHrefAttribute($value)
     {
-        if (is_array($value)) {
-            $value = implode('/', $value);
+        if (!is_string($value)) {
+            throw new \InvalidArgumentException(sprintf('%s: $value argument must be a string', get_class($this)), 1324051523);
         }
 
-        if (preg_match('#^https?#', $value)) {
-            // Leave skip processing of absolute and fully qualified URLs
-            return $value;
-        }
-        return $this->view->getModuleUrl($value);
+        return $value;
     }
 
     public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)

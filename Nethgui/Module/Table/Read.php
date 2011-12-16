@@ -79,6 +79,12 @@ class Read extends Action
         }
     }
 
+    /**
+     * Generate the table actions button list
+     *
+     * @param \Nethgui\Renderer\Xhtml $view A parent controller view
+     * @return \Nethgui\Renderer\WidgetInterface
+     */
     public function renderTableActions(\Nethgui\Renderer\Xhtml $view)
     {
         $tableActions = $view->getModule()->getTableActions();
@@ -87,14 +93,14 @@ class Read extends Action
             ->setAttribute('wrap', 'div/');
 
         foreach ($tableActions as $tableAction) {
-            $action = $tableAction->getIdentifier();
+            $actionId = $tableAction->getIdentifier();
 
             if ($tableAction instanceof Help) {
                 $button = $view->button('Help', \Nethgui\Renderer\WidgetFactoryInterface::BUTTON_HELP);
             } else {
                 $button = $view
-                    ->button($action, \Nethgui\Renderer\WidgetFactoryInterface::BUTTON_LINK)
-                    ->setAttribute('value', array($action, '#' . $view->getUniqueId($action)));
+                    ->button($actionId, \Nethgui\Renderer\WidgetFactoryInterface::BUTTON_LINK)
+                    ->setAttribute('value', $view->getModuleUrl($actionId));
             }
 
             $buttonList->insert($button);
@@ -131,9 +137,9 @@ class Read extends Action
         $methodName = 'prepareViewForColumn' . ucfirst($column);
 
         if (method_exists($this->getParent(), $methodName)) {
-            $columnValue = $this->getParent()->$methodName ($this, $view, $mode, $key, $values, $rowMetadata);
+            $columnValue = $this->getParent()->$methodName($this, $view, $mode, $key, $values, $rowMetadata);
         } elseif (method_exists($this, $methodName)) {
-            $columnValue =   $this->$methodName($view, $mode, $key, $values, $rowMetadata);
+            $columnValue = $this->$methodName($view, $mode, $key, $values, $rowMetadata);
         } else {
             $columnValue = isset($values[$column]) ? $values[$column] : NULL;
         }
@@ -164,13 +170,7 @@ class Read extends Action
             $actionId = $action->getIdentifier();
             $actionInfo = array();
             $actionInfo[] = $cellView->translate($actionId . '_label');
-
-            if ($mode == self::VIEW_CLIENT) {
-                $actionInfo[] = $cellView->getModuleUrl(sprintf('%s/%s#%s', $action->getIdentifier(), $key, $cellView->getUniqueId($actionId)));
-            } else {
-                $actionInfo[] = array($action->getIdentifier(), $key, '#' . $cellView->getUniqueId($actionId));
-            }
-
+            $actionInfo[] = $cellView->getModuleUrl(sprintf('%s/%s', $action->getIdentifier(), $key));
             $cellView[$actionId] = $actionInfo;
         }
 

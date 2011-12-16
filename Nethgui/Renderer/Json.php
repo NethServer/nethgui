@@ -121,13 +121,10 @@ class Json extends AbstractRenderer implements \Nethgui\Core\CommandReceiverInte
     }
 
     /**
-     * Commands dispatched to widgets fall here. 
+     * Implement commands routed to widgets here:
      */
     public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
     {
-        if ($name === 'setLabel') {
-            $arguments[0] = $origin->translate($arguments[0]);
-        }
         $this->receiver->executeCommand($origin, $selector, $name, $arguments);
     }
 

@@ -70,10 +70,14 @@ interface WidgetInterface
     /**
      * Read an attribute value.
      * 
-     * If the attribute has not been set return the given default value
+     * If the attribute has not been set return the given default value.
+     *
+     * The second argument can also be a callable. In this case, it is invoked only
+     * if a default value is needed, and is expected to return that value. The
+     * attribute name will be passed as first function argument.
      *
      * @param string $attribute The attribute name
-     * @param mixed $default The default value
+     * @param mixed $default The default value or callable closure/function.
      */
     public function getAttribute($attribute, $default = NULL);
 

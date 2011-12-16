@@ -204,6 +204,8 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
             }
         }
 
+        $containerClass .= ' ' . $view->getClientEventTarget('');
+
         $container = $view->panel()->setAttribute('class', $containerClass);
 
         foreach ($this->getChildren() as $index => $module) {

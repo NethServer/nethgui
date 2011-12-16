@@ -58,29 +58,34 @@ class HttpCommandReceiver extends \Nethgui\Core\AbstractReceiverChain
         return call_user_func_array(array($this, $name), $arguments);
     }
 
-    protected function cancel(\Nethgui\Core\ViewInterface $origin, $selector)
-    {
-        $this->httpRedirection($origin, $selector, 302, $origin->getModuleUrl('..'));
-    }
+//    protected function showView(\Nethgui\Core\ViewInterface $origin, $selector, $location)
+//    {
+//        $this->httpRedirection($origin, $selector, $code, $location);
+//    }
 
-    protected function activateAction(\Nethgui\Core\ViewInterface $origin, $selector, $actionId, $path = NULL, $prevComponent = NULL)
-    {
-        if (is_null($path)) {
-            $path = $actionId;
-        }
-
-        $this->httpRedirection($origin, $selector, 302, $origin->getModuleUrl($path));
-    }
-
-    protected function enable(\Nethgui\Core\ViewInterface $origin, $selector)
-    {
-        $this->httpRedirection($origin, $selector, 302, $origin->getModuleUrl());
-    }
-
-    protected function redirect(\Nethgui\Core\ViewInterface $origin, $selector, $url)
-    {
-        $this->httpRedirection($origin, $selector, 302, $url);
-    }
+//    protected function cancel(\Nethgui\Core\ViewInterface $origin, $selector)
+//    {
+//        $this->httpRedirection($origin, $selector, 302, $origin->getModuleUrl('..'));
+//    }
+//
+//    protected function activateAction(\Nethgui\Core\ViewInterface $origin, $selector, $actionId, $path = NULL, $prevComponent = NULL)
+//    {
+//        if (is_null($path)) {
+//            $path = $actionId;
+//        }
+//
+//        $this->httpRedirection($origin, $selector, 302, $origin->getModuleUrl($path));
+//    }
+//
+//    protected function enable(\Nethgui\Core\ViewInterface $origin, $selector)
+//    {
+//        $this->httpRedirection($origin, $selector, 302, $origin->getModuleUrl());
+//    }
+//
+//    protected function redirect(\Nethgui\Core\ViewInterface $origin, $selector, $url)
+//    {
+//        $this->httpRedirection($origin, $selector, 302, $url);
+//    }
 
     /**
      *

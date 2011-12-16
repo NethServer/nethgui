@@ -49,6 +49,12 @@ class Action extends \Nethgui\Core\Module\Standard implements ActionInterface
         return ! is_null($this->tableAdapter);
     }
 
+    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
+    {
+        parent::prepareView($view, $mode);
+        $view['Cancel'] = '/' . implode('/', $view->resolvePath('..'));
+    }
+
     public function getDefaultUiStyleFlags()
     {
         switch($this->getIdentifier()) {

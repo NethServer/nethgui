@@ -33,7 +33,7 @@ namespace Nethgui\Module;
  * @since 1.0
  * @api
  */
-class TableController extends \Nethgui\Core\Module\Controller 
+class TableController extends \Nethgui\Core\Module\Controller
 {
 
     /**
@@ -89,8 +89,7 @@ class TableController extends \Nethgui\Core\Module\Controller
         $tableAdapter = call_user_func_array(array($this->getPlatform(), 'getTableAdapter'), $this->tableAdapterArguments);
         foreach ($this->getChildren() as $action) {
             if ($action instanceof Table\Action
-                && ! $action->hasTableAdapter())
-            {
+                && ! $action->hasTableAdapter()) {
                 $action->setTableAdapter($tableAdapter);
             }
         }
@@ -157,8 +156,7 @@ class TableController extends \Nethgui\Core\Module\Controller
         }
 
         if ($actionArguments instanceof Table\Action) {
-            if ( ! is_null($tableAdapter))
-            {
+            if ( ! is_null($tableAdapter)) {
                 $actionArguments->setTableAdapter($tableAdapter);
             }
             $actionObject = $actionArguments;
@@ -189,17 +187,24 @@ class TableController extends \Nethgui\Core\Module\Controller
      */
     public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
     {
-        parent::prepareView($view, $mode);
+        $mode = $view->getTargetFormat();
+        parent::prepareView($view, $mode);        
 
-        if (is_object($this->currentAction)
-            && $mode == $view::TARGET_JSON
-            && $this->getRequest()->isSubmitted()
+        if ($mode !== $view::TARGET_JSON
+            || ! is_object($this->currentAction) ) {
+            return;
+        }
+
+        if ($this->getRequest()->isSubmitted()
             && $this->hasAction('read')) {
             // Load 'read' action when some other action has occurred,
             // to refresh the tabular data.
             $readAction = $this->getAction('read');
             $innerView = $view->spawnView($readAction, TRUE);
             $readAction->prepareView($innerView, $mode);
+            $view->getCommandList()->showView('read');
+        } elseif ( ! $this->getRequest()->isSubmitted()) {            
+            $view->getCommandList()->showView($this->currentAction->getIdentifier());
         }
     }
 
