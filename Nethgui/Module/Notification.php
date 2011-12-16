@@ -137,7 +137,7 @@ class Notification extends \Nethgui\Core\Module\Standard implements \Nethgui\Cor
         }
     }
 
-    protected function showNotification(\Nethgui\Client\AbstractNotification $notification)
+    protected function showNotification(\Nethgui\Client\AbstractNotification $notification) 
     {
         $id = $notification->getIdentifier();
         $this->notifications[$id] = $notification;
