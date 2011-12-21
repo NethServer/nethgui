@@ -30,6 +30,11 @@ namespace Nethgui\Core;
 interface CommandReceiverInterface
 {
     /**
+     * Specify an implementation for the given method and arguments.
+     * 
+     * The original view that generated the command and the selector string
+     * that identifies the logical target provide more contextual informations.
+     *
      * @param \Nethgui\Core\ViewInterface $origin
      * @param string $selector
      * @param string $name

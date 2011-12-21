@@ -44,7 +44,7 @@ interface CommandInterface
      * Called by Invoker
      *
      * @see setReceiver()
-     * @return void
+     * @return CommandInterface
      */
     public function execute();
 

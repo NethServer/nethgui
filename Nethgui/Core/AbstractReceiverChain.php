@@ -21,14 +21,13 @@ namespace Nethgui\Core;
  */
 
 /**
- * An object delegated to do some kind of action by the Delegator.
+ * Forwards the execution opeation to another receiver
  *
- * The object itself can sub-delegate the action or a part of it to another Receiver.
- *
+ * @see http://en.wikipedia.org/wiki/Chain-of-responsibility_pattern
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-abstract class AbstractReceiverChain implements \Nethgui\Core\ReceiverChainInterface
+abstract class AbstractReceiverChain implements CommandReceiverInterface
 {
 
     /**
@@ -36,23 +35,33 @@ abstract class AbstractReceiverChain implements \Nethgui\Core\ReceiverChainInter
      */
     private $nextReceiver;
 
-
+    /**
+     *
+     * @param \Nethgui\Core\CommandReceiverInterface $nextReceiver (optional)
+     */
     public function __construct(\Nethgui\Core\CommandReceiverInterface $nextReceiver = NULL)
     {
         $this->nextReceiver = is_null($nextReceiver) ? \Nethgui\Core\NullReceiver::getNullInstance() : $nextReceiver;
     }
 
     /**
+     * Get the next receiver of the chain
+     *
      * @return \Nethgui\Core\CommandReceiverInterface
      */
-    protected function getNextReceiver()
+    public function getNextReceiver()
     {
         return $this->nextReceiver;
     }
 
-    public function setNextReceiver(\Nethgui\Core\CommandReceiverInterface $subject)
+    /**
+     * Set the next receiver of the chain
+     * 
+     * @param \Nethgui\Core\CommandReceiverInterface $receiver
+     */
+    public function setNextReceiver(\Nethgui\Core\CommandReceiverInterface $receiver)
     {
-        $this->nextReceiver = $subject;
+        $this->nextReceiver = $receiver;
     }
 
     public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
