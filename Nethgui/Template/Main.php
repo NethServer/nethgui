@@ -1,10 +1,17 @@
 <?php
     $view
-        ->includeFile('nethgui.js')
-        ->useFile('css/base.css')
-        ->useFile('css/blue.css')
+        // Javascript:
+        ->useFile('js/jquery-1.6.2.min.js')
+        ->useFile('js/jquery-ui-1.8.16.custom.min.js')
+        ->useFile('js/jquery.dataTables.min.js')
+        ->useFile('js/jquery.qtip.min.js')
+        ->useFile(sprintf('js/jquery.ui.datepicker-%s.js', $view['lang']))
+        ->useFile('js/nethgui.js')
+        // CSS:
         ->useFile('css/default/jquery-ui-1.8.16.custom.css')
         ->useFile('css/jquery.qtip.min.css')
+        ->useFile('css/base.css')
+        ->useFile('css/blue.css')
     ;
 
     $currentModule =  $view[$view['currentModule']]->getModule();
