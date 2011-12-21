@@ -34,7 +34,7 @@ interface LogInterface
     public function getLevel();
 
 
-    public function exception(Exception $ex, $stackTrace = FALSE);
+    public function exception(\Exception $ex, $stackTrace = FALSE);
 
     /**
      * @deprecated

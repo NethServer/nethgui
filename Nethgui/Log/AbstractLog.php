@@ -58,7 +58,7 @@ abstract class AbstractLog implements LogInterface, \Nethgui\Core\GlobalFunction
         $this->level = $level;
     }
 
-    public function exception(Exception $ex, $stackTrace = FALSE)
+    public function exception(\Exception $ex, $stackTrace = FALSE)
     {
         if ( ! $this->level & E_ERROR) {
             return;
