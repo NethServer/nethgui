@@ -46,9 +46,14 @@ class Request implements \Nethgui\Core\RequestInterface
      * @var array
      */
     private $arguments;
+
+    /**
+     *
+     * @var \ArrayAccess
+     */
     private $attributes;
 
-    public function __construct(UserInterface $user, $data, $submitted, $arguments, $attributes)
+    public function __construct(UserInterface $user, $data, $submitted, $arguments, \ArrayAccess $attributes)
     {
         if (is_null($data)) {
             $data = array();
@@ -93,7 +98,7 @@ class Request implements \Nethgui\Core\RequestInterface
 
     public function getParameterAsInnerRequest($parameterName, $arguments = array())
     {
-        return new self($this->user, $this->getParameter($parameterName), $this->submitted, $arguments, array());
+        return new self($this->user, $this->getParameter($parameterName), $this->submitted, $arguments, $this->attributes);
     }
 
     public function getUser()
@@ -115,14 +120,9 @@ class Request implements \Nethgui\Core\RequestInterface
         return $this->attributes[$name];
     }
 
-    public function getContentType()
+    public function getExtension()
     {
-        return $this->getAttribute('CONTENT_TYPE');
-    }
-
-    public function isXmlHttpRequest()
-    {
-        return $this->getAttribute('XML_HTTP_REQUEST');
+        return $this->getAttribute('extension');
     }
 
 }

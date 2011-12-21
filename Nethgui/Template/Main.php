@@ -1,19 +1,27 @@
 <?php
-    $currentModule =  $view['CurrentModule']->getModule();
+    $view
+        ->includeFile('nethgui.js')
+        ->useFile('css/base.css')
+        ->useFile('css/blue.css')
+        ->useFile('css/default/jquery-ui-1.8.16.custom.css')
+        ->useFile('css/jquery.qtip.min.css')
+    ;
+
+    $currentModule =  $view[$view['currentModule']]->getModule();
     $moduleTitle = $view->getTranslator()->translate($currentModule, $currentModule->getAttributesProvider()->getTitle());
     $pageTitle = $view['company'] . " - " . $moduleTitle;
 
     // Must render CurrentModule before NotificationArea to catch notifications
-    $currentModuleOutput = (String) $view->inset('CurrentModule');
+    $currentModuleOutput = (String) $view->inset($view['currentModule']);
+    $menuOutput = $view->inset('Menu');
 ?><!DOCTYPE html>
 <html lang="<?php echo $view['lang'] ?>">
     <head>
         <title><?php echo $pageTitle ?></title>
-        <link rel="icon"  type="image/png"  href="<?php echo htmlspecialchars($view['favicon']) ?>" />
-        <?php foreach ($view['css'] as $cssPath): ?> <link rel="stylesheet" type="text/css" href="<?php echo htmlspecialchars($cssPath) ?>" /><?php endforeach; ?>        
-        <script type="text/javascript">document.write('<style type="text/css">#allWrapper {display:none}</style>')</script>
-        <meta name="viewport" content="width=device-width" />
-        <?php foreach ($view['js'] as $scriptPath): ?><script type="text/javascript" src="<?php echo htmlspecialchars($scriptPath) ?>" ></script><?php endforeach; ?>        
+        <link rel="icon"  type="image/png"  href="<?php echo htmlspecialchars($view['favicon']) ?>" />        
+        <meta name="viewport" content="width=device-width" />  
+        <!-- script>document.write('<style type="text/css">#allWrapper {display:none}</style>')</script -->
+        <?php echo $view->literal($view['Resource']['css']) ?>
     </head>
     <body>
         <div id="allWrapper">
@@ -22,12 +30,12 @@
             <div id="pageContent">
                 <div class="primaryContent" role="mainTask">
                     <div id="CurrentModule"><?php echo $currentModuleOutput ?></div>
-                    <div id='footer'><?php echo htmlspecialchars($view['company'] . " - " . $view['address']); ?></div>
+                    <div id="footer"><em>TODO: insert company and address here</em></div>
                 </div>
 
                 <div class="secondaryContent" role="otherTask">
                     <h2><?php echo htmlspecialchars($view->translate('Other modules')) ?></h2>
-                    <?php echo $view->inset('Menu') ?>
+                    <?php echo $menuOutput ?>
                 </div>
             </div>
             
@@ -38,6 +46,7 @@
                 </div>
             </div>
             
-        </div>       
+        </div>
+        <?php echo $view->literal($view['Resource']['js']) ?>
     </body>
 </html>

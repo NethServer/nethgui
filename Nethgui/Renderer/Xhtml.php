@@ -56,4 +56,35 @@ class Xhtml extends TemplateRenderer
         return $o;
     }
 
+    public function includeJavascript($jsCode)
+    {
+        $this->view->getCommandListFor('/Resource/js')->appendCode($jsCode, 'js');
+        return $this;
+    }
+
+    public function includeCss($cssCode)
+    {
+        $this->view->getCommandListFor('/Resource/css')->appendCode($cssCode, 'css');
+        return $this;
+    }
+
+    public function includeFile($fileName)
+    {
+        $namespace = \Nethgui\array_head(explode('\\', get_class($this->view->getModule())));
+        $resolverFunc = $this->getTemplateResolver();
+        $filePath = call_user_func($resolverFunc, implode('\\', array($namespace, 'Resource', $fileName)));
+        $ext = pathinfo($fileName, PATHINFO_EXTENSION);
+        $ext = $ext ? $ext : 'default';
+        $this->view->getCommandListFor('/Resource/' . $ext)->includeFile($filePath);
+        return $this;
+    }
+
+    public function useFile($fileName)
+    {
+        $ext = pathinfo($fileName, PATHINFO_EXTENSION);
+        $ext = $ext ? $ext : 'default';
+        $this->view->getCommandListFor('/Resource/' . $ext)->useFile($fileName);
+        return $this;
+    }
+
 }

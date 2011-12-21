@@ -84,7 +84,7 @@ class Framework
 
         $this->siteUrl = $this->guessSiteUrl();
         $this->basePath = $this->guessBasePath();
-        $this->decoratorTemplate = 'Nethgui\Template\World';
+        $this->decoratorTemplate = 'Nethgui\Template\Main';
     }
 
     /**
@@ -226,11 +226,18 @@ class Framework
     {
         $nsKey = array_head(explode('\\', $symbol));
 
+        $ext = pathinfo($symbol, PATHINFO_EXTENSION) ? '' : '.php';
+
         if (isset($this->namespaceMap[$nsKey])) {
-            return $this->namespaceMap[$nsKey] . '/' . str_replace('\\', '/', $symbol) . '.php';
+            return $this->namespaceMap[$nsKey] . '/' . str_replace('\\', '/', $symbol) . $ext;
         }
 
         return FALSE;
+    }
+
+    private function getFileNameResolver()
+    {
+        return array($this, 'absoluteScriptPath');
     }
 
     /**
@@ -245,9 +252,9 @@ class Framework
      */
     public function dispatch(Core\RequestInterface $request, &$output = NULL)
     {
-        $httpStatus = "HTTP/1.1 200 Success";
-        $fileNameResolver = array($this, 'absoluteScriptPath');
-        $urlParts = array($this->siteUrl, $this->basePath, 'index.php');
+
+
+
 
         /*
          * TODO: redirect
@@ -265,10 +272,7 @@ class Framework
         $platform = new System\NethPlatform($user);
         $platform->setPolicyDecisionPoint($pdp);
 
-        // Instantiate the string language translator:
-        $translator = new Language\Translator($user, $platform->getLog(), $fileNameResolver, array_keys($this->namespaceMap));
-
-        $validationErrorsNotification = new Client\ValidationErrorsNotification($translator);
+        $validationErrorsNotification = new Client\ValidationErrorsNotification();
 
         $moduleLoader->getModule('Notification')->setSession($session);
 
@@ -278,66 +282,64 @@ class Framework
         $mainModule->bind($request);
         $mainModule->validate($validationErrorsNotification);
 
-        // Validation error http status.
-        // See RFC2616, section 10.4 "Client Error 4xx"
-        if ($validationErrorsNotification->hasValidationErrors()) {
-            // FIXME: check if we are in FAST-CGI module:
-            // @see http://php.net/manual/en/function.header.php
-            $httpStatus = "HTTP/1.1 400 Request validation error";
-        } else {
+        if ( ! $validationErrorsNotification->hasValidationErrors()) {
             $mainModule->process();
             // Finally, signal "final" events (see #506)
             $platform->signalFinalEvents();
         }
 
+        $targetFormat = $request->getExtension();
+        $translator = new Language\Translator($user, $platform->getLog(), $this->getFileNameResolver(), array_keys($this->namespaceMap));
+        $urlParts = array($this->siteUrl, $this->basePath, 'index.php');
+        $rootView = new Client\View($targetFormat, $mainModule, $translator, $urlParts);
 
+        $commandReceiver = new Renderer\HttpCommandReceiver(new Renderer\MarshallingReceiver());
 
-        if ($request->getContentType() === Core\RequestInterface::CONTENT_TYPE_HTML) {
-            $targetFormat = Core\ViewInterface::TARGET_XHTML;
-            $httpContentType = "Content-Type: text/html; charset=UTF-8";
-
-            $httpReceiver = new Renderer\HttpCommandReceiver();
-            $marshallingReceiver = Core\NullReceiver::getNullInstance();
-
-            $rootView = new Client\View($targetFormat, $mainModule, $translator, $urlParts);
-            $rootView->setNextReceiver($httpReceiver);
-        } elseif ($request->getContentType() === Core\RequestInterface::CONTENT_TYPE_JSON) {
-            $targetFormat = Core\ViewInterface::TARGET_JSON;
-            $httpContentType = "Content-Type: application/json; charset=UTF-8";
-
-            $marshallingReceiver = new Renderer\MarshallingReceiver();
-            $httpReceiver = Core\NullReceiver::getNullInstance();
-
-            $rootView = new Client\View($targetFormat, $mainModule, $translator, $urlParts);
-            $rootView->setNextReceiver($marshallingReceiver);
-        }
+        $rootView->setReceiver($commandReceiver);
 
         // ..transfer contents and commands into the MAIN view:
-        $mainModule->prepareView($rootView, $targetFormat);
+        $mainModule->prepareView($rootView, $targetFormat === 'xhtml' ? 0 : 1);
 
         if ($validationErrorsNotification->hasValidationErrors()) {
             // Only validation errors notification has to be shown: clear
             // all enqueued commands.
             $rootView->clearAllCommands();
-            $rootView->getCommandListFor('/Notification')->showNotification($validationErrorsNotification);
+
+            // Validation error http status.
+            // See RFC2616, section 10.4 "Client Error 4xx"
+            // FIXME: check if we are in FAST-CGI module:
+            // @see http://php.net/manual/en/function.header.php
+            $rootView->getCommandListFor('/Notification')
+                ->showNotification($validationErrorsNotification)
+                ->httpHeader("HTTP/1.1 400 Request validation error")
+            ;
         }
 
         // ..Execute commands sent to views. These do not include commands sent to widgets:
         $this->executeViewCommands($rootView);
 
-        if ($httpReceiver instanceof Renderer\HttpCommandReceiver && $httpReceiver->hasRedirect()) {
+        if ($targetFormat === 'xhtml' && $commandReceiver->hasRedirect()) {
             $content = '';
-            $headers = $httpReceiver->getHttpRedirectHeaders();
+            $headers = $commandReceiver->getHttpHeaders();
         } else {
             // Render the view as Xhtml or Json
-            if ($request->getContentType() === Core\RequestInterface::CONTENT_TYPE_JSON) {
-                $renderer = new Renderer\Json($rootView, $marshallingReceiver);
-            } else {
-                $renderer = new Renderer\Xhtml($rootView, $fileNameResolver, 0);
-            }
+            $renderer = $this->getRenderer($targetFormat, $rootView);
 
             $content = $renderer->render();
-            $headers = array($httpStatus, $httpContentType);
+
+            // execute all non-executed commands:
+
+            $defaultHeaders = array(
+                "HTTP/1.1 200 Success",
+                sprintf('Content-Type: %s', $renderer->getContentType()) . (
+                $renderer->getCharset() ?
+                    sprintf('; charset=%s', $renderer->getCharset()) : ''
+                )
+            );
+
+            $headers = array_merge(
+                $defaultHeaders, $commandReceiver->getHttpHeaders()
+            );
         }
 
         if (is_array($output)) {
@@ -354,7 +356,32 @@ class Framework
     }
 
     /**
-     * Vist all sub-views and execute view commands
+     *
+     * @param string $targetFormat
+     * @param \Nethgui\Core\ViewInterface $view
+     * @return Renderer\Text 
+     */
+    private function getRenderer($targetFormat, \Nethgui\Core\ViewInterface $view)
+    {
+        if ($targetFormat === 'json') {
+            $renderer = new Renderer\Json($view, $marshallingReceiver);
+        } elseif ($targetFormat === 'xhtml') {
+            $renderer = new Renderer\Xhtml($view, $this->getFileNameResolver(), 0);
+        } else if ($targetFormat === 'js') {
+            $renderer = new Renderer\TemplateRenderer($view, $this->getFileNameResolver(), 'application/javascript', 'UTF-8');
+        } elseif ($targetFormat === 'css') {
+            $renderer = new Renderer\TemplateRenderer($view, $this->getFileNameResolver(), 'text/css', 'UTF-8');
+        } else {
+            $renderer = new Renderer\TemplateRenderer($view, $this->getFileNameResolver(), 'text/plain', 'UTF-8');
+        }
+
+        return $renderer;
+    }
+
+    /**
+     * Vist all sub-views and execute their commands.
+     * 
+     * These does not include ALL possible commands!
      * 
      * @param Client\View $view
      */
@@ -416,14 +443,6 @@ class Framework
             }
         }
 
-        if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
-            && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') {
-            $isXmlHttpRequest = TRUE;
-        } else {
-            $isXmlHttpRequest = FALSE;
-        }
-
-
         $submitted = FALSE;
         $data = array();
 
@@ -435,7 +454,7 @@ class Framework
                 $data = json_decode($GLOBALS['HTTP_RAW_POST_DATA'], true);
 
                 if (is_null($data)) {
-                    throw new Exception\HttpException('Bad Request', 400, 1322148404);
+                    throw new \Nethgui\Exception\HttpException('Bad Request', 400, 1322148404);
                 }
             } else {
                 // Use PHP global:
@@ -443,23 +462,16 @@ class Framework
             }
         }
 
-        // XXX: This is a non-compliant HTTP Accept-header parsing:
-        $httpAccept = isset($_SERVER['HTTP_ACCEPT']) ? trim(array_head(explode(',', $_SERVER['HTTP_ACCEPT']))) : FALSE;
-
-        if ($httpAccept == 'application/json')
-            $contentType = Core\RequestInterface::CONTENT_TYPE_JSON;
-        else {
-            // Standard  POST request.
-            $contentType = Core\RequestInterface::CONTENT_TYPE_HTML;
-        }
 
         // TODO: retrieve user state from Session
         $user = new Client\AlwaysAuthenticatedUser(new Client\Session());
 
-        $instance = new Client\Request($user, $data, $submitted, $pathInfo, array(
-                'XML_HTTP_REQUEST' => $isXmlHttpRequest,
-                'CONTENT_TYPE' => $contentType,
-            ));
+
+        $attributes = new \ArrayObject();
+
+        $attributes['extension'] = $this->extractTargetFormat($pathInfo);
+
+        $instance = new Client\Request($user, $data, $submitted, $pathInfo, $attributes);
 
         /*
          * Clear global variables
@@ -467,6 +479,57 @@ class Framework
         $_POST = array();
 
         return $instance;
+    }
+
+    private function extractTargetFormat(&$pathInfo)
+    {
+        $lastPart = array_pop($pathInfo);
+
+
+        $ext = '';
+
+        if ( ! is_string($lastPart)) {
+            return '';
+        }
+
+        $dotPos = strpos($lastPart, '.');
+
+        if ($dotPos !== FALSE) {
+            $ext = substr($lastPart, $dotPos + 1);
+            $lastPart = substr($lastPart, 0, $dotPos);
+        } else {
+            $ext = 'xhtml';
+        }
+
+        $pathInfo[] = $lastPart;
+
+        if (preg_match('/[a-z][a-zA-Z]*/', $ext) === 0) {
+            throw new \Nethgui\Exception\HttpException('Bad Request', 400, 1324457459);
+        }
+
+        return $ext;
+    }
+
+    /**
+     * Send a plain text formatted string as server-response.
+     *
+     * @param \Nethgui\Exception\HttpException $ex
+     * @return void;
+     * @api
+     */
+    public function printHttpException(\Nethgui\Exception\HttpException $ex)
+    {
+        header(sprintf('HTTP/1.1 %s %s', $ex->getHttpStatusCode(), $ex->getMessage()));
+        header('Content-Type: text/plain; charset=UTF-8');
+        echo sprintf("Nethgui - fatal error:\n\n    %s [%s]\n\n\n\n", $ex->getMessage(), $ex->getCode());
+        echo "Exception backtrace:\n\n";
+        echo $ex->getTraceAsString();
+
+        $prev = $ex->getPrevious();
+        if ($prev instanceof \Exception) {
+            echo sprintf("\n\nPrevious exception:\n\n    %s [%s]\n\n", $prev->getMessage(), $prev->getCode());
+            echo $prev->getTraceAsString();
+        }
     }
 
 }
@@ -512,6 +575,4 @@ function array_rest($arr)
     array_shift($arr);
     return $arr;
 }
-
-
 

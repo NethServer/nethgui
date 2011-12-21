@@ -34,13 +34,11 @@ class Main extends \Nethgui\Core\Module\ListComposite
      */
     private $moduleLoader;
     private $currentModuleIdentifier;
-//    private $finalModules;
 
     public function __construct($template, \Nethgui\Core\ModuleLoader $moduleLoader)
     {
         parent::__construct(FALSE, $template);
         $this->moduleLoader = $moduleLoader;
-//        $this->finalModules = array();
     }
 
     public function bind(\Nethgui\Core\RequestInterface $request)
@@ -53,21 +51,58 @@ class Main extends \Nethgui\Core\Module\ListComposite
             $idList[] = $this->currentModuleIdentifier;
         }
 
-        foreach ($idList as $moduleIdentifier) {
-            if (in_array($moduleIdentifier, array('Menu', 'Notification'))) {
-                continue;
+        $systemModules = array('Menu', 'Notification', 'Resource');
+
+        try {
+            foreach ($idList as $moduleIdentifier) {
+                if (in_array($moduleIdentifier, $systemModules)) {
+                    continue;
+                }
+                $this->addChild($this->moduleLoader->getModule($moduleIdentifier));
             }
-            $this->addChild($this->moduleLoader->getModule($moduleIdentifier));
+        } catch (\RuntimeException $ex) {
+            throw new \Nethgui\Exception\HttpException('Not found', 404, 1324379722, $ex);
         }
 
         $menuModule = $this->moduleLoader->getModule('Menu');
         $menuModule->setModuleSet($this->moduleLoader)->setCurrentModuleIdentifier($this->currentModuleIdentifier);
         $this->addChild($menuModule);
 
-        $notificationModule = $this->moduleLoader->getModule('Notification');
-        $this->addChild($notificationModule);
+        $this->addChild($this->moduleLoader->getModule('Notification'));
+        $this->addChild($this->moduleLoader->getModule('Resource'));
 
         parent::bind($request);
+    }
+
+    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
+    {
+
+        parent::prepareView($view, $mode);
+
+        /*
+         * Stylesheets and script files can be served only by the Resource module
+         */
+        if ($view->getTargetFormat() === 'css'
+            || $view->getTargetFormat() === 'js') {
+            $view->setTemplate(function(\Nethgui\Renderer\TemplateRenderer $renderer) use ($view) {
+                    return $renderer->spawnRenderer($view['Resource'])->render();
+                });
+
+                
+//            $view['Resource'] = $view->spawnView($this->moduleLoader->getModule('Resource'));
+//            $view->setTemplate(function(\Nethgui\Renderer\TemplateRenderer $renderer) use ($view) {
+//                return $renderer->spawnRenderer($view['Resource'])->render();
+//            });
+//            return;
+        }
+
+
+        if ($view->getTargetFormat() !== 'xhtml') {
+            return;
+        }
+
+        $view['currentModule'] = $this->currentModuleIdentifier;
+        $view['lang'] = $view->getTranslator()->getLanguageCode();
     }
 
 //    public function prepareFinalView(\Nethgui\Core\ViewInterface $view)
@@ -76,56 +111,54 @@ class Main extends \Nethgui\Core\Module\ListComposite
 //            $child->prepareView($view->spawnView($child, TRUE));
 //        }
 //    }
-
-    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
-    {
-//        foreach ($this->getChildren() as $child) {
-//            if ($child instanceof \Nethgui\Core\CommandReceiverInterface) {
-//                // postpone prepareView for command receivers:
-//                $this->finalModules[] = $child;
-//                continue;
-//            }
-//            $innerView = $view->spawnView($child, TRUE);
-//            $child->prepareView($innerView, $mode);
-//        }
-        parent::prepareView($view, $mode);
-
-        if ($view->getTargetFormat() !== $view::TARGET_XHTML) {
-            return;
-        }
-
-        $pathUrl = $view->getPathUrl() . '/';
-
-        $view['CurrentModule'] = $view[$this->currentModuleIdentifier];
-
-        $lang = $view->getTranslator()->getLanguageCode();
-        $immutables = array(
-            'lang' => $lang,
-            'js' => new \ArrayObject(array(
-                'base' => $pathUrl . 'js/jquery-1.6.2.min.js',
-                'ui' => $pathUrl . 'js/jquery-ui-1.8.16.custom.min.js',
-                'dataTables' => $pathUrl . 'js/jquery.dataTables.min.js',
-                'test' => $pathUrl . 'js/nethgui.js',
-                'qTip' => $pathUrl . 'js/jquery.qtip.min.js',
-                /* 'switcher' => 'http://jqueryui.com/themeroller/themeswitchertool/', */
-            )),
-            'favicon' => $pathUrl . 'images/favicon.ico',
-            'css' => new \ArrayObject(array('0base' => $pathUrl . 'css/base.css')),
-        );
-        if ($lang != 'en') {
-            $immutables['js']['datepicker-regional'] = $pathUrl . sprintf('js/jquery.ui.datepicker-%s.js', $lang);
-        }
-
-        foreach ($immutables as $immutableName => $immutableValue) {
-            $view[$immutableName] = $immutableValue;
-        }
-
-        //read css from db
-        $db = $this->getPlatform()->getDatabase('configuration');
-        $customCss = $db->getProp('httpd-admin', 'css');
-        $view['css']['1theme'] = $pathUrl . ($customCss ? sprintf('css/%s.css', $customCss) : 'css/default.css');
-        $view['company'] = $db->getProp('ldap', 'defaultCompany');
-        $view['address'] = $db->getProp('ldap', 'defaultStreet') . ", " . $db->getProp('ldap', 'defaultCity');
-    }
-
+//    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
+//    {
+////        foreach ($this->getChildren() as $child) {
+////            if ($child instanceof \Nethgui\Core\CommandReceiverInterface) {
+////                // postpone prepareView for command receivers:
+////                $this->finalModules[] = $child;
+////                continue;
+////            }
+////            $innerView = $view->spawnView($child, TRUE);
+////            $child->prepareView($innerView, $mode);
+////        }
+//        parent::prepareView($view, $mode);
+//
+////        if ($view->getTargetFormat() !== $view::TARGET_XHTML) {
+////            return;
+////        }
+//
+////        $pathUrl = $view->getPathUrl() . '/';
+////
+////        $view['CurrentModule'] = $view[$this->currentModuleIdentifier];
+////
+////        $lang = $view->getTranslator()->getLanguageCode();
+////        $immutables = array(
+////            'lang' => $lang,
+////            'js' => new \ArrayObject(array(
+////                'base' => $pathUrl . 'js/jquery-1.6.2.min.js',
+////                'ui' => $pathUrl . 'js/jquery-ui-1.8.16.custom.min.js',
+////                'dataTables' => $pathUrl . 'js/jquery.dataTables.min.js',
+////                'test' => $pathUrl . 'js/nethgui.js',
+////                'qTip' => $pathUrl . 'js/jquery.qtip.min.js',
+////                /* 'switcher' => 'http://jqueryui.com/themeroller/themeswitchertool/', */
+////            )),
+////            'favicon' => $pathUrl . 'images/favicon.ico',
+////            'css' => new \ArrayObject(array('0base' => $pathUrl . 'css/base.css')),
+////        );
+////        if ($lang != 'en') {
+////            $immutables['js']['datepicker-regional'] = $pathUrl . sprintf('js/jquery.ui.datepicker-%s.js', $lang);
+////        }
+////
+////        foreach ($immutables as $immutableName => $immutableValue) {
+////            $view[$immutableName] = $immutableValue;
+////        }
+//
+//        //read css from db
+////        $db = $this->getPlatform()->getDatabase('configuration');
+////        $customCss = $db->getProp('httpd-admin', 'css');
+////        $view['css']['1theme'] = $pathUrl . ($customCss ? sprintf('css/%s.css', $customCss) : 'css/default.css');
+////        $view['company'] = $db->getProp('ldap', 'defaultCompany');
+////        $view['address'] = $db->getProp('ldap', 'defaultStreet') . ", " . $db->getProp('ldap', 'defaultCity');
+//    }
 }
