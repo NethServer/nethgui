@@ -158,10 +158,6 @@ class ReadonlyView implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsu
         return $this->view->getTargetFormat();
     }
 
-    public function createCommand($name, $arguments, $selector = '')
-    {
-        return $this->view->createCommand($name, $arguments, $selector);
-    }
 
     public function getCommandList()
     {
