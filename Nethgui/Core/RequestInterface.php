@@ -33,7 +33,7 @@ interface RequestInterface
     const CONTENT_TYPE_UNSPECIFIED = 0;
     const CONTENT_TYPE_JSON = 1;
     const CONTENT_TYPE_HTML = 2;
-    
+
     /**
      * Get a parameter value
      * @param string $parameterName
@@ -100,4 +100,13 @@ interface RequestInterface
      * @api
      */
     public function getUser();
+
+    /**
+     * Get the "file extension" of the request.
+     *
+     * "File extension" is the substring after the last "." character in the
+     * URL path.
+     * @return string
+     */
+    public function getExtension();
 }

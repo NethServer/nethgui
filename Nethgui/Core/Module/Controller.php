@@ -39,7 +39,7 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
 
     /**
      * The action where to forward method calls
-     * @var Nethgui_Core_Module_Interface
+     * @var \Nethgui\Core\ModuleInterface
      */
     protected $currentAction;
     private $request;
