@@ -36,16 +36,9 @@ class ValidationErrorsNotification extends AbstractNotification implements \Neth
      */
     private $errors;
 
-    /**
-     *
-     * @var \Nethgui\Core\TranslatorInterface
-     */
-    private $translator;
-
-    public function __construct(\Nethgui\Core\TranslatorInterface $translator)
+    public function __construct()
     {
         $this->errors = array();
-        $this->translator = $translator;
         parent::__construct(parent::NOTIFY_ERROR, 'ValidationErrors', TRUE);
     }
 

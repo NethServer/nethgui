@@ -40,7 +40,7 @@ namespace Nethgui\Client;
  * @since 1.0
 
  */
-class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInterface, \Nethgui\Core\ReceiverChainInterface
+class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInterface, \Nethgui\Core\CommandReceiverInterface
 {
 
     /**
@@ -96,7 +96,7 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
      *
      * @var \Nethgui\Core\CommandReceiverInterface
      */
-    private $nextReceiver;
+    private $receiver;
 
     /**
      *
@@ -106,7 +106,13 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
 
     /**
      *
-     * @param integer $targetFormat The target format code of the final view output
+     * @var string
+     */
+    private $targetFormat;
+
+    /**
+     *
+     * @param string $targetFormat The target format file extension of the final view output
      * @param \Nethgui\Core\ModuleInterface $module
      * @param \Nethgui\Core\TranslatorInterface $translator
      * @param array $urlParts An array of three strings corresponding to <siteUrl, pathUrl, controllerPath>
@@ -115,7 +121,7 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
     {
         $this->module = $module;
         $this->translator = $translator;
-        $this->nextReceiver = \Nethgui\Core\NullReceiver::getNullInstance();
+        $this->receiver = \Nethgui\Core\NullReceiver::getNullInstance();
 
         $this->siteUrl = array_shift($urlParts); // 0
         $this->pathUrl = array_shift($urlParts); // 1
@@ -152,7 +158,7 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
     public function spawnView(\Nethgui\Core\ModuleInterface $module, $register = FALSE)
     {
         $spawnedView = new static($this->targetFormat, $module, $this->translator, array($this->siteUrl, $this->pathUrl, $this->controllerPath));
-        $spawnedView->setNextReceiver($this->nextReceiver);
+        $spawnedView->setReceiver($this->receiver);
         $spawnedView->commands = $this->commands;
         if ($register === TRUE) {
             $this[$module->getIdentifier()] = $spawnedView;
@@ -341,9 +347,9 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
         }
     }
 
-    public function setNextReceiver(\Nethgui\Core\CommandReceiverInterface $receiver)
+    public function setReceiver(\Nethgui\Core\CommandReceiverInterface $receiver)
     {
-        $this->nextReceiver = $receiver;
+        $this->receiver = $receiver;
         return $this;
     }
 
@@ -354,12 +360,7 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
             $module->executeCommand($origin, $selector, $name, $arguments);
         }
 
-        $this->nextReceiver->executeCommand($origin, $selector, $name, $arguments);
-    }
-
-    public function createCommand($name, $arguments, $selector = '')
-    {
-        return new \Nethgui\Client\Command($this, $name, $arguments, $selector);
+        $this->receiver->executeCommand($origin, $selector, $name, $arguments);
     }
 
     public function getCommandList()

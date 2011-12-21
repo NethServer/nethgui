@@ -24,6 +24,7 @@ namespace Nethgui\Client;
  *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
+ * @internal
  */
 class Command implements \Nethgui\Core\CommandInterface
 {
@@ -91,7 +92,9 @@ class Command implements \Nethgui\Core\CommandInterface
 
         $this->executed = TRUE;
 
-        return $this->receiver->executeCommand($this->origin, $this->selector, $this->methodName, $this->arguments);
+        $this->receiver->executeCommand($this->origin, $this->selector, $this->methodName, $this->arguments);
+
+        return $this;
     }
 
     public function getOrigin()
