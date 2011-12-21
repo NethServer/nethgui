@@ -32,12 +32,14 @@ namespace Nethgui\Renderer;
  * @since 1.0
  * @api
  */
-abstract class AbstractRenderer extends ReadonlyView implements \Nethgui\Core\ModuleAttributesInterface
+abstract class AbstractRenderer extends ReadonlyView
 {
 
     /**
      * Render the object as a string
      *
+     * @see getContentType()
+     * @see getCharset()
      * @return string
      */
     abstract public function render();
@@ -64,35 +66,16 @@ abstract class AbstractRenderer extends ReadonlyView implements \Nethgui\Core\Mo
         return $D;
     }
 
-    public function getCategory()
-    {
-        return $this->translate($this->getModule()->getAttributesProvider()->getCategory());
-    }
+    /**
+     * @return string
+     */
+    abstract public function getContentType();
 
-    public function getDescription()
-    {
-        return $this->translate($this->getModule()->getAttributesProvider()->getDescription());
-    }
+    /**
+     * @return string
+     */
+    abstract public function getCharset();
 
-    public function getLanguageCatalog()
-    {
-        return $this->getModule()->getAttributesProvider()->getLanguageCatalog();
-    }
-
-    public function getMenuPosition()
-    {
-        return $this->getModule()->getAttributesProvider()->getMenuPosition();
-    }
-
-    public function getTags()
-    {
-        return $this->translate($this->getModule()->getAttributesProvider()->getTags());
-    }
-
-    public function getTitle()
-    {
-        return $this->translate($this->getModule()->getAttributesProvider()->getTitle());
-    }
-
+   
 }
 

@@ -41,10 +41,15 @@ class HttpCommandReceiver extends \Nethgui\Core\AbstractReceiverChain
 
     public function hasRedirect()
     {
-        return count($this->headers) > 0;
+        foreach ($this->headers as $header) {
+            if (strtoupper(substr($header, 0, 8)) === 'LOCATION') {
+                return TRUE;
+            }
+        }
+        return FALSE;
     }
 
-    public function getHttpRedirectHeaders()
+    public function getHttpHeaders()
     {
         return $this->headers;
     }
@@ -58,11 +63,15 @@ class HttpCommandReceiver extends \Nethgui\Core\AbstractReceiverChain
         return call_user_func_array(array($this, $name), $arguments);
     }
 
+    protected function httpHeader(\Nethgui\Core\ViewInterface $origin, $selector, $header)
+    {
+        $this->headers[] = $header;
+    }
+
 //    protected function showView(\Nethgui\Core\ViewInterface $origin, $selector, $location)
 //    {
 //        $this->httpRedirection($origin, $selector, $code, $location);
 //    }
-
 //    protected function cancel(\Nethgui\Core\ViewInterface $origin, $selector)
 //    {
 //        $this->httpRedirection($origin, $selector, 302, $origin->getModuleUrl('..'));

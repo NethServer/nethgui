@@ -26,7 +26,7 @@ namespace Nethgui\Renderer;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Json extends AbstractRenderer implements \Nethgui\Core\CommandReceiverInterface
+class Json extends AbstractRenderer 
 {
 
     /**
@@ -34,13 +34,11 @@ class Json extends AbstractRenderer implements \Nethgui\Core\CommandReceiverInte
      * @var \Nethgui\Renderer\MarshallingReceiver
      */
     private $receiver;
-    private $commands;
 
-    public function __construct(\Nethgui\Client\View $view, \Nethgui\Renderer\MarshallingReceiver $receiver)
+    public function __construct(\Nethgui\Client\View $view)
     {
         parent::__construct($view);
-        $this->commands = $view->getCommands();
-        $this->receiver = $receiver;
+        $this->receiver = new MarshallingReceiver();
     }
 
     private function deepWalk(&$events)
@@ -73,13 +71,13 @@ class Json extends AbstractRenderer implements \Nethgui\Core\CommandReceiverInte
             }
         }
 
-        foreach ($this->commands as $command) {
+        foreach ($this->view->getCommands() as $command) {
             if ( ! $command instanceof \Nethgui\Core\CommandInterface || $command->isExecuted()) {
                 continue;
             }
 
-            // Execute all still-unexecuted commands sent to widgets:
-            $command->setReceiver($this)->execute();
+            // Execute all still-unexecuted commands sent to widgets and renderers:
+            $command->setReceiver($this->receiver)->execute();
         }
     }
 
@@ -120,12 +118,14 @@ class Json extends AbstractRenderer implements \Nethgui\Core\CommandReceiverInte
         return json_encode($output);
     }
 
-    /**
-     * Implement commands routed to widgets here:
-     */
-    public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
+    public function getCharset()
     {
-        $this->receiver->executeCommand($origin, $selector, $name, $arguments);
+        return 'UTF-8';
+    }
+
+    public function getContentType()
+    {
+        return 'application/json';
     }
 
 }
