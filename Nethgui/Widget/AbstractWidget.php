@@ -117,7 +117,7 @@ abstract class AbstractWidget implements \Nethgui\Renderer\WidgetInterface, \Net
     {
         try {
             return $this->render();
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             $this->getLog()->exception($ex, TRUE);
             //throw $ex;
             return '';
