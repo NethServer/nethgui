@@ -68,12 +68,11 @@ class ViewCommandSequence implements \Nethgui\Core\ViewCommandInterface
     }
 
     public function execute()
-    {
-        $retval = NULL;
+    {        
         foreach ($this->commands as $command) {
-            $retval = $command->setReceiver($this->receiver)->execute();
+            $command->setReceiver($this->receiver)->execute();
         }
-        return $retval;
+        return $this;
     }
 
     public function isExecuted()
