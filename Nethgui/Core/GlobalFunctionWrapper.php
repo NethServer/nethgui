@@ -21,6 +21,13 @@ namespace Nethgui\Core;
  */
 
 /**
+ * Wraps global PHP functions and variables.
+ *
+ * Refs #95
+ *
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @api
  */
 class GlobalFunctionWrapper
 {
