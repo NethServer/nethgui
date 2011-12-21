@@ -36,11 +36,11 @@ namespace Nethgui\Core;
  */
 interface ViewInterface extends \ArrayAccess, \IteratorAggregate
 {
-    const TARGET_XHTML = 0;
-    const TARGET_JSON = 1;
+    const TARGET_XHTML = 'xhtml';
+    const TARGET_JSON = 'json';
 
     /**
-     * Set the template to be applied to this object.
+     * Set the template to be applied to the view
      *
      * - If a string is given, it identifies a PHP Template script
      *   (ie. Nethgui_Template_World);
@@ -190,20 +190,6 @@ interface ViewInterface extends \ArrayAccess, \IteratorAggregate
     public function getTranslator();
 
     /**
-     * Create a new command object for later execution.
-     *
-     * The command will be executed on the receiver object appointed by the $selector argument.
-     *
-     * The view is recorded as "origin" into the command object.
-     *
-     * @param string $name The method name to execute
-     * @param array $arguments Arguments applied to the method
-     * @param string $selector Routes the command to the receiver. By default the appointed receiver is the creator view itself.
-     * @return \Nethgui\Core\CommandInterface
-     */
-    public function createCommand($name, $arguments, $selector = '');
-
-    /**
      * Get a command list for the current view
      *
      * @return \Nethgui\Core\ViewCommandInterface
@@ -226,7 +212,7 @@ interface ViewInterface extends \ArrayAccess, \IteratorAggregate
     public function hasCommandListFor($selector);
 
     /**
-     * @return integer
+     * @return string
      */
     public function getTargetFormat();
 }
