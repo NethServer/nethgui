@@ -68,18 +68,38 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
         return $o;
     }
 
+    /**
+     * Append a Javascript code fragment to the global .js temporary file
+     * @param string $jsCode Raw Javascript code
+     * @return Xhtml
+     */
     public function includeJavascript($jsCode)
     {
         $this->view->getCommandListFor('/Resource/js')->appendCode($jsCode, 'js');
         return $this;
     }
 
+    /**
+     * Append a CSS code fragment to the global .css temporary file
+     *
+     * @param string $cssCode Raw Css code
+     * @return Xhtml
+     */
     public function includeCss($cssCode)
     {
         $this->view->getCommandListFor('/Resource/css')->appendCode($cssCode, 'css');
         return $this;
     }
 
+    /**
+     * Append the given file to a global temporary file with the same extension.
+     *
+     * The file path is relative to the <namespace>/Resource/ directory. The
+     * <namespace> is assumed to be the same of the module.
+     * 
+     * @param string $fileName
+     * @return Xhtml
+     */
     public function includeFile($fileName)
     {
         $namespace = \Nethgui\array_head(explode('\\', get_class($this->view->getModule())));
@@ -91,6 +111,15 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
         return $this;
     }
 
+    /**
+     * Link an external file into the final XHTML document
+     *
+     * The XHTML tag generated depends on the file extension. Javascript (.js)
+     * needs the SCRIPT tag, External stylesheets (.css) a LINK tag.
+     *
+     * @param string $fileName
+     * @return Xhtml
+     */
     public function useFile($fileName)
     {
         $ext = pathinfo($fileName, PATHINFO_EXTENSION);

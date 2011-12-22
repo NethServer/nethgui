@@ -252,15 +252,10 @@ class Framework
      */
     public function dispatch(Core\RequestInterface $request, &$output = NULL)
     {
-
-
-
-
-        /*
-         * TODO: redirect
-         */
         if (array_head($request->getArguments()) === FALSE) {
-            die("TODO: redirect to default module");
+            $redirectUrl = implode('/', array($this->basePath, 'index.php', $this->defaultModuleIdentifier));
+            $this->sendHttpResponse('', array('HTTP/1.1 302 Found', sprintf('Location: %s', $redirectUrl)), $output);
+            return;
         }
 
         // TODO: enforce some security policy on Models
@@ -342,6 +337,19 @@ class Framework
             );
         }
 
+        $this->sendHttpResponse($content, $headers, $output);
+
+        return 0;
+    }
+
+    /**
+     *
+     * @param string $content
+     * @param array $headers
+     * @param array $output
+     */
+    private function sendHttpResponse($content, $headers, &$output)
+    {
         if (is_array($output)) {
             // put HTTP response into the output array:
             $output['content'] = $content;
@@ -351,8 +359,6 @@ class Framework
             array_map('header', $headers);
             echo $content;
         }
-
-        return 0;
     }
 
     /**
