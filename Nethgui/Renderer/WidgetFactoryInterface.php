@@ -42,6 +42,7 @@ interface WidgetFactoryInterface
     const STATE_DISABLED = 0x20;
     const STATE_VALIDATION_ERROR = 0x40;
     const STATE_READONLY = 0x80;
+    const STATE_UNOBSTRUSIVE = 0x2000000;
 
     const BUTTON_SUBMIT = 0x100;
     const BUTTON_CANCEL = 0x200;
@@ -62,6 +63,8 @@ interface WidgetFactoryInterface
     const BUTTONSET = 0x400000;
     const BUTTON_DROPDOWN = 0x800000;
     const BUTTON_HELP = 0x1000000;
+
+    
 
     /**
      *

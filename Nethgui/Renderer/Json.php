@@ -26,7 +26,7 @@ namespace Nethgui\Renderer;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Json extends AbstractRenderer 
+class Json extends AbstractRenderer
 {
 
     /**
