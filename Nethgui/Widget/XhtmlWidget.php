@@ -294,28 +294,17 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\Core\Comma
             return;
         }
 
-        $commandTargets = array_map('trim', explode(',', $this->getAttribute('receiver')));
+        $targetName = $this->getAttribute('receiver');
 
-        foreach ($commandTargets as $targetName) {
-            if ( ! $this->view->hasCommandListFor($targetName)) {
-                continue;
-            }
-
-            $command = $this->view->getCommandListFor($targetName);
-
-            if ( ! $command->isExecuted()) {
-                $command->setReceiver($this)->execute();
-            }
-        }
-    }
-
-    protected function appendReceiverName($cssClass)
-    {
-        if ($this->hasAttribute('receiver')) {
-            $cssClass .= ' ' . $this->view->getClientEventTarget($this->getAttribute('receiver'));
+        if ( ! $this->view->hasCommandListFor($targetName)) {
+            return;
         }
 
-        return $cssClass;
+        $command = $this->view->getCommandListFor($targetName);
+
+        if ( ! $command->isExecuted()) {
+            $command->setReceiver($this)->execute();
+        }
     }
 
     public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)

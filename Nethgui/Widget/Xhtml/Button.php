@@ -75,7 +75,7 @@ class Button extends \Nethgui\Widget\XhtmlWidget
             }
 
             $attributes['href'] = $this->prepareHrefAttribute($value);
-            $attributes['class'] = $this->appendReceiverName($cssClass);
+            $attributes['class'] = $cssClass;
             $attributes['title'] = $this->getAttribute('title', FALSE);
             
             $content .= $this->openTag('a', $attributes);
@@ -103,7 +103,7 @@ class Button extends \Nethgui\Widget\XhtmlWidget
 
             $attributes['value'] = $label;
 
-            $content .= $this->controlTag('button', $name, $flags, $this->appendReceiverName($cssClass), $attributes);
+            $content .= $this->controlTag('button', $name, $flags, $cssClass, $attributes);
             if (isset($childContent)) {
                 $content .= $childContent;
             }

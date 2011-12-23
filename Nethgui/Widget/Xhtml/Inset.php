@@ -71,12 +71,12 @@ class Inset extends \Nethgui\Widget\XhtmlWidget
             }
         }
 
-        $unobstrusiveRequired = $inset->getDefaultFlags() & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE;
-        $unobstrusiveApplying = $this->getRenderer()->getDefaultFlags() & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE;
-
-        if ($unobstrusiveRequired && ! $unobstrusiveApplying) {
-            $contentWidget = "<script>/*<![CDATA[*/\ndocument.write(" . json_encode(strval($contentWidget)) . ");\n/*]]>*/</script>";
-        }
+//        $unobstrusiveRequired = $inset->getDefaultFlags() & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE;
+//        $unobstrusiveApplying = $this->getRenderer()->getDefaultFlags() & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE;
+//
+//        if ($unobstrusiveRequired && ! $unobstrusiveApplying) {
+//            $contentWidget = "<script>/*<![CDATA[*/\ndocument.write(" . json_encode(strval($contentWidget)) . ");\n/*]]>*/</script>";
+//        }
 
         return $contentWidget;
     }
