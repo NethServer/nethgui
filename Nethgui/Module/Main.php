@@ -87,13 +87,6 @@ class Main extends \Nethgui\Core\Module\ListComposite
             $view->setTemplate(function(\Nethgui\Renderer\TemplateRenderer $renderer) use ($view) {
                     return $renderer->spawnRenderer($view['Resource'])->render();
                 });
-
-                
-//            $view['Resource'] = $view->spawnView($this->moduleLoader->getModule('Resource'));
-//            $view->setTemplate(function(\Nethgui\Renderer\TemplateRenderer $renderer) use ($view) {
-//                return $renderer->spawnRenderer($view['Resource'])->render();
-//            });
-//            return;
         }
 
 
@@ -103,7 +96,7 @@ class Main extends \Nethgui\Core\Module\ListComposite
 
         $view['currentModule'] = $this->currentModuleIdentifier;
         $view['lang'] = $view->getTranslator()->getLanguageCode();
-    }
+
 
 //    public function prepareFinalView(\Nethgui\Core\ViewInterface $view)
 //    {
@@ -155,10 +148,12 @@ class Main extends \Nethgui\Core\Module\ListComposite
 ////        }
 //
 //        //read css from db
-////        $db = $this->getPlatform()->getDatabase('configuration');
-////        $customCss = $db->getProp('httpd-admin', 'css');
-////        $view['css']['1theme'] = $pathUrl . ($customCss ? sprintf('css/%s.css', $customCss) : 'css/default.css');
-////        $view['company'] = $db->getProp('ldap', 'defaultCompany');
-////        $view['address'] = $db->getProp('ldap', 'defaultStreet') . ", " . $db->getProp('ldap', 'defaultCity');
+        $db = $this->getPlatform()->getDatabase('configuration');
+//        $customCss = $db->getProp('httpd-admin', 'css');
+//        $view['css']['1theme'] = $pathUrl . ($customCss ? sprintf('css/%s.css', $customCss) : 'css/default.css');
+        $view['company'] = $db->getProp('ldap', 'defaultCompany');
+        $view['address'] = $db->getProp('ldap', 'defaultStreet') . ", " . $db->getProp('ldap', 'defaultCity');
 //    }
+    }
+
 }

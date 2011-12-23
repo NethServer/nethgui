@@ -146,7 +146,10 @@ class Resource extends \Nethgui\Core\Module\Standard implements \Nethgui\Core\Co
         foreach ($this->code[$ext] as $part) {
 
             if ($part['file']) {
-                $data = $this->php->file_get_contents($part['file']);
+                $data = @$this->php->file_get_contents($part['file']);
+                if ( ! $data) {
+                    $this->getLog()->warning(sprintf('%s: File not found, or missing data.', $part['file']));
+                }
             } else {
                 $data = $part['data'];
             }
@@ -202,8 +205,8 @@ class Resource extends \Nethgui\Core\Module\Standard implements \Nethgui\Core\Co
     public function getUseList($ext)
     {
         return array_filter($this->useList, function($uri) use ($ext) {
-            return $ext === pathinfo($uri, PATHINFO_EXTENSION);
-        });
+                    return $ext === pathinfo($uri, PATHINFO_EXTENSION);
+                });
     }
 
     public function renderFileContent(\Nethgui\Renderer\AbstractRenderer $renderer)

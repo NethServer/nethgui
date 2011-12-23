@@ -1,5 +1,7 @@
-<?php echo $view->inset('TableActions') ?>
-<div class="DataTable <?php echo $view['tableClass']?>" ><?php if(count($view['rows']) > 0) : ?><table>
+<?php
+    $view->includeFile('jquery.nethgui.datatable.js', 'Nethgui');
+    echo $view->inset('TableActions')
+?><div class="DataTable <?php echo $view['tableClass']?>" ><?php if(count($view['rows']) > 0) : ?><table>
     <thead><tr>
         <?php
             foreach ($view['columns'] as $columnInfo) {
