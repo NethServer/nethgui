@@ -25,6 +25,10 @@ namespace Nethgui\Widget\Xhtml;
  */
 class TextInput extends \Nethgui\Widget\XhtmlWidget
 {
+    protected function getJsWidgetTypes()
+    {
+        return array_merge(array('Nethgui:inputcontrol'), parent::getJsWidgetTypes());
+    }
 
     protected function renderContent()
     {

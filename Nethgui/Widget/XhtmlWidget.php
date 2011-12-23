@@ -261,6 +261,13 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\Core\Comma
         return $prefix . '[' . implode('][', $nameSegments) . ']';
     }
 
+    protected function getJsWidgetTypes()
+    {
+        return array(
+            'Nethgui:' . strtolower(\Nethgui\array_end(explode('\\', get_class($this))))
+        );
+    }
+
     public function render()
     {
         /*
@@ -269,7 +276,16 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\Core\Comma
          * in both CLIENT and SERVER modes.
          */
         $this->invokeCommands();
-        return parent::render();
+        $content = parent::render();
+
+        if (NETHGUI_ENABLE_INCLUDE_WIDGET) {
+            foreach ($this->getJsWidgetTypes() as $type) {
+                $typeParts = explode(':', $type);
+                $this->getRenderer()->includeFile(sprintf('jquery.nethgui.%s.js', $typeParts[1]), $typeParts[0]);
+            }
+        }
+
+        return $content;
     }
 
     private function invokeCommands()

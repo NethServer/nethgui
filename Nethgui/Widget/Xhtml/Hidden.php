@@ -26,6 +26,11 @@ namespace Nethgui\Widget\Xhtml;
 class Hidden extends \Nethgui\Widget\XhtmlWidget
 {
 
+    protected function getJsWidgetTypes()
+    {
+        return array('Nethgui:inputcontrol');
+    }
+
     protected function renderContent()
     {
         $name = $this->getAttribute('name');

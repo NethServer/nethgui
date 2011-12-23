@@ -28,6 +28,17 @@ class ElementList extends \Nethgui\Widget\XhtmlWidget
 
     private $childWrapTag;
 
+    protected function getJsWidgetTypes()
+    {
+        $typeName = strtolower($this->getAttribute('class', 'ElementList'));
+
+        if (in_array($typeName, array('buttonset', 'buttonlist'))) {
+            return array('Nethgui:' . $typeName);
+        }
+
+        return array();
+    }
+
     protected function renderContent()
     {
         $name = $this->getAttribute('name');

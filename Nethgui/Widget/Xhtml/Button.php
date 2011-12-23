@@ -32,6 +32,11 @@ namespace Nethgui\Widget\Xhtml;
 class Button extends \Nethgui\Widget\XhtmlWidget
 {
 
+    protected function getJsWidgetTypes()
+    {
+        return array_merge(array('Nethgui:inputcontrol'), parent::getJsWidgetTypes());
+    }
+
     protected function renderContent()
     {
         $name = $this->getAttribute('name');
