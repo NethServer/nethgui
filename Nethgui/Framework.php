@@ -288,7 +288,7 @@ class Framework
         $urlParts = array($this->siteUrl, $this->basePath, 'index.php');
         $rootView = new Client\View($targetFormat, $mainModule, $translator, $urlParts);
 
-        $commandReceiver = new Renderer\HttpCommandReceiver(new Renderer\MarshallingReceiver());
+        $commandReceiver = new Renderer\HttpCommandReceiver(new Renderer\MarshallingReceiver(new Core\LoggingCommandReceiver()));
 
         $rootView->setReceiver($commandReceiver);
 
@@ -318,12 +318,9 @@ class Framework
             $headers = $commandReceiver->getHttpHeaders();
         } else {
             // Render the view as Xhtml or Json
-            $renderer = $this->getRenderer($targetFormat, $rootView);
-
+            $renderer = $this->getRenderer($targetFormat, $rootView, $commandReceiver);
             $content = $renderer->render();
-
             // execute all non-executed commands:
-
             $defaultHeaders = array(
                 "HTTP/1.1 200 Success",
                 sprintf('Content-Type: %s', $renderer->getContentType()) . (
@@ -365,12 +362,13 @@ class Framework
      *
      * @param string $targetFormat
      * @param \Nethgui\Core\ViewInterface $view
+     * @param \Nethgui\Core\CommandReceiverInterface $receiver
      * @return Renderer\Text 
      */
-    private function getRenderer($targetFormat, \Nethgui\Core\ViewInterface $view)
+    private function getRenderer($targetFormat, \Nethgui\Core\ViewInterface $view, \Nethgui\Core\CommandReceiverInterface $receiver)
     {
         if ($targetFormat === 'json') {
-            $renderer = new Renderer\Json($view, $marshallingReceiver);
+            $renderer = new Renderer\Json($view, $receiver);
         } elseif ($targetFormat === 'xhtml') {
             $renderer = new Renderer\Xhtml($view, $this->getFileNameResolver(), 0);
         } else if ($targetFormat === 'js') {
@@ -428,8 +426,6 @@ class Framework
     /**
      * Creates a new Client\Request object from current HTTP request.
      *
-     * 
-     *
      * @param array $parameters
      * @return Core\RequestInterface
      */
@@ -472,7 +468,6 @@ class Framework
         // TODO: retrieve user state from Session
         $user = new Client\AlwaysAuthenticatedUser(new Client\Session());
 
-
         $attributes = new \ArrayObject();
 
         $attributes['extension'] = $this->extractTargetFormat($pathInfo);
@@ -490,7 +485,6 @@ class Framework
     private function extractTargetFormat(&$pathInfo)
     {
         $lastPart = array_pop($pathInfo);
-
 
         $ext = '';
 
@@ -549,6 +543,10 @@ class Framework
  */
 if ( ! defined('NETHGUI_ENABLE_TARGET_HASH')) {
     define('NETHGUI_ENABLE_TARGET_HASH', FALSE);
+}
+
+if ( ! defined('NETHGUI_ENABLE_INCLUDE_WIDGET')) {
+    define('NETHGUI_ENABLE_INCLUDE_WIDGET', FALSE);
 }
 
 /**

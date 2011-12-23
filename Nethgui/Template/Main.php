@@ -1,35 +1,44 @@
 <?php
-    $view
-        // Javascript:
-        ->useFile('js/jquery-1.6.2.min.js')
-        ->useFile('js/jquery-ui-1.8.16.custom.min.js')
-        ->useFile('js/jquery.dataTables.min.js')
-        ->useFile('js/jquery.qtip.min.js')
-        ->useFile(sprintf('js/jquery.ui.datepicker-%s.js', $view['lang']))
-        //->useFile('js/nethgui.js')
-        ->includeFile('jquery.nethgui.js')
-        // CSS:
-        ->useFile('css/default/jquery-ui-1.8.16.custom.css')
-        ->useFile('css/jquery.qtip.min.css')
-        ->useFile('css/base.css')
-        ->useFile('css/blue.css')
-    ;
+$bootstrapJs = <<<'EOJS'
+jQuery(document).ready(function($) {
+    $('#CurrentModule').Component();
+    $('#allWrapper').css('display', 'block');
+});
+EOJS;
 
-    $currentModule =  $view[$view['currentModule']]->getModule();
-    $moduleTitle = $view->getTranslator()->translate($currentModule, $currentModule->getAttributesProvider()->getTitle());
-    $pageTitle = $view['company'] . " - " . $moduleTitle;
-    $pathUrl = $view->getPathUrl();
-    
-    // Must render CurrentModule before NotificationArea to catch notifications
-    $currentModuleOutput = (String) $view->inset($view['currentModule']);
-    $menuOutput = $view->inset('Menu');
+$view
+    // Javascript:
+    ->useFile('js/jquery-1.6.2.min.js')
+    ->useFile('js/jquery-ui-1.8.16.custom.min.js')
+    ->useFile('js/jquery.dataTables.min.js')
+    ->useFile('js/jquery.qtip.min.js')
+    ->useFile(sprintf('js/jquery.ui.datepicker-%s.js', $view['lang']))
+    //->useFile('js/nethgui.js')
+    ->includeFile('jquery.nethgui.js')
+    ->includeJavascript($bootstrapJs)
+    // CSS:
+    ->useFile('css/default/jquery-ui-1.8.16.custom.css')
+    ->useFile('css/jquery.qtip.min.css')
+    ->useFile('css/base.css')
+    ->useFile('css/blue.css')
+;
+
+$currentModule = $view[$view['currentModule']]->getModule();
+$moduleTitle = $view->getTranslator()->translate($currentModule, $currentModule->getAttributesProvider()->getTitle());
+$pageTitle = $view['company'] . " - " . $moduleTitle;
+$pathUrl = $view->getPathUrl();
+
+// Must render CurrentModule before NotificationArea to catch notifications
+$currentModuleOutput = (String) $view->inset($view['currentModule']);
+$menuOutput = $view->inset('Menu');
+
 ?><!DOCTYPE html>
 <html lang="<?php echo $view['lang'] ?>">
     <head>
         <title><?php echo $pageTitle ?></title>
         <link rel="icon"  type="image/png"  href="<?php echo $pathUrl . '/images/favicon.ico' ?>" />
         <meta name="viewport" content="width=device-width" />  
-        <!-- script>document.write('<style type="text/css">#allWrapper {display:none}</style>')</script -->
+        <script>document.write('<style type="text/css">#allWrapper {display:none}</style>')</script>
         <?php echo $view->literal($view['Resource']['css']) ?>
     </head>
     <body>
@@ -47,14 +56,14 @@
                     <?php echo $menuOutput ?>
                 </div>
             </div>
-            
+
             <div id="HelpArea" class="HelpArea disabled">
                 <div class="HelpAreaContent">
                     <?php echo $view->elementList($view::BUTTONSET)->insert($view->button('Hide', $view::BUTTON_CANCEL)); ?>
                     <div id="HelpAreaInnerDocument"></div>
                 </div>
             </div>
-            
+
         </div>
         <?php echo $view->literal($view['Resource']['js']) ?>
     </body>

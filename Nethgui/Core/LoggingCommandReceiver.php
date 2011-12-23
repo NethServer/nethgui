@@ -28,9 +28,15 @@ namespace Nethgui\Core;
  */
 class LoggingCommandReceiver implements \Nethgui\Core\CommandReceiverInterface
 {
-    public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
+    private $log;
+
+    public function __construct()
     {
-        $log = new \Nethgui\Log\Syslog();
-        $log->warning(sprintf('uncaught command: %s(%s)', $name, strtr(print_r($arguments, 1), "\n", " ")));
+        $this->log = new \Nethgui\Log\Syslog();
+    }
+
+    public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
+    {        
+        $this->log->notice(sprintf('%s: %s#%s(%s)', get_class($this), $origin->getClientEventTarget($selector), $name, strtr(var_export($arguments, TRUE), "\n", " ")));
     }
 }

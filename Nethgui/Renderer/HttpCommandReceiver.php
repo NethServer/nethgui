@@ -56,11 +56,12 @@ class HttpCommandReceiver extends \Nethgui\Core\AbstractReceiverChain
 
     public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
     {
-        if ( ! method_exists($this, $name)) {
-            return parent::executeCommand($origin, $selector, $name, $arguments);
+        if (method_exists($this, $name)) {
+            $argumentsCopy = $arguments;
+            array_unshift($argumentsCopy, $origin, $selector);
+            call_user_func_array(array($this, $name), $argumentsCopy);
         }
-        array_unshift($arguments, $origin, $selector);
-        return call_user_func_array(array($this, $name), $arguments);
+        parent::executeCommand($origin, $selector, $name, $arguments);
     }
 
     protected function httpHeader(\Nethgui\Core\ViewInterface $origin, $selector, $header)

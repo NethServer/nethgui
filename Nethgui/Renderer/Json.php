@@ -35,10 +35,10 @@ class Json extends AbstractRenderer
      */
     private $receiver;
 
-    public function __construct(\Nethgui\Client\View $view)
+    public function __construct(\Nethgui\Client\View $view, \Nethgui\Core\CommandReceiverInterface $receiver)
     {
         parent::__construct($view);
-        $this->receiver = new MarshallingReceiver();
+        $this->receiver = $receiver;
     }
 
     private function deepWalk(&$events)
@@ -109,10 +109,12 @@ class Json extends AbstractRenderer
             $output = $events;
         }
 
-        $commands = $this->receiver->getMarshalledCommands();
-
+        $commands = array();
+        
+        $this->receiver->executeCommand($this->view, NULL, 'getMarshalledCommands', array(&$commands));
+      
         if (count($commands) > 0) {
-            $output[] = array('ClientCommandHandler', $commands);
+            $output[] = array('__COMMANDS__', $commands);
         }
 
         return json_encode($output);

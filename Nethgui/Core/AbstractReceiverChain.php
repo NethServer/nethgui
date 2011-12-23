@@ -27,7 +27,7 @@ namespace Nethgui\Core;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-abstract class AbstractReceiverChain implements CommandReceiverInterface
+abstract class AbstractReceiverChain implements \Nethgui\Core\CommandReceiverInterface
 {
 
     /**

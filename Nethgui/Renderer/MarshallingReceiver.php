@@ -40,17 +40,16 @@ class MarshallingReceiver extends \Nethgui\Core\AbstractReceiverChain
 
     public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
     {
-        parent::executeCommand($origin, $selector, $name, $arguments);
-        
-        if ($name === 'showView') {
-            $receiver = '#' . $origin->getUniqueId($arguments[0]);
-            $arguments = array();
-        } else {
-            $receiver = '.' . $origin->getClientEventTarget($selector);
+        if (is_null($selector) && $name == 'getMarshalledCommands') {
+            $arguments[0] = $this->getMarshalledCommands();
+            return;
         }
 
+        $receiver = $origin->getUniqueId($selector);
         $argsArray = $this->prepareArguments($origin, $arguments);
         $this->addCommand($receiver, $name, $argsArray);
+
+        parent::executeCommand($origin, $selector, $name, $arguments);
     }
 
     private function addCommand($receiver, $name, $arguments)
