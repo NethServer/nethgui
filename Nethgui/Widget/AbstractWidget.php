@@ -93,7 +93,7 @@ abstract class AbstractWidget implements \Nethgui\Renderer\WidgetInterface, \Net
             if ($child->hasAttribute('flags')) {
                 $child->setAttribute('flags', $flags | $child->getAttribute('flags'));
             }
-            $output .= $this->wrapChild($child->renderContent());
+            $output .= $this->wrapChild($child->render());
         }
         return $output;
     }

@@ -45,14 +45,14 @@ class CheckBox extends \Nethgui\Widget\XhtmlWidget
         if ($value === $this->view[$name] || $flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_CHECKED) {
             $attributes['checked'] = 'checked';
         }
-       
+
         if ($uncheckedValue !== FALSE) {
             $content .= $this->controlTag('input', $name, $flags, 'HiddenConst', array('type' => 'hidden', 'value' => $uncheckedValue, 'id' => FALSE));
             if ($this->view[$name] === $uncheckedValue) {
                 $attributes['checked'] = FALSE;
             }
         }
-        
+
         $content .= $this->labeledControlTag($label, 'input', $name, $flags, 'CheckBox', $attributes);
 
         return $content;

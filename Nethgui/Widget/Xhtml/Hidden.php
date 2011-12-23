@@ -60,7 +60,7 @@ class Hidden extends \Nethgui\Widget\XhtmlWidget
                     'id' => FALSE
                 );
 
-                if($this->hasAttribute('class')) {
+                if ($this->hasAttribute('class')) {
                     $attributes['class'] = $this->getAttribute('class');
                 }
 

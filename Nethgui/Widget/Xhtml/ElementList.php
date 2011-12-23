@@ -69,9 +69,16 @@ class ElementList extends \Nethgui\Widget\XhtmlWidget
         $childTag = explode('.', $this->childWrapTag) + array(FALSE, FALSE);
 
         $content = '';
-        $content .= $this->openTag($childTag[0]);
-        $content .= parent::wrapChild($childOutput);
-        $content .= $this->closeTag($childTag[0]);
+        if (strlen($childTag[0]) > 0) {
+            $content .= $this->openTag($childTag[0]);
+            $content .= parent::wrapChild($childOutput);
+            $content .= $this->closeTag($childTag[0]);
+        } else {
+            $content .= parent::wrapChild($childOutput);
+        }
+        if (strlen($childTag[1]) > 0) {
+            $content .= htmlspecialchars($childTag[1]);
+        }
 
         return $content;
     }

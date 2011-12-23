@@ -37,7 +37,7 @@ class Inset extends \Nethgui\Widget\XhtmlWidget
         $content = '';
 
         if ($value instanceof \Nethgui\Core\ViewInterface) {
-            $innerRenderer = $this->getRenderer()->spawnRenderer($value)->setDefaultFlags($flags);
+            $innerRenderer = $this->getRenderer()->spawnRenderer($value)->setDefaultFlags($flags | $this->getRenderer()->getDefaultFlags());
             $content = (String) $this->wrapView($innerRenderer);
         } else {
             $content = (String) $this->view->literal($value, $flags);
@@ -69,6 +69,13 @@ class Inset extends \Nethgui\Widget\XhtmlWidget
             if ($module->getParent()->getIdentifier() === FALSE) {
                 $contentWidget = $inset->panel()->setAttribute('class', 'Action')->insert($contentWidget);
             }
+        }
+
+        $unobstrusiveRequired = $inset->getDefaultFlags() & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE;
+        $unobstrusiveApplying = $this->getRenderer()->getDefaultFlags() & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE;
+
+        if ($unobstrusiveRequired && ! $unobstrusiveApplying) {
+            $contentWidget = "<script>/*<![CDATA[*/\ndocument.write(" . json_encode(strval($contentWidget)) . ");\n/*]]>*/</script>";
         }
 
         return $contentWidget;

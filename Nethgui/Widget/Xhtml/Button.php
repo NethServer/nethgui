@@ -65,10 +65,14 @@ class Button extends \Nethgui\Widget\XhtmlWidget
                 $cssClass .= ' link ' . $this->getClientEventTarget();
             }
 
+            if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_DISABLED) {
+                $cssClass .= ' disabled';
+            }
+
             $attributes['href'] = $this->prepareHrefAttribute($value);
             $attributes['class'] = $this->appendReceiverName($cssClass);
             $attributes['title'] = $this->getAttribute('title', FALSE);
-
+            
             $content .= $this->openTag('a', $attributes);
             $content .= htmlspecialchars($label);
             $content .= $this->closeTag('a');
@@ -105,7 +109,7 @@ class Button extends \Nethgui\Widget\XhtmlWidget
 
     private function prepareHrefAttribute($value)
     {
-        if (!is_string($value)) {
+        if ( ! is_string($value)) {
             throw new \InvalidArgumentException(sprintf('%s: $value argument must be a string', get_class($this)), 1324051523);
         }
 

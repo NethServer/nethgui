@@ -309,7 +309,7 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\Core\Comma
 
     /**
      * Get a closure that provides a default value for an attribute
-     * 
+     *
      * @param string $message
      * @param array $args
      * @return closure
@@ -318,8 +318,8 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\Core\Comma
     {
         $view = $this->view;
         $f = function($attributeName) use ($view, $message, $args) {
-            return $view->translate($message, $args);
-        };
+                return $view->translate($message, $args);
+            };
         return $f;
     }
 
