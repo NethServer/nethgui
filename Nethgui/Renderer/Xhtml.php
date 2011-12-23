@@ -100,9 +100,11 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
      * @param string $fileName
      * @return Xhtml
      */
-    public function includeFile($fileName)
+    public function includeFile($fileName, $namespace = NULL)
     {
-        $namespace = \Nethgui\array_head(explode('\\', get_class($this->view->getModule())));
+        if ($namespace === NULL) {
+            $namespace = \Nethgui\array_head(explode('\\', get_class($this->view->getModule())));
+        }
         $resolverFunc = $this->getTemplateResolver();
         $filePath = call_user_func($resolverFunc, implode('\\', array($namespace, 'Resource', $fileName)));
         $ext = pathinfo($fileName, PATHINFO_EXTENSION);
@@ -146,14 +148,14 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
 
         if ($flags & self::BUTTONSET) {
             $widget->setAttribute('class', 'Buttonset')
-                ->setAttribute('wrap', 'div/');
+                ->setAttribute('wrap', 'div/. ');
         }
 
         // Automatically add standard submit/reset/cancel buttons:
         if ($flags & (self::BUTTON_SUBMIT | self::BUTTON_RESET | self::BUTTON_CANCEL | self::BUTTON_HELP)) {
             if ( ! $widget->hasAttribute('class')) {
                 $widget->setAttribute('class', 'Buttonlist')
-                    ->setAttribute('wrap', 'div/');
+                    ->setAttribute('wrap', 'div/. ');
             }
 
             if ($flags & self::BUTTON_SUBMIT) {
@@ -178,7 +180,7 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
         $flags |= $this->inheritFlags;
         $widget = $this->createWidget("elementList", array('flags' => $flags));
 
-        $widget->setAttribute('class', 'Buttonlist')->setAttribute('wrap', 'div/');
+        $widget->setAttribute('class', 'Buttonlist')->setAttribute('wrap', 'div/. ');
 
         return $widget;
     }
