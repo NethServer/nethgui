@@ -33,7 +33,7 @@ class Tabs extends \Nethgui\Widget\XhtmlWidget
         $content .= $this->openTag('div', array('class' => $this->getAttribute('class', 'Tabs')));
 
         if ($this->hasChildren()) {
-            $content .=$this->openTag('ul', array('class' => 'tabList'));
+            $content .= $this->openTag('ul', array('class' => 'tabList'));
 
             foreach ($this->getChildren() as $child) {
                 $page = $child->getAttribute('name');
@@ -54,21 +54,21 @@ class Tabs extends \Nethgui\Widget\XhtmlWidget
         return $content;
     }
 
-    public function insert(\Nethgui\Renderer\WidgetInterface $widget)
-    {
-        if ($widget instanceof \Panel) {
-            $widget->setAttribute('class', $widget->getAttribute('class', '') . ' ' . $this->getAttribute('tabClass', 'TabPanel tab-panel'));
-            parent::insert($widget);            
-        } else {
-            $panel = new Panel($this->view);
-            parent::insert($panel);
-            $panel
-                ->setAttribute('name', $widget->getAttribute('name'))
-                ->setAttribute('class', $this->getAttribute('tabClass', 'TabPanel tab-panel'))
-                ->insert($widget);
-        }
-
-        return $this;
-    }
+//    public function insert(\Nethgui\Renderer\WidgetInterface $widget)
+//    {
+//        if ($widget instanceof \Panel) {
+//            $widget->setAttribute('class', $widget->getAttribute('class', '') . ' ' . $this->getAttribute('tabClass', 'TabPanel tab-panel'));
+//            parent::insert($widget);
+//        } else {
+//            $panel = new Panel($this->view);
+//            parent::insert($panel);
+//            $panel
+//                ->setAttribute('name', $widget->getAttribute('name'))
+//                ->setAttribute('class', $this->getAttribute('tabClass', 'TabPanel tab-panel'))
+//                ->insert($widget);
+//        }
+//
+//        return $this;
+//    }
 
 }

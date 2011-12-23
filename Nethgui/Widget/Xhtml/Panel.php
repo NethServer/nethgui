@@ -33,17 +33,15 @@ class Panel extends \Nethgui\Widget\XhtmlWidget
         $tag = $this->getAttribute('tag', 'div');
 
         $flags = $this->getAttribute('flags');
-        if ($cssClass && ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_DISABLED)) {
-            $cssClass .= ' disabled';
-        }
+//        if ($cssClass && ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_DISABLED)) {
+//            $cssClass .= ' disabled';
+//        }
 
-        if ($this->hasAttribute('name') && $this->getAttribute('name') !== FALSE) {
-            $id = $this->view->getUniqueId($this->getAttribute('name'));
+        if ($this->hasAttribute('receiver') && $this->getAttribute('receiver') !== FALSE) {
+            $id = $this->view->getUniqueId($this->getAttribute('receiver'));
         } else {
             $id = FALSE;
         }
-
-        $cssClass = $this->appendReceiverName($cssClass);
 
         $attributes = array(
             'class' => empty($cssClass) ? FALSE : trim($cssClass),

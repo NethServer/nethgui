@@ -188,10 +188,10 @@ class TableController extends \Nethgui\Core\Module\Controller
     public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
     {
         $mode = $view->getTargetFormat();
-        parent::prepareView($view, $mode);        
+        parent::prepareView($view, $mode);
 
         if ($mode !== $view::TARGET_JSON
-            || ! is_object($this->currentAction) ) {
+            || ! is_object($this->currentAction)) {
             return;
         }
 
@@ -202,9 +202,10 @@ class TableController extends \Nethgui\Core\Module\Controller
             $readAction = $this->getAction('read');
             $innerView = $view->spawnView($readAction, TRUE);
             $readAction->prepareView($innerView, $mode);
-            $view->getCommandList()->showView('read');
-        } elseif ( ! $this->getRequest()->isSubmitted()) {            
-            $view->getCommandList()->showView($this->currentAction->getIdentifier());
+            $view->getCommandListFor('read')->show();
+        } elseif ( ! $this->getRequest()->isSubmitted()) {
+            $view->getCommandListFor($this->currentAction->getIdentifier())->show();
+            $view->getCommandListFor('update/Submit')->setLabel('Hello');
         }
     }
 
@@ -228,6 +229,31 @@ class TableController extends \Nethgui\Core\Module\Controller
     public function getDefaultUiStyleFlags()
     {
         return self::STYLE_CONTAINER_TABLE | parent::getDefaultUiStyleFlags();
+    }
+
+    public function renderIndex(\Nethgui\Renderer\Xhtml $view)
+    {
+        $container = $view->panel()
+            ->setAttribute('class', 'TableController');
+
+        foreach ($this->getChildren() as $index => $module) {
+
+            $moduleIdentifier = $module->getIdentifier();
+
+            if ($moduleIdentifier === 'read') {
+                $flags = 0;                
+            } else {
+                $flags = \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE;
+            }
+
+            $action = $view->inset($moduleIdentifier, $flags)
+                ->setAttribute('receiver', $moduleIdentifier)
+                ->setAttribute('class', 'Action');
+            
+            $container->insert($action);
+
+        }
+        return $container;
     }
 
 }

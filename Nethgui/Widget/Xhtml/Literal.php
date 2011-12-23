@@ -38,27 +38,26 @@ class Literal extends \Nethgui\Widget\XhtmlWidget
     protected function renderContent()
     {
         $value = $this->getAttribute('data', '');
-
+        $flags = $this->getAttribute('flags', 0);
         $content = '';
 
-        $flags = $this->getAttribute('flags', 0);
-
-        if ($value instanceof \Nethgui\Renderer\WidgetFactoryInterface) {
-            $valueFlags = $value->getDefaultFlags() | $this->view->getDefaultFlags();
-        } else {
-            $valueFlags = 0;
-        }
-
         if ($value instanceof \Nethgui\Core\ViewInterface) {
-            $content = $this->getRenderer()->spawnRenderer($value)->setDefaultFlags($valueFlags)->render();
+            $content = $this->getRenderer()->spawnRenderer($value)->setDefaultFlags($flags | $this->getRenderer()->getDefaultFlags())->render();
         } else {
             $content = (String) $value;
         }
 
-        if ($this->getAttribute('hsc', FALSE) === TRUE) {
+        $unobstrusiveRequired = $flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE;
+        $unobstrusiveApplying = $this->getRenderer()->getDefaultFlags() & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE;
+
+        //$this->view->getLog()->notice(sprintf('%s UNOBSTRUSIVE(%s) applying %s required %s',$this->view->getClientEventTarget($this->getAttribute('name')), ($unobstrusiveRequired !== 0 && $unobstrusiveApplying === 0 ? 'yes' : 'no'),dechex($unobstrusiveApplying), dechex($unobstrusiveRequired)));
+
+        if ($unobstrusiveRequired !== 0 && $unobstrusiveApplying === 0) {
+            $content = "<script>/*<![CDATA[*/\ndocument.write(" . json_encode(strval($content)) . ");\n/*]]>*/</script>";
+        } elseif ($this->getAttribute('hsc', FALSE) === TRUE) {
             $content = htmlspecialchars($content);
         }
-
+        
         return $content;
     }
 

@@ -28,15 +28,19 @@ namespace Nethgui\Module;
 class TabsController extends \Nethgui\Core\Module\Controller
 {
 
-    public function renderDefault(\Nethgui\Renderer\Xhtml $view)
+    public function renderIndex(\Nethgui\Renderer\Xhtml $view)
     {
         $container = $view->tabs()
-            ->setAttribute('class', 'Tabs ' . $view->getClientEventTarget(''))
-            ->setAttribute('tabClass', 'Action')
+            ->setAttribute('class', 'TabsController')
         ;
 
         foreach ($this->getChildren() as $index => $module) {
-            $container->insert($view->inset($module->getIdentifier())->setAttribute('flags', \Nethgui\Renderer\WidgetFactoryInterface::STATE_DISABLED));
+            $moduleIdentifier = $module->getIdentifier();
+            $action = $view->inset($moduleIdentifier, \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE)
+                ->setAttribute('class', 'Action')
+                ->setAttribute('receiver', $moduleIdentifier);
+
+            $container->insert($action);
         }
 
         return $container;

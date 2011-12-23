@@ -162,12 +162,12 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
         if (is_null($this->currentAction)) {
             // Handle a NULL current action, rendering all the children in a
             // "DISABLED" state.
+            $view->setTemplate(array($this, 'renderIndex'));
             foreach ($this->getChildren() as $childModule) {
                 $innerView = $view->spawnView($childModule, TRUE);
                 $childModule->prepareView($innerView, $mode);
             }
-            $view->setTemplate(array($this, 'renderDefault'));
-        } else {
+        } elseif ($this->currentAction instanceof \Nethgui\Core\ViewableInterface) {
             $view->setTemplate(array($this, 'renderCurrentAction'));
             $innerView = $view->spawnView($this->currentAction, TRUE);
             $this->currentAction->prepareView($innerView, $mode);
@@ -190,53 +190,14 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
         return $view->inset($this->currentAction->getIdentifier());
     }
 
-    public function renderDefault(\Nethgui\Renderer\Xhtml $view)
+    public function renderIndex(\Nethgui\Renderer\Xhtml $renderer)
     {
-        $containerClass = 'Controller';
-
-        if ($this instanceof DefaultUiStateInterface) {
-            if ($this->getDefaultUiStyleFlags()
-                & DefaultUiStateInterface::STYLE_CONTAINER_TABLE) {
-                $containerClass = 'TableController';
-            } elseif ($this->getDefaultUiStyleFlags()
-                & DefaultUiStateInterface::STYLE_CONTAINER_TABS) {
-                $containerClass = 'TabsController';
-            }
-        }
-
-        $containerClass .= ' ' . $view->getClientEventTarget('');
-
-        $container = $view->panel()->setAttribute('class', $containerClass);
-
+        $container = $renderer->elementList()
+            ->setAttribute('class', 'ActionList');
         foreach ($this->getChildren() as $index => $module) {
-            if ($module instanceof DefaultUiStateInterface) {
-                $flagEnabled = $module->getDefaultUiStyleFlags()
-                    & DefaultUiStateInterface::STYLE_ENABLED;
-                if ($module->getDefaultUiStyleFlags()
-                    & DefaultUiStateInterface::STYLE_DIALOG) {
-                    $widgetClass = 'Dialog';
-                } else {
-                    $widgetClass = 'Action';
-                }
-            } else {
-                $flagEnabled = $index == 0;
-                $widgetClass = 'Action';
-            }
-
-            $flags = 0;
-
-            if ( ! $flagEnabled) {
-                $flags |= $view::STATE_DISABLED;
-            } else {
-                $widgetClass .= ' visible';
-            }
-
-            $panel = $view->panel()
-                ->setAttribute('flags', $flags)
-                ->setAttribute('class', $widgetClass)
-                ->setAttribute('name', $module->getIdentifier())
-                ->insert($view->inset($module->getIdentifier()));
-            $container->insert($panel);
+            $identifier = $module->getIdentifier();
+            $label = $renderer->getTranslator()->translate($module, $module->getAttributesProvider()->getTitle());
+            $container->insert($renderer->literal(strtr('<a href="%URI">%LABEL</a>', array('%URI' => $renderer->getModuleUrl($identifier), '%LABEL' => $label))));
         }
         return $container;
     }

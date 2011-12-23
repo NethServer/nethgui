@@ -73,6 +73,9 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\Core\Comma
     {
         if (isset($attributes['id'])) {
             $controlId = $attributes['id'];
+        } elseif ($this->hasAttribute('receiver')) {
+            $controlId = $this->view->getUniqueId($this->getAttribute('receiver'));
+            $attributes['id'] = $controlId;
         } else {
             $controlId = $this->view->getUniqueId($name);
             $attributes['id'] = $controlId;

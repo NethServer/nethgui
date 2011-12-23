@@ -87,12 +87,12 @@ abstract class AbstractWidget implements \Nethgui\Renderer\WidgetInterface, \Net
 
     protected function renderChildren()
     {
-        $flags = $this->getAttribute('flags', 0) & NETHGUI_INHERITABLE_FLAGS;
+        //$flags = $this->getAttribute('flags', 0) & NETHGUI_INHERITABLE_FLAGS;
         $output = '';
         foreach ($this->children as $child) {
-            if ($child->hasAttribute('flags')) {
-                $child->setAttribute('flags', $flags | $child->getAttribute('flags'));
-            }
+//            if ($child->hasAttribute('flags')) {
+//                $child->setAttribute('flags', $flags | $child->getAttribute('flags'));
+//            }
             $output .= $this->wrapChild($child->render());
         }
         return $output;

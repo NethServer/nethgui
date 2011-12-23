@@ -33,25 +33,50 @@ class Inset extends \Nethgui\Widget\XhtmlWidget
     {
         $name = $this->getAttribute('name');
         $flags = $this->getAttribute('flags', 0);
-        $value = $this->view->offsetGet($name);
-        $content = '';
+        $value = $this->view[$name];
 
+        $content = '';
         if ($value instanceof \Nethgui\Core\ViewInterface) {
-            $innerRenderer = $this->getRenderer()->spawnRenderer($value)->setDefaultFlags($flags | $this->getRenderer()->getDefaultFlags());
-            $content = (String) $this->wrapView($innerRenderer);
+            $renderer = $this->getRenderer()
+                ->spawnRenderer($value)
+                ->setDefaultFlags($flags | $this->getRenderer()->getDefaultFlags())
+            ;
+            $content = (String) $this->wrapSubview($renderer);
         } else {
-            $content = (String) $this->view->literal($value, $flags);
+            $content = (String) $this->getRenderer()->literal($value, $flags);
         }
+
+        $content = (String) $this->wrapContent($content);
 
         return $content;
     }
 
-    private function wrapView(\Nethgui\Renderer\Xhtml $inset)
+    private function wrapContent($content)
     {
-        $module = $inset->getModule();
+        $wrapper = $this->getRenderer()->panel()->setAttribute('tag', FALSE);
 
-        $content = $inset->render();
-        $contentWidget = $this->view->literal($content);
+        if ($this->hasAttribute('class')) {
+            $wrapper
+                ->setAttribute('tag', 'div')
+                ->setAttribute('class', $this->getAttribute('class'))
+            ;
+        }
+
+        if ($this->hasAttribute('receiver')) {
+            $wrapper->setAttribute('receiver', $this->getAttribute('receiver'));
+        }
+
+        $wrapper->insert($this->getRenderer()->literal($content));
+
+        return $wrapper;
+    }
+
+    private function wrapSubview(\Nethgui\Renderer\Xhtml $renderer)
+    {
+        $module = $renderer->getModule();
+
+        $content = $renderer->render();
+        $contentWidget = $this->view->literal($content, $this->getAttribute('flags', 0));
 
         // 1. If we have a NOFORMWRAP give up here.
         if ($module instanceof \Nethgui\Core\Module\DefaultUiStateInterface
@@ -59,25 +84,18 @@ class Inset extends \Nethgui\Widget\XhtmlWidget
             return $contentWidget;
         }
 
-        // 2. Wrap automatically a FORM tag only if instancof RequestHandler and no FORM tag has been emitted.
+        // 2. Wrap automatically a FORM tag only if instance of RequestHandler and no FORM tag has been emitted.
         if ($module instanceof \Nethgui\Core\RequestHandlerInterface
             && stripos($content, '<form ') === FALSE) {
             // Wrap a simple module into a FORM tag automatically
-            $contentWidget = $inset->form()->insert($contentWidget);
+            $contentWidget = $renderer->form()->insert($contentWidget);
 
             // Re-wrap a simple root-module into an Action div
             if ($module->getParent()->getIdentifier() === FALSE) {
-                $contentWidget = $inset->panel()->setAttribute('class', 'Action')->insert($contentWidget);
+                $contentWidget = $renderer->panel()->setAttribute('class', 'Action')->insert($contentWidget);
             }
         }
-
-//        $unobstrusiveRequired = $inset->getDefaultFlags() & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE;
-//        $unobstrusiveApplying = $this->getRenderer()->getDefaultFlags() & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE;
-//
-//        if ($unobstrusiveRequired && ! $unobstrusiveApplying) {
-//            $contentWidget = "<script>/*<![CDATA[*/\ndocument.write(" . json_encode(strval($contentWidget)) . ");\n/*]]>*/</script>";
-//        }
-
+        
         return $contentWidget;
     }
 

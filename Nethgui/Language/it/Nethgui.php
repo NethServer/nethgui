@@ -71,3 +71,11 @@ $L['Please wait...'] = 'Attendere prego...';
 $L['Search'] = 'Cerca';
 $L['Search...'] = 'Cerca...';
 $L['Add'] = 'Aggiungi';
+
+
+$L['create_Title'] = 'Crea';
+$L['read_Title'] = 'Leggi';
+$L['update_Title'] = 'Modifica';
+$L['delete_Title'] = 'Elimina';
+$L['Help_Title'] = 'Guida';
+
