@@ -79,7 +79,17 @@ class TemplateRenderer extends AbstractRenderer implements \Nethgui\Core\GlobalF
 
     public function render()
     {
-        return $this->renderView($this->getTemplate(), array('view' => $this));
+        return $this->renderView($this->getTemplate(), array('view' => $this, 'T' => $this->getTranslateClosure()));
+    }
+
+    private function getTranslateClosure()
+    {
+        $view = $this->view;
+        $T = function($string, $args = array()) use ($view) {
+                return $view->translate($string, $args);
+            };
+
+        return $T;
     }
 
     /**
