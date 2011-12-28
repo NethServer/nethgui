@@ -492,7 +492,7 @@ class Framework
             return '';
         }
 
-        $dotPos = strpos($lastPart, '.');
+        $dotPos = strrpos($lastPart, '.');
 
         if ($dotPos !== FALSE) {
             $ext = substr($lastPart, $dotPos + 1);
