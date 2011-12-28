@@ -30,20 +30,26 @@ class TabsController extends \Nethgui\Core\Module\Controller
 
     public function renderIndex(\Nethgui\Renderer\Xhtml $view)
     {
-        $container = $view->tabs()
-            ->setAttribute('class', 'TabsController')
-        ;
+        $view->includeFile('jquery.nethgui.tabs.js', 'Nethgui');
 
-        foreach ($this->getChildren() as $index => $module) {
+        $tabs = $view->tabs();
+
+        foreach ($this->getChildren() as $module) {
             $moduleIdentifier = $module->getIdentifier();
-            $action = $view->inset($moduleIdentifier, \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE)
-                ->setAttribute('class', 'Action')
-                ->setAttribute('receiver', $moduleIdentifier);
 
-            $container->insert($action);
+            $flags = \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE
+                | \Nethgui\Renderer\WidgetFactoryInterface::INSET_WRAP;
+
+            if ($module instanceof \Nethgui\Core\RequestHandlerInterface) {
+                $flags |= \Nethgui\Renderer\WidgetFactoryInterface::INSET_FORM;
+            }
+
+            $action = $view->inset($moduleIdentifier, $flags)->setAttribute('class', 'Action');
+
+            $tabs->insert($action);
         }
 
-        return $container;
+        return $tabs;
     }
 
 }

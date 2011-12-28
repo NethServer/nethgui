@@ -44,16 +44,16 @@ interface WidgetFactoryInterface
     const STATE_READONLY = 0x80;
     const STATE_UNOBSTRUSIVE = 0x2000000;
 
+    const INSET_WRAP = 0x8000;
+    const INSET_FORM = 0x10000;
+    const INSET_DIALOG = 0x4000;
+    
+
     const BUTTON_SUBMIT = 0x100;
     const BUTTON_CANCEL = 0x200;
     const BUTTON_RESET = 0x400;
     const BUTTON_LINK = 0x800;
     const BUTTON_CUSTOM = 0x1000;
-
-    const DIALOG_MODAL = 0x4000;
-    const DIALOG_SUCCESS = 0x8000;
-    const DIALOG_WARNING = 0x10000;
-    const DIALOG_ERROR = 0x20000;
 
     const SELECTOR_MULTIPLE = 0x40000;
     const SELECTOR_DROPDOWN = 0x80000;
@@ -150,7 +150,7 @@ interface WidgetFactoryInterface
      * Create a button control
      * 
      * @param string $name The view member name
-     * @param integer $flags Optional - {DIALOG_*, STATE_ENABLED}
+     * @param integer $flags Optional 
      * @return \Nethgui\Renderer\WidgetInterface
      * @api
      */
@@ -190,14 +190,6 @@ interface WidgetFactoryInterface
      */
     public function fieldsetSwitch($name, $value, $flags = 0);
 
-    /**
-     * Create a dialog box container.
-     *
-     * @param int $flags Render flags: {DIALOG_MODAL, DIALOG_EMBEDDED, STATE_DISABLED, DIALOG_SUCCESS, DIALOG_WARNING, DIALOG_ERROR}
-     * @return \Nethgui\Renderer\WidgetInterface
-     * @api
-     */
-    public function dialog($name, $flags = 0);
 
     /**
      * Create a tabs container.

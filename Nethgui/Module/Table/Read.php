@@ -71,6 +71,7 @@ class Read extends Action
             $view['tableClass'] = count($view['rows']) > 10 ? 'large-dataTable' : 'small-dataTable';
             $view['tableClass'] .= ' ' . $view->getClientEventTarget('rows');
             $view['tableId'] = $view->getUniqueId();
+            $view['tableTitle'] = $view->getTranslator()->translate($this->getParent(), $this->getParent()->getAttributesProvider()->getTitle());
             $view['TableActions'] = $view->spawnView($this->getParent());
             $view['TableActions']->setTemplate(array($this, 'renderTableActions'));
         } elseif ($mode == self::VIEW_HELP) {

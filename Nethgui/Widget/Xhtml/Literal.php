@@ -42,17 +42,18 @@ class Literal extends \Nethgui\Widget\XhtmlWidget
         $content = '';
 
         if ($value instanceof \Nethgui\Core\ViewInterface) {
+            //die("Literal: Unexpected view value");
             $content = $this->getRenderer()->spawnRenderer($value)->setDefaultFlags($flags | $this->getRenderer()->getDefaultFlags())->render();
         } else {
             $content = (String) $value;
         }
 
-        $unobstrusiveRequired = $flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE;
-        $unobstrusiveApplying = $this->getRenderer()->getDefaultFlags() & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE;
+        $unobstrusiveRequired = ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE) !== 0 ;
+        $unobstrusiveApplying = ($this->getRenderer()->getDefaultFlags() & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE) === 0;
 
-        //$this->view->getLog()->notice(sprintf('%s UNOBSTRUSIVE(%s) applying %s required %s',$this->view->getClientEventTarget($this->getAttribute('name')), ($unobstrusiveRequired !== 0 && $unobstrusiveApplying === 0 ? 'yes' : 'no'),dechex($unobstrusiveApplying), dechex($unobstrusiveRequired)));
+        //$this->view->getLog()->notice(sprintf('%s UNOBSTRUSIVE(%s) applying %s required %s',$this->view->getClientEventTarget($this->getAttribute('name')), ($unobstrusiveRequired && $unobstrusiveApplying ? 'yes' : 'no'),dechex($unobstrusiveApplying), dechex($unobstrusiveRequired)));
 
-        if ($unobstrusiveRequired !== 0 && $unobstrusiveApplying === 0) {
+        if ($unobstrusiveRequired && $unobstrusiveApplying) {
             $content = "<script>/*<![CDATA[*/\ndocument.write(" . json_encode(strval($content)) . ");\n/*]]>*/</script>";
         } elseif ($this->getAttribute('hsc', FALSE) === TRUE) {
             $content = htmlspecialchars($content);
@@ -61,12 +62,12 @@ class Literal extends \Nethgui\Widget\XhtmlWidget
         return $content;
     }
 
-    public function setAttribute($attribute, $value)
-    {
-        if ($attribute == 'data' && $value instanceof \Nethgui\Core\ViewInterface) {
-            parent::setAttribute('name', $value->getModule()->getIdentifier());
-        }
-        return parent::setAttribute($attribute, $value);
-    }
+//    public function setAttribute($attribute, $value)
+//    {
+//        if ($attribute == 'data' && $value instanceof \Nethgui\Core\ViewInterface) {
+//            parent::setAttribute('name', $value->getModule()->getIdentifier());
+//        }
+//        return parent::setAttribute($attribute, $value);
+//    }
 
 }

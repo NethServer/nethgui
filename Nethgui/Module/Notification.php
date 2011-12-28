@@ -110,10 +110,6 @@ class Notification extends \Nethgui\Core\Module\Standard implements \Nethgui\Cor
         return (String) $panel;
     }
 
-    public function getDefaultUiStyleFlags()
-    {
-        return self::STYLE_NOFORMWRAP;
-    }
 
     public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
     {

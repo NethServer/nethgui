@@ -74,7 +74,7 @@ $L['Add'] = 'Aggiungi';
 
 
 $L['create_Title'] = 'Crea';
-$L['read_Title'] = 'Leggi';
+$L['read_Title'] = '';
 $L['update_Title'] = 'Modifica';
 $L['delete_Title'] = 'Elimina';
 $L['Help_Title'] = 'Guida';

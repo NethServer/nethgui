@@ -244,7 +244,7 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\Core\Comma
             if ($value === FALSE) {
                 continue;
             }
-            $content .= $attribute . '="' . htmlspecialchars($value) . '" ';
+            $content .= $attribute . '=\'' . htmlspecialchars($value) . '\' ';
         }
 
         return ' ' . trim($content);
@@ -291,7 +291,7 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\Core\Comma
         return $content;
     }
 
-    private function invokeCommands()
+    protected function invokeCommands()
     {
         if ( ! $this->hasAttribute('receiver')) {
             return;
@@ -312,7 +312,14 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\Core\Comma
 
     public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
     {
-        // PASS.. please override.
+        if ($name === 'requireFlag') {
+            $flags = intval($arguments[0]);
+            $this->setAttribute('flags', $flags | $this->getAttribute('flags', 0));
+            return;
+        } elseif ($name === 'rejectFlag') {
+            $flags = ~intval($arguments[0]);
+            $this->setAttribute('flags', $flags & $this->getAttribute('flags', 0));
+        }
     }
 
     /**

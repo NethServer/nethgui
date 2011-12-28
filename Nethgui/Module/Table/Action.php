@@ -55,15 +55,5 @@ class Action extends \Nethgui\Core\Module\Standard implements ActionInterface
         $view['Cancel'] = '/' . implode('/', $view->resolvePath('..'));
     }
 
-    public function getDefaultUiStyleFlags()
-    {
-        switch($this->getIdentifier()) {
-            case 'delete':
-                return self::STYLE_DIALOG;
-            case 'read':
-                return self::STYLE_ENABLED;
-        }
-        return 0;
-    }
 }
 

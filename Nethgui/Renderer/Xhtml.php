@@ -113,6 +113,19 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
         return $this;
     }
 
+    public function requireFlag($flags)
+    {
+        $this->view->getCommandListFor('')->requireFlag($flags);
+        return $this;
+    }
+
+    public function rejectFlag($flags)
+    {
+        $this->view->getCommandListFor('')->rejectFlag($flags);
+        return $this;
+    }
+
+
     /**
      * Link an external file into the final XHTML document
      *
@@ -195,42 +208,6 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
     {
         $flags |= $this->inheritFlags;
         return $this->createWidget(__FUNCTION__, array('name' => $name, 'value' => $value, 'flags' => $flags));
-    }
-
-    public function dialog($name, $flags = 0)
-    {
-        $flags |= $this->inheritFlags;
-
-        $className = 'dialog';
-
-        if ($flags & WidgetFactoryInterface::DIALOG_SUCCESS) {
-            $className .= ' success';
-        } elseif ($flags & WidgetFactoryInterface::DIALOG_WARNING) {
-            $className .= ' warning';
-        } elseif ($flags & WidgetFactoryInterface::DIALOG_ERROR) {
-            $className .= ' error';
-        }
-
-        if ($flags & WidgetFactoryInterface::DIALOG_MODAL) {
-            $className .= ' modal';
-        }
-
-        if ($flags & WidgetFactoryInterface::STATE_DISABLED) {
-            $className .= ' disabled';
-        }
-
-        /*
-         * Create a panel wrapped around the inset
-         */
-
-        $panel = $this->panel($flags)
-            ->setAttribute('class', $className)
-            ->setAttribute('name', $name);
-        $inset = $this->createWidget('inset', array('name' => $name, 'flags' => $flags));
-
-        $panel->insert($inset);
-
-        return $panel;
     }
 
     public function fieldsetSwitch($name, $value, $flags = 0)

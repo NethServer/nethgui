@@ -26,7 +26,7 @@ namespace Nethgui\Core\Module;
  * @since 1.0
  * @api
  */
-abstract class AbstractModule implements \Nethgui\Core\ModuleInterface, \Nethgui\Core\ViewableInterface, \Nethgui\Log\LogConsumerInterface, DefaultUiStateInterface
+abstract class AbstractModule implements \Nethgui\Core\ModuleInterface, \Nethgui\Core\ViewableInterface, \Nethgui\Log\LogConsumerInterface
 {
 
     /**
@@ -187,9 +187,6 @@ abstract class AbstractModule implements \Nethgui\Core\ModuleInterface, \Nethgui
         return $this->descriptor;
     }
 
-    public function getDefaultUiStyleFlags()
-    {
-        return 0;
-    }
+
 
 }

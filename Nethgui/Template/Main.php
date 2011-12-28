@@ -29,7 +29,7 @@ $pageTitle = $view['company'] . " - " . $moduleTitle;
 $pathUrl = $view->getPathUrl();
 
 // Must render CurrentModule before NotificationArea to catch notifications
-$currentModuleOutput = (String) $view->inset($view['currentModule']);
+$currentModuleOutput = (String) $view->inset($view['currentModule'], $view::INSET_WRAP);
 $menuOutput = $view->inset('Menu');
 
 ?><!DOCTYPE html>

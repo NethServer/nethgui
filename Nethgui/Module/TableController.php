@@ -190,10 +190,10 @@ class TableController extends \Nethgui\Core\Module\Controller
         $mode = $view->getTargetFormat();
         parent::prepareView($view, $mode);
 
-        if ($mode !== $view::TARGET_JSON
-            || ! is_object($this->currentAction)) {
+        if ($mode !== $view::TARGET_JSON) {
             return;
         }
+
 
         if ($this->getRequest()->isSubmitted()
             && $this->hasAction('read')) {
@@ -240,18 +240,20 @@ class TableController extends \Nethgui\Core\Module\Controller
 
             $moduleIdentifier = $module->getIdentifier();
 
-            if ($moduleIdentifier === 'read') {
-                $flags = 0;                
-            } else {
-                $flags = \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE;
+            $flags = \Nethgui\Renderer\WidgetFactoryInterface::INSET_WRAP;
+
+            if ($moduleIdentifier !== 'read') {
+                $flags |= \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE;
+            }
+
+            if ($module instanceof \Nethgui\Core\RequestHandlerInterface) {
+                $flags |= \Nethgui\Renderer\WidgetFactoryInterface::INSET_FORM;
             }
 
             $action = $view->inset($moduleIdentifier, $flags)
-                ->setAttribute('receiver', $moduleIdentifier)
                 ->setAttribute('class', 'Action');
-            
-            $container->insert($action);
 
+            $container->insert($action);
         }
         return $container;
     }

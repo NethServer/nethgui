@@ -187,7 +187,7 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
      */
     public function renderCurrentAction(\Nethgui\Renderer\Xhtml $view)
     {
-        return $view->inset($this->currentAction->getIdentifier());
+        return $view->inset($this->currentAction->getIdentifier(), $view::INSET_FORM | $view::INSET_WRAP);
     }
 
     public function renderIndex(\Nethgui\Renderer\Xhtml $renderer)
@@ -202,9 +202,6 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
         return $container;
     }
 
-    public function getDefaultUiStyleFlags()
-    {
-        return self::STYLE_NOFORMWRAP;
-    }
+
 
 }

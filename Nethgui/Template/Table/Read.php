@@ -1,6 +1,15 @@
 <?php
-    $view->includeFile('jquery.nethgui.datatable.js', 'Nethgui');
-    echo $view->inset('TableActions')
+    $view
+        ->includeFile('jquery.nethgui.datatable.js', 'Nethgui')
+        ->rejectFlag($view::INSET_FORM)
+    ;
+
+//    if(strlen($view['tableTitle']) > 0) {
+//        echo $view->header()->setAttribute('template', $view['tableTitle']);
+//    }
+    
+    echo $view->literal($view['TableActions'])
+
 ?><div class="DataTable <?php echo $view['tableClass']?>" ><?php if(count($view['rows']) > 0) : ?><table>
     <thead><tr>
         <?php

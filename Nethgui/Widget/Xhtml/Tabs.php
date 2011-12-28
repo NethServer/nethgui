@@ -35,11 +35,14 @@ class Tabs extends \Nethgui\Widget\XhtmlWidget
         if ($this->hasChildren()) {
             $content .= $this->openTag('ul', array('class' => 'tabList'));
 
-            foreach ($this->getChildren() as $child) {
-                $page = $child->getAttribute('name');
+            foreach ($this->getChildren() as $index => $child) {
+                if ( ! $child->hasAttribute('receiver')) {
+                    $child->setAttribute('receiver', $child->getAttribute('name', $this->view->getUniqueId(sprintf('tab-%d-%d', $this->getInstanceCounter(), $index))));
+                }
+                $childTitle = $child->getAttribute('title', $this->getTranslateClosure($child->getAttribute('receiver') . '_Title'));
                 $content .= $this->openTag('li');
-                $content .= $this->openTag('a', array('href' => $this->view->getModuleUrl($page)));
-                $content .= htmlspecialchars($this->view->translate($page . '_Title'));
+                $content .= $this->openTag('a', array('href' => '#'));
+                $content .= htmlspecialchars($childTitle);
                 $content .= $this->closeTag('a');
                 $content .= $this->closeTag('li');
             }
@@ -53,22 +56,5 @@ class Tabs extends \Nethgui\Widget\XhtmlWidget
 
         return $content;
     }
-
-//    public function insert(\Nethgui\Renderer\WidgetInterface $widget)
-//    {
-//        if ($widget instanceof \Panel) {
-//            $widget->setAttribute('class', $widget->getAttribute('class', '') . ' ' . $this->getAttribute('tabClass', 'TabPanel tab-panel'));
-//            parent::insert($widget);
-//        } else {
-//            $panel = new Panel($this->view);
-//            parent::insert($panel);
-//            $panel
-//                ->setAttribute('name', $widget->getAttribute('name'))
-//                ->setAttribute('class', $this->getAttribute('tabClass', 'TabPanel tab-panel'))
-//                ->insert($widget);
-//        }
-//
-//        return $this;
-//    }
 
 }
