@@ -15,6 +15,7 @@ $view
     ->useFile(sprintf('js/jquery.ui.datepicker-%s.js', $view['lang']))
     //->useFile('js/nethgui.js')
     ->includeFile('jquery.nethgui.js')
+    ->includeFile('jquery.nethgui.loading.js')
     ->includeJavascript($bootstrapJs)
     // CSS:
     ->useFile('css/default/jquery-ui-1.8.16.custom.css')
