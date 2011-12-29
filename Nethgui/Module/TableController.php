@@ -205,7 +205,6 @@ class TableController extends \Nethgui\Core\Module\Controller
             $view->getCommandListFor('read')->show();
         } elseif ( ! $this->getRequest()->isSubmitted()) {
             $view->getCommandListFor($this->currentAction->getIdentifier())->show();
-            $view->getCommandListFor('update/Submit')->setLabel('Hello');
         }
     }
 

@@ -187,6 +187,8 @@ class Menu extends \Nethgui\Core\Module\Standard
 
     public function renderModuleMenu(\Nethgui\Renderer\Xhtml $view)
     {
+        $view->includeFile('jquery.nethgui.navigation.js');
+
         $rootList = $view->elementList()->setAttribute('wrap', '/');
         foreach ($view['categories'] as $category) {
             // Add category title with fake module

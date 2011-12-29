@@ -222,10 +222,12 @@ class Modify extends Action
 
     protected function processCreate($key)
     {
+
     }
 
     protected function processUpdate($key)
     {
+
     }
 
     public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)

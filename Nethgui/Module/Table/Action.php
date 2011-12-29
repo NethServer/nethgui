@@ -22,7 +22,6 @@ namespace Nethgui\Module\Table;
 
 /**
  * A Table Action receives a TableAdapter to modify a table
- * It specifies the dialog rendering style.
  *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
