@@ -192,16 +192,26 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
 
     public function renderIndex(\Nethgui\Renderer\Xhtml $renderer)
     {
-        $container = $renderer->elementList()
+        $renderer->includeFile('jquery.nethgui.controller.js', 'Nethgui');
+       
+        $container = $renderer->panel()->setAttribute('class', 'Controller');
+        $actionList = $renderer->elementList()
             ->setAttribute('class', 'ActionList');
+
+        $container->insert($actionList);
+
         foreach ($this->getChildren() as $index => $module) {
             $identifier = $module->getIdentifier();
             $label = $renderer->getTranslator()->translate($module, $module->getAttributesProvider()->getTitle());
-            $container->insert($renderer->literal(strtr('<a href="%URI">%LABEL</a>', array('%URI' => $renderer->getModuleUrl($identifier), '%LABEL' => $label))));
+            $actionList->insert($renderer->literal(strtr('<a href="%URI">%LABEL</a>', array('%URI' => $renderer->getModuleUrl($identifier), '%LABEL' => $label))));
+            $flags = $renderer::STATE_UNOBSTRUSIVE | $renderer::INSET_WRAP;
+            if ($module instanceof \Nethgui\Core\RequestHandlerInterface) {
+                $flags |= $renderer::INSET_FORM;
+            }
+            $container->insert($renderer->inset($identifier, $flags)->setAttribute('class', 'Action'));
         }
+
         return $container;
     }
-
-
 
 }

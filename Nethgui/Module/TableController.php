@@ -226,15 +226,13 @@ class TableController extends \Nethgui\Core\Module\Controller
         return $this;
     }
 
-    public function getDefaultUiStyleFlags()
-    {
-        return self::STYLE_CONTAINER_TABLE | parent::getDefaultUiStyleFlags();
-    }
-
     public function renderIndex(\Nethgui\Renderer\Xhtml $view)
     {
+        $view->includeFile('jquery.nethgui.controller.js', 'Nethgui');
+
         $container = $view->panel()
-            ->setAttribute('class', 'TableController');
+            ->setAttribute('class', 'Controller')
+            ->setAttribute('receiver', '');
 
         foreach ($this->getChildren() as $index => $module) {
 

@@ -1,7 +1,9 @@
 <?php
 $bootstrapJs = <<<'EOJS'
 jQuery(document).ready(function($) {
+    $('script.unobstrusive').remove();
     $('#CurrentModule').Component();
+    $('.Navigation').Navigation();
     $('#allWrapper').css('display', 'block');
 });
 EOJS;
@@ -15,6 +17,7 @@ $view
     ->useFile(sprintf('js/jquery.ui.datepicker-%s.js', $view['lang']))
     //->useFile('js/nethgui.js')
     ->includeFile('jquery.nethgui.js')
+    ->includeFile('jquery.nethgui.controller.js')
     ->includeFile('jquery.nethgui.loading.js')
     ->includeJavascript($bootstrapJs)
     // CSS:
@@ -30,7 +33,11 @@ $pageTitle = $view['company'] . " - " . $moduleTitle;
 $pathUrl = $view->getPathUrl();
 
 // Must render CurrentModule before NotificationArea to catch notifications
-$currentModuleOutput = (String) $view->inset($view['currentModule'], $view::INSET_WRAP);
+if ($currentModule instanceof \Nethgui\Core\Module\Standard) {
+    $currentModuleOutput = (String) $view->inset($view['currentModule'], $view::INSET_FORM | $view::INSET_WRAP)->setAttribute('class', 'Action');
+} else {
+    $currentModuleOutput = (String) $view->inset($view['currentModule']);
+}
 $menuOutput = $view->inset('Menu');
 
 ?><!DOCTYPE html>

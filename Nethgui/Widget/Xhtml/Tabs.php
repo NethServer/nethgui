@@ -30,7 +30,12 @@ class Tabs extends \Nethgui\Widget\XhtmlWidget
     {
         $content = '';
 
-        $content .= $this->openTag('div', array('class' => $this->getAttribute('class', 'Tabs')));
+        $attributes = array('class' => $this->getAttribute('class', 'Tabs'));
+        if ($this->hasAttribute('receiver')) {
+            $attributes['id'] = $this->view->getUniqueId($this->getAttribute('receiver'));
+        }
+
+        $content .= $this->openTag('div', $attributes);
 
         if ($this->hasChildren()) {
             $content .= $this->openTag('ul', array('class' => 'tabList'));

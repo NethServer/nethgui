@@ -54,7 +54,7 @@ class Literal extends \Nethgui\Widget\XhtmlWidget
         //$this->view->getLog()->notice(sprintf('%s UNOBSTRUSIVE(%s) applying %s required %s',$this->view->getClientEventTarget($this->getAttribute('name')), ($unobstrusiveRequired && $unobstrusiveApplying ? 'yes' : 'no'),dechex($unobstrusiveApplying), dechex($unobstrusiveRequired)));
 
         if ($unobstrusiveRequired && $unobstrusiveApplying) {
-            $content = "<script>/*<![CDATA[*/\ndocument.write(" . json_encode(strval($content)) . ");\n/*]]>*/</script>";
+            $content = "<script class='unobstrusive'>/*<![CDATA[*/\ndocument.write(" . json_encode(strval($content)) . ");\n/*]]>*/</script>";
         } elseif ($this->getAttribute('hsc', FALSE) === TRUE) {
             $content = htmlspecialchars($content);
         }
