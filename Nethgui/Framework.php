@@ -252,7 +252,7 @@ class Framework
      */
     public function dispatch(Core\RequestInterface $request, &$output = NULL)
     {
-        if (array_head($request->getArguments()) === FALSE) {
+        if (array_head($request->getPath()) === FALSE) {
             $redirectUrl = implode('/', array($this->basePath, 'index.php', $this->defaultModuleIdentifier));
             $this->sendHttpResponse('', array('HTTP/1.1 302 Found', sprintf('Location: %s', $redirectUrl)), $output);
             return;
@@ -447,24 +447,26 @@ class Framework
         }
 
         $submitted = FALSE;
-        $data = array();
+        $postData = array();
+        $getData = array();
 
-        if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+        if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
             $submitted = TRUE;
 
             if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/json; charset=UTF-8') {
                 // Decode RAW request
-                $data = json_decode($GLOBALS['HTTP_RAW_POST_DATA'], true);
+                $postData = json_decode($GLOBALS['HTTP_RAW_POST_DATA'], true);
 
-                if (is_null($data)) {
+                if (is_null($postData)) {
                     throw new \Nethgui\Exception\HttpException('Bad Request', 400, 1322148404);
                 }
             } else {
                 // Use PHP global:
-                $data = $_POST;
+                $postData = $_POST;
             }
+        } elseif (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'GET') {
+            $getData = $_GET;
         }
-
 
         // TODO: retrieve user state from Session
         $user = new Client\AlwaysAuthenticatedUser(new Client\Session());
@@ -475,12 +477,13 @@ class Framework
         $attributes['submitted'] = $submitted;
         $attributes['validated'] = FALSE;
 
-        $instance = new Client\Request($user, $data, $pathInfo, $attributes);
+        $instance = new Client\Request($user, $postData, $getData, $pathInfo, $attributes);
 
         /*
          * Clear global variables
          */
         $_POST = array();
+        $_GET = array();
 
         return $instance;
     }

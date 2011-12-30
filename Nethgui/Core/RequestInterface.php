@@ -43,22 +43,42 @@ interface RequestInterface
     public function getParameter($parameterName);
 
     /**
+     * Get an argument value
+     * @param string $parameterName
+     * @return mixed
+     * @api
+     */
+    public function getArgument($argumentName);
+
+    /**
      * Spawn a new request.
      *
-     * The request will receive $parameterName as data and $arguments as arguments.
+     * The request will receive a subset of parameters and arguments according
+     * to the $subsetName parameter.
      *
-     * @param string $parameterName
+     * @param string $subsetName The name of parameters/arguments
      * @return RequestInterface
      * @api
      */
-    public function getParameterAsInnerRequest($parameterName, $arguments = array());
+    public function spawnRequest($subsetName, $path = array());
 
     /**
-     * Checks if $parameterName exists.
+     * Checks if $parameterName exists in the request
+     *
+     * @param string $parameterName
      * @return bool
      * @api
      */
     public function hasParameter($parameterName);
+
+    /**
+     * Checks if $argumentName exists in the request
+     *
+     * @param string $argumentName
+     * @return bool
+     * @api
+     */
+    public function hasArgument($argumentName);
 
     /**
      * Get a list of parameter names.
@@ -68,20 +88,27 @@ interface RequestInterface
      * @return array
      * @api
      */
-    public function getParameters();
+    public function getParameterNames();
 
     /**
-     * Values coming from the resource name and query string are called
-     * "arguments".
+     * Get a list of argument names
+     *
+     * @return array
+     * @api
+     */
+    public function getArgumentNames();
+
+    /**
+     * URL (sub)path segments
      * 
      * @see getParameters()
      * @return array
      * @api
      */
-    public function getArguments();
+    public function getPath();
 
     /**
-     * Indicates whether the request contains any parameter or no.
+     * Indicates whether the request contains any parameter or not.
      * @return bool
      * @api
      */

@@ -173,7 +173,7 @@ class TableController extends \Nethgui\Core\Module\Controller
             return NULL;
         }
 
-        $currentActionRequest = $this->getRequest()->getParameterAsInnerRequest($this->currentAction->getIdentifier());
+        $currentActionRequest = $this->getRequest()->spawnRequest($this->currentAction->getIdentifier());
 
         if ( ! $currentActionRequest->hasParameter($parameter)) {
             return NULL;

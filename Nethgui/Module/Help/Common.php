@@ -54,7 +54,7 @@ class Common extends \Nethgui\Core\Module\Standard implements \Nethgui\Core\Glob
     {
         parent::bind($request);
 
-        $arguments = $request->getArguments();
+        $arguments = $request->getPath();
 
         if (empty($arguments) || preg_match('/[a-z][a-z0-9]+(.html)/i', $arguments[0]) == 0) {
             throw new \Nethgui\Exception\HttpException('Not found', 404, 1322148405);
@@ -67,7 +67,7 @@ class Common extends \Nethgui\Core\Module\Standard implements \Nethgui\Core\Glob
             throw new \Nethgui\Exception\HttpException('Not found', 404, 1322148406);
         }
         $this->module->initialize();
-        $this->module->bind($request->getParameterAsInnerRequest('', array_slice($arguments, 1)));
+        $this->module->bind($request->spawnRequest('', array_slice($arguments, 1)));
     }
 
     protected function getHelpDocumentPath(\Nethgui\Core\ModuleInterface $module)

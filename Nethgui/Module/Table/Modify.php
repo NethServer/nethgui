@@ -88,7 +88,7 @@ class Modify extends Action
             // Unsubmitted request.
             // - The key (if set) is the first of the $request arguments        
 
-            $arguments = $request->getArguments();
+            $arguments = $request->getPath();
             $keyValue = isset($arguments[0]) ? $arguments[0] : NULL;
         }
 

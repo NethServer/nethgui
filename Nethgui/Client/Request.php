@@ -33,7 +33,12 @@ class Request implements \Nethgui\Core\RequestInterface
     /**
      * @var array
      */
-    private $data;
+    private $postData;
+
+    /**
+     * @var array
+     */
+    private $getData;
 
     /**
      * @var UserInterface
@@ -41,10 +46,9 @@ class Request implements \Nethgui\Core\RequestInterface
     private $user;
 
     /**
-     * @see \Nethgui\Core\RequestInterface::getArguments()
      * @var array
      */
-    private $arguments;
+    private $path;
 
     /**
      *
@@ -52,28 +56,27 @@ class Request implements \Nethgui\Core\RequestInterface
      */
     private $attributes;
 
-    public function __construct(UserInterface $user, $data, $arguments, \ArrayAccess $attributes)
+    public function __construct(UserInterface $user, $postData, $getData, $path, \ArrayAccess $attributes)
     {
-        if (is_null($data)) {
-            $data = array();
+        if ( ! is_array($postData) && ! is_array($getData)) {
+            throw new \InvalidArgumentException(sprintf("%s: parameters and data must be of type `array`.", get_class($this)), 1325242431);
         }
-        if ( ! is_array($data)) {
-            $data = array($data);
-        }
+
         $this->user = $user;
-        $this->data = $data;
-        $this->arguments = $arguments;
+        $this->postData = $postData;
+        $this->getData = $getData;
+        $this->path = $path;
         $this->attributes = $attributes;
     }
 
     public function hasParameter($parameterName)
     {
-        return array_key_exists($parameterName, $this->data);
+        return array_key_exists($parameterName, $this->postData);
     }
 
     public function isEmpty()
     {
-        return empty($this->data);
+        return empty($this->postData) && empty($this->getData);
     }
 
     public function isSubmitted()
@@ -81,22 +84,30 @@ class Request implements \Nethgui\Core\RequestInterface
         return $this->getAttribute('submitted') === TRUE;
     }
 
-    public function getParameters()
+    public function getParameterNames()
     {
-        return array_keys($this->data);
+        return array_keys($this->postData);
     }
 
     public function getParameter($parameterName)
     {
-        if ( ! isset($this->data[$parameterName])) {
+        if ( ! isset($this->postData[$parameterName])) {
             return NULL;
         }
-        return $this->data[$parameterName];
+        return $this->postData[$parameterName];
     }
 
-    public function getParameterAsInnerRequest($parameterName, $arguments = array())
+    public function spawnRequest($subsetName, $path = array())
     {
-        return new self($this->user, $this->getParameter($parameterName), $arguments, $this->attributes);
+        $parameterSubset = $this->getParameter($subsetName);
+        if ( ! is_array($parameterSubset)) {
+            $parameterSubset = array();
+        }
+        $argumentSubset = $this->getArgument($subsetName);
+        if ( ! is_array($argumentSubset)) {
+            $argumentSubset = array();
+        }
+        return new self($this->user, $parameterSubset, $argumentSubset, $path, $this->attributes);
     }
 
     public function getUser()
@@ -104,9 +115,9 @@ class Request implements \Nethgui\Core\RequestInterface
         return $this->user;
     }
 
-    public function getArguments()
+    public function getPath()
     {
-        return $this->arguments;
+        return $this->path;
     }
 
     public function getAttribute($name)
@@ -136,6 +147,24 @@ class Request implements \Nethgui\Core\RequestInterface
     public function isValidated()
     {
         return $this->getAttribute('validated') === TRUE;
+    }
+
+    public function getArgument($argumentName)
+    {
+        if ( ! isset($this->getData[$argumentName])) {
+            return NULL;
+        }
+        return $this->getData[$argumentName];
+    }
+
+    public function getArgumentNames()
+    {
+        return array_keys($this->getData);
+    }
+
+    public function hasArgument($argumentName)
+    {
+        return array_key_exists($argumentName, $this->getData);
     }
 
 }

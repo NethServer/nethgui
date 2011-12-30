@@ -70,14 +70,14 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
 
         $this->currentAction = $this->getAction($actionId);
         if ($this->currentAction instanceof \Nethgui\Core\RequestHandlerInterface) {
-            $this->currentAction->bind($request->getParameterAsInnerRequest($actionId, \Nethgui\array_rest($request->getArguments())));
+            $this->currentAction->bind($request->spawnRequest($actionId, \Nethgui\array_rest($request->getPath())));
         }
     }
 
     protected function establishCurrentActionId()
     {
         $request = $this->getRequest();
-        $arguments = $request->getArguments();
+        $arguments = $request->getPath();
         $actionId = FALSE;
 
         if ( ! empty($arguments) && isset($arguments[0])) {

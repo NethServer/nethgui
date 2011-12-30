@@ -53,7 +53,7 @@ class Action extends \Nethgui\Core\Module\Standard implements ActionInterface
         parent::prepareView($view, $mode);
         $view['Cancel'] = $view->getModuleUrl('/' . implode('/', $view->resolvePath('..')));
         if ( ! $this instanceof \Nethgui\Core\ModuleCompositeInterface) {
-            $view['FormAction'] = $view->getModuleUrl(implode('/', $this->getRequest()->getArguments()));
+            $view['FormAction'] = $view->getModuleUrl(implode('/', $this->getRequest()->getPath()));
         }
     }
 

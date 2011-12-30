@@ -46,17 +46,17 @@ class ListComposite extends Composite implements \Nethgui\Core\RequestHandlerInt
 
     public function bind(\Nethgui\Core\RequestInterface $request)
     {
-        $arguments = $request->getArguments();
+        $arguments = $request->getPath();
         $currentModuleIdentifier = \Nethgui\array_head($arguments);
-        $wakedModules = $request->getParameters();
+        $wakedModules = $request->getParameterNames();
         foreach ($this->getChildren() as $childModule) {
             if ( ! $childModule instanceof \Nethgui\Core\RequestHandlerInterface) {
                 continue;
             } elseif ($currentModuleIdentifier === $childModule->getIdentifier()) {
                 // Forward arguments to submodule:
-                $childModule->bind($request->getParameterAsInnerRequest($currentModuleIdentifier, \Nethgui\array_rest($arguments)));
+                $childModule->bind($request->spawnRequest($currentModuleIdentifier, \Nethgui\array_rest($arguments)));
             } else {
-                $childModule->bind($request->getParameterAsInnerRequest($childModule->getIdentifier()));
+                $childModule->bind($request->spawnRequest($childModule->getIdentifier()));
             } 
         }
     }

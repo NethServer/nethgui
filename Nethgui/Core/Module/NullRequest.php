@@ -45,7 +45,7 @@ class NullRequest implements \Nethgui\Core\RequestInterface, \Nethgui\Client\Use
         return $singleton;
     }
 
-    public function getArguments()
+    public function getPath()
     {
         return array();
     }
@@ -75,12 +75,12 @@ class NullRequest implements \Nethgui\Core\RequestInterface, \Nethgui\Client\Use
         return NULL;
     }
 
-    public function getParameterAsInnerRequest($parameterName, $arguments = array())
+    public function spawnRequest($parameterName, $arguments = array())
     {
         return $this;
     }
 
-    public function getParameters()
+    public function getParameterNames()
     {
         return array();
     }
@@ -153,6 +153,21 @@ class NullRequest implements \Nethgui\Core\RequestInterface, \Nethgui\Client\Use
     public function store($key, \Serializable $object)
     {
         return $this;
+    }
+
+    public function getArgument($argumentName)
+    {
+        return NULL;
+    }
+
+    public function getArgumentNames()
+    {
+        return array();
+    }
+
+    public function hasArgument($argumentName)
+    {
+        return FALSE;
     }
 
 }

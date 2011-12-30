@@ -43,9 +43,9 @@ class Main extends \Nethgui\Core\Module\ListComposite
 
     public function bind(\Nethgui\Core\RequestInterface $request)
     {
-        $idList = $request->getParameters();
+        $idList = $request->getParameterNames();
 
-        $this->currentModuleIdentifier = \Nethgui\array_head($request->getArguments());
+        $this->currentModuleIdentifier = \Nethgui\array_head($request->getPath());
 
         if ( ! in_array($this->currentModuleIdentifier, $idList)) {
             $idList[] = $this->currentModuleIdentifier;

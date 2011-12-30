@@ -50,7 +50,7 @@ class Resource extends \Nethgui\Core\Module\Standard implements \Nethgui\Core\Co
     public function bind(\Nethgui\Core\RequestInterface $request)
     {
         parent::bind($request);
-        $fileName = implode('/', $request->getArguments());
+        $fileName = implode('/', $request->getPath());
 
         if ( ! $fileName) {
             $this->fileName = FALSE;
