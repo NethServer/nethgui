@@ -278,6 +278,7 @@ class Framework
         $mainModule->validate($validationErrorsNotification);
 
         if ( ! $validationErrorsNotification->hasValidationErrors()) {
+            $request->setAttribute('validated', TRUE);
             $mainModule->process();
             // Finally, signal "final" events (see #506)
             $platform->signalFinalEvents();
@@ -471,8 +472,10 @@ class Framework
         $attributes = new \ArrayObject();
 
         $attributes['extension'] = $this->extractTargetFormat($pathInfo);
+        $attributes['submitted'] = $submitted;
+        $attributes['validated'] = FALSE;
 
-        $instance = new Client\Request($user, $data, $submitted, $pathInfo, $attributes);
+        $instance = new Client\Request($user, $data, $pathInfo, $attributes);
 
         /*
          * Clear global variables

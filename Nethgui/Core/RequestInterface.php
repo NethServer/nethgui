@@ -93,7 +93,13 @@ interface RequestInterface
      * @api
      */
     public function isSubmitted();
-    
+
+    /**
+     * Tells if a request has been successfully validated
+     * @return bool
+     * @api
+     */
+    public function isValidated();
 
     /**
      * The User that has sent the request.

@@ -21,11 +21,15 @@ namespace Nethgui\Client;
  */
 
 /**
- * @todo describe class
+ * Default implementation of RequestInterface
  *
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @internal
  */
 class Request implements \Nethgui\Core\RequestInterface
 {
+
     /**
      * @var array
      */
@@ -35,11 +39,6 @@ class Request implements \Nethgui\Core\RequestInterface
      * @var UserInterface
      */
     private $user;
-
-    /**
-     * @var bool
-     */
-    private $submitted;
 
     /**
      * @see \Nethgui\Core\RequestInterface::getArguments()
@@ -53,7 +52,7 @@ class Request implements \Nethgui\Core\RequestInterface
      */
     private $attributes;
 
-    public function __construct(UserInterface $user, $data, $submitted, $arguments, \ArrayAccess $attributes)
+    public function __construct(UserInterface $user, $data, $arguments, \ArrayAccess $attributes)
     {
         if (is_null($data)) {
             $data = array();
@@ -63,7 +62,6 @@ class Request implements \Nethgui\Core\RequestInterface
         }
         $this->user = $user;
         $this->data = $data;
-        $this->submitted = (bool) $submitted;
         $this->arguments = $arguments;
         $this->attributes = $attributes;
     }
@@ -80,7 +78,7 @@ class Request implements \Nethgui\Core\RequestInterface
 
     public function isSubmitted()
     {
-        return $this->submitted;
+        return $this->getAttribute('submitted') === TRUE;
     }
 
     public function getParameters()
@@ -98,7 +96,7 @@ class Request implements \Nethgui\Core\RequestInterface
 
     public function getParameterAsInnerRequest($parameterName, $arguments = array())
     {
-        return new self($this->user, $this->getParameter($parameterName), $this->submitted, $arguments, $this->attributes);
+        return new self($this->user, $this->getParameter($parameterName), $arguments, $this->attributes);
     }
 
     public function getUser()
@@ -120,9 +118,24 @@ class Request implements \Nethgui\Core\RequestInterface
         return $this->attributes[$name];
     }
 
+    public function setAttribute($name, $value)
+    {
+        if ( ! isset($this->attributes[$name])) {
+            throw new \LogicException(sprintf("%s: Cannot change the unknown attribute `%s`", get_class($this), $name), 1325237327);
+        }
+
+        $this->attributes[$name] = $value;
+        return $this;
+    }
+
     public function getExtension()
     {
         return $this->getAttribute('extension');
+    }
+
+    public function isValidated()
+    {
+        return $this->getAttribute('validated') === TRUE;
     }
 
 }

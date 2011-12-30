@@ -194,8 +194,8 @@ class TableController extends \Nethgui\Core\Module\Controller
             return;
         }
 
-
         if ($this->getRequest()->isSubmitted()
+            && $this->getRequest()->isValidated()
             && $this->hasAction('read')) {
             // Load 'read' action when some other action has occurred,
             // to refresh the tabular data.
@@ -219,9 +219,7 @@ class TableController extends \Nethgui\Core\Module\Controller
         if (is_null($create)) {
             return $this;
         }
-
         $create->setCreateDefaults($createDefaults);
-
         return $this;
     }
 
