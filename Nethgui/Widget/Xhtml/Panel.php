@@ -39,6 +39,8 @@ class Panel extends \Nethgui\Widget\XhtmlWidget
 
         if ($this->hasAttribute('receiver') && $this->getAttribute('receiver') !== FALSE) {
             $id = $this->view->getUniqueId($this->getAttribute('receiver'));
+        } elseif ($this->hasAttribute('id')) {
+            $id = $this->getAttribute('id');
         } else {
             $id = FALSE;
         }

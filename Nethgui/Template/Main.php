@@ -51,8 +51,12 @@ $menuOutput = $view->inset('Menu');
     </head>
     <body>
         <div id="allWrapper">
-            <div id="pageHeader"><?php echo $view->inset('Notification') ?><a id="product" href="Dashboard" title='NethServer'></a><h1 id="ModuleTitle"><?php echo $moduleTitle ?></h1><div id="productTitle">NethServer</div></div>
-
+            <?php echo $view->inset('Notification') ?>
+            <div id="pageHeader">
+                <a id="product" href="Dashboard" title='NethServer'></a>
+                <h1 id="ModuleTitle"><?php echo $moduleTitle ?></h1>
+                <div id="productTitle">NethServer</div>
+            </div>
             <div id="pageContent">
                 <div class="primaryContent" role="mainTask">
                     <div id="CurrentModule"><?php echo $currentModuleOutput ?></div>
@@ -64,14 +68,12 @@ $menuOutput = $view->inset('Menu');
                     <?php echo $menuOutput ?>
                 </div>
             </div>
-
             <div id="HelpArea" class="HelpArea disabled">
                 <div class="HelpAreaContent">
                     <?php echo $view->elementList($view::BUTTONSET)->insert($view->button('Hide', $view::BUTTON_CANCEL)); ?>
                     <div id="HelpAreaInnerDocument"></div>
                 </div>
             </div>
-
         </div>
         <?php echo $view->literal($view['Resource']['js']) ?>
     </body>

@@ -21,7 +21,7 @@ namespace Nethgui\Module;
  */
 
 /**
- * TODO: add component description here
+ * Serves and creates Resource files dynamically
  *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
@@ -64,6 +64,13 @@ class Resource extends \Nethgui\Core\Module\Standard implements \Nethgui\Core\Co
         }
     }
 
+    /**
+     * For each known format extension adds a subview that renders into an html
+     * fragment that include the required resources.
+     * 
+     * @param \Nethgui\Core\ViewInterface $view
+     * @return void
+     */
     public function prepareViewXhtml(\Nethgui\Core\ViewInterface $view)
     {
         $fragments = array(

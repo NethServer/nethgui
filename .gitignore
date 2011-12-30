@@ -1,8 +1,8 @@
-CodeIgniter/application/logs/
-CodeIgniter/system
 Documentation/Metrics/
 Documentation/CodeCoverage/
 Documentation/Api/
 Documentation/*/*.html
 www-NethServer/Documentation
+Nethgui/Cache/*.js
+Nethgui/Cache/*.css
 *~
