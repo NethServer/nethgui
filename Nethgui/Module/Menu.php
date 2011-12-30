@@ -101,7 +101,7 @@ class Menu extends \Nethgui\Core\Module\Standard
     public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
     {
         if ($view->getTargetFormat() === $view::TARGET_JSON) {
-            if ($this->getRequest()->isEmpty() ) {
+            if ($this->getRequest()->isEmpty()) {
                 return;
             }
             $view['tags'] = $this->searchTags($view, $this->parameters['search']);
@@ -187,6 +187,7 @@ class Menu extends \Nethgui\Core\Module\Standard
 
     public function renderModuleMenu(\Nethgui\Renderer\Xhtml $view)
     {
+        $view->includeFile('jquery.nethgui.controller.js');
         $view->includeFile('jquery.nethgui.navigation.js');
 
         $rootList = $view->elementList()->setAttribute('wrap', '/');
@@ -213,12 +214,14 @@ class Menu extends \Nethgui\Core\Module\Standard
             ->insert($view->textInput("search", $view::LABEL_NONE)->setAttribute('placeholder', $view->translate('Search') . "..."))
             ->insert($view->button("Find", $view::BUTTON_SUBMIT));
 
-        $form = $view->form()
-            ->setAttribute('method', 'get')
-            ->insert($searchPanel)
-            ->insert($rootList);
-
-        return "<div class=\"Navigation Flat " . $view->getClientEventTarget("tags") . "\">$form</div>";
+        return $view->panel()
+                ->setAttribute('class', 'Navigation Flat ' . $view->getClientEventTarget("tags"))
+                ->insert($view->form()
+                    ->setAttribute('method', 'get')
+                    ->insert($searchPanel)
+                    ->insert($rootList)
+                )
+        ;
     }
 
     protected function renderMenuItem(\Nethgui\Renderer\Xhtml $view, $item)

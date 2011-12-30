@@ -56,6 +56,9 @@ class Form extends Panel
             'class' => 'Form ' . $this->getClientEventTarget(),
         );
 
+        // Change default panel wrap tag:
+        $this->setAttribute('tag', $this->getAttribute('tag', FALSE));
+
         $content = '';
         $content .= $this->openTag('form', $attributes);
         $content .= parent::renderContent();
