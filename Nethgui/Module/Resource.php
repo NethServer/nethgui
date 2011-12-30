@@ -67,8 +67,8 @@ class Resource extends \Nethgui\Core\Module\Standard implements \Nethgui\Core\Co
     public function prepareViewXhtml(\Nethgui\Core\ViewInterface $view)
     {
         $fragments = array(
-            'js' => '<script src="%URI"></script>',
-            'css' => '<link rel="stylesheet" type="text/css" href="%URI" />'
+            'js' => "<script src='%URI'></script>",
+            'css' => "<link rel='stylesheet' type='text/css' href='%URI' />"
         );
 
         foreach (array_keys($fragments) as $ext) {
