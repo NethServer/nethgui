@@ -201,6 +201,7 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
         parent::__construct($identifier);
         $this->parameters = new \Nethgui\Core\ParameterSet();
         $this->autosave = TRUE;
+        $this->request = NullRequest::getInstance();
     }
 
     /**
