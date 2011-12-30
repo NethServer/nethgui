@@ -39,10 +39,9 @@ class TabsController extends \Nethgui\Core\Module\Controller
         foreach ($this->getChildren() as $module) {
             $moduleIdentifier = $module->getIdentifier();
 
-            $flags = \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE
-                | \Nethgui\Renderer\WidgetFactoryInterface::INSET_WRAP;
+            $flags = \Nethgui\Renderer\WidgetFactoryInterface::INSET_WRAP;
 
-            if ($module instanceof \Nethgui\Core\RequestHandlerInterface) {
+            if ($this->needsAutoFormWrap($module)) {
                 $flags |= \Nethgui\Renderer\WidgetFactoryInterface::INSET_FORM;
             }
 

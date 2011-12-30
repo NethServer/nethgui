@@ -88,11 +88,12 @@ interface RequestInterface
     public function isEmpty();
 
     /**
-     * Indicates whether the request comes from a POST method or no.
+     * Indicates whether the request comes from a POST method or not.
      * @return bool
      * @api
      */
     public function isSubmitted();
+    
 
     /**
      * The User that has sent the request.

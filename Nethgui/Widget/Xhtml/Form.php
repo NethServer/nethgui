@@ -22,21 +22,44 @@ namespace Nethgui\Widget\Xhtml;
 
 /**
  * Wrap FORM tag around a Panel object
+ *
+ * Attributes
+ * - string name the view element that overrides the action attribute
+ * - string action the url (relative to the current module) set on the HTML FORM "action" attribute
+ * - string method "post" (default), or "get"
  */
 class Form extends Panel
 {
 
     protected function renderContent()
-    {                       
-        $action = $this->getAttribute('action', '');
-        $this->setAttribute('class', $this->getAttribute('class', FALSE));
-        $this->setAttribute('name', FALSE);
+    {        
+        // Ensure a name is defined:
+        if ( ! $this->hasAttribute('name')) {
+            $this->setAttribute('name', 'FormAction');
+        }
+
+        $name = $this->getAttribute('name');
+
+        if (isset($this->view[$name])) {
+            $action = $this->view[$name];
+        } else {
+            // Rely on action attribute as fallback:
+            $action = $this->view->getModuleUrl($this->getAttribute('action', ''));
+        }
+
+        // Clear the INSET_FORM flag as the form is now rendered.
+        $this->getRenderer()->rejectFlag(\Nethgui\Renderer\WidgetFactoryInterface::INSET_FORM);
+
+        $attributes = array(
+            'method' => $this->getAttribute('method', 'post'),
+            'action' => $action,
+            'class' => 'Form ' . $this->getClientEventTarget(),
+        );
 
         $content = '';
-        $content .= $this->openTag('form', array('method' => 'post', 'action' => $this->view->getModuleUrl($action)));
+        $content .= $this->openTag('form', $attributes);
         $content .= parent::renderContent();
         $content .= $this->closeTag('form');
-
         return $content;
     }
 

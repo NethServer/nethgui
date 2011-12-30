@@ -241,9 +241,9 @@ class TableController extends \Nethgui\Core\Module\Controller
 
             if ($moduleIdentifier !== 'read') {
                 $flags |= \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE;
-            }
+            }            
 
-            if ($module instanceof \Nethgui\Core\RequestHandlerInterface) {
+            if ($this->needsAutoFormWrap($module)) {
                 $flags |= \Nethgui\Renderer\WidgetFactoryInterface::INSET_FORM;
             }
 

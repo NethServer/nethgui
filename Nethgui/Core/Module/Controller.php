@@ -193,7 +193,7 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
     public function renderIndex(\Nethgui\Renderer\Xhtml $renderer)
     {
         $renderer->includeFile('jquery.nethgui.controller.js', 'Nethgui');
-       
+
         $container = $renderer->panel()->setAttribute('class', 'Controller');
         $actionList = $renderer->elementList()
             ->setAttribute('class', 'ActionList');
@@ -212,6 +212,18 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
         }
 
         return $container;
+    }
+
+    /**
+     * Check if the given module is a leaf and can handle requests.
+     * 
+     * @param \Nethgui\Core\ModuleInterface $module
+     * @return bool 
+     */
+    protected function needsAutoFormWrap(\Nethgui\Core\ModuleInterface $module)
+    {
+        return $module instanceof \Nethgui\Core\RequestHandlerInterface
+            && ! ($module instanceof \Nethgui\Core\ModuleCompositeInterface);
     }
 
 }

@@ -46,7 +46,7 @@ class Tabs extends \Nethgui\Widget\XhtmlWidget
                 }
                 $childTitle = $child->getAttribute('title', $this->getTranslateClosure($child->getAttribute('receiver') . '_Title'));
                 $content .= $this->openTag('li');
-                $content .= $this->openTag('a', array('href' => '#'));
+                $content .= $this->openTag('a', array('href' => '#' . $this->view->getUniqueId($child->getAttribute('receiver'))));
                 $content .= htmlspecialchars($childTitle);
                 $content .= $this->closeTag('a');
                 $content .= $this->closeTag('li');

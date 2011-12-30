@@ -29,16 +29,16 @@ namespace Nethgui\Module\Table;
  */
 class Action extends \Nethgui\Core\Module\Standard implements ActionInterface
 {
+
     /**
      *
      * @var \Nethgui\Adapter\AdapterInterface
      */
     protected $tableAdapter;
-      
+
     public function setTableAdapter(\Nethgui\Adapter\AdapterInterface $tableAdapter)
     {
-        if ( ! $this->hasTableAdapter())
-        {
+        if ( ! $this->hasTableAdapter()) {
             $this->tableAdapter = $tableAdapter;
         }
     }
@@ -51,7 +51,10 @@ class Action extends \Nethgui\Core\Module\Standard implements ActionInterface
     public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
-        $view['Cancel'] = '/' . implode('/', $view->resolvePath('..'));
+        $view['Cancel'] = $view->getModuleUrl('/' . implode('/', $view->resolvePath('..')));
+        if ( ! is_null($this->getRequest()) && ! ($this instanceof \Nethgui\Core\ModuleCompositeInterface)) {
+            $view['FormAction'] = $view->getModuleUrl(implode('/', $this->getRequest()->getArguments()));
+        }
     }
 
 }

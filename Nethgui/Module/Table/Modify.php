@@ -233,7 +233,7 @@ class Modify extends Action
     public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
     {
         parent::prepareView($view, $mode);
-        if ($mode == self::VIEW_SERVER) {
+        if ($mode === self::VIEW_SERVER) {
             $view['__key'] = $this->key;
         }
     }
