@@ -93,7 +93,7 @@ abstract class AbstractNotification implements \Serializable, \Nethgui\Core\View
         list($this->identifier, $this->dismissed, $this->style, $this->type, $this->transient) = unserialize($serialized);
     }
 
-    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
+    public function prepareView(\Nethgui\Core\ViewInterface $view)
     {
         $view->setTemplate(array($this, 'renderXhtml'));
         $view['identifier'] = $this->identifier;

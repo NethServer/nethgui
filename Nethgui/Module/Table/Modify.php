@@ -230,10 +230,10 @@ class Modify extends Action
 
     }
 
-    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
+    public function prepareView(\Nethgui\Core\ViewInterface $view)
     {
-        parent::prepareView($view, $mode);
-        if ($mode == self::VIEW_SERVER) {
+        parent::prepareView($view);
+        if ($view->getTargetFormat() === $view::TARGET_XHTML) {
             $view['__key'] = $this->key;
         }
     }

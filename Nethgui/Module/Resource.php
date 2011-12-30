@@ -103,9 +103,9 @@ class Resource extends \Nethgui\Core\Module\Standard implements \Nethgui\Core\Co
         $view->setTemplate(FALSE);
     }
 
-    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
+    public function prepareView(\Nethgui\Core\ViewInterface $view)
     {
-        parent::prepareView($view, $mode);
+        parent::prepareView($view);
 
         if ($view->getTargetFormat() == 'xhtml') {
             $this->prepareViewXhtml($view);

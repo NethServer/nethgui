@@ -134,7 +134,7 @@ abstract class AbstractModule implements \Nethgui\Core\ModuleInterface, \Nethgui
         return $this->parent;
     }
 
-    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
+    public function prepareView(\Nethgui\Core\ViewInterface $view)
     {
         $template = $this->getViewTemplate();
         if ( ! is_null($template)) {

@@ -71,7 +71,7 @@ class ModuleSurrogate implements \Nethgui\Core\ModuleInterface, \Serializable
         throw new \Exception('Not implemented ' . __METHOD__, 1323096814);
     }
 
-    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
+    public function prepareView(\Nethgui\Core\ViewInterface $view)
     {
         throw new \Exception('Not implemented ' . __METHOD__, 1323096815);
     }

@@ -81,7 +81,7 @@ class MarshallingReceiver extends \Nethgui\Core\AbstractReceiverChain
         foreach ($value as $k => $v) {
             if ($v instanceof \Nethgui\Core\ViewableInterface) {
                 $innerView = $view->spawnView($view->getModule());
-                $v->prepareView($innerView, $view->getTargetFormat());
+                $v->prepareView($innerView);
                 $v = $this->prepareArguments($view, $innerView);
             } elseif ($v instanceof \Traversable || is_array($v)) {
                 $v = $this->prepareArguments($view, $v);

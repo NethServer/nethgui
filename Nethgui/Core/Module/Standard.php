@@ -478,14 +478,14 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
         }
     }
 
-    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
+    public function prepareView(\Nethgui\Core\ViewInterface $view)
     {
-        parent::prepareView($view, $mode);
+        parent::prepareView($view);
         $view->copyFrom($this->parameters);
         foreach ($this->dialogBoxes as $dialogArgs) {
            // TODO invoke showNotification command
         }
-        if ($mode === self::VIEW_SERVER) {
+        if ($view->getTargetFormat() === $view::TARGET_XHTML) {
             $view['__invalidParameters'] = $this->invalidParameters;
         }
     }

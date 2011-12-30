@@ -61,11 +61,11 @@ class Read extends Action
         }
     }
 
-    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
+    public function prepareView(\Nethgui\Core\ViewInterface $view)
     {
-        parent::prepareView($view, $mode);
-        $view['rows'] = $this->prepareRows($view, $mode);
-        if ($mode == self::VIEW_SERVER) {
+        parent::prepareView($view);
+        $view['rows'] = $this->prepareRows($view);
+        if ($view->getTargetFormat() === $view::TARGET_XHTML) {
             $view['columns'] = $this->columns;
             // FIXME: implement pagination - on the client side:
             $view['tableClass'] = count($view['rows']) > 10 ? 'large-dataTable' : 'small-dataTable';
@@ -74,9 +74,6 @@ class Read extends Action
             $view['tableTitle'] = $view->getTranslator()->translate($this->getParent(), $this->getParent()->getAttributesProvider()->getTitle());
             $view['TableActions'] = $view->spawnView($this->getParent());
             $view['TableActions']->setTemplate(array($this, 'renderTableActions'));
-        } elseif ($mode == self::VIEW_HELP) {
-            // Ignore the view in help mode:
-            $view->setTemplate(FALSE);
         }
     }
 
@@ -114,7 +111,7 @@ class Read extends Action
         return $m->getIdentifier();
     }
 
-    private function prepareRows(\Nethgui\Core\ViewInterface $view, $mode)
+    private function prepareRows(\Nethgui\Core\ViewInterface $view)
     {
         $rows = new \ArrayObject();
 
@@ -124,7 +121,7 @@ class Read extends Action
             $row[] = $rowMetadata;
 
             foreach ($this->columns as $columnIndex => $columnInfo) {
-                $row[] = $this->prepareColumn($view, $mode, $columnIndex, $columnInfo['name'], $key, $values, $rowMetadata);
+                $row[] = $this->prepareColumn($view, $columnIndex, $columnInfo['name'], $key, $values, $rowMetadata);
             }
 
             $rows[] = $row;
@@ -133,14 +130,14 @@ class Read extends Action
         return $rows;
     }
 
-    private function prepareColumn(\Nethgui\Core\ViewInterface $view, $mode, $columnIndex, $column, $key, $values, &$rowMetadata)
+    private function prepareColumn(\Nethgui\Core\ViewInterface $view, $columnIndex, $column, $key, $values, &$rowMetadata)
     {
         $methodName = 'prepareViewForColumn' . ucfirst($column);
 
         if (method_exists($this->getParent(), $methodName)) {
-            $columnValue = $this->getParent()->$methodName($this, $view, $mode, $key, $values, $rowMetadata);
+            $columnValue = $this->getParent()->$methodName($this, $view, $key, $values, $rowMetadata);
         } elseif (method_exists($this, $methodName)) {
-            $columnValue = $this->$methodName($view, $mode, $key, $values, $rowMetadata);
+            $columnValue = $this->$methodName($view, $key, $values, $rowMetadata);
         } else {
             $columnValue = isset($values[$column]) ? $values[$column] : NULL;
         }
@@ -148,7 +145,7 @@ class Read extends Action
         return $columnValue;
     }
 
-    public function prepareViewForColumnKey(\Nethgui\Core\ViewInterface $view, $mode, $key, $values, &$rowMetadata)
+    public function prepareViewForColumnKey(\Nethgui\Core\ViewInterface $view, $key, $values, &$rowMetadata)
     {
         return strval($key);
     }
@@ -156,13 +153,12 @@ class Read extends Action
     /**
      *
      * @param \Nethgui\Core\ViewInterface $view
-     * @param int $mode
      * @param string $key The data row key
      * @param array $values The data row values
      * @param array &$rowMetadata The metadadata row values, like css classes
      * @return \Nethgui\Core\ViewInterface 
      */
-    public function prepareViewForColumnActions(\Nethgui\Core\ViewInterface $view, $mode, $key, $values, &$rowMetadata)
+    public function prepareViewForColumnActions(\Nethgui\Core\ViewInterface $view, $key, $values, &$rowMetadata)
     {
         $cellView = $view->spawnView($this->getParent());
         $cellView->setTemplate(array($this, 'renderColumnActions'));

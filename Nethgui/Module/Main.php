@@ -74,10 +74,10 @@ class Main extends \Nethgui\Core\Module\ListComposite
         parent::bind($request);
     }
 
-    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
+    public function prepareView(\Nethgui\Core\ViewInterface $view)
     {
 
-        parent::prepareView($view, $mode);
+        parent::prepareView($view);
 
         /*
          * Stylesheets and script files can be served only by the Resource module

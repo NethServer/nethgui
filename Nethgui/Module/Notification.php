@@ -71,9 +71,9 @@ class Notification extends \Nethgui\Core\Module\Standard implements \Nethgui\Cor
         $this->declareParameter('dismiss', '/^[a-zA-Z0-9]+$/');
     }
 
-    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
+    public function prepareView(\Nethgui\Core\ViewInterface $view)
     {
-        parent::prepareView($view, $mode);
+        parent::prepareView($view);
         if ($view->getTargetFormat() === $view::TARGET_XHTML) {
             $view->setTemplate(array($this, 'render'));
         } else {
@@ -146,7 +146,7 @@ class Notification extends \Nethgui\Core\Module\Standard implements \Nethgui\Cor
             return;
         }
         $innerView = $this->view->spawnView($this);
-        $notification->prepareView($innerView, $this->view->getTargetFormat());
+        $notification->prepareView($innerView);
         $this->view[$notification->getIdentifier()] = $innerView;
     }
 

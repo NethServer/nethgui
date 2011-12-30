@@ -153,11 +153,10 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
      * current action.
      * 
      * @param \Nethgui\Core\ViewInterface $view
-     * @param type $mode 
      */
-    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
+    public function prepareView(\Nethgui\Core\ViewInterface $view)
     {
-        parent::prepareView($view, $mode);
+        parent::prepareView($view);
 
         if (is_null($this->currentAction)) {
             // Handle a NULL current action, rendering all the children in a
@@ -165,12 +164,12 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
             $view->setTemplate(array($this, 'renderIndex'));
             foreach ($this->getChildren() as $childModule) {
                 $innerView = $view->spawnView($childModule, TRUE);
-                $childModule->prepareView($innerView, $mode);
+                $childModule->prepareView($innerView);
             }
         } elseif ($this->currentAction instanceof \Nethgui\Core\ViewableInterface) {
             $view->setTemplate(array($this, 'renderCurrentAction'));
             $innerView = $view->spawnView($this->currentAction, TRUE);
-            $this->currentAction->prepareView($innerView, $mode);
+            $this->currentAction->prepareView($innerView);
         }
     }
 

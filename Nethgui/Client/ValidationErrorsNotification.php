@@ -79,9 +79,9 @@ class ValidationErrorsNotification extends AbstractNotification implements \Neth
         return count($this->errors) > 0;
     }
 
-    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
+    public function prepareView(\Nethgui\Core\ViewInterface $view)
     {
-        parent::prepareView($view, $mode);
+        parent::prepareView($view);
         $view['title'] = count($this->errors) > 1 ? $view->translate('Invalid parameters') : $view->translate('Invalid parameter');
         $errors = array();
         foreach ($this->errors as $error) {

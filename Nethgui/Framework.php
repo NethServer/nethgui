@@ -294,7 +294,7 @@ class Framework
         $rootView->setReceiver($commandReceiver);
 
         // ..transfer contents and commands into the MAIN view:
-        $mainModule->prepareView($rootView, $targetFormat === 'xhtml' ? 0 : 1);
+        $mainModule->prepareView($rootView);
 
         if ($validationErrorsNotification->hasValidationErrors()) {
             // Only validation errors notification has to be shown: clear

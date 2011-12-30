@@ -185,12 +185,10 @@ class TableController extends \Nethgui\Core\Module\Controller
     /**
      * @todo refactor into parent class
      */
-    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
+    public function prepareView(\Nethgui\Core\ViewInterface $view)
     {
-        $mode = $view->getTargetFormat();
-        parent::prepareView($view, $mode);
-
-        if ($mode !== $view::TARGET_JSON) {
+        parent::prepareView($view);
+        if ($view->getTargetFormat() !== $view::TARGET_JSON) {
             return;
         }
 
@@ -201,7 +199,7 @@ class TableController extends \Nethgui\Core\Module\Controller
             // to refresh the tabular data.
             $readAction = $this->getAction('read');
             $innerView = $view->spawnView($readAction, TRUE);
-            $readAction->prepareView($innerView, $mode);
+            $readAction->prepareView($innerView);
             $view->getCommandListFor('read')->show();
         } elseif ( ! $this->getRequest()->isSubmitted()) {
             $view->getCommandListFor($this->currentAction->getIdentifier())->show();

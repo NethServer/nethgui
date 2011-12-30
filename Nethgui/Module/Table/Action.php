@@ -48,9 +48,9 @@ class Action extends \Nethgui\Core\Module\Standard implements ActionInterface
         return ! is_null($this->tableAdapter);
     }
 
-    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
+    public function prepareView(\Nethgui\Core\ViewInterface $view)
     {
-        parent::prepareView($view, $mode);
+        parent::prepareView($view);
         $view['Cancel'] = $view->getModuleUrl('/' . implode('/', $view->resolvePath('..')));
         if ( ! $this instanceof \Nethgui\Core\ModuleCompositeInterface) {
             $view['FormAction'] = $view->getModuleUrl(implode('/', $this->getRequest()->getPath()));

@@ -25,12 +25,12 @@ namespace Nethgui\Module\Help;
  */
 class Template extends Common
 {
-    public function prepareView(\Nethgui\Core\ViewInterface $rootView, $mode)
+    public function prepareView(\Nethgui\Core\ViewInterface $rootView)
     {
         $rootView->setTemplate('Nethgui\Template\Help\Schema');
 
         $moduleView = $rootView->spawnView($this->module);
-        $this->module->prepareView($moduleView, self::VIEW_HELP);
+        $this->module->prepareView($moduleView);
 
         $rootView['title'] = $this->module->getTitle();
         $rootView['lang'] = $this->getRequest()->getUser()->getLanguageCode();

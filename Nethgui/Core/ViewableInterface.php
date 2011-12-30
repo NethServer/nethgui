@@ -36,10 +36,9 @@ interface ViewableInterface
      * Prepare view layer data, putting it into $view.
      *
      * @param ViewInterface $view The view to put the data into
-     * @param integer $mode One of VIEW_CLIENT or VIEW_SERVER values
      * @see ViewInterface
      * @return void
      * @api
      */
-    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode);
+    public function prepareView(\Nethgui\Core\ViewInterface $view);
 }

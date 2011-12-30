@@ -95,9 +95,9 @@ class DialogBox extends \Nethgui\Client\AbstractNotification
         return $this->message;
     }
 
-    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
+    public function prepareView(\Nethgui\Core\ViewInterface $view)
     {
-        parent::prepareView($view, $mode);
+        parent::prepareView($view);
         $view['title'] = $view->translate($this->message[0], $this->message[1]);
         $view['actions'] = $this->actions;
     }

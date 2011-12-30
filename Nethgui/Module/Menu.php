@@ -98,7 +98,7 @@ class Menu extends \Nethgui\Core\Module\Standard
         return $results;
     }
 
-    public function prepareView(\Nethgui\Core\ViewInterface $view, $mode)
+    public function prepareView(\Nethgui\Core\ViewInterface $view)
     {
         if ($view->getTargetFormat() === $view::TARGET_JSON) {
             if ($this->getRequest()->isEmpty()) {
@@ -108,7 +108,7 @@ class Menu extends \Nethgui\Core\Module\Standard
             return;
         }
 
-        parent::prepareView($view, $mode);
+        parent::prepareView($view);
         $view->setTemplate(array($this, 'renderModuleMenu'));
 
         $categories = array();
