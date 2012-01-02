@@ -82,7 +82,7 @@ class ValidationErrorsNotification extends AbstractNotification implements \Neth
     public function prepareView(\Nethgui\Core\ViewInterface $view)
     {
         parent::prepareView($view);
-        $view['title'] = count($this->errors) > 1 ? $view->translate('Invalid parameters') : $view->translate('Invalid parameter');
+        $view['title'] = count($this->errors) > 1 ? $view->translate('Incorrect values') : $view->translate('Incorrect value');
         $errors = array();
         foreach ($this->errors as $error) {
             $innerView = $view->spawnView($error['module']);
@@ -103,17 +103,23 @@ class ValidationErrorsNotification extends AbstractNotification implements \Neth
             ->setAttribute('icon-before', 'ui-icon-alert')
             ->setAttribute('template', '${0}: ');
 
-        $elementList = $renderer->elementList()
-            ->setAttribute('wrap', 'ol/li')
-            ->setAttribute('class', 'flatList');
+        $elementList = $renderer->panel()->setAttribute('tag', 'dl');
 
         foreach ($renderer['errors'] as $error) {
-            $elementList->insert($renderer->literal($error['label']));
+
+
+            $content = strtr('<dt><a href="%ID">%TITLE</a></dt><dd>%DESC</dd>', array(
+                '%ID' => htmlspecialchars('#' . $error['widgetId']),
+                '%TITLE' => htmlspecialchars($error['label']),
+                '%DESC' => htmlspecialchars($error['message']),
+                ));
+
+            $elementList->insert($renderer->literal($content));
         }
 
         return $panel
-            ->insert($title)
-            ->insert($elementList);
+                ->insert($title)
+                ->insert($elementList);
     }
 
 }

@@ -309,6 +309,8 @@ class Framework
                 ->showNotification($validationErrorsNotification)
                 ->httpHeader("HTTP/1.1 400 Request validation error")
             ;
+
+            
         }
 
         // ..Execute commands sent to views. These do not include commands sent to widgets:

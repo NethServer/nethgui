@@ -96,6 +96,8 @@ class Notification extends \Nethgui\Core\Module\Standard implements \Nethgui\Cor
 
     public function render(\Nethgui\Renderer\Xhtml $renderer)
     {
+        $renderer->includeFile('jquery.nethgui.notification.js', 'Nethgui');       
+
         $panel = $renderer->panel()->setAttribute('name', 'Pane')->setAttribute('receiver', '');
 
         foreach ($renderer as $offset => $innerView) {
@@ -119,7 +121,11 @@ class Notification extends \Nethgui\Core\Module\Standard implements \Nethgui\Cor
             if ( ! isset($arguments[1])) {
                 $arguments[1] = \Nethgui\Client\AbstractNotification::NOTIFY_SUCCESS;
             }
-            $this->showNotification(new \Nethgui\Client\DialogBox($origin->getModule(), $arguments[0], array(), $arguments[1]));
+
+            $notification = new \Nethgui\Client\DialogBox($origin->getModule(), $arguments[0], array(), $arguments[1]);
+
+            $this->showNotification($notification);
+            
         } elseif ($name === 'dismissNotification') {
             $this->dismissNotification($arguments[0]);
         }

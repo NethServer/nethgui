@@ -78,11 +78,6 @@ abstract class AbstractNotification implements \Serializable, \Nethgui\Core\View
         return $this->dismissed === TRUE;
     }
 
-    public function getIterator()
-    {
-        return new \ArrayIterator($this->asArray());
-    }
-
     public function serialize()
     {
         return serialize(array($this->identifier, $this->dismissed, $this->style, $this->type, $this->transient));
@@ -112,7 +107,11 @@ abstract class AbstractNotification implements \Serializable, \Nethgui\Core\View
             $styleClass = 'ui-state-success';
         }
 
-        return $renderer->panel()->setAttribute('class', sprintf('%s %s', $this->getType(), $styleClass))->setAttribute('name', $this->getIdentifier());
+        if ($this->isTransient()) {
+            $styleClass .= ' transient';
+        }
+
+        return $renderer->panel()->setAttribute('class', sprintf('%s %s', $this->getType(), $styleClass))->setAttribute('receiver', $this->getIdentifier());
     }
 
 }
