@@ -68,14 +68,15 @@ class Command implements \Nethgui\Core\CommandInterface
     /**
      *
      * @param \Nethgui\Core\ViewInterface $origin
-     * @param string $name
+     * @param string $selector
+     * @param string $methodName
      * @param array $arguments
      */
-    public function __construct(\Nethgui\Core\ViewInterface $origin, $name, $arguments, $selector = '')
+    public function __construct(\Nethgui\Core\ViewInterface $origin, $selector, $methodName, $arguments)
     {
         $this->origin = $origin;
         $this->selector = $selector;
-        $this->methodName = $name;
+        $this->methodName = $methodName;
         $this->arguments = $arguments;
         $this->executed = FALSE;
     }

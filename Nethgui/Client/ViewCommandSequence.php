@@ -56,7 +56,7 @@ class ViewCommandSequence implements \Nethgui\Core\ViewCommandInterface
 
     public function __call($name, $arguments)
     {
-        $command = new \Nethgui\Client\Command($this->origin, $name, $arguments, $this->selector);
+        $command = new \Nethgui\Client\Command($this->origin, $this->selector, $name, $arguments);
         $this->addCommand($command);
         return $this;
     }
