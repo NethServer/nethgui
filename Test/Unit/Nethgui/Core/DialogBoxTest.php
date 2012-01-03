@@ -27,7 +27,6 @@ class DialogBoxTest extends \PHPUnit_Framework_TestCase
     public function testGetActions()
     {
         $this->markTestIncomplete();
-        //$this->assertEmpty($this->object->getActionViews($notificationModule));
     }
 
     
@@ -36,42 +35,27 @@ class DialogBoxTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('message', array()), $this->object->getMessage());
     }
 
-    /**
-     * @todo Implement testGetType().
-     */
     public function testGetType()
     {
-        $this->assertEquals(0, $this->object->getType());
+        $this->assertEquals('Message', $this->object->getType());
     }
 
-    /**
-     * @todo Implement testIsTransient().
-     */
     public function testIsTransient()
     {
         $this->assertTrue($this->object->isTransient());
     }
 
-    /**
-     * @todo Implement testGetId().
-     */
     public function testGetId()
     {
-        $this->assertRegExp('/^[a-zA-Z0-9]+$/', $this->object->getId());
+        $this->assertRegExp('/^[a-zA-Z0-9]+$/', $this->object->getIdentifier());
     }
 
-    /**
-     * @todo Implement testSerialize().
-     */
     public function testSerialize()
     {
         $ser = unserialize(serialize($this->object));        
         $this->assertEquals($this->object, $ser);        
     }
 
-    /**
-     * @todo Implement testUnserialize().
-     */
     public function testUnserialize()
     {
         $ser = unserialize(serialize($this->object));        

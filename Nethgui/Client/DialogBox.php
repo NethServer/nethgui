@@ -108,5 +108,16 @@ class DialogBox extends \Nethgui\Client\AbstractNotification
         $message = $renderer->textLabel('title')->setAttribute('icon-before', 'ui-icon-info');
         return $panel->insert($message);
     }
-    
+
+    public function serialize()
+    {
+        $p = parent::serialize();
+        return serialize(array($p, $this->module, $this->actions, $this->message));
+    }
+
+    public function unserialize($serialized)
+    {
+        list($p, $this->module, $this->actions, $this->message) = unserialize($serialized);
+        parent::unserialize($p);
+    }
 }
