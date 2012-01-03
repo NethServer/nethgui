@@ -31,6 +31,7 @@ interface ModuleCompositeInterface
 {
 
     /**
+     * @api
      * @return array An array of ModuleInterface implementing objects.
      */
     public function getChildren();
@@ -38,7 +39,12 @@ interface ModuleCompositeInterface
     /**
      * Adds a child to this Composite. Implementations must send a setParent()
      * message to $module.
+     *
+     * @todo Add return $this on implementations
+     *
+     * @api
      * @param ModuleInterface $module The child module.
+     * @return void
      */
     public function addChild(\Nethgui\Core\ModuleInterface $module);
 }

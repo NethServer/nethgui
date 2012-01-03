@@ -183,11 +183,14 @@ class Modify extends Action
         }
 
         // Transfer all parameters values into tableAdapter (and DB):
-        $this->parameters->save();
+        $changes = $this->parameters->getModifiedKeys();
 
-        // Transfer all tableAdapter values into DB
-        $this->tableAdapter->save();
-
+        $save1 = $this->parameters->save();
+        $save2 = $this->tableAdapter->save();
+        if ($save1 || $save2) {
+            $this->onParametersSaved($changes);
+            $this->getParent()->onParametersSaved($this, $changes);
+        }
     }
 
     protected function processDelete($key)
