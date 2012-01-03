@@ -24,9 +24,8 @@ namespace Nethgui\Adapter;
  * A Multiple adapter maps a scalar value to multiple keys or props through
  * a "reader" and a "writer" callback function.
  * 
- * The reader function is mandatory, the writer is optional. If you set NULL the writer
- * callback you get a read-only adapter. All save() calls have no effects and returns
- * int(0) changes.
+ * The reader function is mandatory, the writer is optional. If you set to NULL the writer
+ * callback you get a read-only adapter, but save() still returns the number of changes.
  * 
  * If the adapter has an empty set of serializers the callback function will 
  * still be called with no arguments.
@@ -97,30 +96,32 @@ class MultipleAdapter implements AdapterInterface
 
     public function save()
     {
-        if ( ! is_callable($this->writerCallback)) {
-            return 0;
-        }
-
         if ( ! $this->isModified()) {
-            return 0;
+            return FALSE;
         }
 
-        $values = call_user_func($this->writerCallback, $this->value);
+        $saved = FALSE;
 
-        $index = 0;
-        $changes = 0;
+        if (is_callable($this->writerCallback)) {
+            $values = call_user_func($this->writerCallback, $this->value);
 
-        if (is_array($values)) {
-            foreach ($values as $value) {
-                $this->innerAdapters[$index]->set($value);
-                $changes += $this->innerAdapters[$index]->save();
-                $index ++;
+            $index = 0;
+            $changes = 0;
+
+            if (is_array($values)) {
+                foreach ($values as $value) {
+                    $this->innerAdapters[$index]->set($value);
+                    $saved = $this->innerAdapters[$index]->save() ? TRUE : $saved;
+                    $index ++;
+                }
             }
+        } else {
+            $saved = TRUE;
         }
 
         $this->modified = FALSE;
 
-        return $changes;
+        return $saved;
     }
 
     private function lazyInitialization()

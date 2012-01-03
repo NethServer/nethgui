@@ -236,16 +236,16 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
 
         // At this point $validator MUST be an object implementing the right interface
         if ( ! $validator instanceof \Nethgui\Core\ValidatorInterface) {
-            throw new \InvalidArgumentException(sprintf('%s: Invalid validator value for parameter `%s`', get_class($this), $parameterName), 1322149486);
+            throw new \InvalidArgumentException(sprintf('%s: Invalid validator instance for parameter `%s`', get_class($this), $parameterName), 1322149486);
         }
 
         $this->validators[$parameterName] = $validator;
 
         if (is_callable($valueProvider)) {
             // Create a read-only Map Adapter using $valueProvider as read-callback
-            $this->parameters->register($this->getPlatform()->getMapAdapter($valueProvider, NULL, array()), $parameterName);
+            $this->parameters->addAdapter($this->getPlatform()->getMapAdapter($valueProvider, NULL, array()), $parameterName);
         } elseif ($valueProvider instanceof \Nethgui\Adapter\AdapterInterface) {
-            $this->parameters->register($valueProvider, $parameterName);
+            $this->parameters->addAdapter($valueProvider, $parameterName);
         } elseif (is_array($valueProvider)) {
             $this->parameters[$parameterName] = $this->getAdapterForParameter($parameterName, $valueProvider);
         } elseif (is_null($valueProvider)) {
@@ -466,16 +466,23 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
     }
 
     /**
-     * Do nothing
+     * Save parameters on mutation
      */
     public function process()
     {
-        if ($this->autosave === TRUE) {
-            $changes = $this->parameters->save();
-            if ($changes > 0) {
-                $this->signalAllEventsFinally();
+        if ($this->getRequest()->isSubmitted()) {
+
+            $changes = $this->parameters->getModifiedKeys();
+
+            if ($this->parameters->save()) {
+                $this->onParametersSaved($changes);
             }
         }
+    }
+
+    protected function onParametersSaved($changedParameters)
+    {
+        // NOOP
     }
 
     public function prepareView(\Nethgui\Core\ViewInterface $view)
@@ -491,7 +498,6 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
     }
 
     /**
-     *
      * @return \Nethgui\Core\RequestInterface
      */
     protected function getRequest()
@@ -500,4 +506,3 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
     }
 
 }
-

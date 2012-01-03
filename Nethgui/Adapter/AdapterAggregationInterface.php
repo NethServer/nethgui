@@ -25,41 +25,40 @@ namespace Nethgui\Adapter;
  * @since 1.0
  * @api
  */
-interface AdapterAggregationInterface {
+interface AdapterAggregationInterface extends ModifiableInterface {
 
     /**
-     * Return the list of registered parameter names
+     * The list of registered adapter names
+     *
+     * @api
      * @return array
      */
     public function getKeys();
+
+    /**
+     * The list of modified adapters in this aggregation
+     *
+     * @api
+     * @see getKeys()
+     * @return array An array of keys
+     */
+    public function getModifiedKeys();
     
     /**
+     * Register the given adapter with the given $key identity
+     * 
+     * @api
      * @param AdapterInterface $adapter
      * @param string $key
      */
-    public function register(AdapterInterface $adapter, $key);
+    public function addAdapter(AdapterInterface $adapter, $key);
     
     /**
+     * Obtain the adapter registered with the given identity
+     *
+     * @api
      * @return AdapterInterface
      */
-    public function query($key);
-    
-    /**
-     * Check if a member is modified from its initial value.
-     * 
-     * If the member to check is not specified (NULL) the method checks if any
-     * of its member is modified and returns TRUE on this case.
-     * 
-     * @param string $key Optional The member to check. 
-     * @return bool
-     */
-    public function isModified($key = NULL);
-    
-    /**
-     * Saves aggregated values into database,
-     * forwarding the call to Adapters and Sets..
-     * 
-     * @return integer The number of saved parameters. A zero value indicates that nothing has been saved.
-     */
-    public function save();
+    public function getAdapter($key);
+   
 }

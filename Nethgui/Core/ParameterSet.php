@@ -102,25 +102,23 @@ class ParameterSet implements \Nethgui\Adapter\AdapterAggregationInterface, \Arr
      */
     public function save()
     {
-        $saveCounter = 0;
+        $saved = FALSE;
 
         foreach ($this->data as $value) {
-            if ($value instanceof \Nethgui\Adapter\AdapterInterface) {
-                $saveCounter += $value->save();
-            } elseif ($value instanceof \Nethgui\Adapter\AdapterAggregationInterface) {
-                $saveCounter += $value->save();
+            if ($value instanceof \Nethgui\Adapter\ModifiableInterface) {
+                $saved = $value->save() ? TRUE : $saved;
             }
         }
 
-        return $saveCounter;
+        return $saved;
     }
 
-    public function register(\Nethgui\Adapter\AdapterInterface $adapter, $key)
+    public function addAdapter(\Nethgui\Adapter\AdapterInterface $adapter, $key)
     {
         $this->data[$key] = $adapter;
     }
 
-    public function query($key)
+    public function getAdapter($key)
     {
         if ( ! $this->data[$key] instanceof \Nethgui\Adapter\AdapterInterface) {
             return NULL;
@@ -128,29 +126,23 @@ class ParameterSet implements \Nethgui\Adapter\AdapterAggregationInterface, \Arr
         return $this->data[$key];
     }
 
-    public function isModified($key = NULL)
+    public function isModified()
     {
-        if (is_null($key)) {
-            $keys = array_keys($this->data);
-        } else {
-            $keys = array($key);
-        }
+        return count($this->getModifiedKeys()) > 0;
+    }
 
-        foreach ($keys as $key) {
-            $value = $this->data[$key];
+    public function getModifiedKeys()
+    {
+        $modified = array();
 
-            if ($value instanceof \Nethgui\Adapter\AdapterInterface) {
-                $modified = $value->isModified();
-            } elseif ($value instanceof \Nethgui\Adapter\AdapterAggregationInterface) {
-                $modified = $value->isModified(NULL);
-            }
-
-            if ($modified === TRUE) {
-                return TRUE;
+        foreach ($this->getKeys() as $key) {
+            if ($this->data[$key] instanceof \Nethgui\Adapter\ModifiableInterface
+                && $this->data[$key]->isModified()) {
+                $modified[] = $key;
             }
         }
 
-        return FALSE;
+        return $modified;
     }
 
     public function current()

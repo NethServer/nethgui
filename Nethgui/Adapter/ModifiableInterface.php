@@ -2,50 +2,46 @@
 namespace Nethgui\Adapter;
 
 /*
- * Copyright (C) 2011 Nethesis S.r.l.
- * 
+ * Copyright (C) 2012 Nethesis S.r.l.
+ *
  * This script is part of NethServer.
- * 
+ *
  * NethServer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * NethServer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * Adapter Interface allows changing a ConfigurationDatabase key or property value
- * through a simplified interface.
- * 
- * @see AdapterAggregationInterface
+ * Report and persist the state of an object
+ *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
- * @api 
  */
-interface AdapterInterface extends ModifiableInterface
+interface ModifiableInterface
 {
 
     /**
-     * @var mixed $value
-     * @return void
+     * Report if the object state has been changed from the last save()
+     *
+     * @return bool;
      */
-    public function set($value);
+    public function isModified();
 
     /**
-     * @return mixed
+     * Persist the object state
+     *
+     * @api
+     * @see isModified()
+     * @return bool
      */
-    public function get();
-
-    /**
-     * @return void
-     */
-    public function delete();
-
+    public function save();
 }
