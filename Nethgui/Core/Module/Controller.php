@@ -186,7 +186,7 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
      */
     public function renderCurrentAction(\Nethgui\Renderer\Xhtml $view)
     {
-        return $view->inset($this->currentAction->getIdentifier(), $view::INSET_FORM | $view::INSET_WRAP);
+        return $view->inset($this->currentAction->getIdentifier(), $this->needsAutoFormWrap($this->currentAction) ? $view::INSET_FORM | $view::INSET_WRAP : $view::INSET_WRAP);
     }
 
     public function renderIndex(\Nethgui\Renderer\Xhtml $renderer)
@@ -204,7 +204,7 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
             $label = $renderer->getTranslator()->translate($module, $module->getAttributesProvider()->getTitle());
             $actionList->insert($renderer->literal(strtr('<a href="%URI">%LABEL</a>', array('%URI' => $renderer->getModuleUrl($identifier), '%LABEL' => $label))));
             $flags = $renderer::STATE_UNOBSTRUSIVE | $renderer::INSET_WRAP;
-            if ($module instanceof \Nethgui\Core\RequestHandlerInterface) {
+            if ($this->needsAutoFormWrap($module)) {
                 $flags |= $renderer::INSET_FORM;
             }
             $container->insert($renderer->inset($identifier, $flags)->setAttribute('class', 'Action'));
