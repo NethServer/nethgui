@@ -1,16 +1,20 @@
 <?php
 namespace Test\Unit\Nethgui\Adapter;
+
+/**
+ * @covers \Nethgui\Adapter\ScalarAdapter
+ */
 class ScalarAdapterTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
      *
-     * @var Nethgui_Core_SerializerInterface
+     * @var \Nethgui\Serializer\SerializerInterface
      */
     private $serializer;
     /**
      *
-     * @var Nethgui_Core_ScalarAdapter
+     * @var \Nethgui\Adapter\ScalarAdapter
      */
     private $fixture;
 
@@ -53,7 +57,7 @@ class ScalarAdapterTest extends \PHPUnit_Framework_TestCase
     /**
      *
      * @depends testSet
-     * @param Nethgui_Core_ScalarAdapter $changedFixture
+     * @param \Nethgui\Adapter\ScalarAdapter $changedFixture
      */
     public function testSaveModified($changedFixture)
     {
@@ -66,7 +70,7 @@ class ScalarAdapterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @depends testGet
-     * @param Nethgui_Core_ScalarAdapter $unchangedFixture
+     * @param \Nethgui\Adapter\ScalarAdapter $unchangedFixture
      */
     public function testSaveNotModified($unchangedFixture)
     {

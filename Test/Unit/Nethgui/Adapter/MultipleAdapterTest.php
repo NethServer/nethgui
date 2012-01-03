@@ -1,5 +1,9 @@
 <?php
 namespace Test\Unit\Nethgui\Adapter;
+
+/**
+ * @covers \Nethgui\Adapter\MultipleAdapter
+ */
 class MultipleAdapterTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -115,7 +119,7 @@ class MultipleAdapterTest extends \PHPUnit_Framework_TestCase
         $this->returnValues('disabled', '');
         $this->object->set('100');
         $this->expectWrites('enabled', '100');
-        $this->assertEquals(2, $this->object->save());
+        $this->assertTrue($this->object->save());
     }
 
     public function testSaveUnchanged()
@@ -130,7 +134,7 @@ class MultipleAdapterTest extends \PHPUnit_Framework_TestCase
         $this->serializers[1]->expects($this->never())
             ->method('write');
 
-        $this->assertEquals(0, $this->object->save());
+        $this->assertFalse($this->object->save());
     }
 
     public function testSaveNull()
@@ -138,7 +142,7 @@ class MultipleAdapterTest extends \PHPUnit_Framework_TestCase
         $this->returnValues('enabled', '99');
         $this->object->delete();
         $this->expectWrites('disabled', NULL);
-        $this->assertEquals(2, $this->object->save());
+        $this->assertTrue($this->object->save());
     }
 
 }

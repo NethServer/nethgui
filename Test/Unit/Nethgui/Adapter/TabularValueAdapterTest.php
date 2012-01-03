@@ -1,5 +1,9 @@
 <?php
 namespace Test\Unit\Nethgui\Adapter;
+
+/**
+ * @covers \Nethgui\Adapter\TabularValueAdapter
+ */
 class TabularValueAdapterTest extends \PHPUnit_Framework_TestCase
 {
 

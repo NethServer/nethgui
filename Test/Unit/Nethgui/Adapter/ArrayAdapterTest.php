@@ -1,5 +1,9 @@
 <?php
 namespace Test\Unit\Nethgui\Adapter;
+
+/**
+ * @covers \Nethgui\Adapter\ArrayAdapter
+ */
 class ArrayAdapterTest extends \PHPUnit_Framework_TestCase
 {
 
