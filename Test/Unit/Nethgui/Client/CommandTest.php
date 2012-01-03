@@ -10,21 +10,25 @@ class CommandTest extends \PHPUnit_Framework_TestCase
     protected $object;
 
     /**
+     *
+     * @var \Nethgui\Core\ViewInterface
+     */
+    private $origin;
+
+    /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
     protected function setUp()
     {
-        $this->object = new \Nethgui\Client\Command('test', array(1, 'A'));
+        $this->origin = $this->getMockBuilder('Nethgui\Core\ViewInterface')->getMock();
+        $this->object = new \Nethgui\Client\Command($this->origin, '../Id', 'test', array(1, 'A'));
     }
 
     public function testExecuteSuccess()
     {
         $receiver = $this->createReceiverMock();
-
-        $retval = $this->object->setReceiver($receiver)->execute();
-
-        $this->assertEquals('success', $retval);
+        $this->object->setReceiver($receiver)->execute();
     }
 
     public function testExecuteAlreadyFail()
@@ -45,10 +49,26 @@ class CommandTest extends \PHPUnit_Framework_TestCase
 
         $receiver->expects($this->once())
             ->method('executeCommand')
-            ->with('test', array(1, 'A'))
+            ->with($this->origin, '../Id', 'test', array(1, 'A'))
             ->will($this->returnValue('success'));
 
         return $receiver;
+    }
+
+    public function testGetOrigin()
+    {
+        $this->assertSame($this->origin, $this->object->getOrigin());
+    }
+
+    public function testGetSelector()
+    {
+        $this->assertEquals('../Id', $this->object->getSelector());
+    }
+
+    public function testSetSelector()
+    {
+        $this->object->setSelector('/Id2');
+        $this->assertEquals('/Id2', $this->object->getSelector());
     }
 
     public function testExecuteFail()
@@ -58,14 +78,6 @@ class CommandTest extends \PHPUnit_Framework_TestCase
         } catch (\Exception $ex) {
             $this->assertInstanceOf('LogicException', $ex);
         }
-    }
-
-    public function testSetReceiver()
-    {
-        $retval = $this->object->setReceiver($this->createReceiverMock());
-        $this->assertSame($this->object, $retval);
-        $v = $this->object->execute();
-        $this->assertEquals('success', $v);
     }
 
     public function testIsExecuted1()
