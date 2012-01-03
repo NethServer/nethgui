@@ -133,7 +133,7 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionC
             $this->setExecutionState(self::STATE_EXITED);
         }
 
-        return $this->readExecutionState();
+        return $this;
     }
 
     private function setExecutionState($newState)

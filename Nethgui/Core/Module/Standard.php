@@ -28,7 +28,7 @@ namespace Nethgui\Core\Module;
  * @since 1.0
  * @api
  */
-abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestHandlerInterface, \Nethgui\System\EventObserverInterface
+abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestHandlerInterface
 {
     /**
      * A valid service status is a 'disabled' or 'enabled' string.
@@ -148,25 +148,10 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
     const VALID_MACADDRESS = 208;
 
     /**
-
-
-
-      /**
      * This collection holds the parameter values as primitive datatype or adapter objects.
      * @var \Nethgui\Core\ParameterSet
      */
     protected $parameters;
-
-    /**
-     * @var array
-     */
-    private $requiredEvents = array();
-
-    /**
-     * Set to FALSE if you want to inhibit saving of parameters.
-     * @var bool
-     */
-    protected $autosave;
 
     /**
      * Validator configuration. Holds declared parameters.
@@ -188,19 +173,12 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
     private $request;
 
     /**
-     * Keeps arguments to show dialog boxes in prepareView
-     * @var array
-     */
-    private $dialogBoxes = array();
-
-    /**
      * @param string $identifier
      */
     public function __construct($identifier = NULL)
     {
         parent::__construct($identifier);
         $this->parameters = new \Nethgui\Core\ParameterSet();
-        $this->autosave = TRUE;
         $this->request = NullRequest::getInstance();
     }
 
@@ -252,58 +230,6 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
             $this->parameters[$parameterName] = NULL;
         } else {
             throw new \InvalidArgumentException(sprintf('%s: Invalid `valueProvider` argument', get_class($this)), 1322149487);
-        }
-    }
-
-    /**
-     * Enqueue an event to be signalled lately
-     * 
-     * The given $eventName is required to be signalled after 
-     * all database changes.
-     *
-     * @see signalAllEventsFinally()
-     * @param string $eventName
-     * @param array $eventArgs Arguments to the event. You can pass a callback function as argument provider. The callback will be invoked with the event name as first argument.
-     * @param \Nethgui\System\EventObserverInterface $observer Optional
-     */
-    protected function requireEvent($eventName, $eventArgs = array(), $observer = NULL)
-    {
-        if (is_string($eventName)) {
-            $this->requiredEvents[] = array($eventName, $eventArgs, is_null($observer) ? $this : $observer);
-        }
-    }
-
-    public function notifyEventCompletion($eventName, $args, $exitStatus, $output)
-    {
-        $messageArgs = array('${0}' => $eventName);
-        $index = 1;
-        foreach ($args as $value) {
-            $messageArgs['${' . $index . '}'] = $value;
-            $index ++;
-        }
-
-        if ($exitStatus === FALSE) {
-            $type = \Nethgui\Client\AbstractNotification::NOTIFY_ERROR;
-            $messageTemplate = $eventName . '_failure';
-        } else {
-            $type = \Nethgui\Client\AbstractNotification::NOTIFY_SUCCESS;
-            $messageTemplate = $eventName . '_success';
-        }
-
-        $this->dialogBoxes[] = array(array($messageTemplate, $messageArgs), array(), $type);
-    }
-
-    /**
-     * Raise enqueued events.
-     *
-     * Signals all required events, flushing the event queue.
-     *
-     * @see requireEvent()
-     */
-    protected function signalAllEventsFinally()
-    {
-        while ($eventCall = array_shift($this->requiredEvents)) {
-            $this->getPlatform()->signalEventFinally($eventCall[0], $eventCall[1], $eventCall[2]);
         }
     }
 
@@ -489,9 +415,6 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
     {
         parent::prepareView($view);
         $view->copyFrom($this->parameters);
-        foreach ($this->dialogBoxes as $dialogArgs) {
-           // TODO invoke showNotification command
-        }
         if ($view->getTargetFormat() === $view::TARGET_XHTML) {
             $view['__invalidParameters'] = $this->invalidParameters;
         }

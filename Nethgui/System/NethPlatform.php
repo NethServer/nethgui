@@ -81,7 +81,7 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
         if ( ! $session->hasElement($key)) {
             $session->store($key, new \ArrayObject());
         }
-        
+
         // TODO: scan the process list and remove long-exited processes.
         $this->processes = $session->retrieve($key);
     }
@@ -164,95 +164,63 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
         return $serializer;
     }
 
-    /**
-     * Signal an event and return the status
-     *
-     * TODO: authorize user action on PDP.
-     *
-     * @param string $event Event name
-     * @param array $arguments Optional arguments array.
-     * @return ProcessInterface
-     */
-    public function signalEvent($event, $arguments = array())
+    public function signalEvent($eventSpecification, $arguments = array())
     {
-        array_unshift($arguments, $event);
-        return $this->exec('/usr/bin/sudo /sbin/e-smith/signal-event ${@}', $arguments);
-    }
+        $matches = array();
 
-    public function signalEventFinally($event, $argv = array(), $observer = NULL)
-    {
-        // Ensure that each event is called one time with the same set of arguments
-        $eventId = $this->calcEventId($event, $argv);
+        preg_match('/(?P<event>[^@]+)(@(?P<queue>[^ ]+))?( +(?P<detached>&))?/', $eventSpecification, $matches);
 
-        if ( ! isset($this->eventQueue[$eventId])) {
-            $this->eventQueue[$eventId] = array(
-                'name' => $event,
-                'args' => $argv,
-                'objs' => array(),
-            );
+        if ( ! isset($matches['event'])) {
+            throw new \InvalidArgumentException(sprintf("%s: invalid event specification", get_class($this)), 1325578497);
         }
 
-        if ($observer instanceof EventObserverInterface) {
-            $this->eventQueue[$eventId]['objs'][] = $observer;
+        $queue = isset($matches['queue']) ? $matches['queue'] : 'now';
+        $detached = isset($matches['detached']) ? TRUE : FALSE;
+
+        // prepend the event name to the argument list:
+        array_unshift($arguments, $matches['event']);
+
+        $command = $this
+            ->createCommandObject('/usr/bin/sudo /sbin/e-smith/signal-event ${@}', $arguments, $detached)
+            ->setIdentifier(uniqid($matches['event'] . '-'))
+        ;
+
+        if ($queue === 'now') {
+            $command->exec();
+        } else {
+            if ( ! isset($this->eventQueue[$queue])) {
+                $this->eventQueue[$queue] = array();
+            }
+
+            $this->eventQueue[$queue][] = $command;
         }
+
+        return $command;
     }
 
     /**
-     * Translates a signal call arguments to a unique string identifier.
+     * Run enqueued events
      * 
-     * @param string $eventName
-     * @param array $args
-     * @return string 
+     * @return void
      */
-    private function calcEventId($eventName, $args)
+    public function runEvents($queueName)
     {
-        $idList = array($eventName);
-
-        foreach ($args as $arg) {
-            if (is_callable($arg)) {
-                $idList[] = is_object($arg[0]) ? get_class($arg[0]) : (String) $arg[0];
-                $idList[] = (String) $arg[1];
-            } else {
-                $idList[] = (String) $arg;
-            }
+        if ( ! isset($this->eventQueue[$queueName])) {
+            return;
         }
 
-        return md5(implode('-', $idList));
-    }
-
-    /**
-     * Raises all asynchronous events, invoking the given callback functions.
-     * @return boolean|NULL
-     */
-    public function signalFinalEvents()
-    {
-        if (empty($this->eventQueue)) {
-            return NULL;
-        }
-        foreach ($this->eventQueue as $eventData) {
-            $args = array();
-
-            foreach ($eventData['args'] as $arg) {
-                if (is_callable($arg)) {
-                    // invoke argument value provider:
-                    $arg = call_user_func($arg, $eventData['name']);
-                }
-                if ($arg === NULL) {
-                    continue; // skip NULL values
-                }
-                $args[] = (String) $arg;
+        foreach ($this->eventQueue[$queueName] as $process) {
+            if ( ! $process instanceof ProcessInterface) {
+                continue;
             }
-            $exitInfo = $this->signalEvent($eventData['name'], $args);
-            foreach ($eventData['objs'] as $observer) {
-                if ($observer instanceof EventObserverInterface) {
-                    $observer->notifyEventCompletion($eventData['name'], $args, $exitInfo->getExitStatus() === 0, $exitInfo->getOutput());
-                }
-            }
-            if ($exitInfo->getExitStatus() !== 0) {
-                return FALSE;
+
+            $process->exec();
+
+            if ($process->readExecutionState() === ProcessInterface::STATE_EXITED
+                && $process->getExitStatus() !== 0) {
+                $this->getLog()->error(sprintf("%s: process `%s` on queue `%s` exited with code %d. Output: `%s`", get_class($this), $process->getIdentifier(), $queueName, $process->getExitStatus(), implode(' ', $process->getOutputArray())));
             }
         }
-        return TRUE;
     }
 
     public function getPolicyDecisionPoint()
@@ -267,7 +235,19 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
 
     public function exec($command, $arguments = array(), $detached = FALSE)
     {
-        if ($detached) {
+        return $this->createCommandObject($command, $arguments, $detached)->exec();
+    }
+
+    /**
+     *
+     * @param type $command
+     * @param type $arguments
+     * @param type $detached
+     * @return ProcessInterface
+     */
+    private function createCommandObject($command, $arguments, $detached)
+    {
+        if ($detached === TRUE) {
             $commandObject = new ProcessDetached($command, $arguments);
             $this->traceProcess($commandObject);
         } else {
@@ -278,7 +258,6 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
             $commandObject->setGlobalFunctionWrapper($this->globalFunctionWrapper);
         }
 
-        $commandObject->exec();
         return $commandObject;
     }
 
@@ -322,7 +301,7 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
     {
         // scan the process list 
         foreach ($this->processes as $process) {
-            if ($process->getIdentifier() == $identifier) {
+            if ($process->getIdentifier() === $identifier) {
                 return $process;
             }
         }

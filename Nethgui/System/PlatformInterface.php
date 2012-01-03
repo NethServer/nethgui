@@ -41,8 +41,9 @@ interface PlatformInterface
      * An Identity Adapter is associated with a database value stored in a key
      * or prop value. If a $separator character is specified, the adapter
      * is enhanced with an ArrayAccess interface, and the value is stored
-     * imploding its elements on that $separator.
+     * joining its elements with that $separator.
      *
+     * @api
      * @see \Nethgui\Adapter\AdapterAggregationInterface
      * @see getMapAdapter()
      * @param string|ArrayAccess $database Database name or ArrayAccess object
@@ -59,6 +60,7 @@ interface PlatformInterface
      * A Map Adapter maps database values through a "reader" and a "writer"
      * converter method. Values are specified through $args parameter.
      *
+     * @api
      * @see getIdentityAdapter()
      * @see \Nethgui\Adapter\AdapterAggregationInterface
      * @param callback $readCallback If $args has N elements $readCallback must accept N parameters and return a value.
@@ -74,33 +76,42 @@ interface PlatformInterface
      * 
      * A table adapter has an array interface, where each element represents a row, and each row
      * is an array itself. 
-     * 
+     *
+     * @api
      * @param string $database Database name
      * @param string $typeOrKey The type of the keys to read from database or the key value where the data is stored
      * @param string $filterOrProp The string to filter the table data or set to a prop name to connect a prop instead of a key.
      * @param array $separators An array of one or two separator strings. The first is for the rows, the second for the columns. Set to NULL if $typeOrKey is a TYPE!
+     *
      * @return \Nethgui\Adapter\AdapterInterface An adapter with array and countable interfaces.
      */
     public function getTableAdapter($database, $typeOrKey, $filterOrProp = NULL, $separators = NULL);
 
     /**
-     * Signal an event and return the status synchronously
+     * Run an event handler
      *
-     * @param string $event Event name
-     * @param array $argv Optional event arguments
+     * The event can be signaled immediately or added to a queue.
+     *
+     * An event is represented by a ProcessInterface. If the event specification
+     * terminates with an ampersand (&) the process is detached.
+     *     
+     * @api
+     * @see runEvents()
+     * @see exec()
+     * @param string $event Event specification <eventName>[@<queueName>][ &]
+     * @param array $arguments Optional event arguments
      * @return ProcessInterface
      */
     public function signalEvent($event, $arguments = array());
 
     /**
-     * Ask the host configuration to signal the given event lately, after all database 
-     * write operations occurred.
-     * 
-     * @param string $event
-     * @param array $argv Optional event arguments
-     * @param EventObserverInterface $observer Optional
+     * Run events on the give queue
+     *
+     * @api
+     * @param string $queueName
+     * @return void
      */
-    public function signalEventFinally($eventName, $argv = array(), $observer = NULL);
+    public function runEvents($queueName);
 
     /**
      * PHP exec() wrapper

@@ -64,8 +64,7 @@ interface ProcessInterface
 
     /**
      * Execute the command
-     * @return the execution status
-     * @see getExecStatus
+     * @return ProcessInterface
      */
     public function exec();
 

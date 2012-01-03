@@ -29,9 +29,7 @@ namespace Nethgui\Module\Table;
  */
 class Action extends \Nethgui\Core\Module\Standard implements ActionInterface
 {
-
     /**
-     *
      * @var \Nethgui\Adapter\AdapterInterface
      */
     protected $tableAdapter;
@@ -41,6 +39,7 @@ class Action extends \Nethgui\Core\Module\Standard implements ActionInterface
         if ( ! $this->hasTableAdapter()) {
             $this->tableAdapter = $tableAdapter;
         }
+        return $this;
     }
 
     public function hasTableAdapter()

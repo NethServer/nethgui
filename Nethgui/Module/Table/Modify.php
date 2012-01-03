@@ -47,7 +47,7 @@ class Modify extends Action
      */
     private $createDefaults = array();
 
-    public function __construct($identifier, $parameterSchema, $requireEvents, $viewTemplate = NULL)
+    public function __construct($identifier, $parameterSchema, $viewTemplate = NULL)
     {
         if ( ! in_array($identifier, array('create', 'delete', 'update'))) {
             throw new \InvalidArgumentException(sprintf('%s: Module identifier must be one of `create`, `delete`, `update` values.', get_class($this)), 1322149372);
@@ -56,24 +56,6 @@ class Modify extends Action
         parent::__construct($identifier);
         $this->setViewTemplate($viewTemplate);
         $this->parameterSchema = $parameterSchema;
-        $this->autosave = FALSE;
-
-        foreach ($requireEvents as $eventData) {
-            if (is_string($eventData)) {
-                $this->requireEvent($eventData);
-            } elseif (is_array($eventData)) {
-                /*
-                 * Sanitize requireEvent arguments:
-                 */
-                if ( ! isset($eventData[1])) {
-                    $eventData[1] = array();
-                }
-                if ( ! isset($eventData[2])) {
-                    $eventData[2] = NULL;
-                }
-                $this->requireEvent($eventData[0], $eventData[1], $eventData[2]);
-            }
-        }
     }
 
     private function getTheKey(\Nethgui\Core\RequestInterface $request, $parameterName)
@@ -183,7 +165,6 @@ class Modify extends Action
 
     public function process()
     {
-        parent::process();
         if ( ! $this->getRequest()->isSubmitted()) {
             return;
         }
@@ -202,13 +183,11 @@ class Modify extends Action
         }
 
         // Transfer all parameters values into tableAdapter (and DB):
-        $changes = $this->parameters->save();
+        $this->parameters->save();
 
         // Transfer all tableAdapter values into DB
-        $changes += $this->tableAdapter->save();
-        if ($changes > 0) {
-            $this->signalAllEventsFinally();
-        }
+        $this->tableAdapter->save();
+
     }
 
     protected function processDelete($key)

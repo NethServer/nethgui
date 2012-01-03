@@ -280,8 +280,8 @@ class Framework
         if ( ! $validationErrorsNotification->hasValidationErrors()) {
             $request->setAttribute('validated', TRUE);
             $mainModule->process();
-            // Finally, signal "final" events (see #506)
-            $platform->signalFinalEvents();
+            // Finally, signal "post-process" events (see #506)
+            $platform->runEvents('post-process');
         }
 
         $targetFormat = $request->getExtension();
@@ -338,6 +338,8 @@ class Framework
         }
 
         $this->sendHttpResponse($content, $headers, $output);
+
+        $platform->runEvents('post-response');
 
         return 0;
     }

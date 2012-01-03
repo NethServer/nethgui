@@ -148,11 +148,7 @@ class TableController extends \Nethgui\Core\Module\Controller
 
             list($actionName, $parameterSchema, $requireEvents, $viewTemplate) = $actionArguments;
 
-            if (is_string($requireEvents)) {
-                $requireEvents = array($requireEvents);
-            }
-
-            $actionObject = new Table\Modify($actionName, $parameterSchema, $requireEvents, $viewTemplate);
+            $actionObject = new Table\Modify($actionName, $parameterSchema, $viewTemplate);
         }
 
         if ($actionArguments instanceof Table\Action) {

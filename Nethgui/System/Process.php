@@ -113,7 +113,7 @@ class Process implements ProcessInterface, \Nethgui\Core\GlobalFunctionConsumerI
         $this->changeState(self::STATE_RUNNING);
         $this->globalFunctionWrapper->exec($this->prepareEscapedCommand(), $this->output, $this->exitStatus);
         $this->changeState(self::STATE_EXITED);
-        return $this->readExecutionState();
+        return $this;
     }
 
     private function changeState($newState)
@@ -127,10 +127,19 @@ class Process implements ProcessInterface, \Nethgui\Core\GlobalFunctionConsumerI
         $escapedArguments = array();
         $i = 1;
         foreach ($this->arguments as $arg) {
-            $escapedArguments[sprintf('${%d}', $i)] = escapeshellarg($arg);
+
+            if (is_string($arg)) {
+                $argOutput = $arg;
+            } elseif (is_callable($arg)) {
+                $argOutput = call_user_func($arg);
+            } else {
+                $argOutput = strval($arg);
+            }
+
+            $escapedArguments[sprintf('${%d}', $i)] = escapeshellarg($argOutput);
             $i ++;
         }
-        $escapedArguments['${@}'] = implode(' ', array_map('escapeshellarg', $this->arguments));
+        $escapedArguments['${@}'] = implode(' ', $escapedArguments);
 
         return strtr($this->command, $escapedArguments);
     }
