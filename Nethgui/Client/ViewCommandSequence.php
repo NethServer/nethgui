@@ -39,17 +39,18 @@ class ViewCommandSequence implements \Nethgui\Core\ViewCommandInterface
      * @var \Nethgui\Core\ViewInterface
      */
     private $origin;
-
     private $selector;
+    private $executed;
 
     /**
      *
      * @var \Nethgui\Core\CommandReceiverInterface
      */
     private $receiver;
-    
+
     public function __construct(\Nethgui\Core\ViewInterface $origin, $selector)
     {
+        $this->executed = FALSE;
         $this->origin = $origin;
         $this->selector = $selector;
     }
@@ -68,7 +69,8 @@ class ViewCommandSequence implements \Nethgui\Core\ViewCommandInterface
     }
 
     public function execute()
-    {        
+    {
+        $this->executed = TRUE;
         foreach ($this->commands as $command) {
             $command->setReceiver($this->receiver)->execute();
         }
@@ -77,11 +79,7 @@ class ViewCommandSequence implements \Nethgui\Core\ViewCommandInterface
 
     public function isExecuted()
     {
-        if (isset($this->commands[0])) {
-            return $this->commands[0]->isExecuted();
-        }
-
-        return FALSE;
+        return $this->executed === TRUE;
     }
 
     public function setReceiver(\Nethgui\Core\CommandReceiverInterface $receiver)
