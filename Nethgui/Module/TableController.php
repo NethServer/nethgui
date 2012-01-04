@@ -185,27 +185,17 @@ class TableController extends \Nethgui\Core\Module\Controller
     }
 
     /**
-     * @todo refactor into parent class
+     * Update the read view
+     * @param \Nethgui\Core\ViewInterface $view
      */
-    public function prepareView(\Nethgui\Core\ViewInterface $view)
+    public function refresh(\Nethgui\Core\ViewInterface $view)
     {
-        parent::prepareView($view);
-        if ($view->getTargetFormat() !== $view::TARGET_JSON) {
+        if ( ! $this->hasAction('read') || $view->getTargetFormat() !== $view::TARGET_JSON) {
             return;
         }
-
-        if ($this->getRequest()->isSubmitted()
-            && $this->getRequest()->isValidated()
-            && $this->hasAction('read')) {
-            // Load 'read' action when some other action has occurred,
-            // to refresh the tabular data.
-            $readAction = $this->getAction('read');
-            $innerView = $view->spawnView($readAction, TRUE);
-            $readAction->prepareView($innerView);
-            $view->getCommandListFor('read')->show();
-        } elseif ( ! $this->getRequest()->isSubmitted()) {
-            $view->getCommandListFor($this->currentAction->getIdentifier())->show();
-        }
+        $readAction = $this->getAction('read');
+        $innerView = $view->spawnView($readAction, TRUE);
+        $readAction->prepareView($innerView);
     }
 
     public function renderIndex(\Nethgui\Renderer\Xhtml $view)

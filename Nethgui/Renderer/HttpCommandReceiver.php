@@ -69,6 +69,14 @@ class HttpCommandReceiver extends \Nethgui\Core\AbstractReceiverChain
         $this->headers[] = $header;
     }
 
+    protected function show(\Nethgui\Core\ViewInterface $origin, $selector)
+    {
+        if ($origin->getTargetFormat() !== $origin::TARGET_XHTML) {
+            return;
+        }
+        $this->httpRedirection($origin, $selector, 302, $origin->getModuleUrl($selector));
+    }
+
 //    protected function showView(\Nethgui\Core\ViewInterface $origin, $selector, $location)
 //    {
 //        $this->httpRedirection($origin, $selector, $code, $location);

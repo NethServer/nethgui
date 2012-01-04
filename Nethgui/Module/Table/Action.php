@@ -29,6 +29,7 @@ namespace Nethgui\Module\Table;
  */
 class Action extends \Nethgui\Core\Module\Standard implements ActionInterface
 {
+
     /**
      * @var \Nethgui\Adapter\AdapterInterface
      */
@@ -50,9 +51,30 @@ class Action extends \Nethgui\Core\Module\Standard implements ActionInterface
     public function prepareView(\Nethgui\Core\ViewInterface $view)
     {
         parent::prepareView($view);
-        $view['Cancel'] = $view->getModuleUrl('/' . \Nethgui\array_head($view->resolvePath('')));
+        if ( ! isset($view['Cancel'])) {
+            $view['Cancel'] = $view->getModuleUrl('/' . \Nethgui\array_head($view->resolvePath('')));
+        }
         if ( ! $this instanceof \Nethgui\Core\ModuleCompositeInterface) {
             $view['FormAction'] = $view->getModuleUrl(implode('/', $this->getRequest()->getPath()));
+        }        
+        $this->prepareNextView($view);
+    }
+
+    /**
+     * Decide where to go after the action processing
+     * @param \Nethgui\Core\ViewInterface $view 
+     */
+    protected function prepareNextView(\Nethgui\Core\ViewInterface $view)
+    {
+        if ($this->getRequest()->isSubmitted()
+            && $this->getRequest()->isValidated()
+            && $this->getParent() instanceof \Nethgui\Module\TableController) {
+            $this->getParent()->refresh($view);
+            $view->getCommandListFor('../read')->show();
+        }
+        if ($view->getTargetFormat() === $view::TARGET_JSON && ! $this->getRequest()->isSubmitted()) {
+            // JSON view need a show() command:
+            $view->getCommandList()->show();
         }
     }
 

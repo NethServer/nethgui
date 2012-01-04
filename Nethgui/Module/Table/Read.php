@@ -73,16 +73,19 @@ class Read extends Action
     {
         parent::prepareView($view);
         $view['rows'] = $this->prepareRows($view);
-        if ($view->getTargetFormat() === $view::TARGET_XHTML) {
-            $view['columns'] = $this->columns;
-            // FIXME: implement pagination - on the client side:
-            $view['tableClass'] = count($view['rows']) > 10 ? 'large-dataTable' : 'small-dataTable';
-            $view['tableClass'] .= ' ' . $view->getClientEventTarget('rows');
-            $view['tableId'] = $view->getUniqueId();
-            $view['tableTitle'] = $view->getTranslator()->translate($this->getParent(), $this->getParent()->getAttributesProvider()->getTitle());
-            $view['TableActions'] = $view->spawnView($this->getParent());
-            $view['TableActions']->setTemplate(array($this, 'renderTableActions'));
+
+        if ($view->getTargetFormat() !== $view::TARGET_XHTML) {
+            return;
         }
+
+        $view['columns'] = $this->columns;
+
+        // FIXME: implement pagination - on the client side:
+        $view['tableClass'] = sprintf('%s %s', count($view['rows']) > 10 ? 'large-dataTable' : 'small-dataTable', $view->getClientEventTarget('rows'));
+        $view['tableId'] = $view->getUniqueId();
+        $view['tableTitle'] = $view->getTranslator()->translate($this->getParent(), $this->getParent()->getAttributesProvider()->getTitle());
+        $view['TableActions'] = $view->spawnView($this->getParent());
+        $view['TableActions']->setTemplate(array($this, 'renderTableActions'));
     }
 
     /**

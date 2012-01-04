@@ -83,7 +83,6 @@ class Modify extends Action
         throw new \LogicException(sprintf('%s: invalid schema. You must declare a KEY field.', __CLASS__), 1325671156);
     }
 
-
     /**
      * We have to declare all the parmeters of parameterSchema here,
      * binding the actual key/row from tableAdapter.
