@@ -32,23 +32,11 @@ namespace Nethgui\Core\Module;
  */
 class ListComposite extends Composite implements \Nethgui\Core\RequestHandlerInterface
 {
-    const TEMPLATE_LIST = 1;
-
-    public function __construct($identifier = NULL, $template = self::TEMPLATE_LIST)
-    {
-        parent::__construct($identifier);
-        if ($template === self::TEMPLATE_LIST) {
-            $this->setViewTemplate(array($this, 'renderList'));
-        } else {
-            $this->setViewTemplate($template);
-        }
-    }
 
     public function bind(\Nethgui\Core\RequestInterface $request)
     {
         $arguments = $request->getPath();
-        $currentModuleIdentifier = \Nethgui\array_head($arguments);
-        $wakedModules = $request->getParameterNames();
+        $currentModuleIdentifier = \Nethgui\array_head($arguments);        
         foreach ($this->getChildren() as $childModule) {
             if ( ! $childModule instanceof \Nethgui\Core\RequestHandlerInterface) {
                 continue;
@@ -88,16 +76,6 @@ class ListComposite extends Composite implements \Nethgui\Core\RequestHandlerInt
             $innerView = $view->spawnView($child, TRUE);
             $child->prepareView($innerView);
         }
-    }
-
-    public function renderList(\Nethgui\Renderer\Xhtml $view)
-    {
-        $widget = $view->panel();
-        foreach ($this->getChildren() as $child) {
-            $widget->insert($view->inset($child->getIdentifier()));
-        }
-        $widget->setAttribute('class', 'List');
-        return $widget;
     }
 
 }
