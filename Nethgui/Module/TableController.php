@@ -38,64 +38,66 @@ class TableController extends \Nethgui\Core\Module\Controller
 
     /**
      *
-     * @var array
+     * @var Table\Read
      */
-    private $tableAdapterArguments;
+    private $readAction = NULL;
 
     /**
      * @var array
      */
-    private $rowActions;
+    private $rowActions = array();
 
     /**
      * @var array
      */
-    private $tableActions;
+    private $tableActions = array();
 
     /**
      *
      * @var \Nethgui\Adapter\AdapterInterface
      */
-    private $tableAdapter;
+    private $tableAdapter = NULL;
 
-    /**
-     * @param string $identifier
-     * @param array $tableAdapterArguments     
-     * @param array $columns
-     * @param array $rowActions
-     * @param array $tableActions
-     */
-    public function __construct($identifier, $tableAdapterArguments, $columns, $rowActions, $tableActions)
+    protected function setTableAdapter(\Nethgui\Adapter\AdapterInterface $tableAdapter)
     {
-        parent::__construct($identifier);
-        $this->tableAdapterArguments = $tableAdapterArguments;
+        $this->tableAdapter = $tableAdapter;
 
         /*
-         *  Create and add the READ action, that displays the table.
+         * Propagate the table adapter object to every children, if
+         * it has not been done before by addChild()
          */
-        $this->addChild(new Table\Read('read', $columns));
+        $actions = array_merge(array($this->readAction), $this->rowActions, $this->tableActions);
 
-        foreach ($rowActions as $actionObject) {
-            $this->addRowAction($actionObject);
+        foreach ($actions as $action) {
+            if ( ! $action instanceof Table\ActionInterface || $action->hasTableAdapter()) {
+                continue;
+            }
+
+            $action->setTableAdapter($this->tableAdapter);
         }
 
-        foreach ($tableActions as $actionObject) {
-            $this->addTableAction($actionObject);
+        return $this;
+    }
+
+    /**
+     *
+     * @param array $columns
+     * @return TableController
+     */
+    protected function setColumns($columns)
+    {
+        if (is_null($this->readAction)) {
+            $this->readAction = new Table\Read('read');
+            $this->addChild($this->readAction);
         }
+        $this->readAction->setColumns($columns);
+        return $this;
     }
 
     public function initialize()
     {
-        /*
-         * Create the table adapter object and assign it to every children, if
-         * it has not been done before.
-         */
-        $this->tableAdapter = call_user_func_array(array($this->getPlatform(), 'getTableAdapter'), $this->tableAdapterArguments);
-        foreach ($this->getChildren() as $action) {
-            if ($action instanceof Table\Action
-                && ! $action->hasTableAdapter()) {
-                $action->setTableAdapter($this->tableAdapter);
-            }
+        if (is_null($this->tableAdapter)) {
+            throw new \LogicException(sprintf('%s: call setTableAdapter() before %s::initialize()', get_class($this), __CLASS__), 1325610869);
         }
 
         /**
@@ -105,10 +107,18 @@ class TableController extends \Nethgui\Core\Module\Controller
         parent::initialize();
     }
 
+    /**
+     * Add a child setting its table adapter, if the child is an instance
+     * of ActionInterface.
+     *
+     * @see \Nethgui\Module\Table\ActionInterface
+     * @param \Nethgui\Core\ModuleInterface $childModule
+     * @return TableController
+     */
     public function addChild(\Nethgui\Core\ModuleInterface $childModule)
     {
         parent::addChild($childModule);
-        if (!is_null($this->tableAdapter)
+        if ( ! is_null($this->tableAdapter)
             && $childModule instanceof Table\ActionInterface
             && ! $childModule->hasTableAdapter()) {
             $childModule->setTableAdapter($this->tableAdapter);
@@ -198,21 +208,6 @@ class TableController extends \Nethgui\Core\Module\Controller
         }
     }
 
-    /**
-     *
-     * @param array $createDefaults
-     * @return TableController
-     */
-    protected function setCreateDefaults($createDefaults)
-    {
-        $create = $this->getAction('create');
-        if (is_null($create)) {
-            return $this;
-        }
-        $create->setCreateDefaults($createDefaults);
-        return $this;
-    }
-
     public function renderIndex(\Nethgui\Renderer\Xhtml $view)
     {
         $view->includeFile('jquery.nethgui.controller.js', 'Nethgui');
@@ -220,6 +215,8 @@ class TableController extends \Nethgui\Core\Module\Controller
         $container = $view->panel()
             ->setAttribute('class', 'Controller')
             ->setAttribute('receiver', '');
+
+        $actions = array();
 
         foreach ($this->getChildren() as $index => $module) {
 
@@ -238,8 +235,18 @@ class TableController extends \Nethgui\Core\Module\Controller
             $action = $view->inset($moduleIdentifier, $flags)
                 ->setAttribute('class', 'Action');
 
+            // ensure the 'read' action is always the first:
+            if ($moduleIdentifier === 'read') {
+                array_unshift($actions, $action);
+            } else {
+                $actions[] = $action;
+            }
+        }
+
+        foreach ($actions as $action) {
             $container->insert($action);
         }
+
         return $container;
     }
 

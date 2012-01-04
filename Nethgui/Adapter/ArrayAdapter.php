@@ -120,7 +120,7 @@ class ArrayAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
     public function save()
     {
         if ( ! $this->isModified()) {
-            return 0;
+            return FALSE;
         }
 
         if (is_object($this->data)) {
@@ -133,7 +133,7 @@ class ArrayAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
 
         $this->modified = FALSE;
         
-        return 1;
+        return TRUE;
     }
 
     public function count()

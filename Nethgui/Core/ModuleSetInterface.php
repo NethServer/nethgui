@@ -36,7 +36,6 @@ interface ModuleSetInterface extends \IteratorAggregate
      * @return \Nethgui\Core\ModuleInterface The module instance
      */
     public function getModule($moduleIdentifier);
-
-
+    
 }
 

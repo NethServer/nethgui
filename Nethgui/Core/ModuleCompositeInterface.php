@@ -44,7 +44,7 @@ interface ModuleCompositeInterface
      *
      * @api
      * @param ModuleInterface $module The child module.
-     * @return void
+     * @return ModuleCompositeInterface The composite module
      */
     public function addChild(\Nethgui\Core\ModuleInterface $module);
 }

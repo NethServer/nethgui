@@ -109,7 +109,7 @@ abstract class AbstractModule implements \Nethgui\Core\ModuleInterface, \Nethgui
         if ($this->initialized === FALSE) {
             $this->initialized = TRUE;
         } else {
-            throw new \Exception("Double Module initialization is forbidden.", 1322148737);
+            throw new \LogicException(sprintf("%s: module re-initialization is forbidden in class `%s`.", __CLASS__, get_class($this)), 1322148737);
         }
     }
 

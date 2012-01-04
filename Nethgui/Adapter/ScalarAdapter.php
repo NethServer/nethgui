@@ -76,13 +76,13 @@ class ScalarAdapter implements AdapterInterface
     public function save()
     {
         if ( ! $this->isModified()) {
-            return 0;
+            return FALSE;
         }
 
         $this->serializer->write($this->value);
         $this->modified = FALSE;
         
-        return 1;
+        return TRUE;
     }
 
 }

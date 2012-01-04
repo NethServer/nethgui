@@ -115,13 +115,13 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
 
     public function requireFlag($flags)
     {
-        $this->view->getCommandListFor('')->requireFlag($flags);
+        $this->view->getCommandList()->requireFlag($flags);
         return $this;
     }
 
     public function rejectFlag($flags)
     {
-        $this->view->getCommandListFor('')->rejectFlag($flags);
+        $this->view->getCommandList()->rejectFlag($flags);
         return $this;
     }
 

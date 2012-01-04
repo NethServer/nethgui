@@ -115,7 +115,7 @@ class TabularValueAdapter implements AdapterInterface, \ArrayAccess, \IteratorAg
     public function save()
     {
         if ( ! $this->isModified()) {
-            return 0;
+            return FALSE;
         }
 
         $value = array();
@@ -126,11 +126,11 @@ class TabularValueAdapter implements AdapterInterface, \ArrayAccess, \IteratorAg
 
         $this->innerAdapter->set($value);
 
-        $saveCount = $this->innerAdapter->save();
+        $saved = $this->innerAdapter->save();
 
         $this->modified = FALSE;
 
-        return $saveCount;
+        return $saved;
     }
 
     public function getIterator()

@@ -35,9 +35,17 @@ class Main extends \Nethgui\Core\Module\ListComposite
     private $moduleLoader;
     private $currentModuleIdentifier;
 
+    /**
+     * The template applied to the Main view
+     * @see ViewInterface#setTemplate()
+     * @var mixed
+     */
+    private $template;
+
     public function __construct($template, \Nethgui\Core\ModuleLoader $moduleLoader)
     {
-        parent::__construct(FALSE, $template);
+        parent::__construct(FALSE);
+        $this->template = $template;
         $this->moduleLoader = $moduleLoader;
     }
 
@@ -76,8 +84,8 @@ class Main extends \Nethgui\Core\Module\ListComposite
 
     public function prepareView(\Nethgui\Core\ViewInterface $view)
     {
-
         parent::prepareView($view);
+        $view->setTemplate($this->template);
 
         /*
          * Stylesheets and script files can be served only by the Resource module

@@ -56,11 +56,12 @@ abstract class Composite extends AbstractModule implements \Nethgui\Core\ModuleC
      * initialized.
      * 
      * @param \Nethgui\Core\ModuleInterface $childModule
+     * @return Composite
      */
     public function addChild(\Nethgui\Core\ModuleInterface $childModule)
     {
         if (isset($this->children[$childModule->getIdentifier()])) {
-            throw new \LogicException(sprintf('%s: the module identifier "%s" is already registered as child!', get_class($this), $childModule->getIdentifier()), 1322818691);
+            throw new \LogicException(sprintf('%s: the module identifier "%s" is already registered as child!', __CLASS__, $childModule->getIdentifier()), 1322818691);
         }
         
         $this->children[$childModule->getIdentifier()] = $childModule;
@@ -73,6 +74,7 @@ abstract class Composite extends AbstractModule implements \Nethgui\Core\ModuleC
         if ($this->isInitialized() && ! $childModule->isInitialized()) {
             $childModule->initialize();
         }
+        return $this;
     }
 
     /**

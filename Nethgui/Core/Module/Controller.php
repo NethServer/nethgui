@@ -64,46 +64,48 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
         $this->request = $request;
         $actionId = $this->establishCurrentActionId();
 
-        if (empty($actionId)) {
-            return; // don't bind the request to any action.
+        if ($actionId === FALSE) {
+            return; // don't bind the request to any action. Render action index.
         }
 
         $this->currentAction = $this->getAction($actionId);
+
+        if (is_null($this->currentAction)) {
+            throw new \Nethgui\Exception\HttpException('Not Found', 404, 1322148401);
+        }
+
         if ($this->currentAction instanceof \Nethgui\Core\RequestHandlerInterface) {
             $this->currentAction->bind($request->spawnRequest($actionId, \Nethgui\array_rest($request->getPath())));
         }
     }
 
+    /**
+     * Decide what to do
+     *
+     * Consider the first available path segment as the action identifier. If
+     * that is missing, render the action index.
+     *
+     * You can override this method to set a different rule.
+     *
+     * @return string|bool The action identifier or FALSE
+     */
     protected function establishCurrentActionId()
     {
-        $request = $this->getRequest();
-        $arguments = $request->getPath();
-        $actionId = FALSE;
-
-        if ( ! empty($arguments) && isset($arguments[0])) {
-            // We can identify the current action from request arguments
-            $actionId = $arguments[0];
-            if ( ! $this->hasAction($actionId)) {
-                // a NULL action at this point results in a "not found" condition:
-                throw new \Nethgui\Exception\HttpException('Not Found', 404, 1322148401);
-            }
-        }
-
-        return $actionId;
+        return \Nethgui\array_head($this->getRequest()->getPath());
     }
 
     /**
-     * Returns the child with $identifier, or the first child, if $identifier is NULL.
+     * Returns the child with $identifier
      * 
      * If the child is not found it returns NULL.
      * 
      * @param string $identifier 
      * @return \Nethgui\Core\ModuleInterface
      */
-    public function getAction($identifier = NULL)
+    public function getAction($identifier)
     {
         foreach ($this->getChildren() as $child) {
-            if ($child->getIdentifier() == $identifier || is_null($identifier)) {
+            if ($child->getIdentifier() === $identifier) {
                 return $child;
             }
         }
@@ -112,7 +114,7 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
 
     protected function hasAction($identifier)
     {
-        return is_object($this->getAction($identifier));
+        return $this->getAction($identifier) instanceof \Nethgui\Core\ModuleInterface;
     }
 
     /**
@@ -186,7 +188,11 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
      */
     public function renderCurrentAction(\Nethgui\Renderer\Xhtml $view)
     {
-        return $view->inset($this->currentAction->getIdentifier(), $this->needsAutoFormWrap($this->currentAction) ? $view::INSET_FORM | $view::INSET_WRAP : $view::INSET_WRAP);
+        $flags = $view::INSET_WRAP;
+        if ($this->needsAutoFormWrap($this->currentAction)) {
+            $flags |= $view::INSET_FORM;
+        }
+        return $view->inset($this->currentAction->getIdentifier(), $flags);
     }
 
     public function renderIndex(\Nethgui\Renderer\Xhtml $renderer)

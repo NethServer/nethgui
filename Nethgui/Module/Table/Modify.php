@@ -30,13 +30,17 @@ namespace Nethgui\Module\Table;
  */
 class Modify extends Action
 {
-    const KEY = 10;
-    const FIELD = 11;
-
-    private $parameterSchema;
+    const KEY = 1325671618;
+    const FIELD = 1325671619;
 
     /**
-     * This holds the name of the key parameter
+     *
+     * @var array
+     */
+    private $parameterSchema = array();
+
+    /**
+     * The name of the key parameter to identify the table adapter record
      * @var string
      */
     private $key;
@@ -46,54 +50,39 @@ class Modify extends Action
      * @var array
      */
     private $createDefaults = array();
+    private $template;
 
-    public function __construct($identifier, $parameterSchema, $viewTemplate = NULL)
+    public function __construct($identifier, $parameterSchema = NULL, $viewTemplate = NULL)
     {
         if ( ! in_array($identifier, array('create', 'delete', 'update'))) {
             throw new \InvalidArgumentException(sprintf('%s: Module identifier must be one of `create`, `delete`, `update` values.', get_class($this)), 1322149372);
         }
 
         parent::__construct($identifier);
-        $this->setViewTemplate($viewTemplate);
-        $this->parameterSchema = $parameterSchema;
-    }
 
-    private function getTheKey(\Nethgui\Core\RequestInterface $request, $parameterName)
-    {
-        if ($request->isSubmitted()) {
-            if ($request->hasParameter($parameterName)) {
-                $keyValue = $request->getParameter($parameterName);
-            } else {
-                $keyValue = NULL;
-            }
-        } else {
-            // Unsubmitted request.
-            // - The key (if set) is the first of the $request arguments        
+        $this->template = $viewTemplate;
 
-            $arguments = $request->getPath();
-            $keyValue = isset($arguments[0]) ? $arguments[0] : NULL;
-        }
-
-        return $keyValue;
-    }
-
-    public function initialize()
-    {
-        parent::initialize();
-        foreach ($this->parameterSchema as $declarationIndex => $parameterDeclaration) {
-            $parameterName = array_shift($parameterDeclaration);
-            $validator = array_shift($parameterDeclaration);
-            $valueProvider = array_shift($parameterDeclaration);
-
-            $useTableAdapter = $this->hasTableAdapter()
-                && is_integer($valueProvider);
-
-            if ($useTableAdapter && $valueProvider === self::KEY) {
-                $this->key = $parameterName;
-                break;
-            }
+        if ( ! is_null($parameterSchema)) {
+            $this->setSchema($parameterSchema);
         }
     }
+
+    public function setSchema($parameterSchema)
+    {
+        $this->parameterSchema = array();
+        $this->key = NULL;
+
+        foreach ($parameterSchema as $parameterDeclaration) {
+            if (isset($parameterDeclaration[0], $parameterDeclaration[2]) && $parameterDeclaration[2] === self::KEY) {
+                $this->key = $parameterDeclaration[0];
+                $this->parameterSchema = $parameterSchema;
+                return $this;
+            }
+        }
+
+        throw new \LogicException(sprintf('%s: invalid schema. You must declare a KEY field.', __CLASS__), 1325671156);
+    }
+
 
     /**
      * We have to declare all the parmeters of parameterSchema here,
@@ -102,61 +91,55 @@ class Modify extends Action
      */
     public function bind(\Nethgui\Core\RequestInterface $request)
     {
-        $key = NULL;
+        if (is_null($this->tableAdapter)) {
+            throw new \LogicException(sprintf('%s: you must setTableAdapter() before bind()', get_class($this)), 1325673694);
+        }
+
+        if (is_null($this->key)) {
+            throw new \LogicException(sprintf('%s: you must setSchema() before bind()', get_class($this)), 1325673717);
+        }
+
+        // The key value is assumed to be the first subpath segment of the request:
+        $key = \Nethgui\array_head($request->getPath());
+
+        if ($this->getIdentifier() === 'create') {
+            if ($request->isSubmitted()) {
+                $key = $request->getParameter($this->key);
+                if (isset($this->tableAdapter[$key])) {
+                    throw new \Nethgui\Exception\HttpException('Conflict', 409, 1325685280);
+                }
+            }
+        } elseif ( ! isset($this->tableAdapter[$key])) {
+            throw new \Nethgui\Exception\HttpException('Not found', 404, 1325672611);
+        }
 
         foreach ($this->parameterSchema as $declarationIndex => $parameterDeclaration) {
-
             $parameterName = array_shift($parameterDeclaration);
             $validator = array_shift($parameterDeclaration);
             $valueProvider = array_shift($parameterDeclaration);
 
-            $useTableAdapter = $this->hasTableAdapter()
-                && is_integer($valueProvider);
-
-            $isKeyDeclaration = ($useTableAdapter && $valueProvider === self::KEY);
-
-            // Deprecated key declaration warning:
-            if ($declarationIndex === 0 && $valueProvider === NULL) {
-                $isKeyDeclaration = TRUE;
-                $this->getLog()->warning('Deprecated key declaration form. See..');
-            }
-
-            $isFieldDeclaration = $useTableAdapter
-                && $valueProvider === self::FIELD
-                && ! is_null($key);
-
-
-            if ($isKeyDeclaration) {
-                $valueProvider = NULL;
-                $key = $this->getTheKey($request, $parameterName);
-            } elseif ($isFieldDeclaration) {
-
+            if ($valueProvider === self::KEY) {
+                $valueProvider = function () use ($key) {
+                        return $key;
+                    };
+            } elseif ($valueProvider === self::FIELD) {
                 $prop = array_shift($parameterDeclaration);
                 $separator = array_shift($parameterDeclaration);
-
+                // Null prop name falls back into parameterName:
                 if (is_null($prop)) {
-                    // expect the table column name is the same as parameter name
                     $prop = $parameterName;
                 }
 
                 $valueProvider = array($this->tableAdapter, $key, $prop, $separator);
-            } elseif ($useTableAdapter && is_null($key)) {
-                $valueProvider = NULL;
             }
 
-            $parameterDeclaration = array($parameterName, $validator, $valueProvider);
-
-            call_user_func_array(array($this, 'declareParameter'), $parameterDeclaration);
-
-            if ($isKeyDeclaration) {
-                $this->parameters[$parameterName] = $key;
-            }
+            $this->declareParameter($parameterName, $validator, $valueProvider);
         }
 
         parent::bind($request);
 
         if ( ! $request->isSubmitted()
-            && $this->getIdentifier() == 'create') {
+            && $this->getIdentifier() === 'create') {
             foreach ($this->createDefaults as $paramName => $paramValue) {
                 $this->parameters[$paramName] = $paramValue;
             }
@@ -204,7 +187,7 @@ class Modify extends Action
 
     protected function processCreate($key)
     {
-
+        
     }
 
     protected function processUpdate($key)
@@ -215,6 +198,9 @@ class Modify extends Action
     public function prepareView(\Nethgui\Core\ViewInterface $view)
     {
         parent::prepareView($view);
+        if (isset($this->template)) {
+            $view->setTemplate($this->template);
+        }
         if ($view->getTargetFormat() === $view::TARGET_XHTML) {
             $view['__key'] = $this->key;
         }
@@ -222,6 +208,9 @@ class Modify extends Action
 
     /**
      * Set the default parameter values in "create" action
+     *
+     * Call before bind()
+     *
      * @param array $defaultValues
      * @return Modify
      */

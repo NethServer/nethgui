@@ -21,7 +21,13 @@ namespace Nethgui\Module\Table;
  */
 
 /**
- * Treats the table read case.
+ * Display a table adapter as a TABLE element
+ *
+ * Each column is rendered through a prepareColumn<columnName>() callback that
+ * you should define on the parent module or on the inheritor class.
+ *
+ * Note that a simple implementation for 'Key' and 'Actions'
+ * columns is provided by this class.
  * 
  * @see Modify
  * @see \Nethgui\Module\TableController
@@ -33,24 +39,25 @@ class Read extends Action
 {
 
     /**
-     *
      * @param array $columns
      */
     private $columns;
 
-    /**
-     *
-     * @param string $identifier Module identifier
-     * @param \Nethgui\Adapter\AdapterInterface $tableAdapter Data source
-     * @param array $columns The columns of the table
-     * @param array $actions A list of actions that apply on the whole table
-     * @param array $viewTemplate Optional
-     */
-    public function __construct($identifier, $columns)
+    public function __construct($identifier = NULL)
     {
-        parent::__construct($identifier, NULL);
-        $this->columns = array();
+        parent::__construct('read');
+    }
 
+    /**
+     * Set the column formatting attributes
+     *
+     * Call before prepareView()
+     *
+     * @param array $columns
+     * @return Read
+     */
+    public function setColumns($columns)
+    {
         foreach ($columns as $columnInfo) {
             if (is_array($columnInfo)) {
                 $this->columns[] = $columnInfo;
@@ -59,6 +66,7 @@ class Read extends Action
                 $this->columns[] = array('name' => strval($columnInfo), 'formatter' => ($columnInfo == 'Actions' ? 'fmtButtonset' : NULL));
             }
         }
+        return $this;
     }
 
     public function prepareView(\Nethgui\Core\ViewInterface $view)
@@ -104,11 +112,6 @@ class Read extends Action
             $buttonList->insert($button);
         }
         return $buttonList;
-    }
-
-    protected function getActionIdentifier(\Nethgui\Core\ModuleInterface $m)
-    {
-        return $m->getIdentifier();
     }
 
     private function prepareRows(\Nethgui\Core\ViewInterface $view)

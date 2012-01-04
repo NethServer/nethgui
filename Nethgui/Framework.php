@@ -358,6 +358,7 @@ class Framework
             // send HTTP response to stdout:
             array_map('header', $headers);
             echo $content;
+            flush();
         }
     }
 

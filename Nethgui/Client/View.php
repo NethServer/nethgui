@@ -309,9 +309,9 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
 
         $url = $this->pathUrl . '/' . implode('/', $segments);
 
-        if (strrpos(\Nethgui\array_end($segments), '.') > 0) {
-            $url .= '.' . $this->getTargetFormat();
-        }
+//        if (strrpos(\Nethgui\array_end($segments), '.') > 0) {
+//            $url .= '.' . $this->getTargetFormat();
+//        }
 
         if ( ! empty($parameters)) {
             $url .= '?' . http_build_query($parameters);
@@ -375,7 +375,7 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
     public function getCommandListFor($selector)
     {
         $fullSelector = $this->getUniqueId($selector);
-        if ( ! isset($this->commands[$fullSelector])) {
+        if ( ! isset($this->commands[$fullSelector]) || $this->commands[$fullSelector]->isExecuted()) {
             $this->commands[$fullSelector] = new \Nethgui\Client\ViewCommandSequence($this, $selector);
         }
         return $this->commands[$fullSelector];
