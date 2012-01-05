@@ -269,7 +269,7 @@ interface WidgetFactoryInterface
      * @return \Nethgui\Renderer\WidgetInterface
      * @api
      */
-    public function progressBar($name, $flags = 0);
+    public function progressbar($name, $flags = 0);
 
     /**
      * Create a text area
