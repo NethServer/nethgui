@@ -27,7 +27,7 @@ namespace Nethgui\Module\Table;
  * @since 1.0
  * @api
  */
-class Action extends \Nethgui\Core\Module\Standard implements ActionInterface
+abstract class Action extends \Nethgui\Core\Module\Standard implements ActionInterface, \Nethgui\Core\Module\ActionInterface
 {
 
     /**
@@ -56,24 +56,12 @@ class Action extends \Nethgui\Core\Module\Standard implements ActionInterface
         }
         if ( ! $this instanceof \Nethgui\Core\ModuleCompositeInterface) {
             $view['FormAction'] = $view->getModuleUrl(implode('/', $this->getRequest()->getPath()));
-        }        
-        $this->prepareNextView($view);
+        }
     }
 
-    /**
-     * Decide where to go after the action processing
-     * @param \Nethgui\Core\ViewInterface $view 
-     */
-    protected function prepareNextView(\Nethgui\Core\ViewInterface $view)
+    public function getNextActionIdentifier()
     {
-        $parent = $this->getParent();
-
-        if ($this->getRequest()->isSubmitted()
-            && $this->getRequest()->isValidated()
-            && $parent instanceof \Nethgui\Module\TableController) {
-            $parent->refresh($view);
-            $view->getCommandListFor('../read')->show();
-        }
+        return 'read';
     }
 
 }

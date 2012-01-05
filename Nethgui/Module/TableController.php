@@ -169,35 +169,6 @@ class TableController extends \Nethgui\Core\Module\Controller
         return $this->tableActions;
     }
 
-    protected function getCurrentActionParameter($parameter)
-    {
-        if ( ! isset($this->currentAction)) {
-            return NULL;
-        }
-
-        $currentActionRequest = $this->getRequest()->spawnRequest($this->currentAction->getIdentifier());
-
-        if ( ! $currentActionRequest->hasParameter($parameter)) {
-            return NULL;
-        }
-
-        return $currentActionRequest->getParameter($parameter);
-    }
-
-    /**
-     * Update the read view
-     * @param \Nethgui\Core\ViewInterface $view
-     */
-    public function refresh(\Nethgui\Core\ViewInterface $view)
-    {
-        if ( ! $this->hasAction('read') || $view->getTargetFormat() !== $view::TARGET_JSON) {
-            return;
-        }
-        $readAction = $this->getAction('read');
-        $innerView = $view->spawnView($readAction, TRUE);
-        $readAction->prepareView($innerView);
-    }
-
     public function renderIndex(\Nethgui\Renderer\Xhtml $renderer)
     {
         $renderer->includeFile('jquery.nethgui.controller.js', 'Nethgui');

@@ -48,7 +48,6 @@ interface WidgetFactoryInterface
     const INSET_FORM = 0x10000;
     const INSET_DIALOG = 0x4000;
     
-
     const BUTTON_SUBMIT = 0x100;
     const BUTTON_CANCEL = 0x200;
     const BUTTON_RESET = 0x400;
@@ -63,8 +62,6 @@ interface WidgetFactoryInterface
     const BUTTONSET = 0x400000;
     const BUTTON_DROPDOWN = 0x800000;
     const BUTTON_HELP = 0x1000000;
-
-    
 
     /**
      *

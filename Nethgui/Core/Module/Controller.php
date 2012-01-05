@@ -161,8 +161,8 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
         parent::prepareView($view);
 
         if (is_null($this->currentAction)) {
-            // Handle a NULL current action, rendering all the children in a
-            // "DISABLED" state.
+            // Prepare an unobstrusive view of each child. The first one is
+            // shown to the user.
             $view->setTemplate(array($this, 'renderIndex'));
             foreach ($this->getChildren() as $childModule) {
                 $innerView = $view->spawnView($childModule, TRUE);
@@ -172,11 +172,44 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
             $view->setTemplate(array($this, 'renderCurrentAction'));
             $innerView = $view->spawnView($this->currentAction, TRUE);
             $this->currentAction->prepareView($innerView);
-            if ($view->getTargetFormat() === $view::TARGET_JSON
+
+            if ($this->getRequest()->isSubmitted()
+                && $this->getRequest()->isValidated()
+                && $this->currentAction instanceof \Nethgui\Core\Module\ActionInterface) {
+                $this->handleNextActionId($view, $this->currentAction);
+            } elseif ($view->getTargetFormat() === $view::TARGET_JSON
                 && ! $this->getRequest()->isSubmitted()) {
                 // JSON view need a show() command:
                 $view->getCommandListFor($this->currentAction->getIdentifier())->show();
             }
+        }
+    }
+
+    private function handleNextActionId(\Nethgui\Core\ViewInterface $view, \Nethgui\Core\Module\ActionInterface $action)
+    {
+        $nextActionId = $action->getNextActionIdentifier();
+
+        if ($nextActionId === $action->getIdentifier()
+            || $nextActionId === FALSE) {
+            return;
+        }
+
+        if ( ! $this->hasAction($nextActionId)) {
+            throw new \RuntimeException(sprintf('%s: invalid next action identifier', get_class($this)), 1325774413);
+        }
+
+        if (defined('IMPLEMENTED_ADAPTER_OBSERVERS')) {
+            $nextAction = $this->getAction($nextActionId);
+            $nextActionView = $view->spawnView($nextAction, TRUE);
+            if ($view->getTargetFormat() === $view::TARGET_JSON) {
+                // This should work if Adapters are notified of
+                // database changes - currently not implemented:
+                $nextAction->prepareView($nextActionView);
+            }
+            $nextActionView->getCommandList()->show();
+        } else {
+            // Trigger another AJAX call or HTTP-Location:
+            $view->getCommandListFor($nextActionId)->sendQuery($view->getModuleUrl($nextActionId));
         }
     }
 
