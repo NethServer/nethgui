@@ -84,6 +84,7 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionC
     {
         $this->initialize();
         $this->innerCommand = new Process($this->shellBackgroundInvocation($command), $arguments);
+        $this->identifier = strtoupper(uniqid());
         $this->setGlobalFunctionWrapper(new \Nethgui\Core\GlobalFunctionWrapper());        
     }
 
@@ -213,6 +214,7 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionC
             $this->exitStatus,
             $this->globalFunctionWrapper,
             $this->outputPosition,
+            $this->identifier,
         );
 
         return serialize($ostate);
@@ -229,6 +231,7 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionC
             $this->exitStatus,
             $this->globalFunctionWrapper,
             $this->outputPosition,
+            $this->identifier,
             ) = $ostate;
 
         return $this;
