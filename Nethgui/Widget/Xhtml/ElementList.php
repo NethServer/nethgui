@@ -49,10 +49,6 @@ class ElementList extends \Nethgui\Widget\XhtmlWidget
 
         $this->childWrapTag = $wrap[1];
 
-        //if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_DISABLED) {
-        //    $cssClass .= ' disabled';
-        //}
-
         if ($this->hasAttribute('maxElements')) {
             $maxElements = intval($this->getAttribute('maxElements'));
             if ($maxElements > 0) {

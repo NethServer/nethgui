@@ -96,19 +96,15 @@ class ObjectPicker extends \Nethgui\Widget\XhtmlWidget
 
         $content = '';
         $content .= $this->openTag('div', array('class' => 'ObjectPicker ' . implode(' ', $this->metadata['listenToEvents'])));
-        $content .= $this->selfClosingTag('input', array('name' => $this->getControlName('meta'), 'type' => 'hidden', 'disabled' => 'disabled', 'value' => json_encode($this->metadata), 'class' => 'metadata'));
+
+        // render the an hidden input, as fallback empty post value:
         foreach ($this->getChildren() as $child) {
             $content .= $this->selfClosingTag('input', array('type' => 'hidden', 'value' => '', 'name' => $this->getControlName($child->getAttribute('name'))));
         }
-        $content .= $this->openTag('div', array('class' => 'schema'));
-        $content .= $this->renderChildren();
-        $content .= $this->closeTag('div');
-        $content .= $this->openTag('div', array('class' => 'searchbox'));
-        $content .= $this->selfClosingTag('input', array('type' => 'text', 'class' => 'TextInput', 'disabled' => 'disabled', 'value' => '', 'placeholder' => $this->view->translate('Search...')));
-        $content .= ' ' . $this->openTag('button', array('type' => 'button', 'class' => 'Button custom', 'disabled' => 'disabled')) . htmlspecialchars($this->view->translate('Add')) . $this->closeTag('button');
-        $content .= $this->closeTag('div');
+
+        $content .= $this->renderMeta();
         $content .= $this->renderObjects();
-        
+
         $content .= $this->closeTag('div');
 
         if ($this->hasAttribute('template')) {
@@ -125,9 +121,37 @@ class ObjectPicker extends \Nethgui\Widget\XhtmlWidget
         return $content;
     }
 
+    private function renderMeta()
+    {
+        $content = '';
+
+        // meta
+        $content .= $this->selfClosingTag('input', array('name' => $this->getControlName('meta'), 'type' => 'hidden', 'disabled' => 'disabled', 'value' => json_encode($this->metadata), 'class' => 'metadata'));
+
+        // searchbox
+        $content .= $this->openTag('div', array('class' => 'searchbox'));
+        $content .= $this->selfClosingTag('input', array('type' => 'text', 'class' => 'TextInput', 'disabled' => 'disabled', 'value' => '', 'placeholder' => $this->view->translate('Search...')));
+        $content .= ' ' . $this->openTag('button', array('type' => 'button', 'class' => 'Button custom', 'disabled' => 'disabled')) . htmlspecialchars($this->view->translate('Add')) . $this->closeTag('button');
+        $content .= $this->closeTag('div');
+
+        // schema
+        $content .= $this->openTag('div', array('class' => 'schema'));
+        $content .= $this->renderChildren();
+        $content .= $this->closeTag('div');
+
+        $flags = $this->getAttribute('flags', 0);
+
+        if ( ! ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE)) {
+            $content = $this->escapeUnobstrusive($content);
+        }
+
+        return $content;
+    }
+
     private function renderObjects()
     {
         $objects = $this->getAttribute('objects', array());
+        $flags = $this->getAttribute('flags', 0);
 
         $attributes = array();
 
@@ -140,23 +164,23 @@ class ObjectPicker extends \Nethgui\Widget\XhtmlWidget
             $attributes['id'] = $this->view->getUniqueId('Datasource');
         }
 
-        $content = $this->openTag('div', $attributes);
+        $content = '';
 
-        if ((is_array($objects) || $objects instanceof \Countable) && count($objects) > 0) {
-            $content .= '<ul>';
+        if ( ! ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE)) {
+            if ((is_array($objects) || $objects instanceof \Countable) && count($objects) > 0) {
+                $content .= '<ul>';
 
-            foreach ($objects as $index => $object) {
-                $content .= '<li>';
-                $content .= $this->renderObjectWidget($index, $object);
-                $content .= '</li>';
+                foreach ($objects as $index => $object) {
+                    $content .= '<li>';
+                    $content .= $this->renderObjectWidget($index, $object);
+                    $content .= '</li>';
+                }
+
+                $content .= '</ul>';
             }
-
-            $content .= '</ul>';
         }
 
-        $content .= $this->closeTag('div');
-
-        return $content;
+        return $this->openTag('div', $attributes) . $content . $this->closeTag('div');
     }
 
     private function renderObjectWidget($index, $object)

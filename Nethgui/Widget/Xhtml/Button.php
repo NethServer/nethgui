@@ -51,14 +51,9 @@ class Button extends \Nethgui\Widget\XhtmlWidget
 
             $value = $this->getAttribute('value', isset($this->view[$name]) ? $this->view[$name] : NULL);
 
-            if (is_null($value)) {
-                if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::BUTTON_LINK) {
-                    $value = $name;
-                } elseif ($flags & \Nethgui\Renderer\WidgetFactoryInterface::BUTTON_CANCEL) {
-                    $value = '..';
-                } elseif ($flags & \Nethgui\Renderer\WidgetFactoryInterface::BUTTON_HELP) {
-                    $value = \Nethgui\array_head($this->view->getModulePath());
-                }
+            if (empty($value)) {
+                $value = '';
+                $flags |= \Nethgui\Renderer\WidgetFactoryInterface::STATE_DISABLED;
             }
 
             if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::BUTTON_CANCEL) {
@@ -72,15 +67,18 @@ class Button extends \Nethgui\Widget\XhtmlWidget
 
             if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_DISABLED) {
                 $cssClass .= ' disabled';
+                $tag = 'span';
+            } else {
+                $attributes['href'] = $this->prepareHrefAttribute($value);
+                $tag = 'a';
             }
 
-            $attributes['href'] = $this->prepareHrefAttribute($value);
             $attributes['class'] = $cssClass;
             $attributes['title'] = $this->getAttribute('title', FALSE);
-            
-            $content .= $this->openTag('a', $attributes);
+
+            $content .= $this->openTag($tag, $attributes);
             $content .= htmlspecialchars($label);
-            $content .= $this->closeTag('a');
+            $content .= $this->closeTag($tag);
         } else {
             if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::BUTTON_SUBMIT) {
                 $attributes['type'] = 'submit';

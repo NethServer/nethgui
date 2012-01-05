@@ -54,12 +54,11 @@ class TextLabel extends \Nethgui\Widget\XhtmlWidget
 
         if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_DISABLED) {
             $cssClass .= ' disabled';
-            $stateDisabled = TRUE;
-        } else {
-            $stateDisabled = FALSE;
         }
 
-        $args = array('${0}' => $this->view->offsetExists($name) && ! $stateDisabled ? $this->view[$name] : '${0}');
+        $unobstrusive = $flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE;
+
+        $args = array('${0}' => $this->view->offsetExists($name) && ! $unobstrusive ? $this->view[$name] : '${0}');
 
         if ($this->hasAttribute('args')) {
             $args = array();
@@ -67,9 +66,8 @@ class TextLabel extends \Nethgui\Widget\XhtmlWidget
                 throw new \InvalidArgumentException(sprintf('%s: `args` attribute must be an array!', get_class($this)), 1322149926);
             }
             $i = 1;
-            foreach ($this->getAttribute('args') as $arg) {
-                $args['${' . $i . '}'] = is_null($arg) || $stateDisabled ? ('${' . $i . '}') : $arg;
-                $i ++;
+            foreach ($this->getAttribute('args') as $argName => $argValue) {
+                $args['${' . $argName . '}'] = is_null($argValue) || $unobstrusive ? ('${' . $argName . '}') : strval($argValue);
             }
         }
 
@@ -88,9 +86,9 @@ class TextLabel extends \Nethgui\Widget\XhtmlWidget
         }
 
         if ($this->hasAttribute('name')) {
-            $content = $this->controlTag($tag, $name, $flags, $cssClass, array('name' => FALSE, 'id' => FALSE), $text);
+            $content = $this->controlTag($tag, $name, $flags, $cssClass, array('name' => FALSE, 'id' => FALSE, 'data-template' => $template), $text);
         } else {
-            $content = $this->openTag($tag, array('class' => $cssClass));
+            $content = $this->openTag($tag, array('class' => $cssClass, 'data-template' => $template));
             $content .= $text;
             $content .= $this->closeTag($tag);
         }

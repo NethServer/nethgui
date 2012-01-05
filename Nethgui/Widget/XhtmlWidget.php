@@ -343,5 +343,10 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\Core\Comma
         return $f;
     }
 
+    protected function escapeUnobstrusive($content)
+    {
+        return "<script class='unobstrusive'>/*<![CDATA[*/\ndocument.write(" . json_encode(strval($content)) . ");\n/*]]>*/</script>";
+    }
+
 }
 
