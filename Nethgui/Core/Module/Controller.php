@@ -172,6 +172,11 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
             $view->setTemplate(array($this, 'renderCurrentAction'));
             $innerView = $view->spawnView($this->currentAction, TRUE);
             $this->currentAction->prepareView($innerView);
+            if ($view->getTargetFormat() === $view::TARGET_JSON
+                && ! $this->getRequest()->isSubmitted()) {
+                // JSON view need a show() command:
+                $view->getCommandListFor($this->currentAction->getIdentifier())->show();
+            }
         }
     }
 
@@ -200,19 +205,20 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
         $renderer->includeFile('jquery.nethgui.controller.js', 'Nethgui');
 
         $container = $renderer->panel()->setAttribute('class', 'Controller');
-        $actionList = $renderer->elementList()
-            ->setAttribute('class', 'ActionList');
-
-        $container->insert($actionList);
 
         foreach ($this->getChildren() as $index => $module) {
             $identifier = $module->getIdentifier();
-            $label = $renderer->getTranslator()->translate($module, $module->getAttributesProvider()->getTitle());
-            $actionList->insert($renderer->literal(strtr('<a href="%URI">%LABEL</a>', array('%URI' => $renderer->getModuleUrl($identifier), '%LABEL' => $label))));
-            $flags = $renderer::STATE_UNOBSTRUSIVE | $renderer::INSET_WRAP;
+
+            $flags = $renderer::INSET_WRAP;
+
+            if ($index > 0) {
+                $flags |= $renderer::STATE_UNOBSTRUSIVE;
+            }
+
             if ($this->needsAutoFormWrap($module)) {
                 $flags |= $renderer::INSET_FORM;
             }
+
             $container->insert($renderer->inset($identifier, $flags)->setAttribute('class', 'Action'));
         }
 

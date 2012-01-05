@@ -33,7 +33,6 @@ class TabsController extends \Nethgui\Core\Module\Controller
         $view->includeFile('jquery.nethgui.tabs.js', 'Nethgui');
         $view->includeFile('jquery.nethgui.controller.js', 'Nethgui');
 
-
         $tabs = $view->tabs()->setAttribute('receiver', '');
 
         foreach ($this->getChildren() as $module) {

@@ -63,14 +63,14 @@ abstract class Composite extends AbstractModule implements \Nethgui\Core\ModuleC
         if (isset($this->children[$childModule->getIdentifier()])) {
             throw new \LogicException(sprintf('%s: the module identifier "%s" is already registered as child!', __CLASS__, $childModule->getIdentifier()), 1322818691);
         }
-        
+
         $this->children[$childModule->getIdentifier()] = $childModule;
 
         $childModule->setParent($this);
         if ($this->getPlatform() !== NULL) {
             $childModule->setPlatform($this->getPlatform());
         }
-        
+
         if ($this->isInitialized() && ! $childModule->isInitialized()) {
             $childModule->initialize();
         }
@@ -130,6 +130,22 @@ abstract class Composite extends AbstractModule implements \Nethgui\Core\ModuleC
     protected function loadChildrenFromPath($path)
     {
         throw new \LogicException(sprintf('%s: %s() is not Implemented', get_class($this), __FUNCTION__), 1322148901);
+    }
+
+    /**
+     * Sort children applying the given callback function
+     *
+     * @see http://php.net/manual/en/function.usort.php
+     * @param callable $callback
+     * @return void;
+     */
+    protected function sortChildren($callback)
+    {
+        if ( ! is_callable($callback)) {
+            throw new \InvalidArgumentException(sprintf('%s: invalid callback for %s#%s()', get_class($this), __CLASS__, __FUNCTION__), 1325760755);
+        }
+
+        usort($this->children, $callback);
     }
 
 }

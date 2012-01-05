@@ -198,46 +198,19 @@ class TableController extends \Nethgui\Core\Module\Controller
         $readAction->prepareView($innerView);
     }
 
-    public function renderIndex(\Nethgui\Renderer\Xhtml $view)
+    public function renderIndex(\Nethgui\Renderer\Xhtml $renderer)
     {
-        $view->includeFile('jquery.nethgui.controller.js', 'Nethgui');
+        $renderer->includeFile('jquery.nethgui.controller.js', 'Nethgui');
+        $this->sortChildren(function(\Nethgui\Core\ModuleInterface $a, \Nethgui\Core\ModuleInterface $b) {
+                if ($a->getIdentifier() === 'read') {
+                    return -1;
+                } elseif ($b->getIdentifier() === 'read') {
+                    return 1;
+                }
+                return 0;
+            });
 
-        $container = $view->panel()
-            ->setAttribute('class', 'Controller')
-            ->setAttribute('receiver', '');
-
-        $actions = array();
-
-        foreach ($this->getChildren() as $index => $module) {
-
-            $moduleIdentifier = $module->getIdentifier();
-
-            $flags = \Nethgui\Renderer\WidgetFactoryInterface::INSET_WRAP;
-
-            if ($moduleIdentifier !== 'read') {
-                $flags |= \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE;
-            }
-
-            if ($this->needsAutoFormWrap($module)) {
-                $flags |= \Nethgui\Renderer\WidgetFactoryInterface::INSET_FORM;
-            }
-
-            $action = $view->inset($moduleIdentifier, $flags)
-                ->setAttribute('class', 'Action');
-
-            // ensure the 'read' action is always the first:
-            if ($moduleIdentifier === 'read') {
-                array_unshift($actions, $action);
-            } else {
-                $actions[] = $action;
-            }
-        }
-
-        foreach ($actions as $action) {
-            $container->insert($action);
-        }
-
-        return $container;
+        return parent::renderIndex($renderer);
     }
 
     public function onParametersSaved(\Nethgui\Core\ModuleInterface $currentAction, $changes)

@@ -66,15 +66,13 @@ class Action extends \Nethgui\Core\Module\Standard implements ActionInterface
      */
     protected function prepareNextView(\Nethgui\Core\ViewInterface $view)
     {
+        $parent = $this->getParent();
+
         if ($this->getRequest()->isSubmitted()
             && $this->getRequest()->isValidated()
-            && $this->getParent() instanceof \Nethgui\Module\TableController) {
-            $this->getParent()->refresh($view);
+            && $parent instanceof \Nethgui\Module\TableController) {
+            $parent->refresh($view);
             $view->getCommandListFor('../read')->show();
-        }
-        if ($view->getTargetFormat() === $view::TARGET_JSON && ! $this->getRequest()->isSubmitted()) {
-            // JSON view need a show() command:
-            $view->getCommandList()->show();
         }
     }
 
