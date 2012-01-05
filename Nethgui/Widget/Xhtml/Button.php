@@ -53,7 +53,6 @@ class Button extends \Nethgui\Widget\XhtmlWidget
 
             if (empty($value)) {
                 $value = '';
-                $flags |= \Nethgui\Renderer\WidgetFactoryInterface::STATE_DISABLED;
             }
 
             if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::BUTTON_CANCEL) {
@@ -75,6 +74,9 @@ class Button extends \Nethgui\Widget\XhtmlWidget
 
             $attributes['class'] = $cssClass;
             $attributes['title'] = $this->getAttribute('title', FALSE);
+            if($this->hasAttribute('receiver')) {
+                $attributes['id'] = $this->view->getUniqueId($this->getAttribute('receiver'));
+            }
 
             $content .= $this->openTag($tag, $attributes);
             $content .= htmlspecialchars($label);
