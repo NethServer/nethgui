@@ -1,0 +1,32 @@
+/*
+ * Loading dialog
+ *
+ * Copyright (C) 2011 Nethesis S.r.l.
+ */
+(function( $ ) {
+    /*
+     * Refs #355. Freeze UI while loading.
+     *
+     * Adds an overlaying modal dialog. The external CSS class
+     * "overlay-loading-message" ensures the dialog is actually
+     * not displayed, while keeping the original jQuery UI
+     * overlaing div.
+     */
+
+    var dialog = $('<div id="NethguiOverlayLoadingMessage" style="display: none"/>');
+
+    $('body').append(dialog);
+    dialog.dialog({
+        autoOpen: false,
+        modal: true,
+        closeOnEscape: false,
+        dialogClass: "NethguiLoading"
+    });
+
+    $(document).bind("ajaxSend.nethgui", function() {
+        dialog.dialog('open');
+    }).bind("ajaxComplete.nethgui", function(){
+        dialog.dialog('close');
+    });
+    
+}( jQuery ));
