@@ -32,8 +32,8 @@ class ElementList extends \Nethgui\Widget\XhtmlWidget
     {
         $typeName = strtolower($this->getAttribute('class', 'ElementList'));
 
-        if (in_array($typeName, array('buttonset', 'buttonlist'))) {
-            return array('Nethgui:' . $typeName);
+        if ($typeName === 'buttonset') {
+            return array('Nethgui:buttonset');
         }
 
         return array();

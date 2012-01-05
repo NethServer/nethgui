@@ -35,6 +35,11 @@ namespace Nethgui\Widget\Xhtml;
 class Literal extends \Nethgui\Widget\XhtmlWidget
 {
 
+    protected function getJsWidgetTypes()
+    {
+        return array();
+    }
+
     protected function renderContent()
     {
         $value = $this->getAttribute('data', '');

@@ -26,6 +26,11 @@ namespace Nethgui\Widget\Xhtml;
 class Panel extends \Nethgui\Widget\XhtmlWidget
 {
 
+    protected function getJsWidgetTypes()
+    {
+        return array();
+    }
+
     protected function renderContent()
     {
         $content = '';

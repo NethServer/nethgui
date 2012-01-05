@@ -62,7 +62,6 @@ class Selector extends \Nethgui\Widget\XhtmlWidget
 
         $cssClass = 'Selector '
             . ($flags & \Nethgui\Renderer\WidgetFactoryInterface::SELECTOR_MULTIPLE ? 'multiple ' : '')
-            . ' '
             . $this->getAttribute('class')
             . ' '
             . $this->getClientEventTarget()

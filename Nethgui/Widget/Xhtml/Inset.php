@@ -28,6 +28,10 @@ namespace Nethgui\Widget\Xhtml;
  */
 class Inset extends \Nethgui\Widget\XhtmlWidget
 {
+    protected function getJsWidgetTypes()
+    {
+        return array();
+    }
 
     protected function renderContent()
     {

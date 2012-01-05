@@ -264,6 +264,11 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\Core\Comma
         return $prefix . '[' . implode('][', $nameSegments) . ']';
     }
 
+    /**
+     * Each element of the returned array is a string <namespace>:<widgetType>
+     * 
+     * @return array
+     */
     protected function getJsWidgetTypes()
     {
         return array(
