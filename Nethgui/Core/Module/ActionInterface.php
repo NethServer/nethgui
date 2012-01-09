@@ -29,7 +29,7 @@ namespace Nethgui\Core\Module;
 interface ActionInterface
 {
     /**
-     * 
+     * @return string The path to the next action, relative to the current module
      */
-    public function getNextActionIdentifier();
+    public function getNextActionPath();
 }

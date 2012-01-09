@@ -59,9 +59,9 @@ abstract class Action extends \Nethgui\Core\Module\Standard implements ActionInt
         }
     }
 
-    public function getNextActionIdentifier()
+    public function getNextActionPath()
     {
-        return 'read';
+        return '../read';
     }
 
 }

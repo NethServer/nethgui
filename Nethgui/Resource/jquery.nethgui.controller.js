@@ -43,9 +43,28 @@
 
             var behaviour = this.element.hasClass('Dialog') ? 'Dialog' : 'Default';
 
+            this._form = this.element.children('form').bind('submit.' + this.namespace, $.proxy(this._onSubmit, this));
+
             this.element.bind('nethguishow.' + this.namespace, $.proxy(this['_onShow' + behaviour], this));
-            this.element.bind('nethguihide.' + this.namespace, $.proxy(this['_onHide' + behaviour], this));
-            this.element.children('form').bind('submit.' + this.namespace, $.proxy(this._onSubmit, this));
+            this.element.bind('nethguihide.' + this.namespace, $.proxy(this['_onHide' + behaviour], this));            
+            this.element.bind('nethguireloaddata.' + this.namespace, $.proxy(this._onReloadData, this));
+        },
+        _onReloadData: function (e, delay) {
+
+            var url = this._form.attr('action');
+            var self = this;
+
+            delay = parseInt(delay)
+            if(delay < 1000) {
+                delay = 1000;
+            } else if ( delay > 10000) {
+                delay = 10000;
+            }
+            window.setTimeout(function() {
+                self._sendQuery(url)
+            }, delay);
+            
+            e.stopPropagation();
         },
         _onSubmit: function (e) {
             e.preventDefault();

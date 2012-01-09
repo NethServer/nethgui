@@ -505,7 +505,14 @@ class Framework
 
         if ($dotPos !== FALSE) {
             $ext = substr($lastPart, $dotPos + 1);
-            $lastPart = substr($lastPart, 0, $dotPos);
+
+            // TODO: register handled extension elsewhere:
+            if(in_array($ext, array('js','css','xhtml','json'))) {
+                $lastPart = substr($lastPart, 0, $dotPos);
+            } else {
+                $ext = 'xhtml';
+            }
+
         } else {
             $ext = 'xhtml';
         }

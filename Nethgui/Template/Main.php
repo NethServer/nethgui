@@ -10,8 +10,8 @@ EOJS;
 
 $view
     // Javascript:
-    ->useFile('js/jquery-1.6.2.min.js')
-    ->useFile('js/jquery-ui-1.8.16.custom.min.js')
+    ->useFile('js/jquery-1.6.2.min.js')    
+    ->useFile('js/jquery-ui-1.8.16.custom.min.js') //->useFile('js/jquery-ui.js')
     ->useFile('js/jquery.dataTables.min.js')
     ->useFile('js/jquery.qtip.min.js')
     ->useFile(sprintf('js/jquery.ui.datepicker-%s.js', $view['lang']))

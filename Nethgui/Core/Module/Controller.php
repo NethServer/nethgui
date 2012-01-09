@@ -187,30 +187,16 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
 
     private function handleNextActionId(\Nethgui\Core\ViewInterface $view, \Nethgui\Core\Module\ActionInterface $action)
     {
-        $nextActionId = $action->getNextActionIdentifier();
+        $actionView = $view->spawnView($action);
 
-        if ($nextActionId === $action->getIdentifier()
-            || $nextActionId === FALSE) {
+        $actionUrl = $actionView->getModuleUrl();
+        $nextUrl = $actionView->getModuleUrl($action->getNextActionPath());
+
+        if ($actionUrl === $nextUrl) {
             return;
         }
 
-        if ( ! $this->hasAction($nextActionId)) {
-            throw new \RuntimeException(sprintf('%s: invalid next action identifier', get_class($this)), 1325774413);
-        }
-
-        if (defined('IMPLEMENTED_ADAPTER_OBSERVERS')) {
-            $nextAction = $this->getAction($nextActionId);
-            $nextActionView = $view->spawnView($nextAction, TRUE);
-            if ($view->getTargetFormat() === $view::TARGET_JSON) {
-                // This should work if Adapters are notified of
-                // database changes - currently not implemented:
-                $nextAction->prepareView($nextActionView);
-            }
-            $nextActionView->getCommandList()->show();
-        } else {
-            // Trigger another AJAX call or HTTP-Location:
-            $view->getCommandListFor($nextActionId)->sendQuery($view->getModuleUrl($nextActionId));
-        }
+        $actionView->getCommandList()->sendQuery($nextUrl);
     }
 
     /**

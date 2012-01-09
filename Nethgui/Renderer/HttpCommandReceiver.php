@@ -74,51 +74,37 @@ class HttpCommandReceiver extends \Nethgui\Core\AbstractReceiverChain
         if ($origin->getTargetFormat() !== $origin::TARGET_XHTML) {
             return;
         }
-        $this->httpRedirection($origin, $selector, 302, $origin->getModuleUrl($selector));
+        $this->httpRedirection($origin, 302, $origin->getModuleUrl($selector));
     }
 
-    protected function sendQuery(\Nethgui\Core\ViewInterface $origin, $selector, $path)
+    protected function sendQuery(\Nethgui\Core\ViewInterface $origin, $selector, $location)
     {
         if ($origin->getTargetFormat() !== $origin::TARGET_XHTML) {
             return;
         }
-        $this->httpRedirection($origin, $selector, 302, $path);
+        $this->httpRedirection($origin, 302, $location);
     }
 
-//    protected function showView(\Nethgui\Core\ViewInterface $origin, $selector, $location)
-//    {
-//        $this->httpRedirection($origin, $selector, $code, $location);
-//    }
-//    protected function cancel(\Nethgui\Core\ViewInterface $origin, $selector)
-//    {
-//        $this->httpRedirection($origin, $selector, 302, $origin->getModuleUrl('..'));
-//    }
-//
-//    protected function activateAction(\Nethgui\Core\ViewInterface $origin, $selector, $actionId, $path = NULL, $prevComponent = NULL)
-//    {
-//        if (is_null($path)) {
-//            $path = $actionId;
-//        }
-//
-//        $this->httpRedirection($origin, $selector, 302, $origin->getModuleUrl($path));
-//    }
-//
-//    protected function enable(\Nethgui\Core\ViewInterface $origin, $selector)
-//    {
-//        $this->httpRedirection($origin, $selector, 302, $origin->getModuleUrl());
-//    }
-//
-//    protected function redirect(\Nethgui\Core\ViewInterface $origin, $selector, $url)
-//    {
-//        $this->httpRedirection($origin, $selector, 302, $url);
-//    }
+    protected function reloadData(\Nethgui\Core\ViewInterface $origin, $selector, $msec)
+    {
+        if ($origin->getTargetFormat() !== $origin::TARGET_XHTML) {
+            return;
+        }
+        $seconds = intval($msec / 1000);
+        if ($seconds < 4) {
+            $seconds = 4;
+        } elseif ($seconds > 10) {
+            $seconds = 10;
+        }
+        $this->httpHeader($origin, $selector, sprintf('Refresh: %d; url=%s', $seconds, $origin->getModuleUrl($selector)));
+    }
 
     /**
      *
      * @param integer $code
      * @param string $location
      */
-    private function httpRedirection(\Nethgui\Core\ViewInterface $origin, $selector, $code, $location)
+    private function httpRedirection(\Nethgui\Core\ViewInterface $origin, $code, $location)
     {
         $messages = array(
             '201' => 'Created',

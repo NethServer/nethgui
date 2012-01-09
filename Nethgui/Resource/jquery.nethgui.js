@@ -278,7 +278,8 @@
         }
     });
 
-    $(document).bind('nethguisendquery.nethgui', function(e, url, delay) {
+    $(document)
+    .bind('nethguisendquery.nethgui', function(e, url, delay) {
         if(!isLocalUrl(url)) {
             return false;
         }
@@ -288,7 +289,8 @@
             window.setTimeout(function() {
                 sendQuery(url)
             }, delay);
-        }        
+        }
+        e.stopPropagation();
     });
     
 }( jQuery ) );
