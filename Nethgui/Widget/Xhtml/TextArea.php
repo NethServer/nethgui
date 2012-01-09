@@ -35,6 +35,11 @@ namespace Nethgui\Widget\Xhtml;
 class TextArea extends \Nethgui\Widget\XhtmlWidget
 {
 
+    protected function getJsWidgetTypes()
+    {
+        return array('Nethgui:Textarea');
+    }
+
     protected function renderContent()
     {
         $name = $this->getAttribute('name');

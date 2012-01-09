@@ -300,7 +300,7 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
         return $this->createWidget(__FUNCTION__, array());
     }
 
-    public function progressbar($name, $flags = 0)
+    public function progressBar($name, $flags = 0)
     {
         $flags |= $this->inheritFlags;
         return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags));
