@@ -37,7 +37,7 @@ class TextArea extends \Nethgui\Widget\XhtmlWidget
 
     protected function getJsWidgetTypes()
     {
-        return array('Nethgui:Textarea');
+        return array('Nethgui:inputcontrol', 'Nethgui:textarea');
     }
 
     protected function renderContent()
@@ -56,7 +56,7 @@ class TextArea extends \Nethgui\Widget\XhtmlWidget
             'cols' => $cols,
         );
 
-        $cssClass = trim('Textarea ' . $this->getAttribute('class', ''));
+        $cssClass = trim('TextArea ' . $this->getAttribute('class', ''));
 
         if ($this->getAttribute('appendOnly', FALSE)) {
             $cssClass .= ' appendOnly';

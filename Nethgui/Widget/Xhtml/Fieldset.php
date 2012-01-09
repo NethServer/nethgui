@@ -31,6 +31,11 @@ namespace Nethgui\Widget\Xhtml;
 class Fieldset extends Panel
 {
 
+    protected function getJsWidgetTypes()
+    {
+        return array('Nethgui:fieldset');
+    }
+
     protected function renderContent()
     {
         // force container tag to FIELDSET:
@@ -38,27 +43,37 @@ class Fieldset extends Panel
         $flags = $this->getAttribute('flags', 0);
 
         if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::FIELDSET_EXPANDABLE) {
-            $this->setAttribute('class', 'Fieldset expandable');
+            $this->setAttribute('class', 'Fieldset expandable');            
         } else {
-            $this->setAttribute('class', 'Fieldset');
+            $this->setAttribute('class', 'Fieldset');            
         }
 
-        $legendWidget = new TextLabel($this->view);
-        $legendWidget->setAttribute('tag', 'legend');
+        $labelWidget = new TextLabel($this->view);
+        $labelWidget->setAttribute('tag', 'span');
         $renderLegend = FALSE;
 
         if ($this->hasAttribute('name')) {
-            $legendWidget->setAttribute('name', $this->getAttribute('name'));
+            $labelWidget->setAttribute('name', $this->getAttribute('name'));
             $renderLegend = TRUE;
         }
 
         if ($this->hasAttribute('template')) {
-            $legendWidget->setAttribute('template', $this->getAttribute('template'));
+            $labelWidget->setAttribute('template', $this->getAttribute('template'));
             $renderLegend = TRUE;
         }
 
         if ($renderLegend && ! ($flags & \Nethgui\Renderer\WidgetFactoryInterface::LABEL_NONE)) {
-            $legendWidget->setAttribute('icon-before', $this->getAttribute('icon-before', FALSE));
+
+            $legendWidget = $this->view->panel()->setAttribute('tag', 'legend')->insert($labelWidget);
+
+            if ($this->hasAttribute('icon-before')) {
+                $legendWidget->prepend($this->view->literal($this->openTag('span', array('class' => 'ui-icon ' . $this->getAttribute('icon-before'))) . $this->closeTag('span')));
+            }
+
+            if ($this->hasAttribute('icon-after')) {
+                $legendWidget->append($this->view->literal($this->openTag('span', array('class' => 'ui-icon ' . $this->getAttribute('icon-after'))) . $this->closeTag('span')));
+            }
+
             $this->prepend($legendWidget);
         }
 

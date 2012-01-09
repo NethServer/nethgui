@@ -252,7 +252,11 @@
                 typeName = this._findType(jqNode)
                 if(typeName !== false) {
                     // constructor call:
-                    $.fn[typeName].apply(jqNode);
+                    if(typeName in $.fn) {
+                        $.fn[typeName].apply(jqNode);
+                    } else {
+                        $.debug('Undefined type ' + typeName);
+                    }
                     this._children.push(node);
                 } else {
                     Array.prototype.push.apply(nodeQueue, jqNode.children().toArray());
@@ -283,7 +287,7 @@
         } else if(parseInt(delay) > 0) {
             window.setTimeout(function() {
                 sendQuery(url)
-                }, delay);
+            }, delay);
         }        
     });
     

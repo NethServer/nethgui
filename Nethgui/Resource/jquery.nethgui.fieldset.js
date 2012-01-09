@@ -11,47 +11,60 @@
         },
         _create: function() {
             SUPER.prototype._create.apply(this);
-            
-            var self = this;
-            this.expanded = false;
 
-            if(!this.element.hasClass('expandable')) {
+            var self = this;
+
+            if( ! this.element.hasClass('expandable')) {
+                this._expandable = false;
                 return;
             }
 
-            var anchor = $('<button type="button" />').bind('click.' + this.namespace, function () {
-                if(self.expanded === true) {
-                    self.collapse();
-                } else {
-                    self.expand();
-                }
+            this._expandable = true;           
+            this.element.children().not('legend').wrap('<div></div>');
+            this._content = this.element.children().not('legend');
+            
+            this.element.find('legend .TextLabel')
+            .addClass('clickable')
+            .bind('click', function(e) {
+                self._setOption('collapsed', ! self.element.hasClass('collapsed'))
             });
 
-            this.element.children().not('legend').wrapAll('<div></div>');
-            this.expandable = true;
-            this.element.children('div').hide();
+            this._content.hide();
             this.element.addClass('collapsed');
-            this.element.children('legend').children('.ui-icon').attr('class', 'ui-icon ui-icon-triangle-1-e');
-            this.element.children('legend').wrapInner(anchor);
-         
-        },
-        expand: function() {
-            if(!this.expandable) {
-                return;
-            }
-            this.element.removeClass('collapsed');
-            this.element.children('div').slideDown();
-            this.element.find('legend .ui-icon').attr('class', 'ui-icon ui-icon-triangle-1-s');
-            this.expanded = true;
-        },
-        collapse: function() {
-            if(!this.expandable) {
-                return;
-            }
-            this.element.addClass('collapsed');
-            this.element.children('div').slideUp();
             this.element.find('legend .ui-icon').attr('class', 'ui-icon ui-icon-triangle-1-e');
-            this.expanded = false;
+        },
+        _setOption: function (key, value) {
+            SUPER.prototype._setOption.apply( this, [key, value] );
+            if(key === 'collapsed') {
+                if( ! this._expandable) {
+                    return this;
+                }
+                
+                var o = value ? {
+                    fx: 'slideUp',
+                    icon: 'e'
+                } : {
+                    fx: 'slideDown',
+                    icon: 's'
+                };
+
+                this.element.trigger('nethguiresizestart', {
+                    height: this.element.height(),
+                    width: this.element.width()
+                });
+                                
+                this._content[o.fx]($.proxy(this._onResizeEnd, this));
+                this.element.find('legend .ui-icon').attr('class', 'ui-icon ui-icon-triangle-1-' + o.icon);
+            }
+            return this;
+        },
+
+        _onResizeEnd: function () {
+            this.element.toggleClass('collapsed')
+            this.element.trigger('nethguiresizeend', {
+                height: this.element.height(),
+                width: this.element.width()
+            });
         }
     });
 

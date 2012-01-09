@@ -77,21 +77,19 @@ class TextLabel extends \Nethgui\Widget\XhtmlWidget
             $text = htmlspecialchars($text);
         }
 
-        if ($this->hasAttribute('icon-before')) {
-            $text = $this->openTag('span', array('class' => 'ui-icon ' . $this->getAttribute('icon-before'))) . $this->closeTag('span') . $text;
-        }
-
-        if ($this->hasAttribute('icon-after')) {
-            $text .= $this->openTag('span', array('class' => 'ui-icon ' . $this->getAttribute('icon-before'))) . $this->closeTag('span');
-        }
-
         if ($this->hasAttribute('name')) {
-            $content = $this->controlTag($tag, $name, $flags, $cssClass, array('name' => FALSE, 'id' => FALSE, 'data-template' => $template), $text);
-        } else {
-            $content = $this->openTag($tag, array('class' => $cssClass, 'data-template' => $template));
-            $content .= $text;
-            $content .= $this->closeTag($tag);
+            $cssClass .= ' ' . $this->getClientEventTarget();
         }
+
+        if ($this->hasAttribute('receiver')) {
+            $attributes['id'] = $this->view->getUniqueId($this->getAttribute('receiver'));
+        }
+
+        $attributes = array('class' => $cssClass, 'data-template' => $template);
+
+        $content = $this->openTag($tag, $attributes);
+        $content .= $text;
+        $content .= $this->closeTag($tag);
 
         return $content;
     }

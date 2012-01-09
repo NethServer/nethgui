@@ -78,6 +78,15 @@
             }
             e.stopPropagation();
         },
+        _onResizeDialog: function (e) {
+            if(this._dialog === undefined) {
+                return;
+            }
+
+            this._dialog.dialog('option', 'width', this._dialog.dialog('option', 'height', 'auto'));
+
+            e.stopPropagation();
+        },
         _initDialog: function() {
             var self = this;
             
@@ -95,7 +104,8 @@
                 autoOpen: false,
                 position: ['center', 50],
                 title: titleNode.text()
-            }).bind('nethguicancel.' + this.namespace, $.proxy(this._onHideDialog, this));
+            }).bind('nethguicancel.' + this.namespace, $.proxy(this._onHideDialog, this))
+            .bind('nethguiresizeend.' + this.namespace, $.proxy(this._onResizeDialog, this));
         }
     });
 }( jQuery ));
