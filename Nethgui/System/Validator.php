@@ -589,11 +589,11 @@ class Validator implements \Nethgui\Core\ValidatorInterface
     {
         $process = $this->platform->exec('/usr/bin/sudo /sbin/e-smith/validate ${@}', array($validatorName, $value));
 
-        if ($process->getExitStatus() !== 0 && $this->platform instanceof \Nethgui\Log\LogConsumerInterface) {
+        if ($process->getExitCode() !== 0 && $this->platform instanceof \Nethgui\Log\LogConsumerInterface) {
             $this->platform->getLog()->error(sprintf('platformValidator: %s', strtr($process->getOutput(), "\n", " ")));
         }
 
-        return $process->getExitStatus() === 0;
+        return $process->getExitCode() === 0;
     }
 
 }

@@ -55,7 +55,7 @@ interface ProcessInterface
      * The exit status code
      * @return int
      */
-    public function getExitStatus();
+    public function getExitCode();
 
     /**
      * @param string

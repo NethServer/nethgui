@@ -144,7 +144,7 @@ class Process implements ProcessInterface, \Nethgui\Core\GlobalFunctionConsumerI
         return strtr($this->command, $escapedArguments);
     }
 
-    public function getExitStatus()
+    public function getExitCode()
     {
         return $this->exitStatus;
     }

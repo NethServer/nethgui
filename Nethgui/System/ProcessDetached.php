@@ -173,7 +173,7 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionC
      *
      * @return integer|boolean FALSE if the command has not exited yet.
      */
-    public function getExitStatus()
+    public function getExitCode()
     {
         if ($this->readExecutionState() == self::STATE_EXITED) {
             return $this->exitStatus;

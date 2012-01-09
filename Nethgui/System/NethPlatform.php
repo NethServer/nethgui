@@ -217,8 +217,8 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
             $process->exec();
 
             if ($process->readExecutionState() === ProcessInterface::STATE_EXITED
-                && $process->getExitStatus() !== 0) {
-                $this->getLog()->error(sprintf("%s: process `%s` on queue `%s` exited with code %d. Output: `%s`", get_class($this), $process->getIdentifier(), $queueName, $process->getExitStatus(), implode(' ', $process->getOutputArray())));
+                && $process->getExitCode() !== 0) {
+                $this->getLog()->error(sprintf("%s: process `%s` on queue `%s` exited with code %d. Output: `%s`", get_class($this), $process->getIdentifier(), $queueName, $process->getExitCode(), implode(' ', $process->getOutputArray())));
             }
         }
     }

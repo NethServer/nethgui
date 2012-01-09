@@ -303,7 +303,7 @@ class ConfigurationDatabase implements \Nethgui\System\DatabaseInterface, \Nethg
         }
         $p->exec();
         $output = $p->getOutput();
-        return $p->getExitStatus();
+        return $p->getExitCode();
     }
 
     /**
