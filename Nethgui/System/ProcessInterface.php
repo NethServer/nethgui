@@ -28,7 +28,7 @@ namespace Nethgui\System;
  * @since 1.0
  * @api 
  */
-interface ProcessInterface
+interface ProcessInterface extends \Nethgui\Core\DisposableInterface
 {
     const STATE_NEW = 0;
     const STATE_RUNNING = 1;
@@ -36,34 +36,47 @@ interface ProcessInterface
 
     /**
      * The command output
+     *
+     * @api
      * @return string
      */
     public function getOutput();
 
     /**
      * The lines of the command output
+     *
+     * @api
      * @return array
      */
     public function getOutputArray();
 
     /**
+     * Peek the running process output
+     *
+     * @api
      * @return string|bool An output chunk, if more data is available, FALSE otherwise.
      */
     public function readOutput();
 
     /**
      * The exit status code
+     *
+     * @api
      * @return int
      */
     public function getExitCode();
 
     /**
+     *
+     * @api
      * @param string
      */
     public function addArgument($arg);
 
     /**
      * Execute the command
+     *
+     * @api
      * @return ProcessInterface
      */
     public function exec();
@@ -71,12 +84,15 @@ interface ProcessInterface
     /**
      * Kills a RUNNING command
      *
+     * @api
      * @return FALSE on error, TRUE if the command was RUNNING
      */
     public function kill();
 
     /**
      * Read and returns the execution state, one of NEW, RUNNING, EXITED
+     *
+     * @api
      * @return integer
      */
     public function readExecutionState();
@@ -84,7 +100,8 @@ interface ProcessInterface
     /**
      * Give an identity to the process object to retrieve it later.
      *
-     * @param string Unique identifier of the process when stored in a hash table
+     * @api
+     * @param string Unique identifier of the process 
      * @return ProcessInterface
      */
     public function setIdentifier($identifier);
@@ -94,13 +111,17 @@ interface ProcessInterface
      *
      * If the identifier has not been set this method returns a random string
      *
+     * @api
      * @return string The process unique identifier
      */
     public function getIdentifier();
 
     /**
+     *
+     * @api
      * @return array Timing informations
      */
     public function getTimes();
+
 }
 

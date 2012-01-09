@@ -72,7 +72,7 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionC
      * @var array
      */
     private $times;
-
+    private $disposed = FALSE;
 
     /**
      *
@@ -82,23 +82,23 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionC
 
     public function __construct($command, $arguments = array())
     {
+        $this->setGlobalFunctionWrapper(new \Nethgui\Core\GlobalFunctionWrapper());
         $this->initialize();
         $this->innerCommand = new Process($this->shellBackgroundInvocation($command), $arguments);
         $this->identifier = strtoupper(uniqid());
-        $this->setGlobalFunctionWrapper(new \Nethgui\Core\GlobalFunctionWrapper());        
+        $this->innerCommand->setGlobalFunctionWrapper($this->globalFunctionWrapper);
     }
 
     public function setGlobalFunctionWrapper(\Nethgui\Core\GlobalFunctionWrapper $object)
     {
         $this->globalFunctionWrapper = $object;
-        $this->innerCommand->setGlobalFunctionWrapper($object);
     }
 
     private function initialize()
     {
         $this->setExecutionState(self::STATE_NEW);
         $dir = '/tmp';
-        $prefix = 'ng-detached-';
+        $prefix = 'ng-x-';
         $this->outputFile = tempnam($dir, $prefix);
         $this->errorFile = tempnam($dir, $prefix);
         $this->outputPosition = 0;
@@ -122,7 +122,7 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionC
     public function exec()
     {
         if ($this->readExecutionState() != self::STATE_NEW) {
-            return FALSE;
+            throw new \UnexpectedValueException(sprintf('%s: cannot invoke exec() on a running or exited process', __CLASS__ ), 1326103905);
         }
 
         $this->innerCommand->exec();
@@ -139,7 +139,7 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionC
 
     private function setExecutionState($newState)
     {
-        $this->times[$newState] = microtime();
+        $this->times[$newState] = $this->globalFunctionWrapper->microtime(TRUE);
         $this->state = $newState;
         if ($newState === self::STATE_EXITED) {
             $this->exitStatus = $this->processId > 0 ? 0 : 1;
@@ -149,8 +149,7 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionC
     public function readExecutionState()
     {
         // An undetermined state or a running state are polled at each request
-        if (is_null($this->state) || $this->state === self::STATE_RUNNING)
-        {
+        if (is_null($this->state) || $this->state === self::STATE_RUNNING) {
             $this->pollProcessState();
         }
 
@@ -207,6 +206,8 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionC
 
     public function serialize()
     {
+        $this->expiredCheck();
+
         $ostate = array(
             $this->errorFile,
             $this->outputFile,
@@ -214,10 +215,28 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionC
             $this->exitStatus,
             $this->globalFunctionWrapper,
             $this->outputPosition,
+            $this->times,
             $this->identifier,
+            $this->disposed,
         );
 
         return serialize($ostate);
+    }
+
+    /**
+     * Dispose the object automatically after five minutes in EXITED states.
+     * 
+     * @return void
+     */
+    private function expiredCheck()
+    {
+        if ( ! isset($this->times[self::STATE_EXITED])) {
+            return;
+        }
+
+        if ($this->globalFunctionWrapper->microtime(TRUE) - floatval($this->times[self::STATE_EXITED]) > 300.0) {
+            $this->dispose();
+        }
     }
 
     public function unserialize($serialized)
@@ -231,7 +250,9 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionC
             $this->exitStatus,
             $this->globalFunctionWrapper,
             $this->outputPosition,
+            $this->times,
             $this->identifier,
+            $this->disposed,
             ) = $ostate;
 
         return $this;
@@ -268,4 +289,26 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionC
         $this->identifier = $identifier;
         return $this;
     }
+
+    public function dispose()
+    {
+        $this->disposed = TRUE;
+        return $this;
+    }
+
+    public function isDisposed()
+    {
+        return $this->disposed === TRUE;
+    }
+
+    public function __destruct()
+    {
+        if ( ! $this->isDisposed()) {
+            return;
+        }
+
+        @$this->globalFunctionWrapper->unlink($this->errorFile);
+        @$this->globalFunctionWrapper->unlink($this->outputFile);
+    }
+
 }

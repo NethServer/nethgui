@@ -79,11 +79,11 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
 
         // check for process session storage initialization:
         if ( ! $session->hasElement($key)) {
-            $session->store($key, new \ArrayObject());
+            $session->store($key, new \Nethgui\Core\ArrayDisposable());
         }
 
-        // TODO: scan the process list and remove long-exited processes.
         $this->processes = $session->retrieve($key);
+        
     }
 
     /**
@@ -299,13 +299,16 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
 
     public function getDetachedProcess($identifier)
     {
-        // scan the process list 
+        // scan the process list
+        $returnProcess = FALSE;
+
         foreach ($this->processes as $process) {
             if ($process->getIdentifier() === $identifier) {
-                return $process;
+                $returnProcess = $process;
             }
         }
-        return FALSE;
+
+        return $returnProcess;
     }
 
 }

@@ -66,6 +66,7 @@ class Process implements ProcessInterface, \Nethgui\Core\GlobalFunctionConsumerI
      * @var array
      */
     private $times;
+    private $disposed = FALSE;
 
     /**
      *
@@ -195,4 +196,14 @@ class Process implements ProcessInterface, \Nethgui\Core\GlobalFunctionConsumerI
         return $this;
     }
 
+    public function isDisposed()
+    {
+        return $this->disposed === TRUE;
+    }
+
+    public function dispose()
+    {
+        $this->disposed = TRUE;
+        return $this;
+    }
 }
