@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Widget;
+namespace Nethgui\Module\Help;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -23,21 +23,20 @@ namespace Nethgui\Widget;
 /**
  * Abstract Help Widget class
  */
-class Help extends AbstractWidget
+class Widget extends \Nethgui\Widget\AbstractWidget
 {
 
     protected function renderContent()
     {
         $whatToDo = $this->getAttribute('do');
 
-        if ($whatToDo == 'inset') {
-            $renderer = $this->view->offsetGet($this->getAttribute('name'));
-            if ($renderer instanceof \Nethgui\Renderer\Help) {
+        if ($whatToDo === 'inset') {
+            $view = $this->view->offsetGet($this->getAttribute('name'));
+            if ($view instanceof \Nethgui\Core\ViewInterface) {
+                $renderer = $this->view->spawnRenderer($view);
                 $renderer->nestingLevel = $this->view->nestingLevel + 1;
+                return $renderer->render();
             }
-
-
-            return (String) $renderer;
         }
 
         return parent::renderContent();

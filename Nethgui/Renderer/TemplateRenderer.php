@@ -69,7 +69,7 @@ class TemplateRenderer extends AbstractRenderer implements \Nethgui\Core\GlobalF
      */
     public function spawnRenderer(\Nethgui\Core\ViewInterface $view)
     {
-        return new TemplateRenderer($view, $this->getTemplateResolver(), $this->getContentType(), $this->getCharset());
+        return new self($view, $this->getTemplateResolver(), $this->getContentType(), $this->getCharset());
     }
 
     protected function getTemplateResolver()

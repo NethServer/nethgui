@@ -32,24 +32,37 @@ class Help extends \Nethgui\Core\Module\Controller
      */
     private $moduleSet;
 
+    /**
+     *
+     * @param \Nethgui\Core\ModuleSetInterface $moduleSet
+     * @return Menu
+     */
+    public function setModuleSet(\Nethgui\Core\ModuleSetInterface $moduleSet)
+    {
+        $this->moduleSet = $moduleSet;
+        return $this;
+    }
+
+    public function getModuleSet()
+    {
+        return $this->moduleSet;
+    }
+
+    public function setFileNameResolver($fileNameResolver)
+    {
+        $this->fileNameResolver = $fileNameResolver;
+        foreach ($this->getChildren() as $child) {
+            if ($child instanceof Help\Common) {
+                $child->setFileNameResolver($fileNameResolver);
+            }
+        }
+        return $this;
+    }
+
     public function initialize()
     {
         parent::initialize();
-        $this->loadChildren(array('Show', 'Template', 'Read'));
-
-        // XXX Propagate moduleSet to children
-        foreach ($this->getChildren() as $child) {
-            // $child->moduleSet = $this->moduleSet;
-        }
-    }
-
-    public function prepareView(\Nethgui\Core\ViewInterface $view)
-    {
-        if (is_null($this->currentAction)) {
-            $view->setTemplate('Nethgui\Template\Help');
-        } else {
-            parent::prepareView($view);
-        }
+        $this->loadChildren(array('*\Show', '*\Template', '*\Read'));
     }
 
 }

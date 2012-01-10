@@ -52,7 +52,7 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
      */
     public function spawnRenderer(\Nethgui\Core\ViewInterface $view)
     {
-        return new Xhtml($view, $this->getTemplateResolver(), $this->getDefaultFlags());
+        return new self($view, $this->getTemplateResolver(), $this->getDefaultFlags());
     }
 
     protected function createWidget($widgetType, $attributes = array())

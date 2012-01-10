@@ -21,28 +21,30 @@ namespace Nethgui\Module\Help;
  */
 
 /**
+ * Prints out the help HTML document
+ *
  * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
  */
 class Read extends Common
 {
 
-    public function process()
+    public function prepareView(\Nethgui\Core\ViewInterface $view)
     {
-        if (is_null($this->module)) {
-            return;
+        $module = $this->getTargetModule();
+
+        if (is_null($module)) {
+            $view->setTemplate(FALSE);
+        } else {
+            $view->getCommandListFor('/Main')->setDecoratorTemplate(array($this, 'renderDocument'));
         }
+    }
 
-        $filePath = $this->getHelpDocumentPath($this->module);
+    public function renderDocument(\Nethgui\Renderer\TemplateRenderer $renderer)
+    {
+        $filePath = $this->getHelpDocumentPath($this->getTargetModule());
 
-        if ( ! $this->globalFunctions->is_readable($filePath)) {
-            throw new \Nethgui\Exception\HttpException('File not found', 404, 1322148407);
-        }
-
-        $this->globalFunctions->header("Content-Type: text/html; charset=UTF-8");
-        $this->globalFunctions->readfile($filePath);
-
-        exit;
+        return $this->globalFunctions->file_get_contents($filePath);
     }
 
 }
-

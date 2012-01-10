@@ -3,11 +3,11 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="<?php echo $view['lang'] ?>" xml:lang="<?php echo $view['lang'] ?>">
     <head>
-        <title><?php echo htmlspecialchars($view->translate($view['title'])) ?></title>
+        <title><?php echo $view['title'] ?></title>
     </head>
     <body>
         <div id="HelpDocument">
-            <?php echo new \Nethgui\Renderer\Help($view['content']) ?>
+            <?php echo $view['content'] ?>
         </div>
         <hr/>
         <p><?php printf("Source: %s <br/>Timestamp: %s", $view['url'], strftime("%F %T")) ?></p>

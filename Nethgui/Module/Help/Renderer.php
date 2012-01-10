@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Renderer;
+namespace Nethgui\Module\Help;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -23,7 +23,7 @@ namespace Nethgui\Renderer;
 /**
  *  @author Davide Principi <davide.principi@nethesis.it>
  */
-class Help extends Xhtml
+class Renderer extends \Nethgui\Renderer\Xhtml
 {
 
     public $nestingLevel = 1;
@@ -31,7 +31,7 @@ class Help extends Xhtml
 
     protected function createWidget($widgetName, $attributes = array())
     {
-        $o = new \Nethgui\Widget\Help($this);
+        $o = new Widget($this);
 
         foreach ($attributes as $aname => $avalue) {
             $o->setAttribute($aname, $avalue);
@@ -46,11 +46,16 @@ class Help extends Xhtml
         return $o;
     }
 
+    public function spawnRenderer(\Nethgui\Core\ViewInterface $view)
+    {
+        return new self($view, $this->getTemplateResolver(), $this->getDefaultFlags());
+    }
+
     public function render()
     {
         $fields = array();
 
-        $content = parent::__toString();
+        $content = parent::render();
 
         foreach ($this->describeWidgets as $widget) {
             if ( ! $widget->hasAttribute('do')) {
@@ -62,9 +67,9 @@ class Help extends Xhtml
             $whatToDo = $widget->getAttribute('do');
 
             if (in_array($whatToDo, array('textInput', 'button'))) {
-                $label = $widget->getAttribute('label', $name . '_label');
+                $label = $widget->getAttribute('label', $this->translate($name . '_label'));
             } elseif (in_array($whatToDo, array('checkBox', 'radioButton', 'fieldsetSwitch'))) {
-                $label = $widget->getAttribute('label', $name . '_' . $value . '_label');
+                $label = $widget->getAttribute('label', $this->translate($name . '_' . $value . '_label'));
             }
 
             $id = $this->view->getUniqueId($name);
@@ -79,11 +84,11 @@ class Help extends Xhtml
 
         $view = $this->view->spawnView($this->view->getModule());
         $view->setTemplate('Nethgui\Template\Help\Section');
-        $view['title'] = $this->getModule()->getTitle();
-        $view['description'] = $this->getModule()->getDescription();
+        $view['title'] = $this->getTitle();
+        $view['description'] = $this->getDescription();
         $view['fields'] = $fields;
         $view['titleLevel'] = $this->nestingLevel;
-        $headingRenderer = new Xhtml($view);
+        $headingRenderer = parent::spawnRenderer($view)->render();
 
         return (String) $headingRenderer . $content;
     }

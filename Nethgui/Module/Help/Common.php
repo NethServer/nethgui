@@ -30,13 +30,17 @@ class Common extends \Nethgui\Core\Module\Standard implements \Nethgui\Core\Glob
      *
      * @var \Nethgui\Core\ModuleInterface
      */
-    protected $module;
+    private $module;
 
     /**
      *
-     * @var \Nethgui\Core\ModuleSetInterface
+     * @return \Nethgui\Core\ModuleSetInterface $moduleSet
+     * @return Menu
      */
-    public $moduleSet;
+    public function getModuleSet()
+    {
+        return $this->getParent()->getModuleSet();
+    }
 
     /**
      *
@@ -47,36 +51,60 @@ class Common extends \Nethgui\Core\Module\Standard implements \Nethgui\Core\Glob
     public function __construct($identifier = NULL)
     {
         parent::__construct($identifier);
-        $this->globalFunctions = new \Nethgui\Core\GlobalFunctionWrapper();        
+        $this->globalFunctions = new \Nethgui\Core\GlobalFunctionWrapper();
     }
 
     public function bind(\Nethgui\Core\RequestInterface $request)
     {
         parent::bind($request);
 
-        $arguments = $request->getPath();
+        $fileName = \Nethgui\array_head($request->getPath());
 
-        if (empty($arguments) || preg_match('/[a-z][a-z0-9]+(.html)/i', $arguments[0]) == 0) {
+        if (preg_match('/[a-z][a-z0-9]+(.html)/i', $fileName) == 0) {
             throw new \Nethgui\Exception\HttpException('Not found', 404, 1322148405);
         }
 
         // Now assuming a trailing ".html" suffix.
-        $this->module = $this->moduleSet->findModule(substr($arguments[0], 0, -5));
+        $this->module = $this->getModuleSet()->getModule(substr($fileName, 0, -5));
 
         if (is_null($this->module)) {
             throw new \Nethgui\Exception\HttpException('Not found', 404, 1322148406);
         }
-        $this->module->initialize();
-        $this->module->bind($request->spawnRequest('', array_slice($arguments, 1)));
+
+        $this->module->setPlatform($this->getPlatform());
+        if ( ! $this->module->isInitialized()) {
+            $this->module->initialize();
+        }
+    }
+
+    public function setFileNameResolver($fileNameResolver)
+    {
+        $this->fileNameResolver = $fileNameResolver;
+        return $this;
+    }
+
+    /**
+     * @return \Nethgui\Core\ModuleInterface
+     */
+    protected function getTargetModule()
+    {
+        return $this->module;
     }
 
     protected function getHelpDocumentPath(\Nethgui\Core\ModuleInterface $module)
     {
-        $fileName = strtr(get_class($module), '\\', '_') . '.html';
-        $appPath = realpath(NETHGUI_ROOTDIR . '/' . NETHGUI_APPLICATION);
-        $lang = $this->getRequest()->getUser()->getLanguageCode();
+        $parts = explode('\\', get_class($module));
 
-        return "${appPath}/Help/${lang}/${fileName}";
+        $ns = \Nethgui\array_head($parts);
+        $lang = $this->getRequest()->getUser()->getLanguageCode();
+        $fileName = implode('_', $parts) . '.html';
+
+        return call_user_func($this->fileNameResolver, "${ns}\\Help\\${lang}\\${fileName}");
+    }
+
+    protected function getFileNameResolver()
+    {
+        return $this->fileNameResolver;
     }
 
     public function setGlobalFunctionWrapper(\Nethgui\Core\GlobalFunctionWrapper $object)
@@ -84,6 +112,10 @@ class Common extends \Nethgui\Core\Module\Standard implements \Nethgui\Core\Glob
         $this->globalFunctions = $object;
     }
 
+    public function renderFileContent(\Nethgui\Renderer\AbstractRenderer $renderer)
+    {
+        return $this->globalFunctions->file_get_contents($this->getCachePath($this->fileName));
+    }
+
 }
 
-?>

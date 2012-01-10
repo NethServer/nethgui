@@ -309,10 +309,6 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
 
         $url = $this->pathUrl . '/' . implode('/', $segments);
 
-//        if (strrpos(\Nethgui\array_end($segments), '.') > 0) {
-//            $url .= '.' . $this->getTargetFormat();
-//        }
-
         if ( ! empty($parameters)) {
             $url .= '?' . http_build_query($parameters);
         }

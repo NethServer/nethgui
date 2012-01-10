@@ -117,7 +117,7 @@ class Resource extends \Nethgui\Core\Module\Standard implements \Nethgui\Core\Co
         if ($view->getTargetFormat() == 'xhtml') {
             $this->prepareViewXhtml($view);
         } elseif ($this->fileName) {
-            $view->setTemplate(array($this, 'renderFileContent'));
+            $view->getCommandListFor('/Main')->setDecoratorTemplate(array($this, 'renderFileContent'));
         }
     }
 

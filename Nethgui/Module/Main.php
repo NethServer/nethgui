@@ -26,7 +26,7 @@ namespace Nethgui\Module;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Main extends \Nethgui\Core\Module\ListComposite
+class Main extends \Nethgui\Core\Module\ListComposite implements \Nethgui\Core\CommandReceiverInterface
 {
 
     /**
@@ -42,11 +42,12 @@ class Main extends \Nethgui\Core\Module\ListComposite
      */
     private $template;
 
-    public function __construct($template, \Nethgui\Core\ModuleLoader $moduleLoader)
+    public function __construct($template, \Nethgui\Core\ModuleLoader $moduleLoader, $fileNameResolver)
     {
         parent::__construct(FALSE);
         $this->template = $template;
         $this->moduleLoader = $moduleLoader;
+        $this->fileNameResolver = $fileNameResolver;
     }
 
     public function bind(\Nethgui\Core\RequestInterface $request)
@@ -79,24 +80,19 @@ class Main extends \Nethgui\Core\Module\ListComposite
         $this->addChild($this->moduleLoader->getModule('Notification'));
         $this->addChild($this->moduleLoader->getModule('Resource'));
 
+        if ($this->currentModuleIdentifier === 'Help') {
+            $this->moduleLoader->getModule('Help')->setModuleSet($this->moduleLoader)->setFileNameResolver($this->fileNameResolver);
+        }
+
         parent::bind($request);
     }
 
     public function prepareView(\Nethgui\Core\ViewInterface $view)
     {
+        $this->view = $view;
+
         parent::prepareView($view);
         $view->setTemplate($this->template);
-
-        /*
-         * Stylesheets and script files can be served only by the Resource module
-         */
-        if ($view->getTargetFormat() === 'css'
-            || $view->getTargetFormat() === 'js') {
-            $view->setTemplate(function(\Nethgui\Renderer\TemplateRenderer $renderer) use ($view) {
-                    return $renderer->spawnRenderer($view['Resource'])->render();
-                });
-        }
-
 
         if ($view->getTargetFormat() !== 'xhtml') {
             return;
@@ -104,13 +100,31 @@ class Main extends \Nethgui\Core\Module\ListComposite
 
         $view['currentModule'] = $this->currentModuleIdentifier;
         $view['lang'] = $view->getTranslator()->getLanguageCode();
-        
+
         //read css from db
         $db = $this->getPlatform()->getDatabase('configuration');
 //        $customCss = $db->getProp('httpd-admin', 'css');
 //        $view['css']['1theme'] = $pathUrl . ($customCss ? sprintf('css/%s.css', $customCss) : 'css/default.css');
         $view['company'] = $db->getProp('ldap', 'defaultCompany');
         $view['address'] = $db->getProp('ldap', 'defaultStreet') . ", " . $db->getProp('ldap', 'defaultCity');
+    }
+
+    /**
+     * Available commands:
+     * - setDecoratorTemplate ( string|callable $template )
+     *
+     * @param \Nethgui\Core\ViewInterface $origin
+     * @param type $selector
+     * @param type $name
+     * @param type $arguments
+     */
+    public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
+    {
+        if ($name === 'setDecoratorTemplate' 
+            && isset($arguments[0])
+            && $this->view instanceof \Nethgui\Core\ViewInterface) {
+            $this->view->setTemplate($arguments[0]);
+        }        
     }
 
 }

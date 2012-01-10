@@ -99,7 +99,7 @@ abstract class Composite extends AbstractModule implements \Nethgui\Core\ModuleC
 
     /**
      * Instantiates the given classes, adding the created objects as children of
-     * this List module.
+     * the composite module.
      *
      * If the first character is `*` (asterisk), the container class name
      * is prepended.

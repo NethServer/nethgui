@@ -43,7 +43,7 @@ interface ViewInterface extends \ArrayAccess, \IteratorAggregate
      * Set the template to be applied to the view
      *
      * - If a string is given, it identifies a PHP Template script
-     *   (ie. Nethgui_Template_World);
+     *   (ie. Nethgui\Template\Main);
      *
      * - If a callback function is given, it is invoked with an array
      *   representing the view state as argument and is expected to return

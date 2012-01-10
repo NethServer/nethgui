@@ -58,7 +58,11 @@ class Button extends \Nethgui\Widget\XhtmlWidget
             if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::BUTTON_CANCEL) {
                 $cssClass .= ' cancel';
             } elseif ($flags & \Nethgui\Renderer\WidgetFactoryInterface::BUTTON_HELP) {
-                $value = '/Help/Read/' . urlencode($value) . '.html#HelpArea';
+
+                if ($value === '') {
+                    $value = $this->view->getModuleUrl('/Help/Read/' . implode('/', $this->view->getModulePath()) . '.html');
+                }
+
                 $cssClass .= ' Help';
             } else {
                 $cssClass .= ' link ' . $this->getClientEventTarget();
@@ -68,13 +72,13 @@ class Button extends \Nethgui\Widget\XhtmlWidget
                 $cssClass .= ' disabled';
                 $tag = 'span';
             } else {
-                $attributes['href'] = $this->prepareHrefAttribute($value);
+                $attributes['href'] = $value;
                 $tag = 'a';
             }
 
             $attributes['class'] = $cssClass;
             $attributes['title'] = $this->getAttribute('title', FALSE);
-            if($this->hasAttribute('receiver')) {
+            if ($this->hasAttribute('receiver')) {
                 $attributes['id'] = $this->view->getUniqueId($this->getAttribute('receiver'));
             }
 
@@ -110,15 +114,6 @@ class Button extends \Nethgui\Widget\XhtmlWidget
         }
 
         return $content;
-    }
-
-    private function prepareHrefAttribute($value)
-    {
-        if ( ! is_string($value)) {
-            throw new \InvalidArgumentException(sprintf('%s: $value argument must be a string', get_class($this)), 1324051523);
-        }
-
-        return $value;
     }
 
     public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)

@@ -69,7 +69,6 @@ class Framework
     /**
      * Identifier of the layout decorator module
      *
-     * @see setDecoratorModule()
      * @var string
      */
     private $decoratorTemplate;
@@ -188,7 +187,7 @@ class Framework
     /**
      *
      * @api
-     * @param type $moduleIdentifier
+     * @param string $moduleIdentifier
      * @return Framework
      */
     public function setDefaultModule($moduleIdentifier)
@@ -198,12 +197,10 @@ class Framework
     }
 
     /**
-     * Set the identifier of the module acting as layout decorator
-     *
-     * Default value: "World"
+     * The script or function that decorates the current module output
      *
      * @api
-     * @param string $template
+     * @param string|callable $template
      * @return Framework
      */
     public function setDecoratorTemplate($template)
@@ -271,10 +268,11 @@ class Framework
 
         $moduleLoader->getModule('Notification')->setSession($session);
 
-        $mainModule = new Module\Main($this->decoratorTemplate, $moduleLoader);
+        $mainModule = new Module\Main($this->decoratorTemplate, $moduleLoader, $this->getFileNameResolver());
         $mainModule->setPlatform($platform);
         $mainModule->initialize();
         $mainModule->bind($request);
+
         $mainModule->validate($validationErrorsNotification);
 
         if ( ! $validationErrorsNotification->hasValidationErrors()) {
@@ -308,7 +306,7 @@ class Framework
             $rootView->getCommandListFor('/Notification')
                 ->showNotification($validationErrorsNotification)
                 ->httpHeader("HTTP/1.1 400 Request validation error")
-            ;            
+            ;
         }
 
         // ..Execute commands sent to views. These do not include commands sent to widgets:
@@ -406,7 +404,11 @@ class Framework
                 }
             }
 
-            $command = $view->getCommandList();
+            if (strlen($view->getModule()->getIdentifier()) == 0) {
+                $command = $view->getCommandListFor('/' . array_end(explode('\\', get_class($view->getModule()))));
+            } else {
+                $command = $view->getCommandList();
+            }
 
             if ( ! $command->isExecuted()) {
                 $command->setReceiver($view)->execute();
@@ -507,12 +509,11 @@ class Framework
             $ext = substr($lastPart, $dotPos + 1);
 
             // TODO: register handled extension elsewhere:
-            if(in_array($ext, array('js','css','xhtml','json'))) {
+            if (in_array($ext, array('js', 'css', 'xhtml', 'json'))) {
                 $lastPart = substr($lastPart, 0, $dotPos);
             } else {
                 $ext = 'xhtml';
             }
-
         } else {
             $ext = 'xhtml';
         }

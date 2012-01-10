@@ -25,20 +25,31 @@ namespace Nethgui\Module\Help;
  */
 class Template extends Common
 {
-    public function prepareView(\Nethgui\Core\ViewInterface $rootView)
+
+    public function prepareView(\Nethgui\Core\ViewInterface $view)
     {
-        $rootView->setTemplate('Nethgui\Template\Help\Schema');
+        $module = $this->getTargetModule();
 
-        $moduleView = $rootView->spawnView($this->module);
-        $this->module->prepareView($moduleView);
+        if (is_null($module)) {
+            $view->setTemplate(FALSE);
+            return;
+        }
 
-        $rootView['title'] = $this->module->getTitle();
-        $rootView['lang'] = $this->getRequest()->getUser()->getLanguageCode();
-        $rootView['content'] = $moduleView;
-        $rootView['url'] = $rootView->getSiteUrl() . $rootView->getModuleUrl($this->module->getIdentifier() . '.html');
+        $view->setTemplate('Nethgui\Template\Help\Schema');
 
-        $this->globalFunctions->header("Content-Type: text/html; charset=UTF-8");
-        echo (String) new \Nethgui\Renderer\Xhtml($rootView);
-        exit;
+        $view->getCommandListFor('/Main')->setDecoratorTemplate(function (\Nethgui\Renderer\TemplateRenderer $renderer) {
+                return $renderer->spawnRenderer($renderer['Help']['Template'])->render();
+            }
+        );
+
+        $moduleView = $view->spawnView($module);
+        $module->prepareView($moduleView);
+        $renderer = new Renderer($moduleView, $this->getFileNameResolver(), 0);
+
+        $view['title'] = $renderer->getTitle();
+        $view['lang'] = $this->getRequest()->getUser()->getLanguageCode();
+        $view['url'] = $view->getSiteUrl() . $view->getModuleUrl($module->getIdentifier() . '.html');
+        $view['content'] = $renderer->render();
     }
+
 }

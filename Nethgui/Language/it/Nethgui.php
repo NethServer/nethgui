@@ -79,3 +79,7 @@ $L['update_Title'] = 'Modifica';
 $L['delete_Title'] = 'Elimina';
 $L['Help_Title'] = 'Guida';
 
+$L['Describe <tt>${0}</tt> here..'] = 'Descrivi <tt>${0}</tt> qui..';
+$L['Documents'] = 'Documenti';
+$L['Templates'] = 'Template';
+

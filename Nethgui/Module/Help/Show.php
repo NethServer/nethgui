@@ -22,6 +22,7 @@ namespace Nethgui\Module\Help;
 
 /**
  * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
  */
 class Show extends Common
 {
@@ -29,28 +30,49 @@ class Show extends Common
     public function prepareView(\Nethgui\Core\ViewInterface $view)
     {
         parent::prepareView($view);
-
-        if (is_null($this->module)) {
-            return;
+        if (is_null($this->getTargetModule())) {
+            $view->setTemplate(array($this, 'renderIndex'));
+        } else {
+            $view->setTemplate(array($this, 'renderDocument'));
         }
-
-        $filePath = $this->getHelpDocumentPath($this->module);
-
-        $content = $this->readHelpDocumentContent($filePath);
-
-        if ($content === FALSE) {
-            $view['content'] = 'Error loading help contents for module ' . $this->module->getIdentifier();
-            return;
-        }
-
-        $view['content'] = $content;
     }
 
-
-    private function readHelpDocumentContent($filePath)
+    public function renderIndex(\Nethgui\Renderer\Xhtml $renderer)
     {
+        $moduleList = $renderer->elementList();
+
+        $templateList = $renderer->elementList();
+
+        $translator = $renderer->getTranslator();
+        $renderer->rejectFlag($renderer::INSET_FORM);
+
+        foreach ($this->getModuleSet() as $module) {
+
+            // skip Help module:
+            if ($module === $this->getParent()) {
+                continue;
+            }
+
+            $template = '<a href="%URL">%LABEL</a>';
+            $args1 = array('%URL' => $renderer->getModuleUrl($module->getIdentifier()) . '.html', '%LABEL' => $translator->translate($module, $module->getAttributesProvider()->getTitle()));
+            $args2 = array('%URL' => $renderer->getModuleUrl('../Template/' . $module->getIdentifier()) . '.html', '%LABEL' => $translator->translate($module, $module->getAttributesProvider()->getTitle()));
+            $moduleList->insert($renderer->literal(strtr($template, $args1)));
+            $templateList->insert($renderer->literal(strtr($template, $args2)));
+        }
+
+        return $renderer->columns()
+                ->insert($renderer->fieldset()->setAttribute('template', $renderer->translate('Documents'))->insert($moduleList))
+                ->insert($renderer->fieldset()->setAttribute('template', $renderer->translate('Templates'))->insert($templateList))
+        ;
+    }
+
+    public function renderDocument(\Nethgui\Renderer\Xhtml $renderer)
+    {
+        $filePath = $this->getHelpDocumentPath($this->getTargetModule());
+        $renderer->rejectFlag($renderer::INSET_FORM);
+
         $document = new \XMLReader();
-        if ( $document->open('file://' . $filePath, 'utf-8', LIBXML_NOENT) !== TRUE) {
+        if ($document->open('file://' . $filePath, 'utf-8', LIBXML_NOENT) !== TRUE) {
             return FALSE;
         }
 
@@ -59,8 +81,8 @@ class Show extends Common
         while ($document->name != 'div' && $document->read());
 
         $content = $document->readInnerXml();
-        $document->close();
 
-        return $content;
+        return $renderer->panel()->setAttribute('class', 'HelpDocument')->insert($renderer->literal($content));
     }
+
 }
