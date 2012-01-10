@@ -24,7 +24,7 @@
             });
         },
         _updateView: function(value, selector) {
-            if(this._isLocalUrl(value) && this.element[0].tagName.toLowerCase() === 'a') {
+            if(this._server.isLocalUrl(value) && this.element[0].tagName.toLowerCase() === 'a') {
                 this.element.attr('href', value);
             }
         },
@@ -44,8 +44,10 @@
                     this._trigger('cancel');
                 } else if(this.element.hasClass('givefocus') && href[0] === '#') {
                     $(href).focus();
+                } else if(this.element.hasClass('Help')) {
+                    this._readHelp(this.element.attr('href'));
                 } else {
-                    this._sendQuery(this.element.attr('href'));
+                    this._sendQuery(this.element.attr('href'), true);
                 }
                 return false;
             }            

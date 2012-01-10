@@ -40,14 +40,13 @@
     $.widget('nethgui.Action', SUPER, {
         _create: function () {
             SUPER.prototype._create.apply(this);
-
             var behaviour = this.element.hasClass('Dialog') ? 'Dialog' : 'Default';
-
             this._form = this.element.children('form').bind('submit.' + this.namespace, $.proxy(this._onSubmit, this));
-
             this.element.bind('nethguishow.' + this.namespace, $.proxy(this['_onShow' + behaviour], this));
             this.element.bind('nethguihide.' + this.namespace, $.proxy(this['_onHide' + behaviour], this));            
             this.element.bind('nethguireloaddata.' + this.namespace, $.proxy(this._onReloadData, this));
+            this.element.bind('nethguisendquery.' + this.namespace, $.proxy(this._onSendQuery, this));
+
         },
         _onReloadData: function (e, delay) {
 
@@ -61,16 +60,30 @@
                 delay = 10000;
             }
             window.setTimeout(function() {
-                self._sendQuery(url)
+                self._sendQuery(url, false)
             }, delay);
             
+            e.stopPropagation();
+        },
+        _onSendQuery: function(e, url, delay, freezeUi) {
+            if(freezeUi === undefined) {
+                freezeUi = true;
+            }
+
+            if(delay === undefined) {
+                this._sendQuery(url, freezeUi);
+            } else if(parseInt(delay) > 0) {
+                window.setTimeout(function() {
+                    this._sendQuery(url, freezeUi)
+                }, delay);
+            }
             e.stopPropagation();
         },
         _onSubmit: function (e) {
             e.preventDefault();
             e.stopPropagation();            
-            var form = $(e.target);
-            this._sendMutation(form.attr('action'), form.attr('method'), form.serialize());
+            var form = $(e.target);            
+            this['_send' + (form.attr('method').toUpperCase() === 'POST' ? 'Mutation' : 'Query')](form.attr('action'), form.serialize(), true);
             return false;
         },
         _onHideDefault: function (e) {
@@ -111,7 +124,6 @@
             
             var titleNode = this.element.find('h1, h2, h3').first().bind('nethguichanged.' + this.namespace, function(e, value) {
                 self._dialog.dialog('option', 'title', value);
-                $.debug('Dialog Title', value);
             }).hide();
 
             var content = this.element.children().detach();

@@ -23,10 +23,14 @@
         dialogClass: "NethguiLoading"
     });
 
-    $(document).bind("ajaxSend.nethgui", function() {
-        dialog.dialog('open');
-    }).bind("ajaxComplete.nethgui", function(){
-        dialog.dialog('close');
+    $(document).bind("nethguifreezeui.nethgui", function() {
+        if(! dialog.dialog('isOpen')) {
+            dialog.dialog('open');
+        }
+    }).bind("ajaxStop.nethgui", function() {
+        if(dialog.dialog('isOpen')) {
+            dialog.dialog('close');
+        }
     });
     
 }( jQuery ));

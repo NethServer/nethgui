@@ -53,122 +53,13 @@
         });
     }
 
-    var debug = $.debug;
 
-    /**
-     * Send the response containing the view data to controls
-     */
-    var dispatchResponse = function (response, status, httpStatusCode) {
-        if(!$.isArray(response)) {
-            alert('Unexpected response format. Please, reload the current page.');
-            throw 'Unexpected response format';
-        }
-
-        if(httpStatusCode === undefined) {
-            httpStatusCode = 200;
-        }
-
-        $.each(response, function (index, item) {
-            if(item === null) {
-                return;
-            }
-
-            var selector = item[0];
-            var value = item[1];
-
-            if(selector === '__COMMANDS__') {
-                $.each(value, function (index, command) {
-                    $('#' + command.R).trigger('nethgui' + command.M.toLowerCase(), command.A);
-                });
-            } else {
-                $('.' + selector).each(function(index, element) {
-                    $(element).triggerHandler('nethguiupdateview', [value, selector, httpStatusCode]);
-                });
-            }
-        });
-    };
-
-    var dispatchError = function(jqXHR, textStatus, errorThrown) {
-        if(jqXHR.status == 400 && errorThrown == "Request validation error") {
-            dispatchResponse($.parseJSON(jqXHR.responseText), textStatus, jqXHR.status);
-        } else {
-            // TODO: display a way to recover from the error state.
-            debug('Server error.', jqXHR, textStatus, errorThrown);
-            alert('Server reported an error. Don\'t know how to recover: please, reload the page.');
-            throw 'Server error. Don\'t know how to recover';
-        }
-    }
-
-    /**
-     * Perform an AJAX GET request on given URL
-     * @param url
-     */
-    var sendQuery = function (url, callback, cacheResponse) {
-        if(!isLocalUrl(url)) {
-            return false;
-        }
-
-        $.ajax(replaceFormatSuffix(url, 'json'), {
-            type: 'GET',
-            dataType: 'json',
-            cache: cacheResponse === true,
-            success: [dispatchResponse, $.isFunction(callback) ? callback : $.noop],
-            error: dispatchError
-        });
-        return true;
-    };
-
-
-    /**
-     * Perform an AJAX POST request on given URL
-     */
-    var submitUrl = function(url, method, data) {
-        if(!isLocalUrl(url)) {
-            return false;
-        }
-
-        $.ajax(replaceFormatSuffix(url, 'json'), {
-            type: method.toUpperCase() === 'POST' ? 'POST' : 'GET',
-            cache: false,
-            dataType: 'json',
-            data: data,
-            success: [dispatchResponse],
-            error: dispatchError
-        });
-
-        return true;
-    };
-
-    /**
-     * Replace the path suffix on the given url with newSuffix
-     * @return string the new url string
-     */
-    var replaceFormatSuffix = function(url, newSuffix) {
-
-        var urlParts = url.split('?',2);
-        var pathParts = urlParts[0].split('/');
-        var lastPart = pathParts.pop();
-
-        if(/.+\.(x?html|json)$/.test(lastPart)) {
-            lastPart = lastPart.substr(0, lastPart.lastIndexOf('.')) + '.' + newSuffix;
-        } else {
-            lastPart += '.' + newSuffix;
-        }
-
-        if(urlParts[1] !== undefined) {
-            lastPart += '?' + urlParts[1];
-        }
-
-        pathParts.push(lastPart);
-        
-        return pathParts.join('/');
-    };
+    var Server = function() {};
 
     /**
      * Check if url is in the same domain of the current page
      */
-    var isLocalUrl = function (url) {
-
+    Server.prototype.isLocalUrl = function (url) {
         // site-root relative urls are always accepted:
         if(url.charAt(0) === '/' || url === '') {
             return true;
@@ -191,8 +82,102 @@
 
         return true;
     }
-       
-    $.widget('nethgui.Component', {        
+
+    /**
+     * Perform an AJAX request on given URL
+     */
+    Server.prototype.ajaxMessage = function(isMutation, url, data, freezeElement) {
+
+        /**
+         * Send the response containing the view data to controls
+         */
+        var dispatchResponse = function (response, status, httpStatusCode) {
+            if(!$.isArray(response)) {
+                alert('Unexpected response format. Please, reload the current page.');
+                throw 'Unexpected response format';
+            }
+
+            if(httpStatusCode === undefined) {
+                httpStatusCode = 200;
+            }
+
+            $.each(response, function (index, item) {
+                if(item === null) {
+                    return;
+                }
+
+                var selector = item[0];
+                var value = item[1];
+
+                if(selector === '__COMMANDS__') {
+                    $.each(value, function (index, command) {
+                        $('#' + command.R).trigger('nethgui' + command.M.toLowerCase(), command.A);
+                    });
+                } else {
+                    $('.' + selector).each(function(index, element) {
+                        $(element).triggerHandler('nethguiupdateview', [value, selector, httpStatusCode]);
+                    });
+                }
+            });
+        };
+
+        var dispatchError = function(jqXHR, textStatus, errorThrown) {
+            if(jqXHR.status == 400 && errorThrown == "Request validation error") {
+                dispatchResponse($.parseJSON(jqXHR.responseText), textStatus, jqXHR.status);
+            } else {
+                // TODO: display a way to recover from the error state.
+                $.debug('Server error.', jqXHR, textStatus, errorThrown);
+                alert('Server reported an error. Don\'t know how to recover: please, reload the page.');
+                throw 'Server error. Don\'t know how to recover';
+            }
+        }
+
+
+        /**
+         * Replace the path suffix on the given url with newSuffix
+         * @return string the new url string
+         */
+        var replaceFormatSuffix = function(url, newSuffix) {
+
+            var urlParts = url.split('?',2);
+            var pathParts = urlParts[0].split('/');
+            var lastPart = pathParts.pop();
+
+            if(/.+\.(x?html|json)$/.test(lastPart)) {
+                lastPart = lastPart.substr(0, lastPart.lastIndexOf('.')) + '.' + newSuffix;
+            } else {
+                lastPart += '.' + newSuffix;
+            }
+
+            if(urlParts[1] !== undefined) {
+                lastPart += '?' + urlParts[1];
+            }
+
+            pathParts.push(lastPart);
+
+            return pathParts.join('/');
+        };
+
+        if( ! this.isLocalUrl(url)) {
+            return;
+        }
+
+        if(freezeElement instanceof jQuery) {
+            freezeElement.trigger('nethguifreezeui');
+        }
+
+        $.ajax(replaceFormatSuffix(url, 'json'), {
+            type: isMutation ? 'POST' : 'GET',
+            cache: false,
+            dataType: 'json',
+            data: data,
+            success: [dispatchResponse],
+            error: dispatchError
+        });
+    };
+
+    $.widget('nethgui.Component', {
+        _server: new Server(),
         _deep: true,                 
         _create: function () {
             var self = this;
@@ -215,10 +200,7 @@
                 self.disable();
                 e.stopPropagation();
             });
-        },
-        _sendQuery: sendQuery,
-        _sendMutation: submitUrl,
-        _isLocalUrl: isLocalUrl,
+        },     
         getChildren: function () {
             return $(this._children);
         },
@@ -275,22 +257,16 @@
         },
         _updateView: function(value, selector) {
         // free to override
+        },
+        _sendQuery: function(url, freezeUi) {
+            this._server.ajaxMessage(false, url, undefined, freezeUi ? this.widget() : undefined);
+        },
+        _sendMutation: function(url, data, freezeUi) {
+            this._server.ajaxMessage(true, url, data, freezeUi ? this.widget() : undefined);
+        },
+        _readHelp: function (url) {
+            $.debug('read help @ ' + url);
         }
-    });
-
-    $(document)
-    .bind('nethguisendquery.nethgui', function(e, url, delay) {
-        if(!isLocalUrl(url)) {
-            return false;
-        }
-        if(delay === undefined) {
-            sendQuery(url);
-        } else if(parseInt(delay) > 0) {
-            window.setTimeout(function() {
-                sendQuery(url)
-            }, delay);
-        }
-        e.stopPropagation();
     });
     
 }( jQuery ) );
