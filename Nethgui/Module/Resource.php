@@ -117,7 +117,25 @@ class Resource extends \Nethgui\Core\Module\Standard implements \Nethgui\Core\Co
         if ($view->getTargetFormat() == 'xhtml') {
             $this->prepareViewXhtml($view);
         } elseif ($this->fileName) {
-            $view->getCommandListFor('/Main')->setDecoratorTemplate(array($this, 'renderFileContent'));
+            $filePath = $this->getCachePath($this->fileName);
+
+            $view->getCommandListFor('/Main')->setDecoratorTemplate(function(\Nethgui\Core\ViewInterface $renderer) {
+                    return $renderer['Resource']['contents'];
+                });
+
+            $meta = array();
+            $view['contents'] = $this->php->file_get_contents_extended($filePath, $meta);
+
+            if ($meta['size'] > 0) {
+                $view->getCommandList()->httpHeader(sprintf('Content-Length: %d', $meta['size']));
+            }
+
+            if (NETHGUI_ENABLE_HTTP_CACHE_HEADERS) {
+                $view->getCommandList()
+                    ->httpHeader(sprintf('Last-Modified: %s', date(DATE_RFC1123, $this->php->filemtime($filePath))))
+                    ->httpHeader(sprintf('Expires: %s', date(DATE_RFC1123, time() + 3600)))
+                ;
+            }
         }
     }
 
@@ -214,11 +232,6 @@ class Resource extends \Nethgui\Core\Module\Standard implements \Nethgui\Core\Co
         return array_filter($this->useList, function($uri) use ($ext) {
                     return $ext === pathinfo($uri, PATHINFO_EXTENSION);
                 });
-    }
-
-    public function renderFileContent(\Nethgui\Renderer\AbstractRenderer $renderer)
-    {
-        return $this->php->file_get_contents($this->getCachePath($this->fileName));
     }
 
     public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)

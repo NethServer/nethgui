@@ -35,16 +35,26 @@ class Read extends Common
 
         if (is_null($module)) {
             $view->setTemplate(FALSE);
-        } else {
-            $view->getCommandListFor('/Main')->setDecoratorTemplate(array($this, 'renderDocument'));
+            return;
         }
-    }
 
-    public function renderDocument(\Nethgui\Renderer\TemplateRenderer $renderer)
-    {
         $filePath = $this->getHelpDocumentPath($this->getTargetModule());
+        $view->getCommandListFor('/Main')->setDecoratorTemplate(function(\Nethgui\Core\ViewInterface $renderer) {
+                return $renderer['Help']['Read']['contents'];
+            });
+        if (NETHGUI_ENABLE_HTTP_CACHE_HEADERS) {
+            $view->getCommandList()
+                ->httpHeader(sprintf('Last-Modified: %s', date(DATE_RFC1123, $this->globalFunctions->filemtime($filePath))))
+                ->httpHeader(sprintf('Expires: %s', date(DATE_RFC1123, time() + 3600)))
+            ;
+        }
 
-        return $this->globalFunctions->file_get_contents($filePath);
+        $meta = array();
+        $view['contents'] = $this->globalFunctions->file_get_contents_extended($filePath, $meta);
+
+        if ($meta['size'] > 0) {
+            $view->getCommandList()->httpHeader(sprintf('Content-Length: %d', $meta['size']));
+        }
     }
 
 }

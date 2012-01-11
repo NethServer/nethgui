@@ -60,7 +60,7 @@ class GlobalFunctionWrapper
     }
 
     public function phpReadGlobalVariable($varName, $varIndex = NULL)
-    {        
+    {
         if (isset($varIndex)) {
             return isset($GLOBALS[$varName], $GLOBALS[$varName][$varIndex]) ? $GLOBALS[$varName][$varIndex] : NULL;
         }
@@ -75,6 +75,16 @@ class GlobalFunctionWrapper
         } else {
             $GLOBALS[$varName] = $value;
         }
+    }
+
+    public function file_get_contents_extended($filePath, &$meta = NULL)
+    {
+        ob_start();
+        readfile($filePath);
+        if (is_array($meta)) {
+            $meta['size'] = ob_get_length();
+        }
+        return ob_get_clean();
     }
 
 }

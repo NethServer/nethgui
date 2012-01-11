@@ -24,6 +24,7 @@
     });
 
     $(document).bind("nethguifreezeui.nethgui", function() {
+        // Todo: open dialog after a small timeout, to avoid flashes on cached responses.
         if(! dialog.dialog('isOpen')) {
             dialog.dialog('open');
         }

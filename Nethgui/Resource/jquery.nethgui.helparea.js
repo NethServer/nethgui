@@ -82,6 +82,7 @@
             $.ajax({
                 type: 'GET',
                 url: url,
+                cache: true,
                 success: $.proxy(this._onHelpDocumentResponse, this),
                 error: function(jqXHR, textStatus, errorThrown) {
                     if(jqXHR.status == 404) {                        
