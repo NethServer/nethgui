@@ -5,12 +5,13 @@ jQuery(document).ready(function($) {
     $('#CurrentModule').Component();
     $('.Navigation').Navigation();
     $('#allWrapper').css('display', 'block');
+    $('.HelpArea').HelpArea();
 });
 EOJS;
 
 $view
     // Javascript:
-    ->useFile('js/jquery-1.6.2.min.js')    
+    ->useFile('js/jquery-1.6.2.min.js')
     ->useFile('js/jquery-ui-1.8.16.custom.min.js') //->useFile('js/jquery-ui.js')
     ->useFile('js/jquery.dataTables.min.js')
     ->useFile('js/jquery.qtip.min.js')
@@ -19,6 +20,7 @@ $view
     ->includeFile('jquery.nethgui.js')
     ->includeFile('jquery.nethgui.controller.js')
     ->includeFile('jquery.nethgui.loading.js')
+    ->includeFile('jquery.nethgui.helparea.js')
     ->includeJavascript($bootstrapJs)
     // CSS:
     ->useFile('css/default/jquery-ui-1.8.16.custom.css')
@@ -31,6 +33,16 @@ $currentModule = $view[$view['currentModule']]->getModule();
 $moduleTitle = $view->getTranslator()->translate($currentModule, $currentModule->getAttributesProvider()->getTitle());
 $pageTitle = $view['company'] . " - " . $moduleTitle;
 $pathUrl = $view->getPathUrl();
+
+$HelpArea = $view->panel()
+    ->setAttribute('class', 'HelpArea')
+    ->insert(
+    $view->panel()
+    ->setAttribute('class', 'wrap')
+    ->insert(
+        $view->elementList($view::BUTTONSET)->insert($view->button('Hide', $view::BUTTON_CANCEL))
+    )
+);
 
 // Must render CurrentModule before NotificationArea to catch notifications
 if ($currentModule instanceof \Nethgui\Core\Module\Standard) {
@@ -68,12 +80,7 @@ $menuOutput = $view->inset('Menu');
                     <?php echo $menuOutput ?>
                 </div>
             </div>
-            <div id="HelpArea" class="HelpArea disabled">
-                <div class="HelpAreaContent">
-                    <?php echo $view->elementList($view::BUTTONSET)->insert($view->button('Hide', $view::BUTTON_CANCEL)); ?>
-                    <div id="HelpAreaInnerDocument"></div>
-                </div>
-            </div>
+            <?php echo $view->literal($HelpArea, $view::STATE_UNOBSTRUSIVE); ?>
         </div>
         <?php echo $view->literal($view['Resource']['js']) ?>
     </body>

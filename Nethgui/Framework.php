@@ -566,6 +566,10 @@ if ( ! defined('NETHGUI_ENABLE_INCLUDE_WIDGET')) {
     define('NETHGUI_ENABLE_INCLUDE_WIDGET', FALSE);
 }
 
+if ( ! defined('NETHGUI_ENABLE_HTTP_CACHE_HEADERS')) {
+    define('NETHGUI_ENABLE_HTTP_CACHE_HEADERS', TRUE);
+}
+
 /**
  *
  * @param array $arr

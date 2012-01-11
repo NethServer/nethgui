@@ -254,6 +254,8 @@
         },
         destroy: function() {
             $.Widget.prototype.destroy.call( this );
+            this.widget().unbind(this.namespace);
+            this.element.unbind(this.namespace);
         },
         _updateView: function(value, selector) {
         // free to override
@@ -265,7 +267,7 @@
             this._server.ajaxMessage(true, url, data, freezeUi ? this.widget() : undefined);
         },
         _readHelp: function (url) {
-            $.debug('read help @ ' + url);
+            
         }
     });
     

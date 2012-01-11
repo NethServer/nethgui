@@ -45,12 +45,13 @@
                 } else if(this.element.hasClass('givefocus') && href[0] === '#') {
                     $(href).focus();
                 } else if(this.element.hasClass('Help')) {
-                    this._readHelp(this.element.attr('href'));
+                    this.element.trigger('nethguihelp', this.element.attr('href'));
                 } else {
                     this._sendQuery(this.element.attr('href'), true);
                 }
-                return false;
-            }            
+                e.stopPropagation();
+                e.preventDefault();
+            }                       
         }
 
     });

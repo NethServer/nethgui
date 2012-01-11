@@ -120,11 +120,11 @@ class Main extends \Nethgui\Core\Module\ListComposite implements \Nethgui\Core\C
      */
     public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
     {
-        if ($name === 'setDecoratorTemplate' 
+        if ($name === 'setDecoratorTemplate'
             && isset($arguments[0])
             && $this->view instanceof \Nethgui\Core\ViewInterface) {
             $this->view->setTemplate($arguments[0]);
-        }        
+        }
     }
 
 }
