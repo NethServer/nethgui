@@ -9,18 +9,9 @@
         _deep: false,
         _create: function() {
             SUPER.prototype._create.apply(this);
-            var self = this;
-            this.element.bind('nethguitooltip.' + this.namespace, $.proxy(this._tooltip, this));
-            this.element.bind('focus.' + this.namespace, function (e) {
-                self.element.qtip('show', e)
-                });
-            this.element.bind('blur.' + this.namespace, function (e) {
-                self.element.qtip('hide', e)
-                });
+            this.element.bind('focus.' + this.namespace, $.proxy(this._onFocus, this));
         },
         _updateView: function(value) {
-            // Clear the tooltip
-            this._tooltip();
             this.element.attr('value', value ? value : '');
         },
         _setOption: function( key, value ) {
@@ -29,34 +20,13 @@
                 value === true ? this.element.attr('disabled', 'disabled') : this.element.removeAttr('disabled');
             }
         },
-        _tooltip: function (e, tooltip) {            
-            var color = 'blue';
-
-            if(tooltip === undefined) {
-                this.element.qtip('destroy');
-                this.element.removeClass('ui-state-error');
-                return;
-            }
-
-            if(tooltip.style & 2) {
-                this.element.addClass('ui-state-error');
-                color = 'red';
-            }
-           
-            this.element.qtip({
-                position: {
-                    my: 'left center',
-                    at: 'right center'
-                },
-                style: {
-                    classes: 'ui-tooltip-${color} ui-tooltip-shadow'.replacePlaceholders({
-                        color: color
-                    })
-                },
-                content: {
-                    text: tooltip.text
-                }
-            });
+        _onFocus: function (e) {
+            e.takeMeVisible = false;
+            
+            if(!this.element.is(':visible')) {
+                e.preventDefault();
+                e.takeMeVisible = true;
+            }            
         }
     });
     $.widget('nethgui.Hidden', $.nethgui.InputControl, {});
@@ -70,4 +40,82 @@
         }
     });
     $.widget('nethgui.CheckBox', $.nethgui.RadioButton, {});
+}( jQuery ) );
+
+/*
+ * Tooltip
+ *
+ * Copyright (C) 2011 Nethesis S.r.l.
+ */
+(function( $ ) {
+    var SUPER = $.nethgui.Component;
+    $.widget('nethgui.Tooltip', SUPER, {
+        _deep: false,
+        options: {
+            sticky: false,
+            show: false,
+            color: 'blue',
+            style: 0,
+            text: '',
+            destroyOn: 'ajaxStart'
+        },
+        _create: function() {
+            SUPER.prototype._create.apply(this);
+
+            var self = this;
+            
+            // error-state forces color to "red"
+            if(this.options.style & 2) {
+                this.element.addClass('ui-state-error');
+                this.options.color = 'red';
+            }
+
+            this.element.qtip({
+                position: {
+                    my: 'left center',
+                    at: 'right center',
+                    container: this.element.parents('.ui-tabs-panel, .Action, #CurrentModule, .Inset').first()
+                },
+                style: {
+                    classes: 'ui-tooltip-${color} ui-tooltip-shadow'.replacePlaceholders({
+                        color: this.options.color
+                    })
+                },
+                content: {
+                    text: this.options.text
+                },
+                events: {
+                    hide: this.options.sticky ? function (e, api) {
+                        e.preventDefault()
+                    } : undefined
+                }
+            });
+
+            if(this.options.show) {
+                this.show();
+            }
+
+            if(typeof this.options.destroyOn === 'string') {
+                this.element.bind(this.options.destroyOn.split(' ').join('.' + this.namespace + ' ').trim(), function (e) {
+                    self.destroy();
+                } );
+            }
+        },
+        show: function() {
+            this.element.qtip('show');
+        },
+        hide: function() {
+            this.element.qtip('hide');
+        },
+        repaint: function() {
+            this.element.qtip('redraw').qtip('reposition', undefined, false);
+        },
+        destroy: function () {
+            SUPER.prototype.destroy.apply(this);
+            this.element.qtip('destroy');
+            if(this.options.style & 2) {
+                this.element.removeClass('ui-state-error');
+            }
+        }
+    });
 }( jQuery ) );

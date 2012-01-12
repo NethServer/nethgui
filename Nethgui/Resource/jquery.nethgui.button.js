@@ -43,11 +43,11 @@
                 if(this.element.hasClass('cancel')) {
                     this._trigger('cancel');
                 } else if(this.element.hasClass('givefocus') && href[0] === '#') {
-                    $(href).focus();
+                    $(href).trigger('focus');
                 } else if(this.element.hasClass('Help')) {
-                    this.element.trigger('nethguihelp', this.element.attr('href'));
+                    this.element.trigger('nethguihelp', href);
                 } else {
-                    this._sendQuery(this.element.attr('href'), true);
+                    this._sendQuery(href, true);
                 }
                 e.stopPropagation();
                 e.preventDefault();

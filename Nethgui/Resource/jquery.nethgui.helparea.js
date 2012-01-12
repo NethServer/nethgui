@@ -6,12 +6,10 @@
 (function( $ ) {
     var SUPER = $.nethgui.Component;
     $.widget('nethgui.HelpArea', SUPER, {
-        options: {
-            _deep: true
-        },
         _create: function() {
             var self = this;
             SUPER.prototype._create.apply(this);
+            this._tooltipControls = [];
             this._proxyHelpHandler = function(e, url) {
                 self.open(url);
             };
@@ -21,6 +19,8 @@
             $(window).bind('resize.' + this.widgetName, $.proxy(this._fixBoxHeight, this));
             this._helpDoc = $('<div class="HelpDocument"></div>');
             this.element.children('.wrap').append(this._helpDoc);
+
+            this.element.bind('ajaxStart.' + this.widgetName, $.proxy(this.close, this));
         },
         destroy: function() {
             SUPER.prototype.destroy.call( this );
@@ -29,6 +29,10 @@
         },
         close: function() {
             this.element.hide();
+            $.each(this._tooltipControls,function (index, element) {
+                $(element).Tooltip('destroy');
+            });
+            this._tooltipControls = [];
         },
         _onHelpDocumentResponse: function(responseData) {
             var responseDocument = $($.parseXML(responseData));
@@ -36,31 +40,47 @@
             this._helpDoc.empty().append(helpNode.children());
             
             // loop on field descriptions to find targets:
-            this._helpDoc.find('dt').each(function (index, element) {
-                var $dt = $(element);
-                var description = $(element).next('dd');
-            // for each class check if a LABEL tag exists and try to attach a click handler to DT.
-            //                $.each($dt.attr('class').split('/ +/'), function(index, target) {
-            //                    var foundItems = $('#CurrentModule label.' + target);
-            //                    if(foundItems.size() == 0) {
-            //                        $dt.wrapInner($('<u />'));
-            //                        return;
-            //                    }
-            //                    $dt.wrapInner($('<a />', {
-            //                        href:'#'
-            //                    }).click(function(e) {
-            //                        foundItems.each(function() {
-            //                            $('#' + $(this).attr('for') + ':visible').Nethgui('tooltipSet', description.clone(), LEVEL_INFO).Nethgui('tooltipShow');
-            //                        });
-            //                        return false;
-            //                    }));
-            //                });
-            });
+            this._helpDoc.find('dt').each($.proxy(this._initializeDtNode, this));
+            $.unique(this._tooltipControls);
 
             this.element.show();
             this._fixBoxHeight();
         },
-        /*
+        _initializeDtNode: function(index, element) {
+            var $dt = $(element);
+            var description = $(element).next('dd');
+            
+            var controlList = [];
+
+            // for each class check if a LABEL tag exists and try to attach a click handler to DT.
+            $.each($dt.attr('class').split('/ +/'), function(index, helpId) {
+                $('label.' + helpId).each(function (index, labelElement) {
+                    var controlElement = $('#' + $(labelElement).attr('for'))[0];
+                    if($.inArray(controlElement, controlList) === -1) {
+                        controlList.push(controlElement);
+                    }
+                });
+            });
+
+            if(controlList.length === 0) {
+                $dt.wrapInner('<u />');
+                return;
+            }
+            
+            this._tooltipControls = this._tooltipControls.concat(controlList);
+
+            $dt.wrapInner($('<a href="#" />').click( function (e) {
+                $(controlList).Tooltip('show').focus();
+                return false;
+            } ));
+           
+            $(controlList).Tooltip( {
+                text: description.text(),
+                sticky: true,
+                show: false
+            } );
+        },
+        /**
          * Calculate window height and set help wievport
          */
         _fixBoxHeight: function() {            

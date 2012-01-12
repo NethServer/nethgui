@@ -11,17 +11,29 @@
             SUPER.prototype._create.apply(this);
             var self = this;
 
+
             // replace href attribute values with tab IDs.
             this.element.children('ul:eq(0)').find('li a').each(function(index, anchor) {
                 var childPanel = self.element.children().get(index + 1);
                 $(anchor).attr('href', '#' + childPanel.id);
-                $(childPanel).bind('focus.' + self.namespace, function(e) {                    
-                    self.element.tabs('select', index);
-                    $(e.target).qtip('reposition');
+                $(childPanel).bind('focus.' + self.namespace, function(e) {
+                    if(self.element.is(':visible')) {
+                        self.element.tabs('select', index);
+                        if(e.takeMeVisible === true) {
+                            e.target.focus();
+                        }
+                    }
                 });
             });
 
-            this.element.tabs();            
+            this.element.tabs();
+
+            // on tabsshow reposition and redraw tracked tooltips:
+            this.element.bind('tabsshow.' + this.namespace, function (e, ui) {
+                $(ui.panel).find('[aria-describedby]').filter(':nethgui-Tooltip').Tooltip('repaint');
+            });
+
+            this.element.tabs('show', 0);
         }
     });
 

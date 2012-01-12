@@ -139,21 +139,15 @@
             });
 
             v.message = errors;
-
-            this.element.bind('ajaxStart.' + this.namespace, $.proxy(this._clearTooltips, this));
-            
+                       
             SUPER.prototype._create.apply(this);           
         },
         _addTooltip: function(err) {
-            $('#' + err.widgetId).trigger('nethguitooltip', {
+            $('#' + err.widgetId).Tooltip({
                 text: err.message,
-                style: 2
-            });
-        },
-        _clearTooltips: function() {
-            var self = this;
-            $.each(this.options.data.errors, function(index, err) {
-                $('#' + err.widgetId).trigger('nethguitooltip');
+                style: 2,
+                show: true,
+                sticky: true
             });
         }
     });
