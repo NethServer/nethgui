@@ -16,9 +16,9 @@ $view
     ->useFile('js/jquery.dataTables.min.js')
     ->useFile('js/jquery.qtip.min.js')
     ->useFile(sprintf('js/jquery.ui.datepicker-%s.js', $view['lang']))
-    //->useFile('js/nethgui.js')
-    ->includeFile('jquery.nethgui.js')
-    ->includeFile('jquery.nethgui.controller.js')
+
+    ->includeFile('jquery.nethgui.base.js')
+    
     ->includeFile('jquery.nethgui.loading.js')
     ->includeFile('jquery.nethgui.helparea.js')
     ->includeJavascript($bootstrapJs)

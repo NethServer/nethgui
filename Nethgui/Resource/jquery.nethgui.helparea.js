@@ -29,9 +29,11 @@
         },
         close: function() {
             this.element.hide();
-            $.each(this._tooltipControls,function (index, element) {
-                $(element).Tooltip('destroy');
-            });
+            if($.fn.Tooltip !== undefined) {
+                $.each(this._tooltipControls,function (index, element) {
+                    $(element).Tooltip('destroy');
+                });
+            }
             this._tooltipControls = [];
         },
         _onHelpDocumentResponse: function(responseData) {
@@ -62,7 +64,7 @@
                 });
             });
 
-            if(controlList.length === 0) {
+            if(controlList.length === 0 || $.fn.Tooltip === undefined) {
                 $dt.wrapInner('<u />');
                 return;
             }
