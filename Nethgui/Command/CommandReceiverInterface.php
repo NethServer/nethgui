@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Authorization;
+namespace Nethgui\Command;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -21,29 +21,26 @@ namespace Nethgui\Authorization;
  */
 
 /**
- * AccessControlRequestInterface.
+ * Implement command(s) semantics
  *
- * An AccessControlRequestInterface implementing object represents a request
- * originating from a Subject to perform a specific Action on a given Resource.
- *
- * @see AccessControlResponseInterface
+ * @see http://en.wikipedia.org/wiki/Command_pattern
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
  */
-interface AccessControlRequestInterface
+interface CommandReceiverInterface
 {
-
     /**
-     * @return \Nethgui\Client\UserInterface
+     * Specify an implementation for the given method and arguments.
+     * 
+     * The original view that generated the command and the selector string
+     * that identifies the logical target provide more contextual informations.
+     *
+     * @param \Nethgui\Core\ViewInterface $origin
+     * @param string $selector
+     * @param string $name
+     * @param array $arguments
+     * @return mixed
      */
-    public function getSubject();
-
-    /**
-     * @return string
-     */
-    public function getResource();
-
-    /**
-     * @return string
-     */
-    public function getAction();
+    public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments);
 }
 

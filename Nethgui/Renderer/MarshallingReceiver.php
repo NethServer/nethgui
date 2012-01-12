@@ -29,7 +29,7 @@ namespace Nethgui\Renderer;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class MarshallingReceiver extends \Nethgui\Core\AbstractReceiverChain
+class MarshallingReceiver extends \Nethgui\Command\AbstractReceiverChain
 {
 
     /**

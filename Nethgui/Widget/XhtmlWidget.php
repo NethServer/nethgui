@@ -23,7 +23,7 @@ namespace Nethgui\Widget;
 /**
  * Abstract Xhtml Widget class
  */
-abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\Core\CommandReceiverInterface
+abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\Command\CommandReceiverInterface
 {
 
     /**

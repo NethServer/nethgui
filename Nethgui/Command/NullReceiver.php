@@ -1,49 +1,58 @@
 <?php
-namespace Nethgui\Authorization;
+namespace Nethgui\Command;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
- * 
+ *
  * This script is part of NethServer.
- * 
+ *
  * NethServer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * NethServer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * AccessControlRequestInterface.
+ * A Receiver that does nothing
  *
- * An AccessControlRequestInterface implementing object represents a request
- * originating from a Subject to perform a specific Action on a given Resource.
- *
- * @see AccessControlResponseInterface
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
  */
-interface AccessControlRequestInterface
+class NullReceiver implements \Nethgui\Command\CommandReceiverInterface
 {
 
     /**
-     * @return \Nethgui\Client\UserInterface
+     * Get the NullReceiver singleton
+     * @staticvar NullReceiver $singleton
+     * @return NullReceiver
      */
-    public function getSubject();
+    static public function getNullInstance()
+    {
+        static $singleton;
 
-    /**
-     * @return string
-     */
-    public function getResource();
+        if ( ! isset($singleton)) {
+            $singleton = new self();
+        }
 
-    /**
-     * @return string
-     */
-    public function getAction();
+        return $singleton;
+    }
+
+    protected function __construct()
+    {
+        // constructor is not publicly available
+    }
+
+    public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
+    {
+        // DO NOTHING
+    }
+
 }
-

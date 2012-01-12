@@ -26,7 +26,7 @@ namespace Nethgui\Module;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Resource extends \Nethgui\Core\Module\Standard implements \Nethgui\Core\CommandReceiverInterface, \Nethgui\Core\GlobalFunctionConsumerInterface
+class Resource extends \Nethgui\Core\Module\Standard implements \Nethgui\Command\CommandReceiverInterface, \Nethgui\Core\GlobalFunctionConsumerInterface
 {
 
     private $code;

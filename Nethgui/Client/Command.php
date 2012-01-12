@@ -26,12 +26,12 @@ namespace Nethgui\Client;
  * @since 1.0
  * @internal
  */
-class Command implements \Nethgui\Core\CommandInterface
+class Command implements \Nethgui\Command\CommandInterface
 {
 
     /**
      *
-     * @var \Nethgui\Core\CommandReceiverInterface
+     * @var \Nethgui\Command\CommandReceiverInterface
      */
     private $receiver;
 
@@ -87,7 +87,7 @@ class Command implements \Nethgui\Core\CommandInterface
             throw new \LogicException(sprintf('%s: command was already executed', get_class($this)), 1322148828);
         }
 
-        if ( ! $this->receiver instanceof \Nethgui\Core\CommandReceiverInterface) {
+        if ( ! $this->receiver instanceof \Nethgui\Command\CommandReceiverInterface) {
             throw new \LogicException(sprintf('%s: invalid receiver object', get_class($this)), 1323170262);
         }
 
@@ -113,7 +113,7 @@ class Command implements \Nethgui\Core\CommandInterface
         $this->selector = $selector;
     }
 
-    public function setReceiver(\Nethgui\Core\CommandReceiverInterface $receiver)
+    public function setReceiver(\Nethgui\Command\CommandReceiverInterface $receiver)
     {
         $this->receiver = $receiver;
         return $this;

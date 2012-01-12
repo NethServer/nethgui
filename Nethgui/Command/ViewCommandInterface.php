@@ -1,49 +1,45 @@
 <?php
-namespace Nethgui\Authorization;
-
+namespace Nethgui\Command;
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
- * 
+ *
  * This script is part of NethServer.
- * 
+ *
  * NethServer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * NethServer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * AccessControlRequestInterface.
+ * Records a sequence of method calls through the PHP magic method __call.
  *
- * An AccessControlRequestInterface implementing object represents a request
- * originating from a Subject to perform a specific Action on a given Resource.
- *
- * @see AccessControlResponseInterface
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @api
  */
-interface AccessControlRequestInterface
+interface ViewCommandInterface
 {
+    /**
+     * A magic method that creates and appends a Command object to the command
+     * sequence.
+     *
+     * @param string $name
+     * @param array $arguments
+     * @return \Nethgui\Command\ViewCommandInterface
+     */
+    public function __call($name, $arguments);
 
     /**
-     * @return \Nethgui\Client\UserInterface
+     * @return \Nethgui\Command\CommandSequenceInterface
      */
-    public function getSubject();
-
-    /**
-     * @return string
-     */
-    public function getResource();
-
-    /**
-     * @return string
-     */
-    public function getAction();
+    public function addCommand(\Nethgui\Command\CommandInterface $command);
 }
-

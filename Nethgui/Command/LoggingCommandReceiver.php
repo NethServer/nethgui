@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Authorization;
+namespace Nethgui\Command;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -21,29 +21,24 @@ namespace Nethgui\Authorization;
  */
 
 /**
- * AccessControlRequestInterface.
+ * Log unhandled commands to syslog.
  *
- * An AccessControlRequestInterface implementing object represents a request
- * originating from a Subject to perform a specific Action on a given Resource.
- *
- * @see AccessControlResponseInterface
+ * @since 1.0
+ * @internal
  */
-interface AccessControlRequestInterface
+class LoggingCommandReceiver implements \Nethgui\Command\CommandReceiverInterface
 {
+    private $log;
 
-    /**
-     * @return \Nethgui\Client\UserInterface
-     */
-    public function getSubject();
+    public function __construct()
+    {
+        $this->log = new \Nethgui\Log\Syslog();
+    }
 
-    /**
-     * @return string
-     */
-    public function getResource();
-
-    /**
-     * @return string
-     */
-    public function getAction();
+    public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
+    {
+        $argStrings = array_map(function($arg) { return is_object($arg) ? get_class($arg) : gettype($arg); }, $arguments);
+        $selectorString = $origin->getClientEventTarget($selector);
+        $this->log->notice(sprintf('%s: %s#%s(%s)', get_class($this), $selectorString, $name, implode(', ', $argStrings)));
+    }
 }
-

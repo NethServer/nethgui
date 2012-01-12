@@ -28,12 +28,12 @@ namespace Nethgui\Renderer;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class HttpCommandReceiver extends \Nethgui\Core\AbstractReceiverChain
+class HttpCommandReceiver extends \Nethgui\Command\AbstractReceiverChain
 {
 
     private $headers;
 
-    public function __construct(\Nethgui\Core\CommandReceiverInterface $nextReceiver = NULL)
+    public function __construct(\Nethgui\Command\CommandReceiverInterface $nextReceiver = NULL)
     {
         parent::__construct($nextReceiver);
         $this->headers = array();

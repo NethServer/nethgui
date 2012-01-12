@@ -29,7 +29,7 @@ namespace Nethgui\Client;
  * @since 1.0
  * @internal
  */
-class ViewCommandSequence implements \Nethgui\Core\ViewCommandInterface
+class ViewCommandSequence implements \Nethgui\Command\ViewCommandInterface
 {
 
     private $commands = array();
@@ -44,7 +44,7 @@ class ViewCommandSequence implements \Nethgui\Core\ViewCommandInterface
 
     /**
      *
-     * @var \Nethgui\Core\CommandReceiverInterface
+     * @var \Nethgui\Command\CommandReceiverInterface
      */
     private $receiver;
 
@@ -62,7 +62,7 @@ class ViewCommandSequence implements \Nethgui\Core\ViewCommandInterface
         return $this;
     }
 
-    public function addCommand(\Nethgui\Core\CommandInterface $command)
+    public function addCommand(\Nethgui\Command\CommandInterface $command)
     {
         $this->commands[] = $command;
         return $this;
@@ -82,7 +82,7 @@ class ViewCommandSequence implements \Nethgui\Core\ViewCommandInterface
         return $this->executed === TRUE;
     }
 
-    public function setReceiver(\Nethgui\Core\CommandReceiverInterface $receiver)
+    public function setReceiver(\Nethgui\Command\CommandReceiverInterface $receiver)
     {
         $this->receiver = $receiver;
         return $this;
