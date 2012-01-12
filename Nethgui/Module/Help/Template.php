@@ -37,7 +37,7 @@ class Template extends Common
 
         $view->setTemplate('Nethgui\Template\Help\Schema');
 
-        $view->getCommandListFor('/Main')->setDecoratorTemplate(function (\Nethgui\Renderer\TemplateRenderer $renderer) {
+        $view->getCommandList('/Main')->setDecoratorTemplate(function (\Nethgui\Renderer\TemplateRenderer $renderer) {
                 return $renderer->spawnRenderer($renderer['Help']['Template'])->render();
             }
         );

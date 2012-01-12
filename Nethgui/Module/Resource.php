@@ -86,7 +86,7 @@ class Resource extends \Nethgui\Core\Module\Standard implements \Nethgui\Core\Co
                 use ($ext, $thisModule, $fragments)
                 {
                     $command = $renderer
-                        ->getCommandListFor($ext)
+                        ->getCommandList($ext)
                         ->setReceiver($thisModule)
                         ->execute()
                     ;
@@ -119,7 +119,7 @@ class Resource extends \Nethgui\Core\Module\Standard implements \Nethgui\Core\Co
         } elseif ($this->fileName) {
             $filePath = $this->getCachePath($this->fileName);
 
-            $view->getCommandListFor('/Main')->setDecoratorTemplate(function(\Nethgui\Core\ViewInterface $renderer) {
+            $view->getCommandList('/Main')->setDecoratorTemplate(function(\Nethgui\Core\ViewInterface $renderer) {
                     return $renderer['Resource']['contents'];
                 });
 

@@ -303,7 +303,7 @@ class Framework
             // See RFC2616, section 10.4 "Client Error 4xx"
             // FIXME: check if we are in FAST-CGI module:
             // @see http://php.net/manual/en/function.header.php
-            $rootView->getCommandListFor('/Notification')
+            $rootView->getCommandList('/Notification')
                 ->showNotification($validationErrorsNotification)
                 ->httpHeader("HTTP/1.1 400 Request validation error")
             ;
@@ -405,7 +405,7 @@ class Framework
             }
 
             if (strlen($view->getModule()->getIdentifier()) == 0) {
-                $command = $view->getCommandListFor('/' . array_end(explode('\\', get_class($view->getModule()))));
+                $command = $view->getCommandList('/' . array_end(explode('\\', get_class($view->getModule()))));
             } else {
                 $command = $view->getCommandList();
             }

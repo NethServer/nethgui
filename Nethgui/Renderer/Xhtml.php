@@ -75,7 +75,7 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
      */
     public function includeJavascript($jsCode)
     {
-        $this->view->getCommandListFor('/Resource/js')->appendCode($jsCode, 'js');
+        $this->view->getCommandList('/Resource/js')->appendCode($jsCode, 'js');
         return $this;
     }
 
@@ -87,7 +87,7 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
      */
     public function includeCss($cssCode)
     {
-        $this->view->getCommandListFor('/Resource/css')->appendCode($cssCode, 'css');
+        $this->view->getCommandList('/Resource/css')->appendCode($cssCode, 'css');
         return $this;
     }
 
@@ -109,7 +109,7 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
         $filePath = call_user_func($resolverFunc, implode('\\', array($namespace, 'Resource', $fileName)));
         $ext = pathinfo($fileName, PATHINFO_EXTENSION);
         $ext = $ext ? $ext : 'default';
-        $this->view->getCommandListFor('/Resource/' . $ext)->includeFile($filePath);
+        $this->view->getCommandList('/Resource/' . $ext)->includeFile($filePath);
         return $this;
     }
 
@@ -139,7 +139,7 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
     {
         $ext = pathinfo($fileName, PATHINFO_EXTENSION);
         $ext = $ext ? $ext : 'default';
-        $this->view->getCommandListFor('/Resource/' . $ext)->useFile($fileName);
+        $this->view->getCommandList('/Resource/' . $ext)->useFile($fileName);
         return $this;
     }
 

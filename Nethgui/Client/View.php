@@ -363,12 +363,7 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
         $this->receiver->executeCommand($origin, $selector, $name, $arguments);
     }
 
-    public function getCommandList()
-    {
-        return $this->getCommandListFor('');
-    }
-
-    public function getCommandListFor($selector)
+    public function getCommandList($selector = '')
     {
         $fullSelector = $this->getUniqueId($selector);
         if ( ! isset($this->commands[$fullSelector]) || $this->commands[$fullSelector]->isExecuted()) {
@@ -377,7 +372,7 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
         return $this->commands[$fullSelector];
     }
 
-    public function hasCommandListFor($selector)
+    public function hasCommandList($selector = '')
     {
         return isset($this->commands[$this->getUniqueId($selector)]);
     }

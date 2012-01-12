@@ -26,7 +26,7 @@ namespace Nethgui\Core;
  * @since 1.0
  * @api
  */
-interface ViewCommandInterface extends \Nethgui\Core\CommandSequenceInterface
+interface ViewCommandInterface
 {
     /**
      * A magic method that creates and appends a Command object to the command
@@ -37,4 +37,9 @@ interface ViewCommandInterface extends \Nethgui\Core\CommandSequenceInterface
      * @return \Nethgui\Core\ViewCommandInterface
      */
     public function __call($name, $arguments);
+
+    /**
+     * @return \Nethgui\Core\CommandSequenceInterface
+     */
+    public function addCommand(\Nethgui\Core\CommandInterface $command);
 }

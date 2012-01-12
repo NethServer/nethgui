@@ -180,7 +180,7 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
             } elseif ($view->getTargetFormat() === $view::TARGET_JSON
                 && ! $this->getRequest()->isSubmitted()) {
                 // JSON view need a show() command:
-                $view->getCommandListFor($this->currentAction->getIdentifier())->show();
+                $view->getCommandList($this->currentAction->getIdentifier())->show();
             }
         }
     }

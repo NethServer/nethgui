@@ -304,11 +304,11 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\Core\Comma
 
         $targetName = $this->getAttribute('receiver');
 
-        if ( ! $this->view->hasCommandListFor($targetName)) {
+        if ( ! $this->view->hasCommandList($targetName)) {
             return;
         }
 
-        $command = $this->view->getCommandListFor($targetName);
+        $command = $this->view->getCommandList($targetName);
 
         if ( ! $command->isExecuted()) {
             $command->setReceiver($this)->execute();

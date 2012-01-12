@@ -190,30 +190,28 @@ interface ViewInterface extends \ArrayAccess, \IteratorAggregate
     public function getTranslator();
 
     /**
-     * Get a command list for the current view
-     *
-     * @return \Nethgui\Core\ViewCommandInterface
-     */
-    public function getCommandList();
-
-    /**
      * Get a command list for the given selector
      *
      * The returned command list is ready to execute().
      *
+     * @api
      * @param string $selector Routes the command list to the receiver appointed by this parameter.
      * @return \Nethgui\Core\ViewCommandInterface
      */
-    public function getCommandListFor($selector);
+    public function getCommandList($selector = '');
 
     /**
      * Check if one or more commands has been added to the selected command list
      *
+     * @api
      * @return boolean TRUE, if some command has been added to the list
      */
-    public function hasCommandListFor($selector);
+    public function hasCommandList($selector = '');
 
     /**
+     * Get the requested resource format
+     *
+     * @api
      * @return string
      */
     public function getTargetFormat();

@@ -39,7 +39,7 @@ class Read extends Common
         }
 
         $filePath = $this->getHelpDocumentPath($this->getTargetModule());
-        $view->getCommandListFor('/Main')->setDecoratorTemplate(function(\Nethgui\Core\ViewInterface $renderer) {
+        $view->getCommandList('/Main')->setDecoratorTemplate(function(\Nethgui\Core\ViewInterface $renderer) {
                 return $renderer['Help']['Read']['contents'];
             });
         if (NETHGUI_ENABLE_HTTP_CACHE_HEADERS) {
