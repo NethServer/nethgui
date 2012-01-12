@@ -22,12 +22,132 @@ namespace Nethgui\System;
 
 /**
  * Interface to the underlying platform
+ *
+ * @api
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
- * @api
  */
 interface PlatformInterface
 {
+    /**
+     * A valid service status is a 'disabled' or 'enabled' string.
+     */
+    const SERVICESTATUS = 1248968160;
+
+    /**
+     * A valid *nix username token
+     */
+    const USERNAME = 1248968161;
+
+    /**
+     * A not empty value
+     */
+    const NOTEMPTY = 1248968162;
+
+    /**
+     * Accepts any value
+     */
+    const ANYTHING = 1248968163;
+
+    /**
+     * Accept a value that represents a collection of any thing
+     */
+    const ANYTHING_COLLECTION = 1248968164;
+
+    /**
+     * Accept a value that represents a collection of any Unix usernames
+     */
+    const USERNAME_COLLECTION = 1248968165;
+
+    /**
+     * Accept positive integer
+     */
+    const POSITIVE_INTEGER = 1248968166;
+
+    /**
+     * Valid host name
+     *
+     * @see #478
+     */
+    const HOSTNAME = 1248968167;
+
+    /**
+     * Valid host name or ip address
+     *
+     * @see #478
+     */
+    const HOSTADDRESS = 1248968168;
+
+    /**
+     * Valid date
+     *
+     * @see #513
+     */
+    const DATE = 1248968169;
+
+    /**
+     * Valid time
+     *
+     * @see #513
+     */
+    const TIME = 1248968170;
+
+    /**
+     * Boolean validator.
+     * 
+     * '', '0', FALSE are FALSE boolean values. Other values are TRUE.
+     */
+    const BOOLEAN = 1248968171;
+
+    /**
+     * A valid IPv4 address like '192.168.1.1' 
+     */
+    const IPv4 = 1248968172;
+
+    /**
+     * A valid IPv4 address like '192.168.1.1' ore empty
+     */
+    const IPv4_OR_EMPTY = 1248968173;
+
+    /**
+     * Alias for VALID_IPv4 
+     */
+    const IP = 1248968174;
+
+    /**
+     * Alias for VALID_IPv4_OR_EMPTY
+     */
+    const IP_OR_EMPTY = 1248968175;
+
+    /**
+     * A valid TCP/UDP port number 0-65535
+     */
+    const PORTNUMBER = 1248968176;
+
+    /**
+     * A choice between 'yes' and 'no' values
+     */
+    const YES_NO = 1248968177;
+
+    /**
+     * A valid ipv4 netmask address like '255.255.255.0'
+     */
+    const IPv4_NETMASK = 1248968178;
+
+    /**
+     * Alias for VALID_IPv4_NETMASK
+     */
+    const NETMASK = 1248968179;
+
+    /**
+     * A valid mac address like 00:16:3E:78:7A:7B 
+     */
+    const MACADDRESS = 1248968180;
+
+    /*
+     * Define new constant values assigning
+     * the current Unix timestamp (`/bin/date +%s` ouput)
+     */
 
     /**
      * @var string
@@ -130,7 +250,8 @@ interface PlatformInterface
     public function exec($command, $arguments = array(), $detached = FALSE);
 
     /**
-     * Create a system validator object
+     * Create a platform validator object
+     * @param int ... One of the VALID_* constants
      * @return Validator
      */
     public function createValidator();

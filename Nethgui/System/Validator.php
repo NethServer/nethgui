@@ -600,6 +600,7 @@ class Validator implements \Nethgui\Core\ValidatorInterface
 
 /**
  * @author Davide Principi <davide.principi@nethesis.it>
+ * @internal
  */
 class CollectionValidator implements \Nethgui\Core\ValidatorInterface
 {
@@ -659,6 +660,7 @@ class CollectionValidator implements \Nethgui\Core\ValidatorInterface
 /**
  * @author Davide Principi <davide.principi@nethesis.it>
  * @see Validator::orValidator()
+ * @internal
  */
 class OrValidator implements \Nethgui\Core\ValidatorInterface
 {

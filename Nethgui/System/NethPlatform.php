@@ -83,7 +83,6 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
         }
 
         $this->processes = $session->retrieve($key);
-        
     }
 
     /**
@@ -271,11 +270,6 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
         $this->log = $log;
     }
 
-    public function createValidator()
-    {
-        return new Validator($this);
-    }
-
     public function getDateFormat()
     {
         return 'YYYY-mm-dd';
@@ -311,4 +305,102 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
         return $returnProcess;
     }
 
+    /**
+     * Creates a Validator object that checks against each of the function arguemnts
+     *
+     * @param integer ...
+     * @return Validator
+     */
+    public function createValidator()
+    {
+        $validator = new Validator($this);
+
+        foreach (func_get_args() as $ruleCode) {
+            switch ($ruleCode) {
+                case self::ANYTHING:
+                    $validator->forceResult(TRUE);
+                    break;
+
+                case self::ANYTHING_COLLECTION:
+                    $validator->orValidator($this->createValidator()->isEmpty(), $this->createValidator()->collectionValidator($this->createValidator()->forceResult(TRUE)));
+                    break;
+
+                case self::USERNAME_COLLECTION:
+                    $validator->orValidator($this->createValidator()->isEmpty(), $this->createValidator()->collectionValidator($this->createValidator()->username()));
+                    break;
+
+                case self::SERVICESTATUS:
+                    $validator->memberOf('enabled', 'disabled');
+                    break;
+
+                case self::USERNAME:
+                    $validator->username();
+                    break;
+
+                case self::HOSTNAME:
+                    $validator->hostname();
+                    break;
+
+                case self::HOSTADDRESS:
+                    $validator->orValidator($this->createValidator()->ipV4Address(), $this->createValidator()->hostname());
+                    break;
+
+                case self::NOTEMPTY:
+                    $validator->notEmpty();
+                    break;
+
+                case self::DATE:
+                    $validator->date();
+                    break;
+
+                case self::TIME:
+                    $validator->time();
+                    break;
+
+                case self::IP:
+                case self::IPv4:
+                    $validator->ipV4Address();
+                    break;
+
+                case self::NETMASK:
+                case self::IPv4_NETMASK:
+                    $validator->ipV4Netmask();
+                    break;
+
+                case self::MACADDRESS:
+                    $validator->macAddress();
+                    break;
+
+                case self::POSITIVE_INTEGER:
+                    $validator->integer()->positive();
+                    break;
+
+                case self::PORTNUMBER:
+                    $validator->integer()->greatThan(0)->lessThan(65535);
+                    break;
+
+                case self::BOOLEAN:
+                    $validator->memberOf('1', 'yes', '0', '');
+                    break;
+
+                case self::IP_OR_EMPTY:
+                case self::IPv4_OR_EMPTY:
+                    $validator->orValidator($this->createValidator()->ipV4Address(), $this->createValidator()->isEmpty());
+                    break;
+
+                case self::YES_NO:
+                    $validator->memberOf('yes', 'no');
+                    break;
+
+                case NULL:
+                    continue;
+
+                default:
+                    throw new \InvalidArgumentException(sprintf('%s: Unknown validator code: %s', get_class($this), $ruleCode), 1326380984);
+            }
+        }
+        return $validator;
+    }
+
 }
+

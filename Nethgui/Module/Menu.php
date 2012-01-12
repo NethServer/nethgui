@@ -20,7 +20,10 @@ namespace Nethgui\Module;
  * along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Nethgui\System\PlatformInterface as Validate;
+
 /**
+ *
  */
 class Menu extends \Nethgui\Core\Module\Standard
 {
@@ -63,7 +66,7 @@ class Menu extends \Nethgui\Core\Module\Standard
     public function initialize()
     {
         parent::initialize();
-        $this->declareParameter('search', self::VALID_ANYTHING);
+        $this->declareParameter('search', Validate::ANYTHING);
     }
 
     private function searchTags(\Nethgui\Core\ViewInterface $view, $query)

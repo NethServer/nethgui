@@ -31,123 +31,6 @@ namespace Nethgui\Core\Module;
 abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestHandlerInterface
 {
     /**
-     * A valid service status is a 'disabled' or 'enabled' string.
-     */
-    const VALID_SERVICESTATUS = 100;
-
-    /**
-     * A valid *nix username token
-     */
-    const VALID_USERNAME = 101;
-
-    /**
-     * A not empty value
-     */
-    const VALID_NOTEMPTY = 102;
-
-
-    /**
-     * Accepts any value
-     */
-    const VALID_ANYTHING = 103;
-
-    /**
-     * Accept a value that represents a collection of any thing
-     */
-    const VALID_ANYTHING_COLLECTION = 104;
-
-    /**
-     * Accept a value that represents a collection of any Unix usernames
-     */
-    const VALID_USERNAME_COLLECTION = 105;
-
-    /**
-     * Accept positive integer
-     */
-    const VALID_POSITIVE_INTEGER = 106;
-
-    /**
-     * Valid host name
-     *
-     * @see #478
-     */
-    const VALID_HOSTNAME = 107;
-
-    /**
-     * Valid host name or ip address
-     *
-     * @see #478
-     */
-    const VALID_HOSTADDRESS = 108;
-
-
-    /**
-     * Valid date
-     *
-     * @see #513
-     */
-    const VALID_DATE = 109;
-
-    /**
-     * Valid time
-     *
-     * @see #513
-     */
-    const VALID_TIME = 110;
-
-    /**
-     * Boolean validator.
-     * 
-     * '', '0', FALSE are FALSE boolean values. Other values are TRUE.
-     */
-    const VALID_BOOLEAN = 111;
-
-    /**
-     * A valid IPv4 address like '192.168.1.1' 
-     */
-    const VALID_IPv4 = 200;
-
-    /**
-     * A valid IPv4 address like '192.168.1.1' ore empty
-     */
-    const VALID_IPv4_OR_EMPTY = 201;
-
-    /**
-     * Alias for VALID_IPv4 
-     */
-    const VALID_IP = 202;
-
-    /**
-     * Alias for VALID_IPv4_OR_EMPTY
-     */
-    const VALID_IP_OR_EMPTY = 203;
-
-    /**
-     * A valid TCP/UDP port number 0-65535
-     */
-    const VALID_PORTNUMBER = 204;
-
-    /**
-     * A choice between 'yes' and 'no' values
-     */
-    const VALID_YES_NO = 205;
-
-    /**
-     * A valid ipv4 netmask address like '255.255.255.0'
-     */
-    const VALID_IPv4_NETMASK = 206;
-
-    /**
-     * Alias for VALID_IPv4_NETMASK
-     */
-    const VALID_NETMASK = 207;
-
-    /**
-     * A valid mac address like 00:16:3E:78:7A:7B 
-     */
-    const VALID_MACADDRESS = 208;
-
-    /**
      * This collection holds the parameter values as primitive datatype or adapter objects.
      * @var \Nethgui\Core\ParameterSet
      */
@@ -209,7 +92,7 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
         } elseif ($validator === FALSE) {
             $validator = $this->createValidator()->forceResult(FALSE);
         } elseif (is_integer($validator)) {
-            $validator = $this->createValidatorFromInteger($validator);
+            $validator = $this->createValidator($validator);
         }
 
         // At this point $validator MUST be an object implementing the right interface
@@ -234,86 +117,14 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
     }
 
     /**
-     * Creates a Validator object that checks against $ruleCode.
-     *
-     * @param integer $ruleCode
-     * @return Nethgui_Core_Validator
-     */
-    private function createValidatorFromInteger($ruleCode)
-    {
-        $validator = $this->createValidator();
-
-        switch ($ruleCode) {
-            case self::VALID_ANYTHING:
-                return $validator->forceResult(TRUE);
-
-            case self::VALID_ANYTHING_COLLECTION:
-                return $validator->orValidator($this->createValidator()->isEmpty(), $this->createValidator()->collectionValidator($this->createValidator()->forceResult(TRUE)));
-
-            case self::VALID_USERNAME_COLLECTION:
-                return $validator->orValidator($this->createValidator()->isEmpty(), $this->createValidator()->collectionValidator($this->createValidator()->username()));
-
-            case self::VALID_SERVICESTATUS:
-                return $validator->memberOf('enabled', 'disabled');
-
-            case self::VALID_USERNAME:
-                return $validator->username();
-
-            case self::VALID_HOSTNAME:
-                return $validator->hostname();
-
-            case self::VALID_HOSTADDRESS:
-                return $validator->orValidator($this->createValidator()->ipV4Address(), $this->createValidator()->hostname());
-
-            case self::VALID_NOTEMPTY:
-                return $validator->notEmpty();
-
-            case self::VALID_DATE:
-                return $validator->date();
-
-            case self::VALID_TIME:
-                return $validator->time();
-
-            case self::VALID_IP:
-            case self::VALID_IPv4:
-                return $validator->ipV4Address();
-
-            case self::VALID_NETMASK:
-            case self::VALID_IPv4_NETMASK:
-                return $validator->ipV4Netmask();
-
-            case self::VALID_MACADDRESS:
-                return $validator->macAddress();
-
-            case self::VALID_POSITIVE_INTEGER:
-                return $validator->integer()->positive();
-
-            case self::VALID_PORTNUMBER:
-                return $validator->integer()->greatThan(0)->lessThan(65535);
-
-            case self::VALID_BOOLEAN:
-                return $validator->memberOf('1', 'yes', '0', '');
-
-            case self::VALID_IP_OR_EMPTY:
-            case self::VALID_IPv4_OR_EMPTY:
-                return $validator->orValidator($this->createValidator()->ipV4Address(), $this->createValidator()->isEmpty());
-
-            case self::VALID_YES_NO:
-                return $validator->memberOf('yes', 'no');
-        }
-
-        throw new \InvalidArgumentException(sprintf('%s: Unknown standard validator code: %s', get_class($this), $ruleCode), 1322149658);
-    }
-
-    /**
      * @return \Nethgui\System\Validator
      */
-    protected function createValidator()
+    protected function createValidator($ruleCode = NULL)
     {
         if ( ! $this->getPlatform() instanceof \Nethgui\System\PlatformInterface) {
             throw new \UnexpectedValueException(sprintf('%s: the platform instance has not been set!', get_class($this)), 1322822430);
         }
-        return $this->getPlatform()->createValidator();
+        return $this->getPlatform()->createValidator($ruleCode);
     }
 
     /**
