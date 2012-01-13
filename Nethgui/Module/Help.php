@@ -23,7 +23,7 @@ namespace Nethgui\Module;
 /**
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class Help extends \Nethgui\Core\Module\Controller
+class Help extends \Nethgui\Module\Controller
 {
 
     /**

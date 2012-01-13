@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Core\Module;
+namespace Nethgui\Module;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -175,7 +175,7 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
 
             if ($this->getRequest()->isSubmitted()
                 && $this->getRequest()->isValidated()
-                && $this->currentAction instanceof \Nethgui\Core\Module\ActionInterface) {
+                && $this->currentAction instanceof \Nethgui\Module\ActionInterface) {
                 $this->handleNextActionId($view, $this->currentAction);
             } elseif ($view->getTargetFormat() === $view::TARGET_JSON
                 && ! $this->getRequest()->isSubmitted()) {
@@ -185,7 +185,7 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
         }
     }
 
-    private function handleNextActionId(\Nethgui\Core\ViewInterface $view, \Nethgui\Core\Module\ActionInterface $action)
+    private function handleNextActionId(\Nethgui\Core\ViewInterface $view, \Nethgui\Module\ActionInterface $action)
     {
         $actionView = $view->spawnView($action);
 

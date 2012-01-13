@@ -33,7 +33,7 @@ namespace Nethgui\Module;
  * @since 1.0
  * @api
  */
-class TableController extends \Nethgui\Core\Module\Controller
+class TableController extends \Nethgui\Module\Controller
 {
 
     /**

@@ -28,7 +28,7 @@ namespace Nethgui\Module;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Notification extends \Nethgui\Core\Module\Standard implements \Nethgui\Command\CommandReceiverInterface
+class Notification extends \Nethgui\Module\Standard implements \Nethgui\Command\CommandReceiverInterface
 {
 
     public function __construct($identifier = NULL)

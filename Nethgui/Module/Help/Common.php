@@ -23,7 +23,7 @@ namespace Nethgui\Module\Help;
 /**
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class Common extends \Nethgui\Core\Module\Standard implements \Nethgui\Core\GlobalFunctionConsumerInterface
+class Common extends \Nethgui\Module\Standard implements \Nethgui\Core\GlobalFunctionConsumerInterface
 {
 
     /**

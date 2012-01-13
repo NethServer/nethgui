@@ -1,35 +1,43 @@
 <?php
-namespace Nethgui\Core\Module;
+namespace Nethgui\Module\Table;
 
 /*
- * Copyright (C) 2012 Nethesis S.r.l.
- *
+ * Copyright (C) 2011 Nethesis S.r.l.
+ * 
  * This script is part of NethServer.
- *
+ * 
  * NethServer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * NethServer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License
  * along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * An action is one of the children in a Controller composite
+ * A table action is provided with an adapter to access the underlying database table
  *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
+ * @api
  */
-interface ActionInterface
+interface TableActionInterface
 {
     /**
-     * @return string The path to the next action, relative to the current module
+     * @param \Nethgui\Adapter\AdapterInterface $tableAdapter
+     * @return TableActionInterface
      */
-    public function getNextActionPath();
+    public function setTableAdapter(\Nethgui\Adapter\AdapterInterface $tableAdapter);
+
+
+    /**
+     * @return bool
+     */
+    public function hasTableAdapter();
 }

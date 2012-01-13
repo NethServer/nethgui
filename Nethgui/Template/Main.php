@@ -45,7 +45,7 @@ $HelpArea = $view->panel()
 );
 
 // Must render CurrentModule before NotificationArea to catch notifications
-if ($currentModule instanceof \Nethgui\Core\Module\Standard) {
+if ($currentModule instanceof \Nethgui\Module\Standard) {
     $currentModuleOutput = (String) $view->inset($view['currentModule'], $view::INSET_FORM | $view::INSET_WRAP)->setAttribute('class', 'Action');
 } else {
     $currentModuleOutput = (String) $view->inset($view['currentModule']);

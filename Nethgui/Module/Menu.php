@@ -25,7 +25,7 @@ use Nethgui\System\PlatformInterface as Validate;
 /**
  *
  */
-class Menu extends \Nethgui\Core\Module\Standard
+class Menu extends \Nethgui\Module\Standard
 {
 
     /**
