@@ -26,7 +26,7 @@ namespace Nethgui\Module;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Resource extends \Nethgui\Module\Standard implements \Nethgui\Command\CommandReceiverInterface, \Nethgui\Core\GlobalFunctionConsumerInterface
+class Resource extends \Nethgui\Module\Standard implements \Nethgui\View\CommandReceiverInterface, \Nethgui\Core\GlobalFunctionConsumerInterface
 {
 
     private $code;
@@ -68,10 +68,10 @@ class Resource extends \Nethgui\Module\Standard implements \Nethgui\Command\Comm
      * For each known format extension adds a subview that renders into an html
      * fragment that include the required resources.
      * 
-     * @param \Nethgui\Core\ViewInterface $view
+     * @param \Nethgui\View\ViewInterface $view
      * @return void
      */
-    public function prepareViewXhtml(\Nethgui\Core\ViewInterface $view)
+    public function prepareViewXhtml(\Nethgui\View\ViewInterface $view)
     {
         $fragments = array(
             'js' => "<script src='%URI'></script>",
@@ -110,7 +110,7 @@ class Resource extends \Nethgui\Module\Standard implements \Nethgui\Command\Comm
         $view->setTemplate(FALSE);
     }
 
-    public function prepareView(\Nethgui\Core\ViewInterface $view)
+    public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
 
@@ -119,7 +119,7 @@ class Resource extends \Nethgui\Module\Standard implements \Nethgui\Command\Comm
         } elseif ($this->fileName) {
             $filePath = $this->getCachePath($this->fileName);
 
-            $view->getCommandList('/Main')->setDecoratorTemplate(function(\Nethgui\Core\ViewInterface $renderer) {
+            $view->getCommandList('/Main')->setDecoratorTemplate(function(\Nethgui\View\ViewInterface $renderer) {
                     return $renderer['Resource']['contents'];
                 });
 
@@ -234,7 +234,7 @@ class Resource extends \Nethgui\Module\Standard implements \Nethgui\Command\Comm
                 });
     }
 
-    public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
+    public function executeCommand(\Nethgui\View\ViewInterface $origin, $selector, $name, $arguments)
     {
         if ($name === 'includeFile') {
             $this->includeFile($arguments[0]);

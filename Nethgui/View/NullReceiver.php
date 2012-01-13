@@ -1,5 +1,6 @@
 <?php
-namespace Nethgui\Command;
+namespace Nethgui\View;
+
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
  *
@@ -20,26 +21,38 @@ namespace Nethgui\Command;
  */
 
 /**
- * Records a sequence of method calls through the PHP magic method __call.
+ * A Receiver that does nothing
  *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
- * @api
  */
-interface ViewCommandInterface
+class NullReceiver implements \Nethgui\View\CommandReceiverInterface
 {
-    /**
-     * A magic method that creates and appends a Command object to the command
-     * sequence.
-     *
-     * @param string $name
-     * @param array $arguments
-     * @return \Nethgui\Command\ViewCommandInterface
-     */
-    public function __call($name, $arguments);
 
     /**
-     * @return \Nethgui\Command\ViewCommandInterface
+     * Get the NullReceiver singleton
+     * @staticvar NullReceiver $singleton
+     * @return NullReceiver
      */
-    public function addCommand(\Nethgui\Command\CommandInterface $command);
+    static public function getNullInstance()
+    {
+        static $singleton;
+
+        if ( ! isset($singleton)) {
+            $singleton = new self();
+        }
+
+        return $singleton;
+    }
+
+    protected function __construct()
+    {
+        // constructor is not publicly available
+    }
+
+    public function executeCommand(\Nethgui\View\ViewInterface $origin, $selector, $name, $arguments)
+    {
+        // DO NOTHING
+    }
+
 }

@@ -27,7 +27,7 @@ namespace Nethgui\Module\Help;
 class Show extends Common
 {
 
-    public function prepareView(\Nethgui\Core\ViewInterface $view)
+    public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
         if (is_null($this->getTargetModule())) {

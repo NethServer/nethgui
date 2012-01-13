@@ -45,7 +45,7 @@ class Inset extends \Nethgui\Widget\XhtmlWidget
         $value = $this->view[$name];
 
         $content = '';
-        if ($value instanceof \Nethgui\Core\ViewInterface) {
+        if ($value instanceof \Nethgui\View\ViewInterface) {
             // Render the view:
             $insetRenderer = $this->getRenderer()
                 ->spawnRenderer($value)

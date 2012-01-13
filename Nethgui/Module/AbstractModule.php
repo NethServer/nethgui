@@ -26,7 +26,7 @@ namespace Nethgui\Module;
  * @since 1.0
  * @api
  */
-abstract class AbstractModule implements \Nethgui\Core\ModuleInterface, \Nethgui\Core\ViewableInterface, \Nethgui\Log\LogConsumerInterface
+abstract class AbstractModule implements \Nethgui\Core\ModuleInterface, \Nethgui\View\ViewableInterface, \Nethgui\Log\LogConsumerInterface
 {
 
     /**
@@ -64,7 +64,7 @@ abstract class AbstractModule implements \Nethgui\Core\ModuleInterface, \Nethgui
     /**
      * Template applied to view, if different from NULL
      *
-     * @see \Nethgui\Core\ViewInterface::setTemplate()
+     * @see \Nethgui\View\ViewInterface::setTemplate()
      * @var string|callable
      */
     private $viewTemplate;
@@ -134,7 +134,7 @@ abstract class AbstractModule implements \Nethgui\Core\ModuleInterface, \Nethgui
         return $this->parent;
     }
 
-    public function prepareView(\Nethgui\Core\ViewInterface $view)
+    public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         $template = $this->getViewTemplate();
         if ( ! is_null($template)) {

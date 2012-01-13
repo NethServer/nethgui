@@ -154,9 +154,9 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
      * state (index) if current action is not defined, or to display the 
      * current action.
      * 
-     * @param \Nethgui\Core\ViewInterface $view
+     * @param \Nethgui\View\ViewInterface $view
      */
-    public function prepareView(\Nethgui\Core\ViewInterface $view)
+    public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
 
@@ -168,7 +168,7 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
                 $innerView = $view->spawnView($childModule, TRUE);
                 $childModule->prepareView($innerView);
             }
-        } elseif ($this->currentAction instanceof \Nethgui\Core\ViewableInterface) {
+        } elseif ($this->currentAction instanceof \Nethgui\View\ViewableInterface) {
             $view->setTemplate(array($this, 'renderCurrentAction'));
             $innerView = $view->spawnView($this->currentAction, TRUE);
             $this->currentAction->prepareView($innerView);
@@ -185,7 +185,7 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
         }
     }
 
-    private function handleNextActionId(\Nethgui\Core\ViewInterface $view, \Nethgui\Module\ActionInterface $action)
+    private function handleNextActionId(\Nethgui\View\ViewInterface $view, \Nethgui\Module\ActionInterface $action)
     {
         $actionView = $view->spawnView($action);
 

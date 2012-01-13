@@ -35,7 +35,7 @@ class Json extends AbstractRenderer
      */
     private $receiver;
 
-    public function __construct(\Nethgui\Client\View $view, \Nethgui\Command\CommandReceiverInterface $receiver)
+    public function __construct(\Nethgui\Client\View $view, \Nethgui\View\CommandReceiverInterface $receiver)
     {
         parent::__construct($view);
         $this->receiver = $receiver;
@@ -52,7 +52,7 @@ class Json extends AbstractRenderer
 
                 $eventTarget = $view->getClientEventTarget($offset);
 
-                if ($value instanceof \Nethgui\Core\ViewInterface) {
+                if ($value instanceof \Nethgui\View\ViewInterface) {
                     // honor the ViewInterface contract: if template is FALSE
                     // skip rendering, otherwise enqueue:
                     if ($value->getTemplate() !== FALSE) {
@@ -72,7 +72,7 @@ class Json extends AbstractRenderer
         }
 
         foreach ($this->view->getCommands() as $command) {
-            if ( ! $command instanceof \Nethgui\Command\CommandInterface || $command->isExecuted()) {
+            if ( ! $command instanceof \Nethgui\View\CommandInterface || $command->isExecuted()) {
                 continue;
             }
 

@@ -26,7 +26,7 @@ namespace Nethgui\Module;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Main extends \Nethgui\Module\ListComposite implements \Nethgui\Command\CommandReceiverInterface
+class Main extends \Nethgui\Module\ListComposite implements \Nethgui\View\CommandReceiverInterface
 {
 
     /**
@@ -87,7 +87,7 @@ class Main extends \Nethgui\Module\ListComposite implements \Nethgui\Command\Com
         parent::bind($request);
     }
 
-    public function prepareView(\Nethgui\Core\ViewInterface $view)
+    public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         $this->view = $view;
 
@@ -113,16 +113,16 @@ class Main extends \Nethgui\Module\ListComposite implements \Nethgui\Command\Com
      * Available commands:
      * - setDecoratorTemplate ( string|callable $template )
      *
-     * @param \Nethgui\Core\ViewInterface $origin
+     * @param \Nethgui\View\ViewInterface $origin
      * @param type $selector
      * @param type $name
      * @param type $arguments
      */
-    public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
+    public function executeCommand(\Nethgui\View\ViewInterface $origin, $selector, $name, $arguments)
     {
         if ($name === 'setDecoratorTemplate'
             && isset($arguments[0])
-            && $this->view instanceof \Nethgui\Core\ViewInterface) {
+            && $this->view instanceof \Nethgui\View\ViewInterface) {
             $this->view->setTemplate($arguments[0]);
         }
     }

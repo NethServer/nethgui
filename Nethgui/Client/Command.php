@@ -26,12 +26,12 @@ namespace Nethgui\Client;
  * @since 1.0
  * @internal
  */
-class Command implements \Nethgui\Command\CommandInterface
+class Command implements \Nethgui\View\CommandInterface
 {
 
     /**
      *
-     * @var \Nethgui\Command\CommandReceiverInterface
+     * @var \Nethgui\View\CommandReceiverInterface
      */
     private $receiver;
 
@@ -55,7 +55,7 @@ class Command implements \Nethgui\Command\CommandInterface
 
     /**
      *
-     * @var \Nethgui\Core\ViewInterface
+     * @var \Nethgui\View\ViewInterface
      */
     private $origin;
 
@@ -67,12 +67,12 @@ class Command implements \Nethgui\Command\CommandInterface
 
     /**
      *
-     * @param \Nethgui\Core\ViewInterface $origin
+     * @param \Nethgui\View\ViewInterface $origin
      * @param string $selector
      * @param string $methodName
      * @param array $arguments
      */
-    public function __construct(\Nethgui\Core\ViewInterface $origin, $selector, $methodName, $arguments)
+    public function __construct(\Nethgui\View\ViewInterface $origin, $selector, $methodName, $arguments)
     {
         $this->origin = $origin;
         $this->selector = $selector;
@@ -87,7 +87,7 @@ class Command implements \Nethgui\Command\CommandInterface
             throw new \LogicException(sprintf('%s: command was already executed', get_class($this)), 1322148828);
         }
 
-        if ( ! $this->receiver instanceof \Nethgui\Command\CommandReceiverInterface) {
+        if ( ! $this->receiver instanceof \Nethgui\View\CommandReceiverInterface) {
             throw new \LogicException(sprintf('%s: invalid receiver object', get_class($this)), 1323170262);
         }
 
@@ -113,7 +113,7 @@ class Command implements \Nethgui\Command\CommandInterface
         $this->selector = $selector;
     }
 
-    public function setReceiver(\Nethgui\Command\CommandReceiverInterface $receiver)
+    public function setReceiver(\Nethgui\View\CommandReceiverInterface $receiver)
     {
         $this->receiver = $receiver;
         return $this;

@@ -23,7 +23,7 @@ namespace Nethgui\Widget;
 /**
  * Abstract Xhtml Widget class
  */
-abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\Command\CommandReceiverInterface
+abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\CommandReceiverInterface
 {
 
     /**
@@ -315,7 +315,7 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\Command\Co
         }
     }
 
-    public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
+    public function executeCommand(\Nethgui\View\ViewInterface $origin, $selector, $name, $arguments)
     {
         if ($name === 'requireFlag') {
             $flags = intval($arguments[0]);

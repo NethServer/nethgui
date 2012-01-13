@@ -29,7 +29,7 @@ namespace Nethgui\Module\Help;
 class Read extends Common
 {
 
-    public function prepareView(\Nethgui\Core\ViewInterface $view)
+    public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         $module = $this->getTargetModule();
 
@@ -39,7 +39,7 @@ class Read extends Common
         }
 
         $filePath = $this->getHelpDocumentPath($this->getTargetModule());
-        $view->getCommandList('/Main')->setDecoratorTemplate(function(\Nethgui\Core\ViewInterface $renderer) {
+        $view->getCommandList('/Main')->setDecoratorTemplate(function(\Nethgui\View\ViewInterface $renderer) {
                 return $renderer['Help']['Read']['contents'];
             });
         if (NETHGUI_ENABLE_HTTP_CACHE_HEADERS) {

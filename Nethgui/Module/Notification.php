@@ -28,7 +28,7 @@ namespace Nethgui\Module;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Notification extends \Nethgui\Module\Standard implements \Nethgui\Command\CommandReceiverInterface
+class Notification extends \Nethgui\Module\Standard implements \Nethgui\View\CommandReceiverInterface
 {
 
     public function __construct($identifier = NULL)
@@ -71,7 +71,7 @@ class Notification extends \Nethgui\Module\Standard implements \Nethgui\Command\
         $this->declareParameter('dismiss', '/^[a-zA-Z0-9]+$/');
     }
 
-    public function prepareView(\Nethgui\Core\ViewInterface $view)
+    public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
         if ($view->getTargetFormat() === $view::TARGET_XHTML) {
@@ -101,7 +101,7 @@ class Notification extends \Nethgui\Module\Standard implements \Nethgui\Command\
         $panel = $renderer->panel()->setAttribute('name', 'Pane')->setAttribute('receiver', '');
 
         foreach ($renderer as $offset => $innerView) {
-            if ( ! $innerView instanceof \Nethgui\Core\ViewInterface
+            if ( ! $innerView instanceof \Nethgui\View\ViewInterface
                 || $innerView['dismissed'] === TRUE) {
                 continue;
             }
@@ -113,7 +113,7 @@ class Notification extends \Nethgui\Module\Standard implements \Nethgui\Command\
     }
 
 
-    public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
+    public function executeCommand(\Nethgui\View\ViewInterface $origin, $selector, $name, $arguments)
     {
         if ($name === 'showNotification') {
             $this->showNotification($arguments[0]);

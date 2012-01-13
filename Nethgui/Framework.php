@@ -287,7 +287,7 @@ class Framework
         $urlParts = array($this->siteUrl, $this->basePath, 'index.php');
         $rootView = new Client\View($targetFormat, $mainModule, $translator, $urlParts);
 
-        $commandReceiver = new Renderer\HttpCommandReceiver(new Renderer\MarshallingReceiver(new Command\LoggingCommandReceiver()));
+        $commandReceiver = new \Nethgui\Renderer\HttpCommandReceiver(new \Nethgui\Renderer\MarshallingReceiver(new \Nethgui\View\LoggingCommandReceiver()));
 
         $rootView->setReceiver($commandReceiver);
 
@@ -363,11 +363,11 @@ class Framework
     /**
      *
      * @param string $targetFormat
-     * @param \Nethgui\Core\ViewInterface $view
-     * @param \Nethgui\Command\CommandReceiverInterface $receiver
+     * @param \Nethgui\View\ViewInterface $view
+     * @param \Nethgui\View\CommandReceiverInterface $receiver
      * @return Renderer\Text 
      */
-    private function getRenderer($targetFormat, \Nethgui\Core\ViewInterface $view, \Nethgui\Command\CommandReceiverInterface $receiver)
+    private function getRenderer($targetFormat, \Nethgui\View\ViewInterface $view, \Nethgui\View\CommandReceiverInterface $receiver)
     {
         if ($targetFormat === 'json') {
             $renderer = new Renderer\Json($view, $receiver);

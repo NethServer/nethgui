@@ -69,7 +69,7 @@ class Read extends Action
         return $this;
     }
 
-    public function prepareView(\Nethgui\Core\ViewInterface $view)
+    public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
         $view['rows'] = $this->prepareRows($view);
@@ -117,7 +117,7 @@ class Read extends Action
         return $buttonList;
     }
 
-    private function prepareRows(\Nethgui\Core\ViewInterface $view)
+    private function prepareRows(\Nethgui\View\ViewInterface $view)
     {
         $rows = new \ArrayObject();
 
@@ -140,7 +140,7 @@ class Read extends Action
         return $rows;
     }
 
-    private function prepareColumn(\Nethgui\Core\ViewInterface $view, $columnIndex, $column, $key, $values, &$rowMetadata)
+    private function prepareColumn(\Nethgui\View\ViewInterface $view, $columnIndex, $column, $key, $values, &$rowMetadata)
     {
         $methodName = 'prepareViewForColumn' . ucfirst($column);
 
@@ -155,20 +155,20 @@ class Read extends Action
         return $columnValue;
     }
 
-    public function prepareViewForColumnKey(\Nethgui\Core\ViewInterface $view, $key, $values, &$rowMetadata)
+    public function prepareViewForColumnKey(\Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
     {
         return strval($key);
     }
 
     /**
      *
-     * @param \Nethgui\Core\ViewInterface $view
+     * @param \Nethgui\View\ViewInterface $view
      * @param string $key The data row key
      * @param array $values The data row values
      * @param array &$rowMetadata The metadadata row values, like css classes
-     * @return \Nethgui\Core\ViewInterface 
+     * @return \Nethgui\View\ViewInterface 
      */
-    public function prepareViewForColumnActions(\Nethgui\Core\ViewInterface $view, $key, $values, &$rowMetadata)
+    public function prepareViewForColumnActions(\Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
     {
         $cellView = $view->spawnView($this->getParent());
         $cellView->setTemplate(array($this, 'renderColumnActions'));

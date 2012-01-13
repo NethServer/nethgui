@@ -45,12 +45,12 @@ class TemplateRenderer extends AbstractRenderer implements \Nethgui\Core\GlobalF
 
     /**
      *
-     * @param \Nethgui\Core\ViewInterface $view
+     * @param \Nethgui\View\ViewInterface $view
      * @param callable $templateResolver
      * @param string $contentType
      * @param string $charset
      */
-    public function __construct(\Nethgui\Core\ViewInterface $view, $templateResolver, $contentType, $charset)
+    public function __construct(\Nethgui\View\ViewInterface $view, $templateResolver, $contentType, $charset)
     {
         if ( ! is_callable($templateResolver)) {
             throw new \InvalidArgumentException(sprintf('%s: $templateResolver must be a valid callback function.', get_class($this)), 1322238847);
@@ -64,10 +64,10 @@ class TemplateRenderer extends AbstractRenderer implements \Nethgui\Core\GlobalF
 
     /**
      *
-     * @param \Nethgui\Core\ViewInterface $view
+     * @param \Nethgui\View\ViewInterface $view
      * @return \Nethgui\Renderer\Xhtml
      */
-    public function spawnRenderer(\Nethgui\Core\ViewInterface $view)
+    public function spawnRenderer(\Nethgui\View\ViewInterface $view)
     {
         return new self($view, $this->getTemplateResolver(), $this->getContentType(), $this->getCharset());
     }

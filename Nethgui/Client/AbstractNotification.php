@@ -26,7 +26,7 @@ namespace Nethgui\Client;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-abstract class AbstractNotification implements \Serializable, \Nethgui\Core\ViewableInterface
+abstract class AbstractNotification implements \Serializable, \Nethgui\View\ViewableInterface
 {
     const NOTIFY_SUCCESS = 0x0;
     const NOTIFY_WARNING = 0x1;
@@ -88,7 +88,7 @@ abstract class AbstractNotification implements \Serializable, \Nethgui\Core\View
         list($this->identifier, $this->dismissed, $this->style, $this->type, $this->transient) = unserialize($serialized);
     }
 
-    public function prepareView(\Nethgui\Core\ViewInterface $view)
+    public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         $view->setTemplate(array($this, 'renderXhtml'));
         $view['identifier'] = $this->identifier;

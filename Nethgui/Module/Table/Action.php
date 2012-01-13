@@ -48,7 +48,7 @@ abstract class Action extends \Nethgui\Module\Standard implements TableActionInt
         return ! is_null($this->tableAdapter);
     }
 
-    public function prepareView(\Nethgui\Core\ViewInterface $view)
+    public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
         if ( ! isset($view['Cancel'])) {

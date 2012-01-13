@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Core;
+namespace Nethgui\View;
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
  *
@@ -40,5 +40,5 @@ interface ViewableInterface
      * @return void
      * @api
      */
-    public function prepareView(\Nethgui\Core\ViewInterface $view);
+    public function prepareView(\Nethgui\View\ViewInterface $view);
 }

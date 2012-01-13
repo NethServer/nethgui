@@ -46,7 +46,7 @@ class Literal extends \Nethgui\Widget\XhtmlWidget
         $flags = $this->getAttribute('flags', 0);
         $content = '';
 
-        if ($value instanceof \Nethgui\Core\ViewInterface) {
+        if ($value instanceof \Nethgui\View\ViewInterface) {
             //die("Literal: Unexpected view value");
             $content = $this->getRenderer()->spawnRenderer($value)->setDefaultFlags($flags | $this->getRenderer()->getDefaultFlags())->render();
         } else {
@@ -69,7 +69,7 @@ class Literal extends \Nethgui\Widget\XhtmlWidget
 
 //    public function setAttribute($attribute, $value)
 //    {
-//        if ($attribute == 'data' && $value instanceof \Nethgui\Core\ViewInterface) {
+//        if ($attribute == 'data' && $value instanceof \Nethgui\View\ViewInterface) {
 //            parent::setAttribute('name', $value->getModule()->getIdentifier());
 //        }
 //        return parent::setAttribute($attribute, $value);

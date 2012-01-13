@@ -39,7 +39,7 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
      */
     private $inheritFlags = 0;
 
-    public function __construct(\Nethgui\Core\ViewInterface $view, $templateResolver, $inheritFlags)
+    public function __construct(\Nethgui\View\ViewInterface $view, $templateResolver, $inheritFlags)
     {
         parent::__construct($view, $templateResolver, 'text/html', 'UTF-8');
         $this->inheritFlags = $inheritFlags & NETHGUI_INHERITABLE_FLAGS;
@@ -47,10 +47,10 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
 
     /**
      *
-     * @param \Nethgui\Core\ViewInterface $view
+     * @param \Nethgui\View\ViewInterface $view
      * @return \Nethgui\Renderer\Xhtml
      */
-    public function spawnRenderer(\Nethgui\Core\ViewInterface $view)
+    public function spawnRenderer(\Nethgui\View\ViewInterface $view)
     {
         return new self($view, $this->getTemplateResolver(), $this->getDefaultFlags());
     }

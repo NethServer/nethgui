@@ -46,7 +46,7 @@ class Renderer extends \Nethgui\Renderer\Xhtml
         return $o;
     }
 
-    public function spawnRenderer(\Nethgui\Core\ViewInterface $view)
+    public function spawnRenderer(\Nethgui\View\ViewInterface $view)
     {
         return new self($view, $this->getTemplateResolver(), $this->getDefaultFlags());
     }

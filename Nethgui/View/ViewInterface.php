@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Core;
+namespace Nethgui\View;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -79,11 +79,11 @@ interface ViewInterface extends \ArrayAccess, \IteratorAggregate
      * Create a new view object associated to $module
      *
      * @api
-     * @param ModuleInterface $module The associated $module
+     * @param \Nethgui\Core\ModuleInterface $module The associated $module
      * @param boolean Optional If TRUE the returned view is added to the current object with key equal to the module identifier
-     * @return \Nethgui\Core\ViewInterface The new view object, of the same type of the actual.
+     * @return \Nethgui\View\ViewInterface The new view object, of the same type of the actual.
      */
-    public function spawnView(ModuleInterface $module, $register = FALSE);
+    public function spawnView(\Nethgui\Core\ModuleInterface $module, $register = FALSE);
 
     /**
      * The module associated to this view.
@@ -196,7 +196,7 @@ interface ViewInterface extends \ArrayAccess, \IteratorAggregate
      *
      * @api
      * @param string $selector Routes the command list to the receiver appointed by this parameter.
-     * @return \Nethgui\Command\ViewCommandInterface
+     * @return \Nethgui\View\ViewCommandInterface
      */
     public function getCommandList($selector = '');
 

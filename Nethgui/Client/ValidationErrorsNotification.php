@@ -79,7 +79,7 @@ class ValidationErrorsNotification extends AbstractNotification implements \Neth
         return count($this->errors) > 0;
     }
 
-    public function prepareView(\Nethgui\Core\ViewInterface $view)
+    public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
         $view['title'] = count($this->errors) > 1 ? $view->translate('Incorrect values') : $view->translate('Incorrect value');

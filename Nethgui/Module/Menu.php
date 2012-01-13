@@ -69,7 +69,7 @@ class Menu extends \Nethgui\Module\Standard
         $this->declareParameter('search', Validate::ANYTHING);
     }
 
-    private function searchTags(\Nethgui\Core\ViewInterface $view, $query)
+    private function searchTags(\Nethgui\View\ViewInterface $view, $query)
     {
         if (is_null($this->moduleSet)) {
             return array();
@@ -101,7 +101,7 @@ class Menu extends \Nethgui\Module\Standard
         return $results;
     }
 
-    public function prepareView(\Nethgui\Core\ViewInterface $view)
+    public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         if ($view->getTargetFormat() === $view::TARGET_JSON) {
             if ($this->getRequest()->isEmpty()) {

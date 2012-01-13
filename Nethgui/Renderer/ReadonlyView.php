@@ -26,15 +26,15 @@ namespace Nethgui\Renderer;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class ReadonlyView implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInterface
+class ReadonlyView implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInterface
 {
 
     /**
-     * @var \Nethgui\Core\ViewInterface
+     * @var \Nethgui\View\ViewInterface
      */
     protected $view;
 
-    public function __construct(\Nethgui\Core\ViewInterface $view)
+    public function __construct(\Nethgui\View\ViewInterface $view)
     {
         if ($view instanceof ReadonlyView) {
             // Prevent re-wrapping of a read-only view instance:

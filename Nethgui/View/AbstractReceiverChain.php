@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Command;
+namespace Nethgui\View;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -27,27 +27,27 @@ namespace Nethgui\Command;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-abstract class AbstractReceiverChain implements \Nethgui\Command\CommandReceiverInterface
+abstract class AbstractReceiverChain implements \Nethgui\View\CommandReceiverInterface
 {
 
     /**
-     * @var \Nethgui\Command\CommandReceiverInterface
+     * @var \Nethgui\View\CommandReceiverInterface
      */
     private $nextReceiver;
 
     /**
      *
-     * @param \Nethgui\Command\CommandReceiverInterface $nextReceiver (optional)
+     * @param \Nethgui\View\CommandReceiverInterface $nextReceiver (optional)
      */
-    public function __construct(\Nethgui\Command\CommandReceiverInterface $nextReceiver = NULL)
+    public function __construct(\Nethgui\View\CommandReceiverInterface $nextReceiver = NULL)
     {
-        $this->nextReceiver = is_null($nextReceiver) ? \Nethgui\Command\NullReceiver::getNullInstance() : $nextReceiver;
+        $this->nextReceiver = is_null($nextReceiver) ? \Nethgui\View\NullReceiver::getNullInstance() : $nextReceiver;
     }
 
     /**
      * Get the next receiver of the chain
      *
-     * @return \Nethgui\Command\CommandReceiverInterface
+     * @return \Nethgui\View\CommandReceiverInterface
      */
     public function getNextReceiver()
     {
@@ -57,14 +57,14 @@ abstract class AbstractReceiverChain implements \Nethgui\Command\CommandReceiver
     /**
      * Set the next receiver of the chain
      * 
-     * @param \Nethgui\Command\CommandReceiverInterface $receiver
+     * @param \Nethgui\View\CommandReceiverInterface $receiver
      */
-    public function setNextReceiver(\Nethgui\Command\CommandReceiverInterface $receiver)
+    public function setNextReceiver(\Nethgui\View\CommandReceiverInterface $receiver)
     {
         $this->nextReceiver = $receiver;
     }
 
-    public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
+    public function executeCommand(\Nethgui\View\ViewInterface $origin, $selector, $name, $arguments)
     {
         return $this->getNextReceiver()->executeCommand($origin, $selector, $name, $arguments);
     }

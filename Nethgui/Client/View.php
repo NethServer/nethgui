@@ -40,7 +40,7 @@ namespace Nethgui\Client;
  * @since 1.0
 
  */
-class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInterface, \Nethgui\Command\CommandReceiverInterface
+class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInterface, \Nethgui\View\CommandReceiverInterface
 {
 
     /**
@@ -94,7 +94,7 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
 
     /**
      *
-     * @var \Nethgui\Command\CommandReceiverInterface
+     * @var \Nethgui\View\CommandReceiverInterface
      */
     private $receiver;
 
@@ -121,7 +121,7 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
     {
         $this->module = $module;
         $this->translator = $translator;
-        $this->receiver = \Nethgui\Command\NullReceiver::getNullInstance();
+        $this->receiver = \Nethgui\View\NullReceiver::getNullInstance();
 
         $this->siteUrl = array_shift($urlParts); // 0
         $this->pathUrl = array_shift($urlParts); // 1
@@ -347,16 +347,16 @@ class View implements \Nethgui\Core\ViewInterface, \Nethgui\Log\LogConsumerInter
         }
     }
 
-    public function setReceiver(\Nethgui\Command\CommandReceiverInterface $receiver)
+    public function setReceiver(\Nethgui\View\CommandReceiverInterface $receiver)
     {
         $this->receiver = $receiver;
         return $this;
     }
 
-    public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
+    public function executeCommand(\Nethgui\View\ViewInterface $origin, $selector, $name, $arguments)
     {
         $module = $this->getModule();
-        if ($module instanceof \Nethgui\Command\CommandReceiverInterface) {
+        if ($module instanceof \Nethgui\View\CommandReceiverInterface) {
             $module->executeCommand($origin, $selector, $name, $arguments);
         }
 

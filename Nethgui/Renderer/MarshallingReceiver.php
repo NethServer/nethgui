@@ -29,7 +29,7 @@ namespace Nethgui\Renderer;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class MarshallingReceiver extends \Nethgui\Command\AbstractReceiverChain
+class MarshallingReceiver extends \Nethgui\View\AbstractReceiverChain
 {
 
     /**
@@ -38,7 +38,7 @@ class MarshallingReceiver extends \Nethgui\Command\AbstractReceiverChain
      */
     private $commands = array();
 
-    public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
+    public function executeCommand(\Nethgui\View\ViewInterface $origin, $selector, $name, $arguments)
     {
         if (is_null($selector) && $name == 'getMarshalledCommands') {
             $arguments[0] = $this->getMarshalledCommands();
@@ -75,11 +75,11 @@ class MarshallingReceiver extends \Nethgui\Command\AbstractReceiverChain
      * @param mixed $value
      * @return array
      */
-    private function prepareArguments(\Nethgui\Core\ViewInterface $view, $value)
+    private function prepareArguments(\Nethgui\View\ViewInterface $view, $value)
     {
         $a = array();
         foreach ($value as $k => $v) {
-            if ($v instanceof \Nethgui\Core\ViewableInterface) {
+            if ($v instanceof \Nethgui\View\ViewableInterface) {
                 $innerView = $view->spawnView($view->getModule());
                 $v->prepareView($innerView);
                 $v = $this->prepareArguments($view, $innerView);

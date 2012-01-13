@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Command;
+namespace Nethgui\View;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -21,26 +21,24 @@ namespace Nethgui\Command;
  */
 
 /**
- * Implement command(s) semantics
+ * Log unhandled commands to syslog.
  *
- * @see http://en.wikipedia.org/wiki/Command_pattern
- * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
+ * @internal
  */
-interface CommandReceiverInterface
+class LoggingCommandReceiver implements \Nethgui\View\CommandReceiverInterface
 {
-    /**
-     * Specify an implementation for the given method and arguments.
-     * 
-     * The original view that generated the command and the selector string
-     * that identifies the logical target provide more contextual informations.
-     *
-     * @param \Nethgui\Core\ViewInterface $origin
-     * @param string $selector
-     * @param string $name
-     * @param array $arguments
-     * @return mixed
-     */
-    public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments);
-}
+    private $log;
 
+    public function __construct()
+    {
+        $this->log = new \Nethgui\Log\Syslog();
+    }
+
+    public function executeCommand(\Nethgui\View\ViewInterface $origin, $selector, $name, $arguments)
+    {
+        $argStrings = array_map(function($arg) { return is_object($arg) ? get_class($arg) : gettype($arg); }, $arguments);
+        $selectorString = $origin->getClientEventTarget($selector);
+        $this->log->notice(sprintf('%s: %s#%s(%s)', get_class($this), $selectorString, $name, implode(', ', $argStrings)));
+    }
+}

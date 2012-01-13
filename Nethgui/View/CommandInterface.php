@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Command;
+namespace Nethgui\View;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -52,10 +52,10 @@ interface CommandInterface
      * Set the command receiver, the object where the command is executed
      *
      * @see \Nethgui\Core\ReceiverChainInterface
-     * @param \Nethgui\Command\CommandReceiverInterface $receiver The object where the command is executed
+     * @param \Nethgui\View\CommandReceiverInterface $receiver The object where the command is executed
      * @return CommandInterface
      */
-    public function setReceiver(\Nethgui\Command\CommandReceiverInterface $receiver);
+    public function setReceiver(\Nethgui\View\CommandReceiverInterface $receiver);
 
     /**
      * The string that matches the appointed receiver
@@ -67,7 +67,7 @@ interface CommandInterface
     /**
      * The view that created the command
      *
-     * @return \Nethgui\Core\ViewInterface
+     * @return \Nethgui\View\ViewInterface
      */
     public function getOrigin();
 

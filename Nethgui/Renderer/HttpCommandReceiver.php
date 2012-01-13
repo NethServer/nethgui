@@ -28,12 +28,12 @@ namespace Nethgui\Renderer;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class HttpCommandReceiver extends \Nethgui\Command\AbstractReceiverChain
+class HttpCommandReceiver extends \Nethgui\View\AbstractReceiverChain
 {
 
     private $headers;
 
-    public function __construct(\Nethgui\Command\CommandReceiverInterface $nextReceiver = NULL)
+    public function __construct(\Nethgui\View\CommandReceiverInterface $nextReceiver = NULL)
     {
         parent::__construct($nextReceiver);
         $this->headers = array();
@@ -54,7 +54,7 @@ class HttpCommandReceiver extends \Nethgui\Command\AbstractReceiverChain
         return $this->headers;
     }
 
-    public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
+    public function executeCommand(\Nethgui\View\ViewInterface $origin, $selector, $name, $arguments)
     {
         if (method_exists($this, $name)) {
             $argumentsCopy = $arguments;
@@ -64,12 +64,12 @@ class HttpCommandReceiver extends \Nethgui\Command\AbstractReceiverChain
         parent::executeCommand($origin, $selector, $name, $arguments);
     }
 
-    protected function httpHeader(\Nethgui\Core\ViewInterface $origin, $selector, $header)
+    protected function httpHeader(\Nethgui\View\ViewInterface $origin, $selector, $header)
     {
         $this->headers[] = $header;
     }
 
-    protected function show(\Nethgui\Core\ViewInterface $origin, $selector)
+    protected function show(\Nethgui\View\ViewInterface $origin, $selector)
     {
         if ($origin->getTargetFormat() !== $origin::TARGET_XHTML) {
             return;
@@ -77,7 +77,7 @@ class HttpCommandReceiver extends \Nethgui\Command\AbstractReceiverChain
         $this->httpRedirection($origin, 302, $origin->getModuleUrl($selector));
     }
 
-    protected function sendQuery(\Nethgui\Core\ViewInterface $origin, $selector, $location)
+    protected function sendQuery(\Nethgui\View\ViewInterface $origin, $selector, $location)
     {
         if ($origin->getTargetFormat() !== $origin::TARGET_XHTML) {
             return;
@@ -85,7 +85,7 @@ class HttpCommandReceiver extends \Nethgui\Command\AbstractReceiverChain
         $this->httpRedirection($origin, 302, $location);
     }
 
-    protected function reloadData(\Nethgui\Core\ViewInterface $origin, $selector, $msec)
+    protected function reloadData(\Nethgui\View\ViewInterface $origin, $selector, $msec)
     {
         if ($origin->getTargetFormat() !== $origin::TARGET_XHTML) {
             return;
@@ -104,7 +104,7 @@ class HttpCommandReceiver extends \Nethgui\Command\AbstractReceiverChain
      * @param integer $code
      * @param string $location
      */
-    private function httpRedirection(\Nethgui\Core\ViewInterface $origin, $code, $location)
+    private function httpRedirection(\Nethgui\View\ViewInterface $origin, $code, $location)
     {
         $messages = array(
             '201' => 'Created',

@@ -222,7 +222,7 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
         // NOOP
     }
 
-    public function prepareView(\Nethgui\Core\ViewInterface $view)
+    public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
         $view->copyFrom($this->parameters);

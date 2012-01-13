@@ -114,7 +114,7 @@ class Button extends \Nethgui\Widget\XhtmlWidget
         return $content;
     }
 
-    public function executeCommand(\Nethgui\Core\ViewInterface $origin, $selector, $name, $arguments)
+    public function executeCommand(\Nethgui\View\ViewInterface $origin, $selector, $name, $arguments)
     {
         switch ($name) {
             case 'setLabel':

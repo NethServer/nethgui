@@ -194,7 +194,7 @@ class Modify extends Action
 
     }
 
-    public function prepareView(\Nethgui\Core\ViewInterface $view)
+    public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
         if (isset($this->template)) {

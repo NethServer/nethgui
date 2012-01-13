@@ -30,7 +30,7 @@ namespace Nethgui\Module\Table;
  */
 class Help extends Action
 {
-    public function prepareView(\Nethgui\Core\ViewInterface $view)
+    public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
         $view->setTemplate(FALSE);

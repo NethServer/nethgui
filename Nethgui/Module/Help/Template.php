@@ -26,7 +26,7 @@ namespace Nethgui\Module\Help;
 class Template extends Common
 {
 
-    public function prepareView(\Nethgui\Core\ViewInterface $view)
+    public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         $module = $this->getTargetModule();
 
