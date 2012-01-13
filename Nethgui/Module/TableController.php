@@ -69,7 +69,7 @@ class TableController extends \Nethgui\Module\Controller
         $actions = array_merge(array($this->readAction), $this->rowActions, $this->tableActions);
 
         foreach ($actions as $action) {
-            if ( ! $action instanceof Table\ActionInterface || $action->hasTableAdapter()) {
+            if ( ! $action instanceof \Nethgui\Module\Table\TableActionInterface || $action->hasTableAdapter()) {
                 continue;
             }
 
@@ -111,7 +111,7 @@ class TableController extends \Nethgui\Module\Controller
      * Add a child setting its table adapter, if the child is an instance
      * of ActionInterface.
      *
-     * @see \Nethgui\Module\Table\ActionInterface
+     * @see \Nethgui\Module\Table\TableActionInterface
      * @param \Nethgui\Core\ModuleInterface $childModule
      * @return TableController
      */
@@ -119,7 +119,7 @@ class TableController extends \Nethgui\Module\Controller
     {
         parent::addChild($childModule);
         if ( ! is_null($this->tableAdapter)
-            && $childModule instanceof Table\ActionInterface
+            && $childModule instanceof \Nethgui\Module\Table\TableActionInterface
             && ! $childModule->hasTableAdapter()) {
             $childModule->setTableAdapter($this->tableAdapter);
         }

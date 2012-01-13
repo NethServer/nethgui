@@ -121,6 +121,10 @@ class Read extends Action
     {
         $rows = new \ArrayObject();
 
+        if ( ! $this->hasTableAdapter()) {
+            throw new \UnexpectedValueException(sprintf('%s: the table adapter has not been set.', __CLASS__), 1326474696);
+        }
+
         foreach ($this->tableAdapter as $key => $values) {
             $row = new \ArrayObject();
             $rowMetadata = new \ArrayObject(array('rowCssClass' => '', 'columns' => array()));
