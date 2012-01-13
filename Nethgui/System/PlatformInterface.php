@@ -150,6 +150,7 @@ interface PlatformInterface
      */
 
     /**
+     * @api
      * @var string
      * @return \Nethgui\System\DatabaseInterface
      */
@@ -227,7 +228,6 @@ interface PlatformInterface
     /**
      * Run events on the give queue
      *
-     * @api
      * @param string $queueName
      * @return void
      */
@@ -242,33 +242,39 @@ interface PlatformInterface
      * NOTE: Only placeholders corresponding to i+1 element in the
      * arguments array are replaced.
      *
+     * @api
      * @param string $command
      * @param array $arguments Arguments for the command. Will be shell-escaped.
      * @param boolean $detached If set the command is run detached from the PHP system process and traced
-     * @return ProcessInterface
+     * @return \Nethgui\System\ProcessInterface
      */
     public function exec($command, $arguments = array(), $detached = FALSE);
 
     /**
      * Create a platform validator object
+     *
+     * @api
      * @param int ... One of the VALID_* constants
-     * @return Validator
+     * @return \Nethgui\Core\ValidatorInterface
      */
     public function createValidator();
 
     /**
      * Get the system internal date format
+     *
      * @return string
      */
     public function getDateFormat();
 
     /**
+     * 
      * @return array An array of \Nethgui\System\ProcessInterface traced objects
      * @see \Nethgui\System\ProcessInterface
      */
     public function getDetachedProcesses();
 
     /**
+     * @api
      * @param string $name The identifier of the process
      * @return \Nethgui\System\ProcessInterface
      */

@@ -39,49 +39,52 @@ interface UserInterface
     public function isAuthenticated();
 
     /**
+     * @api
      * @param bool $status
      * @return UserInterface
-     * @api
      */
     public function setAuthenticated($status);
 
     /**
+     * @api
      * @param string $credentialName
      * @param mixed $credentialValue
      * @return UserInterface
-     * @api
      */
     public function setCredential($credentialName, $credentialValue);
 
     /**
+     * @api
      * @param string $credentialName
      * @return mixed
-     * @api
      */
     public function getCredential($credentialName);
 
     /**
-     * @return array
      * @api
+     * @return array
      */
     public function getCredentials();
 
     /**
-     * @return boolean
      * @api
+     * @return boolean
      */
     public function hasCredential($credentialName);
 
     /**
      * Get the current language code
-     * @return string ISO 639-1 language code (2 characters).
+     *
      * @api
+     * @return string ISO 639-1 language code (2 characters).
+     *
      */
     public function getLanguageCode();
 
     /**
-     * @return \Nethgui\Core\SessionInterface
+     * 
      * @api
+     * @return \Nethgui\Core\SessionInterface     
      */
     public function getSession();
 

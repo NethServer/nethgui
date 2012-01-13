@@ -27,7 +27,7 @@ namespace Nethgui\Core;
  * - initialize the module (and its submodules)
  * - prepare view parameters
  *
- * @see RequestHandlerInterface
+ * @see \Nethgui\Core\RequestHandlerInterface
  * @since 1.0
  * @api
  */

@@ -39,7 +39,7 @@ interface ViewCommandInterface
     public function __call($name, $arguments);
 
     /**
-     * @return \Nethgui\Command\CommandSequenceInterface
+     * @return \Nethgui\Command\ViewCommandInterface
      */
     public function addCommand(\Nethgui\Command\CommandInterface $command);
 }

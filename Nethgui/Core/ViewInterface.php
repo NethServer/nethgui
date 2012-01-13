@@ -183,9 +183,9 @@ interface ViewInterface extends \ArrayAccess, \IteratorAggregate
     /**
      * Access to the object performing string translations
      *
-     * @see translate()
-     * @return TranslatorInterface
      * @api
+     * @see translate()
+     * @return \Nethgui\Core\TranslatorInterface
      */
     public function getTranslator();
 
