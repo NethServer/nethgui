@@ -26,7 +26,7 @@ namespace Nethgui\Module;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class NullRequest implements \Nethgui\Core\RequestInterface, \Nethgui\Client\UserInterface, \Nethgui\Core\SessionInterface
+class NullRequest implements \Nethgui\Core\RequestInterface, \Nethgui\Core\UserInterface, \Nethgui\Core\SessionInterface
 {
 
     private function __construct()

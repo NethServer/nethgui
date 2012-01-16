@@ -32,7 +32,7 @@ interface AccessControlRequestInterface
 {
 
     /**
-     * @return \Nethgui\Client\UserInterface
+     * @return \Nethgui\Core\UserInterface
      */
     public function getSubject();
 

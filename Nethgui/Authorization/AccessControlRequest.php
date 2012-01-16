@@ -27,7 +27,7 @@ namespace Nethgui\Authorization;
 final class AccessControlRequest implements AccessControlRequestInterface
 {
 
-    public function __construct(\Nethgui\Client\UserInterface $subject, $resource, $action)
+    public function __construct(\Nethgui\Core\UserInterface $subject, $resource, $action)
     {
         $this->subject = $subject;
         $this->action = $action;

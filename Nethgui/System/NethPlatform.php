@@ -40,7 +40,7 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
 
     /**
      * Keeps User object acting on host configuration.
-     * @var \Nethgui\Client\UserInterface
+     * @var \Nethgui\Core\UserInterface
      */
     private $user;
     private $eventQueue;
@@ -65,9 +65,9 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
      * We must specify who acts on host configuration for authorization purposes
      * and to track the processes (s)he starts.
      *
-     * @param \Nethgui\Client\UserInterface $user
+     * @param \Nethgui\Core\UserInterface $user
      */
-    public function __construct(\Nethgui\Client\UserInterface $user)
+    public function __construct(\Nethgui\Core\UserInterface $user)
     {
         $this->user = $user;
         $this->eventQueue = array();

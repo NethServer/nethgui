@@ -41,7 +41,7 @@ class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Core\Glo
 
     /**
      *
-     * @var \Nethgui\Client\UserInterface
+     * @var \Nethgui\Core\UserInterface
      */
     private $user;
 
@@ -53,12 +53,12 @@ class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Core\Glo
 
     /**
      * 
-     * @param \Nethgui\Client\UserInterface $user
+     * @param \Nethgui\Core\UserInterface $user
      * @param \Nethgui\Log\LogInterface $log
      * @param callable $catalogResolver
      * @param array $initialCatalogStack 
      */
-    public function __construct(\Nethgui\Client\UserInterface $user, \Nethgui\Log\LogInterface $log, $catalogResolver, $initialCatalogStack = array())
+    public function __construct(\Nethgui\Core\UserInterface $user, \Nethgui\Log\LogInterface $log, $catalogResolver, $initialCatalogStack = array())
     {
         if ( ! is_callable($catalogResolver)) {
             throw new \InvalidArgumentException(sprintf('%s: $catalogResolver must be a valid callback function.', get_class($this)), 1322240722);

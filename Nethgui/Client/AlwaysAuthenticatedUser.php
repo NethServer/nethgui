@@ -25,7 +25,7 @@ namespace Nethgui\Client;
  *
  * @deprecated Substitute with the complete implementation in version Sigma.
  */
-class AlwaysAuthenticatedUser implements UserInterface
+class AlwaysAuthenticatedUser implements \Nethgui\Core\UserInterface
 {
 
     /**

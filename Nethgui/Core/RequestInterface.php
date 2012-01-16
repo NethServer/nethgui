@@ -130,7 +130,7 @@ interface RequestInterface
 
     /**
      * The User that has sent the request.
-     * @return \Nethgui\Client\UserInterface
+     * @return \Nethgui\Core\UserInterface
      * @api
      */
     public function getUser();
