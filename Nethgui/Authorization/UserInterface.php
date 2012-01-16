@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Core;
+namespace Nethgui\Authorization;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -23,8 +23,6 @@ namespace Nethgui\Core;
 /**
  * UserInterface provides access to the login information of the current user.
  *
- * @todo Move into Core package
- *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  * @api
@@ -33,8 +31,8 @@ interface UserInterface
 {
 
     /**
-     * @return boolean
      * @api
+     * @return boolean
      */
     public function isAuthenticated();
 

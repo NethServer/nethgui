@@ -75,7 +75,7 @@ class ConfigurationDatabase implements \Nethgui\System\DatabaseInterface, \Nethg
 
     /**
      * Keeps User object acting on this database. 
-     * @var \Nethgui\Core\UserInterface
+     * @var \Nethgui\Authorization\UserInterface
      */
     private $user;
 
@@ -109,7 +109,7 @@ class ConfigurationDatabase implements \Nethgui\System\DatabaseInterface, \Nethg
      * 
      * @param string $database Database name
      */
-    public function __construct($database, \Nethgui\Core\UserInterface $user)
+    public function __construct($database, \Nethgui\Authorization\UserInterface $user)
     {
         if ( ! $database)
             throw new \InvalidArgumentException(sprintf("%s: You must provide a valid database name.", get_class($this)), 1322148910);

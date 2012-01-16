@@ -41,7 +41,7 @@ class Request implements \Nethgui\Core\RequestInterface
     private $getData;
 
     /**
-     * @var \Nethgui\Core\UserInterface
+     * @var \Nethgui\Authorization\UserInterface
      */
     private $user;
 
@@ -56,7 +56,7 @@ class Request implements \Nethgui\Core\RequestInterface
      */
     private $attributes;
 
-    public function __construct(\Nethgui\Core\UserInterface $user, $postData, $getData, $path, \ArrayAccess $attributes)
+    public function __construct(\Nethgui\Authorization\UserInterface $user, $postData, $getData, $path, \ArrayAccess $attributes)
     {
         if ( ! is_array($postData) && ! is_array($getData)) {
             throw new \InvalidArgumentException(sprintf("%s: parameters and data must be of type `array`.", get_class($this)), 1325242431);

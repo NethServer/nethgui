@@ -474,7 +474,7 @@ class Framework
         }
 
         // TODO: retrieve user state from Session
-        $user = new Client\AlwaysAuthenticatedUser(new Client\Session());
+        $user = new Client\AlwaysAuthenticatedUser(new \Nethgui\Client\Session());
 
         $attributes = new \ArrayObject();
 
