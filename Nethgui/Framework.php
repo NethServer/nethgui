@@ -283,7 +283,7 @@ class Framework
         }
 
         $targetFormat = $request->getExtension();
-        $translator = new Language\Translator($user, $platform->getLog(), $this->getFileNameResolver(), array_keys($this->namespaceMap));
+        $translator = new \Nethgui\View\Translator($user, $platform->getLog(), $this->getFileNameResolver(), array_keys($this->namespaceMap));
         $urlParts = array($this->siteUrl, $this->basePath, 'index.php');
         $rootView = new Client\View($targetFormat, $mainModule, $translator, $urlParts);
 
