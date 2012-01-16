@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Core;
+namespace Nethgui\Module;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -32,7 +32,7 @@ interface ModuleSetInterface extends \IteratorAggregate
 {
     /**
      * @param string $moduleIdentifier
-     * @return \Nethgui\Core\ModuleInterface The module instance
+     * @return \Nethgui\Module\ModuleInterface The module instance
      */
     public function getModule($moduleIdentifier);
     

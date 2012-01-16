@@ -54,7 +54,7 @@ abstract class Action extends \Nethgui\Module\Standard implements TableActionInt
         if ( ! isset($view['Cancel'])) {
             $view['Cancel'] = $view->getModuleUrl('/' . \Nethgui\array_head($view->resolvePath('')));
         }
-        if ( ! $this instanceof \Nethgui\Core\ModuleCompositeInterface) {
+        if ( ! $this instanceof \Nethgui\Module\ModuleCompositeInterface) {
             $view['FormAction'] = $view->getModuleUrl(implode('/', $this->getRequest()->getPath()));
         }
     }

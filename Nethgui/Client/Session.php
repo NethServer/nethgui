@@ -27,14 +27,14 @@ namespace Nethgui\Client;
  * @since 1.0
  * @internal
  */
-class Session implements \Nethgui\Core\SessionInterface, \Nethgui\Core\GlobalFunctionConsumerInterface
+class Session implements \Nethgui\Core\SessionInterface, \Nethgui\Utility\PhpConsumerInterface
 {
 
     /**
      *
-     * @var \Nethgui\Core\GlobalFunctionWrapper
+     * @var \Nethgui\Utility\PhpWrapper
      */
-    private $globalFunctionWrapper;
+    private $phpWrapper;
 
     /**
      *
@@ -42,20 +42,20 @@ class Session implements \Nethgui\Core\SessionInterface, \Nethgui\Core\GlobalFun
      */
     private $data;
 
-    public function __construct(\Nethgui\Core\GlobalFunctionWrapper $gfw = NULL)
+    public function __construct(\Nethgui\Utility\PhpWrapper $gfw = NULL)
     {
         if (isset($gfw)) {
-            $this->globalFunctionWrapper = $gfw;
+            $this->phpWrapper = $gfw;
         } else {
-            $this->globalFunctionWrapper = new \Nethgui\Core\GlobalFunctionWrapper();
+            $this->phpWrapper = new \Nethgui\Utility\PhpWrapper();
         }
 
-        $this->globalFunctionWrapper->session_name(get_class($this));
+        $this->phpWrapper->session_name(get_class($this));
         if ($this->getSessionIdentifier() == '') {
-            $this->globalFunctionWrapper->session_start();
+            $this->phpWrapper->session_start();
         }
 
-        $this->data = $this->globalFunctionWrapper->phpReadGlobalVariable('_SESSION', get_class($this));
+        $this->data = $this->phpWrapper->phpReadGlobalVariable('_SESSION', get_class($this));
 
         if (is_null($this->data)) {
             $this->data = new \ArrayObject();
@@ -64,14 +64,14 @@ class Session implements \Nethgui\Core\SessionInterface, \Nethgui\Core\GlobalFun
         }
     }
 
-    public function setGlobalFunctionWrapper(\Nethgui\Core\GlobalFunctionWrapper $object)
+    public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
     {
-        $this->globalFunctionWrapper = $object;
+        $this->phpWrapper = $object;
     }
 
     public function getSessionIdentifier()
     {
-        return $this->globalFunctionWrapper->session_id();
+        return $this->phpWrapper->session_id();
     }
 
     public function retrieve($key)
@@ -98,7 +98,7 @@ class Session implements \Nethgui\Core\SessionInterface, \Nethgui\Core\GlobalFun
 
     public function __destruct()
     {
-        $this->globalFunctionWrapper->phpWriteGlobalVariable($this->data, '_SESSION', get_class($this));
+        $this->phpWrapper->phpWriteGlobalVariable($this->data, '_SESSION', get_class($this));
     }
 
 }

@@ -24,7 +24,7 @@ namespace Nethgui\Log;
  * Provides message formatting capabilities without specify the log message destination
  *
  */
-abstract class AbstractLog implements LogInterface, \Nethgui\Core\GlobalFunctionConsumerInterface
+abstract class AbstractLog implements LogInterface, \Nethgui\Utility\PhpConsumerInterface
 {
 
     /**
@@ -37,15 +37,15 @@ abstract class AbstractLog implements LogInterface, \Nethgui\Core\GlobalFunction
     abstract public function message($level, $message);
 
     /**
-     * @var \Nethgui\Core\GlobalFunctionWrapper
+     * @var \Nethgui\Utility\PhpWrapper
      */
-    protected $globalFunctionWrapper;
+    protected $phpWrapper;
     private $level;
 
     public function __construct($level = E_ALL)
     {
         $this->level = $level;
-        $this->globalFunctionWrapper = new \Nethgui\Core\GlobalFunctionWrapper();
+        $this->phpWrapper = new \Nethgui\Utility\PhpWrapper();
     }
 
     public function getLevel()
@@ -121,9 +121,9 @@ abstract class AbstractLog implements LogInterface, \Nethgui\Core\GlobalFunction
         return $this->message(__FUNCTION__, $message);
     }
 
-    public function setGlobalFunctionWrapper(\Nethgui\Core\GlobalFunctionWrapper $object)
+    public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
     {
-        $this->globalFunctionWrapper = $object;
+        $this->phpWrapper = $object;
         return $this;
     }
 

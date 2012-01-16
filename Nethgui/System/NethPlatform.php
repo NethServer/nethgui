@@ -24,7 +24,7 @@ namespace Nethgui\System;
  * Implementation of the platform interface for Nethesis products
  *
  */
-class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEnforcementPointInterface, \Nethgui\Log\LogConsumerInterface, \Nethgui\Core\GlobalFunctionConsumerInterface
+class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEnforcementPointInterface, \Nethgui\Log\LogConsumerInterface, \Nethgui\Utility\PhpConsumerInterface
 {
 
     /**
@@ -51,9 +51,9 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
     private $log;
 
     /**
-     * @var \Nethgui\Core\GlobalFunctionWrapper
+     * @var \Nethgui\Utility\PhpWrapper
      */
-    private $globalFunctionWrapper;
+    private $phpWrapper;
 
     /**
      * Traced processes
@@ -79,7 +79,7 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
 
         // check for process session storage initialization:
         if ( ! $session->hasElement($key)) {
-            $session->store($key, new \Nethgui\Core\ArrayDisposable());
+            $session->store($key, new \Nethgui\Utility\ArrayDisposable());
         }
 
         $this->processes = $session->retrieve($key);
@@ -253,8 +253,8 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
             $commandObject = new Process($command, $arguments);
         }
 
-        if (isset($this->globalFunctionWrapper)) {
-            $commandObject->setGlobalFunctionWrapper($this->globalFunctionWrapper);
+        if (isset($this->phpWrapper)) {
+            $commandObject->setPhpWrapper($this->phpWrapper);
         }
 
         return $commandObject;
@@ -275,9 +275,9 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
         return 'YYYY-mm-dd';
     }
 
-    public function setGlobalFunctionWrapper(\Nethgui\Core\GlobalFunctionWrapper $object)
+    public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
     {
-        $this->globalFunctionWrapper = $object;
+        $this->phpWrapper = $object;
     }
 
     private function traceProcess(\Nethgui\System\ProcessInterface $process)

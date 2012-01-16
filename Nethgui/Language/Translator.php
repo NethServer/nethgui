@@ -23,13 +23,13 @@ namespace Nethgui\Language;
 /**
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Core\GlobalFunctionConsumerInterface, \Nethgui\Log\LogConsumerInterface
+class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Log\LogConsumerInterface
 {
 
     /**
-     * @var \Nethgui\Core\GlobalFunctionWrapper
+     * @var \Nethgui\Utility\PhpWrapper
      */
-    private $globalFunctionWrapper;
+    private $phpWrapper;
 
     /**
      * This is a stack of catalog names. Current catalog is the last element
@@ -64,7 +64,7 @@ class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Core\Glo
             throw new \InvalidArgumentException(sprintf('%s: $catalogResolver must be a valid callback function.', get_class($this)), 1322240722);
         }
 
-        $this->globalFunctionWrapper = new \Nethgui\Core\GlobalFunctionWrapper();
+        $this->phpWrapper = new \Nethgui\Utility\PhpWrapper();
         $this->languageCatalogStack = $initialCatalogStack;
         $this->log = $log;
         $this->user = $user;
@@ -79,13 +79,13 @@ class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Core\Glo
      *
      * @see strtr()
      *
-     * @param \Nethgui\Core\ModuleInterface $module
+     * @param \Nethgui\Module\ModuleInterface $module
      * @param string $string The string to be translated
      * @param array $args Values substituted in output string.
      * @param string $languageCode The language code
      * @return string
      */
-    public function translate(\Nethgui\Core\ModuleInterface $module, $string, $args = array(), $languageCode = NULL)
+    public function translate(\Nethgui\Module\ModuleInterface $module, $string, $args = array(), $languageCode = NULL)
     {
         if ( ! is_string($string)) {
             throw new \InvalidArgumentException(sprintf("%s: in translate(); unexpected `%s` type!", get_class($this), gettype($string)), 1322150166);
@@ -185,7 +185,7 @@ class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Core\Glo
         $filePath = call_user_func($this->catalogResolver, sprintf('%s\Language\%s\%s', $prefix, $languageCode, $languageCatalog));
         $L = array();
 
-        $included = @$this->globalFunctionWrapper->phpInclude($filePath, array('L' => &$L));
+        $included = @$this->phpWrapper->phpInclude($filePath, array('L' => &$L));
         if ($included) {
             //$this->getLog()->notice(sprintf('%s: Loaded language catalog `%s` [%s].', get_class($this), $languageCatalog, $languageCode));
         } else {
@@ -194,7 +194,7 @@ class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Core\Glo
         $this->catalogs[$languageCode][$languageCatalog] = &$L;
     }
 
-    private function extractLanguageCatalogStack(\Nethgui\Core\ModuleInterface $module)
+    private function extractLanguageCatalogStack(\Nethgui\Module\ModuleInterface $module)
     {
         $languageCatalogList = array();
 
@@ -211,9 +211,9 @@ class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Core\Glo
         return $languageCatalogList;
     }
 
-    public function setGlobalFunctionWrapper(\Nethgui\Core\GlobalFunctionWrapper $object)
+    public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
     {
-        $this->globalFunctionWrapper = $object;
+        $this->phpWrapper = $object;
     }
 
     public function getLog()

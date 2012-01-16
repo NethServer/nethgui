@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Core;
+namespace Nethgui\Module;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -33,31 +33,6 @@ namespace Nethgui\Core;
  */
 interface ModuleInterface
 {
-    /**
-     * Prepare the server view
-     *
-     * @api
-     */
-    const VIEW_SERVER = 0;
-    /**
-     * Prepare the client view
-     *
-     * @api
-     */
-    const VIEW_CLIENT = 1;
-    /**
-     * Prepare an help template
-     *
-     * @api
-     */
-    const VIEW_HELP = 2;
-
-    /**
-     * Sets the host configuration Model.
-     * @return ModuleInterface
-     * @api
-     */
-    public function setPlatform(\Nethgui\System\PlatformInterface $platform);
 
     /**
      * The Module Identifier is a string that univocally identifies a Module.

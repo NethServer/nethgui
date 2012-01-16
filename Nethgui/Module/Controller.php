@@ -39,7 +39,7 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
 
     /**
      * The action where to forward method calls
-     * @var \Nethgui\Core\ModuleInterface
+     * @var \Nethgui\Module\ModuleInterface
      */
     protected $currentAction;
     private $request;
@@ -100,7 +100,7 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
      * If the child is not found it returns NULL.
      * 
      * @param string $identifier 
-     * @return \Nethgui\Core\ModuleInterface
+     * @return \Nethgui\Module\ModuleInterface
      */
     public function getAction($identifier)
     {
@@ -114,7 +114,7 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
 
     protected function hasAction($identifier)
     {
-        return $this->getAction($identifier) instanceof \Nethgui\Core\ModuleInterface;
+        return $this->getAction($identifier) instanceof \Nethgui\Module\ModuleInterface;
     }
 
     /**
@@ -247,13 +247,13 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
     /**
      * Check if the given module is a leaf and can handle requests.
      * 
-     * @param \Nethgui\Core\ModuleInterface $module
+     * @param \Nethgui\Module\ModuleInterface $module
      * @return bool 
      */
-    protected function needsAutoFormWrap(\Nethgui\Core\ModuleInterface $module)
+    protected function needsAutoFormWrap(\Nethgui\Module\ModuleInterface $module)
     {
         return $module instanceof \Nethgui\Core\RequestHandlerInterface
-            && ! ($module instanceof \Nethgui\Core\ModuleCompositeInterface);
+            && ! ($module instanceof \Nethgui\Module\ModuleCompositeInterface);
     }
 
 }

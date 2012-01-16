@@ -20,7 +20,7 @@ namespace Nethgui\Core;
  * along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class ModuleLoader implements ModuleSetInterface, GlobalFunctionConsumerInterface, \Nethgui\Log\LogConsumerInterface
+class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Log\LogConsumerInterface
 {
 
     private $namespaceMap;
@@ -40,13 +40,13 @@ class ModuleLoader implements ModuleSetInterface, GlobalFunctionConsumerInterfac
      *
      * @var GlobalFunctionWrapper
      */
-    private $globalFunctionWrapper;
+    private $phpWrapper;
 
     public function __construct($namespaceMap)
     {
         $this->namespaceMap = $namespaceMap;
         $this->instanceCache = new \ArrayObject();
-        $this->globalFunctionWrapper = new GlobalFunctionWrapper;
+        $this->phpWrapper = new \Nethgui\Utility\PhpWrapper();
         $this->cacheIsFilled = FALSE;
     }
 
@@ -69,7 +69,7 @@ class ModuleLoader implements ModuleSetInterface, GlobalFunctionConsumerInterfac
 
             $path = $namespaceRootPath . '/' . $namespaceName . '/Module';
 
-            $files = $this->globalFunctionWrapper->scandir($path);
+            $files = $this->phpWrapper->scandir($path);
 
             if ($files === FALSE) {
                 throw new \UnexpectedValueException(sprintf("%s: `%s` is not a valid module directory!", get_class($this), $path), 1322649822);
@@ -107,7 +107,7 @@ class ModuleLoader implements ModuleSetInterface, GlobalFunctionConsumerInterfac
         while ($nsName = array_pop($namespaces)) {
             $className = $nsName . '\Module\\' . $moduleIdentifier;
 
-            if ( ! @$this->globalFunctionWrapper->class_exists($className)) {
+            if ( ! @$this->phpWrapper->class_exists($className)) {
                 continue;
             }
 
@@ -120,9 +120,9 @@ class ModuleLoader implements ModuleSetInterface, GlobalFunctionConsumerInterfac
         throw new \RuntimeException(sprintf("%s: `%s` is an unknown module identifier", get_class($this), $moduleIdentifier), 1322231262);
     }
 
-    public function setGlobalFunctionWrapper(GlobalFunctionWrapper $object)
+    public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
     {
-        $this->globalFunctionWrapper = $object;
+        $this->phpWrapper = $object;
     }
 
     public function getLog()

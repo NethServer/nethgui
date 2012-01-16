@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Core;
+namespace Nethgui\Utility;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -29,7 +29,7 @@ namespace Nethgui\Core;
  * @since 1.0
  * @api
  */
-class GlobalFunctionWrapper
+class PhpWrapper
 {
 
     public function __call($name, $arguments)

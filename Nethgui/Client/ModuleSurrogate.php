@@ -26,12 +26,12 @@ namespace Nethgui\Client;
  * 
  * @see DialogBox
  */
-class ModuleSurrogate implements \Nethgui\Core\ModuleInterface, \Serializable
+class ModuleSurrogate implements \Nethgui\Module\ModuleInterface, \Serializable
 {
 
     private $info;
 
-    public function __construct(\Nethgui\Core\ModuleInterface $originalModule)
+    public function __construct(\Nethgui\Module\ModuleInterface $originalModule)
     {
         $this->info = array();
 
@@ -39,7 +39,7 @@ class ModuleSurrogate implements \Nethgui\Core\ModuleInterface, \Serializable
         $this->info['getAttributesProvider'] = $originalModule->getAttributesProvider();
 
         $parent = $originalModule->getParent();
-        if ($parent instanceof \Nethgui\Core\ModuleInterface) {
+        if ($parent instanceof \Nethgui\Module\ModuleInterface) {
             $this->info['getParent'] = new self($parent);
         } else {
             $this->info['getParent'] = NULL;
@@ -81,7 +81,7 @@ class ModuleSurrogate implements \Nethgui\Core\ModuleInterface, \Serializable
         throw new \Exception('Not implemented ' . __METHOD__, 1323096816);
     }
 
-    public function setParent(\Nethgui\Core\ModuleInterface $parentModule)
+    public function setParent(\Nethgui\Module\ModuleInterface $parentModule)
     {
         throw new \Exception('Not implemented ' . __METHOD__, 1323096817);
     }

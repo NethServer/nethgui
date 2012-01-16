@@ -26,7 +26,7 @@ namespace Nethgui\Module;
  * @since 1.0
  * @api
  */
-abstract class AbstractModule implements \Nethgui\Core\ModuleInterface, \Nethgui\View\ViewableInterface, \Nethgui\Log\LogConsumerInterface
+abstract class AbstractModule implements \Nethgui\Module\ModuleInterface, \Nethgui\View\ViewableInterface, \Nethgui\Log\LogConsumerInterface
 {
 
     /**
@@ -36,7 +36,7 @@ abstract class AbstractModule implements \Nethgui\Core\ModuleInterface, \Nethgui
 
     /**
      *
-     * @var \Nethgui\Core\ModuleInterface;
+     * @var \Nethgui\Module\ModuleInterface;
      */
     private $parent;
     /*
@@ -123,7 +123,7 @@ abstract class AbstractModule implements \Nethgui\Core\ModuleInterface, \Nethgui
         return $this->identifier;
     }
 
-    public function setParent(\Nethgui\Core\ModuleInterface $parentModule)
+    public function setParent(\Nethgui\Module\ModuleInterface $parentModule)
     {
         $this->parent = $parentModule;
         return $this;
@@ -170,10 +170,10 @@ abstract class AbstractModule implements \Nethgui\Core\ModuleInterface, \Nethgui
      * Called after a default attributes provider object is created
      *
      * @see getAttributesProvider()
-     * @param \Nethgui\Core\ModuleAttributesInterface $descriptor
-     * @return \Nethgui\Core\ModuleAttributesInterface
+     * @param \Nethgui\Module\ModuleAttributesInterface $descriptor
+     * @return \Nethgui\Module\ModuleAttributesInterface
      */
-    protected function initializeAttributes(\Nethgui\Core\ModuleAttributesInterface $attributes)
+    protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $attributes)
     {
         return $attributes;
     }

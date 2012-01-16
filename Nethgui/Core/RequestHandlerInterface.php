@@ -38,6 +38,13 @@ interface RequestHandlerInterface
 {
 
     /**
+     * Sets the host configuration Model.
+     * @return \Nethgui\Core\RequestHandlerInterface
+     * @api
+     */
+    public function setPlatform(\Nethgui\System\PlatformInterface $platform);
+
+    /**
      * Put the request into the object internal state.
      * @param RequestInterface $request
      */

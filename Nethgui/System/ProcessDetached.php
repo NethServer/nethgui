@@ -25,7 +25,7 @@ namespace Nethgui\System;
  *
  * @see NethPlatform::exec()
  */
-class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionConsumerInterface, \Serializable
+class ProcessDetached implements ProcessInterface, \Nethgui\Utility\PhpConsumerInterface, \Serializable
 {
 
     /**
@@ -76,22 +76,22 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionC
 
     /**
      *
-     * @var \Nethgui\Core\GlobalFunctionWrapper
+     * @var \Nethgui\Utility\PhpWrapper
      */
-    protected $globalFunctionWrapper;
+    protected $phpWrapper;
 
     public function __construct($command, $arguments = array())
     {
-        $this->setGlobalFunctionWrapper(new \Nethgui\Core\GlobalFunctionWrapper());
+        $this->setPhpWrapper(new \Nethgui\Utility\PhpWrapper());
         $this->initialize();
         $this->innerCommand = new Process($this->shellBackgroundInvocation($command), $arguments);
         $this->identifier = strtoupper(uniqid());
-        $this->innerCommand->setGlobalFunctionWrapper($this->globalFunctionWrapper);
+        $this->innerCommand->setPhpWrapper($this->phpWrapper);
     }
 
-    public function setGlobalFunctionWrapper(\Nethgui\Core\GlobalFunctionWrapper $object)
+    public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
     {
-        $this->globalFunctionWrapper = $object;
+        $this->phpWrapper = $object;
     }
 
     private function initialize()
@@ -139,7 +139,7 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionC
 
     private function setExecutionState($newState)
     {
-        $this->times[$newState] = $this->globalFunctionWrapper->microtime(TRUE);
+        $this->times[$newState] = $this->phpWrapper->microtime(TRUE);
         $this->state = $newState;
         if ($newState === self::STATE_EXITED) {
             $this->exitStatus = $this->processId > 0 ? 0 : 1;
@@ -158,7 +158,7 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionC
 
     private function pollProcessState()
     {
-        if ($this->globalFunctionWrapper->is_readable(sprintf('/proc/%d', $this->processId))) {
+        if ($this->phpWrapper->is_readable(sprintf('/proc/%d', $this->processId))) {
             $this->setExecutionState(self::STATE_RUNNING);
         } else {
             $this->setExecutionState(self::STATE_EXITED);
@@ -182,7 +182,7 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionC
 
     public function getOutput()
     {
-        return $this->globalFunctionWrapper->file_get_contents($this->outputFile);
+        return $this->phpWrapper->file_get_contents($this->outputFile);
     }
 
     public function getOutputArray()
@@ -195,7 +195,7 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionC
         if ($this->readExecutionState() == self::STATE_RUNNING) {
             $killExitCode = NULL;
             $killOutput = array();
-            $this->globalFunctionWrapper->exec(sprintf('/bin/kill %d', $this->processId), $killOutput, $killExitCode);
+            $this->phpWrapper->exec(sprintf('/bin/kill %d', $this->processId), $killOutput, $killExitCode);
             if ($killExitCode === 0) {
                 $this->setExecutionState(self::STATE_EXITED);
                 return TRUE;
@@ -213,7 +213,7 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionC
             $this->outputFile,
             $this->processId,
             $this->exitStatus,
-            $this->globalFunctionWrapper,
+            $this->phpWrapper,
             $this->outputPosition,
             $this->times,
             $this->identifier,
@@ -234,7 +234,7 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionC
             return;
         }
 
-        if ($this->globalFunctionWrapper->microtime(TRUE) - floatval($this->times[self::STATE_EXITED]) > 300.0) {
+        if ($this->phpWrapper->microtime(TRUE) - floatval($this->times[self::STATE_EXITED]) > 300.0) {
             $this->dispose();
         }
     }
@@ -248,7 +248,7 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionC
             $this->outputFile,
             $this->processId,
             $this->exitStatus,
-            $this->globalFunctionWrapper,
+            $this->phpWrapper,
             $this->outputPosition,
             $this->times,
             $this->identifier,
@@ -307,8 +307,8 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Core\GlobalFunctionC
             return;
         }
 
-        @$this->globalFunctionWrapper->unlink($this->errorFile);
-        @$this->globalFunctionWrapper->unlink($this->outputFile);
+        @$this->phpWrapper->unlink($this->errorFile);
+        @$this->phpWrapper->unlink($this->outputFile);
     }
 
 }

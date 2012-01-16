@@ -26,7 +26,7 @@ namespace Nethgui\Module;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Resource extends \Nethgui\Module\Standard implements \Nethgui\View\CommandReceiverInterface, \Nethgui\Core\GlobalFunctionConsumerInterface
+class Resource extends \Nethgui\Module\Standard implements \Nethgui\View\CommandReceiverInterface, \Nethgui\Utility\PhpConsumerInterface
 {
 
     private $code;
@@ -35,7 +35,7 @@ class Resource extends \Nethgui\Module\Standard implements \Nethgui\View\Command
 
     /**
      *
-     * @var \Nethgui\Core\GlobalFunctionWrapper
+     * @var \Nethgui\Utility\PhpWrapper
      */
     private $php;
 
@@ -44,7 +44,7 @@ class Resource extends \Nethgui\Module\Standard implements \Nethgui\View\Command
         parent::__construct(NULL);
         $this->code = array();
         $this->useList = array();
-        $this->php = new \Nethgui\Core\GlobalFunctionWrapper;
+        $this->php = new \Nethgui\Utility\PhpWrapper;
     }
 
     public function bind(\Nethgui\Core\RequestInterface $request)
@@ -245,7 +245,7 @@ class Resource extends \Nethgui\Module\Standard implements \Nethgui\View\Command
         }
     }
 
-    public function setGlobalFunctionWrapper(\Nethgui\Core\GlobalFunctionWrapper $object)
+    public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
     {
         $this->php = $object;
     }

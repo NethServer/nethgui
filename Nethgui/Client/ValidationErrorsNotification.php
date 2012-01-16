@@ -42,7 +42,7 @@ class ValidationErrorsNotification extends AbstractNotification implements \Neth
         parent::__construct(parent::NOTIFY_ERROR, 'ValidationErrors', TRUE);
     }
 
-    public function addValidationErrorMessage(\Nethgui\Core\ModuleInterface $module, $parameterName, $message, $args = array())
+    public function addValidationErrorMessage(\Nethgui\Module\ModuleInterface $module, $parameterName, $message, $args = array())
     {
         $this->errors[] = array(
             'module' => new ModuleSurrogate($module),
@@ -52,7 +52,7 @@ class ValidationErrorsNotification extends AbstractNotification implements \Neth
         );
     }
 
-    public function addValidationError(\Nethgui\Core\ModuleInterface $module, $parameterName, \Nethgui\System\ValidatorInterface $validator)
+    public function addValidationError(\Nethgui\Module\ModuleInterface $module, $parameterName, \Nethgui\System\ValidatorInterface $validator)
     {
         foreach ($validator->getFailureInfo() as $failureInfo) {
             if ( ! isset($failureInfo[1])) {

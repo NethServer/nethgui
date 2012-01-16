@@ -39,14 +39,14 @@ use Nethgui\Exception\AuthorizationException;
  * @since 1.0
  * @internal
  */
-class ConfigurationDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Authorization\PolicyEnforcementPointInterface, \Nethgui\Core\GlobalFunctionConsumerInterface
+class ConfigurationDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Authorization\PolicyEnforcementPointInterface, \Nethgui\Utility\PhpConsumerInterface
 {
 
     /**
      *
-     * @var \Nethgui\Core\GlobalFunctionWrapper
+     * @var \Nethgui\Utility\PhpWrapper
      */
-    private $globalFunctionWrapper;
+    private $phpWrapper;
 
     /**
      * @var PolicyDecisionPointInterface;
@@ -288,9 +288,9 @@ class ConfigurationDatabase implements \Nethgui\System\DatabaseInterface, \Nethg
         return ($ret == 0);
     }
 
-    public function setGlobalFunctionWrapper(\Nethgui\Core\GlobalFunctionWrapper $object)
+    public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
     {
-        $this->globalFunctionWrapper = $object;
+        $this->phpWrapper = $object;
     }
 
     private function dbExec($command, $args, &$output)
@@ -298,8 +298,8 @@ class ConfigurationDatabase implements \Nethgui\System\DatabaseInterface, \Nethg
         // prepend the database name and command
         array_unshift($args, $this->db, $command);
         $p = new Process($this->command . ' ${@}', $args);
-        if (isset($this->globalFunctionWrapper)) {
-            $p->setGlobalFunctionWrapper($this->globalFunctionWrapper);
+        if (isset($this->phpWrapper)) {
+            $p->setPhpWrapper($this->phpWrapper);
         }
         $p->exec();
         $output = $p->getOutput();

@@ -23,18 +23,18 @@ namespace Nethgui\Module\Help;
 /**
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class Common extends \Nethgui\Module\Standard implements \Nethgui\Core\GlobalFunctionConsumerInterface
+class Common extends \Nethgui\Module\Standard implements \Nethgui\Utility\PhpConsumerInterface
 {
 
     /**
      *
-     * @var \Nethgui\Core\ModuleInterface
+     * @var \Nethgui\Module\ModuleInterface
      */
     private $module;
 
     /**
      *
-     * @return \Nethgui\Core\ModuleSetInterface $moduleSet
+     * @return \Nethgui\Module\ModuleSetInterface $moduleSet
      * @return Menu
      */
     public function getModuleSet()
@@ -44,14 +44,14 @@ class Common extends \Nethgui\Module\Standard implements \Nethgui\Core\GlobalFun
 
     /**
      *
-     * @var \Nethgui\Core\GlobalFunctionWrapper
+     * @var \Nethgui\Utility\PhpWrapper
      */
     protected $globalFunctions;
 
     public function __construct($identifier = NULL)
     {
         parent::__construct($identifier);
-        $this->globalFunctions = new \Nethgui\Core\GlobalFunctionWrapper();
+        $this->globalFunctions = new \Nethgui\Utility\PhpWrapper();
     }
 
     public function bind(\Nethgui\Core\RequestInterface $request)
@@ -84,14 +84,14 @@ class Common extends \Nethgui\Module\Standard implements \Nethgui\Core\GlobalFun
     }
 
     /**
-     * @return \Nethgui\Core\ModuleInterface
+     * @return \Nethgui\Module\ModuleInterface
      */
     protected function getTargetModule()
     {
         return $this->module;
     }
 
-    protected function getHelpDocumentPath(\Nethgui\Core\ModuleInterface $module)
+    protected function getHelpDocumentPath(\Nethgui\Module\ModuleInterface $module)
     {
         $parts = explode('\\', get_class($module));
 
@@ -107,7 +107,7 @@ class Common extends \Nethgui\Module\Standard implements \Nethgui\Core\GlobalFun
         return $this->fileNameResolver;
     }
 
-    public function setGlobalFunctionWrapper(\Nethgui\Core\GlobalFunctionWrapper $object)
+    public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
     {
         $this->globalFunctions = $object;
     }

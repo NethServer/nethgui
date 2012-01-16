@@ -112,10 +112,10 @@ class TableController extends \Nethgui\Module\Controller
      * of ActionInterface.
      *
      * @see \Nethgui\Module\Table\TableActionInterface
-     * @param \Nethgui\Core\ModuleInterface $childModule
+     * @param \Nethgui\Module\ModuleInterface $childModule
      * @return TableController
      */
-    public function addChild(\Nethgui\Core\ModuleInterface $childModule)
+    public function addChild(\Nethgui\Module\ModuleInterface $childModule)
     {
         parent::addChild($childModule);
         if ( ! is_null($this->tableAdapter)
@@ -131,7 +131,7 @@ class TableController extends \Nethgui\Module\Controller
      * @see getRowActions()
      * @return TableController
      */
-    public function addRowAction(\Nethgui\Core\ModuleInterface $a)
+    public function addRowAction(\Nethgui\Module\ModuleInterface $a)
     {
         $this->rowActions[] = $a;
         $this->addChild($a);
@@ -153,7 +153,7 @@ class TableController extends \Nethgui\Module\Controller
      * @see getTableActions()
      * @return TableController
      */
-    public function addTableAction(\Nethgui\Core\ModuleInterface $a)
+    public function addTableAction(\Nethgui\Module\ModuleInterface $a)
     {
         $this->tableActions[] = $a;
         $this->addChild($a);
@@ -172,7 +172,7 @@ class TableController extends \Nethgui\Module\Controller
     public function renderIndex(\Nethgui\Renderer\Xhtml $renderer)
     {
         $renderer->includeFile('jquery.nethgui.controller.js', 'Nethgui');
-        $this->sortChildren(function(\Nethgui\Core\ModuleInterface $a, \Nethgui\Core\ModuleInterface $b) {
+        $this->sortChildren(function(\Nethgui\Module\ModuleInterface $a, \Nethgui\Module\ModuleInterface $b) {
                 if ($a->getIdentifier() === 'read') {
                     return -1;
                 } elseif ($b->getIdentifier() === 'read') {
@@ -184,7 +184,7 @@ class TableController extends \Nethgui\Module\Controller
         return parent::renderIndex($renderer);
     }
 
-    public function onParametersSaved(\Nethgui\Core\ModuleInterface $currentAction, $changes)
+    public function onParametersSaved(\Nethgui\Module\ModuleInterface $currentAction, $changes)
     {
         // NOOP;
     }

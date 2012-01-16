@@ -25,7 +25,7 @@ namespace Nethgui\Core;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class SimpleModuleAttributesProvider implements ModuleAttributesInterface
+class SimpleModuleAttributesProvider implements \Nethgui\Module\ModuleAttributesInterface
 {
 
     protected $title, $category, $description, $languageCatalog, $tags, $menuPosition;
@@ -33,10 +33,10 @@ class SimpleModuleAttributesProvider implements ModuleAttributesInterface
     /**
      * Create a new instance from basic module informations
      * 
-     * @param \Nethgui\Core\ModuleInterface $module
+     * @param \Nethgui\Module\ModuleInterface $module
      * @return SimpleModuleAttributesProvider 
      */
-    public function initializeFromModule(\Nethgui\Core\ModuleInterface $module)
+    public function initializeFromModule(\Nethgui\Module\ModuleInterface $module)
     {
         $i = $module->getIdentifier();
         $this->title = $i . '_Title';
@@ -50,12 +50,12 @@ class SimpleModuleAttributesProvider implements ModuleAttributesInterface
     /**
      * Set category and menuPosition values
      * 
-     * @param \Nethgui\Core\ModuleAttributesInterface $base
+     * @param \Nethgui\Module\ModuleAttributesInterface $base
      * @param string $category
      * @param string $menuPosition
      * @return SimpleModuleAttributesProvider
      */
-    public static function extendModuleAttributes(\Nethgui\Core\ModuleAttributesInterface $base, $category = NULL, $menuPosition = NULL)
+    public static function extendModuleAttributes(\Nethgui\Module\ModuleAttributesInterface $base, $category = NULL, $menuPosition = NULL)
     {
         $o = new static();
 

@@ -39,7 +39,7 @@ class DialogBox extends \Nethgui\Client\AbstractNotification
     private $actions;
     private $module;
 
-    public function __construct(\Nethgui\Core\ModuleInterface $module, $message, $actions = array(), $style = 0)
+    public function __construct(\Nethgui\Module\ModuleInterface $module, $message, $actions = array(), $style = 0)
     {
         if ( ! $module instanceof ModuleSurrogate) {
             $module = new ModuleSurrogate($module);

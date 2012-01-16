@@ -79,17 +79,17 @@ interface ViewInterface extends \ArrayAccess, \IteratorAggregate
      * Create a new view object associated to $module
      *
      * @api
-     * @param \Nethgui\Core\ModuleInterface $module The associated $module
+     * @param \Nethgui\Module\ModuleInterface $module The associated $module
      * @param boolean Optional If TRUE the returned view is added to the current object with key equal to the module identifier
      * @return \Nethgui\View\ViewInterface The new view object, of the same type of the actual.
      */
-    public function spawnView(\Nethgui\Core\ModuleInterface $module, $register = FALSE);
+    public function spawnView(\Nethgui\Module\ModuleInterface $module, $register = FALSE);
 
     /**
      * The module associated to this view.
      *
      * @api
-     * @return \Nethgui\Core\ModuleInterface
+     * @return \Nethgui\Module\ModuleInterface
      */
     public function getModule();
 

@@ -25,7 +25,7 @@ namespace Nethgui\System;
  *
  * @see NethPlatform::exec()
  */
-class Process implements ProcessInterface, \Nethgui\Core\GlobalFunctionConsumerInterface
+class Process implements ProcessInterface, \Nethgui\Utility\PhpConsumerInterface
 {
 
     /**
@@ -70,13 +70,13 @@ class Process implements ProcessInterface, \Nethgui\Core\GlobalFunctionConsumerI
 
     /**
      *
-     * @var \Nethgui\Core\GlobalFunctionWrapper
+     * @var \Nethgui\Utility\PhpWrapper
      */
-    private $globalFunctionWrapper;
+    private $phpWrapper;
 
     public function __construct($command, $arguments = array())
     {
-        $this->globalFunctionWrapper = new \Nethgui\Core\GlobalFunctionWrapper();
+        $this->phpWrapper = new \Nethgui\Utility\PhpWrapper();
         $this->arguments = $arguments;
         $this->command = $command;
         $this->changeState(self::STATE_NEW);
@@ -112,7 +112,7 @@ class Process implements ProcessInterface, \Nethgui\Core\GlobalFunctionConsumerI
         }
 
         $this->changeState(self::STATE_RUNNING);
-        $this->globalFunctionWrapper->exec($this->prepareEscapedCommand(), $this->output, $this->exitStatus);
+        $this->phpWrapper->exec($this->prepareEscapedCommand(), $this->output, $this->exitStatus);
         $this->changeState(self::STATE_EXITED);
         return $this;
     }
@@ -165,9 +165,9 @@ class Process implements ProcessInterface, \Nethgui\Core\GlobalFunctionConsumerI
         return $this->state;
     }
 
-    public function setGlobalFunctionWrapper(\Nethgui\Core\GlobalFunctionWrapper $object)
+    public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
     {
-        $this->globalFunctionWrapper = $object;
+        $this->phpWrapper = $object;
     }
 
     public function readOutput()

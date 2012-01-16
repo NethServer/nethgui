@@ -37,7 +37,7 @@ class Menu extends \Nethgui\Module\Standard
 
     /**
      *
-     * @var \Nethgui\Core\ModuleSetInterface
+     * @var \Nethgui\Module\ModuleSetInterface
      */
     private $moduleSet;
 
@@ -54,10 +54,10 @@ class Menu extends \Nethgui\Module\Standard
 
     /**
      *
-     * @param \Nethgui\Core\ModuleSetInterface $moduleSet
+     * @param \Nethgui\Module\ModuleSetInterface $moduleSet
      * @return Menu
      */
-    public function setModuleSet(\Nethgui\Core\ModuleSetInterface $moduleSet)
+    public function setModuleSet(\Nethgui\Module\ModuleSetInterface $moduleSet)
     {
         $this->moduleSet = $moduleSet;
         return $this;
@@ -79,7 +79,7 @@ class Menu extends \Nethgui\Module\Standard
         $results = array();
 
         foreach ($this->moduleSet as $module) {
-            if ( ! $module instanceof \Nethgui\Core\ModuleInterface) {
+            if ( ! $module instanceof \Nethgui\Module\ModuleInterface) {
                 continue;
             }
 
@@ -120,7 +120,7 @@ class Menu extends \Nethgui\Module\Standard
         $categoryOrder = array_flip(array_map('trim', explode(',', $view->translate('Category_Order'))));
 
         foreach ($this->moduleSet as $moduleIdentifier => $moduleInstance) {
-            if ( ! $moduleInstance instanceof \Nethgui\Core\ModuleInterface) {
+            if ( ! $moduleInstance instanceof \Nethgui\Module\ModuleInterface) {
                 continue;
             }
 

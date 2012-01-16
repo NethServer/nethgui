@@ -31,7 +31,7 @@ namespace Nethgui\Module;
  * @see Controller
  * @see List
  */
-abstract class Composite extends AbstractModule implements \Nethgui\Core\ModuleCompositeInterface
+abstract class Composite extends AbstractModule implements \Nethgui\Module\ModuleCompositeInterface
 {
 
     private $children = array();
@@ -55,10 +55,10 @@ abstract class Composite extends AbstractModule implements \Nethgui\Core\ModuleC
      * Adds a child to Composite, initializing it, if current Composite is
      * initialized.
      * 
-     * @param \Nethgui\Core\ModuleInterface $childModule
+     * @param \Nethgui\Module\ModuleInterface $childModule
      * @return Composite
      */
-    public function addChild(\Nethgui\Core\ModuleInterface $childModule)
+    public function addChild(\Nethgui\Module\ModuleInterface $childModule)
     {
         if (isset($this->children[$childModule->getIdentifier()])) {
             throw new \LogicException(sprintf('%s: the module identifier "%s" is already registered as child!', __CLASS__, $childModule->getIdentifier()), 1322818691);

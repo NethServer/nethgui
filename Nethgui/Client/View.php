@@ -36,7 +36,7 @@ namespace Nethgui\Client;
  * prepareView() operation.
  *
  * @author Davide Principi <davide.principi@nethesis.it>
- * @see \Nethgui\Core\ModuleInterface::prepareView()
+ * @see \Nethgui\Module\ModuleInterface::prepareView()
  * @since 1.0
 
  */
@@ -45,7 +45,7 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
 
     /**
      * Reference to associated module
-     * @var \Nethgui\Core\ModuleInterface
+     * @var \Nethgui\Module\ModuleInterface
      */
     private $module;
 
@@ -113,11 +113,11 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
     /**
      *
      * @param string $targetFormat The target format file extension of the final view output
-     * @param \Nethgui\Core\ModuleInterface $module
+     * @param \Nethgui\Module\ModuleInterface $module
      * @param \Nethgui\View\TranslatorInterface $translator
      * @param array $urlParts An array of three strings corresponding to <siteUrl, pathUrl, controllerPath>
      */
-    public function __construct($targetFormat, \Nethgui\Core\ModuleInterface $module, \Nethgui\View\TranslatorInterface $translator, $urlParts = array())
+    public function __construct($targetFormat, \Nethgui\Module\ModuleInterface $module, \Nethgui\View\TranslatorInterface $translator, $urlParts = array())
     {
         $this->module = $module;
         $this->translator = $translator;
@@ -155,7 +155,7 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
         return $this->template;
     }
 
-    public function spawnView(\Nethgui\Core\ModuleInterface $module, $register = FALSE)
+    public function spawnView(\Nethgui\Module\ModuleInterface $module, $register = FALSE)
     {
         $spawnedView = new static($this->targetFormat, $module, $this->translator, array($this->siteUrl, $this->pathUrl, $this->controllerPath));
         $spawnedView->setReceiver($this->receiver);

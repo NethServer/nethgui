@@ -28,16 +28,16 @@ class Help extends \Nethgui\Module\Controller
 
     /**
      *
-     * @var \Nethgui\Core\ModuleSetInterface
+     * @var \Nethgui\Module\ModuleSetInterface
      */
     private $moduleSet;
 
     /**
      *
-     * @param \Nethgui\Core\ModuleSetInterface $moduleSet
+     * @param \Nethgui\Module\ModuleSetInterface $moduleSet
      * @return Menu
      */
-    public function setModuleSet(\Nethgui\Core\ModuleSetInterface $moduleSet)
+    public function setModuleSet(\Nethgui\Module\ModuleSetInterface $moduleSet)
     {
         $this->moduleSet = $moduleSet;
         return $this;

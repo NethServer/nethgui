@@ -27,7 +27,7 @@ class Syslog extends AbstractLog
 {
     public function message($level, $message)
     {
-        $this->globalFunctionWrapper->error_log(sprintf('[%s] %s', strtoupper($level), $message));
+        $this->phpWrapper->error_log(sprintf('[%s] %s', strtoupper($level), $message));
         return $this;
     }
 }

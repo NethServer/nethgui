@@ -28,7 +28,7 @@ namespace Nethgui\System;
  * @since 1.0
  * @api 
  */
-interface ProcessInterface extends \Nethgui\Core\DisposableInterface
+interface ProcessInterface extends \Nethgui\Utility\DisposableInterface
 {
     const STATE_NEW = 0;
     const STATE_RUNNING = 1;

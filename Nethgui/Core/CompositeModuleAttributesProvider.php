@@ -32,10 +32,10 @@ class CompositeModuleAttributesProvider extends SimpleModuleAttributesProvider
     /**
      * Extends the attributes from the composite module
      * 
-     * @param \Nethgui\Core\ModuleCompositeInterface $composite
+     * @param \Nethgui\Module\ModuleCompositeInterface $composite
      * @return CompositeModuleAttributesProvider
      */
-    public function extendFromComposite(\Nethgui\Core\ModuleCompositeInterface $composite)
+    public function extendFromComposite(\Nethgui\Module\ModuleCompositeInterface $composite)
     {
         $tags = array($this->getTags());
 

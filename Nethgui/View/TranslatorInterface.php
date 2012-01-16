@@ -39,7 +39,7 @@ interface TranslatorInterface
      * @param string $languageCode
      * @return string
      */
-    public function translate(\Nethgui\Core\ModuleInterface $module, $string, $args = array(), $languageCode = NULL);
+    public function translate(\Nethgui\Module\ModuleInterface $module, $string, $args = array(), $languageCode = NULL);
 
     /**
      * Get the default language code

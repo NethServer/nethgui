@@ -89,7 +89,7 @@ class ReadonlyView implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsu
         return $this->view->getTemplate();
     }
 
-    public function spawnView(\Nethgui\Core\ModuleInterface $module, $register = FALSE)
+    public function spawnView(\Nethgui\Module\ModuleInterface $module, $register = FALSE)
     {
         throw new \LogicException('Readonly view: cannot spawn another view!', 1322149484);
     }

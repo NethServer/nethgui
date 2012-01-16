@@ -29,7 +29,7 @@ namespace Nethgui\Renderer;
  * @since 1.0
  * @api
  */
-class TemplateRenderer extends AbstractRenderer implements \Nethgui\Core\GlobalFunctionConsumerInterface, \Nethgui\Core\ModuleAttributesInterface
+class TemplateRenderer extends AbstractRenderer implements \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Module\ModuleAttributesInterface
 {
 
     /**
@@ -39,9 +39,9 @@ class TemplateRenderer extends AbstractRenderer implements \Nethgui\Core\GlobalF
     private $templateResolver;
 
     /**
-     * @var \Nethgui\Core\GlobalFunctionWrapper
+     * @var \Nethgui\Utility\PhpWrapper
      */
-    protected $globalFunctionWrapper;
+    protected $phpWrapper;
 
     /**
      *
@@ -57,7 +57,7 @@ class TemplateRenderer extends AbstractRenderer implements \Nethgui\Core\GlobalF
         }
         parent::__construct($view);
         $this->templateResolver = $templateResolver;
-        $this->globalFunctionWrapper = new \Nethgui\Core\GlobalFunctionWrapper();
+        $this->phpWrapper = new \Nethgui\Utility\PhpWrapper();
         $this->contentType = $contentType;
         $this->charset = $charset;
     }
@@ -116,7 +116,7 @@ class TemplateRenderer extends AbstractRenderer implements \Nethgui\Core\GlobalF
 
             // Rendered by PHP script
             ob_start();
-            $this->globalFunctionWrapper->phpInclude($absoluteViewPath, $viewState);
+            $this->phpWrapper->phpInclude($absoluteViewPath, $viewState);
             $viewOutput = ob_get_contents();
             ob_end_clean();
         } else {
@@ -126,9 +126,9 @@ class TemplateRenderer extends AbstractRenderer implements \Nethgui\Core\GlobalF
         return $viewOutput;
     }
 
-    public function setGlobalFunctionWrapper(\Nethgui\Core\GlobalFunctionWrapper $object)
+    public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
     {
-        $this->globalFunctionWrapper = $object;
+        $this->phpWrapper = $object;
     }
 
     public function getCategory()

@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Core;
+namespace Nethgui\Utility;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -21,31 +21,10 @@ namespace Nethgui\Core;
  */
 
 /**
- * A complex module, composed by other modules, must implement this interface.
- *
- * @author Davide Principi <davide.principi@nethesis.it>
- * @since 1.0
- * @api
+ * Classes that interacts with the global environment should wrap global operations
+ * into a GlobalFunctionWrapper object to facilitate unit testing.
  */
-interface ModuleCompositeInterface
+interface PhpConsumerInterface
 {
-
-    /**
-     * @api
-     * @return array An array of ModuleInterface implementing objects.
-     */
-    public function getChildren();
-
-    /**
-     * Adds a child to this Composite. Implementations must send a setParent()
-     * message to $module.
-     *
-     * @todo Add return $this on implementations
-     *
-     * @api
-     * @param ModuleInterface $module The child module.
-     * @return ModuleCompositeInterface The composite module
-     */
-    public function addChild(\Nethgui\Core\ModuleInterface $module);
+    public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object);
 }
-
