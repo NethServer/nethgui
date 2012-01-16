@@ -90,8 +90,10 @@ class Modify extends Action
      */
     public function bind(\Nethgui\Core\RequestInterface $request)
     {
+        $this->tableAdapter = $this->getAdapter();
+
         if (is_null($this->tableAdapter)) {
-            throw new \LogicException(sprintf('%s: you must setTableAdapter() before bind()', get_class($this)), 1325673694);
+            throw new \LogicException(sprintf('%s: you must setTableAdapter() on %s before bind().', __CLASS__, $this->getParent()->getIdentifier()), 1325673694);
         }
 
         if (is_null($this->key)) {

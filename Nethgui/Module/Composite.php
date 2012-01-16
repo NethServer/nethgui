@@ -90,11 +90,20 @@ abstract class Composite extends AbstractModule implements \Nethgui\Module\Modul
 
     public function setPlatform(\Nethgui\System\PlatformInterface $platform)
     {
-        parent::setPlatform($platform);
+        $this->platform = $platform;
         foreach ($this->getChildren() as $childModule) {
             $childModule->setPlatform($platform);
         }
         return $this;
+    }
+
+    /**
+     *
+     * @return \Nethgui\System\PlatformInterface
+     */
+    protected function getPlatform()
+    {
+        return $this->platform;
     }
 
     /**

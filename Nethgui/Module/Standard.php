@@ -30,6 +30,7 @@ namespace Nethgui\Module;
  */
 abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestHandlerInterface
 {
+
     /**
      * This collection holds the parameter values as primitive datatype or adapter objects.
      * @var \Nethgui\Core\ParameterSet
@@ -56,6 +57,11 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
     private $request;
 
     /**
+     * @var \Nethgui\System\PlatformInterface
+     */
+    private $platform;
+
+    /**
      * @param string $identifier
      */
     public function __construct($identifier = NULL)
@@ -63,6 +69,23 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
         parent::__construct($identifier);
         $this->parameters = new \Nethgui\Core\ParameterSet();
         $this->request = NullRequest::getInstance();
+    }
+
+    public function setPlatform(\Nethgui\System\PlatformInterface $platform)
+    {
+        $this->platform = $platform;
+        if ($platform instanceof \Nethgui\Log\LogConsumerInterface) {
+            $this->setLog($platform->getLog());
+        }
+        return $this;
+    }
+
+    /**
+     * @return \Nethgui\System\PlatformInterface
+     */
+    protected function getPlatform()
+    {
+        return $this->platform;
     }
 
     /**

@@ -27,25 +27,28 @@ namespace Nethgui\Module\Table;
  * @since 1.0
  * @api
  */
-abstract class Action extends \Nethgui\Module\Standard implements TableActionInterface, \Nethgui\Module\ActionInterface
+abstract class Action extends \Nethgui\Module\Standard implements \Nethgui\Module\ActionInterface, \Nethgui\Adapter\AdapterAggregateInterface
 {
 
     /**
-     * @var \Nethgui\Adapter\AdapterInterface
+     * @return \Nethgui\Adapter\AdapterInterface
      */
-    protected $tableAdapter;
-
-    public function setTableAdapter(\Nethgui\Adapter\AdapterInterface $tableAdapter)
+    public function getAdapter()
     {
-        if ( ! $this->hasTableAdapter()) {
-            $this->tableAdapter = $tableAdapter;
+        if ( ! $this->getParent() instanceof \Nethgui\Adapter\AdapterAggregateInterface) {
+            throw new \LogicException(sprintf('%s: the parent module must implement \Nethgui\Adapter\AdapterAggregateInterface', __CLASS__), 1326732824);
         }
-        return $this;
+
+        return $this->getParent()->getAdapter();
     }
 
-    public function hasTableAdapter()
+    /**
+     *
+     * @return bool
+     */
+    public function hasAdapter()
     {
-        return ! is_null($this->tableAdapter);
+        return $this->getAdapter() instanceof \Nethgui\Adapter\AdapterInterface;
     }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)

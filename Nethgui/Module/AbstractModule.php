@@ -45,11 +45,6 @@ abstract class AbstractModule implements \Nethgui\Module\ModuleInterface, \Nethg
     private $initialized = FALSE;
 
     /**
-     * @var \Nethgui\System\PlatformInterface
-     */
-    private $platform;
-
-    /**
      *
      * @var \Nethgui\Log\LogInterface
      */
@@ -77,28 +72,6 @@ abstract class AbstractModule implements \Nethgui\Module\ModuleInterface, \Nethg
         } else {
             $this->identifier = \Nethgui\array_end(explode('\\', get_class($this)));
         }
-    }
-
-    public function setPlatform(\Nethgui\System\PlatformInterface $platform)
-    {
-        $this->platform = $platform;
-
-        if (is_null($this->log) && $platform instanceof \Nethgui\Log\LogConsumerInterface) {
-            $log = $platform->getLog();
-            if ($log instanceof \Nethgui\Log\LogInterface) {
-                $this->setLog($log);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return \Nethgui\System\PlatformInterface
-     */
-    protected function getPlatform()
-    {
-        return $this->platform;
     }
 
     /**

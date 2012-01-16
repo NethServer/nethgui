@@ -33,7 +33,7 @@ namespace Nethgui\Module;
  * @since 1.0
  * @api
  */
-class TableController extends \Nethgui\Module\Controller
+class TableController extends \Nethgui\Module\Controller implements \Nethgui\Adapter\AdapterAggregateInterface
 {
 
     /**
@@ -58,25 +58,26 @@ class TableController extends \Nethgui\Module\Controller
      */
     private $tableAdapter = NULL;
 
+    /**
+     * Set the adapter object that gives access to the database table
+     * 
+     * @param \Nethgui\Adapter\AdapterInterface $tableAdapter
+     * @return TableController
+     */
     protected function setTableAdapter(\Nethgui\Adapter\AdapterInterface $tableAdapter)
     {
         $this->tableAdapter = $tableAdapter;
-
-        /*
-         * Propagate the table adapter object to every children, if
-         * it has not been done before by addChild()
-         */
-        $actions = array_merge(array($this->readAction), $this->rowActions, $this->tableActions);
-
-        foreach ($actions as $action) {
-            if ( ! $action instanceof \Nethgui\Module\Table\TableActionInterface || $action->hasTableAdapter()) {
-                continue;
-            }
-
-            $action->setTableAdapter($this->tableAdapter);
-        }
-
         return $this;
+    }
+
+    public function getAdapter()
+    {
+        return $this->tableAdapter;
+    }
+
+    public function hasAdapter()
+    {
+        return $this->tableAdapter instanceof \Nethgui\Adapter\AdapterInterface;
     }
 
     /**
@@ -105,25 +106,6 @@ class TableController extends \Nethgui\Module\Controller
          * adapter has been set BEFORE the child initialization
          */
         parent::initialize();
-    }
-
-    /**
-     * Add a child setting its table adapter, if the child is an instance
-     * of ActionInterface.
-     *
-     * @see \Nethgui\Module\Table\TableActionInterface
-     * @param \Nethgui\Module\ModuleInterface $childModule
-     * @return TableController
-     */
-    public function addChild(\Nethgui\Module\ModuleInterface $childModule)
-    {
-        parent::addChild($childModule);
-        if ( ! is_null($this->tableAdapter)
-            && $childModule instanceof \Nethgui\Module\Table\TableActionInterface
-            && ! $childModule->hasTableAdapter()) {
-            $childModule->setTableAdapter($this->tableAdapter);
-        }
-        return $this;
     }
 
     /**
