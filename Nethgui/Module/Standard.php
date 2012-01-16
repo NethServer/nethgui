@@ -96,7 +96,7 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
         }
 
         // At this point $validator MUST be an object implementing the right interface
-        if ( ! $validator instanceof \Nethgui\Core\ValidatorInterface) {
+        if ( ! $validator instanceof \Nethgui\System\ValidatorInterface) {
             throw new \InvalidArgumentException(sprintf('%s: Invalid validator instance for parameter `%s`', get_class($this), $parameterName), 1322149486);
         }
 

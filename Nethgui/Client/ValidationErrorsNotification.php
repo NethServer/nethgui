@@ -52,7 +52,7 @@ class ValidationErrorsNotification extends AbstractNotification implements \Neth
         );
     }
 
-    public function addValidationError(\Nethgui\Core\ModuleInterface $module, $parameterName, \Nethgui\Core\ValidatorInterface $validator)
+    public function addValidationError(\Nethgui\Core\ModuleInterface $module, $parameterName, \Nethgui\System\ValidatorInterface $validator)
     {
         foreach ($validator->getFailureInfo() as $failureInfo) {
             if ( ! isset($failureInfo[1])) {

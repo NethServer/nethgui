@@ -255,7 +255,7 @@ interface PlatformInterface
      *
      * @api
      * @param int ... One of the VALID_* constants
-     * @return \Nethgui\Core\ValidatorInterface
+     * @return \Nethgui\System\ValidatorInterface
      */
     public function createValidator();
 

@@ -24,7 +24,7 @@ namespace Nethgui\System;
  * 
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class Validator implements \Nethgui\Core\ValidatorInterface
+class Validator implements \Nethgui\System\ValidatorInterface
 {
 
     private $chain = array();
@@ -43,11 +43,11 @@ class Validator implements \Nethgui\Core\ValidatorInterface
 
     /**
      *
-     * @param \Nethgui\Core\ValidatorInterface $v1
-     * @param \Nethgui\Core\ValidatorInterface $v2
+     * @param \Nethgui\System\ValidatorInterface $v1
+     * @param \Nethgui\System\ValidatorInterface $v2
      * @return Nethgui_Core_Validator
      */
-    public function orValidator(\Nethgui\Core\ValidatorInterface $v1, \Nethgui\Core\ValidatorInterface $v2)
+    public function orValidator(\Nethgui\System\ValidatorInterface $v1, \Nethgui\System\ValidatorInterface $v2)
     {
         $this->chain[] = new OrValidator($v1, $v2);
         return $this;
@@ -338,7 +338,7 @@ class Validator implements \Nethgui\Core\ValidatorInterface
                     $this->failureInfo[] = $expression[3];
                     return FALSE;
                 }
-            } elseif ($expression instanceof \Nethgui\Core\ValidatorInterface) {
+            } elseif ($expression instanceof \Nethgui\System\ValidatorInterface) {
                 $isValid = $expression->evaluate($value);
                 if (($isValid XOR $notFlag) === FALSE) {
                     $this->failureInfo = array_merge($this->failureInfo, $expression->getFailureInfo());
@@ -602,12 +602,12 @@ class Validator implements \Nethgui\Core\ValidatorInterface
  * @author Davide Principi <davide.principi@nethesis.it>
  * @internal
  */
-class CollectionValidator implements \Nethgui\Core\ValidatorInterface
+class CollectionValidator implements \Nethgui\System\ValidatorInterface
 {
 
     /**
      *
-     * @var \Nethgui\Core\ValidatorInterface
+     * @var \Nethgui\System\ValidatorInterface
      */
     private $memberValidator;
     private $failureInfo;
@@ -618,7 +618,7 @@ class CollectionValidator implements \Nethgui\Core\ValidatorInterface
      */
     private $iterator;
 
-    public function __construct(\Nethgui\Core\ValidatorInterface $memberValidator)
+    public function __construct(\Nethgui\System\ValidatorInterface $memberValidator)
     {
         $this->memberValidator = $memberValidator;
     }
@@ -662,23 +662,23 @@ class CollectionValidator implements \Nethgui\Core\ValidatorInterface
  * @see Validator::orValidator()
  * @internal
  */
-class OrValidator implements \Nethgui\Core\ValidatorInterface
+class OrValidator implements \Nethgui\System\ValidatorInterface
 {
 
     /**
      *
-     * @var \Nethgui\Core\ValidatorInterface
+     * @var \Nethgui\System\ValidatorInterface
      */
     private $v1;
 
     /**
      *
-     * @var \Nethgui\Core\ValidatorInterface
+     * @var \Nethgui\System\ValidatorInterface
      */
     private $v2;
     private $failureInfo;
 
-    public function __construct(\Nethgui\Core\ValidatorInterface $v1, \Nethgui\Core\ValidatorInterface $v2)
+    public function __construct(\Nethgui\System\ValidatorInterface $v1, \Nethgui\System\ValidatorInterface $v2)
     {
         $this->v1 = $v1;
         $this->v2 = $v2;

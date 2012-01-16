@@ -43,7 +43,7 @@ interface ValidationReportInterface
      * @param string $parameterName
      * @param ValidatorInterface $validator
      */
-    public function addValidationError(\Nethgui\Core\ModuleInterface $module, $parameterName, \Nethgui\Core\ValidatorInterface $validator);
+    public function addValidationError(\Nethgui\Core\ModuleInterface $module, $parameterName, \Nethgui\System\ValidatorInterface $validator);
 
     /**
      * Check if a validation error has been added.
