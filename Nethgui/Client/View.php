@@ -70,7 +70,7 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
 
     /**
      *
-     * @var \Nethgui\Core\TranslatorInterface;
+     * @var \Nethgui\View\TranslatorInterface;
      */
     private $translator;
 
@@ -114,10 +114,10 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
      *
      * @param string $targetFormat The target format file extension of the final view output
      * @param \Nethgui\Core\ModuleInterface $module
-     * @param \Nethgui\Core\TranslatorInterface $translator
+     * @param \Nethgui\View\TranslatorInterface $translator
      * @param array $urlParts An array of three strings corresponding to <siteUrl, pathUrl, controllerPath>
      */
-    public function __construct($targetFormat, \Nethgui\Core\ModuleInterface $module, \Nethgui\Core\TranslatorInterface $translator, $urlParts = array())
+    public function __construct($targetFormat, \Nethgui\Core\ModuleInterface $module, \Nethgui\View\TranslatorInterface $translator, $urlParts = array())
     {
         $this->module = $module;
         $this->translator = $translator;
