@@ -245,6 +245,12 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
         // NOOP
     }
 
+    public function nextActionPath()
+    {
+        return '';
+    }
+
+
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);

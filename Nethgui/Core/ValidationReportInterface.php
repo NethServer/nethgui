@@ -31,6 +31,8 @@ namespace Nethgui\Core;
 interface ValidationReportInterface
 {
     /**
+     *
+     * @api
      * @param ModuleInterface $module
      * @param string $parameterName
      * @param string The error message template
@@ -39,6 +41,8 @@ interface ValidationReportInterface
     public function addValidationErrorMessage(\Nethgui\Module\ModuleInterface $module, $parameterName, $message, $args = array());
 
     /**
+     *
+     * @api
      * @param ModuleInterface $module
      * @param string $parameterName
      * @param ValidatorInterface $validator

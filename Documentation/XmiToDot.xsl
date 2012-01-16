@@ -11,13 +11,14 @@
   <xsl:output method="text" indent="no" />
 
   <xsl:param name="docUrl">http://nethgui.nethesis.it/dpdev/Documentation/Api/</xsl:param>
+  <xsl:param name="compound" />
 
   <xsl:template match="/">
     <xsl:variable name="myIndentation" select="'    '" />
     <xsl:variable name="myUrl" select="$docUrl" />
 
     <xsl:text>digraph Nethgui {&#xA;</xsl:text>
-    <xsl:text>    rankdir = "LR"; compound = true; concentrate = true; fontname = "Cantarell"; fontnames="svg"; &#xA;</xsl:text>
+    <xsl:text>    rankdir = "LR"; compound = false; concentrate = true; fontname = "Cantarell"; fontnames="svg"; &#xA;</xsl:text>
     <xsl:text>    node [shape=rect,fontname = "Cantarell"] &#xA;</xsl:text>
     <xsl:text>    edge [arrowhead=vee,style=dashed] &#xA;</xsl:text>
 
@@ -71,6 +72,7 @@
   <xsl:template mode="declaration" match="packagedElement[@xmi:type='uml:Interface' or @xmi:type='uml:Class']">
     <xsl:param name="indentation" />
     <xsl:param name="url">./</xsl:param>
+    <xsl:param name="compound" />
 
     <xsl:variable name="myIndentation" select="concat($indentation, '    ')" />
     <xsl:variable name="myUrl" select="concat($url, 'interface-', @name, '.htm')" />
@@ -94,7 +96,11 @@
       <xsl:for-each select="ownedParameter/type">
         <xsl:variable name="refId" select="@xmi:idref"></xsl:variable>
         <xsl:if test="@xmi:idref != ../../../@xmi:id and dyn:evaluate('/descendant::*[@xmi:id=$refId and @xmi:type!=&#x22;uml:DataType&#x22;]')">
-          <xsl:value-of select="$myIndentation" />"<xsl:value-of select="../../../@xmi:id"/>" -&gt; "<xsl:value-of select="@xmi:idref"/>" <!-- [ltail="cluster_<xsl:value-of select='../../../../@xmi:id' />"]-->;  <xsl:text>&#xA;</xsl:text>
+          <xsl:value-of select="$myIndentation" />"<xsl:value-of select="../../../@xmi:id"/>" -&gt; "<xsl:value-of select="@xmi:idref"/>" 
+          <xsl:if test="$compound">
+            <xsl:value-of select="concat('[ltail=&#x22;cluster_', ../../../../@xmi:id, '&#x22;]')" />
+          </xsl:if>
+          <xsl:text>&#xA;</xsl:text>
         </xsl:if>
       </xsl:for-each>      
     </xsl:for-each>

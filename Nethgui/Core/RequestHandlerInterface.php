@@ -39,27 +39,49 @@ interface RequestHandlerInterface
 
     /**
      * Sets the host configuration Model.
-     * @return \Nethgui\Core\RequestHandlerInterface
+     *
      * @api
+     * @return \Nethgui\Core\RequestHandlerInterface
      */
     public function setPlatform(\Nethgui\System\PlatformInterface $platform);
 
     /**
-     * Put the request into the object internal state.
+     *
+     * Put the request into the object internal state
+     * 
+     * @api
      * @param RequestInterface $request
      */
     public function bind(RequestInterface $request);
 
     /**
-     * Validate object state. Errors are sent to $report.
+     * Validate object state
+     *
+     * Errors must be sent to $report.
+     *
+     * @api
      * @return void
      */
     public function validate(ValidationReportInterface $report);
 
     /**
-     * Module behaviour implementation. Executed only if no validation errors has occurred.
+     * Behaviour implementation
      *
+     * Executed only if no validation errors has occurred.
+     *
+     * @api
      * @return void
      */
     public function process();
+
+
+    /**
+     * Get the path to the next action, relative to the current URL
+     *
+     * Executed after process()
+     *
+     * @api
+     * @return string 
+     */
+    public function nextActionPath();
 }

@@ -149,6 +149,11 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
         }
     }
 
+    public function nextActionPath()
+    {
+        return '';
+    }
+
     /**
      * Implements prepareView() to display all actions in a disabled 
      * state (index) if current action is not defined, or to display the 
@@ -175,7 +180,7 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
 
             if ($this->getRequest()->isSubmitted()
                 && $this->getRequest()->isValidated()
-                && $this->currentAction instanceof \Nethgui\Module\ActionInterface) {
+                && $this->currentAction instanceof \Nethgui\Core\RequestHandlerInterface) {
                 $this->handleNextActionId($view, $this->currentAction);
             } elseif ($view->getTargetFormat() === $view::TARGET_JSON
                 && ! $this->getRequest()->isSubmitted()) {
@@ -185,12 +190,12 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
         }
     }
 
-    private function handleNextActionId(\Nethgui\View\ViewInterface $view, \Nethgui\Module\ActionInterface $action)
+    private function handleNextActionId(\Nethgui\View\ViewInterface $view, \Nethgui\Core\RequestHandlerInterface $action)
     {
         $actionView = $view->spawnView($action);
 
         $actionUrl = $actionView->getModuleUrl();
-        $nextUrl = $actionView->getModuleUrl($action->getNextActionPath());
+        $nextUrl = $actionView->getModuleUrl($action->nextActionPath());
 
         if ($actionUrl === $nextUrl) {
             return;

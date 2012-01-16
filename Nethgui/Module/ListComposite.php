@@ -69,6 +69,12 @@ class ListComposite extends Composite implements \Nethgui\Core\RequestHandlerInt
         }
     }
 
+    public function nextActionPath()
+    {
+        return '';
+    }
+
+
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
