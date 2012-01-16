@@ -84,7 +84,7 @@ interface UserInterface
     /**
      * 
      * @api
-     * @return \Nethgui\Core\SessionInterface     
+     * @return \Nethgui\Utility\SessionInterface     
      */
     public function getSession();
 

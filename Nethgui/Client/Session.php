@@ -27,7 +27,7 @@ namespace Nethgui\Client;
  * @since 1.0
  * @internal
  */
-class Session implements \Nethgui\Core\SessionInterface, \Nethgui\Utility\PhpConsumerInterface
+class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\PhpConsumerInterface
 {
 
     /**

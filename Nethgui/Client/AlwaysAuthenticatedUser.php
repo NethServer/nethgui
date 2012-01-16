@@ -41,11 +41,11 @@ class AlwaysAuthenticatedUser implements \Nethgui\Core\UserInterface
 
     /**
      *
-     * @var \Nethgui\Core\SessionInterface
+     * @var \Nethgui\Utility\SessionInterface
      */
     private $session;
 
-    public function __construct(\Nethgui\Core\SessionInterface $session)
+    public function __construct(\Nethgui\Utility\SessionInterface $session)
     {
         $this->session = $session;
 

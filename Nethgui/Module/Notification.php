@@ -37,7 +37,7 @@ class Notification extends \Nethgui\Module\Standard implements \Nethgui\View\Com
         $this->notifications = new \ArrayObject();
     }
 
-    public function setSession(\Nethgui\Core\SessionInterface $session)
+    public function setSession(\Nethgui\Utility\SessionInterface $session)
     {
         $key = get_class($this);
 
