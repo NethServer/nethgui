@@ -28,12 +28,12 @@ namespace Nethgui\Module;
  * @since 1.0
  * @api
  */
-abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestHandlerInterface
+abstract class Standard extends AbstractModule implements \Nethgui\Controller\RequestHandlerInterface
 {
 
     /**
      * This collection holds the parameter values as primitive datatype or adapter objects.
-     * @var \Nethgui\Core\ParameterSet
+     * @var \Nethgui\Adapter\ParameterSet
      */
     protected $parameters;
 
@@ -52,7 +52,7 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
 
     /**
      *
-     * @var \Nethgui\Core\RequestInterface
+     * @var \Nethgui\Controller\RequestInterface
      */
     private $request;
 
@@ -67,7 +67,7 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
     public function __construct($identifier = NULL)
     {
         parent::__construct($identifier);
-        $this->parameters = new \Nethgui\Core\ParameterSet();
+        $this->parameters = new \Nethgui\Adapter\ParameterSet();
         $this->request = NullRequest::getInstance();
     }
 
@@ -194,7 +194,7 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
         return $adapterObject;
     }
 
-    public function bind(\Nethgui\Core\RequestInterface $request)
+    public function bind(\Nethgui\Controller\RequestInterface $request)
     {
         $this->request = $request;
         foreach ($this->parameters->getKeys() as $parameterName) {
@@ -204,7 +204,7 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
         }
     }
 
-    public function validate(\Nethgui\Core\ValidationReportInterface $report)
+    public function validate(\Nethgui\Controller\ValidationReportInterface $report)
     {
         foreach ($this->parameters->getKeys() as $parameterName) {
             if ( ! $this->getRequest()->hasParameter($parameterName)) {
@@ -261,7 +261,7 @@ abstract class Standard extends AbstractModule implements \Nethgui\Core\RequestH
     }
 
     /**
-     * @return \Nethgui\Core\RequestInterface
+     * @return \Nethgui\Controller\RequestInterface
      */
     protected function getRequest()
     {

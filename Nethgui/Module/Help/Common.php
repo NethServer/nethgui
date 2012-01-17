@@ -54,7 +54,7 @@ class Common extends \Nethgui\Module\Standard implements \Nethgui\Utility\PhpCon
         $this->globalFunctions = new \Nethgui\Utility\PhpWrapper();
     }
 
-    public function bind(\Nethgui\Core\RequestInterface $request)
+    public function bind(\Nethgui\Controller\RequestInterface $request)
     {
         parent::bind($request);
 

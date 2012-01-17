@@ -27,7 +27,7 @@ namespace Nethgui\Client;
  * @since 1.0
  * @internal
  */
-class Request implements \Nethgui\Core\RequestInterface
+class Request implements \Nethgui\Controller\RequestInterface
 {
 
     /**

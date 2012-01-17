@@ -47,7 +47,7 @@ class Resource extends \Nethgui\Module\Standard implements \Nethgui\View\Command
         $this->php = new \Nethgui\Utility\PhpWrapper;
     }
 
-    public function bind(\Nethgui\Core\RequestInterface $request)
+    public function bind(\Nethgui\Controller\RequestInterface $request)
     {
         parent::bind($request);
         $fileName = implode('/', $request->getPath());

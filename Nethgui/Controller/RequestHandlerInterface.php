@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Core;
+namespace Nethgui\Controller;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -41,7 +41,7 @@ interface RequestHandlerInterface
      * Sets the host configuration Model.
      *
      * @api
-     * @return \Nethgui\Core\RequestHandlerInterface
+     * @return \Nethgui\Controller\RequestHandlerInterface
      */
     public function setPlatform(\Nethgui\System\PlatformInterface $platform);
 

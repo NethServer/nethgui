@@ -26,7 +26,7 @@ namespace Nethgui\Client;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class ValidationErrorsNotification extends AbstractNotification implements \Nethgui\Core\ValidationReportInterface
+class ValidationErrorsNotification extends AbstractNotification implements \Nethgui\Controller\ValidationReportInterface
 {
 
     /**

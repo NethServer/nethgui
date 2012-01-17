@@ -86,9 +86,9 @@ class Modify extends Action
     /**
      * We have to declare all the parmeters of parameterSchema here,
      * binding the actual key/row from tableAdapter.
-     * @param \Nethgui\Core\RequestInterface $request 
+     * @param \Nethgui\Controller\RequestInterface $request 
      */
-    public function bind(\Nethgui\Core\RequestInterface $request)
+    public function bind(\Nethgui\Controller\RequestInterface $request)
     {
         $this->tableAdapter = $this->getAdapter();
 

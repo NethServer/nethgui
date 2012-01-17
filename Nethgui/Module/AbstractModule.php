@@ -52,7 +52,7 @@ abstract class AbstractModule implements \Nethgui\Module\ModuleInterface, \Nethg
 
     /**
      *
-     * @var \Nethgui\Core\SimpleModuleAttributesProvider
+     * @var \Nethgui\Module\SimpleModuleAttributesProvider
      */
     private $descriptor;
 
@@ -154,7 +154,7 @@ abstract class AbstractModule implements \Nethgui\Module\ModuleInterface, \Nethg
     public function getAttributesProvider()
     {
         if ( ! isset($this->descriptor)) {
-            $attributes = new \Nethgui\Core\SimpleModuleAttributesProvider();
+            $attributes = new \Nethgui\Module\SimpleModuleAttributesProvider();
             $this->descriptor = $this->initializeAttributes($attributes->initializeFromModule($this));
         }
         return $this->descriptor;

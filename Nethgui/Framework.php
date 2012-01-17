@@ -27,7 +27,7 @@ namespace Nethgui;
  * class, invoking the setter methods and catching the output from the dispatch()
  * method.
  *
- * @see #dispatch(Core\RequestInterface $request)
+ * @see #dispatch(Controller\RequestInterface $request)
  * @api
  */
 class Framework
@@ -247,7 +247,7 @@ class Framework
      * @param array $arguments
      * @return integer
      */
-    public function dispatch(Core\RequestInterface $request, &$output = NULL)
+    public function dispatch(Controller\RequestInterface $request, &$output = NULL)
     {
         if (array_head($request->getPath()) === FALSE) {
             $redirectUrl = implode('/', array($this->basePath, 'index.php', $this->defaultModuleIdentifier));
@@ -259,7 +259,7 @@ class Framework
         $pdp = new Authorization\PermissivePolicyDecisionPoint();
         $user = $request->getUser();
         $session = $user->getSession();
-        $moduleLoader = new Core\ModuleLoader($this->namespaceMap);
+        $moduleLoader = new Module\ModuleLoader($this->namespaceMap);
 
         $platform = new System\NethPlatform($user);
         $platform->setPolicyDecisionPoint($pdp);
@@ -421,7 +421,7 @@ class Framework
      *
      * @see disparch()
      * @param integer $type - Not used
-     * @return Core\RequestInterface
+     * @return Controller\RequestInterface
      * @api
      */
     public function createRequest($type = NULL)
@@ -433,7 +433,7 @@ class Framework
      * Creates a new Client\Request object from current HTTP request.
      *
      * @param array $parameters
-     * @return Core\RequestInterface
+     * @return Controller\RequestInterface
      */
     private function createRequestModApache()
     {

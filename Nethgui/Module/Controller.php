@@ -34,7 +34,7 @@ namespace Nethgui\Module;
  * @api
  * @see Composite
  */
-class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterface
+class Controller extends Composite implements \Nethgui\Controller\RequestHandlerInterface
 {
 
     /**
@@ -46,7 +46,7 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
 
     /**
      *
-     * @return \Nethgui\Core\RequestInterface
+     * @return \Nethgui\Controller\RequestInterface
      */
     protected function getRequest()
     {
@@ -57,9 +57,9 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
      * Overrides Composite bind() method, defining what is the current action
      * and forwarding the call to it.
      *
-     * @param \Nethgui\Core\RequestInterface $request 
+     * @param \Nethgui\Controller\RequestInterface $request 
      */
-    public function bind(\Nethgui\Core\RequestInterface $request)
+    public function bind(\Nethgui\Controller\RequestInterface $request)
     {
         $this->request = $request;
         $actionId = $this->establishCurrentActionId();
@@ -74,7 +74,7 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
             throw new \Nethgui\Exception\HttpException('Not Found', 404, 1322148401);
         }
 
-        if ($this->currentAction instanceof \Nethgui\Core\RequestHandlerInterface) {
+        if ($this->currentAction instanceof \Nethgui\Controller\RequestHandlerInterface) {
             $this->currentAction->bind($request->spawnRequest($actionId, \Nethgui\array_rest($request->getPath())));
         }
     }
@@ -119,16 +119,16 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
 
     /**
      * Implements validate() method, forwarding the call to current action only.
-     * @param \Nethgui\Core\ValidationReportInterface $report
+     * @param \Nethgui\Controller\ValidationReportInterface $report
      * @return void 
      */
-    public function validate(\Nethgui\Core\ValidationReportInterface $report)
+    public function validate(\Nethgui\Controller\ValidationReportInterface $report)
     {
         if (is_null($this->currentAction)) {
             return;
         }
 
-        if ($this->currentAction instanceof \Nethgui\Core\RequestHandlerInterface) {
+        if ($this->currentAction instanceof \Nethgui\Controller\RequestHandlerInterface) {
             $this->currentAction->validate($report);
         }
     }
@@ -144,7 +144,7 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
             return;
         }
 
-        if ($this->currentAction instanceof \Nethgui\Core\RequestHandlerInterface) {
+        if ($this->currentAction instanceof \Nethgui\Controller\RequestHandlerInterface) {
             $this->currentAction->process();
         }
     }
@@ -180,7 +180,7 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
 
             if ($this->getRequest()->isSubmitted()
                 && $this->getRequest()->isValidated()
-                && $this->currentAction instanceof \Nethgui\Core\RequestHandlerInterface) {
+                && $this->currentAction instanceof \Nethgui\Controller\RequestHandlerInterface) {
                 $this->handleNextActionId($view, $this->currentAction);
             } elseif ($view->getTargetFormat() === $view::TARGET_JSON
                 && ! $this->getRequest()->isSubmitted()) {
@@ -190,7 +190,7 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
         }
     }
 
-    private function handleNextActionId(\Nethgui\View\ViewInterface $view, \Nethgui\Core\RequestHandlerInterface $action)
+    private function handleNextActionId(\Nethgui\View\ViewInterface $view, \Nethgui\Controller\RequestHandlerInterface $action)
     {
         $actionView = $view->spawnView($action);
 
@@ -257,7 +257,7 @@ class Controller extends Composite implements \Nethgui\Core\RequestHandlerInterf
      */
     protected function needsAutoFormWrap(\Nethgui\Module\ModuleInterface $module)
     {
-        return $module instanceof \Nethgui\Core\RequestHandlerInterface
+        return $module instanceof \Nethgui\Controller\RequestHandlerInterface
             && ! ($module instanceof \Nethgui\Module\ModuleCompositeInterface);
     }
 

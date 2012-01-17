@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Core;
+namespace Nethgui\Adapter;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.

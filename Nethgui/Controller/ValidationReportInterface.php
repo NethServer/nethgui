@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Core;
+namespace Nethgui\Controller;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -24,7 +24,7 @@ namespace Nethgui\Core;
  * Collect validation errors
  * 
  * @author Davide Principi <davide.principi@nethesis.it>
- * @see \Nethgui\Core\RequestHandlerInterface::validate()
+ * @see \Nethgui\Controller\RequestHandlerInterface::validate()
  * @since 1.0
  * @api
  */

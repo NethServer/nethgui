@@ -30,7 +30,7 @@ class Main extends \Nethgui\Module\ListComposite implements \Nethgui\View\Comman
 {
 
     /**
-     * @var \Nethgui\Core\ModuleLoader
+     * @var \Nethgui\Module\ModuleLoader
      */
     private $moduleLoader;
     private $currentModuleIdentifier;
@@ -42,7 +42,7 @@ class Main extends \Nethgui\Module\ListComposite implements \Nethgui\View\Comman
      */
     private $template;
 
-    public function __construct($template, \Nethgui\Core\ModuleLoader $moduleLoader, $fileNameResolver)
+    public function __construct($template, \Nethgui\Module\ModuleLoader $moduleLoader, $fileNameResolver)
     {
         parent::__construct(FALSE);
         $this->template = $template;
@@ -50,7 +50,7 @@ class Main extends \Nethgui\Module\ListComposite implements \Nethgui\View\Comman
         $this->fileNameResolver = $fileNameResolver;
     }
 
-    public function bind(\Nethgui\Core\RequestInterface $request)
+    public function bind(\Nethgui\Controller\RequestInterface $request)
     {
         $idList = $request->getParameterNames();
 

@@ -30,15 +30,15 @@ namespace Nethgui\Module;
  * @since 1.0
  * @api
  */
-class ListComposite extends Composite implements \Nethgui\Core\RequestHandlerInterface
+class ListComposite extends Composite implements \Nethgui\Controller\RequestHandlerInterface
 {
 
-    public function bind(\Nethgui\Core\RequestInterface $request)
+    public function bind(\Nethgui\Controller\RequestInterface $request)
     {
         $arguments = $request->getPath();
         $currentModuleIdentifier = \Nethgui\array_head($arguments);        
         foreach ($this->getChildren() as $childModule) {
-            if ( ! $childModule instanceof \Nethgui\Core\RequestHandlerInterface) {
+            if ( ! $childModule instanceof \Nethgui\Controller\RequestHandlerInterface) {
                 continue;
             } elseif ($currentModuleIdentifier === $childModule->getIdentifier()) {
                 // Forward arguments to submodule:
@@ -49,10 +49,10 @@ class ListComposite extends Composite implements \Nethgui\Core\RequestHandlerInt
         }
     }
 
-    public function validate(\Nethgui\Core\ValidationReportInterface $report)
+    public function validate(\Nethgui\Controller\ValidationReportInterface $report)
     {
         foreach ($this->getChildren() as $childModule) {
-            if ( ! $childModule instanceof \Nethgui\Core\RequestHandlerInterface) {
+            if ( ! $childModule instanceof \Nethgui\Controller\RequestHandlerInterface) {
                 continue;
             }
             $childModule->validate($report);
@@ -62,7 +62,7 @@ class ListComposite extends Composite implements \Nethgui\Core\RequestHandlerInt
     public function process()
     {
         foreach ($this->getChildren() as $childModule) {
-            if ( ! $childModule instanceof \Nethgui\Core\RequestHandlerInterface) {
+            if ( ! $childModule instanceof \Nethgui\Controller\RequestHandlerInterface) {
                 continue;
             }
             $childModule->process();
