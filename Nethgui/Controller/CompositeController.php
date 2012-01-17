@@ -34,7 +34,7 @@ namespace Nethgui\Controller;
  * @api
  * @see Composite
  */
-class Controller extends \Nethgui\Module\Composite implements \Nethgui\Controller\RequestHandlerInterface
+class CompositeController extends \Nethgui\Module\Composite implements \Nethgui\Controller\RequestHandlerInterface
 {
 
     /**

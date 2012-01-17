@@ -33,7 +33,7 @@ namespace Nethgui\Module;
  * @since 1.0
  * @api
  */
-class TableController extends \Nethgui\Controller\Controller implements \Nethgui\Adapter\AdapterAggregateInterface
+class TableController extends \Nethgui\Controller\CompositeController implements \Nethgui\Adapter\AdapterAggregateInterface
 {
 
     /**
