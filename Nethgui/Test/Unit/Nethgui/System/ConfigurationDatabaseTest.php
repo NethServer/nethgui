@@ -1,6 +1,6 @@
 <?php
 
-namespace Test\Unit\Nethgui\System;
+namespace Nethgui\Test\Unit\Nethgui\System;
 
 class ConfigurationDatabaseTest extends \PHPUnit_Framework_TestCase
 {

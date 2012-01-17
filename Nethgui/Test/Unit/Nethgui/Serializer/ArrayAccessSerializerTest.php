@@ -1,5 +1,5 @@
 <?php
-namespace Test\Unit\Nethgui\Serializer;
+namespace Nethgui\Test\Unit\Nethgui\Serializer;
 class ArrayAccessSerializerTest extends \PHPUnit_Framework_TestCase
 {
 

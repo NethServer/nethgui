@@ -1,5 +1,5 @@
 <?php
-namespace Test\Unit\Nethgui\Adapter\ParameterSet;
+namespace Nethgui\Test\Unit\Nethgui\Adapter\ParameterSet;
 
 /**
  * @covers \Nethgui\Adapter\ParameterSet

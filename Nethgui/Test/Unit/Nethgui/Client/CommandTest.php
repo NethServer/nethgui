@@ -1,5 +1,5 @@
 <?php
-namespace Test\Unit\Nethgui\Client;
+namespace Nethgui\Test\Unit\Nethgui\Client;
 
 /**
  * @covers \Nethgui\View\Command

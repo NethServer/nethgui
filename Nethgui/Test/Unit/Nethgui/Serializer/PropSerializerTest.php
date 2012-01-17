@@ -1,5 +1,5 @@
 <?php
-namespace Test\Unit\Nethgui\Serializer;
+namespace Nethgui\Test\Unit\Nethgui\Serializer;
 class PropSerializerTest extends \PHPUnit_Framework_TestCase
 {
 

@@ -1,5 +1,5 @@
 <?php
-namespace Test\Unit\Nethgui\Renderer;
+namespace Nethgui\Test\Unit\Nethgui\Renderer;
 
 /**
  * @covers \Nethgui\Renderer\HttpCommandReceiver

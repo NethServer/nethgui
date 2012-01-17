@@ -1,5 +1,5 @@
 <?php
-namespace Test\Unit\Nethgui\Core;
+namespace Nethgui\Test\Unit\Nethgui\Core;
 
 /**
  * @covers \Nethgui\Module\ModuleLoader
@@ -16,7 +16,6 @@ class ModuleLoaderTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         spl_autoload_register(array($this, 'autoloader'));
-
 
         $namespaceMap = array(
             'Vendor00' => '/usr/local/share',
@@ -53,7 +52,7 @@ class ModuleLoaderTest extends \PHPUnit_Framework_TestCase
         $unqClass = $parts[2];
 
         if (substr($rootNs, 0, 6) == 'Vendor' && substr($unqClass, 0, 10) == 'TestModule') {
-            eval("namespace ${rootNs}\\Module;\n class ${unqClass} extends \Nethgui\Controller\Standard {}");
+            eval("namespace ${rootNs}\\Module;\n class ${unqClass} extends \Nethgui\Controller\AbstractController {}");
         }
     }
 

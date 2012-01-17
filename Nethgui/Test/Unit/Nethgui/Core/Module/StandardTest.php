@@ -1,5 +1,5 @@
 <?php
-namespace Test\Unit\Nethgui\Module;
+namespace Nethgui\Test\Unit\Nethgui\Module;
 
 /**
  * @covers \Nethgui\Controller\Standard

@@ -1,5 +1,5 @@
 <?php
-namespace Test\Unit\Nethgui\Adapter;
+namespace Nethgui\Test\Unit\Nethgui\Adapter;
 
 /**
  * @covers \Nethgui\Adapter\MultipleAdapter

@@ -1,5 +1,5 @@
 <?php
-namespace Test\Unit\Nethgui\Core;
+namespace Nethgui\Test\Unit\Nethgui\Core;
 
 /**
  * @covers \Nethgui\Module\Notification\DialogBox

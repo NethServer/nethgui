@@ -1,5 +1,5 @@
 <?php
-namespace Test\Unit\Nethgui\System;
+namespace Nethgui\Test\Unit\Nethgui\System;
 class NethPlatformTest extends \PHPUnit_Framework_TestCase
 {
 
