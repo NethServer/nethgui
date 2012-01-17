@@ -51,7 +51,6 @@ interface CommandInterface
     /**
      * Set the command receiver, the object where the command is executed
      *
-     * @see \Nethgui\Core\ReceiverChainInterface
      * @param \Nethgui\View\CommandReceiverInterface $receiver The object where the command is executed
      * @return CommandInterface
      */

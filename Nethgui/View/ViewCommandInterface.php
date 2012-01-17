@@ -38,8 +38,4 @@ interface ViewCommandInterface
      */
     public function __call($name, $arguments);
 
-    /**
-     * @return \Nethgui\View\ViewCommandInterface
-     */
-    public function addCommand(\Nethgui\View\CommandInterface $command);
 }
