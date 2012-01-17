@@ -23,7 +23,7 @@ namespace Nethgui\Serializer;
 /**
  * Transfers a prop value to/from an object implementing ArrayAccess interface
  *
- * @see \Nethgui\Module\Table\Modify
+ * @see \Nethgui\Controller\Table\Modify
  */
 class ArrayAccessSerializer implements SerializerInterface
 {

@@ -26,7 +26,7 @@ namespace Nethgui\Module;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Resource extends \Nethgui\Controller\Standard implements \Nethgui\View\CommandReceiverInterface, \Nethgui\Utility\PhpConsumerInterface
+class Resource extends \Nethgui\Controller\AbstractController implements \Nethgui\View\CommandReceiverInterface, \Nethgui\Utility\PhpConsumerInterface
 {
 
     private $code;

@@ -21,14 +21,13 @@ namespace Nethgui\Controller;
  */
 
 /**
- * A Standard Module connects the Configuration Database and the View layer,
- * performing data validation and processing.
+ * 
  * 
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  * @api
  */
-abstract class Standard extends \Nethgui\Module\AbstractModule implements \Nethgui\Controller\RequestHandlerInterface
+abstract class AbstractController extends \Nethgui\Module\AbstractModule implements \Nethgui\Controller\RequestHandlerInterface
 {
 
     /**

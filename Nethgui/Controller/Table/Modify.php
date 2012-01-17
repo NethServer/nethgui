@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Module\Table;
+namespace Nethgui\Controller\Table;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -28,7 +28,7 @@ namespace Nethgui\Module\Table;
  * @since 1.0
  * @api
  */
-class Modify extends Action
+class Modify extends AbstractAction
 {
     const KEY = 1325671618;
     const FIELD = 1325671619;

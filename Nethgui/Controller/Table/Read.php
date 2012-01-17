@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Module\Table;
+namespace Nethgui\Controller\Table;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -30,12 +30,12 @@ namespace Nethgui\Module\Table;
  * columns is provided by this class.
  * 
  * @see Modify
- * @see \Nethgui\Module\TableController
+ * @see \Nethgui\Controller\Table
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  * @api
  */
-class Read extends Action
+class Read extends AbstractAction
 {
 
     /**
@@ -72,6 +72,8 @@ class Read extends Action
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
+        $view->setTemplate('Nethgui\Template\Table\Read');
+        
         $view['rows'] = $this->prepareRows($view);
 
         if ($view->getTargetFormat() !== $view::TARGET_XHTML) {

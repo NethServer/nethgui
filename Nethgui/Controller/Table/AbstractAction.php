@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Module\Table;
+namespace Nethgui\Controller\Table;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -27,7 +27,7 @@ namespace Nethgui\Module\Table;
  * @since 1.0
  * @api
  */
-abstract class Action extends \Nethgui\Controller\Standard implements \Nethgui\Adapter\AdapterAggregateInterface
+abstract class AbstractAction extends \Nethgui\Controller\AbstractController implements \Nethgui\Adapter\AdapterAggregateInterface
 {
 
     /**
