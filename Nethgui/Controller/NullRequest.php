@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Module;
+namespace Nethgui\Controller;
 
 /*
  * Copyright (C) 2012 Nethesis S.r.l.

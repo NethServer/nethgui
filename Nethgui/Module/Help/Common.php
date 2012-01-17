@@ -23,7 +23,7 @@ namespace Nethgui\Module\Help;
 /**
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class Common extends \Nethgui\Module\Standard implements \Nethgui\Utility\PhpConsumerInterface
+class Common extends \Nethgui\Controller\Standard implements \Nethgui\Utility\PhpConsumerInterface
 {
 
     /**

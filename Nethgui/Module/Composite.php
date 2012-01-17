@@ -31,7 +31,7 @@ namespace Nethgui\Module;
  * @see Controller
  * @see List
  */
-abstract class Composite extends AbstractModule implements \Nethgui\Module\ModuleCompositeInterface
+abstract class Composite extends \Nethgui\Module\AbstractModule implements \Nethgui\Module\ModuleCompositeInterface
 {
 
     private $children = array();

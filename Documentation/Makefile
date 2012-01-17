@@ -11,8 +11,7 @@ DOCURL=http://dev.nethesis.it/dpdev/Documentation/Api/
 RST2HTML=rst2html --stylesheet-path=css/style.css --link-stylesheet
 
 PDEPEND_OUTPUT=Metrics/pyramid.svg Metrics/jdepend.svg Metrics/summary.xml
-API_OUTPUT=Api/index.htm Api/Nethgui.svg
-
+API_OUTPUT=Api/index.htm Api/Nethgui.xmi Api/Nethgui.dot Api/Nethgui.svg
 
 PHPUML_OPTS = --pure-object
 
@@ -32,8 +31,14 @@ api: ${API_OUTPUT}
 Api/index.htm:
 	phpuml -f htmlnew ${PHPUML_OPTS}  -n 'Nethgui framework' -o Api ../Nethgui
 
-Api/Nethgui.svg:
-	phpuml -x 2 ${PHPUML_OPTS} ../Nethgui | xsltproc --param docUrl 'string("${DOCURL}")' XmiToDot.xsl - | dot -Tsvg > Api/Nethgui.svg
+Api/Nethgui.xmi:
+	phpuml -x 2 ${PHPUML_OPTS} ../Nethgui > $@
+
+Api/Nethgui.dot: Api/Nethgui.xmi XmiToDot.xsl
+	xsltproc --param docUrl 'string("${DOCURL}")' XmiToDot.xsl $< > $@
+
+Api/Nethgui.svg: Api/Nethgui.dot 
+	dot -Tsvg $< > Api/Nethgui.svg
 
 clean:
 	rm -f ${HTMLFILES} ${PDEPEND_OUTPUT}

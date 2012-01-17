@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Module;
+namespace Nethgui\Controller;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -30,7 +30,7 @@ namespace Nethgui\Module;
  * @since 1.0
  * @api
  */
-class ListComposite extends Composite implements \Nethgui\Controller\RequestHandlerInterface
+class ListComposite extends \Nethgui\Module\Composite implements \Nethgui\Controller\RequestHandlerInterface
 {
 
     public function bind(\Nethgui\Controller\RequestInterface $request)

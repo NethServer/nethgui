@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Client;
+namespace Nethgui\View;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -57,7 +57,7 @@ class ViewCommandSequence implements \Nethgui\View\ViewCommandInterface
 
     public function __call($name, $arguments)
     {
-        $command = new \Nethgui\Client\Command($this->origin, $this->selector, $name, $arguments);
+        $command = new \Nethgui\View\Command($this->origin, $this->selector, $name, $arguments);
         $this->addCommand($command);
         return $this;
     }

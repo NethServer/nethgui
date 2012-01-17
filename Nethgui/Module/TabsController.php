@@ -25,7 +25,7 @@ namespace Nethgui\Module;
  * @since 1.0
  * @api
  */
-class TabsController extends \Nethgui\Module\Controller
+class TabsController extends \Nethgui\Controller\Controller
 {
 
     public function renderIndex(\Nethgui\Renderer\Xhtml $view)

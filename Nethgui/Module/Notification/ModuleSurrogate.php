@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Client;
+namespace Nethgui\Module\Notification;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -25,6 +25,7 @@ namespace Nethgui\Client;
  * during DialogBox serialization.
  * 
  * @see DialogBox
+ * @internal
  */
 class ModuleSurrogate implements \Nethgui\Module\ModuleInterface, \Serializable
 {

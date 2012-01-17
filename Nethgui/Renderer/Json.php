@@ -35,7 +35,7 @@ class Json extends AbstractRenderer
      */
     private $receiver;
 
-    public function __construct(\Nethgui\Client\View $view, \Nethgui\View\CommandReceiverInterface $receiver)
+    public function __construct(\Nethgui\View\View $view, \Nethgui\View\CommandReceiverInterface $receiver)
     {
         parent::__construct($view);
         $this->receiver = $receiver;

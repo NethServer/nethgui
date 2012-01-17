@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Client;
+namespace Nethgui\View;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -367,7 +367,7 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
     {
         $fullSelector = $this->getUniqueId($selector);
         if ( ! isset($this->commands[$fullSelector]) || $this->commands[$fullSelector]->isExecuted()) {
-            $this->commands[$fullSelector] = new \Nethgui\Client\ViewCommandSequence($this, $selector);
+            $this->commands[$fullSelector] = new \Nethgui\View\ViewCommandSequence($this, $selector);
         }
         return $this->commands[$fullSelector];
     }

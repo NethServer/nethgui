@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Module;
+namespace Nethgui\Controller;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -28,7 +28,7 @@ namespace Nethgui\Module;
  * @since 1.0
  * @api
  */
-abstract class Standard extends AbstractModule implements \Nethgui\Controller\RequestHandlerInterface
+abstract class Standard extends \Nethgui\Module\AbstractModule implements \Nethgui\Controller\RequestHandlerInterface
 {
 
     /**
@@ -219,7 +219,7 @@ abstract class Standard extends AbstractModule implements \Nethgui\Controller\Re
 
             $isValid = $validator->evaluate($this->parameters[$parameterName]);
             if ($isValid !== TRUE) {
-                $report->addValidationError(new \Nethgui\Client\ModuleSurrogate($this), $parameterName, $validator);
+                $report->addValidationError(new \Nethgui\Module\Notification\ModuleSurrogate($this), $parameterName, $validator);
                 $this->invalidParameters[] = $parameterName;
             }
         }

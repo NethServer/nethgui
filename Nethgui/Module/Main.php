@@ -26,7 +26,7 @@ namespace Nethgui\Module;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Main extends \Nethgui\Module\ListComposite implements \Nethgui\View\CommandReceiverInterface
+class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\CommandReceiverInterface
 {
 
     /**

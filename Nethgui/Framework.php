@@ -247,7 +247,7 @@ class Framework
      * @param array $arguments
      * @return integer
      */
-    public function dispatch(Controller\RequestInterface $request, &$output = NULL)
+    public function dispatch(\Nethgui\Controller\RequestInterface $request, &$output = NULL)
     {
         if (array_head($request->getPath()) === FALSE) {
             $redirectUrl = implode('/', array($this->basePath, 'index.php', $this->defaultModuleIdentifier));
@@ -256,19 +256,21 @@ class Framework
         }
 
         // TODO: enforce some security policy on Models
-        $pdp = new Authorization\PermissivePolicyDecisionPoint();
+        $pdp = new \Nethgui\Authorization\PermissivePolicyDecisionPoint();
         $user = $request->getUser();
         $session = $user->getSession();
-        $moduleLoader = new Module\ModuleLoader($this->namespaceMap);
+        
 
-        $platform = new System\NethPlatform($user);
+        $platform = new \Nethgui\System\NethPlatform($user);
         $platform->setPolicyDecisionPoint($pdp);
 
-        $validationErrorsNotification = new Client\ValidationErrorsNotification();
+        $validationErrorsNotification = new \Nethgui\Module\Notification\ValidationErrorsNotification();
 
+        $moduleLoader = new \Nethgui\Module\ModuleLoader($this->namespaceMap);
+        $moduleLoader->setLog($platform->getLog());
         $moduleLoader->getModule('Notification')->setSession($session);
 
-        $mainModule = new Module\Main($this->decoratorTemplate, $moduleLoader, $this->getFileNameResolver());
+        $mainModule = new \Nethgui\Module\Main($this->decoratorTemplate, $moduleLoader, $this->getFileNameResolver());
         $mainModule->setPlatform($platform);
         $mainModule->initialize();
         $mainModule->bind($request);
@@ -285,7 +287,7 @@ class Framework
         $targetFormat = $request->getExtension();
         $translator = new \Nethgui\View\Translator($user, $platform->getLog(), $this->getFileNameResolver(), array_keys($this->namespaceMap));
         $urlParts = array($this->siteUrl, $this->basePath, 'index.php');
-        $rootView = new Client\View($targetFormat, $mainModule, $translator, $urlParts);
+        $rootView = new \Nethgui\View\View($targetFormat, $mainModule, $translator, $urlParts);
 
         $commandReceiver = new \Nethgui\Renderer\HttpCommandReceiver(new \Nethgui\Renderer\MarshallingReceiver(new \Nethgui\View\LoggingCommandReceiver()));
 
@@ -389,9 +391,9 @@ class Framework
      * 
      * These does not include ALL possible commands!
      * 
-     * @param Client\View $view
+     * @param View\View $view
      */
-    private function executeViewCommands(Client\View $view)
+    private function executeViewCommands(View\View $view)
     {
         $q = array($view);
 
@@ -399,7 +401,7 @@ class Framework
             $view = array_pop($q);
 
             foreach ($view as $key => $value) {
-                if ($value instanceof Client\View) {
+                if ($value instanceof View\View) {
                     $q[] = $value;
                 }
             }
@@ -430,7 +432,7 @@ class Framework
     }
 
     /**
-     * Creates a new Client\Request object from current HTTP request.
+     * Creates a new Controller\Request object from current HTTP request.
      *
      * @param array $parameters
      * @return Controller\RequestInterface
@@ -474,7 +476,7 @@ class Framework
         }
 
         // TODO: retrieve user state from Session
-        $user = new Client\AlwaysAuthenticatedUser(new \Nethgui\Client\Session());
+        $user = new \Nethgui\Authorization\AlwaysAuthenticatedUser(new \Nethgui\Utility\Session());
 
         $attributes = new \ArrayObject();
 
@@ -482,7 +484,7 @@ class Framework
         $attributes['submitted'] = $submitted;
         $attributes['validated'] = FALSE;
 
-        $instance = new Client\Request($user, $postData, $getData, $pathInfo, $attributes);
+        $instance = new \Nethgui\Controller\Request($user, $postData, $getData, $pathInfo, $attributes);
 
         /*
          * Clear global variables

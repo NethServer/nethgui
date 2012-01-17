@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Module;
+namespace Nethgui\Controller;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -34,7 +34,7 @@ namespace Nethgui\Module;
  * @api
  * @see Composite
  */
-class Controller extends Composite implements \Nethgui\Controller\RequestHandlerInterface
+class Controller extends \Nethgui\Module\Composite implements \Nethgui\Controller\RequestHandlerInterface
 {
 
     /**

@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Client;
+namespace Nethgui\View;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.

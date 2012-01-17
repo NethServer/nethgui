@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Client;
+namespace Nethgui\Module\Notification;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -101,7 +101,7 @@ abstract class AbstractNotification implements \Serializable, \Nethgui\View\View
 
     public function renderXhtml(\Nethgui\Renderer\Xhtml $renderer)
     {
-        if ($this->getStyle() & (\Nethgui\Client\AbstractNotification::NOTIFY_ERROR | \Nethgui\Client\AbstractNotification::NOTIFY_WARNING)) {
+        if ($this->getStyle() & (\Nethgui\Module\Notification\AbstractNotification::NOTIFY_ERROR | \Nethgui\Module\Notification\AbstractNotification::NOTIFY_WARNING)) {
             $styleClass = 'ui-state-error';
         } else {
             $styleClass = 'ui-state-success';

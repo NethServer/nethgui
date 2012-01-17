@@ -27,7 +27,7 @@ namespace Nethgui\Module\Table;
  * @since 1.0
  * @api
  */
-abstract class Action extends \Nethgui\Module\Standard implements \Nethgui\Adapter\AdapterAggregateInterface
+abstract class Action extends \Nethgui\Controller\Standard implements \Nethgui\Adapter\AdapterAggregateInterface
 {
 
     /**

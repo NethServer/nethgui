@@ -28,7 +28,7 @@ namespace Nethgui\Module;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Notification extends \Nethgui\Module\Standard implements \Nethgui\View\CommandReceiverInterface
+class Notification extends \Nethgui\Controller\Standard implements \Nethgui\View\CommandReceiverInterface
 {
 
     public function __construct($identifier = NULL)
@@ -49,8 +49,8 @@ class Notification extends \Nethgui\Module\Standard implements \Nethgui\View\Com
 
         // Update notification state after retrieving objects from session:
         foreach (new \ArrayIterator($this->notifications) as $index => $notification) {
-            if ( ! $notification instanceof \Nethgui\Client\AbstractNotification) {
-                throw new \UnexpectedValueException(sprintf('%s: notifications must be instances of class \Nethgui\Client\AbstractNotification', get_class($this)), 1323168952);
+            if ( ! $notification instanceof \Nethgui\Module\Notification\AbstractNotification) {
+                throw new \UnexpectedValueException(sprintf('%s: notifications must be instances of class \Nethgui\Module\Notification\AbstractNotification', get_class($this)), 1323168952);
             }
 
             // Transient notifications are dismissed:
@@ -119,10 +119,10 @@ class Notification extends \Nethgui\Module\Standard implements \Nethgui\View\Com
             $this->showNotification($arguments[0]);
         } elseif ($name === 'showMessage') {
             if ( ! isset($arguments[1])) {
-                $arguments[1] = \Nethgui\Client\AbstractNotification::NOTIFY_SUCCESS;
+                $arguments[1] = \Nethgui\Module\Notification\AbstractNotification::NOTIFY_SUCCESS;
             }
 
-            $notification = new \Nethgui\Client\DialogBox($origin->getModule(), $arguments[0], array(), $arguments[1]);
+            $notification = new \Nethgui\Module\Notification\DialogBox($origin->getModule(), $arguments[0], array(), $arguments[1]);
 
             $this->showNotification($notification);
             
@@ -139,14 +139,14 @@ class Notification extends \Nethgui\Module\Standard implements \Nethgui\View\Com
         }
     }
 
-    protected function showNotification(\Nethgui\Client\AbstractNotification $notification)
+    protected function showNotification(\Nethgui\Module\Notification\AbstractNotification $notification)
     {
         $id = $notification->getIdentifier();
         $this->notifications[$id] = $notification;
         $this->updateViewData($notification);
     }
 
-    protected function updateViewData(\Nethgui\Client\AbstractNotification $notification)
+    protected function updateViewData(\Nethgui\Module\Notification\AbstractNotification $notification)
     {
         if ( ! isset($this->view)) {
             return;

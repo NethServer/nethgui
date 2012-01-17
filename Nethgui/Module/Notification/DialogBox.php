@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Client;
+namespace Nethgui\Module\Notification;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -32,7 +32,7 @@ namespace Nethgui\Client;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class DialogBox extends \Nethgui\Client\AbstractNotification
+class DialogBox extends \Nethgui\Module\Notification\AbstractNotification
 {
 
     private $message;

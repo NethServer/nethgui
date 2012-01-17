@@ -103,21 +103,41 @@ class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utili
 
         $namespaces = array_keys($this->namespaceMap);
 
+        $warnings = array();
+
+        set_error_handler(function ($errno, $errstr) use (&$warnings) {
+                $warnings[] = array($errno, $errstr);
+            }, E_WARNING);
+
+        $moduleInstance = NULL;
+
         // Resolve module class namespaces LIFO
         while ($nsName = array_pop($namespaces)) {
             $className = $nsName . '\Module\\' . $moduleIdentifier;
 
-            if ( ! @$this->phpWrapper->class_exists($className)) {
-                continue;
+            if ($this->phpWrapper->class_exists($className)) {
+                $moduleInstance = new $className();
+                $this->getLog()->notice(sprintf('%s::getModule(): Created "%s" instance', get_class($this), $className));
+                $this->instanceCache[$moduleIdentifier] = $moduleInstance;
+                break;
             }
-
-            $moduleInstance = new $className();
-            $this->getLog()->notice(sprintf('%s::getModule(): Created "%s" instance', get_class($this), $className));
-            $this->instanceCache[$moduleIdentifier] = $moduleInstance;
-            return $moduleInstance;
         }
 
-        throw new \RuntimeException(sprintf("%s: `%s` is an unknown module identifier", get_class($this), $moduleIdentifier), 1322231262);
+        restore_error_handler();
+
+        if ($moduleInstance === NULL) {
+            throw new \RuntimeException(sprintf("%s: `%s` is an unknown module identifier", __CLASS__, $moduleIdentifier), 1322231262);
+        }
+
+        if (count($warnings) > 0) {
+            $message = '';
+            foreach ($warnings as $warning) {
+                $message .= sprintf('%s %s; ',  $warning[0], $warning[1]);
+            }
+            $this->getLog()->debug(sprintf("%s: %s", __CLASS__, $message));
+        }
+
+        return $moduleInstance;
     }
 
     public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
