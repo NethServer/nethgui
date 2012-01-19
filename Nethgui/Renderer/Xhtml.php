@@ -125,7 +125,6 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
         return $this;
     }
 
-
     /**
      * Link an external file into the final XHTML document
      *
@@ -157,35 +156,7 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
     public function elementList($flags = 0)
     {
         $flags |= $this->inheritFlags;
-        $widget = $this->createWidget(__FUNCTION__, array('flags' => $flags));
-
-        if ($flags & self::BUTTONSET) {
-            $widget->setAttribute('class', 'Buttonset')
-                ->setAttribute('wrap', 'div/. ');
-        }
-
-        // Automatically add standard submit/reset/cancel buttons:
-        if ($flags & (self::BUTTON_SUBMIT | self::BUTTON_RESET | self::BUTTON_CANCEL | self::BUTTON_HELP)) {
-            if ( ! $widget->hasAttribute('class')) {
-                $widget->setAttribute('class', 'Buttonlist')
-                    ->setAttribute('wrap', 'div/. ');
-            }
-
-            if ($flags & self::BUTTON_SUBMIT) {
-                $widget->insert($this->button('Submit', self::BUTTON_SUBMIT));
-            }
-            if ($flags & self::BUTTON_RESET) {
-                $widget->insert($this->button('Reset', self::BUTTON_RESET));
-            }
-            if ($flags & self::BUTTON_CANCEL) {
-                $widget->insert($this->button('Cancel', self::BUTTON_CANCEL));
-            }
-            if ($flags & self::BUTTON_HELP) {
-                $widget->insert($this->button('Help', self::BUTTON_HELP));
-            }
-        }
-
-        return $widget;
+        return $this->createWidget(__FUNCTION__, array('flags' => $flags));
     }
 
     public function buttonList($flags = 0)
@@ -193,7 +164,26 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
         $flags |= $this->inheritFlags;
         $widget = $this->createWidget("elementList", array('flags' => $flags));
 
-        $widget->setAttribute('class', 'Buttonlist')->setAttribute('wrap', 'div/. ');
+        if ($flags & self::BUTTONSET) {
+            $widget->setAttribute('class', 'Buttonset')
+                ->setAttribute('wrap', 'div/. ');
+        } else {
+            $widget->setAttribute('class', 'Buttonlist')->setAttribute('wrap', 'div/. ');
+        }
+
+        // Automatically add standard submit/reset/cancel buttons:
+        if ($flags & self::BUTTON_SUBMIT) {
+            $widget->insert($this->button('Submit', self::BUTTON_SUBMIT));
+        }
+        if ($flags & self::BUTTON_RESET) {
+            $widget->insert($this->button('Reset', self::BUTTON_RESET));
+        }
+        if ($flags & self::BUTTON_CANCEL) {
+            $widget->insert($this->button('Cancel', self::BUTTON_CANCEL));
+        }
+        if ($flags & self::BUTTON_HELP) {
+            $widget->insert($this->button('Help', self::BUTTON_HELP));
+        }
 
         return $widget;
     }

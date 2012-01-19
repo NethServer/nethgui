@@ -188,17 +188,17 @@ class Read extends AbstractAction
 
     public function renderColumnActions(\Nethgui\Renderer\Xhtml $view)
     {
-        $elementList = $view->elementList(\Nethgui\Renderer\WidgetFactoryInterface::BUTTONSET)
+        $buttonList = $view->buttonList(\Nethgui\Renderer\WidgetFactoryInterface::BUTTONSET)
             ->setAttribute('maxElements', 1);
 
         foreach ($view as $actionId => $actionInfo) {
             $button = $view
                 ->button($actionId, \Nethgui\Renderer\WidgetFactoryInterface::BUTTON_LINK)
                 ->setAttribute('value', $actionInfo[1]);
-            $elementList->insert($button);
+            $buttonList->insert($button);
         }
 
-        return $elementList;
+        return $buttonList;
     }
 
 }

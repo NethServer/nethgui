@@ -26,25 +26,18 @@ namespace Nethgui\Module;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Resource extends \Nethgui\Controller\AbstractController implements \Nethgui\View\CommandReceiverInterface, \Nethgui\Utility\PhpConsumerInterface
+class Resource extends \Nethgui\Controller\AbstractController implements \Nethgui\View\CommandReceiverInterface
 {
 
     private $code;
     private $useList;
     private $fileName;
 
-    /**
-     *
-     * @var \Nethgui\Utility\PhpWrapper
-     */
-    private $php;
-
     public function __construct()
     {
         parent::__construct(NULL);
         $this->code = array();
         $this->useList = array();
-        $this->php = new \Nethgui\Utility\PhpWrapper;
     }
 
     public function bind(\Nethgui\Controller\RequestInterface $request)
@@ -59,7 +52,7 @@ class Resource extends \Nethgui\Controller\AbstractController implements \Nethgu
 
         $this->fileName = $fileName . '.' . $request->getExtension();
 
-        if ( ! $this->php->file_exists($this->getCachePath($this->fileName))) {
+        if ( ! $this->getPhpWrapper()->file_exists($this->getCachePath($this->fileName))) {
             throw new \Nethgui\Exception\HttpException('Not Found', 404, 1324373071);
         }
     }
@@ -124,7 +117,7 @@ class Resource extends \Nethgui\Controller\AbstractController implements \Nethgu
                 });
 
             $meta = array();
-            $view['contents'] = $this->php->file_get_contents_extended($filePath, $meta);
+            $view['contents'] = $this->getPhpWrapper()->file_get_contents_extended($filePath, $meta);
 
             if ($meta['size'] > 0) {
                 $view->getCommandList()->httpHeader(sprintf('Content-Length: %d', $meta['size']));
@@ -132,7 +125,7 @@ class Resource extends \Nethgui\Controller\AbstractController implements \Nethgu
 
             if (NETHGUI_ENABLE_HTTP_CACHE_HEADERS) {
                 $view->getCommandList()
-                    ->httpHeader(sprintf('Last-Modified: %s', date(DATE_RFC1123, $this->php->filemtime($filePath))))
+                    ->httpHeader(sprintf('Last-Modified: %s', date(DATE_RFC1123, $this->getPhpWrapper()->filemtime($filePath))))
                     ->httpHeader(sprintf('Expires: %s', date(DATE_RFC1123, time() + 3600)))
                 ;
             }
@@ -155,7 +148,7 @@ class Resource extends \Nethgui\Controller\AbstractController implements \Nethgu
 
     protected function cacheWrite($fileName, $ext)
     {
-        $resource = $this->php->fopen($this->getCachePath($fileName), 'w');
+        $resource = $this->getPhpWrapper()->fopen($this->getCachePath($fileName), 'w');
 
         if ($resource === FALSE) {
             $error = error_get_last();
@@ -171,7 +164,7 @@ class Resource extends \Nethgui\Controller\AbstractController implements \Nethgu
         foreach ($this->code[$ext] as $part) {
 
             if ($part['file']) {
-                $data = @$this->php->file_get_contents($part['file']);
+                $data = @$this->getPhpWrapper()->file_get_contents($part['file']);
                 if ( ! $data) {
                     $this->getLog()->warning(sprintf('%s: File not found, or missing data.', $part['file']));
                 }
@@ -179,10 +172,10 @@ class Resource extends \Nethgui\Controller\AbstractController implements \Nethgu
                 $data = $part['data'];
             }
 
-            $this->php->fwrite($resource, $data);
+            $this->getPhpWrapper()->fwrite($resource, $data);
         }
 
-        $this->php->fclose($resource);
+        $this->getPhpWrapper()->fclose($resource);
     }
 
     protected function includeFile($fileName)
@@ -243,11 +236,6 @@ class Resource extends \Nethgui\Controller\AbstractController implements \Nethgu
         } elseif ($name === 'useFile' && isset($arguments[0])) {
             $this->useList[] = $origin->getPathUrl() . '/' . $arguments[0];
         }
-    }
-
-    public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
-    {
-        $this->php = $object;
     }
 
 }

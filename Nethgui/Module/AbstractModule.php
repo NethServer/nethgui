@@ -26,7 +26,7 @@ namespace Nethgui\Module;
  * @since 1.0
  * @api
  */
-abstract class AbstractModule implements \Nethgui\Module\ModuleInterface, \Nethgui\View\ViewableInterface, \Nethgui\Log\LogConsumerInterface
+abstract class AbstractModule implements \Nethgui\Module\ModuleInterface, \Nethgui\View\ViewableInterface, \Nethgui\Log\LogConsumerInterface, \Nethgui\Utility\PhpConsumerInterface
 {
 
     /**
@@ -52,6 +52,12 @@ abstract class AbstractModule implements \Nethgui\Module\ModuleInterface, \Nethg
 
     /**
      *
+     * @var \Nethgui\Utility\PhpWrapper
+     */
+    private $php;
+
+    /**
+     *
      * @var \Nethgui\Module\SimpleModuleAttributesProvider
      */
     private $descriptor;
@@ -66,6 +72,7 @@ abstract class AbstractModule implements \Nethgui\Module\ModuleInterface, \Nethg
 
     public function __construct($identifier = NULL)
     {
+        $this->php = new \Nethgui\Utility\PhpWrapper();
         $this->viewTemplate = NULL;
         if (isset($identifier)) {
             $this->identifier = $identifier;
@@ -160,6 +167,18 @@ abstract class AbstractModule implements \Nethgui\Module\ModuleInterface, \Nethg
         return $this->descriptor;
     }
 
+    public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
+    {
+        $this->php = $object;
+    }
 
+    /**
+     *
+     * @return \Nethgui\Utility\PhpWrapper
+     */
+    protected function getPhpWrapper()
+    {
+        return $this->php;
+    }
 
 }

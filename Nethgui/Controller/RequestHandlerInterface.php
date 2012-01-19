@@ -76,12 +76,14 @@ interface RequestHandlerInterface
 
 
     /**
-     * Get the path to the next action, relative to the current URL
+     * Get the path to the next module, relative to the parent's path
      *
      * Executed after process()
      *
+     * If boolean FALSE is returned the no action take place
+     *
      * @api
-     * @return string 
+     * @return bool|string The path string or boolean FALSE
      */
-    public function nextActionPath();
+    public function nextPath();
 }

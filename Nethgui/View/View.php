@@ -143,11 +143,13 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
         foreach ($data as $offset => $value) {
             $this->offsetSet($offset, $value);
         }
+        return $this;
     }
 
     public function setTemplate($template)
     {
         $this->template = $template;
+        return $this;
     }
 
     public function getTemplate()

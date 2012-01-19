@@ -69,9 +69,9 @@ class ListComposite extends \Nethgui\Module\Composite implements \Nethgui\Contro
         }
     }
 
-    public function nextActionPath()
+    public function nextPath()
     {
-        return '';
+        return $this->getIdentifier();
     }
 
 

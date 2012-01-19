@@ -42,7 +42,8 @@ class HttpCommandReceiver extends \Nethgui\View\AbstractReceiverChain
     public function hasRedirect()
     {
         foreach ($this->headers as $header) {
-            if (strtoupper(substr($header, 0, 8)) === 'LOCATION') {
+            if (strtoupper(substr($header, 0, 8)) === 'LOCATION'
+                || strtoupper(substr($header, 0, 7)) === 'REFRESH') {
                 return TRUE;
             }
         }
@@ -96,7 +97,10 @@ class HttpCommandReceiver extends \Nethgui\View\AbstractReceiverChain
         } elseif ($seconds > 10) {
             $seconds = 10;
         }
-        $this->httpHeader($origin, $selector, sprintf('Refresh: %d; url=%s', $seconds, $origin->getModuleUrl($selector)));
+
+        if ( ! $this->hasRedirect()) {
+            $this->httpHeader($origin, $selector, sprintf('Refresh: %d; url=%s', $seconds, $origin->getModuleUrl($selector)));
+        }
     }
 
     /**

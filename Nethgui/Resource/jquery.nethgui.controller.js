@@ -49,7 +49,6 @@
 
         },
         _onReloadData: function (e, delay) {
-
             var url = this._form.attr('action');
             var self = this;
 
@@ -61,8 +60,7 @@
             }
             window.setTimeout(function() {
                 self._sendQuery(url, false)
-            }, delay);
-            
+            }, delay);            
             e.stopPropagation();
         },
         _onSendQuery: function(e, url, delay, freezeUi) {
@@ -131,7 +129,7 @@
             this._dialog = $('<div class="Dialog"></div>');
             this.element.append(this._dialog).hide();
             this._dialog.append(content).dialog({
-                modal:true,
+                modal: true,
                 autoOpen: false,
                 position: ['center', 50],
                 title: titleNode.text()

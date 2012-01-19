@@ -41,33 +41,26 @@ class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Utility\
 
     /**
      *
-     * @var \Nethgui\Authorization\UserInterface
-     */
-    private $user;
-
-    /**
-     *
      * @var callable
      */
     private $catalogResolver;
 
     /**
      * 
-     * @param \Nethgui\Authorization\UserInterface $user
-     * @param \Nethgui\Log\LogInterface $log
+     * @param string ISO 639-1 language code (2 characters)
      * @param callable $catalogResolver
      * @param array $initialCatalogStack 
      */
-    public function __construct(\Nethgui\Authorization\UserInterface $user, \Nethgui\Log\LogInterface $log, $catalogResolver, $initialCatalogStack = array())
+    public function __construct($languageCode, $catalogResolver, $initialCatalogStack = array())
     {
         if ( ! is_callable($catalogResolver)) {
             throw new \InvalidArgumentException(sprintf('%s: $catalogResolver must be a valid callback function.', get_class($this)), 1322240722);
         }
 
+        $this->log = new \Nethgui\Log\Nullog();
         $this->phpWrapper = new \Nethgui\Utility\PhpWrapper();
         $this->languageCatalogStack = $initialCatalogStack;
-        $this->log = $log;
-        $this->user = $user;
+        $this->defaultLanguage = $languageCode;
         $this->catalogResolver = $catalogResolver;
     }
 
@@ -92,7 +85,7 @@ class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Utility\
         }
 
         if ( ! isset($languageCode)) {
-            $languageCode = $this->user->getLanguageCode();
+            $languageCode = $this->getLanguageCode();
         }
 
         if (empty($languageCode)) {
@@ -229,7 +222,7 @@ class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Utility\
 
     public function getLanguageCode()
     {
-        return $this->user->getLanguageCode();
+        return $this->defaultLanguage;
     }
 
 }

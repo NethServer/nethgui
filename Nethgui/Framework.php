@@ -249,6 +249,8 @@ class Framework
      */
     public function dispatch(\Nethgui\Controller\RequestInterface $request, &$output = NULL)
     {
+        $user = $request->getUser();
+
         if (array_head($request->getPath()) === FALSE) {
             $redirectUrl = implode('/', array($this->basePath, 'index.php', $this->defaultModuleIdentifier));
             $this->sendHttpResponse('', array('HTTP/1.1 302 Found', sprintf('Location: %s', $redirectUrl)), $output);
@@ -257,9 +259,7 @@ class Framework
 
         // TODO: enforce some security policy on Models
         $pdp = new \Nethgui\Authorization\PermissivePolicyDecisionPoint();
-        $user = $request->getUser();
-        $session = $user->getSession();
-        
+
 
         $platform = new \Nethgui\System\NethPlatform($user);
         $platform->setPolicyDecisionPoint($pdp);
@@ -268,7 +268,7 @@ class Framework
 
         $moduleLoader = new \Nethgui\Module\ModuleLoader($this->namespaceMap);
         $moduleLoader->setLog($platform->getLog());
-        $moduleLoader->getModule('Notification')->setSession($session);
+        $moduleLoader->getModule('Notification')->setSession($user->getSession());
 
         $mainModule = new \Nethgui\Module\Main($this->decoratorTemplate, $moduleLoader, $this->getFileNameResolver());
         $mainModule->setPlatform($platform);
@@ -280,12 +280,12 @@ class Framework
         if ( ! $validationErrorsNotification->hasValidationErrors()) {
             $request->setAttribute('validated', TRUE);
             $mainModule->process();
-            // Finally, signal "post-process" events (see #506)
+            // Run the "post-process" event queue (see #506)
             $platform->runEvents('post-process');
         }
 
         $targetFormat = $request->getExtension();
-        $translator = new \Nethgui\View\Translator($user, $platform->getLog(), $this->getFileNameResolver(), array_keys($this->namespaceMap));
+        $translator = new \Nethgui\View\Translator($user->getLanguageCode(), $this->getFileNameResolver(), array_keys($this->namespaceMap));
         $urlParts = array($this->siteUrl, $this->basePath, 'index.php');
         $rootView = new \Nethgui\View\View($targetFormat, $mainModule, $translator, $urlParts);
 
@@ -296,7 +296,13 @@ class Framework
         // ..transfer contents and commands into the MAIN view:
         $mainModule->prepareView($rootView);
 
-        if ($validationErrorsNotification->hasValidationErrors()) {
+        if ($request->isSubmitted() && $request->isValidated()) {
+            // On a valid POST request honorate the nextPath() semantics:
+            $nextPath = $mainModule->nextPath();
+            $rootView->getCommandList('/Main')
+                ->sendQuery($rootView->getModuleUrl($nextPath));
+            
+        } elseif ( ! $request->isValidated()) {
             // Only validation errors notification has to be shown: clear
             // all enqueued commands.
             $rootView->clearAllCommands();
@@ -330,13 +336,13 @@ class Framework
                 )
             );
 
-            $headers = array_merge(
-                $defaultHeaders, $commandReceiver->getHttpHeaders()
-            );
+            $headers = array_merge($defaultHeaders, $commandReceiver->getHttpHeaders());
         }
 
+        // Send response to client
         $this->sendHttpResponse($content, $headers, $output);
 
+        // Run the "post-response" event queue (see #506)
         $platform->runEvents('post-response');
 
         return 0;

@@ -133,7 +133,7 @@
             var v = this.options.data;
             var errors = '';
 
-            $.each(v.errors, function (undefined, err) {
+            $.each(v.errors, function (index, err) {
                 errors += '<a class="Button givefocus" href="#${widgetId}">${label}</a> '.replacePlaceholders(err);
                 self._addTooltip(err);
             });

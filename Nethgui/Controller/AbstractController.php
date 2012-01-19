@@ -244,9 +244,9 @@ abstract class AbstractController extends \Nethgui\Module\AbstractModule impleme
         // NOOP
     }
 
-    public function nextActionPath()
+    public function nextPath()
     {
-        return '';
+        return FALSE;
     }
 
 

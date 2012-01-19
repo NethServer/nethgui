@@ -23,7 +23,7 @@ namespace Nethgui\Module\Help;
 /**
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class Common extends \Nethgui\Controller\AbstractController implements \Nethgui\Utility\PhpConsumerInterface
+class Common extends \Nethgui\Controller\AbstractController
 {
 
     /**
@@ -40,18 +40,6 @@ class Common extends \Nethgui\Controller\AbstractController implements \Nethgui\
     public function getModuleSet()
     {
         return $this->getParent()->getModuleSet();
-    }
-
-    /**
-     *
-     * @var \Nethgui\Utility\PhpWrapper
-     */
-    protected $globalFunctions;
-
-    public function __construct($identifier = NULL)
-    {
-        parent::__construct($identifier);
-        $this->globalFunctions = new \Nethgui\Utility\PhpWrapper();
     }
 
     public function bind(\Nethgui\Controller\RequestInterface $request)
@@ -107,14 +95,9 @@ class Common extends \Nethgui\Controller\AbstractController implements \Nethgui\
         return $this->fileNameResolver;
     }
 
-    public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
-    {
-        $this->globalFunctions = $object;
-    }
-
     public function renderFileContent(\Nethgui\Renderer\AbstractRenderer $renderer)
     {
-        return $this->globalFunctions->file_get_contents($this->getCachePath($this->fileName));
+        return $this->getPhpWrapper()->file_get_contents($this->getCachePath($this->fileName));
     }
 
 }

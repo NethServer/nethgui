@@ -60,7 +60,7 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
         if (is_null($this->data)) {
             $this->data = new \ArrayObject();
         } elseif ( ! $this->data instanceof \ArrayObject) {
-            throw new \UnexpectedValueException(sprintf('%s: session data must be enclosed into an \ArrayObject', get_class($this)), 1322738011);
+            throw new \UnexpectedValueException(sprintf('%s: session data must be enclosed into an \ArrayObject', __CLASS__), 1322738011);
         }
     }
 

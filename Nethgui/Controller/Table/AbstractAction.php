@@ -62,9 +62,9 @@ abstract class AbstractAction extends \Nethgui\Controller\AbstractController imp
         }
     }
 
-    public function nextActionPath()
+    public function nextPath()
     {
-        return '../read';
+        return 'read';
     }
 
 }

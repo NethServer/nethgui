@@ -111,7 +111,11 @@
 
                 if(selector === '__COMMANDS__') {
                     $.each(value, function (index, command) {
-                        $('#' + command.R).trigger('nethgui' + command.M.toLowerCase(), command.A);
+                        if(command.R === 'Main') {
+                            $(document).trigger('nethgui' + command.M.toLowerCase(), command.A);
+                        } else {
+                            $('#' + command.R).trigger('nethgui' + command.M.toLowerCase(), command.A);
+                        }
                     });
                 } else {
                     $('.' + selector).each(function(index, element) {
@@ -261,7 +265,9 @@
         // free to override
         },
         _sendQuery: function(url, freezeUi) {
+            
             this._server.ajaxMessage(false, url, undefined, freezeUi ? this.widget() : undefined);
+            
         },
         _sendMutation: function(url, data, freezeUi) {
             this._server.ajaxMessage(true, url, data, freezeUi ? this.widget() : undefined);
@@ -270,5 +276,13 @@
             
         }
     });
-    
+
+
+    $(document).bind('nethguisendquery.nethgui', function(e, url, delay, freezeUi) {
+        var server = new Server();
+        if(server.isLocalUrl(url)) {
+            window.location = url;
+        }
+    });
+
 }( jQuery ) );

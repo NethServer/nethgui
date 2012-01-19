@@ -71,11 +71,10 @@ interface UserInterface
     public function hasCredential($credentialName);
 
     /**
-     * Get the current language code
+     * The language that was choosen by the user
      *
      * @api
      * @return string ISO 639-1 language code (2 characters).
-     *
      */
     public function getLanguageCode();
 

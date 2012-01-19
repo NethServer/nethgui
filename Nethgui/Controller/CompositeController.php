@@ -149,9 +149,9 @@ class CompositeController extends \Nethgui\Module\Composite implements \Nethgui\
         }
     }
 
-    public function nextActionPath()
+    public function nextPath()
     {
-        return '';
+        return FALSE;
     }
 
     /**
@@ -178,30 +178,42 @@ class CompositeController extends \Nethgui\Module\Composite implements \Nethgui\
             $innerView = $view->spawnView($this->currentAction, TRUE);
             $this->currentAction->prepareView($innerView);
 
-            if ($this->getRequest()->isSubmitted()
-                && $this->getRequest()->isValidated()
-                && $this->currentAction instanceof \Nethgui\Controller\RequestHandlerInterface) {
-                $this->handleNextActionId($view, $this->currentAction);
-            } elseif ($view->getTargetFormat() === $view::TARGET_JSON
+            if ($view->getTargetFormat() === $view::TARGET_JSON
                 && ! $this->getRequest()->isSubmitted()) {
                 // JSON view need a show() command:
                 $view->getCommandList($this->currentAction->getIdentifier())->show();
+            } elseif ($this->getRequest()->isValidated() && $this->getRequest()->isSubmitted()) {
+                $this->prepareViewOptimized($view, $innerView);
             }
         }
     }
 
-    private function handleNextActionId(\Nethgui\View\ViewInterface $view, \Nethgui\Controller\RequestHandlerInterface $action)
+    /**
+     * Save a request/response round, putting the next view data in the response
+     * 
+     * @param \Nethgui\View\ViewInterface $view 
+     */
+    private function prepareViewOptimized(\Nethgui\View\ViewInterface $view, \Nethgui\View\ViewInterface $currentView)
     {
-        $actionView = $view->spawnView($action);
+        $np = $this->currentAction->nextPath();
 
-        $actionUrl = $actionView->getModuleUrl();
-        $nextUrl = $actionView->getModuleUrl($action->nextActionPath());
-
-        if ($actionUrl === $nextUrl) {
+        if ($np === FALSE) {
             return;
         }
 
-        $actionView->getCommandList()->sendQuery($nextUrl);
+        $nextModule = $this->getAction($np);
+        if ($nextModule instanceof \Nethgui\View\ViewableInterface) {
+            // prefetch the next view data:
+            $nextView = $view->spawnView($nextModule, TRUE);
+            if ($view->getTargetFormat() === $view::TARGET_JSON) {
+                $nextModule->prepareView($nextView);
+                $nextView->getCommandList()->prefetched();
+            }
+            $nextView->getCommandList()->show();
+        } else {
+            // query for the next view data:
+            $view->getCommandList($np)->sendQuery($view->getModuleUrl($np));
+        }
     }
 
     /**

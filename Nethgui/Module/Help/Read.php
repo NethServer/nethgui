@@ -44,13 +44,13 @@ class Read extends Common
             });
         if (NETHGUI_ENABLE_HTTP_CACHE_HEADERS) {
             $view->getCommandList()
-                ->httpHeader(sprintf('Last-Modified: %s', date(DATE_RFC1123, $this->globalFunctions->filemtime($filePath))))
+                ->httpHeader(sprintf('Last-Modified: %s', date(DATE_RFC1123, $this->getPhpWrapper()->filemtime($filePath))))
                 ->httpHeader(sprintf('Expires: %s', date(DATE_RFC1123, time() + 3600)))
             ;
         }
 
         $meta = array();
-        $view['contents'] = $this->globalFunctions->file_get_contents_extended($filePath, $meta);
+        $view['contents'] = $this->getPhpWrapper()->file_get_contents_extended($filePath, $meta);
 
         if ($meta['size'] > 0) {
             $view->getCommandList()->httpHeader(sprintf('Content-Length: %d', $meta['size']));

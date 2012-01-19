@@ -70,7 +70,7 @@ interface ViewInterface extends \ArrayAccess, \IteratorAggregate
      * Assign data to the View state.
      *
      * @param Traversable $data
-     * @return void
+     * @return ViewInterface
      * @api
      */
     public function copyFrom($data);
