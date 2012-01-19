@@ -83,3 +83,9 @@ $L['Describe <tt>${0}</tt> here..'] = 'Descrivi <tt>${0}</tt> qui..';
 $L['Documents'] = 'Documenti';
 $L['Templates'] = 'Template';
 
+$L['username_label'] = 'Nome utente';
+$L['password_label'] = 'Password';
+
+$L['Login_label'] = 'Accedi';
+$L['Logout_label'] = 'Esci';
+$L['Welcome on ${0}'] = 'Benvenuto su ${0}';
