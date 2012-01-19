@@ -301,11 +301,10 @@ class Framework
             $nextPath = $mainModule->nextPath();
             $rootView->getCommandList('/Main')
                 ->sendQuery($rootView->getModuleUrl($nextPath));
-            
         } elseif ( ! $request->isValidated()) {
             // Only validation errors notification has to be shown: clear
             // all enqueued commands.
-            $rootView->clearAllCommands();
+            //$rootView->clearAllCommands();
 
             // Validation error http status.
             // See RFC2616, section 10.4 "Client Error 4xx"
@@ -342,8 +341,10 @@ class Framework
         // Send response to client
         $this->sendHttpResponse($content, $headers, $output);
 
-        // Run the "post-response" event queue (see #506)
-        $platform->runEvents('post-response');
+        if ($request->isValidated()) {
+            // Run the "post-response" event queue (see #506)
+            $platform->runEvents('post-response');
+        }
 
         return 0;
     }
@@ -489,6 +490,11 @@ class Framework
         $attributes['extension'] = $this->extractTargetFormat($pathInfo);
         $attributes['submitted'] = $submitted;
         $attributes['validated'] = FALSE;
+
+        error_log('POST ' . print_r($postData, 1));
+        error_log('GET ' . print_r($getData, 1));
+        error_log('PATH ' . print_r($pathInfo, 1));
+        error_log('ATT ' . print_r($attributes, 1));
 
         $instance = new \Nethgui\Controller\Request($user, $postData, $getData, $pathInfo, $attributes);
 

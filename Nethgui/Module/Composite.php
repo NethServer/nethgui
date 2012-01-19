@@ -67,7 +67,7 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
         $this->children[$childModule->getIdentifier()] = $childModule;
 
         $childModule->setParent($this);
-        if ($this->getPlatform() !== NULL) {
+        if ($this->getPlatform() !== NULL && $childModule instanceof \Nethgui\Controller\RequestHandlerInterface) {
             $childModule->setPlatform($this->getPlatform());
         }
 

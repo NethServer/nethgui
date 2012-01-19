@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Module\Authentication;
+namespace Nethgui\Module;
 
 /*
  * Copyright (C) 2012 Nethesis S.r.l.

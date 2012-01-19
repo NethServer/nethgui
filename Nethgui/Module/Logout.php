@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Module\Authentication;
+namespace Nethgui\Module;
 
 /*
  * Copyright (C) 2012 Nethesis S.r.l.
@@ -40,14 +40,9 @@ class Logout extends \Nethgui\Controller\AbstractController
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         $view->setTemplate(function(\Nethgui\Renderer\Xhtml $renderer) {
-
-                // return empty string on parent::renderIndex()
-                if ($renderer->getDefaultFlags() & $renderer::STATE_UNOBSTRUSIVE) {
-                    $renderer->rejectFlag($renderer::INSET_FORM | $renderer::INSET_WRAP);
-                    return '';
-                }
-
-                $renderer->requireFlag($renderer::INSET_FORM);
+                $actionId = $renderer->getUniqueId();
+                $renderer->includeCss("#{$actionId} .Buttonlist {text-align:center; border-top: 1px solid white; padding-top: 4px }");
+                $renderer->requireFlag($renderer::INSET_FORM | $renderer::INSET_WRAP);
                 return $renderer->buttonList()
                         ->insert($renderer->button('Logout', $renderer::BUTTON_SUBMIT));
             });

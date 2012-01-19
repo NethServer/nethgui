@@ -90,9 +90,7 @@ class Inset extends \Nethgui\Widget\XhtmlWidget
 
             $panel->setAttribute('class', $cssClass);
         }
-
-
-
+        
         return $panel;
     }
 

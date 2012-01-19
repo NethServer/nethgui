@@ -6,10 +6,9 @@ $bootstrapJs = <<<"EOJS"
  */
 jQuery(document).ready(function($) {
     $('script.unobstrusive').remove();
-    $('#CurrentModule').Component();
-    $('.Navigation').Navigation();
-    $('#allWrapper').css('display', 'block');
+    $('#pageContent').Component();
     $('.HelpArea').HelpArea();
+    $('#allWrapper').css('display', 'block');
 });
 EOJS;
 
@@ -45,7 +44,7 @@ $view
                     <div id="CurrentModule"><?php echo $view['currentModuleOutput'] ?></div>
                     <?php if ( ! $view['disableFooter']): ?><div id="footer"><p><?php echo htmlspecialchars($view['company'] . ' - ' . $view['address']) ?></p></div><?php endif; ?>
                 </div>
-                <?php if ( ! $view['disableMenu']): ?><div class="secondaryContent" role="otherTask"><h2><?php echo htmlspecialchars($view->translate('Other modules')) ?></h2><?php echo $view['menuOutput'] ?></div><?php endif; ?>
+                <?php if ( ! $view['disableMenu']): ?><div class="secondaryContent" role="otherTask"><h2><?php echo htmlspecialchars($view->translate('Other modules')) ?></h2><?php echo $view['menuOutput'] . $view['logoutOutput'] ?></div><?php endif; ?>
             </div><?php echo $view['helpAreaOutput'] ?>
         </div><?php echo $view->literal($view['Resource']['js']) ?>
     </body>

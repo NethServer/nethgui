@@ -73,7 +73,7 @@ class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\Co
             $idList[] = $this->currentModuleIdentifier;
         }
 
-        $systemModules = array('Menu', 'Notification', 'Resource');
+        $systemModules = array('Menu', 'Notification', 'Resource', 'Logout');
 
         try {
             foreach ($idList as $moduleIdentifier) {
@@ -92,6 +92,7 @@ class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\Co
 
         $this->addChild($this->moduleLoader->getModule('Notification'));
         $this->addChild($this->moduleLoader->getModule('Resource'));
+        $this->addChild($this->moduleLoader->getModule('Logout'));
 
         if ($this->currentModuleIdentifier === 'Help') {
             $this->moduleLoader->getModule('Help')->setModuleSet($this->moduleLoader)->setFileNameResolver($this->fileNameResolver);
@@ -140,6 +141,7 @@ class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\Co
         $view['menuOutput'] = 'menuOutput';
         $view['helpAreaOutput'] = 'helpAreaOutput';
         $view['notificationOutput'] = 'notificationOutput';
+        $view['logoutOutput'] = 'logoutOutput';
     }
 
     /**
@@ -209,6 +211,8 @@ class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\Co
 
         // Override menuOutput
         $decoratorView['menuOutput'] = (String) $renderer->inset('Menu');
+
+        $decoratorView['logoutOutput'] = (String) $renderer->inset('Logout');
 
         return $renderer->spawnRenderer($decoratorView)->render();
     }
