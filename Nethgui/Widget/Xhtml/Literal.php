@@ -53,26 +53,11 @@ class Literal extends \Nethgui\Widget\XhtmlWidget
             $content = (String) $value;
         }
 
-        $unobstrusiveRequired = ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE) !== 0 ;
-        $unobstrusiveApplying = ($this->getRenderer()->getDefaultFlags() & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE) === 0;
-
-        //$this->view->getLog()->notice(sprintf('%s UNOBSTRUSIVE(%s) applying %s required %s',$this->view->getClientEventTarget($this->getAttribute('name')), ($unobstrusiveRequired && $unobstrusiveApplying ? 'yes' : 'no'),dechex($unobstrusiveApplying), dechex($unobstrusiveRequired)));
-
-        if ($unobstrusiveRequired && $unobstrusiveApplying) {
-            $content = $this->escapeUnobstrusive($content);
-        } elseif ($this->getAttribute('hsc', FALSE) === TRUE) {
+        if ($this->getAttribute('hsc', FALSE) === TRUE) {
             $content = htmlspecialchars($content);
         }
-        
+
         return $content;
     }
-
-//    public function setAttribute($attribute, $value)
-//    {
-//        if ($attribute == 'data' && $value instanceof \Nethgui\View\ViewInterface) {
-//            parent::setAttribute('name', $value->getModule()->getIdentifier());
-//        }
-//        return parent::setAttribute($attribute, $value);
-//    }
 
 }

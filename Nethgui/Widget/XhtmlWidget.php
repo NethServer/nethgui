@@ -286,6 +286,10 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
         $this->invokeCommands();
         $content = parent::render();
 
+        if ($this->canEscapeUnobstrusive($this->getAttribute('flags', 0))) {
+            $content = $this->escapeUnobstrusive($content);
+        }
+
         if (NETHGUI_ENABLE_INCLUDE_WIDGET) {
             foreach ($this->getJsWidgetTypes() as $type) {
                 $typeParts = explode(':', $type);
@@ -350,6 +354,13 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
     protected function escapeUnobstrusive($content)
     {
         return "<script class='unobstrusive'>/*<![CDATA[*/\ndocument.write(" . json_encode(strval($content)) . ");\n/*]]>*/</script>";
+    }
+
+    protected function canEscapeUnobstrusive($flags)
+    {
+        $unobstrusiveRequired = ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE) !== 0;
+        $unobstrusiveApplying = ($this->getRenderer()->getDefaultFlags() & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE) === 0;
+        return $unobstrusiveRequired && $unobstrusiveApplying;
     }
 
 }
