@@ -27,7 +27,7 @@ namespace Nethgui\View;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-abstract class AbstractReceiverChain implements \Nethgui\View\CommandReceiverInterface
+abstract class AbstractReceiverChain implements \Nethgui\View\CommandReceiverInterface, \Nethgui\Log\LogConsumerInterface
 {
 
     /**
@@ -67,6 +67,21 @@ abstract class AbstractReceiverChain implements \Nethgui\View\CommandReceiverInt
     public function executeCommand(\Nethgui\View\ViewInterface $origin, $selector, $name, $arguments)
     {
         return $this->getNextReceiver()->executeCommand($origin, $selector, $name, $arguments);
+    }
+
+    public function getLog()
+    {
+        if ( ! isset($this->log)) {
+            $this->log = new \Nethgui\Log\Nullog();
+        }
+
+        return $this->log;
+    }
+
+    public function setLog(\Nethgui\Log\LogInterface $log)
+    {
+        $this->log = $log;
+        return $this;
     }
 
 }

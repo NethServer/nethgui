@@ -39,11 +39,21 @@ class HttpCommandReceiver extends \Nethgui\View\AbstractReceiverChain
         $this->headers = array();
     }
 
-    public function hasRedirect()
+    public function hasRefresh()
     {
+        return $this->hasHeader('Refresh');
+    }
+
+    public function hasLocation()
+    {
+        return $this->hasHeader('Location');
+    }
+
+    private function hasHeader($headerName)
+    {
+        $len = strlen($headerName);
         foreach ($this->headers as $header) {
-            if (strtoupper(substr($header, 0, 8)) === 'LOCATION'
-                || strtoupper(substr($header, 0, 7)) === 'REFRESH') {
+            if (strtoupper(substr($header, 0, $len)) === $headerName) {
                 return TRUE;
             }
         }
@@ -98,7 +108,7 @@ class HttpCommandReceiver extends \Nethgui\View\AbstractReceiverChain
             $seconds = 10;
         }
 
-        if ( ! $this->hasRedirect()) {
+        if ( ! $this->hasLocation() && ! $this->hasRefresh()) {
             $this->httpHeader($origin, $selector, sprintf('Refresh: %d; url=%s', $seconds, $origin->getModuleUrl($selector)));
         }
     }
@@ -130,10 +140,13 @@ class HttpCommandReceiver extends \Nethgui\View\AbstractReceiverChain
             $location = $origin->getSiteUrl() . $location;
         }
 
-        if ( ! $this->hasRedirect()) {
-            $this->headers[] = sprintf('HTTP/1.1 %d %s', $code, $codeMessage);
-            $this->headers[] = 'Location: ' . $location;
+        if ($this->hasLocation()) {
+            $this->getLog()->debug(sprintf('%s: the Location header has been set already. Location `%s` is ignored.', __CLASS__, $location));
+            return;
         }
+
+        $this->headers[] = sprintf('HTTP/1.1 %d %s', $code, $codeMessage);
+        $this->headers[] = 'Location: ' . $location;
     }
 
 }

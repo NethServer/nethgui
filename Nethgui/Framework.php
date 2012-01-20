@@ -290,6 +290,7 @@ class Framework
         $rootView = new \Nethgui\View\View($targetFormat, $mainModule, $translator, $urlParts);
 
         $commandReceiver = new \Nethgui\Renderer\HttpCommandReceiver(new \Nethgui\Renderer\MarshallingReceiver(new \Nethgui\View\LoggingCommandReceiver()));
+        $commandReceiver->setLog($platform->getLog());
 
         $rootView->setReceiver($commandReceiver);
 
@@ -299,8 +300,10 @@ class Framework
         if ($request->isSubmitted() && $request->isValidated()) {
             // On a valid POST request honorate the nextPath() semantics:
             $nextPath = $mainModule->nextPath();
-            $rootView->getCommandList('/Main')
-                ->sendQuery($rootView->getModuleUrl($nextPath));
+            if(is_string($nextPath)) {
+                $rootView->getCommandList('/Main')
+                    ->sendQuery($rootView->getModuleUrl($nextPath));
+            }
         } elseif ( ! $request->isValidated()) {
             // Only validation errors notification has to be shown: clear
             // all enqueued commands.
@@ -319,7 +322,7 @@ class Framework
         // ..Execute commands sent to views. These do not include commands sent to widgets:
         $this->executeViewCommands($rootView);
 
-        if ($targetFormat === 'xhtml' && $commandReceiver->hasRedirect()) {
+        if ($targetFormat === 'xhtml' && $commandReceiver->hasLocation()) {
             $content = '';
             $headers = $commandReceiver->getHttpHeaders();
         } else {

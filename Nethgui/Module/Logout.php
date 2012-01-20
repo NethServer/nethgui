@@ -44,7 +44,7 @@ class Logout extends \Nethgui\Controller\AbstractController
                 $renderer->includeCss("#{$actionId} .Buttonlist {text-align:center; border-top: 1px solid white; padding-top: 4px }");
                 $renderer->requireFlag($renderer::INSET_FORM | $renderer::INSET_WRAP);
                 return $renderer->buttonList()
-                        ->insert($renderer->button('Logout', $renderer::BUTTON_SUBMIT));
+                        ->insert($renderer->button('Logout', $renderer::BUTTON_SUBMIT)->setAttribute('class', 'Button'));
             });
     }
 
