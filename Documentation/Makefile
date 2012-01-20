@@ -5,7 +5,7 @@
 RSTFILES := $(shell find . -name '*.rst')
 HTMLFILES := $(addsuffix .html, $(basename ${RSTFILES}))
 
-DOCURL=http://dev.nethesis.it/dpdev/Documentation/Api/
+DOCURL=http://dev.nethesis.it/nethgui/Documentation/Api/
 
 
 RST2HTML=rst2html --stylesheet-path=css/style.css --link-stylesheet
