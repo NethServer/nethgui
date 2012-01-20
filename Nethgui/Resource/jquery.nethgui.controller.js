@@ -59,7 +59,7 @@
                 delay = 10000;
             }
             window.setTimeout(function() {
-                self._sendQuery(url, false)
+                self._sendQuery(url, undefined, false)
             }, delay);            
             e.stopPropagation();
         },
@@ -69,10 +69,10 @@
             }
 
             if(delay === undefined) {
-                this._sendQuery(url, freezeUi);
+                this._sendQuery(url, undefined, freezeUi);
             } else if(parseInt(delay) > 0) {
                 window.setTimeout(function() {
-                    this._sendQuery(url, freezeUi)
+                    this._sendQuery(url, undefined, freezeUi)
                 }, delay);
             }
             e.stopPropagation();

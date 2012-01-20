@@ -47,7 +47,7 @@
                 } else if(this.element.hasClass('Help')) {
                     this.element.trigger('nethguihelp', href);
                 } else {
-                    this._sendQuery(href, true);
+                    this._sendQuery(href, undefined, true);
                 }
                 e.stopPropagation();
                 e.preventDefault();

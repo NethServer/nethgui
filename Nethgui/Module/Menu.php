@@ -63,10 +63,10 @@ class Menu extends \Nethgui\Controller\AbstractController
         return $this;
     }
 
-    public function initialize()
+    public function bind(\Nethgui\Controller\RequestInterface $request)
     {
-        parent::initialize();
-        $this->declareParameter('search', Validate::ANYTHING);
+        parent::bind($request);
+        $this->parameters['search'] = $request->getArgument('search');
     }
 
     private function searchTags(\Nethgui\View\ViewInterface $view, $query)

@@ -264,13 +264,11 @@
         _updateView: function(value, selector) {
         // free to override
         },
-        _sendQuery: function(url, freezeUi) {
-            
-            this._server.ajaxMessage(false, url, undefined, freezeUi ? this.widget() : undefined);
-            
+        _sendQuery: function(url, data, freezeUi) {            
+            this._server.ajaxMessage(false, url, typeof data === 'string' ? data : undefined, freezeUi ? this.widget() : undefined);
         },
         _sendMutation: function(url, data, freezeUi) {
-            this._server.ajaxMessage(true, url, data, freezeUi ? this.widget() : undefined);
+            this._server.ajaxMessage(true, url, typeof data === 'string' ? data : undefined, freezeUi ? this.widget() : undefined);
         },
         _readHelp: function (url) {
             
