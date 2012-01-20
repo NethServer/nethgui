@@ -105,7 +105,7 @@ class Button extends \Nethgui\Widget\XhtmlWidget
 
             $attributes['value'] = $label;
 
-            $content .= $this->controlTag('button', $name, $flags, $cssClass, $attributes);
+            $content .= $this->controlTag('button', $name, $flags, $this->getAttribute('class', $cssClass), $attributes);
             if (isset($childContent)) {
                 $content .= $childContent;
             }
