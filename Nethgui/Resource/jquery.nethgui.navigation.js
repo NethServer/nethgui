@@ -6,6 +6,17 @@
 (function( $ ) {
     var SUPER = $.nethgui.Action;
     $.widget('nethgui.Navigation', SUPER, {
+        _create: function() {
+            SUPER.prototype._create.call( this );
+            this.element.find('.Button.search')
+                .button({icons: {primary: 'ui-icon-search'}, text: false})
+                .removeClass('ui-corner-all');
+                
+
+            this.element.find('.TextInput')
+                .removeClass('ui-corner-all');
+                
+        },
         _updateView: function(value) {
             // if the response is empty show all items:
             if(!$.isArray(value) || value.length === 0) {

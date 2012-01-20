@@ -213,9 +213,9 @@ class Menu extends \Nethgui\Controller\AbstractController
         }
 
         $searchPanel = $view->panel()
-            ->setAttribute('class', 'searchPanel')
+            ->setAttribute('class', 'searchPanel ui-corner-all')
             ->insert($view->textInput("search", $view::LABEL_NONE)->setAttribute('placeholder', $view->translate('Search') . "..."))
-            ->insert($view->button("Find", $view::BUTTON_SUBMIT));
+            ->insert($view->button("Find", $view::BUTTON_SUBMIT)->setAttribute('class', 'Button search'));
 
         return $view->panel()
                 ->setAttribute('class', 'Navigation Flat ' . $view->getClientEventTarget("tags"))
