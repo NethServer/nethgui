@@ -47,6 +47,12 @@ class Button extends \Nethgui\Widget\XhtmlWidget
         $attributes = array();
         $cssClass = 'Button';
 
+        if ($this->hasAttribute('receiver')) {
+            $attributes['id'] = $this->view->getUniqueId($this->getAttribute('receiver'));
+        } else {
+            $attributes['id'] = FALSE;
+        }
+
         if ($flags & (\Nethgui\Renderer\WidgetFactoryInterface::BUTTON_LINK | \Nethgui\Renderer\WidgetFactoryInterface::BUTTON_CANCEL | \Nethgui\Renderer\WidgetFactoryInterface::BUTTON_HELP)) {
 
             $value = $this->getAttribute('value', isset($this->view[$name]) ? $this->view[$name] : NULL);
@@ -76,9 +82,6 @@ class Button extends \Nethgui\Widget\XhtmlWidget
 
             $attributes['class'] = $cssClass;
             $attributes['title'] = $this->getAttribute('title', FALSE);
-            if ($this->hasAttribute('receiver')) {
-                $attributes['id'] = $this->view->getUniqueId($this->getAttribute('receiver'));
-            }
 
             $content .= $this->openTag($tag, $attributes);
             $content .= htmlspecialchars($label);
@@ -87,7 +90,6 @@ class Button extends \Nethgui\Widget\XhtmlWidget
             if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::BUTTON_SUBMIT) {
                 $attributes['type'] = 'submit';
                 $cssClass .= ' submit';
-                $attributes['id'] = FALSE;
                 $attributes['name'] = FALSE;
             } elseif ($flags & \Nethgui\Renderer\WidgetFactoryInterface::BUTTON_RESET) {
                 $attributes['type'] = 'reset';
@@ -98,7 +100,6 @@ class Button extends \Nethgui\Widget\XhtmlWidget
             } elseif ($flags & \Nethgui\Renderer\WidgetFactoryInterface::BUTTON_DROPDOWN) {
                 $attributes['type'] = 'button';
                 $attributes['name'] = FALSE;
-                $attributes['id'] = FALSE;
                 $cssClass .= ' dropdown';
                 $childContent = $this->renderChildren();
             }

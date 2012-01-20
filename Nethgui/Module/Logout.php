@@ -39,18 +39,29 @@ class Logout extends \Nethgui\Controller\AbstractController
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
+
+
         $view->setTemplate(function(\Nethgui\Renderer\Xhtml $renderer) {
+                $buttonId = $renderer->getUniqueId('Logout');
+                $js = <<<"EOJS"
+(function ( $ ) {
+    $(document).ready(function(){
+        $('#{$buttonId}').button({icons: {primary:"ui-icon-extlink"}, text: true});
+    });
+} ( jQuery ));
+EOJS;
                 $actionId = $renderer->getUniqueId();
                 $renderer->includeCss("#{$actionId} .Buttonlist {text-align:center; border-top: 1px solid white; padding-top: 4px }");
+                $renderer->includeJavascript($js);
                 $renderer->requireFlag($renderer::INSET_FORM | $renderer::INSET_WRAP);
                 return $renderer->buttonList()
-                        ->insert($renderer->button('Logout', $renderer::BUTTON_SUBMIT)->setAttribute('class', 'Button'));
+                        ->insert($renderer->button('Logout', $renderer::BUTTON_SUBMIT)->setAttribute('class', 'Button')->setAttribute('receiver', 'Logout'));
             });
     }
 
     public function nextPath()
     {
-        return '/';
+        return '/Login';
     }
 
 }
