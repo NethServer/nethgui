@@ -28,7 +28,7 @@ namespace Nethgui\Module;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Notification extends \Nethgui\Controller\AbstractController implements \Nethgui\View\CommandReceiverInterface
+class Notification extends \Nethgui\Controller\AbstractController implements \Nethgui\View\CommandReceiverInterface, \Nethgui\Utility\SessionConsumerInterface
 {
 
     public function __construct($identifier = NULL)
@@ -41,8 +41,10 @@ class Notification extends \Nethgui\Controller\AbstractController implements \Ne
     {
         $key = get_class($this);
 
-        if ($session->hasElement($key)) {
-            $this->notifications = $session->retrieve($key);
+        $s = $session->retrieve($key);
+
+        if ($s instanceof $this->notifications) {
+            $this->notifications = $s;
         } else {
             $session->store($key, $this->notifications);
         }
@@ -63,6 +65,7 @@ class Notification extends \Nethgui\Controller\AbstractController implements \Ne
                 unset($this->notifications[$index]);
             }
         }
+        return $this;
     }
 
     public function initialize()
@@ -96,7 +99,7 @@ class Notification extends \Nethgui\Controller\AbstractController implements \Ne
 
     public function render(\Nethgui\Renderer\Xhtml $renderer)
     {
-        $renderer->includeFile('jquery.nethgui.notification.js', 'Nethgui');       
+        $renderer->includeFile('jquery.nethgui.notification.js', 'Nethgui');
 
         $panel = $renderer->panel()->setAttribute('name', 'Pane')->setAttribute('receiver', '');
 
@@ -112,7 +115,6 @@ class Notification extends \Nethgui\Controller\AbstractController implements \Ne
         return (String) $panel;
     }
 
-
     public function executeCommand(\Nethgui\View\ViewInterface $origin, $selector, $name, $arguments)
     {
         if ($name === 'showNotification') {
@@ -125,7 +127,6 @@ class Notification extends \Nethgui\Controller\AbstractController implements \Ne
             $notification = new \Nethgui\Module\Notification\DialogBox($origin->getModule(), $arguments[0], array(), $arguments[1]);
 
             $this->showNotification($notification);
-            
         } elseif ($name === 'dismissNotification') {
             $this->dismissNotification($arguments[0]);
         }

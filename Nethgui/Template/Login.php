@@ -3,6 +3,7 @@
 echo $view->header('hostname')->setAttribute('template', $T('Welcome on ${0}'));
 echo $view->textInput('username');
 echo $view->textInput('password', $view::TEXTINPUT_PASSWORD);
+echo $view->selector('language', $view::SELECTOR_DROPDOWN);
 echo $view->buttonList()
     ->insert($view->button('Login', $view::BUTTON_SUBMIT));
 
@@ -68,7 +69,7 @@ $extJs = <<<"JS"
     $(window).resize(adjust).scroll(adjust);
     
     $(document).ready(function() {
-        window.setTimeout(adjust, 10);
+        window.setTimeout(adjust, 1);
     });
     
 } ( jQuery ));

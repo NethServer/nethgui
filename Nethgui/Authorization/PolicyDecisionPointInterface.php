@@ -30,11 +30,19 @@ namespace Nethgui\Authorization;
  */
 interface PolicyDecisionPointInterface
 {
+    const INSTANTIATE = 'CREATE';
+    const QUERY = 'QUERY';
+    const MUTATE = 'MUTATE';
 
     /**
-     * Checks if $request is satisfiable.
-     * @return AccessControlResponseInterface The response to the request.
+     * Authorize the $subject to perform $action on $resource
+     *
+     * @param UserInterface
+     * @param string|object
+     * @param string
+     * @return AccessControlResponseInterface
      */
-    public function authorizeRequest(AccessControlRequestInterface $request);
+    public function authorize(UserInterface $subject, $resource, $action);
+
 }
 

@@ -30,26 +30,29 @@ namespace Nethgui\Authorization;
 interface UserInterface 
 {
 
+    const ID = __CLASS__;
+
     /**
+     * Authenticate the user through the given credentials.
+     *
+     * NOTE:
+     * You can pass an arbitrary number of arguments to the
+     * authentication procedure. The actual number of arguments depends on
+     * the implementation
+     *
      * @api
-     * @return boolean
+     * @see isAuthenticated()
+     * @return boolean TRUE if authentication is successful
+     */
+    public function authenticate();
+
+    /**
+     * The authentication state
+     *
+     * @api
+     * @return boolean TRUE if authenticated, FALSE otherwise
      */
     public function isAuthenticated();
-
-    /**
-     * @api
-     * @param bool $status
-     * @return UserInterface
-     */
-    public function setAuthenticated($status);
-
-    /**
-     * @api
-     * @param string $credentialName
-     * @param mixed $credentialValue
-     * @return UserInterface
-     */
-    public function setCredential($credentialName, $credentialValue);
 
     /**
      * @api
@@ -57,12 +60,6 @@ interface UserInterface
      * @return mixed
      */
     public function getCredential($credentialName);
-
-    /**
-     * @api
-     * @return array
-     */
-    public function getCredentials();
 
     /**
      * @api
@@ -77,13 +74,6 @@ interface UserInterface
      * @return string ISO 639-1 language code (2 characters).
      */
     public function getLanguageCode();
-
-    /**
-     * 
-     * @api
-     * @return \Nethgui\Utility\SessionInterface     
-     */
-    public function getSession();
 
 }
 

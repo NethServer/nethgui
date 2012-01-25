@@ -26,25 +26,46 @@ namespace Nethgui\Authorization;
  * An AccessControlRequestInterface implementing object encapsulates the authorization
  * response that can be ``GRANTED`` or ``NOT GRANTED``.
  *
+ * @author Davide Principi <davide.principi@nethesis.it>
  * @see AccessControlRequestInterface
+ * @api
+ * @since 1.0
  */
 interface AccessControlResponseInterface
 {
 
     /**
-     * Get a reference to the original Request.
-     * @return AccessControlRequestInterface The original Request.
-     */
-    public function getRequest();
-
-    /**
+     * TRUE if the access is granted
+     *
      * @return bool TRUE, if granted, FALSE otherwise.
      */
-    public function isAccessGranted();
+    public function isGranted();
 
     /**
-     * Can contain a message explaining the response state.
+     * This is the dual of isGranted()
+     *
+     * @see isGranted()
+     * @return bool TRUE, if access is denied FALSE otherwise
+     */
+    public function isDenied();
+
+    /**
+     * Response explanation
+     *
      * @return string
      */
     public function getMessage();
+
+    /**
+     * Response code
+     * 
+     * @return integer 0 if granted, positive otherwise
+     */
+    public function getCode();
+
+    /**
+     * @param integer $identifier
+     * @return \Nethgui\Exception\AuthorizationException
+     */
+    public function asException($identifier);
 }

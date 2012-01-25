@@ -21,6 +21,7 @@ namespace Nethgui\System;
  */
 
 use Nethgui\Exception\AuthorizationException;
+use Nethgui\Authorization\PolicyDecisionPointInterface as Permission;
 
 /**
  * Read and write parameters into SME DB
@@ -64,14 +65,14 @@ class ConfigurationDatabase implements \Nethgui\System\DatabaseInterface, \Nethg
     private $db;
 
     /**
-     * @var $canRead Read flag permission, it's true if the current user can read the database, false otherwise
+     * @var \Nethgui\Authorization\AccessControlResponseInterface
      * */
-    private $canRead = FALSE;
+    private $readPermission;
 
     /**
-     * @var $canWrite Write flag permission, it's true if the current user can write the database, false otherwise
+     * @var \Nethgui\Authorization\AccessControlResponseInterface
      * */
-    private $canWrite = FALSE;
+    private $writePermission;
 
     /**
      * Keeps User object acting on this database. 
@@ -84,23 +85,13 @@ class ConfigurationDatabase implements \Nethgui\System\DatabaseInterface, \Nethg
      * 
      * @param \Nethgui\Authorization\PolicyDecisionPointInterface $pdp 
      * @access public
-     * @return void
+     * @return \Nethgui\Authorization\PolicyEnforcementPointInterface
      */
     public function setPolicyDecisionPoint(\Nethgui\Authorization\PolicyDecisionPointInterface $pdp)
     {
         $this->policyDecisionPoint = $pdp;
         $this->authorizeDbAccess();
-    }
-
-    /**
-     * Return current getPolicyDecisionPoint 
-     * 
-     * @access public
-     * @return policyDecisionPoint
-     */
-    public function getPolicyDecisionPoint()
-    {
-        return $this->policyDecisionPoint;
+        return $this;
     }
 
     /**
@@ -116,21 +107,23 @@ class ConfigurationDatabase implements \Nethgui\System\DatabaseInterface, \Nethg
 
         $this->db = $database;
         $this->user = $user;
+        $this->readPermission = \Nethgui\Authorization\LazyAccessControlResponse::createDenyResponse();
+        $this->writePermission = \Nethgui\Authorization\LazyAccessControlResponse::createDenyResponse();
     }
 
     private function authorizeDbAccess()
     {
-        $requestRead = new \Nethgui\Authorization\AccessControlRequest($this->user, $this->db, 'READ');
-        $responseRead = $this->policyDecisionPoint->authorizeRequest($requestRead);
-        if ($responseRead) {
-            $this->canRead = TRUE;
-        }
+        $resource = __CLASS__ . '\\' . $this->db;
+        $this->readPermission = $this->policyDecisionPoint->authorize($this->getUser(), $resource, Permission::QUERY);
+        $this->writePermission = $this->policyDecisionPoint->authorize($this->getUser(), $resource, Permission::MUTATE);
+    }
 
-        $requestWrite = new \Nethgui\Authorization\AccessControlRequest($this->user, $this->db, 'WRITE');
-        $responseWrite = $this->policyDecisionPoint->authorizeRequest($requestWrite);
-        if ($responseWrite) {
-            $this->canWrite = TRUE;
-        }
+    /**
+     * @return \Nethgui\Authorization\UserInterface
+     */
+    private function getUser()
+    {
+        return $this->user;
     }
 
     public function getAll($type = NULL, $filter = NULL)
@@ -139,8 +132,8 @@ class ConfigurationDatabase implements \Nethgui\System\DatabaseInterface, \Nethg
             throw new \InvalidArgumentException(sprintf('%s: $filter argument must be NULL!', get_class($this)), 1322149165);
         }
 
-        if ( ! $this->canRead) {
-            throw new AuthorizationException(sprintf("%s: Permission Denied", get_class($this)), 1322149164);
+        if ($this->readPermission->isDenied()) {
+            throw $this->readPermission->asException(1322149164);
         }
 
         $output = NULL;
@@ -174,8 +167,8 @@ class ConfigurationDatabase implements \Nethgui\System\DatabaseInterface, \Nethg
 
     public function getKey($key)
     {
-        if ( ! $this->canRead) {
-            throw new AuthorizationException(sprintf("%s: Permission Denied", get_class($this)), 1322149166);
+        if ($this->readPermission->isDenied()) {
+            throw $this->readPermission->asException(1322149166);
         }
 
         $result = array();
@@ -195,8 +188,8 @@ class ConfigurationDatabase implements \Nethgui\System\DatabaseInterface, \Nethg
 
     public function setKey($key, $type, $props)
     {
-        if ( ! $this->canWrite) {
-            throw new AuthorizationException(sprintf("%s: Permission Denied", get_class($this)), 1322149167);
+        if ($this->writePermission->isDenied()) {
+            throw $this->writePermission->asException(1322149167);
         }
 
         $output = NULL;
@@ -206,8 +199,8 @@ class ConfigurationDatabase implements \Nethgui\System\DatabaseInterface, \Nethg
 
     public function deleteKey($key)
     {
-        if ( ! $this->canWrite) {
-            throw new AuthorizationException(sprintf("%s: Permission Denied", get_class($this)), 1322149168);
+        if ($this->writePermission->isDenied()) {
+            throw $this->writePermission->asException(1322149168);
         }
 
         $output = NULL;
@@ -226,8 +219,8 @@ class ConfigurationDatabase implements \Nethgui\System\DatabaseInterface, \Nethg
      */
     public function getType($key)
     {
-        if ( ! $this->canRead) {
-            throw new AuthorizationException(sprintf("%s: Permission Denied", get_class($this)), 1322149169);
+        if ($this->readPermission->isDenied()) {
+            throw $this->readPermission->asException(1322149169);
         }
 
         $output = NULL;
@@ -246,8 +239,8 @@ class ConfigurationDatabase implements \Nethgui\System\DatabaseInterface, \Nethg
      */
     public function setType($key, $type)
     {
-        if ( ! $this->canWrite) {
-            throw new AuthorizationException(sprintf("%s: Permission Denied", get_class($this)), 1322149193);
+        if ($this->writePermission->isDenied()) {
+            throw $this->writePermission->asException(1322149193);
         }
 
         $output = NULL;
@@ -257,8 +250,8 @@ class ConfigurationDatabase implements \Nethgui\System\DatabaseInterface, \Nethg
 
     public function getProp($key, $prop)
     {
-        if ( ! $this->canRead) {
-            throw new AuthorizationException(sprintf("%s: Permission Denied", get_class($this)), 1322149194);
+        if ($this->readPermission->isDenied()) {
+            throw $this->readPermission->asException(1322149194);
         }
 
         $output = NULL;
@@ -268,8 +261,8 @@ class ConfigurationDatabase implements \Nethgui\System\DatabaseInterface, \Nethg
 
     public function setProp($key, $props)
     {
-        if ( ! $this->canWrite) {
-            throw new AuthorizationException(sprintf("%s: Permission Denied", get_class($this)), 1322149191);
+        if ($this->writePermission->isDenied()) {
+            throw $this->writePermission->asException(1322149191);
         }
 
         $output = NULL;
@@ -279,8 +272,8 @@ class ConfigurationDatabase implements \Nethgui\System\DatabaseInterface, \Nethg
 
     public function delProp($key, $props)
     {
-        if ( ! $this->canWrite) {
-            throw new AuthorizationException(sprintf("%s: Permission Denied", get_class($this)), 1322149192);
+        if ($this->writePermission->isDenied()) {
+            throw $this->writePermission->asException(1322149192);
         }
 
         $output = NULL;

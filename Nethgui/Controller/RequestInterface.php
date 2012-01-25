@@ -109,6 +109,7 @@ interface RequestInterface
 
     /**
      * Indicates whether the request contains any parameter or not.
+     * 
      * @return bool
      * @api
      */
@@ -116,6 +117,7 @@ interface RequestInterface
 
     /**
      * Indicates whether the request comes from a POST method or not.
+     * 
      * @return bool
      * @api
      */
@@ -123,6 +125,7 @@ interface RequestInterface
 
     /**
      * Tells if a request has been successfully validated
+     *
      * @return bool
      * @api
      */
@@ -130,6 +133,7 @@ interface RequestInterface
 
     /**
      * The User that has sent the request.
+     *
      * @return \Nethgui\Authorization\UserInterface
      * @api
      */

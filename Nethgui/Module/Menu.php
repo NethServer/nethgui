@@ -21,6 +21,7 @@ namespace Nethgui\Module;
  */
 
 use Nethgui\System\PlatformInterface as Validate;
+use Nethgui\Authorization\PolicyDecisionPointInterface as Permission;
 
 /**
  *

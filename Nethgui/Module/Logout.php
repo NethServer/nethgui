@@ -26,14 +26,26 @@ namespace Nethgui\Module;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Logout extends \Nethgui\Controller\AbstractController
+class Logout extends \Nethgui\Controller\AbstractController implements \Nethgui\Utility\SessionConsumerInterface
 {
+
+    /**
+     *
+     * @var \Nethgui\Utility\SessionInterface
+     */
+    private $session;
+
+    public function initialize()
+    {
+        parent::initialize();
+        $this->declareParameter('action', '/^logout$/');
+    }
 
     public function process()
     {
         $request = $this->getRequest();
-        if ($request->isSubmitted()) {
-            $request->getUser()->setAuthenticated(FALSE);
+        if ($request->isSubmitted() && $this->parameters['action'] === 'logout') {
+            $this->session->end();
         }
     }
 
@@ -55,6 +67,7 @@ EOJS;
                 $renderer->includeJavascript($js);
                 $renderer->requireFlag($renderer::INSET_FORM | $renderer::INSET_WRAP);
                 return $renderer->buttonList()
+                        ->insert($renderer->hidden('action')->setAttribute('value', 'logout'))
                         ->insert($renderer->button('Logout', $renderer::BUTTON_SUBMIT)->setAttribute('class', 'Button')->setAttribute('receiver', 'Logout'));
             });
     }
@@ -64,4 +77,10 @@ EOJS;
         return '/Login';
     }
 
+
+    public function setSession(\Nethgui\Utility\SessionInterface $session)
+    {
+        $this->session = $session;
+        return $this;
+    }
 }

@@ -28,58 +28,88 @@ use Nethgui\System\PlatformInterface as Valid;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Login extends \Nethgui\Controller\AbstractController
+class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\Utility\SessionConsumerInterface
 {
+
+    /**
+     *
+     * @var \Nethgui\Utility\SessionInterface
+     */
+    private $session;
 
     public function initialize()
     {
         parent::initialize();
 
-        if ( ! $this->getPhpWrapper()->extension_loaded('pam')) {
-            throw new \RuntimeException(sprintf('%s: the PAM PHP extension is not loaded', __CLASS__), 1326879560);
-        }
+        $languages = array(
+            'en' => 'English',
+            'it' => 'Italiano'
+        );
+
+        $languageValidator = $this->createValidator()->memberOf(array_keys($languages));
 
         $this->declareParameter('username', Valid::NOTEMPTY);
         $this->declareParameter('password', Valid::NOTEMPTY);
+        $this->declareParameter('language', $languageValidator, array($this, 'getDefaultLanguageCode'));
         $this->declareParameter('hostname', FALSE, array('configuration', 'SystemName'));
+        $this->declareParameter('languageDatasource', FALSE, function () use ($languages) {
+                return \Nethgui\Renderer\AbstractRenderer::hashToDatasource($languages);
+            });
     }
 
-    public function validate(\Nethgui\Controller\ValidationReportInterface $report)
+    public function getDefaultLanguageCode()
     {
-        parent::validate($report);
-
-        $error = '';
-
-        if ( ! $report->hasValidationErrors() && $this->getRequest()->isSubmitted()) {
-            $authorized = $this->getPhpWrapper()->pam_auth($this->parameters['username'], $this->parameters['password'], $error, FALSE);
-            if ( ! $authorized) {
-                $report->addValidationErrorMessage($this, 'password', 'Permission denied');
-            }
-        }
+        return $this->getRequest()->getUser()->getLanguageCode();
     }
 
     public function process()
     {
-        $request = $this->getRequest();
-        if ($request->isSubmitted()) {
-            $request->getUser()->setAuthenticated(TRUE);
+        $user = $this->getRequest()->getUser();
+        if ( ! $user->isAuthenticated() && $this->getRequest()->isSubmitted()) {
+            $user = new \Nethgui\Authorization\User($this->getPhpWrapper());
+            $authenticated = $user->authenticate($this->parameters['username'], $this->parameters['password']);
+            $user->setLanguageCode($this->parameters['language']);
+            if ($authenticated) {
+                $this->session->begin()->store(\Nethgui\Authorization\UserInterface::ID, $user);
+            }
         }
     }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
+        $user = $this->getRequest()->getUser();
+
         $view->setTemplate('Nethgui\Template\Login');
         $view->getCommandList('/Main')
             ->setDecoratorParameter('disableHeader', TRUE)
             ->setDecoratorParameter('disableMenu', TRUE)
 //            ->setDecoratorParameter('disableFooter', TRUE)
         ;
+
+        if ( ! $user->isAuthenticated()
+            && $this->getRequest()->isSubmitted()
+            && $this->getRequest()->isValidated()) {
+            $view->getCommandList('/Notification')
+                ->httpHeader('HTTP/1.1 400 Invalid credentials supplied')
+                ->showMessage($view->translate('Invalid credentials'), \Nethgui\Module\Notification\AbstractNotification::NOTIFY_ERROR);
+        } elseif ($user->isAuthenticated()
+            && ! $this->getRequest()->isSubmitted()) {
+            $view->getCommandList()
+                ->httpHeader('HTTP/1.1 302 Found')
+                ->httpHeader('Location: ' . $view->getSiteUrl() . $view->getModuleUrl('/'));
+        }
     }
 
     public function nextPath()
     {
-        return '/';
+        return $this->getRequest()->getUser()->isAuthenticated() ? '/' : FALSE;
+    }
+
+    public function setSession(\Nethgui\Utility\SessionInterface $session)
+    {
+        $this->session = $session;
+        return $this;
     }
 
 }

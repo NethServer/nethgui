@@ -24,7 +24,7 @@ namespace Nethgui\System;
  * Implementation of the platform interface for Nethesis products
  *
  */
-class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEnforcementPointInterface, \Nethgui\Log\LogConsumerInterface, \Nethgui\Utility\PhpConsumerInterface
+class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEnforcementPointInterface, \Nethgui\Log\LogConsumerInterface, \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Utility\SessionConsumerInterface
 {
 
     /**
@@ -61,28 +61,28 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
      */
     private $processes;
 
-    /**
-     * We must specify who acts on host configuration for authorization purposes
-     * and to track the processes (s)he starts.
-     *
-     * @param \Nethgui\Authorization\UserInterface $user
-     */
     public function __construct(\Nethgui\Authorization\UserInterface $user)
     {
-        $this->user = $user;
         $this->eventQueue = array();
-        $this->log = new \Nethgui\Log\Syslog();
+        $this->processes = new \Nethgui\Utility\ArrayDisposable();
+        $this->user = $user;
+    }
 
-        $session = $user->getSession();
-
+    public function setSession(\Nethgui\Utility\SessionInterface $session)
+    {
         $key = get_class($this);
 
-        // check for process session storage initialization:
-        if ( ! $session->hasElement($key)) {
-            $session->store($key, new \Nethgui\Utility\ArrayDisposable());
-        }
+        $s = $session->retrieve($key);
 
-        $this->processes = $session->retrieve($key);
+        if ($s instanceof $this->processes) {
+            if (count($this->processes) > 0) {
+                throw new \UnexpectedValueException(sprintf('%s: some processes are still traced, cannot set the session.', __CLASS__), 1327406381);
+            }
+            $this->processes = $s;
+        } else {
+            $session->store($key, $this->processes);
+        }
+        return $this;
     }
 
     /**
@@ -94,7 +94,7 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
     {
         if ( ! isset($this->databases[$database])) {
             $object = new ConfigurationDatabase($database, $this->user);
-            $object->setPolicyDecisionPoint($this->getPolicyDecisionPoint());
+            $object->setPolicyDecisionPoint($this->policyDecisionPoint);
             $this->databases[$database] = $object;
         }
 
@@ -222,14 +222,10 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
         }
     }
 
-    public function getPolicyDecisionPoint()
-    {
-        return $this->policyDecisionPoint;
-    }
-
     public function setPolicyDecisionPoint(\Nethgui\Authorization\PolicyDecisionPointInterface $pdp)
     {
         $this->policyDecisionPoint = $pdp;
+        return $this;
     }
 
     public function exec($command, $arguments = array(), $detached = FALSE)
@@ -262,12 +258,16 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
 
     public function getLog()
     {
+        if ( ! isset($this->log)) {
+            $this->log = new \Nethgui\Log\Nullog();
+        }
         return $this->log;
     }
 
     public function setLog(\Nethgui\Log\LogInterface $log)
     {
         $this->log = $log;
+        return $this;
     }
 
     public function getDateFormat()

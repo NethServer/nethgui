@@ -21,5 +21,42 @@ namespace Nethgui\Exception;
  */
 
 /**
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
  */
-class AuthorizationException extends \RuntimeException {}
+class AuthorizationException extends \RuntimeException
+{
+
+
+    /**
+     *
+     * @var integer
+     */
+    private $authorizationCode;
+
+    /**
+     * @param string $message
+     * @param integer $authorizationCode
+     * @param integer $code
+     * @param \Exception $previous
+     */
+    public function __construct($message, $authorizationCode, $code, $previous)
+    {
+        $this->authorizationCode = $authorizationCode;
+        parent::__construct($message, $code, $previous);
+    }
+
+    /**
+     *
+     * @return integer
+     */
+    public function getAuthorizationCode()
+    {
+        return $this->authorizationCode;
+    }
+
+    public function __toString()
+    {
+        return sprintf('%s [%d]', parent::__toString(), $this->authorizationCode);
+    }
+}

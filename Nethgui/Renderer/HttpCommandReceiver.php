@@ -114,7 +114,6 @@ class HttpCommandReceiver extends \Nethgui\View\AbstractReceiverChain
     }
 
     /**
-     *
      * @param integer $code
      * @param string $location
      */

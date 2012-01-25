@@ -21,16 +21,40 @@ namespace Nethgui\Authorization;
  */
 
 /**
- * TODO: describe class
+ * A PDP implementation that returns only affermative responses.
  *
  */
-class PermissivePolicyDecisionPoint implements PolicyDecisionPointInterface
+class PermissivePolicyDecisionPoint implements PolicyDecisionPointInterface, AccessControlResponseInterface
 {
 
-    public function authorizeRequest(AccessControlRequestInterface $request)
+    public function authorize(UserInterface $subject, $resource, $action)
     {
-        // TODO: log a debug message
-        return new AccessControlResponse($request);
+        return $this;
+    }
+
+    public function asException($identifier)
+    {
+        return new \Nethgui\Exception\AuthorizationException('', 0, 1327074631, NULL);
+    }
+
+    public function getCode()
+    {
+        return 0;
+    }
+
+    public function getMessage()
+    {
+        return '';
+    }
+
+    public function isDenied()
+    {
+        return FALSE;
+    }
+
+    public function isGranted()
+    {
+        return TRUE;
     }
 
 }

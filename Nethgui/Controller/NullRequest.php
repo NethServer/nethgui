@@ -26,12 +26,12 @@ namespace Nethgui\Controller;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class NullRequest implements \Nethgui\Controller\RequestInterface, \Nethgui\Authorization\UserInterface, \Nethgui\Utility\SessionInterface
+class NullRequest implements \Nethgui\Controller\RequestInterface
 {
 
     private function __construct()
     {
-        // private constructor - applied Singleton pattern
+
     }
 
     public static function getInstance()
@@ -50,22 +50,7 @@ class NullRequest implements \Nethgui\Controller\RequestInterface, \Nethgui\Auth
         return array();
     }
 
-    public function getCredential($credentialName)
-    {
-        return '';
-    }
-
-    public function getCredentials()
-    {
-        return array();
-    }
-
     public function getExtension()
-    {
-        return '';
-    }
-
-    public function getLanguageCode()
     {
         return '';
     }
@@ -85,37 +70,12 @@ class NullRequest implements \Nethgui\Controller\RequestInterface, \Nethgui\Auth
         return array();
     }
 
-    public function getSession()
-    {
-        return $this;
-    }
-
-    public function getSessionIdentifier()
-    {
-        return '';
-    }
-
     public function getUser()
     {
-        return $this;
-    }
-
-    public function hasCredential($credentialName)
-    {
-        return FALSE;
-    }
-
-    public function hasElement($key)
-    {
-        return FALSE;
+        return \Nethgui\Authorization\User::getAnonymousUser();
     }
 
     public function hasParameter($parameterName)
-    {
-        return FALSE;
-    }
-
-    public function isAuthenticated()
     {
         return FALSE;
     }
@@ -135,26 +95,6 @@ class NullRequest implements \Nethgui\Controller\RequestInterface, \Nethgui\Auth
         return FALSE;
     }
 
-    public function retrieve($key)
-    {
-        return NULL;
-    }
-
-    public function setAuthenticated($status)
-    {
-        return $this;
-    }
-
-    public function setCredential($credentialName, $credentialValue)
-    {
-        return $this;
-    }
-
-    public function store($key, \Serializable $object)
-    {
-        return $this;
-    }
-
     public function getArgument($argumentName)
     {
         return NULL;
@@ -170,4 +110,9 @@ class NullRequest implements \Nethgui\Controller\RequestInterface, \Nethgui\Auth
         return FALSE;
     }
 
+    public function getSession()
+    {
+        throw new \Exception('not implemented');
+    }
+    
 }

@@ -48,3 +48,11 @@ $L['read_Title'] = '';
 $L['update_Title'] = 'Update';
 $L['delete_Title'] = 'Delete';
 $L['Help_Title'] = 'Help';
+
+$L['username_label'] = 'User name';
+$L['password_label'] = 'Password';
+$L['language_label'] = 'Language';
+
+$L['Login_label'] = 'Login';
+$L['Logout_label'] = 'Logout';
+$L['Welcome on ${0}'] = 'Welcome on ${0}';

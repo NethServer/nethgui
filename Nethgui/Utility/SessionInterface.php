@@ -33,28 +33,56 @@ interface SessionInterface
     /**
      * Put a Serializable object into the session storage
      *
+     * @api
+     * @param string $key
+     * @param \Serializable $object
      * @return SessionInterface The same SessionInterface object
      */
     public function store($key, \Serializable $object);
 
     /**
      * Get a stored Serializable object
-     * 
+     *
+     * @api
      * @param string $key
      * @return \Serializable The stored object
      */
     public function retrieve($key);
 
     /**
-     * Check if an object has been stored with the given key
-     *
-     * @param string $key
-     * @return boolean
+     * @api
+     * @return SessionInterface
      */
-    public function hasElement($key);
+    public function begin();
 
     /**
-     * @return string The unique session indentifier
+     * @api
+     * @return SessionInterface
      */
-    public function getSessionIdentifier();
+    public function end();
+
+//    /**
+//     * Check if an object has been stored with the given key
+//     *
+//     * @param string $key
+//     * @return boolean
+//     */
+//    public function offsetExists($key);
+//    /**
+//     * @return string The unique session indentifier
+//     */
+//    public function getSessionIdentifier();
+//
+//    /**
+//     * @return bool TRUE if the session has started
+//     */
+//    public function isStarted();
+//
+//    /**
+//     * Start the session, restoring the persistent state and/or setting the
+//     * session cookie.
+//     *
+//     * @return SessionInterface
+//     */
+//    public function start();
 }

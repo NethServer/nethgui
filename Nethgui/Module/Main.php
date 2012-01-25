@@ -20,19 +20,21 @@ namespace Nethgui\Module;
  * along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Nethgui\Authorization\PolicyDecisionPointInterface as Permission;
+
 /**
  * TODO: add component description here
  *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\CommandReceiverInterface
+class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\CommandReceiverInterface, \Nethgui\Authorization\PolicyEnforcementPointInterface
 {
 
     /**
-     * @var \Nethgui\Module\ModuleLoader
+     * @var \Nethgui\Module\ModuleSetInterface
      */
-    private $moduleLoader;
+    private $modules;
     private $currentModuleIdentifier;
 
     /**
@@ -54,51 +56,62 @@ class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\Co
      */
     private $decoratorParameter;
 
-    public function __construct($template, \Nethgui\Module\ModuleLoader $moduleLoader, $fileNameResolver)
+    /**
+     *
+     * @var \Nethgui\Authorization\PolicyDecisionPointInterface
+     */
+    private $pdp;
+
+    /**
+     *
+     * @var array
+     */
+    private $systemModules;
+
+    public function __construct($template, \Nethgui\Module\ModuleSetInterface $modules)
     {
         parent::__construct(FALSE);
         $this->template = $template;
         $this->decoratorParameter = array();
-        $this->moduleLoader = $moduleLoader;
-        $this->fileNameResolver = $fileNameResolver;
+        $this->modules = $modules;
+        $this->systemModules = array('Menu', 'Notification', 'Resource', 'Logout');
     }
 
     public function bind(\Nethgui\Controller\RequestInterface $request)
     {
-        $idList = $request->getParameterNames();
-
+        $idList = array_merge($request->getParameterNames(), $this->systemModules);
         $this->currentModuleIdentifier = \Nethgui\array_head($request->getPath());
+        $idList[] = $this->currentModuleIdentifier;
 
-        if ( ! in_array($this->currentModuleIdentifier, $idList)) {
-            $idList[] = $this->currentModuleIdentifier;
-        }
-
-        $systemModules = array('Menu', 'Notification', 'Resource', 'Logout');
+        $idList = array_unique($idList);
 
         try {
             foreach ($idList as $moduleIdentifier) {
-                if (in_array($moduleIdentifier, $systemModules)) {
-                    continue;
-                }
-                $this->addChild($this->moduleLoader->getModule($moduleIdentifier));
+                $moduleInstance = $this->modules->getModule($moduleIdentifier);
+                $this->addChild($moduleInstance);
             }
         } catch (\RuntimeException $ex) {
             throw new \Nethgui\Exception\HttpException('Not found', 404, 1324379722, $ex);
         }
 
-        $menuModule = $this->moduleLoader->getModule('Menu');
-        $menuModule->setModuleSet($this->moduleLoader)->setCurrentModuleIdentifier($this->currentModuleIdentifier);
-        $this->addChild($menuModule);
-
-        $this->addChild($this->moduleLoader->getModule('Notification'));
-        $this->addChild($this->moduleLoader->getModule('Resource'));
-        $this->addChild($this->moduleLoader->getModule('Logout'));
-
-        if ($this->currentModuleIdentifier === 'Help') {
-            $this->moduleLoader->getModule('Help')->setModuleSet($this->moduleLoader)->setFileNameResolver($this->fileNameResolver);
-        }
+        $this->authorize($request);
 
         parent::bind($request);
+    }
+
+    private function authorize(\Nethgui\Controller\RequestInterface $request)
+    {
+        foreach ($this->getChildren() as $child) {
+            if ($request->isSubmitted()) {
+                $auth = $this->pdp->authorize($request->getUser(), $child, Permission::MUTATE);
+            } else {
+                $auth = $this->pdp->authorize($request->getUser(), $child, Permission::QUERY);
+            }
+
+            if ($auth->isDenied()) {
+                throw $auth->asException(1327499272);
+            }
+        }
     }
 
     /**
@@ -106,7 +119,7 @@ class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\Co
      */
     private function getCurrentModule()
     {
-        return $this->moduleLoader->getModule($this->currentModuleIdentifier);
+        return $this->modules->getModule($this->currentModuleIdentifier);
     }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
@@ -226,6 +239,12 @@ class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\Co
             }
         }
         return FALSE;
+    }
+
+    public function setPolicyDecisionPoint(\Nethgui\Authorization\PolicyDecisionPointInterface $pdp)
+    {
+        $this->pdp = $pdp;
+        return $this;
     }
 
 }

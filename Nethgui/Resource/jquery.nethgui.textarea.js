@@ -15,7 +15,7 @@
                 } else {
                     control.val(control.val() + value);
                 }
-                   control.scrollTop(control[0].scrollHeight - control.height());
+                control.scrollTop(control[0].scrollHeight - control.height());
             } else {
                 control.val(value);
             }

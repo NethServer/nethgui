@@ -29,12 +29,13 @@ namespace Nethgui\Utility;
  */
 class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\PhpConsumerInterface
 {
+    const SESSION_NAME = 'nethgui';
 
     /**
      *
      * @var \Nethgui\Utility\PhpWrapper
      */
-    private $phpWrapper;
+    private $php;
 
     /**
      *
@@ -44,42 +45,58 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
 
     public function __construct(\Nethgui\Utility\PhpWrapper $gfw = NULL)
     {
-        if (isset($gfw)) {
-            $this->phpWrapper = $gfw;
-        } else {
-            $this->phpWrapper = new \Nethgui\Utility\PhpWrapper();
+        $this->php = new \Nethgui\Utility\PhpWrapper();
+        $this->data = new \ArrayObject();
+        $this->php->session_name(self::SESSION_NAME);
+
+        if ( ! $this->isStarted()) {
+            $this->start();
+        }
+    }
+
+    private function isStarted()
+    {
+        return $this->getSessionIdentifier() !== '';
+    }
+
+    private function start()
+    {
+        if ($this->isStarted()) {
+            throw new \LogicException(sprintf('%s: cannot start an already started session!', __CLASS__), 1327397142);
         }
 
-        $this->phpWrapper->session_name(get_class($this));
-        if ($this->getSessionIdentifier() == '') {
-            $this->phpWrapper->session_start();
-        }
+        $this->php->session_start();
 
-        $this->data = $this->phpWrapper->phpReadGlobalVariable('_SESSION', get_class($this));
-
+        $this->data = $this->php->phpReadGlobalVariable('_SESSION', self::SESSION_NAME);
         if (is_null($this->data)) {
             $this->data = new \ArrayObject();
         } elseif ( ! $this->data instanceof \ArrayObject) {
             throw new \UnexpectedValueException(sprintf('%s: session data must be enclosed into an \ArrayObject', __CLASS__), 1322738011);
         }
+        return $this;
     }
 
     public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
     {
-        $this->phpWrapper = $object;
+        $this->php = $object;
+        return $this;
     }
 
-    public function getSessionIdentifier()
+    private function getSessionIdentifier()
     {
-        return $this->phpWrapper->session_id();
+        return $this->php->session_id();
     }
 
     public function retrieve($key)
     {
+        if ( ! isset($this->data[$key])) {
+            return NULL;
+        }
+
         $object = $this->data[$key];
 
         if ( ! $object instanceof \Serializable) {
-            throw new \UnexpectedValueException(sprintf('%s: only \Serializable implementors can be stored in this collection!', get_class($this)), 1322738020);
+            throw new \UnexpectedValueException(sprintf('%s: only \Serializable implementors can be stored in this collection!', __CLASS__), 1322738020);
         }
 
         return $object;
@@ -91,14 +108,26 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
         return $this;
     }
 
-    public function hasElement($key)
+    public function begin()
     {
-        return isset($this->data[$key]);
+        $this->php->session_regenerate_id(TRUE);
+        $this->data[get_class($this)] = TRUE;
+        return $this;
+    }
+
+    public function end()
+    {
+        $this->php->session_destroy();
+        $this->data[get_class($this)] = FALSE;
+        return $this;
     }
 
     public function __destruct()
     {
-        $this->phpWrapper->phpWriteGlobalVariable($this->data, '_SESSION', get_class($this));
+        $key = get_class($this);
+        if (isset($this->data[$key]) && $this->data[$key] === TRUE) {
+            $this->php->phpWriteGlobalVariable($this->data, '_SESSION', self::SESSION_NAME);
+        }
     }
 
 }

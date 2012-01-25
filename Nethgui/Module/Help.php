@@ -51,11 +51,6 @@ class Help extends \Nethgui\Controller\CompositeController
     public function setFileNameResolver($fileNameResolver)
     {
         $this->fileNameResolver = $fileNameResolver;
-        foreach ($this->getChildren() as $child) {
-            if ($child instanceof Help\Common) {
-                $child->setFileNameResolver($fileNameResolver);
-            }
-        }
         return $this;
     }
 
@@ -63,6 +58,11 @@ class Help extends \Nethgui\Controller\CompositeController
     {
         parent::initialize();
         $this->loadChildren(array('*\Show', '*\Template', '*\Read'));
+        foreach ($this->getChildren() as $child) {
+            if ($child instanceof Help\Common) {
+                $child->setFileNameResolver($this->fileNameResolver);
+            }
+        }
     }
 
 }

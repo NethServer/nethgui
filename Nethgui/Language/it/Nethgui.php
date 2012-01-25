@@ -85,7 +85,9 @@ $L['Templates'] = 'Template';
 
 $L['username_label'] = 'Nome utente';
 $L['password_label'] = 'Password';
+$L['language_label'] = 'Lingua';
 
 $L['Login_label'] = 'Accedi';
 $L['Logout_label'] = 'Esci';
 $L['Welcome on ${0}'] = 'Benvenuto su ${0}';
+$L['Invalid credentials'] = 'Credenziali non valide';

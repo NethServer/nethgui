@@ -84,6 +84,15 @@ class Framework
         $this->siteUrl = $this->guessSiteUrl();
         $this->basePath = $this->guessBasePath();
         $this->decoratorTemplate = 'Nethgui\Template\Main';
+
+        $this->log = new \Nethgui\Log\Syslog();
+        $this->session = new \Nethgui\Utility\Session();
+        $this->pdp = new \Nethgui\Authorization\GroupBasedPolicyDecisionPoint();
+        $this->pdp->setLog($this->log);
+
+        $this->moduleSet = new \Nethgui\Module\ModuleLoader($this->namespaceMap);
+        $this->moduleSet->setLog($this->log);
+        $this->moduleSet->addInstantiateCallback(array($this, 'initializeModule'));
     }
 
     /**
@@ -210,6 +219,18 @@ class Framework
     }
 
     /**
+     * Change the level of details in the log output
+     *
+     * @api
+     * @param integer $level The standard PHP error mask
+     * @return $this;
+     */
+    public function setLogLevel($level)
+    {
+        $this->log->setLevel($level);
+    }
+
+    /**
      * Translate a namespaced classifier (interface, class) or a namespaced-script-name
      * into a filesystem path.
      *
@@ -237,10 +258,16 @@ class Framework
         return array($this, 'absoluteScriptPath');
     }
 
+    private function redirect($moduleIdentifier, &$output)
+    {
+        $redirectUrl = $this->siteUrl . implode('/', array($this->basePath, 'index.php', $moduleIdentifier));
+        $this->sendHttpResponse('', array('HTTP/1.1 302 Found', sprintf('Location: %s', $redirectUrl)), $output);
+    }
+
     /**
      * Forwards control to Modules and creates output views.
      *
-     * This is the framework "main()" function / entry point. 
+     * This is the framework "main()" function / entry point.
      *
      * @api
      * @param string $currentModuleIdentifier
@@ -249,31 +276,56 @@ class Framework
      */
     public function dispatch(\Nethgui\Controller\RequestInterface $request, &$output = NULL)
     {
+        if ($request instanceof \Nethgui\Utility\SessionConsumerInterface) {
+            $request->setSession($this->session);
+        }
+
         $user = $request->getUser();
 
         if (array_head($request->getPath()) === FALSE) {
-            $redirectUrl = implode('/', array($this->basePath, 'index.php', $this->defaultModuleIdentifier));
-            $this->sendHttpResponse('', array('HTTP/1.1 302 Found', sprintf('Location: %s', $redirectUrl)), $output);
+            $this->redirect($this->defaultModuleIdentifier, $output);
             return;
         }
 
-        // TODO: enforce some security policy on Models
-        $pdp = new \Nethgui\Authorization\PermissivePolicyDecisionPoint();
-
-
         $platform = new \Nethgui\System\NethPlatform($user);
-        $platform->setPolicyDecisionPoint($pdp);
+        $platform
+            ->setLog($this->log)
+            ->setSession($this->session)
+            ->setPolicyDecisionPoint($this->pdp)
+        ;
 
-        $validationErrorsNotification = new \Nethgui\Module\Notification\ValidationErrorsNotification();
+        $authModuleLoader = new \Nethgui\Authorization\AuthorizedModuleSet($this->moduleSet, $user);
+        $authModuleLoader->setPolicyDecisionPoint($this->pdp);
 
-        $moduleLoader = new \Nethgui\Module\ModuleLoader($this->namespaceMap);
-        $moduleLoader->setLog($platform->getLog());
-        $moduleLoader->getModule('Notification')->setSession($user->getSession());
+        $fileNameResolver = $this->getFileNameResolver();
+        $currentModuleIdentifier = array_head($request->getPath());
 
-        $mainModule = new \Nethgui\Module\Main($this->decoratorTemplate, $moduleLoader, $this->getFileNameResolver());
+        $this->moduleSet->addInstantiateCallback(function (Module\ModuleInterface $module) use ($authModuleLoader, $currentModuleIdentifier, $fileNameResolver) {
+                $moduleIdentifier = $module->getIdentifier();
+
+                if ($moduleIdentifier === 'Menu') {
+                    $module
+                        ->setModuleSet($authModuleLoader)
+                        ->setCurrentModuleIdentifier($currentModuleIdentifier)
+                    ;
+                } elseif ($moduleIdentifier === 'Help') {
+                    $module
+                        ->setModuleSet($authModuleLoader)
+                        ->setFileNameResolver($fileNameResolver)
+                    ;
+                }
+            });
+
+
+
+        $mainModule = new \Nethgui\Module\Main($this->decoratorTemplate, $authModuleLoader);
         $mainModule->setPlatform($platform);
+        $mainModule->setPolicyDecisionPoint($this->pdp);
+
         $mainModule->initialize();
         $mainModule->bind($request);
+
+        $validationErrorsNotification = new \Nethgui\Module\Notification\ValidationErrorsNotification();
 
         $mainModule->validate($validationErrorsNotification);
 
@@ -290,7 +342,7 @@ class Framework
         $rootView = new \Nethgui\View\View($targetFormat, $mainModule, $translator, $urlParts);
 
         $commandReceiver = new \Nethgui\Renderer\HttpCommandReceiver(new \Nethgui\Renderer\MarshallingReceiver(new \Nethgui\View\LoggingCommandReceiver()));
-        $commandReceiver->setLog($platform->getLog());
+        $commandReceiver->setLog($this->log);
 
         $rootView->setReceiver($commandReceiver);
 
@@ -300,7 +352,7 @@ class Framework
         if ($request->isSubmitted() && $request->isValidated()) {
             // On a valid POST request honorate the nextPath() semantics:
             $nextPath = $mainModule->nextPath();
-            if(is_string($nextPath)) {
+            if (is_string($nextPath)) {
                 $rootView->getCommandList('/Main')
                     ->sendQuery($rootView->getModuleUrl($nextPath));
             }
@@ -308,7 +360,6 @@ class Framework
             // Only validation errors notification has to be shown: clear
             // all enqueued commands.
             //$rootView->clearAllCommands();
-
             // Validation error http status.
             // See RFC2616, section 10.4 "Client Error 4xx"
             // FIXME: check if we are in FAST-CGI module:
@@ -352,6 +403,17 @@ class Framework
         return 0;
     }
 
+    public function initializeModule(Module\ModuleInterface $module)
+    {
+        if ($module instanceof \Nethgui\Utility\SessionConsumerInterface) {
+            $module->setSession($this->session);
+        }
+
+        if ($module instanceof Authorization\PolicyEnforcementPointInterface) {
+            $module->setPolicyDecisionPoint($this->pdp);
+        }
+    }
+
     /**
      *
      * @param string $content
@@ -377,7 +439,7 @@ class Framework
      * @param string $targetFormat
      * @param \Nethgui\View\ViewInterface $view
      * @param \Nethgui\View\CommandReceiverInterface $receiver
-     * @return Renderer\Text 
+     * @return Renderer\Text
      */
     private function getRenderer($targetFormat, \Nethgui\View\ViewInterface $view, \Nethgui\View\CommandReceiverInterface $receiver)
     {
@@ -485,21 +547,11 @@ class Framework
             $getData = $_GET;
         }
 
-        // TODO: retrieve user state from Session
-        $user = new \Nethgui\Authorization\AlwaysAuthenticatedUser(new \Nethgui\Utility\Session());
-
         $attributes = new \ArrayObject();
 
         $attributes['extension'] = $this->extractTargetFormat($pathInfo);
         $attributes['submitted'] = $submitted;
         $attributes['validated'] = FALSE;
-
-        error_log('POST ' . print_r($postData, 1));
-        error_log('GET ' . print_r($getData, 1));
-        error_log('PATH ' . print_r($pathInfo, 1));
-        error_log('ATT ' . print_r($attributes, 1));
-
-        $instance = new \Nethgui\Controller\Request($user, $postData, $getData, $pathInfo, $attributes);
 
         /*
          * Clear global variables
@@ -507,7 +559,7 @@ class Framework
         $_POST = array();
         $_GET = array();
 
-        return $instance;
+        return new \Nethgui\Controller\Request($postData, $getData, $pathInfo, $attributes);
     }
 
     private function extractTargetFormat(&$pathInfo)
@@ -551,18 +603,19 @@ class Framework
      * @return void;
      * @api
      */
-    public function printHttpException(\Nethgui\Exception\HttpException $ex)
+    public function printHttpException(\Nethgui\Exception\HttpException $ex, $backtrace = TRUE)
     {
         header(sprintf('HTTP/1.1 %s %s', $ex->getHttpStatusCode(), $ex->getMessage()));
         header('Content-Type: text/plain; charset=UTF-8');
-        echo sprintf("Nethgui - fatal error:\n\n    %s [%s]\n\n\n\n", $ex->getMessage(), $ex->getCode());
-        echo "Exception backtrace:\n\n";
-        echo $ex->getTraceAsString();
+        echo sprintf("Nethgui:\n\n    %d - %s [%s]\n\n\n\n", $ex->getHttpStatusCode(), $ex->getMessage(), $ex->getCode());
 
-        $prev = $ex->getPrevious();
-        if ($prev instanceof \Exception) {
-            echo sprintf("\n\nPrevious exception:\n\n    %s [%s]\n\n", $prev->getMessage(), $prev->getCode());
-            echo $prev->getTraceAsString();
+        if ($backtrace) {
+            echo sprintf("Exception backtrace:\n\n%s\n\n", $ex->getTraceAsString());
+            $prev = $ex->getPrevious();
+            if ($prev instanceof \Exception) {
+                echo sprintf("Previous exception:\n\n    %s [%s]\n\n", $prev->getMessage(), $prev->getCode());
+                echo $prev->getTraceAsString();
+            }
         }
     }
 

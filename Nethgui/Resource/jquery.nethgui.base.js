@@ -126,7 +126,7 @@
         };
 
         var dispatchError = function(jqXHR, textStatus, errorThrown) {
-            if(jqXHR.status == 400 && errorThrown == "Request validation error") {
+            if(jqXHR.status == 400 && (errorThrown == "Request validation error" || errorThrown == "Invalid credentials supplied")) {
                 dispatchResponse($.parseJSON(jqXHR.responseText), textStatus, jqXHR.status);
             } else {
                 // TODO: display a way to recover from the error state.

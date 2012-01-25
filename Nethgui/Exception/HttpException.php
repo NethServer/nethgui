@@ -21,6 +21,8 @@ namespace Nethgui\Exception;
  */
 
 /**
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
  */
 class HttpException extends \RuntimeException
 {

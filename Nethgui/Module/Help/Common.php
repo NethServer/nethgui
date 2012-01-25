@@ -34,6 +34,12 @@ class Common extends \Nethgui\Controller\AbstractController
 
     /**
      *
+     * @var callable
+     */
+    private $fileNameResolver;
+
+    /**
+     *
      * @return \Nethgui\Module\ModuleSetInterface $moduleSet
      * @return Menu
      */

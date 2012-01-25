@@ -42,12 +42,23 @@ class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utili
      */
     private $phpWrapper;
 
-    public function __construct($namespaceMap)
+    /**
+     *
+     * @var array
+     */
+    private $onInstantiate = array();
+
+    /**
+     *
+     * @param array $namespaceMap
+     */
+    public function __construct(&$namespaceMap)
     {
-        $this->namespaceMap = $namespaceMap;
+        $this->namespaceMap = &$namespaceMap;
         $this->instanceCache = new \ArrayObject();
         $this->phpWrapper = new \Nethgui\Utility\PhpWrapper();
         $this->cacheIsFilled = FALSE;
+        $this->onInstantiate;
     }
 
     public function getIterator()
@@ -55,7 +66,6 @@ class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utili
         if ($this->cacheIsFilled !== TRUE) {
             $this->fillCache();
         }
-
         return $this->instanceCache->getIterator();
     }
 
@@ -84,8 +94,10 @@ class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utili
 
                 if ( ! isset($this->instanceCache[$moduleIdentifier])) {
                     $className = $namespaceName . '\Module\\' . $moduleIdentifier;
-                    $this->instanceCache[$moduleIdentifier] = new $className();
+                    $moduleInstance = new $className();
                     $this->getLog()->notice(sprintf('%s::fillCache(): Created "%s" instance', get_class($this), $className));
+                    $this->notifyCallbacks($moduleInstance);
+                    $this->instanceCache[$moduleIdentifier] = $moduleInstance;                    
                 }
             }
         }
@@ -118,6 +130,7 @@ class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utili
             if ($this->phpWrapper->class_exists($className)) {
                 $moduleInstance = new $className();
                 $this->getLog()->notice(sprintf('%s::getModule(): Created "%s" instance', get_class($this), $className));
+                $this->notifyCallbacks($moduleInstance);
                 $this->instanceCache[$moduleIdentifier] = $moduleInstance;
                 break;
             }
@@ -132,7 +145,7 @@ class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utili
         if (count($warnings) > 0) {
             $message = '';
             foreach ($warnings as $warning) {
-                $message .= sprintf('%s %s; ',  $warning[0], $warning[1]);
+                $message .= sprintf('%s %s; ', $warning[0], $warning[1]);
             }
             $this->getLog()->debug(sprintf("%s: %s", __CLASS__, $message));
         }
@@ -156,6 +169,25 @@ class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utili
     public function setLog(\Nethgui\Log\LogInterface $log)
     {
         $this->log = $log;
+        return $this;
+    }
+
+    /**
+     *
+     * @param callable $callable
+     * @return ModuleLoader
+     */
+    public function addInstantiateCallback($callable)
+    {
+        $this->onInstantiate[] = $callable;
+        return $this;
+    }
+
+    private function notifyCallbacks(ModuleInterface $module)
+    {
+        foreach ($this->onInstantiate as $callback) {
+            call_user_func($callback, $module);
+        }
     }
 
 }

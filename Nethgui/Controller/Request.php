@@ -27,7 +27,7 @@ namespace Nethgui\Controller;
  * @since 1.0
  * @internal
  */
-class Request implements \Nethgui\Controller\RequestInterface
+class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\SessionConsumerInterface
 {
 
     /**
@@ -41,9 +41,10 @@ class Request implements \Nethgui\Controller\RequestInterface
     private $getData;
 
     /**
-     * @var \Nethgui\Authorization\UserInterface
+     *
+     * @var \Nethgui\Utility\SessionInterface
      */
-    private $user;
+    private $session;
 
     /**
      * @var array
@@ -56,17 +57,21 @@ class Request implements \Nethgui\Controller\RequestInterface
      */
     private $attributes;
 
-    public function __construct(\Nethgui\Authorization\UserInterface $user, $postData, $getData, $path, \ArrayAccess $attributes)
+    public function __construct($postData, $getData, $path, \ArrayAccess $attributes)
     {
         if ( ! is_array($postData) && ! is_array($getData)) {
             throw new \InvalidArgumentException(sprintf("%s: parameters and data must be of type `array`.", get_class($this)), 1325242431);
         }
-
-        $this->user = $user;
         $this->postData = $postData;
         $this->getData = $getData;
         $this->path = $path;
         $this->attributes = $attributes;
+    }
+
+    public function setSession(\Nethgui\Utility\SessionInterface $session)
+    {
+        $this->session = $session;
+        return $this;
     }
 
     public function hasParameter($parameterName)
@@ -107,12 +112,27 @@ class Request implements \Nethgui\Controller\RequestInterface
         if ( ! is_array($argumentSubset)) {
             $argumentSubset = array();
         }
-        return new self($this->user, $parameterSubset, $argumentSubset, $path, $this->attributes);
+
+        $instance = new static($parameterSubset, $argumentSubset, $path, $this->attributes);
+
+        if (isset($this->session)) {
+            $instance->setSession($this->session);
+        }
+        
+        return $instance;
     }
 
     public function getUser()
     {
-        return $this->user;
+        $key = \Nethgui\Authorization\UserInterface::ID;
+
+        $user = $this->session->retrieve($key);
+
+        if (isset($this->session) && $user instanceof \Nethgui\Authorization\UserInterface) {
+            return $user;
+        }
+        
+        return \Nethgui\Authorization\User::getAnonymousUser();
     }
 
     public function getPath()
