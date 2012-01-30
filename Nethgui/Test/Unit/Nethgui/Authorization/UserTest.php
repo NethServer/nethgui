@@ -41,10 +41,18 @@ class UserTest extends \PHPUnit_Framework_TestCase
      */
     private $php;
 
+    /**
+     *
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
+    private $log;
+
     protected function setUp()
     {
         $this->php = $this->getMock('Nethgui\Utility\PhpWrapper', array('phpReadGlobalVariable'));
-        $this->object = new \Nethgui\Authorization\User($this->php);
+        $this->log = $this->getMock('Nethgui\Log\LogInterface');
+
+        $this->object = new \Nethgui\Authorization\User($this->php, $this->log);
     }
 
     public function testGetAnonymousUser()
@@ -168,7 +176,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $phpwrapper->expects($this->once())
             ->method('extension_loaded')
             ->with('pam')
-            ->will($this->returnValue(FALSE));        
+            ->will($this->returnValue(FALSE));
 
         $this->object = new \Nethgui\Authorization\User($phpwrapper);
 
@@ -177,21 +185,78 @@ class UserTest extends \PHPUnit_Framework_TestCase
 
     public function testPam2()
     {
-        $phpwrapper = $this->getMock('Nethgui\Utility\PhpWrapper', array('extension_loaded', 'pam_auth'));
+        $phpwrapper = $this->getMock('Nethgui\Utility\PhpWrapper', array('extension_loaded', 'pam_auth', 'exec'));
 
         $phpwrapper->expects($this->once())
             ->method('extension_loaded')
             ->with('pam')
             ->will($this->returnValue(TRUE));
 
-   $phpwrapper->expects($this->once())
+        $phpwrapper->expects($this->once())
             ->method('pam_auth')
             ->with('user', 'pass', '', FALSE)
             ->will($this->returnValue(TRUE));
 
-        $this->object = new \Nethgui\Authorization\User($phpwrapper);
+        $phpwrapper->expects($this->once())
+            ->method('exec')
+            ->with($this->stringStartsWith('/usr/sbin/lid'), $this->anything(), $this->anything())
+            ->will($this->returnCallback(function($cmd, &$output, &$exitCode) {
+                        $exitCode = 0;
+                        $output = " g1\n g2\n g3\n";
+                    }));
 
-        $this->assertTrue($this->object->authenticate('user', 'pass'));
+        $object = new \Nethgui\Authorization\User($phpwrapper, $this->log);
+
+                $this->assertTrue($object->authenticate('user', 'pass'));
+        $this->assertEquals(array('g1', 'g2', 'g3'), $object->getCredential('groups'));
+
+    }
+
+    public function testPam3()
+    {
+        $phpwrapper = $this->getMock('Nethgui\Utility\PhpWrapper', array('extension_loaded', 'pam_auth', 'exec'));
+
+        $phpwrapper->expects($this->once())
+            ->method('extension_loaded')
+            ->with('pam')
+            ->will($this->returnValue(TRUE));
+
+        $phpwrapper->expects($this->once())
+            ->method('pam_auth')
+            ->with('user', 'pass', '', FALSE)
+            ->will($this->returnValue(TRUE));
+
+        $phpwrapper->expects($this->once())
+            ->method('exec')
+            ->withAnyParameters()
+            ->will($this->returnCallback(function($cmd, &$output, &$exitCode) {
+                        $exitCode = 1;
+                        $output = 'error';
+                    }));
+
+        $log = $this->getMock('Nethgui\Log\Nullog', array('warning'));
+        $log->expects($this->once())
+            ->method('warning')
+            ->withAnyParameters()
+            ->will($this->returnValue($log))
+        ;
+
+        $object = new \Nethgui\Authorization\User($phpwrapper, $log);
+
+        $this->assertTrue($object->authenticate('user', 'pass'));
+
+        $this->assertEquals(array(), $object->getCredential('groups'));
+        
+    }
+
+    public function testSetLog()
+    {
+        $this->assertSame($this->object, $this->object->setLog(new \Nethgui\Log\Nullog()));
+    }
+
+    public function testGetLog()
+    {
+        $this->assertInstanceOf('Nethgui\Log\LogInterface', $this->object->getLog());
     }
 
 }

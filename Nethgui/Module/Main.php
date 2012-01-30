@@ -90,6 +90,8 @@ class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\Co
                 $moduleInstance = $this->modules->getModule($moduleIdentifier);
                 $this->addChild($moduleInstance);
             }
+        } catch (\Nethgui\Exception\AuthorizationException $ex) {
+            throw $ex;
         } catch (\RuntimeException $ex) {
             throw new \Nethgui\Exception\HttpException('Not found', 404, 1324379722, $ex);
         }

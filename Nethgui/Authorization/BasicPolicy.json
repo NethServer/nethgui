@@ -6,7 +6,7 @@
         "Subject": "*",
         "Action": "*",
         "Resource": "*",
-        "Obligation": ["AUTHORIZE"]
+        "Obligation": ["AUTHORIZE"],
 
         "Description":
             "Deny access to everyone on everything"

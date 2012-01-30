@@ -66,7 +66,7 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
     {
         $user = $this->getRequest()->getUser();
         if ( ! $user->isAuthenticated() && $this->getRequest()->isSubmitted()) {
-            $user = new \Nethgui\Authorization\User($this->getPhpWrapper());
+            $user = new \Nethgui\Authorization\User($this->getPhpWrapper(), $this->getLog());
             $authenticated = $user->authenticate($this->parameters['username'], $this->parameters['password']);
             $user->setLanguageCode($this->parameters['language']);
             if ($authenticated) {

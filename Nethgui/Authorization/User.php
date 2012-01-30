@@ -26,8 +26,13 @@ namespace Nethgui\Authorization;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class User implements \Nethgui\Authorization\UserInterface, \Serializable, \Nethgui\Utility\PhpConsumerInterface
+class User implements \Nethgui\Authorization\UserInterface, \Serializable, \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Log\LogConsumerInterface
 {
+
+    /**
+     *  @var \Nethgui\Log\LogInterface
+     */
+    private $log;
 
     /**
      *
@@ -79,15 +84,21 @@ class User implements \Nethgui\Authorization\UserInterface, \Serializable, \Neth
         return $anonymous;
     }
 
-    public function __construct(\Nethgui\Utility\PhpWrapper $php = NULL)
+    public function __construct(\Nethgui\Utility\PhpWrapper $php = NULL, \Nethgui\Log\LogInterface $log = NULL)
     {
         if (is_null($php)) {
             $php = new \Nethgui\Utility\PhpWrapper();
         }
         $this->setPhpWrapper($php);
 
+        if (is_null($log)) {
+            $log = new \Nethgui\Log\Nullog();
+        }
+        $this->setLog($log);
+
+
         // The default PAM based authentication procedure:
-        $this->authenticationProcedure = function ($username, $password, &$credentials) use ($php) {
+        $this->authenticationProcedure = function ($username, $password, &$credentials) use ($php, $log) {
                 if ( ! $php->extension_loaded('pam')) {
                     throw new \RuntimeException(sprintf('%s: the PAM PHP extension is not loaded', __CLASS__), 1326879560);
                 }
@@ -96,6 +107,20 @@ class User implements \Nethgui\Authorization\UserInterface, \Serializable, \Neth
                 $authenticated = $php->pam_auth($username, $password, $error, FALSE);
 
                 if ($authenticated) {
+
+                    $exitCode = 0;
+                    $output = '';
+
+                    $php->exec(sprintf('/usr/sbin/lid -n %s', escapeshellarg($username)), $output, $exitCode);
+
+                    if ($exitCode === 0) {
+                        $groups = array_filter(array_map('trim', explode("\n", $output)));
+                    } else {
+                        $log->warning(sprintf('%s: failed to execute `/usr/sbin/lid` command. Code %d', __CLASS__, $exitCode));
+                        $groups = array();
+                    }
+
+                    $credentials['groups'] = $groups;
                     $credentials['username'] = $username;
                 }
 
@@ -202,6 +227,17 @@ class User implements \Nethgui\Authorization\UserInterface, \Serializable, \Neth
             return $this->isAuthenticated();
         }
         return $this->getCredential($attributeName);
+    }
+
+    public function getLog()
+    {
+        return $this->log;
+    }
+
+    public function setLog(\Nethgui\Log\LogInterface $log)
+    {
+        $this->log = $log;
+        return $this;
     }
 
 }

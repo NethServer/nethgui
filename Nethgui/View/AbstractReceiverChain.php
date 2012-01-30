@@ -31,6 +31,11 @@ abstract class AbstractReceiverChain implements \Nethgui\View\CommandReceiverInt
 {
 
     /**
+     *  @var \Nethgui\Log\LogInterface
+     */
+    private $log;
+
+    /**
      * @var \Nethgui\View\CommandReceiverInterface
      */
     private $nextReceiver;
