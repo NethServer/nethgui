@@ -43,7 +43,7 @@ class AuthorizationException extends \RuntimeException
     public function __construct($message, $authorizationCode, $code, $previous)
     {
         $this->authorizationCode = $authorizationCode;
-        parent::__construct($message, $code, $previous);
+        parent::__construct(sprintf('rule#%d: %s', $authorizationCode, $message), $code, $previous);
     }
 
     /**
@@ -54,9 +54,5 @@ class AuthorizationException extends \RuntimeException
     {
         return $this->authorizationCode;
     }
-
-    public function __toString()
-    {
-        return sprintf('%s [%d]', parent::__toString(), $this->authorizationCode);
-    }
+    
 }

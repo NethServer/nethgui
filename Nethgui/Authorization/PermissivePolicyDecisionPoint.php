@@ -52,7 +52,7 @@ class PermissivePolicyDecisionPoint implements PolicyDecisionPointInterface, Acc
         return FALSE;
     }
 
-    public function isGranted()
+    public function isAllowed()
     {
         return TRUE;
     }

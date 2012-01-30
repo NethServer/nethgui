@@ -105,6 +105,9 @@ class User implements \Nethgui\Authorization\UserInterface, \Serializable, \Neth
 
     public function getCredential($credentialName)
     {
+        if ( ! $this->hasCredential($credentialName)) {
+            return NULL;
+        }
         return $this->credentials[$credentialName];
     }
 

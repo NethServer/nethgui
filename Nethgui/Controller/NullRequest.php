@@ -34,6 +34,11 @@ class NullRequest implements \Nethgui\Controller\RequestInterface
 
     }
 
+    /**
+     *
+     * @staticvar self $singleton
+     * @return \Nethgui\Controller\RequestInterface
+     */
     public static function getInstance()
     {
         static $singleton;

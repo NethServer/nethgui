@@ -33,7 +33,6 @@ use Nethgui\Authorization\PolicyDecisionPointInterface as Permission;
  * www ALL=NOPASSWD: SME
  * </code>
  *
- * Before use any method in the class, the method st($db) must be called. 
  *
  * @author Giacomo Sanchietti <giacomo.sanchietti@nethesis.it>
  * @author Davide Principi <davide.principi@nethesis.it>

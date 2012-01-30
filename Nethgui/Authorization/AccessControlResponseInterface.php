@@ -39,7 +39,7 @@ interface AccessControlResponseInterface
      *
      * @return bool TRUE, if granted, FALSE otherwise.
      */
-    public function isGranted();
+    public function isAllowed();
 
     /**
      * This is the dual of isGranted()

@@ -58,7 +58,7 @@ class AuthorizedIterator extends \FilterIterator
     {
         return $this->pdp
                 ->authorize($this->subject, $this->current(), \Nethgui\Authorization\PolicyDecisionPointInterface::QUERY)
-                ->isGranted();
+                ->isAllowed();
     }
 
 }

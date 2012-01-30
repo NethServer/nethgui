@@ -47,14 +47,29 @@ class LazyAccessControlResponse implements AccessControlResponseInterface
         return $this->message;
     }
 
-    public function isGranted()
+    public function isAllowed()
     {
         return $this->getCode() === 0;
     }
 
     public function isDenied()
     {
-        return ! $this->isGranted();
+        return ! $this->isAllowed();
+    }
+
+    /**
+     * Convert the given $value to a String
+     *
+     * @param mixed $value
+     * @return string
+     */
+    protected function asString($value)
+    {
+        if (is_object($value)) {
+            return method_exists($value, '__toString') ? strval($value) : get_class($value);
+        } else {
+            return (String) $value;
+        }
     }
 
     public function asException($identifier)

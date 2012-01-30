@@ -232,25 +232,29 @@ class Framework
 
     /**
      * Translate a namespaced classifier (interface, class) or a namespaced-script-name
-     * into a filesystem path.
+     * into an absolute filesystem path.
      *
      * This is equivalent to the autoloader() function
      *
-     * @example Nethgui_Template_Help is converted into /abs/path/Nethgui/Template/Help.php
-     * @param string $symbol A "namespace" classifier or script file name (without .php extension)
+     * @example Nethgui\Template\Help is converted into /abs/path/Nethgui/Template/Help.php
+     * @param string $symbol A "namespace" classifier or script file name
      * @return string The absolute script path of $symbol
      */
     public function absoluteScriptPath($symbol)
     {
-        $nsKey = array_head(explode('\\', $symbol));
+        // fix namespace backslashes:
+        $symbol = str_replace('\\', '/', $symbol);
+        $nsKey = array_head(explode('/', $symbol));
 
-        $ext = pathinfo($symbol, PATHINFO_EXTENSION) ? '' : '.php';
-
-        if (isset($this->namespaceMap[$nsKey])) {
-            return $this->namespaceMap[$nsKey] . '/' . str_replace('\\', '/', $symbol) . $ext;
+        if ( ! isset($this->namespaceMap[$nsKey])) {
+            return FALSE;
         }
 
-        return FALSE;
+        $absolutePath = $this->namespaceMap[$nsKey] . '/' . $symbol;
+        if (pathinfo($symbol, PATHINFO_EXTENSION) === '') {
+            $absolutePath .= '.php';
+        }
+        return $absolutePath;
     }
 
     private function getFileNameResolver()
@@ -276,6 +280,18 @@ class Framework
      */
     public function dispatch(\Nethgui\Controller\RequestInterface $request, &$output = NULL)
     {
+        try {
+            return $this->__dispatch($request, $output);
+        } catch (\Nethgui\Exception\AuthorizationException $ex) {
+            $this->log->notice(sprintf('%s: [%d] %s', __CLASS__, $ex->getCode(), $ex->getMessage()));
+            throw new \Nethgui\Exception\HttpException('Forbidden', 403, 1327681977, $ex);
+        }
+    }
+
+    private function __dispatch(\Nethgui\Controller\RequestInterface $request, &$output = NULL)
+    {
+        $this->session->start();
+
         if ($request instanceof \Nethgui\Utility\SessionConsumerInterface) {
             $request->setSession($this->session);
         }
@@ -294,6 +310,7 @@ class Framework
             ->setPolicyDecisionPoint($this->pdp)
         ;
 
+        // Enforce authorization policy on moduleSet:
         $authModuleLoader = new \Nethgui\Authorization\AuthorizedModuleSet($this->moduleSet, $user);
         $authModuleLoader->setPolicyDecisionPoint($this->pdp);
 
