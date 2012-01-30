@@ -108,11 +108,21 @@ class JsonPolicyDecisionPointTest extends \PHPUnit_Framework_TestCase
             {
                 "Id": 1,
                 "Effect": "ALLOW",
-                "Subject": ".isAuthenticated",
+                "Subject": ".authenticated IS TRUE",
                 "Action": "USE || SUSPEND || RESUME",
                 "Resource": "PROCESSOR1",
                 "Description":
                     "Authenticated users have access to PROCESSOR1"
+            }
+            ,
+            {
+                "Id": 3,
+                "Effect": "DENY",
+                "Subject": "*",
+                "Action": "*",
+                "Resource": "PROC*",
+                "Description":
+                    "Unauthenticated users cannot access any PROCESSOR (Override)"
             }
             ]');
 
@@ -132,7 +142,11 @@ class JsonPolicyDecisionPointTest extends \PHPUnit_Framework_TestCase
             if ( ! $auth instanceof \Nethgui\Authorization\AccessControlResponseInterface)
                 continue;
 
-            $this->assertTrue($pass ? $auth->isAllowed() : $auth->isDenied(), sprintf('assertion[%d]: Rule#%d - %s', $index, $auth->getCode(), $auth->getMessage()));
+
+            $cond = $pass ? $auth->isAllowed() : $auth->isDenied();
+            $failMsg = sprintf('assertion[%d]: Rule#%d - %s', $index, $auth->getCode(), $auth->getMessage());
+            $this->assertTrue($cond, $failMsg);
+            
         }
     }
 
