@@ -156,6 +156,26 @@ class PolicyRule
     }
 
     /**
+     * Convert the given argument to a AuthorizationAttributesProviderInterface
+     * object
+     *
+     * @param mixed $o
+     * @return AuthorizationAttributesProviderInterface
+     */
+    private function asAttributeProvider($o)
+    {
+        $retval = NULL;
+
+        if ($o instanceof AuthorizationAttributesProviderInterface) {
+            $retval = $o;
+        } else {
+            $retval = new StringAttributesProvider($o);
+        }
+
+        return $retval;
+    }
+
+    /**
      * If a rule is not final it is overridable by
      * another rule with the same Identifier
      * 

@@ -39,7 +39,7 @@ use Nethgui\Authorization\PolicyDecisionPointInterface as Permission;
  * @since 1.0
  * @internal
  */
-class ConfigurationDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Authorization\PolicyEnforcementPointInterface, \Nethgui\Utility\PhpConsumerInterface
+class ConfigurationDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Authorization\PolicyEnforcementPointInterface, \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Authorization\AuthorizationAttributesProviderInterface
 {
 
     /**
@@ -320,6 +320,20 @@ class ConfigurationDatabase implements \Nethgui\System\DatabaseInterface, \Nethg
         }
 
         return $args;
+    }
+
+    public function asAuthorizationString()
+    {
+        return get_class($this) . ':' . $this->db;
+    }
+
+    public function getAuthorizationAttribute($attributeName)
+    {
+        if ($attributeName === 'dbname') {
+            return $this->db;
+        }
+
+        return NULL;
     }
 
 }

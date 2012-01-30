@@ -21,7 +21,7 @@ namespace Nethgui\Authorization;
  */
 
 /**
- * Read policies from json encoded objects on the local filesystem
+ * PDP that read policies from json encoded objects on the local filesystem
  *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0

@@ -182,8 +182,17 @@ class User implements \Nethgui\Authorization\UserInterface, \Serializable, \Neth
         return $this->preferences[$name];
     }
 
-    public function __toString()
+    public function asAuthorizationString()
     {
         return $this->isAuthenticated() ? $this->getCredential('username') : 'Anonymous';
     }
+
+    public function getAuthorizationAttribute($attributeName)
+    {
+        if ($attributeName === 'authenticated') {
+            return $this->isAuthenticated();
+        }
+        return $this->getCredential($attributeName);
+    }
+
 }

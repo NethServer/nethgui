@@ -34,9 +34,9 @@ class MockFactory
      * @param string $username
      * @return \Nethgui\Authorization\UserInterface
      */
-    public static function getAuthenticationSubject(\PHPUnit_Framework_TestCase $testcase, $username = FALSE)
+    public static function getAuthenticationSubject(\PHPUnit_Framework_TestCase $testcase, $username = FALSE, $groups = array())
     {
-        $subject = $testcase->getMock('Nethgui\Authorization\User', array('authenticate', 'isAuthenticated', 'getCredential', 'hasCredential', 'getLanguageCode'));
+        $subject = $testcase->getMock('Nethgui\Authorization\User', array('authenticate', 'isAuthenticated', 'getCredential', 'hasCredential', 'getLanguageCode', 'asAuthorizationString', 'getAuthorizationAttribute'));
 
         $subject->expects($testcase->any())
             ->method('isAuthenticated')
@@ -52,9 +52,32 @@ class MockFactory
             ->with('username')
             ->will($testcase->returnValue(is_string($username)));
 
+        $getAttribute = function($attName) use ($username, $groups) {
+                if ($attName === 'username') {
+                    return is_string($username) ? $username : NULL;
+                } elseif ($attName === 'authenticated') {
+                    return is_string($username) ? TRUE : FALSE;
+                } elseif ($attName == 'groups') {
+                    return $groups;
+                }
+
+                return NULL;
+            };
+
+        $subject->expects($testcase->any())
+            ->method('getAuthorizationAttribute')
+            ->withAnyParameters()
+            ->will($testcase->returnCallback($getAttribute));
+
+        $subject->expects($testcase->any())
+            ->method('asAuthorizationString')
+            ->will($testcase->returnValue(is_string($username) ? $username : 'Anonymous'));
+
         $subject->hasCredential('username');
         $subject->getCredential('username');
         $subject->isAuthenticated();
+        $subject->getAuthorizationAttribute('username');
+        $subject->asAuthorizationString();
 
         return $subject;
     }

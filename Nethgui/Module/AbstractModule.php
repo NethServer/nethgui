@@ -26,7 +26,7 @@ namespace Nethgui\Module;
  * @since 1.0
  * @api
  */
-abstract class AbstractModule implements \Nethgui\Module\ModuleInterface, \Nethgui\View\ViewableInterface, \Nethgui\Log\LogConsumerInterface, \Nethgui\Utility\PhpConsumerInterface
+abstract class AbstractModule implements \Nethgui\Module\ModuleInterface, \Nethgui\View\ViewableInterface, \Nethgui\Log\LogConsumerInterface, \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Authorization\AuthorizationAttributesProviderInterface
 {
 
     /**
@@ -179,6 +179,24 @@ abstract class AbstractModule implements \Nethgui\Module\ModuleInterface, \Nethg
     protected function getPhpWrapper()
     {
         return $this->php;
+    }
+
+    public function asAuthorizationString()
+    {
+        return get_class($this) . ':' . $this->getIdentifier();
+    }
+
+    public function getAuthorizationAttribute($attributeName)
+    {
+        if ($attributeName === 'identifier') {
+            return $this->getIdentifier();
+        } elseif ($attributeName === 'title') {
+            return $this->getAttributesProvider()->getTitle();
+        } elseif ($attributeName === 'category') {
+            return $this->getAttributesProvider()->getCategory();
+        }
+
+        return NULL;
     }
 
 }

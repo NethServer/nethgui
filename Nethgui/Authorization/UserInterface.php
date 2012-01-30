@@ -27,7 +27,7 @@ namespace Nethgui\Authorization;
  * @since 1.0
  * @api
  */
-interface UserInterface 
+interface UserInterface extends AuthorizationAttributesProviderInterface
 {
 
     const ID = __CLASS__;
