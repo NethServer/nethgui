@@ -129,22 +129,17 @@ class PolicyRule
     }
 
     /**
-     *
-     * @param mixed $subject
-     * @param mixed $action
-     * @param mixed $resource
+     * @param array $request
      * @return boolean
      */
-    public function isApplicableTo($subject, $resource, $action)
+    public function isApplicableTo($request)
     {
-        $matchers = array('subject', 'resource', 'action');
-
-        foreach ($matchers as $matcherId => $matcherName) {
+        foreach ($request as $matcherName => $obj) {
             if ( ! isset($this->matcher[$matcherName])) {
                 continue; // undefined matchers are skipped
             }
 
-            $result = $this->matcher[$matcherName]->evaluate(func_get_arg($matcherId));
+            $result = $this->matcher[$matcherName]->evaluate($this->asAttributeProvider($obj));
             if ( ! $result) {
                 // matcher failed
                 return FALSE;
@@ -223,7 +218,7 @@ class PolicyRule
     /**
      *
      * @param mixed $value
-     * @return AbstractPolicyRuleMatcher
+     * @return AbstractExpression
      */
     private function parseMatcher($value)
     {
@@ -237,7 +232,7 @@ class PolicyRule
                 return $a;
             }
             $b = $this->parseMatcher(\Nethgui\array_rest($value));
-            return new AnyOfPolicyRuleMatcher($a, $b);
+            return new AnyOfExpression($a, $b);
         }
 
         $parser = new PolicyExpressionParser($value);
@@ -251,21 +246,26 @@ class PolicyRule
  *
  * Expr := SubExpr BinaryOp
  *
- * SubExpr := STRING
- *      | DOT STRING
- *      | ( Expr )
+ * SubExpr := LITERAL
+ *      | AttributeEval
+ *      | "(" Expr ")"
  *      | NEGATION SubExpr
  *
  * BinaryOp := EPS
  *      | AND Expr
  *      | OR Expr
- *
+ *      | IS SubExpr
+ *      | HAS SubExpr
+ * 
+ * AttributeEval := DOT LITERAL
  *
  * AND := "&&"
  * OR := "||"
+ * IS := "IS"
+ * HAS := "HAS"
  * EQ := "=="
  * eps := ""
- * STRING := <any other string>
+ * LITERAL := <char sequence>
  * DOT := "."
  * NEGATION := "!"
  *
@@ -281,16 +281,18 @@ class PolicyExpressionParser
     private $value;
     private $offset;
 
-    const T_STRING = 1;
+    const T_LITERAL = 1;
     const T_WHITESPACE = 2;
     const T_BOOLEAN_AND = 3;
     const T_BOOLEAN_OR = 4;
     const T_NEGATION = 5;
     const T_LEFT_PARENS = 6;
     const T_RIGHT_PARENS = 7;
-    const T_DOT = 8;
+    const T_ATTRIBUTE = 8;
     const T_EQUAL = 9;
     const T_IN = 10;
+    const T_IS = 11;
+    const T_HAS = 12;
 
     /**
      *
@@ -303,11 +305,13 @@ class PolicyExpressionParser
         }
 
         $this->input = $text;
-        $this->tokens = preg_split("/(\.|!|\&\&|\|\||\(|\))/ ", $text, NULL, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY | PREG_SPLIT_OFFSET_CAPTURE);
+        $this->tokens = preg_split("/(\bIS\b|\bHAS\b|\.[A-Za-z][A-Za-z0-9_-]*|!|\&\&|\|\||\(|\))/ ", $text, NULL, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY | PREG_SPLIT_OFFSET_CAPTURE);
+
+        //print_r($this->tokens);
     }
 
     /**
-     * @return AbstractPolicyRuleMatcher
+     * @return AbstractExpression
      */
     public function parse()
     {
@@ -340,13 +344,20 @@ class PolicyExpressionParser
             case ")":
                 $this->symbol = self::T_RIGHT_PARENS;
                 break;
-            case ".":
-                $this->symbol = self::T_DOT;
+            case "IS":
+                $this->symbol = self::T_IS;
+                break;
+            case "HAS":
+                $this->symbol = self::T_HAS;
                 break;
             default:
                 $token = trim($token);
                 if (strlen($token) > 0) {
-                    $this->symbol = self::T_STRING;
+                    if ($token{0} === '.') {
+                        $this->symbol = self::T_ATTRIBUTE;
+                    } else {
+                        $this->symbol = self::T_LITERAL;
+                    }
                 } else {
                     $this->symbol = self::T_WHITESPACE;
                 }
@@ -377,14 +388,16 @@ class PolicyExpressionParser
     private function tokenName($s)
     {
         switch ($s) {
-            case self::T_STRING: return 'T_STRING';
+            case self::T_LITERAL: return 'T_LITERAL';
             case self::T_WHITESPACE: return 'T_WHITESPACE';
             case self::T_BOOLEAN_AND: return 'T_BOOLEAN_AND';
             case self::T_BOOLEAN_OR: return 'T_BOOLEAN_OR';
             case self::T_NEGATION: return 'T_NEGATION';
             case self::T_LEFT_PARENS: return 'T_LEFT_PARENS';
             case self::T_RIGHT_PARENS: return 'T_RIGHT_PARENS';
-            case self::T_DOT: return 'T_DOT';
+            case self::T_ATTRIBUTE: return 'T_ATTRIBUTE';
+            case self::T_IS: return 'T_IS';
+            case self::T_HAS: return 'T_HAS';
             default: return 'UNKNOWN ' . $s;
         }
     }
@@ -410,20 +423,18 @@ class PolicyExpressionParser
         $this->read();
         switch ($this->symbol) {
             case self::T_NEGATION:
-                $SubExpr = new NegationPolicyRuleMatcher($this->SubExpr());
+                $SubExpr = new NegationExpression($this->SubExpr());
                 break;
             case self::T_LEFT_PARENS:
                 $SubExpr = $this->Expr();
                 $this
                     ->accept(self::T_RIGHT_PARENS);
                 break;
-            case self::T_DOT:
-                $this->read()
-                    ->accept(self::T_STRING);
-                $SubExpr = new AttributePolicyRuleMatcher($this->value);
+            case self::T_ATTRIBUTE:
+                $SubExpr = new AttributeExpression(substr($this->value, 1));
                 break;
-            case self::T_STRING:
-                $SubExpr = new StarPolicyRuleMatcher($this->value);
+            case self::T_LITERAL:
+                $SubExpr = new StringMatchExpression($this->value);
                 break;
             default:
                 $this->throwError($this->symbol);
@@ -431,14 +442,18 @@ class PolicyExpressionParser
         return $SubExpr;
     }
 
-    private function BinaryOperator(AbstractPolicyRuleMatcher $first)
+    private function BinaryOperator(AbstractExpression $first)
     {
         $this->read();
         switch ($this->symbol) {
             case self::T_BOOLEAN_AND:
-                return new AllOfPolicyRuleMatcher($first, $this->Expr());
+                return new AllOfExpression($first, $this->Expr());
             case self::T_BOOLEAN_OR:
-                return new AnyOfPolicyRuleMatcher($first, $this->Expr());
+                return new AnyOfExpression($first, $this->Expr());
+            case self::T_IS:
+                return new IsExpression($first, $this->Expr());
+            case self::T_HAS:
+                return new HasExpression($first, $this->Expr());
             default:
                 return $first;
         }
@@ -449,30 +464,15 @@ class PolicyExpressionParser
 /**
  * @internal
  */
-abstract class AbstractPolicyRuleMatcher
+abstract class AbstractExpression
 {
-
-    /**
-     * Convert the given $value to a String 
-     * 
-     * @param mixed $value 
-     * @return string
-     */
-    protected function asString($value)
-    {
-        if (is_object($value)) {
-            return method_exists($value, '__toString') ? strval($value) : get_class($value);
-        } else {
-            return (String) $value;
-        }
-    }
 
     /**
      *
      * @param mixed $value 
      * @return mixed - boolean TRUE if $value matches, FALSE otherwise, or a string
      */
-    abstract public function evaluate($value);
+    abstract public function evaluate(AuthorizationAttributesProviderInterface $value);
 
     /**
      * @codeCoverageIgnore
@@ -490,26 +490,27 @@ abstract class AbstractPolicyRuleMatcher
  *
  * @internal
  */
-abstract class BinaryOperatorRuleMatcher extends AbstractPolicyRuleMatcher
+abstract class BinaryExpression extends AbstractExpression
 {
 
     /**
      *
-     * @var AbstractPolicyRuleMatcher
+     * @var AbstractExpression
      */
     protected $a;
 
     /**
      *
-     * @var AbstractPolicyRuleMatcher
+     * @var AbstractExpression
      */
     protected $b;
 
     /**
      *
-     * @param array $a
+     * @param AbstractExpression $a
+     * @param AbstractExpression $b
      */
-    public function __construct(AbstractPolicyRuleMatcher $a, AbstractPolicyRuleMatcher $b)
+    public function __construct(AbstractExpression $a, AbstractExpression $b)
     {
         $this->a = $a;
         $this->b = $b;
@@ -520,10 +521,68 @@ abstract class BinaryOperatorRuleMatcher extends AbstractPolicyRuleMatcher
 /**
  * @internal
  */
-class AnyOfPolicyRuleMatcher extends BinaryOperatorRuleMatcher
+class IsExpression extends BinaryExpression
 {
 
-    public function evaluate($value)
+    public function evaluate(AuthorizationAttributesProviderInterface $value)
+    {
+        $areturn = $this->a->evaluate($value);
+
+        if ($areturn === TRUE) {
+            $evalue = 'TRUE';
+        } elseif ($areturn === FALSE) {
+            $evalue = 'FALSE';
+        } else {
+            $evalue = $areturn;
+        }
+
+        return $this->b->evaluate(new StringAttributesProvider($evalue));
+    }
+
+    public function getSpecificity()
+    {
+        return $this->b->getSpecificity();
+    }
+
+}
+
+/**
+ * @internal
+ */
+class HasExpression extends BinaryExpression
+{
+
+    public function evaluate(AuthorizationAttributesProviderInterface $value)
+    {
+        $arr = $this->a->evaluate($value);
+
+        if ( ! is_array($arr)) {
+            $arr = array($arr);
+        }
+
+        foreach ($arr as $itemValue) {
+            if ($this->b->evaluate(new StringAttributesProvider($itemValue)) === TRUE) {
+                return TRUE;
+            }
+        }
+
+        return FALSE;
+    }
+
+    public function getSpecificity()
+    {
+        return $this->b->getSpecificity();
+    }
+
+}
+
+/**
+ * @internal
+ */
+class AnyOfExpression extends BinaryExpression
+{
+
+    public function evaluate(AuthorizationAttributesProviderInterface $value)
     {
         $evA = $this->a->evaluate($value);
         $evB = $this->b->evaluate($value);
@@ -544,13 +603,13 @@ class AnyOfPolicyRuleMatcher extends BinaryOperatorRuleMatcher
 /**
  * @internal
  */
-class AllOfPolicyRuleMatcher extends BinaryOperatorRuleMatcher
+class AllOfExpression extends BinaryExpression
 {
 
-    public function evaluate($value)
+    public function evaluate(AuthorizationAttributesProviderInterface $value)
     {
-        $evA = $this->a->evaluate($value);
-        $evB = $this->b->evaluate($value);
+        $evA = (bool) $this->a->evaluate($value);
+        $evB = (bool) $this->b->evaluate($value);
         return $evA && $evB;
     }
 
@@ -568,27 +627,23 @@ class AllOfPolicyRuleMatcher extends BinaryOperatorRuleMatcher
 /**
  * @internal
  */
-class AttributePolicyRuleMatcher extends AbstractPolicyRuleMatcher
+class AttributeExpression extends AbstractExpression
 {
 
-    private $methodName;
+    private $attributeName;
 
     /**
      *
-     * @param string $methodName
+     * @param string $attributeName
      */
-    public function __construct($methodName)
+    public function __construct($attributeName)
     {
-        $this->methodName = $methodName;
+        $this->attributeName = $attributeName;
     }
 
-    public function evaluate($value)
+    public function evaluate(AuthorizationAttributesProviderInterface $value)
     {
-        if (is_object($value) && method_exists($value, $this->methodName)) {
-            return $value->{$this->methodName}();
-        }
-
-        return FALSE;
+        return $value->getAuthorizationAttribute($this->attributeName);
     }
 
     public function getSpecificity()
@@ -601,21 +656,21 @@ class AttributePolicyRuleMatcher extends AbstractPolicyRuleMatcher
 /**
  * @internal
  */
-class NegationPolicyRuleMatcher extends AbstractPolicyRuleMatcher
+class NegationExpression extends AbstractExpression
 {
 
     /**
      *
-     * @var AbstractPolicyRuleMatcher
+     * @var AbstractExpression
      */
     private $inner;
 
-    public function __construct(AbstractPolicyRuleMatcher $inner)
+    public function __construct(AbstractExpression $inner)
     {
         $this->inner = $inner;
     }
 
-    public function evaluate($value)
+    public function evaluate(AuthorizationAttributesProviderInterface $value)
     {
         return ! $this->inner->evaluate($value);
     }
@@ -630,7 +685,7 @@ class NegationPolicyRuleMatcher extends AbstractPolicyRuleMatcher
 /**
  * @internal
  */
-class StarPolicyRuleMatcher extends AbstractPolicyRuleMatcher
+class StringMatchExpression extends AbstractExpression
 {
 
     /**
@@ -657,14 +712,14 @@ class StarPolicyRuleMatcher extends AbstractPolicyRuleMatcher
         $this->regexPattern = '#^' . $regexPattern . '$#';
     }
 
-    public function evaluate($value)
+    public function evaluate(AuthorizationAttributesProviderInterface $value)
     {
         if ($this->stars === 0) {
             // exact match:
-            return $this->asString($value) === $this->pattern;
+            return $value->asAuthorizationString() === $this->pattern;
         }
 
-        return preg_match($this->regexPattern, $this->asString($value)) > 0;
+        return preg_match($this->regexPattern, $value->asAuthorizationString()) > 0;
     }
 
     public function getSpecificity()

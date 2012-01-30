@@ -40,7 +40,7 @@ class LazyAccessControlResponse implements AccessControlResponseInterface
      */
     private $request;
 
-    public function __construct($request, $closure)
+    public function __construct($closure, $request)
     {
         $this->request = $request;
         $this->closure = $closure;
@@ -96,7 +96,7 @@ class LazyAccessControlResponse implements AccessControlResponseInterface
     protected function authorize()
     {
         $f = $this->closure;
-        return $f($this->message);
+        return $f($this->request, $this->message);
     }
 
     /**

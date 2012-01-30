@@ -39,12 +39,14 @@ interface PolicyDecisionPointInterface
     /**
      * Authorize the $subject to perform $action on $resource
      *
-     * @param UserInterface
-     * @param string|object
-     * @param string
+     * Each parameter may implement AuthorizationAttributesProviderInterface
+     *
+     * @param string|object The Subject
+     * @param string|object The resource requested
+     * @param string|object The action to be performed
      * @return AccessControlResponseInterface
      */
-    public function authorize(UserInterface $subject, $resource, $action);
+    public function authorize($subject, $resource, $action);
 
 }
 

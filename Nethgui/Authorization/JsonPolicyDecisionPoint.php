@@ -106,7 +106,7 @@ class JsonPolicyDecisionPoint implements PolicyDecisionPointInterface, \Nethgui\
         return $this;
     }
 
-    public function authorizeSync(UserInterface $subject, $resource, $action, &$message)
+    public function authorizeSync($request, &$message)
     {
         // Lazy policy loading:
         if ( ! isset($this->rules)) {
@@ -116,7 +116,7 @@ class JsonPolicyDecisionPoint implements PolicyDecisionPointInterface, \Nethgui\
 
         // Exit on the first applicable result:
         foreach ($this->rules as $rule) {
-            if ($rule instanceof PolicyRule && $rule->isApplicableTo($subject, $resource, $action)) {
+            if ($rule instanceof PolicyRule && $rule->isApplicableTo($request)) {
 //                $logMessage = sprintf('%s `%s` access on `%s` to `%s` [rule#%d: %s].', $rule->isAllow() ? 'Allowed' : 'Denied', $this->asString($action), $this->asString($resource), $this->asString($subject), $rule->getIdentifier(), $rule->getDescription());
 //                $this->getLog()->debug(sprintf('%s: %s', __CLASS__, $logMessage));
                 if ($rule->isAllow()) {
@@ -133,17 +133,21 @@ class JsonPolicyDecisionPoint implements PolicyDecisionPointInterface, \Nethgui\
         return 1;
     }
 
-    public function authorize(UserInterface $subject, $resource, $action)
+    public function authorize($subject, $resource, $action)
     {
         $pdp = $this;
 
-        $f = function(&$message) use ($pdp, $subject, $resource, $action) {
-                    return $pdp->authorizeSync($subject, $resource, $action, $message);
-                };
+        $request = array(
+            'subject' => $subject,
+            'resource' => $resource,
+            'action' => $action,
+        );
 
-        $request = array('subject' => $subject, 'resource'=> $resource, 'action' => $action);
+        $f = function($request, &$message) use ($pdp) {
+                return $pdp->authorizeSync($request, $message);
+            };
 
-        return new LazyAccessControlResponse($request, $f);
+        return new LazyAccessControlResponse($f, $request);
     }
 
     public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)

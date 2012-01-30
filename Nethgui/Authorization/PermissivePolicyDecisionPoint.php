@@ -23,11 +23,13 @@ namespace Nethgui\Authorization;
 /**
  * A PDP implementation that returns only affermative responses.
  *
+ * @since 1.0
+ * @author Davide Principi <davide.principi@nethesis.it>
  */
 class PermissivePolicyDecisionPoint implements PolicyDecisionPointInterface, AccessControlResponseInterface
 {
 
-    public function authorize(UserInterface $subject, $resource, $action)
+    public function authorize($subject, $resource, $action)
     {
         return $this;
     }
