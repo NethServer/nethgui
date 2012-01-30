@@ -48,10 +48,6 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
         $this->php = new \Nethgui\Utility\PhpWrapper();
         $this->data = new \ArrayObject();
         $this->php->session_name(self::SESSION_NAME);
-
-        if ( ! $this->isStarted()) {
-            $this->start();
-        }
     }
 
     private function isStarted()
@@ -59,7 +55,7 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
         return $this->getSessionIdentifier() !== '';
     }
 
-    private function start()
+    public function start()
     {
         if ($this->isStarted()) {
             throw new \LogicException(sprintf('%s: cannot start an already started session!', __CLASS__), 1327397142);
@@ -108,14 +104,14 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
         return $this;
     }
 
-    public function begin()
+    public function login()
     {
         $this->php->session_regenerate_id(TRUE);
         $this->data[get_class($this)] = TRUE;
         return $this;
     }
 
-    public function end()
+    public function logout()
     {
         $this->php->session_destroy();
         $this->data[get_class($this)] = FALSE;

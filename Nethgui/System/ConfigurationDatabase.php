@@ -112,9 +112,9 @@ class ConfigurationDatabase implements \Nethgui\System\DatabaseInterface, \Nethg
 
     private function authorizeDbAccess()
     {
-        $resource = __CLASS__ . '\\' . $this->db;
-        $this->readPermission = $this->policyDecisionPoint->authorize($this->getUser(), $resource, Permission::QUERY);
-        $this->writePermission = $this->policyDecisionPoint->authorize($this->getUser(), $resource, Permission::MUTATE);
+        $resource = __CLASS__ . ':' . $this->db;
+        $this->readPermission = $this->policyDecisionPoint->authorize($this->getUser(), $resource, Permission::READ);
+        $this->writePermission = $this->policyDecisionPoint->authorize($this->getUser(), $resource, Permission::WRITE);
     }
 
     /**

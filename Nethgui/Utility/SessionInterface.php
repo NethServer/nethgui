@@ -53,13 +53,13 @@ interface SessionInterface
      * @api
      * @return SessionInterface
      */
-    public function begin();
+    public function login();
 
     /**
      * @api
      * @return SessionInterface
      */
-    public function end();
+    public function logout();
 
 //    /**
 //     * Check if an object has been stored with the given key

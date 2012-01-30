@@ -70,7 +70,7 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
             $authenticated = $user->authenticate($this->parameters['username'], $this->parameters['password']);
             $user->setLanguageCode($this->parameters['language']);
             if ($authenticated) {
-                $this->session->begin()->store(\Nethgui\Authorization\UserInterface::ID, $user);
+                $this->session->login()->store(\Nethgui\Authorization\UserInterface::ID, $user);
             }
         }
     }

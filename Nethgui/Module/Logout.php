@@ -45,7 +45,7 @@ class Logout extends \Nethgui\Controller\AbstractController implements \Nethgui\
     {
         $request = $this->getRequest();
         if ($request->isSubmitted() && $this->parameters['action'] === 'logout') {
-            $this->session->end();
+            $this->session->logout();
         }
     }
 
