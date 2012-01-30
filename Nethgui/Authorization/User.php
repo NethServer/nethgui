@@ -59,16 +59,22 @@ class User implements \Nethgui\Authorization\UserInterface, \Serializable, \Neth
      */
     private $preferences = array();
 
+    /**
+     * 
+     * @return \Nethgui\Authorization\UserInterface
+     */
     public static function getAnonymousUser()
     {
-        static $anonymous;
+        static $anonymous = NULL;
 
+        // @codeCoverageIgnoreStart
         if ( ! isset($anonymous)) {
             $anonymous = new static();
             $anonymous->setAuthenticationProcedure(function() {
                     return FALSE;
                 });
         }
+        // @codeCoverageIgnoreEnd
 
         return $anonymous;
     }
@@ -179,6 +185,9 @@ class User implements \Nethgui\Authorization\UserInterface, \Serializable, \Neth
 
     public function getPreference($name)
     {
+        if ( ! isset($this->preferences[$name])) {
+            return NULL;
+        }
         return $this->preferences[$name];
     }
 

@@ -40,6 +40,11 @@ class LazyAccessControlResponse implements AccessControlResponseInterface
      */
     private $request;
 
+    /**
+     *
+     * @param Closure $closure
+     * @param array $request
+     */
     public function __construct($closure, $request)
     {
         $this->request = $request;
@@ -72,17 +77,19 @@ class LazyAccessControlResponse implements AccessControlResponseInterface
      */
     protected function asString($value)
     {
-        if (is_object($value)) {
-            return method_exists($value, '__toString') ? strval($value) : get_class($value);
-        } else {
-            return (String) $value;
-        }
+        $converter = new StringAttributesProvider($value);
+        return $converter->asAuthorizationString();
     }
 
     public function asException($identifier)
     {
-        $originalRequest = sprintf('action `%s` on `%s` subject `%s`', $this->asString($this->request['action']), $this->asString($this->request['resource']), $this->asString($this->request['subject']));
-        return new \Nethgui\Exception\AuthorizationException($this->getMessage() . " :: AppliedTo :: " . $originalRequest, $this->getCode(), $identifier, NULL);
+        $originalRequest = '';
+
+        foreach ($this->request as $name => $value) {
+            $originalRequest .= sprintf('%s `%s` ', $name, $this->asString($value));
+        }
+
+        return new \Nethgui\Exception\AuthorizationException($this->getMessage() . " :: AppliedTo :: " . trim($originalRequest), $this->getCode(), $identifier, NULL);
     }
 
     public function getCode()
@@ -110,10 +117,10 @@ class LazyAccessControlResponse implements AccessControlResponseInterface
             'action' => 'None'
         );
 
-        return new LazyAccessControlResponse($request, function (&$message) {
+        return new LazyAccessControlResponse(function (&$message) {
                     $message = 'ALWAYSFAIL';
                     return 1;
-                });
+                }, $request);
     }
 
     /**
@@ -127,10 +134,10 @@ class LazyAccessControlResponse implements AccessControlResponseInterface
             'action' => 'None'
         );
 
-        return new LazyAccessControlResponse($request, function (&$message) {
+        return new LazyAccessControlResponse(function (&$message) {
                     $message = '';
                     return 0;
-                });
+                }, $request);
     }
 
 }

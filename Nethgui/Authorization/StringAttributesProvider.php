@@ -42,7 +42,9 @@ class StringAttributesProvider implements AuthorizationAttributesProviderInterfa
      */
     public function __construct($o)
     {
-        if (is_object($o)) {
+        if ($o instanceof AuthorizationAttributesProviderInterface) {
+            $str = $o->asAuthorizationString();
+        } elseif (is_object($o)) {
             $str = method_exists($o, '__toString') ? strval($o) : get_class($o);
         } else {
             $str = strval($o);
