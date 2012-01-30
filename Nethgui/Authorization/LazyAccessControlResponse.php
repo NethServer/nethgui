@@ -34,8 +34,15 @@ class LazyAccessControlResponse implements AccessControlResponseInterface
     private $code;
     private $closure;
 
-    public function __construct($closure)
+    /**
+     * 
+     * @var array
+     */
+    private $request;
+
+    public function __construct($request, $closure)
     {
+        $this->request = $request;
         $this->closure = $closure;
     }
 
@@ -74,7 +81,8 @@ class LazyAccessControlResponse implements AccessControlResponseInterface
 
     public function asException($identifier)
     {
-        return new \Nethgui\Exception\AuthorizationException($this->getMessage(), $this->getCode(), $identifier, NULL);
+        $originalRequest = sprintf('action `%s` on `%s` subject `%s`', $this->asString($this->request['action']), $this->asString($this->request['resource']), $this->asString($this->request['subject']));
+        return new \Nethgui\Exception\AuthorizationException($this->getMessage() . " :: AppliedTo :: " . $originalRequest, $this->getCode(), $identifier, NULL);
     }
 
     public function getCode()
@@ -96,7 +104,13 @@ class LazyAccessControlResponse implements AccessControlResponseInterface
      */
     public static function createDenyResponse()
     {
-        return new LazyAccessControlResponse(function (&$message) {
+        $request = array(
+            'subject' => 'None',
+            'resource' => 'None',
+            'action' => 'None'
+        );
+
+        return new LazyAccessControlResponse($request, function (&$message) {
                     $message = 'ALWAYSFAIL';
                     return 1;
                 });
@@ -107,7 +121,13 @@ class LazyAccessControlResponse implements AccessControlResponseInterface
      */
     public static function createSuccessResponse()
     {
-        return new LazyAccessControlResponse(function (&$message) {
+        $request = array(
+            'subject' => 'None',
+            'resource' => 'None',
+            'action' => 'None'
+        );
+
+        return new LazyAccessControlResponse($request, function (&$message) {
                     $message = '';
                     return 0;
                 });

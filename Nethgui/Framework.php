@@ -87,7 +87,7 @@ class Framework
 
         $this->log = new \Nethgui\Log\Syslog();
         $this->session = new \Nethgui\Utility\Session();
-        $this->pdp = new \Nethgui\Authorization\GroupBasedPolicyDecisionPoint();
+        $this->pdp = new \Nethgui\Authorization\JsonPolicyDecisionPoint($this->getFileNameResolver());
         $this->pdp->setLog($this->log);
 
         $this->moduleSet = new \Nethgui\Module\ModuleLoader($this->namespaceMap);

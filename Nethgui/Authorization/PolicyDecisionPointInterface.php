@@ -30,9 +30,11 @@ namespace Nethgui\Authorization;
  */
 interface PolicyDecisionPointInterface
 {
-    const INSTANTIATE = 'CREATE';
+    const INSTANTIATE = 'INSTANTIATE';
     const QUERY = 'QUERY';
     const MUTATE = 'MUTATE';
+    const READ = 'READ';
+    const WRITE = 'WRITE';
 
     /**
      * Authorize the $subject to perform $action on $resource
