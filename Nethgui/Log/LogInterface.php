@@ -29,24 +29,27 @@ namespace Nethgui\Log;
  */
 interface LogInterface
 {
+    /**
+     * Change log details level
+     *
+     * @api
+     * @return LogInterface
+     */
     public function setLevel($level);
-    
-    public function getLevel();
 
+    /**
+     * Log details level
+     *
+     * It's a bitmask of E_ERROR , E_WARNING, E_NOTICE
+     *
+     * @api
+     * @return integer
+     */
+    public function getLevel();
 
     public function exception(\Exception $ex, $stackTrace = FALSE);
 
-    /**
-     * @deprecated
-     */
-    public function debug($message);
-
     public function notice($message);
-
-    /**
-     * @deprecated
-     */
-    public function info($message);
 
     public function error($message);
 

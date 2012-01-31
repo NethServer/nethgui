@@ -20,10 +20,11 @@ namespace Nethgui\Module;
  * along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Nethgui\Authorization\PolicyDecisionPointInterface as Permission;
-
 /**
- * TODO: add component description here
+ * This is the root of the module composition
+ *
+ * - Enforce basic module authorization
+ * - Prepare the decoration view
  *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
@@ -105,9 +106,9 @@ class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\Co
     {
         foreach ($this->getChildren() as $child) {
             if ($request->isSubmitted()) {
-                $auth = $this->pdp->authorize($request->getUser(), $child, Permission::MUTATE);
+                $auth = $this->pdp->authorize($request->getUser(), $child, self::ACTION_MUTATE);
             } else {
-                $auth = $this->pdp->authorize($request->getUser(), $child, Permission::QUERY);
+                $auth = $this->pdp->authorize($request->getUser(), $child, self::ACTION_QUERY);
             }
 
             if ($auth->isDenied()) {

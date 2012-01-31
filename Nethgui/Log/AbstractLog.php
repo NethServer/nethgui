@@ -42,6 +42,10 @@ abstract class AbstractLog implements LogInterface, \Nethgui\Utility\PhpConsumer
     protected $phpWrapper;
     private $level;
 
+    /**
+     * @see setLevel()
+     * @param integer $level
+     */
     public function __construct($level = E_ALL)
     {
         $this->level = $level;
@@ -56,11 +60,12 @@ abstract class AbstractLog implements LogInterface, \Nethgui\Utility\PhpConsumer
     public function setLevel($level)
     {
         $this->level = $level;
+        return $this;
     }
 
     public function exception(\Exception $ex, $stackTrace = FALSE)
     {
-        if ( ! $this->level & E_ERROR) {
+        if (($this->level & E_ERROR) === 0) {
             return;
         }
 
@@ -76,36 +81,18 @@ abstract class AbstractLog implements LogInterface, \Nethgui\Utility\PhpConsumer
         return $retval;
     }
 
-    public function debug($message)
-    {
-        if ( ! $this->level & E_NOTICE) {
-            return;
-        }
-
-        return $this->message(__FUNCTION__, $message);
-    }
-
     public function notice($message)
     {
-        if ( ! $this->level & E_NOTICE) {
+        if (($this->level & E_NOTICE) === 0) {
             return;
         }
 
         return $this->message(__FUNCTION__, $message);
-    }
-
-    public function info($message)
-    {
-        if ( ! $this->level & E_NOTICE) {
-            return;
-        }
-
-        return $this->notice($message);
     }
 
     public function error($message)
     {
-        if ( ! $this->level & E_ERROR) {
+        if (($this->level & E_ERROR) === 0) {
             return;
         }
 
@@ -114,7 +101,7 @@ abstract class AbstractLog implements LogInterface, \Nethgui\Utility\PhpConsumer
 
     public function warning($message)
     {
-        if ( ! $this->level & E_WARNING) {
+        if (($this->level & E_WARNING) === 0) {
             return;
         }
 

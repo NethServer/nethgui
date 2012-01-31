@@ -147,7 +147,7 @@ class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utili
             foreach ($warnings as $warning) {
                 $message .= sprintf('%s %s; ', $warning[0], $warning[1]);
             }
-            $this->getLog()->debug(sprintf("%s: %s", __CLASS__, $message));
+            $this->getLog()->notice(sprintf("%s: %s", __CLASS__, $message));
         }
 
         return $moduleInstance;

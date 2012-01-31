@@ -36,7 +36,16 @@ namespace Nethgui\Controller;
  */
 interface RequestHandlerInterface
 {
+    /**
+     * Authorization required to send a mutation request
+     */
+    const ACTION_MUTATE = 'MUTATE';
 
+    /**
+     * Authorization required to send a query request
+     */
+    const ACTION_QUERY = 'QUERY';
+    
     /**
      * Sets the host configuration Model.
      *

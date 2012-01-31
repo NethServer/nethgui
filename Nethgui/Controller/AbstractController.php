@@ -29,7 +29,6 @@ namespace Nethgui\Controller;
  */
 abstract class AbstractController extends \Nethgui\Module\AbstractModule implements \Nethgui\Controller\RequestHandlerInterface
 {
-
     /**
      * This collection holds the parameter values as primitive datatype or adapter objects.
      * @var \Nethgui\Adapter\ParameterSet
@@ -248,7 +247,6 @@ abstract class AbstractController extends \Nethgui\Module\AbstractModule impleme
     {
         return FALSE;
     }
-
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {

@@ -140,7 +140,7 @@ class HttpCommandReceiver extends \Nethgui\View\AbstractReceiverChain
         }
 
         if ($this->hasLocation()) {
-            $this->getLog()->debug(sprintf('%s: the Location header has been set already. Location `%s` is ignored.', __CLASS__, $location));
+            $this->getLog()->notice(sprintf('%s: the Location header has been set already. Location `%s` is ignored.', __CLASS__, $location));
             return;
         }
 

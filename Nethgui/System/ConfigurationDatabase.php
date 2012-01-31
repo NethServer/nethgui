@@ -20,9 +20,6 @@ namespace Nethgui\System;
  * along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Nethgui\Exception\AuthorizationException;
-use Nethgui\Authorization\PolicyDecisionPointInterface as Permission;
-
 /**
  * Read and write parameters into SME DB
  *
@@ -41,6 +38,9 @@ use Nethgui\Authorization\PolicyDecisionPointInterface as Permission;
  */
 class ConfigurationDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Authorization\PolicyEnforcementPointInterface, \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Authorization\AuthorizationAttributesProviderInterface
 {
+
+    const PERM_READ = 'READ';
+    const PERM_WRITE = 'WRITE';
 
     /**
      *
@@ -113,8 +113,8 @@ class ConfigurationDatabase implements \Nethgui\System\DatabaseInterface, \Nethg
     private function authorizeDbAccess()
     {
         $resource = __CLASS__ . ':' . $this->db;
-        $this->readPermission = $this->policyDecisionPoint->authorize($this->getUser(), $resource, Permission::READ);
-        $this->writePermission = $this->policyDecisionPoint->authorize($this->getUser(), $resource, Permission::WRITE);
+        $this->readPermission = $this->policyDecisionPoint->authorize($this->getUser(), $resource, self::PERM_READ);
+        $this->writePermission = $this->policyDecisionPoint->authorize($this->getUser(), $resource, self::PERM_WRITE);
     }
 
     /**

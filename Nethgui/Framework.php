@@ -85,7 +85,7 @@ class Framework
         $this->basePath = $this->guessBasePath();
         $this->decoratorTemplate = 'Nethgui\Template\Main';
 
-        $this->log = new \Nethgui\Log\Syslog();
+        $this->log = new \Nethgui\Log\Syslog(E_WARNING | E_ERROR);
         $this->session = new \Nethgui\Utility\Session();
         $this->pdp = new \Nethgui\Authorization\JsonPolicyDecisionPoint($this->getFileNameResolver());
         $this->pdp->setLog($this->log);
@@ -223,11 +223,12 @@ class Framework
      *
      * @api
      * @param integer $level The standard PHP error mask
-     * @return $this;
+     * @return \Nethgui\Framework
      */
     public function setLogLevel($level)
     {
         $this->log->setLevel($level);
+        return $this;
     }
 
     /**
@@ -288,8 +289,22 @@ class Framework
         }
     }
 
+    /**
+     * Load all json files in \Authorization subdirs as authorization policies
+     * 
+     * @return \Nethgui\Framework
+     */
+    private function enforceAuthorization()
+    {
+        foreach ($this->namespaceMap as $nsName => $nsPath) {
+            $this->pdp->loadPolicy($nsName . '\Authorization\*.json');
+        }
+        return $this;
+    }
+
     private function __dispatch(\Nethgui\Controller\RequestInterface $request, &$output = NULL)
     {
+        $this->enforceAuthorization();
         $this->session->start();
 
         if ($request instanceof \Nethgui\Utility\SessionConsumerInterface) {
@@ -333,8 +348,6 @@ class Framework
                 }
             });
 
-
-
         $mainModule = new \Nethgui\Module\Main($this->decoratorTemplate, $authModuleLoader);
         $mainModule->setPlatform($platform);
         $mainModule->setPolicyDecisionPoint($this->pdp);
@@ -358,7 +371,7 @@ class Framework
         $urlParts = array($this->siteUrl, $this->basePath, 'index.php');
         $rootView = new \Nethgui\View\View($targetFormat, $mainModule, $translator, $urlParts);
 
-        $commandReceiver = new \Nethgui\Renderer\HttpCommandReceiver(new \Nethgui\Renderer\MarshallingReceiver(new \Nethgui\View\LoggingCommandReceiver()));
+        $commandReceiver = new \Nethgui\Renderer\HttpCommandReceiver(new \Nethgui\Renderer\MarshallingReceiver(new \Nethgui\View\LoggingCommandReceiver($this->log)));
         $commandReceiver->setLog($this->log);
 
         $rootView->setReceiver($commandReceiver);

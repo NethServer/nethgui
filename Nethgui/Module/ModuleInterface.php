@@ -33,7 +33,11 @@ namespace Nethgui\Module;
  */
 interface ModuleInterface
 {
-
+    /**
+     * Authorization required to create a module instance
+     */
+    const ACTION_INSTANTIATE = 'INSTANTIATE';
+    
     /**
      * The Module Identifier is a string that univocally identifies a Module.
      *

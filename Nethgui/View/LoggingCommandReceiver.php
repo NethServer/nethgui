@@ -30,9 +30,9 @@ class LoggingCommandReceiver implements \Nethgui\View\CommandReceiverInterface
 {
     private $log;
 
-    public function __construct()
+    public function __construct(\Nethgui\Log\LogInterface $log)
     {
-        $this->log = new \Nethgui\Log\Syslog();
+        $this->log = $log;
     }
 
     public function executeCommand(\Nethgui\View\ViewInterface $origin, $selector, $name, $arguments)
