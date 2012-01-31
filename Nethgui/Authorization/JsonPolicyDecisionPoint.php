@@ -81,7 +81,7 @@ class JsonPolicyDecisionPoint implements PolicyDecisionPointInterface, \Nethgui\
         
         foreach ($policyFiles as $policyFile) {
             $data = $this->php->file_get_contents($policyFile);
-            $this->loadJsonString($policyName, $data);
+            $this->loadJsonString(basename($policyFile), $data);
         }
 
         return $this;

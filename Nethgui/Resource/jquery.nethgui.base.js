@@ -128,6 +128,20 @@
         var dispatchError = function(jqXHR, textStatus, errorThrown) {
             if(jqXHR.status == 400 && (errorThrown == "Request validation error" || errorThrown == "Invalid credentials supplied")) {
                 dispatchResponse($.parseJSON(jqXHR.responseText), textStatus, jqXHR.status);
+            } else if(jqXHR.status == 403 && errorThrown === 'Forbidden') {
+                $('<pre></pre>').text(jqXHR.responseText).dialog({
+                    modal: true,
+                    buttons: [
+                    {
+                        text: "Ok",
+                        click: function() {
+                            $(this).dialog("close");
+                            
+                        }
+                    }
+                    ],
+                    title: '403 - Forbidden'
+                });
             } else {
                 // TODO: display a way to recover from the error state.
                 $.debug('Server error.', jqXHR, textStatus, errorThrown);
@@ -138,9 +152,9 @@
 
 
         /**
-         * Replace the path suffix on the given url with newSuffix
-         * @return string the new url string
-         */
+             * Replace the path suffix on the given url with newSuffix
+             * @return string the new url string
+             */
         var replaceFormatSuffix = function(url, newSuffix) {
 
             var urlParts = url.split('?',2);
@@ -182,7 +196,7 @@
 
     $.widget('nethgui.Component', {
         _server: new Server(),
-        _deep: true,                 
+        _deep: true,
         _create: function () {
             var self = this;
 
@@ -192,7 +206,7 @@
 
             if(this._deep === true) {
                 this._initializeDeep(this.element.children().toArray());
-            }            
+            }
             this.element.bind('nethguiupdateview.' + this.namespace, function(e, value, selector) {
                 self._updateView(value, selector);
             });
@@ -204,7 +218,7 @@
                 self.disable();
                 e.stopPropagation();
             });
-        },     
+        },
         getChildren: function () {
             return $(this._children);
         },
@@ -251,7 +265,7 @@
             }
         },
         _setOption: function( key, value ) {
-            $.Widget.prototype._setOption.apply( this, [key, value] ); 
+            $.Widget.prototype._setOption.apply( this, [key, value] );
             if(key === 'disabled' && this._deep === true) {
                 this.getChildren().Component('option', key, value);
             }
@@ -264,7 +278,7 @@
         _updateView: function(value, selector) {
         // free to override
         },
-        _sendQuery: function(url, data, freezeUi) {            
+        _sendQuery: function(url, data, freezeUi) {
             this._server.ajaxMessage(false, url, typeof data === 'string' ? data : undefined, freezeUi ? this.widget() : undefined);
         },
         _sendMutation: function(url, data, freezeUi) {

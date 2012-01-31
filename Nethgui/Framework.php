@@ -284,7 +284,7 @@ class Framework
         try {
             return $this->__dispatch($request, $output);
         } catch (\Nethgui\Exception\AuthorizationException $ex) {
-            $this->log->notice(sprintf('%s: [%d] %s', __CLASS__, $ex->getCode(), $ex->getMessage()));
+            $this->log->error(sprintf('%s: [%d] %s', __CLASS__, $ex->getCode(), $ex->getMessage()));
             throw new \Nethgui\Exception\HttpException('Forbidden', 403, 1327681977, $ex);
         }
     }
