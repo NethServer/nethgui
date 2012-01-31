@@ -26,21 +26,17 @@ namespace Nethgui\Authorization;
  * A PDP implementation is responsible for authorizing access requests coming
  * from PEPs (PolicyEnforcementPointInterfaces).
  *
+ * @api
  * @see PolicyEnforcementPointInterface
  */
 interface PolicyDecisionPointInterface
 {
-    const INSTANTIATE = 'INSTANTIATE';
-    const QUERY = 'QUERY';
-    const MUTATE = 'MUTATE';
-    const READ = 'READ';
-    const WRITE = 'WRITE';
-
     /**
      * Authorize the $subject to perform $action on $resource
      *
      * Each parameter may implement AuthorizationAttributesProviderInterface
      *
+     * @api
      * @param string|object The Subject
      * @param string|object The resource requested
      * @param string|object The action to be performed

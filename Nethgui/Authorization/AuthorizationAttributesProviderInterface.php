@@ -21,21 +21,30 @@ namespace Nethgui\Authorization;
  */
 
 /**
- * Implementors can be evaluated in authorization rules
+ * Object implementors can be evaluated in authorization rules as subject,
+ * resource, action and so on..
  *
+ * @api
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
 interface AuthorizationAttributesProviderInterface
 {
+
     /**
+     * Get the value of an attribute
+     *
+     * @api
      * @return mixed The value of the authorization attribute
      */
     public function getAuthorizationAttribute($attributeName);
+
     /**
+     * Convert an object to a default string representation
+     *
+     * @api
      * @return string The string representing the object in authorization rules
      */
     public function asAuthorizationString();
 }
-
 

@@ -57,7 +57,7 @@ class AuthorizedIterator extends \FilterIterator
     public function accept()
     {
         return $this->pdp
-                ->authorize($this->subject, $this->current(), \Nethgui\Authorization\PolicyDecisionPointInterface::QUERY)
+                ->authorize($this->subject, $this->current(), \Nethgui\Controller\RequestHandlerInterface::ACTION_QUERY)
                 ->isAllowed();
     }
 

@@ -37,7 +37,7 @@ class JsonPolicyDecisionPointTest extends \PHPUnit_Framework_TestCase
 
     /**
      *
-     * @var Mock
+     * @var \PHPUnit_Framework_MockObject_MockObject
      */
     private $phpMock;
 
@@ -53,9 +53,9 @@ class JsonPolicyDecisionPointTest extends \PHPUnit_Framework_TestCase
                 }, $this->phpMock);
     }
 
-    private function getSubject($username = FALSE)
+    private function getSubject($username = FALSE, $groups = array())
     {
-        return \Nethgui\Test\Tool\MockFactory::getAuthenticationSubject($this, $username);
+        return \Nethgui\Test\Tool\MockFactory::getAuthenticationSubject($this, $username, $groups);
     }
 
     private function loadPolicy($policy)
@@ -65,13 +65,66 @@ class JsonPolicyDecisionPointTest extends \PHPUnit_Framework_TestCase
             ->with('/prefix/Nethgui/Authorization/BasicPolicy.json')
             ->will($this->returnValue($policy))
         ;
+
+        $this->object->loadPolicy('Nethgui\Authorization\BasicPolicy.json');
+    }
+
+    public function testEmptyPdp()
+    {
+        $this->assertTrue($this->object->authorize('S', 'R', 'A')->isAllowed());
+    }
+
+    public function testNoMatchPdp()
+    {
+        $this->loadPolicy('[{"Id": 1234, "Effect": "ALLOW", "Subject": "XXX", "Action": "XXX", "Resource": "XXX"}]');
+        $this->assertFalse($this->object->authorize('S', 'R', 'A')->isAllowed());
+    }
+
+    public function testGlobPolicyFiles()
+    {
+        $phpMock = $this->getMockBuilder('Nethgui\Utility\PhpWrapper')
+            ->setMethods(array('file_get_contents', 'glob'))
+            ->getMock()
+        ;
+
+        $phpMock->expects($this->at(0))
+            ->method('glob')
+            ->with('/prefix/Nethgui/Authorization/*.json')
+            ->will($this->returnValue(array('/prefix/Nethgui/Authorization/A.json', '/prefix/Nethgui/Authorization/B.json')))
+        ;
+
+        $phpMock->expects($this->at(1))
+            ->method('file_get_contents')
+            ->with('/prefix/Nethgui/Authorization/A.json')
+            ->will($this->returnValue('[]'));
+
+        $phpMock->expects($this->at(2))
+            ->method('file_get_contents')
+            ->with('/prefix/Nethgui/Authorization/B.json')
+            ->will($this->returnValue('[]'));
+
+        $phpMock->expects($this->at(3))
+            ->method('glob')
+            ->with('/prefix/Product/Authorization/*.json')
+            ->will($this->returnValue(FALSE))
+        ;
+
+        $logMock = $this->getMock('Nethgui\Log\Nullog', array('warning'));
+        $logMock->expects($this->once())
+            ->method('warning')
+            ->with($this->stringContains('invalid policy file specification'))
+            ->will($this->returnValue($logMock));
+
+        $this->object->setPhpWrapper($phpMock)->setLog($logMock);
+        $this->object->loadPolicy('Nethgui\Authorization\*.json');
+        $this->object->loadPolicy('Product\Authorization\*.json');
+
+        $this->assertTrue($this->object->authorize('S', 'R', 'A')->isAllowed());
     }
 
     public function testAuthorizeLogin1()
     {
-        $this->loadPolicy('[
-
-            
+        $this->loadPolicy('[            
             {
                 "Id": 2,
                 "Final": true,
@@ -108,11 +161,11 @@ class JsonPolicyDecisionPointTest extends \PHPUnit_Framework_TestCase
             {
                 "Id": 1,
                 "Effect": "ALLOW",
-                "Subject": ".authenticated IS TRUE",
-                "Action": "USE || SUSPEND || RESUME",
+                "Subject": ".groups HAS g1 OR .groups HAS g2",
+                "Action": "USE OR SUSPEND OR RESUME",
                 "Resource": "PROCESSOR1",
                 "Description":
-                    "Authenticated users have access to PROCESSOR1"
+                    "g1 and g2 groups have access to PROCESSOR1"
             }
             ,
             {
@@ -122,7 +175,7 @@ class JsonPolicyDecisionPointTest extends \PHPUnit_Framework_TestCase
                 "Action": "*",
                 "Resource": "PROC*",
                 "Description":
-                    "Unauthenticated users cannot access any PROCESSOR (Override)"
+                    "Generic user has no access to any PROCESSOR (Override)"
             }
             ]');
 
@@ -130,10 +183,12 @@ class JsonPolicyDecisionPointTest extends \PHPUnit_Framework_TestCase
 
         $assertions = array(
             0 => array($this->object->authorize($this->getSubject('admin'), 'PROCESSOR2', 'HALT'), TRUE),
-            1 => array($this->object->authorize($this->getSubject('dude'), 'PROCESSOR1', 'USE'), TRUE),
-            2 => array($this->object->authorize($this->getSubject('dude'), 'PROCESSOR1', 'HALT'), FALSE),
-            3 => array($this->object->authorize($this->getSubject('dude'), 'PROCESSOR2', 'USE'), FALSE),
-            4 => array($this->object->authorize($this->getSubject(FALSE), 'PROCESSOR3', 'USE'), FALSE)
+            1 => array($this->object->authorize($this->getSubject('dude', array('g1')), 'PROCESSOR1', 'USE'), TRUE),
+            2 => array($this->object->authorize($this->getSubject('dude', array('g2')), 'PROCESSOR1', 'HALT'), FALSE),
+            3 => array($this->object->authorize($this->getSubject('dude', array('g1', 'g2')), 'PROCESSOR2', 'USE'), FALSE),
+            4 => array($this->object->authorize($this->getSubject(FALSE), 'PROCESSOR3', 'USE'), FALSE),
+            5 => array($this->object->authorize($this->getSubject('user', array('g1')), 'PROCESSOR3', 'USE'), FALSE),
+            6 => array($this->object->authorize($this->getSubject('dude', array('g2')), 'PROCESSOR1', 'USE'), TRUE),
         );
 
         foreach ($assertions as $index => $assertion) {
@@ -146,7 +201,6 @@ class JsonPolicyDecisionPointTest extends \PHPUnit_Framework_TestCase
             $cond = $pass ? $auth->isAllowed() : $auth->isDenied();
             $failMsg = sprintf('assertion[%d]: Rule#%d - %s', $index, $auth->getCode(), $auth->getMessage());
             $this->assertTrue($cond, $failMsg);
-            
         }
     }
 

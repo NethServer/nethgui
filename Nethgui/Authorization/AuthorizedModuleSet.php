@@ -80,7 +80,7 @@ class AuthorizedModuleSet implements \Nethgui\Module\ModuleSetInterface, \Nethgu
 
     private function setup(\Nethgui\Module\ModuleInterface $module)
     {
-        $access = $this->pdp->authorize($this->user, get_class($module), \Nethgui\Authorization\PolicyDecisionPointInterface::INSTANTIATE);
+        $access = $this->pdp->authorize($this->user, get_class($module), \Nethgui\Module\ModuleInterface::ACTION_INSTANTIATE);
         if ($access->isDenied()) {
             throw $access->asException(1327492764);
         }

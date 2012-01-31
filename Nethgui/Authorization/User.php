@@ -109,14 +109,16 @@ class User implements \Nethgui\Authorization\UserInterface, \Serializable, \Neth
                 if ($authenticated) {
 
                     $exitCode = 0;
-                    $output = '';
+                    $output = array();
 
-                    $php->exec(sprintf('/usr/sbin/lid -n %s', escapeshellarg($username)), $output, $exitCode);
+                    $command = sprintf('/usr/bin/id -G -n %s 2>&1', escapeshellarg($username));
+
+                    $php->exec($command, $output, $exitCode);
 
                     if ($exitCode === 0) {
-                        $groups = array_filter(array_map('trim', explode("\n", $output)));
+                        $groups = array_filter(array_map('trim', explode(' ',implode(' ', $output))));
                     } else {
-                        $log->warning(sprintf('%s: failed to execute `/usr/sbin/lid` command. Code %d', __CLASS__, $exitCode));
+                        $log->warning(sprintf('%s: failed to execute %s command. Code %d. Output: %s', __CLASS__, $command, $exitCode, implode("\n", $output)));
                         $groups = array();
                     }
 
@@ -188,12 +190,12 @@ class User implements \Nethgui\Authorization\UserInterface, \Serializable, \Neth
 
     public function serialize()
     {
-        return serialize(array($this->authenticated, $this->credentials, $this->preferences, $this->php));
+        return serialize(array($this->authenticated, $this->credentials, $this->preferences, $this->php, $this->log));
     }
 
     public function unserialize($serialized)
     {
-        list($this->authenticated, $this->credentials, $this->preferences, $this->php) = unserialize($serialized);
+        list($this->authenticated, $this->credentials, $this->preferences, $this->php, $this->log) = unserialize($serialized);
     }
 
     public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)

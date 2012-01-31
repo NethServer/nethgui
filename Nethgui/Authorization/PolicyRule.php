@@ -134,6 +134,7 @@ class PolicyRule
      */
     public function isApplicableTo($request)
     {
+
         foreach ($request as $matcherName => $obj) {
             if ( ! isset($this->matcher[$matcherName])) {
                 continue; // undefined matchers are skipped
@@ -236,7 +237,9 @@ class PolicyRule
         }
 
         $parser = new PolicyExpressionParser($value);
-        return $parser->parse();
+        $parseTree = $parser->parse();
+
+        return $parseTree;
     }
 
 }
@@ -244,30 +247,17 @@ class PolicyRule
 /**
  * A simple descent parser for the following grammar:
  *
- * Expr := SubExpr BinaryOp
- *
- * SubExpr := LITERAL
- *      | AttributeEval
- *      | "(" Expr ")"
- *      | NEGATION SubExpr
- *
- * BinaryOp := EPS
- *      | AND Expr
- *      | OR Expr
- *      | IS SubExpr
- *      | HAS SubExpr
- * 
- * AttributeEval := DOT LITERAL
- *
- * AND := "&&"
- * OR := "||"
- * IS := "IS"
- * HAS := "HAS"
- * EQ := "=="
- * eps := ""
- * LITERAL := <char sequence>
- * DOT := "."
- * NEGATION := "!"
+ * expression  := orExp
+ * orExp       := orOp orExpTail
+ * orExpTail   := EPS | "OR" orExp
+ * orOp        := andExp
+ * andExp      := andOp andExpTail
+ * andExpTail  := EPS | "AND" andExp
+ * andOp       := "NOT" matchExp | matchExp
+ * matchExp    := matchOp matchExpTail
+ * matchExpTail:= EPS | "IS" operand | "HAS" operand
+ * matchOp     := operand
+ * operand     := <LITERAL> | <ATTRIBUTE> | "(" expression ")" | "TRUE" | "FALSE"
  *
  * @internal
  * @since 1.0
@@ -281,6 +271,7 @@ class PolicyExpressionParser
     private $value;
     private $offset;
 
+    const T_EOF = 0;
     const T_LITERAL = 1;
     const T_WHITESPACE = 2;
     const T_BOOLEAN_AND = 3;
@@ -293,6 +284,8 @@ class PolicyExpressionParser
     const T_IN = 10;
     const T_IS = 11;
     const T_HAS = 12;
+    const T_TRUE = 13;
+    const T_FALSE = 14;
 
     /**
      *
@@ -305,7 +298,7 @@ class PolicyExpressionParser
         }
 
         $this->input = $text;
-        $this->tokens = preg_split("/(\bIS\b|\bHAS\b|\.[A-Za-z][A-Za-z0-9_-]*|!|\&\&|\|\||\(|\))/ ", $text, NULL, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY | PREG_SPLIT_OFFSET_CAPTURE);
+        $this->tokens = preg_split("/(\b(?:TRUE|FALSE|AND|OR|NOT|HAS|IS)\b|\.[A-Za-z][A-Za-z0-9_-]*|\(|\))/ ", $text, NULL, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY | PREG_SPLIT_OFFSET_CAPTURE);
 
         //print_r($this->tokens);
     }
@@ -315,7 +308,19 @@ class PolicyExpressionParser
      */
     public function parse()
     {
-        return $this->Expr();
+        return $this->expression();
+    }
+
+    private function eat($token)
+    {
+
+        if ($token !== $this->symbol) {
+            $this->throwError();
+            // @codeCoverageIgnoreStart
+        }
+        // @codeCoverageIgnoreEnd
+
+        return $this->read();
     }
 
     private function read()
@@ -327,15 +332,15 @@ class PolicyExpressionParser
 
         switch ($token) {
             case FALSE;
-                $this->symbol = FALSE;
+                $this->symbol = self::T_EOF;
                 break;
-            case '&&':
+            case 'AND':
                 $this->symbol = self::T_BOOLEAN_AND;
                 break;
-            case '||':
+            case 'OR':
                 $this->symbol = self::T_BOOLEAN_OR;
                 break;
-            case "!":
+            case 'NOT':
                 $this->symbol = self::T_NEGATION;
                 break;
             case "(":
@@ -349,6 +354,12 @@ class PolicyExpressionParser
                 break;
             case "HAS":
                 $this->symbol = self::T_HAS;
+                break;
+            case "TRUE":
+                $this->symbol = self::T_TRUE;
+                break;
+            case "FALSE":
+                $this->symbol = self::T_FALSE;
                 break;
             default:
                 $token = trim($token);
@@ -365,24 +376,11 @@ class PolicyExpressionParser
 
         $this->value = $token;
 
-        // skip whitespaces
         if ($this->symbol === self::T_WHITESPACE) {
             $this->read();
         }
 
         return $this;
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    private function accept($sym)
-    {
-        if ($this->symbol === $sym) {
-            return $this;
-        }
-
-        $this->throwError($sym);
     }
 
     private function tokenName($s)
@@ -398,7 +396,9 @@ class PolicyExpressionParser
             case self::T_ATTRIBUTE: return 'T_ATTRIBUTE';
             case self::T_IS: return 'T_IS';
             case self::T_HAS: return 'T_HAS';
-            default: return 'UNKNOWN ' . $s;
+            case self::T_FALSE: return 'T_FALSE';
+            case self::T_TRUE: return 'T_TRUE';
+            default: return 'UNKNOWN ' . var_export($s, TRUE);
         }
     }
 
@@ -406,57 +406,106 @@ class PolicyExpressionParser
      * @throws \UnexpectedValueException
      * @param integer $s
      */
-    private function throwError($s)
+    private function throwError()
     {
-        $tok = $this->tokenName($s);
+        $tok = $this->tokenName($this->symbol);
         $expr = '`' . substr($this->input, 0, $this->offset) . '` {!} `' . substr($this->input, $this->offset) . '`';
         throw new \UnexpectedValueException(sprintf('%s: unexpected token %s; %s', __CLASS__, $tok, $expr), 1327593544);
     }
 
-    private function Expr()
-    {
-        return $this->BinaryOperator($this->SubExpr());
-    }
-
-    private function SubExpr()
+    private function expression()
     {
         $this->read();
+        return $this->orExp();
+    }
+
+    private function orExp()
+    {
+        return $this->orExpTail($this->orOp());
+    }
+
+    private function orExpTail(AbstractExpression $p)
+    {
+        if ($this->symbol === self::T_BOOLEAN_OR) {
+            $this->eat(self::T_BOOLEAN_OR);
+            return new AnyOfExpression($p, $this->orExp());
+        }
+        return $p; // EPS
+    }
+
+    private function orOp()
+    {
+        return $this->andExp();
+    }
+
+    private function andExp()
+    {
+        return $this->andExpTail($this->andOp());
+    }
+
+    private function andExpTail(AbstractExpression $p)
+    {
+        if ($this->symbol == self::T_BOOLEAN_AND) {
+            $this->eat(self::T_BOOLEAN_AND);
+            return new AllOfExpression($p, $this->andExp());
+        }
+        return $p; // EPS
+    }
+
+    private function andOp()
+    {
+        if ($this->symbol === self::T_NEGATION) {
+            $this->eat(self::T_NEGATION);
+            return new NegationExpression($this->matchExp());
+        } else {
+            return $this->matchExp();
+        }
+        $this->throwError();
+    }
+
+    private function matchExp()
+    {
+        return $this->matchExpTail($this->operand());
+    }
+
+    private function operand()
+    {
         switch ($this->symbol) {
-            case self::T_NEGATION:
-                $SubExpr = new NegationExpression($this->SubExpr());
-                break;
-            case self::T_LEFT_PARENS:
-                $SubExpr = $this->Expr();
-                $this
-                    ->accept(self::T_RIGHT_PARENS);
-                break;
             case self::T_ATTRIBUTE:
-                $SubExpr = new AttributeExpression(substr($this->value, 1));
-                break;
+                $operand = new AttributeExpression(substr($this->value, 1));
+                $this->eat(self::T_ATTRIBUTE);
+                return $operand;
             case self::T_LITERAL:
-                $SubExpr = new StringMatchExpression($this->value);
-                break;
-            default:
-                $this->throwError($this->symbol);
+                $operand = new StringMatchExpression($this->value);
+                $this->eat(self::T_LITERAL);
+                return $operand;
+            case self::T_LEFT_PARENS:
+                $this->eat(self::T_LEFT_PARENS);
+                $operand = $this->orExp();
+                $this->eat(self::T_RIGHT_PARENS);
+                return $operand;
+            case self::T_TRUE:
+                $this->eat(self::T_TRUE);
+                return new Constant(TRUE);
+            case self::T_FALSE:
+                $this->eat(self::T_FALSE);
+                return new Constant(FALSE);
         }
-        return $SubExpr;
+        $this->throwError();
+        // @codeCoverageIgnoreStart
     }
+    // @codeCoverageIgnoreEnd
 
-    private function BinaryOperator(AbstractExpression $first)
+    private function matchExpTail(AbstractExpression $p)
     {
-        $this->read();
-        switch ($this->symbol) {
-            case self::T_BOOLEAN_AND:
-                return new AllOfExpression($first, $this->Expr());
-            case self::T_BOOLEAN_OR:
-                return new AnyOfExpression($first, $this->Expr());
-            case self::T_IS:
-                return new IsExpression($first, $this->Expr());
-            case self::T_HAS:
-                return new HasExpression($first, $this->Expr());
-            default:
-                return $first;
+        if ($this->symbol === self::T_IS) {
+            $this->eat(self::T_IS);
+            return new IsExpression($p, $this->operand());
+        } elseif ($this->symbol === self::T_HAS) {
+            $this->eat(self::T_HAS);
+            return new HasExpression($p, $this->operand());
         }
+        return $p;  // EPS
     }
 
 }
@@ -526,17 +575,7 @@ class IsExpression extends BinaryExpression
 
     public function evaluate(AuthorizationAttributesProviderInterface $value)
     {
-        $areturn = $this->a->evaluate($value);
-
-        if ($areturn === TRUE) {
-            $evalue = 'TRUE';
-        } elseif ($areturn === FALSE) {
-            $evalue = 'FALSE';
-        } else {
-            $evalue = $areturn;
-        }
-
-        return $this->b->evaluate(new StringAttributesProvider($evalue));
+        return $this->b->evaluate(new StringAttributesProvider(strval($this->a->evaluate($value))));
     }
 
     public function getSpecificity()
@@ -557,7 +596,7 @@ class HasExpression extends BinaryExpression
         $arr = $this->a->evaluate($value);
 
         if ( ! is_array($arr)) {
-            $arr = array($arr);
+            return FALSE;
         }
 
         foreach ($arr as $itemValue) {
@@ -735,3 +774,22 @@ class StringMatchExpression extends AbstractExpression
 
 }
 
+/**
+ * @internal
+ */
+class Constant extends AbstractExpression
+{
+
+    private $value;
+
+    public function __construct($constValue)
+    {
+        $this->value = $constValue;
+    }
+
+    public function evaluate(AuthorizationAttributesProviderInterface $value)
+    {
+        return $this->value;
+    }
+
+}

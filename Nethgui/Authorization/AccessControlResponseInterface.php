@@ -37,6 +37,7 @@ interface AccessControlResponseInterface
     /**
      * TRUE if the access is granted
      *
+     * @api
      * @return bool TRUE, if granted, FALSE otherwise.
      */
     public function isAllowed();
@@ -44,6 +45,7 @@ interface AccessControlResponseInterface
     /**
      * This is the dual of isGranted()
      *
+     * @api
      * @see isGranted()
      * @return bool TRUE, if access is denied FALSE otherwise
      */
@@ -52,19 +54,24 @@ interface AccessControlResponseInterface
     /**
      * Response explanation
      *
+     * @api
      * @return string
      */
     public function getMessage();
 
     /**
-     * Response code
-     * 
+     * Response numeric code
+     *
+     * @api
      * @return integer 0 if granted, positive otherwise
      */
     public function getCode();
 
     /**
-     * @param integer $identifier
+     * Prepare an exception object with the response informations
+     *
+     * @api
+     * @param integer $identifier The exception unique identifier
      * @return \Nethgui\Exception\AuthorizationException
      */
     public function asException($identifier);

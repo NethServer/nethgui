@@ -23,14 +23,17 @@ namespace Nethgui\Authorization;
 /**
  * PolicyEnforcementPointInterface (PEP)
  *
- * Implementors authorize access to their owned resources
- * depending on the responses of PolicyDecisionPointInterface.
+ * Implementors authorize access to resources
+ * depending on the responses of the Policy Decision Point (PDP)
  *
+ * @api
  * @see  \Nethgui\Authorization\PolicyDecisionPointInterface
  */
 interface PolicyEnforcementPointInterface
 {
     /**
+     *
+     * @api
      * @param PolicyDecisionPointInterface $pdp
      * @return \Nethgui\Authorization\PolicyEnforcementPointInterface
      */

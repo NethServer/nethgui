@@ -37,6 +37,7 @@ namespace Nethgui\Test\Unit\Nethgui\Authorization;
  * @covers \Nethgui\Authorization\StringMatchExpression
  * @covers \Nethgui\Authorization\BinaryExpression
  * @covers \Nethgui\Authorization\StringAttributesProvider
+ * @covers \Nethgui\Authorization\Constant
  */
 class PolicyRuleTest extends \PHPUnit_Framework_TestCase
 {
@@ -52,20 +53,23 @@ class PolicyRuleTest extends \PHPUnit_Framework_TestCase
         foreach (array(
         0 => '{ "Id": 1$INDEX, "Effect": "DENY", "Subject": "*", "Action": "*", "Resource": "*", "Description": "Desc$INDEX", "Final": true }',
         1 => '{ "Id": 1$INDEX, "Effect": "ALLOW", "Subject": "admin", "Action": "*", "Resource": "*", "Description": "Desc$INDEX" }',
-        2 => '{ "Id": 1$INDEX, "Effect": "ALLOW", "Subject": "*", "Action": "QUERY || !MUTATE", "Resource": "Resource1\\\\* && (!Res4 || Res5)", "Description": "Desc$INDEX" }',
-        3 => '{ "Id": 1$INDEX, "Effect": "ALLOW", "Subject": "*", "Action": ["QUERY", "!MUTATE"], "Resource": "Resource2\\\\* && !Res4", "Description": "Desc$INDEX" }',
-        4 => '{ "Id": 1$INDEX, "Effect": "DENY", "Subject": "dude || (a && !(!(b))) || .authenticated ", "Resource": "*", "Description": "Desc$INDEX" }',
+        2 => '{ "Id": 1$INDEX, "Effect": "ALLOW", "Subject": "*", "Action": "QUERY OR NOT MUTATE", "Resource": "Resource1\\\\* AND (NOT Res4 OR Res5)", "Description": "Desc$INDEX" }',
+        3 => '{ "Id": 1$INDEX, "Effect": "ALLOW", "Subject": "*", "Action": ["QUERY", "NOT MUTATE"], "Resource": "Resource2\\\\* AND NOT Res4", "Description": "Desc$INDEX" }',
+        4 => '{ "Id": 1$INDEX, "Effect": "DENY", "Subject": "dude OR (a AND b) OR .authenticated", "Resource": "*", "Description": "Desc$INDEX" }',
         5 => '{ "Id": 1$INDEX, "Effect": "DENY", "Subject": false, "Resource": "*", "Description": "Desc$INDEX" }',
-        6 => '{ "Id": 1$INDEX, "Effect": "DENY", "Subject": "*", "Action": "*", "Resource": "a && ", "Description": "Desc$INDEX" }', // ERROR
-        7 => '{ "Id": 1$INDEX, "Effect": "DENY", "Subject": "*", "Action": "*", "Resource": "a && ( b", "Description": "Desc$INDEX" }', // ERROR
-        8 => '{ "Id": 1$INDEX, "Effect": "ALLOW", "Subject": "admin || .authenticated || .username IS admin || .groups HAS Users", "Action": "*", "Resource": "*", "Description": "Desc$INDEX" }',
-        9 => '{ "Id": 1$INDEX, "Effect": "ALLOW", "Subject": "!.authenticated  || .noattribute", "Action": "*", "Resource": "*", "Description": "Desc$INDEX" }',
+        6 => '{ "Id": 1$INDEX, "Effect": "DENY", "Subject": "*", "Action": "*", "Resource": "a AND ", "Description": "Desc$INDEX" }', // ERROR
+        7 => '{ "Id": 1$INDEX, "Effect": "DENY", "Subject": "*", "Action": "*", "Resource": "a AND ( b", "Description": "Desc$INDEX" }', // ERROR
+        8 => '{ "Id": 1$INDEX, "Effect": "ALLOW", "Subject": "admin OR .authenticated OR .username IS admin OR .groups HAS Users", "Action": "*", "Resource": "*", "Description": "Desc$INDEX" }',
+        9 => '{ "Id": 1$INDEX, "Effect": "ALLOW", "Subject": "NOT .authenticated  OR .noattribute", "Action": "*", "Resource": "*", "Description": "Desc$INDEX" }',
         10 => '{ "Id": 1$INDEX, "Effect": "ALLOW", "Subject": "*", "Action": [], "Resource": "*", "Description": "Desc$INDEX" }',
         11 => '{ "Id": 1$INDEX, "Effect": "ALLOW", "Subject": ".authenticated ", "Action": "*", "Resource": "*", "Description": "Desc$INDEX", "Final": true }',
         12 => '{ "Id": 1$INDEX, "Effect": "ALLOW", "Subject": "*", "Action": "*", "Resource": ".nullattribute IS 16", "Description": "Desc$INDEX" }',
         13 => '{ "Id": 1$INDEX, "Effect": "ALLOW", "Subject": ".groups HAS Managers", "Action": "*", "Resource": "*", "Description": "Desc$INDEX" }',
         14 => '{ "Id": 1$INDEX, "Effect": "DENY", "Subject": ".groups HAS Guests", "Action": "*", "Resource": "*", "Description": "Desc$INDEX" }',
+        15 => '{ "Id": 1$INDEX, "Effect": "DENY", "Subject": "notarray HAS ACT", "Action": "*", "Resource": "*", "Description": "Desc$INDEX" }',
+        16 => '{ "Id": 1$INDEX, "Effect": "DENY", "Subject": ".authenticated IS TRUE OR NOT .authenticated IS FALSE ", "Action": "*", "Resource": "*", "Description": "Desc$INDEX" }',
         ) as $index => $rule) {
+
             $this->rules[$index] = strtr($rule, array('$INDEX' => $index));
         }
     }
@@ -158,6 +162,9 @@ class PolicyRuleTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse($this->getRule(14)->isApplicableTo($this->getRequest('Manager', 'R', 'A')));
         $this->assertTrue($this->getRule(14)->isApplicableTo($this->getRequest('Guest', 'R', 'A')));
+
+        $this->assertFalse($this->getRule(15)->isApplicableTo($this->getRequest('Guest', 'R', 'A')));
+        $this->assertTrue($this->getRule(16)->isApplicableTo($this->getRequest('dude', 'R', 'A')));
     }
 
     /**

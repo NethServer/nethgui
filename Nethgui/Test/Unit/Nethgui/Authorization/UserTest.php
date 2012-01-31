@@ -199,10 +199,10 @@ class UserTest extends \PHPUnit_Framework_TestCase
 
         $phpwrapper->expects($this->once())
             ->method('exec')
-            ->with($this->stringStartsWith('/usr/sbin/lid'), $this->anything(), $this->anything())
+            ->with($this->stringStartsWith('/usr/bin/id'), $this->anything(), $this->anything())
             ->will($this->returnCallback(function($cmd, &$output, &$exitCode) {
                         $exitCode = 0;
-                        $output = " g1\n g2\n g3\n";
+                        $output = array('g1 g2 g3');
                     }));
 
         $object = new \Nethgui\Authorization\User($phpwrapper, $this->log);
@@ -231,7 +231,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
             ->withAnyParameters()
             ->will($this->returnCallback(function($cmd, &$output, &$exitCode) {
                         $exitCode = 1;
-                        $output = 'error';
+                        $output = array('error');
                     }));
 
         $log = $this->getMock('Nethgui\Log\Nullog', array('warning'));
@@ -244,7 +244,6 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $object = new \Nethgui\Authorization\User($phpwrapper, $log);
 
         $this->assertTrue($object->authenticate('user', 'pass'));
-
         $this->assertEquals(array(), $object->getCredential('groups'));
         
     }

@@ -43,7 +43,7 @@ class JsonPolicyDecisionPoint implements PolicyDecisionPointInterface, \Nethgui\
 
     /**
      *
-     * @var ArrayObject
+     * @var \ArrayObject
      */
     private $rules;
 
@@ -55,20 +55,41 @@ class JsonPolicyDecisionPoint implements PolicyDecisionPointInterface, \Nethgui\
 
     public function __construct($fileNameResolver, \Nethgui\Utility\PhpWrapper $php = NULL)
     {
+        $this->rules = new \ArrayObject();
         $this->fileNameResolver = $fileNameResolver;
         $this->php = is_null($php) ? new \Nethgui\Utility\PhpWrapper() : $php;
     }
 
     /**
      *
-     * @param type $policyName
+     * @param string $policyName
      * @return JsonPolicyDecisionPoint
      */
-    private function loadPolicy($policyName)
+    public function loadPolicy($policyName)
     {
-        $policyFile = call_user_func($this->fileNameResolver, $policyName);
+        $policyFileSpec = call_user_func($this->fileNameResolver, $policyName);
 
-        $rawRules = json_decode($this->php->file_get_contents($policyFile));
+        if (strpos($policyFileSpec, '*') === FALSE) {
+            $policyFiles = array($policyFileSpec);
+        } else {
+            $policyFiles = $this->php->glob($policyFileSpec);
+            if ($policyFiles === FALSE) {
+                $this->getLog()->warning(sprintf('%s: invalid policy file specification `%s`', __CLASS__, $policyFileSpec));
+                $policyFiles = array();
+            }
+        }
+        
+        foreach ($policyFiles as $policyFile) {
+            $data = $this->php->file_get_contents($policyFile);
+            $this->loadJsonString($policyName, $data);
+        }
+
+        return $this;
+    }
+
+    private function loadJsonString($policyName, $data)
+    {
+        $rawRules = json_decode($data);
 
         if ($rawRules === NULL) {
             $jsonErrorCode = json_last_error();
@@ -79,7 +100,6 @@ class JsonPolicyDecisionPoint implements PolicyDecisionPointInterface, \Nethgui\
         if ( ! is_array($rawRules)) {
             throw new \UnexpectedValueException(sprintf("%s: invalid policy file `%s`.", __CLASS__, $policyName), 1327572841);
         }
-
 
         foreach ($rawRules as $rawRule) {
             $ruleObject = PolicyRule::createFromObject($rawRule);
@@ -101,24 +121,19 @@ class JsonPolicyDecisionPoint implements PolicyDecisionPointInterface, \Nethgui\
                 return - $a->compare($b);
             });
 
-        //die(print_r($this->rules, 1));
-
         return $this;
     }
 
     public function authorizeSync($request, &$message)
     {
-        // Lazy policy loading:
-        if ( ! isset($this->rules)) {
-            $this->rules = new \ArrayObject();
-            $this->loadPolicy('Nethgui\Authorization\BasicPolicy.json');
+        if ($this->rules->count() === 0) {
+            $message = 'No rules defined, no restrictions applied.';
+            return 0;
         }
 
         // Exit on the first applicable result:
         foreach ($this->rules as $rule) {
             if ($rule instanceof PolicyRule && $rule->isApplicableTo($request)) {
-//                $logMessage = sprintf('%s `%s` access on `%s` to `%s` [rule#%d: %s].', $rule->isAllow() ? 'Allowed' : 'Denied', $this->asString($action), $this->asString($resource), $this->asString($subject), $rule->getIdentifier(), $rule->getDescription());
-//                $this->getLog()->debug(sprintf('%s: %s', __CLASS__, $logMessage));
                 if ($rule->isAllow()) {
                     $message = '';
                     return 0;

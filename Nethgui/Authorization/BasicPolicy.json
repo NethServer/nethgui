@@ -6,7 +6,6 @@
         "Subject": "*",
         "Action": "*",
         "Resource": "*",
-        "Obligation": ["AUTHORIZE"],
 
         "Description":
             "Deny access to everyone on everything"
@@ -17,8 +16,8 @@
         "Final": true,
         "Effect": "ALLOW",
         "Subject": "*",
-        "Action": "!WRITE",
-        "Resource": "Nethgui\\Module\\* || Nethgui\\System\\ConfigurationDatabase:configuration",
+        "Action": "NOT WRITE",
+        "Resource": "Nethgui\\Module\\* OR Nethgui\\System\\ConfigurationDatabase:configuration",
 
         "Description":
             "Everyone can instantiate the main system modules"
@@ -39,10 +38,9 @@
     {
         "Id": 1327570199,
         "Effect": "ALLOW",
-        "Subject": ".isAuthenticated",
+        "Subject": ".authenticated",
         "Action": "*",
         "Resource": [
-            "NethServer\\*",
             "Nethgui\\Module\\Help",
             "Nethgui\\Module\\Logout",
             "Nethgui\\Module\\Menu"
@@ -55,11 +53,37 @@
     {
         "Id": 1327570200,
         "Effect": "ALLOW",
-        "Subject": ".isAuthenticated",
+        "Subject": ".authenticated",
         "Action": ["READ", "WRITE"],
         "Resource": "Nethgui\\System\\ConfigurationDatabase:*",
 
         "Description":
             "Authenticated users are allowed to read and modify any database"
     }
+    ,
+        {
+        "Id": 123,
+        "Effect": "DENY",
+        "Subject": ".groups HAS ldapuserx OR .groups HAS testgroup3",
+        "Action": "*",
+        "Resource": "NethServer\\Module\\LocalNetwork*",
+
+        "Description":
+            "Rule 123"
+    }
+    ,
+        {
+        "Id": 122,
+        "Effect": "ALLOW",
+        "Subject": ".groups HAS testgroup2",
+        "Action": "*",
+        "Resource": "NethServer\\Module\\*",
+
+        "Description":
+            "Rule 122"
+    }
+    
+
+    
+   
 ]
