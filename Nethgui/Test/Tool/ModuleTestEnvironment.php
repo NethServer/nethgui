@@ -33,7 +33,7 @@ class ModuleTestEnvironment
         return $this->databases[$name];
     }
 
-    public function isSubmitted()
+    public function isMutation()
     {
         return ! is_null($this->request);
     }

@@ -61,7 +61,7 @@ interface RequestHandlerInterface
      * @api
      * @param RequestInterface $request
      */
-    public function bind(RequestInterface $request);
+    public function bind(\Nethgui\Controller\RequestInterface $request);
 
     /**
      * Validate object state
@@ -71,7 +71,7 @@ interface RequestHandlerInterface
      * @api
      * @return void
      */
-    public function validate(ValidationReportInterface $report);
+    public function validate(\Nethgui\Controller\ValidationReportInterface $report);
 
     /**
      * Behaviour implementation

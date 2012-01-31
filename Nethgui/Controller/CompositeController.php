@@ -179,10 +179,10 @@ class CompositeController extends \Nethgui\Module\Composite implements \Nethgui\
             $this->currentAction->prepareView($innerView);
 
             if ($view->getTargetFormat() === $view::TARGET_JSON
-                && ! $this->getRequest()->isSubmitted()) {
+                && ! $this->getRequest()->isMutation()) {
                 // JSON view need a show() command:
                 $view->getCommandList($this->currentAction->getIdentifier())->show();
-            } elseif ($this->getRequest()->isValidated() && $this->getRequest()->isSubmitted()) {
+            } elseif ($this->getRequest()->isValidated() && $this->getRequest()->isMutation()) {
                 $this->prepareViewOptimized($view, $innerView);
             }
         }

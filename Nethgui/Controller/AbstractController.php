@@ -228,7 +228,7 @@ abstract class AbstractController extends \Nethgui\Module\AbstractModule impleme
      */
     public function process()
     {
-        if ($this->getRequest()->isSubmitted()) {
+        if ($this->getRequest()->isMutation()) {
 
             $changes = $this->parameters->getModifiedKeys();
 

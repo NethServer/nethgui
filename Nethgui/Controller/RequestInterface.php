@@ -116,12 +116,12 @@ interface RequestInterface
     public function isEmpty();
 
     /**
-     * Indicates whether the request comes from a POST method or not.
+     * Indicates whether the request is a mutation request
      * 
      * @return bool
      * @api
      */
-    public function isSubmitted();
+    public function isMutation();
 
     /**
      * Tells if a request has been successfully validated

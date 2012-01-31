@@ -182,7 +182,7 @@ class ModuleTestCase extends \PHPUnit_Framework_TestCase
     {
         $data = $env->getRequest();
         $arguments = $env->getArguments();
-        $submitted = $env->isSubmitted();
+        $submitted = $env->isMutation();
         $user = $this->createUserMock($env);
         return new \Nethgui\Controller\Request($user, $data, $submitted, $arguments, array());
     }

@@ -65,7 +65,7 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
     public function process()
     {
         $user = $this->getRequest()->getUser();
-        if ( ! $user->isAuthenticated() && $this->getRequest()->isSubmitted()) {
+        if ( ! $user->isAuthenticated() && $this->getRequest()->isMutation()) {
             $user = new \Nethgui\Authorization\User($this->getPhpWrapper(), $this->getLog());
             $authenticated = $user->authenticate($this->parameters['username'], $this->parameters['password']);
             $user->setLanguageCode($this->parameters['language']);
@@ -88,13 +88,13 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
         ;
 
         if ( ! $user->isAuthenticated()
-            && $this->getRequest()->isSubmitted()
+            && $this->getRequest()->isMutation()
             && $this->getRequest()->isValidated()) {
             $view->getCommandList('/Notification')
                 ->httpHeader('HTTP/1.1 400 Invalid credentials supplied')
                 ->showMessage($view->translate('Invalid credentials'), \Nethgui\Module\Notification\AbstractNotification::NOTIFY_ERROR);
         } elseif ($user->isAuthenticated()
-            && ! $this->getRequest()->isSubmitted()) {
+            && ! $this->getRequest()->isMutation()) {
             $view->getCommandList()
                 ->httpHeader('HTTP/1.1 302 Found')
                 ->httpHeader('Location: ' . $view->getSiteUrl() . $view->getModuleUrl('/'));

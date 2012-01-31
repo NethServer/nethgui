@@ -84,7 +84,7 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
         return empty($this->postData) && empty($this->getData);
     }
 
-    public function isSubmitted()
+    public function isMutation()
     {
         return $this->getAttribute('submitted') === TRUE;
     }

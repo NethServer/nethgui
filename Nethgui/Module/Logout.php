@@ -44,7 +44,7 @@ class Logout extends \Nethgui\Controller\AbstractController implements \Nethgui\
     public function process()
     {
         $request = $this->getRequest();
-        if ($request->isSubmitted() && $this->parameters['action'] === 'logout') {
+        if ($request->isMutation() && $this->parameters['action'] === 'logout') {
             $this->session->logout();
         }
     }

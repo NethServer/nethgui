@@ -105,7 +105,7 @@ class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\Co
     private function authorize(\Nethgui\Controller\RequestInterface $request)
     {
         foreach ($this->getChildren() as $child) {
-            if ($request->isSubmitted()) {
+            if ($request->isMutation()) {
                 $auth = $this->pdp->authorize($request->getUser(), $child, self::ACTION_MUTATE);
             } else {
                 $auth = $this->pdp->authorize($request->getUser(), $child, self::ACTION_QUERY);

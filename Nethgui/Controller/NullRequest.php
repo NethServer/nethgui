@@ -90,7 +90,7 @@ class NullRequest implements \Nethgui\Controller\RequestInterface
         return TRUE;
     }
 
-    public function isSubmitted()
+    public function isMutation()
     {
         return FALSE;
     }

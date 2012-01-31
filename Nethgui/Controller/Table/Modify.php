@@ -104,7 +104,7 @@ class Modify extends AbstractAction
         $key = \Nethgui\array_head($request->getPath());
 
         if ($this->getIdentifier() === 'create') {
-            if ($request->isSubmitted()) {
+            if ($request->isMutation()) {
                 $key = $request->getParameter($this->key);
                 if (isset($this->tableAdapter[$key])) {
                     throw new \Nethgui\Exception\HttpException('Conflict', 409, 1325685280);
@@ -139,7 +139,7 @@ class Modify extends AbstractAction
 
         parent::bind($request);
 
-        if ( ! $request->isSubmitted()
+        if ( ! $request->isMutation()
             && $this->getIdentifier() === 'create') {
             foreach ($this->createDefaults as $paramName => $paramValue) {
                 $this->parameters[$paramName] = $paramValue;
@@ -149,7 +149,7 @@ class Modify extends AbstractAction
 
     public function process()
     {
-        if ( ! $this->getRequest()->isSubmitted()) {
+        if ( ! $this->getRequest()->isMutation()) {
             return;
         }
 
