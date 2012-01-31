@@ -314,7 +314,11 @@ class Framework
         $user = $request->getUser();
 
         if (array_head($request->getPath()) === FALSE) {
-            $this->redirect($this->defaultModuleIdentifier, $output);
+            if ($user->isAuthenticated()) {
+                $this->redirect($this->defaultModuleIdentifier, $output);
+            } else {
+                $this->redirect('Login', $output);
+            }
             return;
         }
 

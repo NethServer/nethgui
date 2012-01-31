@@ -134,8 +134,8 @@ interface RequestInterface
     /**
      * The User that has sent the request.
      *
-     * @return \Nethgui\Authorization\UserInterface
      * @api
+     * @return \Nethgui\Authorization\UserInterface
      */
     public function getUser();
 
