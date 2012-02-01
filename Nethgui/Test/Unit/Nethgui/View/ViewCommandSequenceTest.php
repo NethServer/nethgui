@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Test\Unit\Nethgui\Client;
+namespace Nethgui\Test\Unit\Nethgui\View;
 
 /**
  * @covers \Nethgui\View\ViewCommandSequence
@@ -31,7 +31,7 @@ class ViewCommandSequenceTest extends \PHPUnit_Framework_TestCase
         $this->object
             ->__call('method1', array(1, 2, 3))
             ->__call('method2', array(1, 'a', 'b'))
-            ->setReceiver($this->getMock('Nethgui\Core\CommandReceiverInterface'));
+            ->setReceiver($this->getMock('Nethgui\View\CommandReceiverInterface'));
         ;
 
         $this->object->execute();
@@ -39,15 +39,10 @@ class ViewCommandSequenceTest extends \PHPUnit_Framework_TestCase
 
     public function test__call2()
     {
-        $this->object->method3('M', 3)->method4('M', 5)->setReceiver($this->getMock('Nethgui\Core\CommandReceiverInterface'));
-
+        $this->object->method3('M', 3)->method4('M', 5)->setReceiver($this->getMock('Nethgui\View\CommandReceiverInterface'));
         $this->object->execute();
     }
 
-    public function testAddCommand()
-    {
-        $this->assertSame($this->object, $this->object->addCommand($this->getMock('Nethgui\Core\CommandInterface')));
-    }
 
     public function testExecuteEmpty()
     {
@@ -67,7 +62,7 @@ class ViewCommandSequenceTest extends \PHPUnit_Framework_TestCase
 
     public function testSetReceiver()
     {
-        $this->assertSame($this->object, $this->object->setReceiver($this->getMock('Nethgui\Core\CommandReceiverInterface')));
+        $this->assertSame($this->object, $this->object->setReceiver($this->getMock('Nethgui\View\CommandReceiverInterface')));
     }
 
     public function testGetOrigin()

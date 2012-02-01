@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Test\Unit\Nethgui\Client;
+namespace Nethgui\Test\Unit\Nethgui\View;
 
 /**
  * @covers \Nethgui\View\Command
@@ -46,7 +46,7 @@ class CommandTest extends \PHPUnit_Framework_TestCase
 
     private function createReceiverMock()
     {
-        $receiver = $this->getMockBuilder('Nethgui\Core\CommandReceiverInterface')
+        $receiver = $this->getMockBuilder('Nethgui\View\CommandReceiverInterface')
             ->setMethods(array('executeCommand'))
             ->getMock();
 

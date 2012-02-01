@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Test\Unit\Nethgui\Client;
+namespace Nethgui\Test\Unit\Nethgui\View;
 
 /**
  * @covers \Nethgui\View\View
@@ -22,7 +22,7 @@ class ViewGenericTest extends \PHPUnit_Framework_TestCase
             ->setConstructorArgs(array('Parent'))
             ->getMock();
                
-        $module = $this->getMockBuilder('Nethgui\Controller\Standard')
+        $module = $this->getMockBuilder('Nethgui\Controller\AbstractController')
             ->setConstructorArgs(array('TestingModule'))
             ->getMock();
 
@@ -70,7 +70,7 @@ class ViewGenericTest extends \PHPUnit_Framework_TestCase
 
     public function testSpawnView()
     {
-        $module = $this->getMockBuilder('Nethgui\Controller\Standard')
+        $module = $this->getMockBuilder('Nethgui\Controller\AbstractController')
             ->setConstructorArgs(array('InnerModule'))
             ->setMethods(array())
             ->getMock();

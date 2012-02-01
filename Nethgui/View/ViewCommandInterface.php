@@ -29,12 +29,13 @@ namespace Nethgui\View;
 interface ViewCommandInterface
 {
     /**
-     * A magic method that creates and appends a Command object to the command
+     * A magic method that creates and appends a Command object to a command
      * sequence.
      *
+     * @api
      * @param string $name
      * @param array $arguments
-     * @return \Nethgui\View\ViewCommandInterface
+     * @return \Nethgui\View\ViewCommandInterface The command sequence, with the registered method call appended
      */
     public function __call($name, $arguments);
 
