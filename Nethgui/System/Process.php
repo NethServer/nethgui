@@ -92,14 +92,6 @@ class Process implements ProcessInterface, \Nethgui\Utility\PhpConsumerInterface
         $this->arguments[] = $arg;
     }
 
-    public function __clone()
-    {
-        $this->state = self::STATE_NEW;
-        $this->output = array();
-        $this->exitStatus = FALSE;
-        $this->outputRed = FALSE;
-    }
-
     public function kill()
     {
         return FALSE;

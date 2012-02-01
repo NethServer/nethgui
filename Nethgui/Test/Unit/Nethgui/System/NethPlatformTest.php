@@ -20,33 +20,31 @@ class NethPlatformTest extends \PHPUnit_Framework_TestCase
     {
         $mockUser = $this->getMockBuilder('\Nethgui\Authorization\UserInterface')
             ->disableOriginalConstructor()
-            ->setMethods(array('getSession','isAuthenticated','setAuthenticated','setCredential', 'getCredential', 'getCredentials', 'hasCredential', 'getLanguageCode'))
+            ->setMethods(array('authenticate', 'getAuthorizationAttribute', 'asAuthorizationString','isAuthenticated', 'getCredential', 'getCredentials', 'hasCredential', 'getLanguageCode'))
             ->getMock();
 
         $mockSession = $this->getMockBuilder('\Nethgui\Utility\SessionInterface')
             ->disableOriginalConstructor()
-            ->setMethods(array('retrieve', 'hasElement', 'store', 'getSessionIdentifier'))
+            ->setMethods(array('retrieve', 'store', 'login', 'logout'))
             ->getMock();
-
-        $mockSession->expects($this->atLeastOnce())
-            ->method('hasElement')
-            ->with('Nethgui\System\NethPlatform')
-            ->will($this->returnValue(TRUE));
 
         $mockSession->expects($this->atLeastOnce())
             ->method('retrieve')
             ->with('Nethgui\System\NethPlatform')
             ->will($this->returnValue(new \ArrayObject()));
 
-        $mockUser->expects($this->atLeastOnce())
-            ->method('getSession')
-            ->will($this->returnValue($mockSession));
 
+        $pdpMock = $this->getMock('Nethgui\Authorization\PolicyDecisionPointInterface');
 
-        $this->globalsMock = $this->getMock('\Nethgui\Utility\PhpWrapper', array('exec'));
+        $pdpMock->expects($this->any())
+            ->method('authorize')
+            ->will($this->returnValue(\Nethgui\Authorization\LazyAccessControlResponse::createSuccessResponse()));
+
+        $this->globalsMock = $this->getMock('\Nethgui\Utility\PhpWrapper');
         $this->object = new \Nethgui\System\NethPlatform($mockUser);
+        $this->object->setSession($mockSession);
         $this->object->setPhpWrapper($this->globalsMock);
-        $this->object->setPolicyDecisionPoint(new \Nethgui\Authorization\PermissivePolicyDecisionPoint());
+        $this->object->setPolicyDecisionPoint($pdpMock);
     }
 
     public function exec_successCallback($command, &$output, &$retval)
@@ -63,11 +61,6 @@ class NethPlatformTest extends \PHPUnit_Framework_TestCase
         return array_slice($output, -1, 1);
     }
 
-    public function testPdp()
-    {
-        $db = $this->object->getDatabase('testdb');
-        $this->assertSame($this->object->getPolicyDecisionPoint(), $db->getPolicyDecisionPoint());
-    }
 
     /**
      * Asserts a database object interface has the same PDP of the fixture.

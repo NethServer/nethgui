@@ -1,5 +1,6 @@
 <?php
 namespace Nethgui\Test\Unit\Nethgui\System;
+
 class ProcessDetachedTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -50,21 +51,8 @@ class ProcessDetachedTest extends \PHPUnit_Framework_TestCase
 
     public function testExec1()
     {
-        $this->assertEquals(\Nethgui\System\ProcessInterface::STATE_RUNNING, $this->object->exec()->readExecutionState());
-    }
-
-    public function test__clone1()
-    {
-        $c = clone $this->object;
-        $this->assertEquals(\Nethgui\System\ProcessInterface::STATE_RUNNING, $c->exec()->readExecutionState());
-    }
-
-    public function test__clone2()
-    {
         $this->object->exec();
-        $c = clone $this->object;
-        $this->assertEquals(\Nethgui\System\ProcessInterface::STATE_RUNNING, $c->exec()->readExecutionState());
-        $this->assertFalse($this->object->exec());
+        $this->assertEquals(\Nethgui\System\ProcessInterface::STATE_RUNNING, $this->object->readExecutionState());
     }
 
     public function testGetExitStatus1()
@@ -105,6 +93,7 @@ class ProcessDetachedTest extends \PHPUnit_Framework_TestCase
 
         $this->assertRegExp('#^/tmp/.*$#', array_shift($data)); // errorFile
         $this->assertRegExp('#^/tmp/.*$#', array_shift($data)); // outputFile
+        $this->assertEquals(\Nethgui\System\ProcessInterface::STATE_NEW, array_shift($data));
         $this->assertNull(array_shift($data)); // processId
         $this->assertNull(array_shift($data)); // exitStatus
         $this->assertInstanceOf('\Nethgui\Utility\PhpWrapper', array_shift($data)); // phpWrapper
@@ -121,6 +110,7 @@ class ProcessDetachedTest extends \PHPUnit_Framework_TestCase
 
         $this->assertRegExp('#^/tmp/.*$#', array_shift($data)); // errorFile
         $this->assertRegExp('#^/tmp/.*$#', array_shift($data)); // outputFile
+        $this->assertEquals(\Nethgui\System\ProcessInterface::STATE_RUNNING, array_shift($data));
         $this->assertGreaterThan(0, array_shift($data)); // processId
         $this->assertNull(array_shift($data)); // exitStatus
         $this->assertInstanceOf('\Nethgui\Utility\PhpWrapper', array_shift($data)); // phpWrapper
@@ -135,13 +125,13 @@ class ProcessDetachedTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(\Nethgui\System\ProcessInterface::STATE_RUNNING, $this->object->readExecutionState());
         $this->simulation->timeStep();
 
-        // Force an internal object state update before serializing:
-        $this->assertEquals(\Nethgui\System\ProcessInterface::STATE_EXITED, $this->object->readExecutionState());
+        $restoredObject = unserialize(serialize($this->object));
 
-        $data = unserialize($this->object->serialize());
+        $data = unserialize($restoredObject->serialize());
 
         $this->assertRegExp('#^/tmp/.*$#', array_shift($data)); // errorFile
         $this->assertRegExp('#^/tmp/.*$#', array_shift($data)); // outputFile
+        $this->assertEquals(\Nethgui\System\ProcessInterface::STATE_EXITED, array_shift($data));
         $this->assertGreaterThan(0, array_shift($data)); // processId
         $this->assertEquals(0, array_shift($data)); // exitStatus
         $this->assertInstanceOf('\Nethgui\Utility\PhpWrapper', array_shift($data)); // phpWrapper
@@ -205,27 +195,29 @@ class GlobalFunctionWrapperTimedForDetachedCommand extends \Nethgui\Utility\PhpW
             if ($this->currentInstant > 0) {
                 $output[] = '';
                 $exitCode = 0;
-                return $output[0];
+                $exec = $output[0];
             } else {
                 $output[] = 'No such process';
                 $exitCode = 0;
-                return $output[1];
+                $exec = $output[1];
             }
-        } else if (preg_match('#^/usr/bin/nohup .*#', $command) > 0) {
-            if ($this->getInstantName() == 'START') {
+        } elseif (preg_match('#^/usr/bin/nohup .*#', $command) > 0) {
+            if ($this->getInstantName() === 'START') {
                 $output[] = '1234';
                 $exitCode = 0;
-                $this->timeStep();
-                return $output[0];
+                $exec = $output[0];
             }
+        } else {
+            throw new \InvalidArgumentException(sprintf('%s: Command `%s` not defined at instant "%s"', get_class($this), $command, $this->getInstantName()), 1322149476);
         }
 
-        throw new \InvalidArgumentException(sprintf('%s: Command `%s` not defined at instant "%s"', get_class($this), $command, $this->getInstantName()), 1322149476);
+        $this->timeStep();
+        return $exec;
     }
 
     public function is_readable($file)
     {
-        if ($this->getInstantName() == 'COMMAND_RUNNING') {
+        if (in_array($this->getInstantName(), array('COMMAND_RUNNING'))) {
             return TRUE;
         }
         return FALSE;

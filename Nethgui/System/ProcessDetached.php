@@ -58,7 +58,7 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Utility\PhpConsumerI
      *
      * @var boolean|integer
      */
-    private $exitStatus;
+    private $exitCode;
     private $outputPosition;
 
     /**
@@ -83,7 +83,12 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Utility\PhpConsumerI
     public function __construct($command, $arguments = array())
     {
         $this->setPhpWrapper(new \Nethgui\Utility\PhpWrapper());
-        $this->initialize();
+        $this->setExecutionState(self::STATE_NEW);
+        $dir = '/tmp';
+        $prefix = 'ng-x-';
+        $this->outputFile = tempnam($dir, $prefix);
+        $this->errorFile = tempnam($dir, $prefix);
+        $this->outputPosition = 0;
         $this->innerCommand = new Process($this->shellBackgroundInvocation($command), $arguments);
         $this->identifier = strtoupper(uniqid());
         $this->innerCommand->setPhpWrapper($this->phpWrapper);
@@ -92,21 +97,27 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Utility\PhpConsumerI
     public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
     {
         $this->phpWrapper = $object;
+        if ($this->innerCommand instanceof \Nethgui\Utility\PhpConsumerInterface) {
+            $this->innerCommand->setPhpWrapper($object);
+        }
+        return $this;
     }
 
-    private function initialize()
+    private function updateStatus()
     {
-        $this->setExecutionState(self::STATE_NEW);
-        $dir = '/tmp';
-        $prefix = 'ng-x-';
-        $this->outputFile = tempnam($dir, $prefix);
-        $this->errorFile = tempnam($dir, $prefix);
-        $this->outputPosition = 0;
-    }
+        if ( ! isset($this->processId)) {
+            return;
+        }
 
-    public function __clone()
-    {
-        $this->initialize();
+        $isRunning = $this->phpWrapper->is_readable(sprintf('/proc/%d', $this->processId));
+
+        if ($this->state === self::STATE_NEW && $isRunning) {
+            $this->setExecutionState(self::STATE_RUNNING);
+        } elseif ($this->state === self::STATE_RUNNING && ! $isRunning) {
+            $this->setExecutionState(self::STATE_EXITED);
+        } elseif ($this->state === self::STATE_EXITED && $isRunning) {
+            throw new \UnexpectedValueException(sprintf('%s: inconsistent process object state', __CLASS__), 1328109246);
+        }
     }
 
     private function shellBackgroundInvocation($commandTemplate)
@@ -121,8 +132,8 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Utility\PhpConsumerI
 
     public function exec()
     {
-        if ($this->readExecutionState() != self::STATE_NEW) {
-            throw new \UnexpectedValueException(sprintf('%s: cannot invoke exec() on a running or exited process', __CLASS__ ), 1326103905);
+        if ($this->readExecutionState() !== self::STATE_NEW) {
+            throw new \UnexpectedValueException(sprintf('%s: cannot invoke exec() on a running or exited process', __CLASS__), 1326103905);
         }
 
         $this->innerCommand->exec();
@@ -142,27 +153,14 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Utility\PhpConsumerI
         $this->times[$newState] = $this->phpWrapper->microtime(TRUE);
         $this->state = $newState;
         if ($newState === self::STATE_EXITED) {
-            $this->exitStatus = $this->processId > 0 ? 0 : 1;
+            $this->exitCode = $this->processId > 0 ? 0 : 1;
         }
     }
 
     public function readExecutionState()
     {
-        // An undetermined state or a running state are polled at each request
-        if (is_null($this->state) || $this->state === self::STATE_RUNNING) {
-            $this->pollProcessState();
-        }
-
+        $this->updateStatus();
         return $this->state;
-    }
-
-    private function pollProcessState()
-    {
-        if ($this->phpWrapper->is_readable(sprintf('/proc/%d', $this->processId))) {
-            $this->setExecutionState(self::STATE_RUNNING);
-        } else {
-            $this->setExecutionState(self::STATE_EXITED);
-        }
     }
 
     /**
@@ -174,8 +172,8 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Utility\PhpConsumerI
      */
     public function getExitCode()
     {
-        if ($this->readExecutionState() == self::STATE_EXITED) {
-            return $this->exitStatus;
+        if ($this->readExecutionState() === self::STATE_EXITED) {
+            return $this->exitCode;
         }
         return FALSE;
     }
@@ -192,7 +190,7 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Utility\PhpConsumerI
 
     public function kill()
     {
-        if ($this->readExecutionState() == self::STATE_RUNNING) {
+        if ($this->readExecutionState() === self::STATE_RUNNING) {
             $killExitCode = NULL;
             $killOutput = array();
             $this->phpWrapper->exec(sprintf('/bin/kill %d', $this->processId), $killOutput, $killExitCode);
@@ -211,8 +209,9 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Utility\PhpConsumerI
         $ostate = array(
             $this->errorFile,
             $this->outputFile,
+            $this->state,
             $this->processId,
-            $this->exitStatus,
+            $this->exitCode,
             $this->phpWrapper,
             $this->outputPosition,
             $this->times,
@@ -246,14 +245,17 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Utility\PhpConsumerI
         list(
             $this->errorFile,
             $this->outputFile,
+            $this->state,
             $this->processId,
-            $this->exitStatus,
+            $this->exitCode,
             $this->phpWrapper,
             $this->outputPosition,
             $this->times,
             $this->identifier,
             $this->disposed,
             ) = $ostate;
+
+        $this->updateStatus();
 
         return $this;
     }

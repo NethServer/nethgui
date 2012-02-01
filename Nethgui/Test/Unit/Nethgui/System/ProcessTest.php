@@ -1,5 +1,6 @@
 <?php
 namespace Nethgui\Test\Unit\Nethgui\System;
+
 class ProcessTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -35,35 +36,6 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(\Nethgui\System\ProcessInterface::STATE_EXITED, $this->object->exec()->readExecutionState());
     }
 
-    public function test__clone1()
-    {
-        $c = clone $this->object;
-        $this->assertEquals(\Nethgui\System\ProcessInterface::STATE_EXITED, $c->exec()->readExecutionState());
-    }
-
-    public function test__clone2()
-    {
-        $this->object->exec();
-        $c = clone $this->object;
-        $this->assertEquals(\Nethgui\System\ProcessInterface::STATE_EXITED, $c->exec()->readExecutionState());
-        $this->assertFalse($this->object->exec());
-    }
-
-    public function testAddArgument()
-    {
-        $this->object->exec();
-        $c = clone $this->object;
-        $c->addArgument('added');
-        $c->exec();
-
-        $expected = implode(' ', $this->arguments) . ' ' . implode(' ', $this->arguments) . ' added';
-
-        $this->assertEquals($expected, $c->getOutput());
-    }
-
-    /**
-     * @todo Implement testGetExitStatus().
-     */
     public function testGetExitStatus()
     {
         $this->object->exec();

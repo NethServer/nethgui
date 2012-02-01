@@ -1,5 +1,6 @@
 <?php
 namespace Nethgui\Test\Unit\Nethgui\System;
+
 class ValidatorTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -16,10 +17,20 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->platform = $this->getMockBuilder('\Nethgui\System\PlatformInterface')
-            //->setMethods(array('getDateFormat'))
-            ->getMock();
-
+        $this->platform = $this->getMock('\Nethgui\System\PlatformInterface', array(
+            'getDateFormat',
+            'exec',
+            'getIdentityAdapter',
+            'getMapAdapter',
+            'getDatabase',
+            'getTableAdapter',
+            'signalEvent',
+            'createValidator',
+            'getDetachedProcess',
+            'getDetachedProcesses',
+            'runEvents',
+            ));
+        
         $this->platform
             ->expects($this->any())
             ->method('getDateFormat')
@@ -369,12 +380,24 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
     {
         $this->object->platform('test');
 
-        $processMockSuccess = $this->getMockBuilder('\Nethgui\System\ProcessInterface')
-            //->setMethods(array('getExitStatus', 'getOutput'))
-            ->getMock();
+        $processMockSuccess = $this->getMock('\Nethgui\System\ProcessInterface', array(
+            'getOutput',
+            'getOutputArray',
+            'readOutput',
+            'getExitCode',
+            'addArgument',
+            'exec',
+            'kill',
+            'setIdentifier',
+            'getIdentifier',
+            'readExecutionState',
+            'getTimes',
+            'isDisposed',
+            'dispose')
+        );
 
         $processMockSuccess->expects($this->any())
-            ->method('getExitStatus')
+            ->method('getExitCode')
             ->will($this->returnValue(0));
 
         $processMockSuccess->expects($this->any())

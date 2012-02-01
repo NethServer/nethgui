@@ -60,29 +60,4 @@ interface SessionInterface
      * @return SessionInterface
      */
     public function logout();
-
-//    /**
-//     * Check if an object has been stored with the given key
-//     *
-//     * @param string $key
-//     * @return boolean
-//     */
-//    public function offsetExists($key);
-//    /**
-//     * @return string The unique session indentifier
-//     */
-//    public function getSessionIdentifier();
-//
-//    /**
-//     * @return bool TRUE if the session has started
-//     */
-//    public function isStarted();
-//
-//    /**
-//     * Start the session, restoring the persistent state and/or setting the
-//     * session cookie.
-//     *
-//     * @return SessionInterface
-//     */
-//    public function start();
 }
