@@ -2,6 +2,10 @@
 
 namespace Nethgui\Test\Unit\Nethgui\System;
 
+/**
+ *
+ * @covers \Nethgui\System\ConfigurationDatabase
+ */
 class ConfigurationDatabaseTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -24,7 +28,7 @@ class ConfigurationDatabaseTest extends \PHPUnit_Framework_TestCase
         $this->globalsMock = $this->getMock('\Nethgui\Utility\PhpWrapper', array('exec'));
         $this->object = new \Nethgui\System\ConfigurationDatabase('MOCKDB', $this->getMock('\Nethgui\Authorization\UserInterface'));
         $this->object->setPhpWrapper($this->globalsMock);
-        $this->object->setPolicyDecisionPoint(new \Nethgui\Authorization\PermissivePolicyDecisionPoint());
+        $this->object->setPolicyDecisionPoint(new \Nethgui\Test\Tool\PermissivePolicyDecisionPoint());
     }
 
     public function testGetAll1()

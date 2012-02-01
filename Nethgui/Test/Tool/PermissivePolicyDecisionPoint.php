@@ -1,5 +1,5 @@
 <?php
-namespace Nethgui\Authorization;
+namespace Nethgui\Test\Tool;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -21,12 +21,14 @@ namespace Nethgui\Authorization;
  */
 
 /**
- * A PDP implementation that returns only affermative responses.
+ * A PDP implementation that returns only affermative responses. For testing
+ * purposes
  *
+ * @codeCoverageIgnore
  * @since 1.0
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class PermissivePolicyDecisionPoint implements PolicyDecisionPointInterface, AccessControlResponseInterface
+class PermissivePolicyDecisionPoint implements \Nethgui\Authorization\PolicyDecisionPointInterface, \Nethgui\Authorization\AccessControlResponseInterface
 {
 
     public function authorize($subject, $resource, $action)
