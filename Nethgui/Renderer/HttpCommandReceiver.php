@@ -75,12 +75,12 @@ class HttpCommandReceiver extends \Nethgui\View\AbstractReceiverChain
         parent::executeCommand($origin, $selector, $name, $arguments);
     }
 
-    protected function httpHeader(\Nethgui\View\ViewInterface $origin, $selector, $header)
+    public function httpHeader(\Nethgui\View\ViewInterface $origin, $selector, $header)
     {
         $this->headers[] = $header;
     }
 
-    protected function show(\Nethgui\View\ViewInterface $origin, $selector)
+    public function show(\Nethgui\View\ViewInterface $origin, $selector)
     {
         if ($origin->getTargetFormat() !== $origin::TARGET_XHTML) {
             return;
@@ -88,7 +88,7 @@ class HttpCommandReceiver extends \Nethgui\View\AbstractReceiverChain
         $this->httpRedirection($origin, 302, $origin->getModuleUrl($selector));
     }
 
-    protected function sendQuery(\Nethgui\View\ViewInterface $origin, $selector, $location)
+    public function sendQuery(\Nethgui\View\ViewInterface $origin, $selector, $location)
     {
         if ($origin->getTargetFormat() !== $origin::TARGET_XHTML) {
             return;
@@ -96,7 +96,7 @@ class HttpCommandReceiver extends \Nethgui\View\AbstractReceiverChain
         $this->httpRedirection($origin, 302, $location);
     }
 
-    protected function reloadData(\Nethgui\View\ViewInterface $origin, $selector, $msec)
+    public function reloadData(\Nethgui\View\ViewInterface $origin, $selector, $msec)
     {
         if ($origin->getTargetFormat() !== $origin::TARGET_XHTML) {
             return;

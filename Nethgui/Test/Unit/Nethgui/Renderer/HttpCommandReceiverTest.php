@@ -31,9 +31,9 @@ class HttpCommandReceiverTest extends \PHPUnit_Framework_TestCase
             ->method('getParent')
             ->will($this->returnValue(NULL));
 
-        $view = new \Nethgui\View\View(0, $moduleMock, $this->getMock('\Nethgui\Language\Translator', array(), array(), '', FALSE), array('http://localhost:8080', '/my', 'test.php'));
+        $view = new \Nethgui\View\View(0, $moduleMock, $this->getMock('Nethgui\View\Translator', array(), array(), '', FALSE), array('http://localhost:8080', '/my', 'test.php'));
 
-        $delegatedCommandReceiver = $this->getMockBuilder('\Nethgui\Core\CommandReceiverInterface')
+        $delegatedCommandReceiver = $this->getMockBuilder('\Nethgui\View\CommandReceiverInterface')
             ->setMethods(array('executeCommand'))
             ->getMock();
 
@@ -41,32 +41,41 @@ class HttpCommandReceiverTest extends \PHPUnit_Framework_TestCase
         $this->urlPrefix = 'http://localhost:8080/my/test.php';
     }
 
-    public function testCancel()
+    public function testShow()
     {
-        $this->object->setPhpWrapper($this->getGlobalMock($this->urlPrefix));
-        $this->object->cancel();
+        $this->markTestIncomplete();
     }
 
-    public function testActivateAction()
+    public function testHttpHeader()
     {
-        $url = '/OtherModule/a/b#c';
-        $this->object->setPhpWrapper($this->getGlobalMock($this->urlPrefix . $url));
-        $this->object->activateAction('../OtherModule/a/b#c');
+        $this->markTestIncomplete();
     }
 
-    public function testEnable()
+    public function testGetHttpHeaders()
     {
-        $url = '/ModuleId';
-        $this->object->setPhpWrapper($this->getGlobalMock($this->urlPrefix . $url));
-        $this->object->enable();
+        $this->markTestIncomplete();
     }
 
-    public function testRedirect()
+    public function testHasRefresh()
     {
-        $url = 'http://www.example.com';
-        $this->object->setPhpWrapper($this->getGlobalMock($url));
-        $this->object->redirect($url);
+        $this->markTestIncomplete();
     }
+
+    public function testHasLocation()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function testReloadData()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function testSendQuery()
+    {
+        $this->markTestIncomplete();
+    }
+
 
     private function getGlobalMock($url)
     {

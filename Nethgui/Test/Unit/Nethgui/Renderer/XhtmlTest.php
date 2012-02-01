@@ -31,7 +31,7 @@ class XhtmlTest extends \PHPUnit_Framework_TestCase
             ->method('getModule')
             ->will($this->returnValue($moduleMock));
 
-       $delegatedCommandReceiver = $this->getMockBuilder('\Nethgui\Core\CommandReceiverInterface')
+       $delegatedCommandReceiver = $this->getMockBuilder('\Nethgui\View\CommandReceiverInterface')
             ->setMethods(array('executeCommand'))
             ->getMock();
 
@@ -204,7 +204,7 @@ class XhtmlTest extends \PHPUnit_Framework_TestCase
 
     public function testGetCommandList()
     {
-        $type = '\Nethgui\Core\CommandInterface';
+        $type = '\Nethgui\View\ViewCommandInterface';
         $o = $this->object->getCommandList();
         $this->assertInstanceOf($type, $o);
     }
