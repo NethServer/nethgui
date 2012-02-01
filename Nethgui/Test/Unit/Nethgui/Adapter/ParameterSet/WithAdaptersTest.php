@@ -99,5 +99,71 @@ class WithAdaptersTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(TRUE, $this->object->save());
     }
 
+    public function testGetKeys()
+    {
+        $this->assertEquals(array('arrayAdapter', 'scalarAdapter', 'inner', 'pi'), $this->object->getKeys());
+    }
+
+    public function testGetKeys1()
+    {
+        $this->object['pi'] = 6.28;
+        $this->assertEquals(array(), $this->object->getModifiedKeys());
+    }
+
+    public function testGetKeys2()
+    {
+        $mockModifiable = $this->getMock('Nethgui\Adapter\ModifiableInterface');
+
+        $mockModifiable->expects($this->once())
+            ->method('isModified')
+            ->will($this->returnValue('TRUE'));
+
+        $this->object['modifiable'] = $mockModifiable;
+
+        $this->assertEquals(array('modifiable'), $this->object->getModifiedKeys());
+    }
+
+    public function testGetAdapter()
+    {
+        $this->assertNull($this->object->getAdapter('pi'));
+        $this->assertInstanceOf('Nethgui\Adapter\AdapterInterface', $this->object->getAdapter('scalarAdapter'));
+    }
+
+    public function testOffsetUnset()
+    {
+        $this->object->offsetUnset('scalarAdapter');
+        $this->assertFalse($this->object->offsetExists('scalarAdapter'));
+    }
+
+    public function testIsModified()
+    {
+        $this->object['pi'] = 6.28;
+
+        $this->assertFalse($this->object->isModified());
+
+        $mockModifiable = $this->getMock('Nethgui\Adapter\ModifiableInterface');
+
+        $mockModifiable->expects($this->once())
+            ->method('isModified')
+            ->will($this->returnValue('TRUE'));
+
+        $this->object['modifiable'] = $mockModifiable;
+
+        $this->assertTrue($this->object->isModified());
+    }
+
+    public function testIteratorAndArrayInterface()
+    {
+        $object = new \Nethgui\Adapter\ParameterSet();
+
+        $object['a'] = 1;
+        $object['b'] = 2;
+        $object['c'] = array();
+
+        $this->assertEquals(array('a' => 1, 'b' => 2, 'c' => array()), iterator_to_array($object));
+
+        $this->assertEquals(array('a' => 1, 'b' => 2, 'c' => array()), $object->getArrayCopy());
+    }
+
 }
 

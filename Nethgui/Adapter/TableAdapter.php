@@ -126,7 +126,7 @@ class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
     public function set($value)
     {
         if ( ! is_array($value) && ! $value instanceof \Traversable) {
-            throw new \InvalidArgumentException(sprintf('%s: Value must be an array!', get_class($this)), 1322149788);
+            throw new \InvalidArgumentException(sprintf('%s: Value must be an array!', __CLASS__), 1322149788);
         }
 
         if ( ! isset($this->data)) {
@@ -198,7 +198,7 @@ class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
         }
 
         if ( ! is_array($value) && ! $value instanceof \Traversable) {
-            throw new \InvalidArgumentException(sprintf('%s: Value must be an array!', get_class($this)), 1322149789);
+            throw new \InvalidArgumentException(sprintf('%s: Value must be an array!', __CLASS__), 1322149789);
         }
 
         if (isset($this[$offset])) {

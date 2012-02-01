@@ -11,19 +11,19 @@ class TabularValueAdapterTest extends \PHPUnit_Framework_TestCase
      * @var \Nethgui\Adapter\TabularValueAdapter
      */
     protected $object;
+
     /**
      *
      * @var \Nethgui\Serializer\SerializerInterface
      */
     private $serializer;
 
-
     protected function setUp()
     {
         $this->serializer = $this->getMockBuilder('\Nethgui\Serializer\KeySerializer')
             ->disableOriginalConstructor()
             ->getMock();
-               
+
         $this->serializer->expects($this->any())->method('read')
             ->will($this->returnValue('1A/1B/1C,2A/2B/2C,3A/3B/3C'));
 
@@ -51,9 +51,7 @@ class TabularValueAdapterTest extends \PHPUnit_Framework_TestCase
             '3A' => array('3B', '3C'),
         );
 
-        
-
-        foreach ($this->object as $key => $row) {
+        foreach ($this->object->get() as $key => $row) {
             $this->assertEquals($row, $compareMatrix[$key]);
         }
     }
@@ -112,20 +110,20 @@ class TabularValueAdapterTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testOffsetExists()
-    {           
+    {
         $this->assertTrue($this->object->offsetExists('1A'));
         $this->assertTrue($this->object->offsetExists('2A'));
         $this->assertTrue($this->object->offsetExists('3A'));
         $this->assertFalse($this->object->offsetExists('XX'));
         $this->assertFalse($this->object->offsetExists(-1));
-        $this->assertFalse($this->object->offsetExists(''));        
+        $this->assertFalse($this->object->offsetExists(''));
     }
 
     public function testOffsetGet()
     {
-       $this->assertTrue(is_array($this->object->offsetGet('1A')));
-       $this->assertTrue(is_array($this->object->offsetGet('2A')));
-       $this->assertTrue(is_array($this->object->offsetGet('3A')));      
+        $this->assertTrue(is_array($this->object->offsetGet('1A')));
+        $this->assertTrue(is_array($this->object->offsetGet('2A')));
+        $this->assertTrue(is_array($this->object->offsetGet('3A')));
     }
 
     public function testOffsetSet()
@@ -140,6 +138,37 @@ class TabularValueAdapterTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(2, $this->object->count());
         $this->assertFalse($this->object->offsetExists('1A'));
     }
+
+    public function testGet2()
+    {
+        $value = $this->object->get();
+        $this->assertInstanceOf('ArrayAccess', $value);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testSetError1()
+    {
+        $this->object->set('hi');
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testSetError2()
+    {
+        $this->object->set(array(array(1,2,3), 'hi'));
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testOffsetSetError1()
+    {
+        $this->object->offsetSet('4', 'hi');
+    }
+
 
 }
 

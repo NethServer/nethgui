@@ -11,6 +11,7 @@ class ArrayAdapterTest extends \PHPUnit_Framework_TestCase
      * @var \Nethgui\Adapter\ArrayAdapter
      */
     protected $fixture;
+
     /**
      *
      * @var \Nethgui\Serializer\SerializerInterface
@@ -20,8 +21,8 @@ class ArrayAdapterTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->serializer = $this->getMockBuilder('\Nethgui\Serializer\KeySerializer')
-                ->disableOriginalConstructor()
-                ->getMock();
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $this->fixture = new \Nethgui\Adapter\ArrayAdapter(',', $this->serializer);
     }
@@ -40,9 +41,6 @@ class ArrayAdapterTest extends \PHPUnit_Framework_TestCase
         return $this->fixture;
     }
 
-    /**
-     *
-     */
     public function testGetNull()
     {
         $this->serializer->expects($this->once())
@@ -68,6 +66,11 @@ class ArrayAdapterTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('B', $this->fixture[1]);
         $this->assertEquals('C', $this->fixture[2]);
         $this->assertTrue($this->fixture->isModified());
+
+        $this->fixture->set(array('D', 'E', 'F'));
+        $this->assertEquals('D', $this->fixture[0]);
+        $this->assertEquals('E', $this->fixture[1]);
+        $this->assertEquals('F', $this->fixture[2]);
     }
 
     public function testSetNull()

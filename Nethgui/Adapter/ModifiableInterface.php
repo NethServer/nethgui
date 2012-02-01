@@ -23,6 +23,7 @@ namespace Nethgui\Adapter;
 /**
  * Report and persist the state of an object
  *
+ * @api
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
@@ -32,6 +33,7 @@ interface ModifiableInterface
     /**
      * Report if the object state has been changed from the last save()
      *
+     * @api
      * @return bool;
      */
     public function isModified();

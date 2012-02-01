@@ -25,6 +25,9 @@ namespace Nethgui\Adapter;
  * Array adapter maps a PHP array-like interface to a key or prop value
  * where values are separated by a separator character.
  *
+ * @api
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
  */
 class ArrayAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate, \Countable
 {

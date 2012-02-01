@@ -11,6 +11,7 @@ class MultipleAdapterTest extends \PHPUnit_Framework_TestCase
      * @var \Nethgui\Adapter\MultipleAdapter
      */
     protected $object;
+
     /**
      *
      * @var array
@@ -27,7 +28,6 @@ class MultipleAdapterTest extends \PHPUnit_Framework_TestCase
                 $this->getMockBuilder('\Nethgui\Serializer\PropSerializer')
                 ->disableOriginalConstructor()
                 ->getMock(),
-
                 $this->getMockBuilder('\Nethgui\Serializer\PropSerializer')
                 ->disableOriginalConstructor()
                 ->getMock(),
@@ -143,6 +143,33 @@ class MultipleAdapterTest extends \PHPUnit_Framework_TestCase
         $this->object->delete();
         $this->expectWrites('disabled', NULL);
         $this->assertTrue($this->object->save());
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testNoReader()
+    {
+        new \Nethgui\Adapter\MultipleAdapter(FALSE);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testInvalidSerializers()
+    {
+        new \Nethgui\Adapter\MultipleAdapter(array($this, 'readerCallback'),
+                array($this, 'writerCallback'),
+                array(1, 2, 3)
+        );
+    }
+
+    public function testNoWriter()
+    {
+         $object = new \Nethgui\Adapter\MultipleAdapter(function () {return '88';});
+         $this->assertFalse($object->save());
+         $object->set('99');
+         $this->assertTrue($object->save());
     }
 
 }

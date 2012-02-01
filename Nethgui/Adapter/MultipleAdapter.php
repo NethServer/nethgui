@@ -25,11 +25,14 @@ namespace Nethgui\Adapter;
  * a "reader" and a "writer" callback function.
  * 
  * The reader function is mandatory, the writer is optional. If you set to NULL the writer
- * callback you get a read-only adapter, but save() still returns the number of changes.
+ * callback you get a read-only adapter, but save() still records the modified state.
  * 
- * If the adapter has an empty set of serializers the callback function will 
+ * NOTE: If the adapter has an empty set of serializers the reader function will
  * still be called with no arguments.
- *
+ * 
+ * @api
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
  */
 class MultipleAdapter implements AdapterInterface
 {
@@ -104,10 +107,7 @@ class MultipleAdapter implements AdapterInterface
 
         if (is_callable($this->writerCallback)) {
             $values = call_user_func($this->writerCallback, $this->value);
-
             $index = 0;
-            $changes = 0;
-
             if (is_array($values)) {
                 foreach ($values as $value) {
                     $this->innerAdapters[$index]->set($value);

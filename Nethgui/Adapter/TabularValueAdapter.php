@@ -24,11 +24,14 @@ namespace Nethgui\Adapter;
  * The TabularValueAdapter provide an array interface to access tabular data 
  * encoded into a value stored in a key or prop.
  * 
- * The encoding uses a separator string to split the logical rows and 
- * another separator string to separate logical columns.
+ * The encoding uses two distinct string separators to divide the logical rows and
+ * split each row into logical columns.
  * 
- * This is implemented applying a decorator pattern to ArrayAdapter
- *
+ * Note implementation applies Decorator Pattern to ArrayAdapter
+ * 
+ * @api
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
  */
 class TabularValueAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate, \Countable
 {
@@ -101,12 +104,12 @@ class TabularValueAdapter implements AdapterInterface, \ArrayAccess, \IteratorAg
         $this->modified = TRUE;
 
         if ( ! is_array($value) && ! $value instanceof \Traversable) {
-            throw new \InvalidArgumentException(sprintf('%s: Value must be an array!', get_class($this)), 1322149790);
+            throw new \InvalidArgumentException(sprintf('%s: Value must be an array!', __CLASS__), 1322149790);
         }
 
         foreach ($value as $key => $row) {
             if ( ! is_array($row)) {
-                throw new \InvalidArgumentException(sprintf('%s: Value must be an array of arrays!', get_class($this)), 1322149791);
+                throw new \InvalidArgumentException(sprintf('%s: Value must be an array of arrays!', __CLASS__), 1322149791);
             }
             $this[$key] = $row;
         }
@@ -172,7 +175,7 @@ class TabularValueAdapter implements AdapterInterface, \ArrayAccess, \IteratorAg
         }
 
         if ( ! is_array($value) && ! $value instanceof \Traversable) {
-            throw new \InvalidArgumentException(sprintf('%s: Value must be an array!', get_class($this)), 1322149888);
+            throw new \InvalidArgumentException(sprintf('%s: Value must be an array!', __CLASS__), 1322149888);
         }
 
         $this->modified = TRUE;

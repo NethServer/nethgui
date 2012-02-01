@@ -20,7 +20,7 @@ namespace Nethgui\Adapter;
  */
 
 /**
- * An object with a table adapter aggregated to it
+ * An object with an adapter aggregated to it
  *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0

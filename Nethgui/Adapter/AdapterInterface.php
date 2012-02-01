@@ -33,17 +33,20 @@ interface AdapterInterface extends ModifiableInterface
 {
 
     /**
+     * @api
      * @var mixed $value
      * @return void
      */
     public function set($value);
 
     /**
+     * @api
      * @return mixed
      */
     public function get();
 
     /**
+     * @api
      * @return void
      */
     public function delete();
