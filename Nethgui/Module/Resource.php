@@ -32,6 +32,7 @@ class Resource extends \Nethgui\Controller\AbstractController implements \Nethgu
     private $code;
     private $useList;
     private $fileName;
+    private $cachePath;
 
     public function __construct()
     {
@@ -78,7 +79,7 @@ class Resource extends \Nethgui\Controller\AbstractController implements \Nethgu
             $templateClosure = function(\Nethgui\Renderer\AbstractRenderer $renderer)
                 use ($ext, $thisModule, $fragments)
                 {
-                    $command = $renderer
+                    $renderer
                         ->getCommandList($ext)
                         ->setReceiver($thisModule)
                         ->execute()
@@ -143,7 +144,14 @@ class Resource extends \Nethgui\Controller\AbstractController implements \Nethgu
 
     protected function getCachePath($fileName = '')
     {
-        return __DIR__ . '/../Cache/' . $fileName;
+        if ( ! isset($this->cachePath)) {
+            $dirHash = sprintf('/nethgui-resource-cache-%s/', substr(md5($this->getPhpWrapper()->phpReadGlobalVariable('SCRIPT_FILENAME')), 0, 5));
+            $this->cachePath = $this->getPhpWrapper()->ini_get('session.save_path') . $dirHash;
+            if ( ! $this->getPhpWrapper()->file_exists($this->cachePath)) {
+                $this->getPhpWrapper()->mkdir($this->cachePath, 0755);
+            }
+        }
+        return $this->cachePath . $fileName;
     }
 
     protected function cacheWrite($fileName, $ext)
@@ -212,7 +220,7 @@ class Resource extends \Nethgui\Controller\AbstractController implements \Nethgu
         if ( ! isset($fileNames[$ext])) {
             $fileNames[$ext] = $this->calcFileName($ext);
 
-            if ($fileNames[$ext] !== FALSE && ! file_exists($fileNames[$ext])) {
+            if ($fileNames[$ext] !== FALSE && ! $this->getPhpWrapper()->file_exists($fileNames[$ext])) {
                 $this->cacheWrite($fileNames[$ext], $ext);
             }
         }
