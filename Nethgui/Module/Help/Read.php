@@ -30,11 +30,11 @@ class Read extends Common
 {
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
-    {
+    {        
+        $view->setTemplate(FALSE);
+        
         $module = $this->getTargetModule();
-
-        if (is_null($module)) {
-            $view->setTemplate(FALSE);
+        if (is_null($module)) {            
             return;
         }
 
