@@ -30,8 +30,8 @@ class TabsController extends \Nethgui\Controller\CompositeController
 
     public function renderIndex(\Nethgui\Renderer\Xhtml $view)
     {
-        $view->includeFile('jquery.nethgui.tabs.js', 'Nethgui');
-        $view->includeFile('jquery.nethgui.controller.js', 'Nethgui');
+        $view->includeFile('Nethgui/Js/jquery.nethgui.tabs.js');
+        $view->includeFile('Nethgui/Js/jquery.nethgui.controller.js');
 
         $tabs = $view->tabs()->setAttribute('receiver', '');
 

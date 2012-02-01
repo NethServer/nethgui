@@ -196,9 +196,9 @@ class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\Co
             ->useFile('js/jquery.dataTables.min.js')
             ->useFile('js/jquery.qtip.min.js')
             ->useFile(sprintf('js/jquery.ui.datepicker-%s.js', $decoratorView['lang']))
-            ->includeFile('jquery.nethgui.base.js')
-            ->includeFile('jquery.nethgui.loading.js')
-            ->includeFile('jquery.nethgui.helparea.js')
+            ->includeFile('Nethgui/Js/jquery.nethgui.base.js')
+            ->includeFile('Nethgui/Js/jquery.nethgui.loading.js')
+            ->includeFile('Nethgui/Js/jquery.nethgui.helparea.js')
         ;
 
 

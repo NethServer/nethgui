@@ -99,7 +99,7 @@ class Notification extends \Nethgui\Controller\AbstractController implements \Ne
 
     public function render(\Nethgui\Renderer\Xhtml $renderer)
     {
-        $renderer->includeFile('jquery.nethgui.notification.js', 'Nethgui');
+        $renderer->includeFile('Nethgui/Js/jquery.nethgui.notification.js');
 
         $panel = $renderer->panel()->setAttribute('name', 'Pane')->setAttribute('receiver', '');
 

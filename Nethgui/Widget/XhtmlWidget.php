@@ -293,7 +293,7 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
         if (NETHGUI_ENABLE_INCLUDE_WIDGET) {
             foreach ($this->getJsWidgetTypes() as $type) {
                 $typeParts = explode(':', $type);
-                $this->getRenderer()->includeFile(sprintf('jquery.nethgui.%s.js', $typeParts[1]), $typeParts[0]);
+                $this->getRenderer()->includeFile(sprintf('%s/Js/jquery.nethgui.%s.js', $typeParts[0], $typeParts[1]));
             }
         }
 

@@ -191,8 +191,8 @@ class Menu extends \Nethgui\Controller\AbstractController
 
     public function renderModuleMenu(\Nethgui\Renderer\Xhtml $view)
     {
-        $view->includeFile('jquery.nethgui.controller.js');
-        $view->includeFile('jquery.nethgui.navigation.js');
+        $view->includeFile('Nethgui/Js/jquery.nethgui.controller.js');
+        $view->includeFile('Nethgui/Js/jquery.nethgui.navigation.js');
 
         $rootList = $view->elementList()->setAttribute('wrap', '/');
         foreach ($view['categories'] as $category) {

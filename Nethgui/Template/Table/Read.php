@@ -1,6 +1,6 @@
 <?php
     $view
-        ->includeFile('jquery.nethgui.datatable.js', 'Nethgui')
+        ->includeFile('Nethgui/Js/jquery.nethgui.datatable.js')
         ->rejectFlag($view::INSET_FORM)
     ;
 

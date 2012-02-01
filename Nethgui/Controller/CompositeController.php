@@ -238,7 +238,7 @@ class CompositeController extends \Nethgui\Module\Composite implements \Nethgui\
 
     public function renderIndex(\Nethgui\Renderer\Xhtml $renderer)
     {
-        $renderer->includeFile('jquery.nethgui.controller.js', 'Nethgui');
+        $renderer->includeFile('Nethgui/Js/jquery.nethgui.controller.js');
 
         $container = $renderer->panel()->setAttribute('class', 'Controller');
 

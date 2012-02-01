@@ -100,13 +100,9 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
      * @param string $fileName
      * @return Xhtml
      */
-    public function includeFile($fileName, $namespace = NULL)
-    {
-        if ($namespace === NULL) {
-            $namespace = \Nethgui\array_head(explode('\\', get_class($this->view->getModule())));
-        }
-        $resolverFunc = $this->getTemplateResolver();
-        $filePath = call_user_func($resolverFunc, implode('\\', array($namespace, 'Resource', $fileName)));
+    public function includeFile($fileName)
+    {        
+        $filePath = call_user_func($this->getTemplateResolver(), $fileName);
         $ext = pathinfo($fileName, PATHINFO_EXTENSION);
         $ext = $ext ? $ext : 'default';
         $this->view->getCommandList('/Resource/' . $ext)->includeFile($filePath);
