@@ -38,7 +38,8 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
 
     /**
      * Propagates initialize() message to children.
-     * 
+     *
+     * @api
      * @see loadChildren()
      */
     public function initialize()
@@ -54,7 +55,8 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
     /**
      * Adds a child to Composite, initializing it, if current Composite is
      * initialized.
-     * 
+     *
+     * @api
      * @param \Nethgui\Module\ModuleInterface $childModule
      * @return Composite
      */
@@ -67,7 +69,7 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
         $this->children[$childModule->getIdentifier()] = $childModule;
 
         $childModule->setParent($this);
-        if ($this->getPlatform() !== NULL && $childModule instanceof \Nethgui\Controller\RequestHandlerInterface) {
+        if ($this->hasPlatform() && $childModule instanceof \Nethgui\System\PlatformConsumerInterface) {
             $childModule->setPlatform($this->getPlatform());
         }
 
@@ -80,6 +82,7 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
     /**
      * Get the parts of this Composite.
      *
+     * @api
      * @return array
      */
     public function getChildren()
@@ -90,20 +93,11 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
 
     public function setPlatform(\Nethgui\System\PlatformInterface $platform)
     {
-        $this->platform = $platform;
+        parent::setPlatform($platform);
         foreach ($this->getChildren() as $childModule) {
             $childModule->setPlatform($platform);
         }
         return $this;
-    }
-
-    /**
-     *
-     * @return \Nethgui\System\PlatformInterface
-     */
-    protected function getPlatform()
-    {
-        return $this->platform;
     }
 
     /**

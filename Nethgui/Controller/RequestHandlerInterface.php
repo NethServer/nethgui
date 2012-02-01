@@ -45,14 +45,7 @@ interface RequestHandlerInterface
      * Authorization required to send a query request
      */
     const ACTION_QUERY = 'QUERY';
-    
-    /**
-     * Sets the host configuration Model.
-     *
-     * @api
-     * @return \Nethgui\Controller\RequestHandlerInterface
-     */
-    public function setPlatform(\Nethgui\System\PlatformInterface $platform);
+   
 
     /**
      *

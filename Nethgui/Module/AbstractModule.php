@@ -26,7 +26,7 @@ namespace Nethgui\Module;
  * @since 1.0
  * @api
  */
-abstract class AbstractModule implements \Nethgui\Module\ModuleInterface, \Nethgui\View\ViewableInterface, \Nethgui\Log\LogConsumerInterface, \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Authorization\AuthorizationAttributesProviderInterface
+abstract class AbstractModule implements \Nethgui\Module\ModuleInterface, \Nethgui\View\ViewableInterface, \Nethgui\Log\LogConsumerInterface, \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Authorization\AuthorizationAttributesProviderInterface, \Nethgui\System\PlatformConsumerInterface
 {
 
     /**
@@ -79,6 +79,25 @@ abstract class AbstractModule implements \Nethgui\Module\ModuleInterface, \Nethg
         } else {
             $this->identifier = \Nethgui\array_end(explode('\\', get_class($this)));
         }
+    }
+
+    public function setPlatform(\Nethgui\System\PlatformInterface $platform)
+    {
+        $this->platform = $platform;
+        if ($platform instanceof \Nethgui\Log\LogConsumerInterface) {
+            $this->setLog($platform->getLog());
+        }
+        return $this;
+    }
+
+    public function getPlatform()
+    {
+        return $this->platform;
+    }
+
+    public function hasPlatform()
+    {
+        return $this->getPlatform() instanceof \Nethgui\System\PlatformInterface;
     }
 
     /**
@@ -170,6 +189,7 @@ abstract class AbstractModule implements \Nethgui\Module\ModuleInterface, \Nethg
     public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
     {
         $this->php = $object;
+        return $this;
     }
 
     /**

@@ -26,7 +26,7 @@ class DialogBoxTest extends \PHPUnit_Framework_TestCase
     
     public function testGetActions()
     {
-        $this->markTestIncomplete();
+        $this->assertEquals(array(), $this->object->getActions());
     }
 
     

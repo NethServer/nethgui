@@ -69,23 +69,6 @@ abstract class AbstractController extends \Nethgui\Module\AbstractModule impleme
         $this->request = NullRequest::getInstance();
     }
 
-    public function setPlatform(\Nethgui\System\PlatformInterface $platform)
-    {
-        $this->platform = $platform;
-        if ($platform instanceof \Nethgui\Log\LogConsumerInterface) {
-            $this->setLog($platform->getLog());
-        }
-        return $this;
-    }
-
-    /**
-     * @return \Nethgui\System\PlatformInterface
-     */
-    protected function getPlatform()
-    {
-        return $this->platform;
-    }
-
     /**
      * Declare a Module parameter.
      *
