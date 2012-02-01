@@ -39,7 +39,7 @@ class Framework
      * 
      * @var array
      */
-    private $namespaceMap = array();
+    private $namespaceMap;
 
     /**
      * The complete URL to the web-root without trailing slash
@@ -75,6 +75,8 @@ class Framework
 
     public function __construct()
     {
+        $this->namespaceMap = new \ArrayObject();
+
         spl_autoload_register(array($this, 'autoloader'));
         if (basename(__DIR__) !== __NAMESPACE__) {
             throw new \LogicException(sprintf('%s: `%s` is an invalid framework filesystem directory! Must be `%s`.', get_class($this), basename(__DIR__), __NAMESPACE__), 1322213425);
@@ -371,7 +373,7 @@ class Framework
         }
 
         $targetFormat = $request->getExtension();
-        $translator = new \Nethgui\View\Translator($user->getLanguageCode(), $this->getFileNameResolver(), array_keys($this->namespaceMap));
+        $translator = new \Nethgui\View\Translator($user->getLanguageCode(), $this->getFileNameResolver(), array_keys(iterator_to_array($this->namespaceMap)));
         $urlParts = array($this->siteUrl, $this->basePath, 'index.php');
         $rootView = new \Nethgui\View\View($targetFormat, $mainModule, $translator, $urlParts);
 

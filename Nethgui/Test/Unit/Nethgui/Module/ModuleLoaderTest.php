@@ -17,11 +17,11 @@ class ModuleLoaderTest extends \PHPUnit_Framework_TestCase
     {
         spl_autoload_register(array($this, 'autoloader'));
 
-        $namespaceMap = array(
+        $namespaceMap = new \ArrayObject(array(
             'Vendor00' => '/usr/local/share',
             'Vendor1B' => '/home/vendor1',
             'Vendor1A' => '/home/vendor1',
-        );
+        ));
 
         $gfw = $this->getMockBuilder('Nethgui\Utility\PhpWrapper')
             ->disableOriginalConstructor()
@@ -81,7 +81,7 @@ class ModuleLoaderTest extends \PHPUnit_Framework_TestCase
 
         $gfw->expects($this->any())->method('scandir')->will($this->returnValue(FALSE));
 
-        $object = new \Nethgui\Module\ModuleLoader(array('NonExists' => '/non-exists'));
+        $object = new \Nethgui\Module\ModuleLoader(new \ArrayObject(array('NonExists' => '/non-exists')));
         $object->setPhpWrapper($gfw);
 
         try {

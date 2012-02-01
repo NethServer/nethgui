@@ -23,6 +23,9 @@ namespace Nethgui\Module;
 class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Log\LogConsumerInterface
 {
 
+    /**
+     * @var \ArrayObject
+     */
     private $namespaceMap;
 
     /**
@@ -50,11 +53,11 @@ class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utili
 
     /**
      *
-     * @param array $namespaceMap
+     * @param \ArrayObject $namespaceMap
      */
-    public function __construct(&$namespaceMap)
+    public function __construct(\ArrayObject $namespaceMap)
     {
-        $this->namespaceMap = &$namespaceMap;
+        $this->namespaceMap = $namespaceMap;
         $this->instanceCache = new \ArrayObject();
         $this->phpWrapper = new \Nethgui\Utility\PhpWrapper();
         $this->cacheIsFilled = FALSE;
@@ -113,7 +116,7 @@ class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utili
             return $this->instanceCache[$moduleIdentifier];
         }
 
-        $namespaces = array_keys($this->namespaceMap);
+        $namespaces = array_keys(iterator_to_array($this->namespaceMap));
 
         $warnings = array();
 
