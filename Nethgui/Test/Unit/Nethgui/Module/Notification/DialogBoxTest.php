@@ -1,8 +1,8 @@
 <?php
-namespace Nethgui\Test\Unit\Nethgui\Core;
+namespace Nethgui\Test\Unit\Nethgui\Module\Notification;
 
 /**
- * @covers \Nethgui\Module\Notification\DialogBox
+ * @covers Nethgui\Module\Notification\DialogBox
  */
 class DialogBoxTest extends \PHPUnit_Framework_TestCase
 {
@@ -18,7 +18,7 @@ class DialogBoxTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $userMock = $this->getMockBuilder('Nethgui\Controller\Standard')
+        $userMock = $this->getMockBuilder('Nethgui\Controller\AbstractController')
             ->disableOriginalConstructor()
             ->getMock();
         $this->object = new \Nethgui\Module\Notification\DialogBox($userMock, 'message');

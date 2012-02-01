@@ -2,9 +2,9 @@
 namespace Nethgui\Test\Unit\Nethgui\Module;
 
 /**
- * @covers \Nethgui\Controller\Standard
+ * @covers Nethgui\Controller\AbstractController
  */
-class StandardTest extends \PHPUnit_Framework_TestCase
+class AbstractControllerTest extends \PHPUnit_Framework_TestCase
 {
 
     /**

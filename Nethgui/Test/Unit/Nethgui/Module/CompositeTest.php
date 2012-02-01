@@ -2,7 +2,7 @@
 namespace Nethgui\Test\Unit\Nethgui\Module;
 
 /**
- * @covers \Nethgui\Module\Composite
+ * @covers Nethgui\Module\Composite
  */
 class CompositeTest extends \PHPUnit_Framework_TestCase
 {
@@ -12,29 +12,20 @@ class CompositeTest extends \PHPUnit_Framework_TestCase
      */
     protected $object;
 
-    /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     */
     protected function setUp()
     {
+        $platform = $this->getMock('Nethgui\System\PlatformInterface');
+
         $this->object = new ConcreteCompositeModule1();
+        $this->object->setPlatform($platform);
     }
 
-    /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
-     */
-    protected function tearDown()
-    {
-        
-    }
-
+ 
     public function testAddChildInitialized()
     {
         $this->object->initialize();
 
-        $mockModule1 = $this->getMockBuilder('\Nethgui\Controller\Standard')
+        $mockModule1 = $this->getMockBuilder('\Nethgui\Controller\AbstractController')
             ->getMock();
 
         $mockModule1->expects($this->once())

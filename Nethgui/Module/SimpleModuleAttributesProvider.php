@@ -69,7 +69,6 @@ class SimpleModuleAttributesProvider implements \Nethgui\Module\ModuleAttributes
         return $o;
     }
 
-
     public function getCategory()
     {
         return $this->category;
