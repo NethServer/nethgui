@@ -42,7 +42,7 @@ class EmptyTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider offsetProvider
-     * @expectedException PHPUnit_Framework_Error_Notice
+     * @expectedException \OutOfBoundsException
      */
     public function testOffsetGet($offset)
     {

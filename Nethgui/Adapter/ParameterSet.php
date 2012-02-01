@@ -62,7 +62,7 @@ class ParameterSet implements \Nethgui\Adapter\AdapterAggregationInterface, \Arr
     public function offsetGet($offset)
     {
         if ( ! $this->offsetExists($offset)) {
-            throw new \RuntimeException(sprintf('%s: undefined parameter %s.', __CLASS__, var_export($offset, TRUE)), 1325669847);
+            throw new \OutOfBoundsException(sprintf('%s: undefined parameter %s.', __CLASS__, var_export($offset, TRUE)), 1325669847);
         }
 
         if ($this->data[$offset] instanceof \Nethgui\Adapter\AdapterInterface) {
