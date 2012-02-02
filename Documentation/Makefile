@@ -22,7 +22,7 @@ endif
 %.html: %.rst
 	${RST2HTML} $< $@
 
-.PHONY: clean all
+.PHONY: clean all sync
 
 all: ${HTMLFILES} ${PDEPEND_OUTPUT} 
 
@@ -39,6 +39,9 @@ Api/Nethgui.dot: Api/Nethgui.xmi XmiToDot.xsl
 
 Api/Nethgui.svg: Api/Nethgui.dot 
 	dot -Tsvg $< > Api/Nethgui.svg
+
+sync:
+	rsync -zar -e "ssh -p 2222 -c blowfish -l git"  -stats ${PWD} git@dev.nethesis.it:/var/www/html/nethgui
 
 clean:
 	rm -f ${HTMLFILES} ${PDEPEND_OUTPUT}
