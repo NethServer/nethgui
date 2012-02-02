@@ -21,7 +21,10 @@ namespace Nethgui\Log;
  */
 
 /**
- * Implement in any object that logs something
+ * Implementor produces some log messages
+ *
+ * NOTE: when implementing this interface remind that getLog() must return always
+ * a valid LogInterface object: instantiate Nullog as last resort.
  *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
@@ -30,13 +33,19 @@ namespace Nethgui\Log;
 interface LogConsumerInterface
 {
     /**
-     * @param LogInterface $log
-     * @return void
+     * Change the log attached to the interface implementor
+     *
+     * @api
+     * @param \Nethgui\Log\LogInterface $log
+     * @return \Nethgui\Log\LogConsumerInterface
      */
     public function setLog(\Nethgui\Log\LogInterface $log);
 
     /**
-     * @return LogInterface
+     * The log attached to the interface implementor
+     *
+     * @api
+     * @return \Nethgui\Log\LogInterface
      */
     public function getLog();
 }

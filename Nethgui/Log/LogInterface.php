@@ -47,11 +47,32 @@ interface LogInterface
      */
     public function getLevel();
 
+    /**
+     * @api
+     * @param \Exception $ex The exception to be printed
+     * @param boolean $stackTrace Whether to print the stack trace or not
+     * @return LogInterface
+     */
     public function exception(\Exception $ex, $stackTrace = FALSE);
 
+    /**
+     * @api
+     * @param string $message The message to be printed
+     * @return LogInterface
+     */
     public function notice($message);
 
+    /**
+     * @api
+     * @param string $message The message to be printed
+     * @return LogInterface
+     */
     public function error($message);
 
+    /**
+     * @api
+     * @param string $message The message to be printed
+     * @return LogInterface
+     */
     public function warning($message);
 }

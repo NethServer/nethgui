@@ -22,13 +22,16 @@ namespace Nethgui\Log;
 
 /**
  * A log that does not emit any message
+ * 
+ * @since 1.0
+ * @author Davide Principi <davide.principi@nethesis.it>
  */
 class Nullog extends AbstractLog
 {
 
-    public function message($level, $message)
+    protected function message($level, $message)
     {
-        // NOOP
+        return $this;
     }
 
 }

@@ -23,6 +23,8 @@ namespace Nethgui\Log;
 /**
  * Provides message formatting capabilities without specify the log message destination
  *
+ * @since 1.0
+ * @author Davide Principi <davide.principi@nethesis.it>
  */
 abstract class AbstractLog implements LogInterface, \Nethgui\Utility\PhpConsumerInterface
 {
@@ -32,9 +34,9 @@ abstract class AbstractLog implements LogInterface, \Nethgui\Utility\PhpConsumer
      *
      * @param string $level
      * @param string $message
-     * @return void
+     * @return AbstractLog
      */
-    abstract public function message($level, $message);
+    abstract protected function message($level, $message);
 
     /**
      * @var \Nethgui\Utility\PhpWrapper
@@ -66,11 +68,11 @@ abstract class AbstractLog implements LogInterface, \Nethgui\Utility\PhpConsumer
     public function exception(\Exception $ex, $stackTrace = FALSE)
     {
         if (($this->level & E_ERROR) === 0) {
-            return;
+            return $this;
         }
 
         $message = sprintf('%s : file %s; line %d', $ex->getMessage(), $ex->getFile(), $ex->getLine());
-        $retval = $this->message(__FUNCTION__, $message);
+        $this->message(__FUNCTION__, $message);
 
         if ($stackTrace) {
             foreach (explode("\n", $ex->getTraceAsString()) as $line) {
@@ -78,34 +80,37 @@ abstract class AbstractLog implements LogInterface, \Nethgui\Utility\PhpConsumer
             }
         }
 
-        return $retval;
+        return $this;
     }
 
     public function notice($message)
     {
         if (($this->level & E_NOTICE) === 0) {
-            return;
+            return $this;
         }
 
-        return $this->message(__FUNCTION__, $message);
+        $this->message(__FUNCTION__, $message);
+        return $this;
     }
 
     public function error($message)
     {
         if (($this->level & E_ERROR) === 0) {
-            return;
+            return $this;
         }
 
-        return $this->message(__FUNCTION__, $message);
+        $this->message(__FUNCTION__, $message);
+        return $this;
     }
 
     public function warning($message)
     {
         if (($this->level & E_WARNING) === 0) {
-            return;
+            return $this;
         }
 
-        return $this->message(__FUNCTION__, $message);
+        $this->message(__FUNCTION__, $message);
+        return $this;
     }
 
     public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)

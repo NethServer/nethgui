@@ -22,10 +22,13 @@ namespace Nethgui\Log;
 
 /**
  * A log that sends message to the system log
+ *
+ * @since 1.0
+ * @author Davide Principi <davide.principi@nethesis.it>
  */
 class Syslog extends AbstractLog
 {
-    public function message($level, $message)
+    protected function message($level, $message)
     {
         $this->phpWrapper->error_log(sprintf('[%s] %s', strtoupper($level), $message));
         return $this;
