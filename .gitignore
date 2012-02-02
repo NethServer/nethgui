@@ -5,4 +5,5 @@ Documentation/*/*.html
 www-NethServer/Documentation
 Nethgui/Cache/*.js
 Nethgui/Cache/*.css
+nbproject/
 *~
