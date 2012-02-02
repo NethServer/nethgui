@@ -31,11 +31,11 @@ class PropSerializer implements SerializerInterface
 
     /**
      *
-     * @var \Nethgui\System\ConfigurationDatabase
+     * @var \Nethgui\System\EsmithDatabase
      */
     private $database;
 
-    public function __construct(\Nethgui\System\ConfigurationDatabase $database, $key, $prop)
+    public function __construct(\Nethgui\System\EsmithDatabase $database, $key, $prop)
     {
         $this->database = $database;
         $this->key = $key;

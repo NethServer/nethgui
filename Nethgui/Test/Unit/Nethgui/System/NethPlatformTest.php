@@ -67,7 +67,7 @@ class NethPlatformTest extends \PHPUnit_Framework_TestCase
     public function testGetDatabase()
     {
         $db = $this->object->getDatabase('testdb');
-        $this->assertInstanceOf('\Nethgui\System\ConfigurationDatabase', $db);
+        $this->assertInstanceOf('Nethgui\System\EsmithDatabase', $db);
     }
 
     public function testSignalEventSuccess()

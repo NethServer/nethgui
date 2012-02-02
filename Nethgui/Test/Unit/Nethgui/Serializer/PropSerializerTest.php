@@ -10,7 +10,7 @@ class PropSerializerTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->database = $this->getMockBuilder('\Nethgui\System\ConfigurationDatabase')
+        $this->database = $this->getMockBuilder('Nethgui\System\EsmithDatabase')
                 ->disableOriginalConstructor()
                 ->getMock();
 

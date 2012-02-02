@@ -88,12 +88,12 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
     /**
      *
      * @param string $database SME database configuration name
-     * @return ConfigurationDatabase
+     * @return EsmithDatabase
      */
     public function getDatabase($database)
     {
         if ( ! isset($this->databases[$database])) {
-            $object = new ConfigurationDatabase($database, $this->user);
+            $object = new EsmithDatabase($database, $this->user);
             $object->setPolicyDecisionPoint($this->policyDecisionPoint);
             $this->databases[$database] = $object;
         }
