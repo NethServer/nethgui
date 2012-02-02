@@ -21,21 +21,18 @@ namespace Nethgui\Authorization;
  */
 
 /**
- * AccessControlRequestInterface.
+ * Implementors encapsulate the authorization response,
+ * that can allow or deny the requested action.
  *
- * An AccessControlRequestInterface implementing object encapsulates the authorization
- * response that can be ``GRANTED`` or ``NOT GRANTED``.
- *
- * @author Davide Principi <davide.principi@nethesis.it>
- * @see AccessControlRequestInterface
  * @api
+ * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
 interface AccessControlResponseInterface
 {
 
     /**
-     * TRUE if the access is granted
+     * TRUE if the access is granted.
      *
      * @api
      * @return bool TRUE, if granted, FALSE otherwise.
@@ -43,7 +40,7 @@ interface AccessControlResponseInterface
     public function isAllowed();
 
     /**
-     * This is the dual of isGranted()
+     * This is the dual of isAllowed().
      *
      * @api
      * @see isGranted()
@@ -52,7 +49,7 @@ interface AccessControlResponseInterface
     public function isDenied();
 
     /**
-     * Response explanation
+     * Response explanation.
      *
      * @api
      * @return string
@@ -60,7 +57,7 @@ interface AccessControlResponseInterface
     public function getMessage();
 
     /**
-     * Response numeric code
+     * Response numeric code.
      *
      * @api
      * @return integer 0 if granted, positive otherwise
@@ -68,7 +65,7 @@ interface AccessControlResponseInterface
     public function getCode();
 
     /**
-     * Prepare an exception object with the response informations
+     * Prepare an exception object with the response informations.
      *
      * @api
      * @param integer $identifier The exception unique identifier

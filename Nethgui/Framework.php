@@ -277,8 +277,8 @@ class Framework
      * This is the framework "main()" function / entry point.
      *
      * @api
-     * @param string $currentModuleIdentifier
-     * @param array $arguments
+     * @param \Nethgui\Controller\RequestInterface $request
+     * @param array $arguments Optional - This array is filled with the output, instead of echo()ing it
      * @return integer
      */
     public function dispatch(\Nethgui\Controller\RequestInterface $request, &$output = NULL)
@@ -529,10 +529,10 @@ class Framework
     /**
      * Create a default Request object for dispatch()
      *
-     * @see disparch()
-     * @param integer $type - Not used
-     * @return Controller\RequestInterface
      * @api
+     * @see dispatch()
+     * @param integer $type - Not used
+     * @return \Nethgui\Controller\RequestInterface
      */
     public function createRequest($type = NULL)
     {

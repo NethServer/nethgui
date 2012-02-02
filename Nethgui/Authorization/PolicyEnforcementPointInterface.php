@@ -21,17 +21,22 @@ namespace Nethgui\Authorization;
  */
 
 /**
- * PolicyEnforcementPointInterface (PEP)
- *
- * Implementors authorize access to resources
- * depending on the responses of the Policy Decision Point (PDP)
+ * PolicyEnforcementPointInterface (PEP).
+ * 
+ * - Implementors authorize access to resources
+ *   depending on the responses of the Policy Decision Point (PDP).
+ * - Implementors will receive the PDP object through setPolicyDecisionPoint()
+ *   operation.
  *
  * @api
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
  * @see  \Nethgui\Authorization\PolicyDecisionPointInterface
  */
 interface PolicyEnforcementPointInterface
 {
     /**
+     * Interface implementor will receive the PDP object through this setter
      *
      * @api
      * @param PolicyDecisionPointInterface $pdp

@@ -21,7 +21,9 @@ namespace Nethgui\Authorization;
  */
 
 /**
- * UserInterface provides access to the login information of the current user.
+ * UserInterface implements the authentication procedure and
+ * provides access to authentication credentials of the user
+ * 
  *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
@@ -38,7 +40,7 @@ interface UserInterface extends AuthorizationAttributesProviderInterface
      * NOTE:
      * You can pass an arbitrary number of arguments to the
      * authentication procedure. The actual number of arguments depends on
-     * the implementation
+     * the implementation.
      *
      * @api
      * @see isAuthenticated()
@@ -55,6 +57,9 @@ interface UserInterface extends AuthorizationAttributesProviderInterface
     public function isAuthenticated();
 
     /**
+     * Authentication credentials are acquired during authentication and
+     * provide the basic informations for authorization decisions.
+     *
      * @api
      * @param string $credentialName
      * @return mixed
@@ -62,6 +67,8 @@ interface UserInterface extends AuthorizationAttributesProviderInterface
     public function getCredential($credentialName);
 
     /**
+     * Check whether $credentialName is present or not.
+     *
      * @api
      * @return boolean
      */
