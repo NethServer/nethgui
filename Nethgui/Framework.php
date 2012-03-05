@@ -75,7 +75,7 @@ class Framework
         $this->registerNamespace(__DIR__);
 
         $this->urlParts = $this->guessUrlParts();
-        
+
         $this->decoratorTemplate = 'Nethgui\Template\Main';
 
         $this->log = new \Nethgui\Log\Syslog(E_WARNING | E_ERROR);
@@ -139,32 +139,32 @@ class Framework
     private function guessUrlParts()
     {
         $urlParts = array();
-        
+
         $siteUrl = empty($_SERVER['HTTPS']) ? 'http://' : 'https://';
         $siteUrl .= isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : 'localhost';
         if (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] != '80') {
             $siteUrl .= ':' . $_SERVER['SERVER_PORT'];
         }
-        
-        $urlParts[] = $siteUrl;
-        
-        $parts = array_values(array_filter(explode('/', $_SERVER['SCRIPT_NAME'])));
-        $lastPart = $parts[max(0, count($parts) - 1)];
 
-        if ($lastPart === basename($_SERVER['SCRIPT_FILENAME'])) {
-            $controllerPath = array_pop($parts) . '/';
+        $urlParts[] = $siteUrl;
+
+        $basePath = dirname($_SERVER['SCRIPT_NAME']);
+
+        $urlParts[] = ($basePath === '/') ? '/' : ($basePath . '/');
+
+        if (isset($_SERVER['PATH_INFO'])) {
+            //echo 'PATH_INFO: ' . $_SERVER['PATH_INFO'] . "\n";
+            $requestPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+            $requestController = substr($requestPath, 0, strlen($requestPath) - strlen($_SERVER['PATH_INFO']));
+            if ($requestController === $_SERVER['SCRIPT_NAME']) {
+                $urlParts[] = basename($_SERVER['SCRIPT_NAME']) . '/';
+            }
         } else {
-            $controllerPath = '';            
+            $urlParts[] = basename($_SERVER['SCRIPT_NAME']) . '/';
         }
-        
-        $basePath = implode('/', $parts);        
-        
-        $urlParts[] = ($basePath === '') ? '/' : ('/' . $basePath . '/');
-        
-        if($controllerPath !== '') {
-            $urlParts[] = $controllerPath;
-        }
-        
+
+
+        //echo '<!-- ' . implode('    ', $urlParts) . "-->\n";
         return $urlParts;
     }
 
@@ -280,9 +280,12 @@ class Framework
      */
     public function dispatch(\Nethgui\Controller\RequestInterface $request, &$output = NULL)
     {
-        try {
+        try
+        {
             return $this->__dispatch($request, $output);
-        } catch (\Nethgui\Exception\AuthorizationException $ex) {
+        }
+        catch (\Nethgui\Exception\AuthorizationException $ex)
+        {
             $this->log->error(sprintf('%s: [%d] %s', __CLASS__, $ex->getCode(), $ex->getMessage()));
             throw new \Nethgui\Exception\HttpException('Forbidden', 403, 1327681977, $ex);
         }
@@ -295,17 +298,18 @@ class Framework
      */
     private function enforceAuthorization()
     {
-        foreach ($this->namespaceMap as $nsName => $nsPath) {
+        foreach ($this->namespaceMap as $nsName => $nsPath)
+        {
             $this->pdp->loadPolicy($nsName . '\Authorization\*.json');
         }
         return $this;
     }
 
     private function __dispatch(\Nethgui\Controller\RequestInterface $request, &$output = NULL)
-    {               
+    {
         $this->enforceAuthorization();
         $this->session->start();
-        
+
         if ($request instanceof \Nethgui\Utility\SessionConsumerInterface) {
             $request->setSession($this->session);
         }
@@ -317,17 +321,17 @@ class Framework
                 $redirectModule = $this->defaultModuleIdentifier;
             } else {
                 $redirectModule = 'Login';
-            }       
+            }
             $redirectUrl = implode('', $this->urlParts) . $redirectModule;
-            $this->sendHttpResponse('', array('HTTP/1.1 302 Found', sprintf('Location: %s', $redirectUrl)), $output);                        
+            $this->sendHttpResponse('', array('HTTP/1.1 302 Found', sprintf('Location: %s', $redirectUrl)), $output);
             return;
         }
 
         $platform = new \Nethgui\System\NethPlatform($user);
         $platform
-            ->setLog($this->log)
-            ->setSession($this->session)
-            ->setPolicyDecisionPoint($this->pdp)
+                ->setLog($this->log)
+                ->setSession($this->session)
+                ->setPolicyDecisionPoint($this->pdp)
         ;
 
         // Enforce authorization policy on moduleSet:
@@ -337,21 +341,22 @@ class Framework
         $fileNameResolver = $this->getFileNameResolver();
         $currentModuleIdentifier = array_head($request->getPath());
 
-        $this->moduleSet->addInstantiateCallback(function (Module\ModuleInterface $module) use ($authModuleLoader, $currentModuleIdentifier, $fileNameResolver) {
-                $moduleIdentifier = $module->getIdentifier();
+        $this->moduleSet->addInstantiateCallback(function (Module\ModuleInterface $module) use ($authModuleLoader, $currentModuleIdentifier, $fileNameResolver)
+                {
+                    $moduleIdentifier = $module->getIdentifier();
 
-                if ($moduleIdentifier === 'Menu') {
-                    $module
-                        ->setModuleSet($authModuleLoader)
-                        ->setCurrentModuleIdentifier($currentModuleIdentifier)
-                    ;
-                } elseif ($moduleIdentifier === 'Help') {
-                    $module
-                        ->setModuleSet($authModuleLoader)
-                        ->setFileNameResolver($fileNameResolver)
-                    ;
-                }
-            });
+                    if ($moduleIdentifier === 'Menu') {
+                        $module
+                                ->setModuleSet($authModuleLoader)
+                                ->setCurrentModuleIdentifier($currentModuleIdentifier)
+                        ;
+                    } elseif ($moduleIdentifier === 'Help') {
+                        $module
+                                ->setModuleSet($authModuleLoader)
+                                ->setFileNameResolver($fileNameResolver)
+                        ;
+                    }
+                });
 
         $mainModule = new \Nethgui\Module\Main($this->decoratorTemplate, $authModuleLoader);
         $mainModule->setPlatform($platform);
@@ -372,7 +377,7 @@ class Framework
         }
 
         $targetFormat = $request->getExtension();
-        $translator = new \Nethgui\View\Translator($user->getLanguageCode(), $this->getFileNameResolver(), array_keys(iterator_to_array($this->namespaceMap)));        
+        $translator = new \Nethgui\View\Translator($user->getLanguageCode(), $this->getFileNameResolver(), array_keys(iterator_to_array($this->namespaceMap)));
         $rootView = new \Nethgui\View\View($targetFormat, $mainModule, $translator, $this->urlParts);
 
         $commandReceiver = new \Nethgui\Renderer\HttpCommandReceiver(new \Nethgui\Renderer\MarshallingReceiver(new \Nethgui\View\LoggingCommandReceiver($this->log)));
@@ -388,7 +393,7 @@ class Framework
             $nextPath = $mainModule->nextPath();
             if (is_string($nextPath)) {
                 $rootView->getCommandList('/Main')
-                    ->sendQuery($rootView->getModuleUrl($nextPath));
+                        ->sendQuery($rootView->getModuleUrl($nextPath));
             }
         } elseif ( ! $request->isValidated()) {
             // Only validation errors notification has to be shown: clear
@@ -399,8 +404,8 @@ class Framework
             // FIXME: check if we are in FAST-CGI module:
             // @see http://php.net/manual/en/function.header.php
             $rootView->getCommandList('/Notification')
-                ->showNotification($validationErrorsNotification)
-                ->httpHeader("HTTP/1.1 400 Request validation error")
+                    ->showNotification($validationErrorsNotification)
+                    ->httpHeader("HTTP/1.1 400 Request validation error")
             ;
         }
 
@@ -419,7 +424,7 @@ class Framework
                 "HTTP/1.1 200 Success",
                 sprintf('Content-Type: %s', $renderer->getContentType()) . (
                 $renderer->getCharset() ?
-                    sprintf('; charset=%s', $renderer->getCharset()) : ''
+                        sprintf('; charset=%s', $renderer->getCharset()) : ''
                 )
             );
 
@@ -503,10 +508,12 @@ class Framework
     {
         $q = array($view);
 
-        while (count($q) > 0) {
+        while (count($q) > 0)
+        {
             $view = array_pop($q);
 
-            foreach ($view as $key => $value) {
+            foreach ($view as $key => $value)
+            {
                 if ($value instanceof View\View) {
                     $q[] = $value;
                 }
@@ -550,10 +557,11 @@ class Framework
         if (isset($_SERVER['PATH_INFO']) && $_SERVER['PATH_INFO'] != '/') {
             $pathInfo = array_rest(explode('/', $_SERVER['PATH_INFO']));
 
-            foreach ($pathInfo as $pathPart) {
+            foreach ($pathInfo as $pathPart)
+            {
                 if ($pathPart === '.'
-                    || $pathPart === '..'
-                    || $pathPart === '') {
+                        || $pathPart === '..'
+                        || $pathPart === '') {
                     throw new Exception\HttpException('Bad Request', 400, 1322217901);
                 }
             }
