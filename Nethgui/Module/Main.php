@@ -150,7 +150,7 @@ class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\Co
 //        $view['css']['1theme'] = $pathUrl . ($customCss ? sprintf('css/%s.css', $customCss) : 'css/default.css');
         $view['company'] = $db->getProp('ldap', 'defaultCompany');
         $view['address'] = $db->getProp('ldap', 'defaultStreet') . ", " . $db->getProp('ldap', 'defaultCity');
-        $view['favicon'] = $view->getPathUrl() . '/images/favicon.ico';
+        $view['favicon'] = $view->getPathUrl() . 'images/favicon.ico';
         $view['moduleTitle'] = $view->getTranslator()->translate($currentModule, $currentModule->getAttributesProvider()->getTitle());
 
         $view['currentModuleOutput'] = 'currentModuleOutput';

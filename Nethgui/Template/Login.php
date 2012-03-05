@@ -11,7 +11,7 @@ echo $view->literal($view['Resource']['js']);
 
 
 $images = array('Waves', 'Flow', 'Spring', 'Silk', 'Gulp');
-$backgroundUrl = $view->getPathUrl() . "/images/{$images[3]}.png";
+$backgroundUrl = $view->getPathUrl() . "images/{$images[3]}.png";
 $actionId = $view->getUniqueId();
 $bg1 = '#1d247c';
 

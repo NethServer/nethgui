@@ -140,9 +140,9 @@ interface ViewInterface extends \ArrayAccess, \IteratorAggregate
     public function getSiteUrl();
 
     /**
-     * The path component of an URL with a leading slash
+     * The path component of an URL with a leading slash and trailing
      * 
-     * @example /my/path/to/the/app
+     * @example /my/path/to/the/app/
      * @return string
      * @api
      */

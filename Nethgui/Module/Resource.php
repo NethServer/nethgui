@@ -242,7 +242,7 @@ class Resource extends \Nethgui\Controller\AbstractController implements \Nethgu
         } elseif ($name === 'appendCode') {
             $this->appendCode($arguments[0], $arguments[1]);
         } elseif ($name === 'useFile' && isset($arguments[0])) {
-            $this->useList[] = $origin->getPathUrl() . '/' . $arguments[0];
+            $this->useList[] = $origin->getPathUrl() . $arguments[0];
         }
     }
 

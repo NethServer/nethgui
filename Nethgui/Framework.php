@@ -42,22 +42,13 @@ class Framework
     private $namespaceMap;
 
     /**
-     * The complete URL to the web-root without trailing slash
-     *
-     * @example http://www.example.com:8080
-     *
-     * @var string
+     * Index 0 => The complete URL to the web-root without trailing slash (ex: http://www.example.com:8080)
+     * Index 1 => The URL part from the web-root to the app-root with trailing slash (ex: /path/to/app-root/)
+     * Index 2 => [Optional] The controller script file name or empty string with trailing slash 
+     * 
+     * @var array
      */
-    private $siteUrl;
-
-    /**
-     * The URL part from the web-root to the app-root with trailing slash
-     *
-     * @example /path/to/app-root/
-     *
-     * @var string
-     */
-    private $basePath;
+    private $urlParts;
 
     /**
      * If no module identifier is provided fall back to this value
@@ -83,8 +74,8 @@ class Framework
         }
         $this->registerNamespace(__DIR__);
 
-        $this->siteUrl = $this->guessSiteUrl();
-        $this->basePath = $this->guessBasePath();
+        $this->urlParts = $this->guessUrlParts();
+        
         $this->decoratorTemplate = 'Nethgui\Template\Main';
 
         $this->log = new \Nethgui\Log\Syslog(E_WARNING | E_ERROR);
@@ -145,26 +136,36 @@ class Framework
         return $this;
     }
 
-    private function guessSiteUrl()
+    private function guessUrlParts()
     {
-        $tmpSiteUrl = empty($_SERVER['HTTPS']) ? 'http://' : 'https://';
-        $tmpSiteUrl .= isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : 'localhost';
+        $urlParts = array();
+        
+        $siteUrl = empty($_SERVER['HTTPS']) ? 'http://' : 'https://';
+        $siteUrl .= isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : 'localhost';
         if (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] != '80') {
-            $tmpSiteUrl .= ':' . $_SERVER['SERVER_PORT'];
+            $siteUrl .= ':' . $_SERVER['SERVER_PORT'];
         }
-        return $tmpSiteUrl;
-    }
-
-    private function guessBasePath()
-    {
+        
+        $urlParts[] = $siteUrl;
+        
         $parts = array_values(array_filter(explode('/', $_SERVER['SCRIPT_NAME'])));
         $lastPart = $parts[max(0, count($parts) - 1)];
-        $nethguiFile = basename($_SERVER['SCRIPT_FILENAME']);
 
-        if ($lastPart == $nethguiFile) {
-            array_pop($parts);
+        if ($lastPart === basename($_SERVER['SCRIPT_FILENAME'])) {
+            $controllerPath = array_pop($parts) . '/';
+        } else {
+            $controllerPath = '';            
         }
-        return '/' . implode('/', $parts);
+        
+        $basePath = implode('/', $parts);        
+        
+        $urlParts[] = ($basePath === '') ? '/' : ('/' . $basePath . '/');
+        
+        if($controllerPath !== '') {
+            $urlParts[] = $controllerPath;
+        }
+        
+        return $urlParts;
     }
 
     /**
@@ -172,26 +173,28 @@ class Framework
      *
      * @example http://www.example.org:8080
      * @api
-     * @param string $url
+     * @param string $siteUrl
      * @return Framework
      */
-    public function setSiteUrl($url)
+    public function setSiteUrl($siteUrl)
     {
-        $this->siteUrl = $url;
+        $this->urlParts[0] = $siteUrl;
         return $this;
     }
 
     /**
-     * The path component of an URL with a leading slash
+     * The path component of an URL with a leading and trailing slash.
+     * 
+     * An empty path collapse to a single slash "/".
      *
-     * @example /my/path/to/the/app
+     * @example /my/path/to/the/app/
      * @api
      * @param type $basePath
      * @return Framework
      */
     public function setBasePath($basePath)
     {
-        $this->basePath = $basePath;
+        $this->urlParts[1] = $basePath;
         return $this;
     }
 
@@ -265,12 +268,6 @@ class Framework
         return array($this, 'absoluteScriptPath');
     }
 
-    private function redirect($moduleIdentifier, &$output)
-    {
-        $redirectUrl = $this->siteUrl . implode('/', array($this->basePath, 'index.php', $moduleIdentifier));
-        $this->sendHttpResponse('', array('HTTP/1.1 302 Found', sprintf('Location: %s', $redirectUrl)), $output);
-    }
-
     /**
      * Forwards control to Modules and creates output views.
      *
@@ -305,10 +302,10 @@ class Framework
     }
 
     private function __dispatch(\Nethgui\Controller\RequestInterface $request, &$output = NULL)
-    {
+    {               
         $this->enforceAuthorization();
         $this->session->start();
-
+        
         if ($request instanceof \Nethgui\Utility\SessionConsumerInterface) {
             $request->setSession($this->session);
         }
@@ -317,10 +314,12 @@ class Framework
 
         if (array_head($request->getPath()) === FALSE) {
             if ($user->isAuthenticated()) {
-                $this->redirect($this->defaultModuleIdentifier, $output);
+                $redirectModule = $this->defaultModuleIdentifier;
             } else {
-                $this->redirect('Login', $output);
-            }
+                $redirectModule = 'Login';
+            }       
+            $redirectUrl = implode('', $this->urlParts) . $redirectModule;
+            $this->sendHttpResponse('', array('HTTP/1.1 302 Found', sprintf('Location: %s', $redirectUrl)), $output);                        
             return;
         }
 
@@ -373,9 +372,8 @@ class Framework
         }
 
         $targetFormat = $request->getExtension();
-        $translator = new \Nethgui\View\Translator($user->getLanguageCode(), $this->getFileNameResolver(), array_keys(iterator_to_array($this->namespaceMap)));
-        $urlParts = array($this->siteUrl, $this->basePath, 'index.php');
-        $rootView = new \Nethgui\View\View($targetFormat, $mainModule, $translator, $urlParts);
+        $translator = new \Nethgui\View\Translator($user->getLanguageCode(), $this->getFileNameResolver(), array_keys(iterator_to_array($this->namespaceMap)));        
+        $rootView = new \Nethgui\View\View($targetFormat, $mainModule, $translator, $this->urlParts);
 
         $commandReceiver = new \Nethgui\Renderer\HttpCommandReceiver(new \Nethgui\Renderer\MarshallingReceiver(new \Nethgui\View\LoggingCommandReceiver($this->log)));
         $commandReceiver->setLog($this->log);

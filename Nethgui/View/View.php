@@ -75,22 +75,16 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
     private $translator;
 
     /**
-     *
-     * @var string
+     * An array of two or more strings 
+     * 
+     * Index 0 => Site URL without trailing slash (Schema, Host, Port)
+     * Index 1 => URL path (without controller)
+     * Index 2 => [Optional] controller path (example index.php/)
+     * 
+     * @var array
      */
-    private $siteUrl;
+    private $urlParts;
 
-    /**
-     *
-     * @var string
-     */
-    private $controllerPath;
-
-    /**
-     * @see getPathUrl()
-     * @var string
-     */
-    private $pathUrl;
 
     /**
      *
@@ -122,11 +116,7 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
         $this->module = $module;
         $this->translator = $translator;
         $this->receiver = \Nethgui\View\NullReceiver::getNullInstance();
-
-        $this->siteUrl = array_shift($urlParts); // 0
-        $this->pathUrl = array_shift($urlParts); // 1
-        $this->controllerPath = array_shift($urlParts); // 2
-
+        $this->urlParts = $urlParts;
         $this->template = str_replace('\Module\\', '\Template\\', get_class($module));
         $this->data = array();
         $this->targetFormat = $targetFormat;
@@ -159,7 +149,7 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
 
     public function spawnView(\Nethgui\Module\ModuleInterface $module, $register = FALSE)
     {
-        $spawnedView = new static($this->targetFormat, $module, $this->translator, array($this->siteUrl, $this->pathUrl, $this->controllerPath));
+        $spawnedView = new static($this->targetFormat, $module, $this->translator, $this->urlParts);
         $spawnedView->setReceiver($this->receiver);
         $spawnedView->commands = $this->commands;
         if ($register === TRUE) {
@@ -288,7 +278,7 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
      * @param string $path
      * @param array $parameters
      */
-    private function buildUrl($path, $parameters = array())
+    private function buildModuleUrl($path, $parameters = array())
     {
         if (is_array($path) || is_object($path)) {
             throw new \InvalidArgumentException(sprintf('%s: $path argument must be a string, `%s` given.', get_class($this), gettype($path)), 1322150500);
@@ -299,18 +289,13 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
 
         if (strpos($path, '#') !== FALSE) {
             list($path, $fragment) = explode('#', $path, 2);
-
             $fragment = '#' . $fragment;
         }
 
         $segments = $this->resolvePath($path);
 
-        if ($this->controllerPath !== '') {
-            array_unshift($segments, $this->controllerPath);
-        }
-
-        $url = $this->pathUrl . '/' . implode('/', $segments);
-
+        $url = implode('', \Nethgui\array_rest($this->urlParts)) . implode('/', $segments);
+        
         if ( ! empty($parameters)) {
             $url .= '?' . http_build_query($parameters);
         }
@@ -320,17 +305,17 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
 
     public function getModuleUrl($path = '')
     {
-        return $this->buildUrl($path);
+        return $this->buildModuleUrl($path);
     }
 
     public function getSiteUrl()
     {
-        return $this->siteUrl;
+        return $this->urlParts[0];
     }
 
     public function getPathUrl()
     {
-        return $this->pathUrl;
+        return $this->urlParts[1];
     }
 
     public function setLog(\Nethgui\Log\LogInterface $log)
