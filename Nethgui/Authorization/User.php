@@ -98,14 +98,17 @@ class User implements \Nethgui\Authorization\UserInterface, \Serializable, \Neth
 
 
         // The default PAM based authentication procedure:
-        $this->authenticationProcedure = function ($username, $password, &$credentials) use ($php, $log) {
-                if ( ! $php->extension_loaded('pam')) {
-                    throw new \RuntimeException(sprintf('%s: the PAM PHP extension is not loaded', __CLASS__), 1326879560);
+        $this->authenticationProcedure = function ($username, $password, &$credentials) use ($php, $log) {                               
+                $processPipe = $php->popen('/sbin/e-smith/pam-authenticate-pw >/dev/null 2>&1', 'w');
+                if($processPipe === FALSE) {
+                    $log->error(sprintf('%s: %s', __CLASS__, implode(' ', $php->error_get_last())));
+                    return FALSE;
                 }
-
-                $error = '';
-                $authenticated = $php->pam_auth($username, $password, $error, FALSE);
-
+                
+                $php->fwrite($processPipe, $username . "\n" . $password); 
+                
+                $authenticated = $php->pclose($processPipe) === 0;
+                
                 if ($authenticated) {
 
                     $exitCode = 0;
