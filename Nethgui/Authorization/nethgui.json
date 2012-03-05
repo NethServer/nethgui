@@ -17,7 +17,7 @@
         "Effect": "ALLOW",
         "Subject": "*",
         "Action": "NOT WRITE",
-        "Resource": "Nethgui\\Module\\* OR Nethgui\\System\\ConfigurationDatabase:configuration",
+        "Resource": "Nethgui\\Module\\* OR Nethgui\\System\\EsmithDatabase:configuration",
 
         "Description":
             "Everyone can instantiate the main system modules and read the configuration database"
