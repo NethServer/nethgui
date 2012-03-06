@@ -166,7 +166,13 @@ class TableController extends \Nethgui\Controller\CompositeController implements
         return parent::renderIndex($renderer);
     }
 
-    public function onParametersSaved(\Nethgui\Module\ModuleInterface $currentAction, $changes)
+    /**
+     *
+     * @param \Nethgui\Module\ModuleInterface $currentAction The current action
+     * @param array $changes changed parameters list
+     * @param array $parameters Parameters for $currentAction
+     */
+    public function onParametersSaved(\Nethgui\Module\ModuleInterface $currentAction, $changes, $parameters)
     {
         // NOOP;
     }

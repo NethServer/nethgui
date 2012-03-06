@@ -173,7 +173,7 @@ class Modify extends AbstractAction
         $save2 = $this->tableAdapter->save();
         if ($save1 || $save2) {
             $this->onParametersSaved($changes);
-            $this->getParent()->onParametersSaved($this, $changes);
+            $this->getParent()->onParametersSaved($this, $changes, $this->parameters->getArrayCopy());
         }
     }
 

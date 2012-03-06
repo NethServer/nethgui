@@ -164,7 +164,7 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
     }
 
     public function signalEvent($eventSpecification, $arguments = array())
-    {
+    {        
         $matches = array();
 
         preg_match('/(?P<event>[^@]+)(@(?P<queue>[^ ]+))?( +(?P<detached>&))?/', $eventSpecification, $matches);
