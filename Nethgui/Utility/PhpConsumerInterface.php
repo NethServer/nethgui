@@ -21,10 +21,18 @@ namespace Nethgui\Utility;
  */
 
 /**
- * Classes that interacts with the global environment should wrap global operations
- * into a GlobalFunctionWrapper object to facilitate unit testing.
+ * Classes that interacts with the global environment should use
+ * a PhpWrapper object to call global functions to facilitate unit testing.
+ * 
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
+ * @api
  */
 interface PhpConsumerInterface
 {
+    /**
+     * @param \Nethgui\Utility\PhpWrapper $object
+     * @return \Nethgui\Utility\PhpConsumerInterface 
+     */
     public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object);
 }

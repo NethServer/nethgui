@@ -29,17 +29,78 @@ namespace Nethgui\Utility;
  * @since 1.0
  * @api
  */
-class PhpWrapper
+class PhpWrapper implements \Nethgui\Log\LogConsumerInterface
 {
+    /**
+     *
+     * @var \Nethgui\Log\LogInterface
+     */
+    private $log;
+
+    /**
+     *
+     * @var string
+     */
+    private $identifier;
+
+    public function __construct($identifier = __CLASS__)
+    {
+        $this->identifier = $identifier;
+    }
+    
+    public function class_exists($className) {
+        $warnings = array();
+        $this->wrapBegin($warnings, E_NOTICE);
+        $retval = class_exists($className);
+        $this->wrapEnd($warnings);
+        return $retval;
+    }
 
     public function __call($name, $arguments)
     {
-        return call_user_func_array($name, $arguments);
+        $warnings = array();
+        $this->wrapBegin($warnings);
+        $exitCode = call_user_func_array($name, $arguments);
+        $this->wrapEnd($warnings);
+        return $exitCode;
+    }
+
+    protected function wrapBegin(&$messages, $forceErrno = 0)
+    {
+        if ($this->getLog() instanceof \Nethgui\Log\Nullog) {
+            return;
+        }
+        set_error_handler(function ($errno, $errstr) use (&$messages, $forceErrno) {
+                $messages[] = array($forceErrno > 0 ? $forceErrno : $errno, $errstr);
+            }, E_WARNING | E_NOTICE);
+    }
+
+    protected function wrapEnd($messages)
+    {
+        if ($this->getLog() instanceof \Nethgui\Log\Nullog) {
+            return;
+        }
+        restore_error_handler();
+        if (count($messages) > 0) {
+            $message = '';
+            foreach ($messages as $msg) {
+                if ($msg[0] & E_WARNING) {
+                    $level = 'warning';
+                } else {
+                    $level = 'notice';
+                }
+                $this->getLog()->$level(sprintf("%s: %s", $this->identifier, $msg[1]));
+            }
+        }
     }
 
     public function exec($command, &$output, &$retval)
     {
-        return exec($command, $output, $retval);
+        $warnings = array();
+        $this->wrapBegin($warnings);
+        $exitCode = exec($command, $output, $retval);
+        $this->wrapEnd($warnings);
+        return $exitCode;
     }
 
     public function phpInclude($filePath, $vars)
@@ -85,6 +146,20 @@ class PhpWrapper
             $meta['size'] = ob_get_length();
         }
         return ob_get_clean();
+    }
+
+    public function getLog()
+    {
+        if ( ! isset($this->log)) {
+            $this->log = new \Nethgui\Log\Nullog();
+        }
+        return $this->log;
+    }
+
+    public function setLog(\Nethgui\Log\LogInterface $log)
+    {
+        $this->log = $log;
+        return $this;
     }
 
 }
