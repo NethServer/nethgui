@@ -33,8 +33,13 @@ namespace Nethgui\Module;
  */
 abstract class Composite extends \Nethgui\Module\AbstractModule implements \Nethgui\Module\ModuleCompositeInterface
 {
-
     private $children = array();
+
+    /**
+     *
+     * @var ModuleLoader
+     */
+    private $childLoader;
 
     /**
      * Propagates initialize() message to children.
@@ -75,7 +80,7 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
 
         if ($this->isInitialized() && ! $childModule->isInitialized()) {
             $childModule->initialize();
-        }
+        }       
         return $this;
     }
 
@@ -110,7 +115,7 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
      * @see addChild()
      * @link http://redmine.nethesis.it/issues/196
      * @param type $classList
-     * @return void
+     * @return \Nethgui\Module\Composite
      */
     protected function loadChildren($classList)
     {
@@ -130,9 +135,23 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
         }
     }
 
-    protected function loadChildrenFromPath($path)
+    /**
+     *
+     * @param string $path
+     * @return \Nethgui\Module\Composite 
+     */
+    protected function loadChildrenDirectory()
     {
-        throw new \LogicException(sprintf('%s: %s() is not Implemented', get_class($this), __FUNCTION__), 1322148901);
+        if ( ! isset($this->childLoader)) {
+            $this->childLoader = new \Nethgui\Module\ModuleLoader();
+            $this->childLoader
+                ->setLog($this->getLog())
+                ->setNamespaceFromModule($this);                                   
+        }
+        foreach ($this->childLoader as  $childInstance) {
+            $this->addChild($childInstance);
+        }
+        return $this;
     }
 
     /**
@@ -151,5 +170,12 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
         usort($this->children, $callback);
     }
 
-}
+    public function setLog(\Nethgui\Log\LogInterface $log)
+    {
+        if (isset($this->childLoader)) {
+            $this->childLoader->setLog($log);
+        }
+        return parent::setLog($log);
+    }
 
+}

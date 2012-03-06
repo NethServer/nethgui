@@ -32,7 +32,6 @@ namespace Nethgui;
  */
 class Framework
 {
-
     /**
      * Associate each namespace root name to a filesystem directory where
      * the namespace resides.
@@ -64,13 +63,19 @@ class Framework
      */
     private $decoratorTemplate;
 
+    /**
+     *
+     * @var \Nethgui\Module\ModuleLoader;
+     */
+    private $moduleSet;
+
     public function __construct()
     {
         $this->namespaceMap = new \ArrayObject();
 
         spl_autoload_register(array($this, 'autoloader'));
         if (basename(__DIR__) !== __NAMESPACE__) {
-            throw new \LogicException(sprintf('%s: `%s` is an invalid framework filesystem directory! Must be `%s`.', get_class($this), basename(__DIR__), __NAMESPACE__), 1322213425);
+            throw new \LogicException(sprintf('%s: `%s` is an invalid framework filesystem directory! Must be `%s`.', __CLASS__, basename(__DIR__), __NAMESPACE__), 1322213425);
         }
         $this->registerNamespace(__DIR__);
 
@@ -82,10 +87,6 @@ class Framework
         $this->session = new \Nethgui\Utility\Session();
         $this->pdp = new \Nethgui\Authorization\JsonPolicyDecisionPoint($this->getFileNameResolver());
         $this->pdp->setLog($this->log);
-
-        $this->moduleSet = new \Nethgui\Module\ModuleLoader($this->namespaceMap);
-        $this->moduleSet->setLog($this->log);
-        $this->moduleSet->addInstantiateCallback(array($this, 'initializeModule'));
     }
 
     /**
@@ -279,13 +280,10 @@ class Framework
      * @return integer
      */
     public function dispatch(\Nethgui\Controller\RequestInterface $request, &$output = NULL)
-    {
-        try
-        {
+    {        
+        try {
             return $this->__dispatch($request, $output);
-        }
-        catch (\Nethgui\Exception\AuthorizationException $ex)
-        {
+        } catch (\Nethgui\Exception\AuthorizationException $ex) {
             $this->log->error(sprintf('%s: [%d] %s', __CLASS__, $ex->getCode(), $ex->getMessage()));
             throw new \Nethgui\Exception\HttpException('Forbidden', 403, 1327681977, $ex);
         }
@@ -298,15 +296,29 @@ class Framework
      */
     private function enforceAuthorization()
     {
-        foreach ($this->namespaceMap as $nsName => $nsPath)
-        {
+        foreach ($this->namespaceMap as $nsName => $nsPath) {
             $this->pdp->loadPolicy($nsName . '\Authorization\*.json');
+        }
+        return $this;
+    }
+
+    private function initializeModuleLoader()
+    {
+        $this->moduleSet = new \Nethgui\Module\ModuleLoader();
+        $this->moduleSet->setLog($this->log);
+        $this->moduleSet->addInstantiateCallback(array($this, 'initializeModule'));
+        foreach ($this->namespaceMap as $nsName => $nsRoot) {
+            if($nsName === 'Nethgui') {
+                $nsRoot = FALSE;                
+            }
+            $this->moduleSet->setNamespace($nsName . '\\Module', $nsRoot);
         }
         return $this;
     }
 
     private function __dispatch(\Nethgui\Controller\RequestInterface $request, &$output = NULL)
     {
+        $this->initializeModuleLoader();
         $this->enforceAuthorization();
         $this->session->start();
 
@@ -329,9 +341,9 @@ class Framework
 
         $platform = new \Nethgui\System\NethPlatform($user);
         $platform
-                ->setLog($this->log)
-                ->setSession($this->session)
-                ->setPolicyDecisionPoint($this->pdp)
+            ->setLog($this->log)
+            ->setSession($this->session)
+            ->setPolicyDecisionPoint($this->pdp)
         ;
 
         // Enforce authorization policy on moduleSet:
@@ -341,22 +353,21 @@ class Framework
         $fileNameResolver = $this->getFileNameResolver();
         $currentModuleIdentifier = array_head($request->getPath());
 
-        $this->moduleSet->addInstantiateCallback(function (Module\ModuleInterface $module) use ($authModuleLoader, $currentModuleIdentifier, $fileNameResolver)
-                {
-                    $moduleIdentifier = $module->getIdentifier();
+        $this->moduleSet->addInstantiateCallback(function (Module\ModuleInterface $module) use ($authModuleLoader, $currentModuleIdentifier, $fileNameResolver) {
+                $moduleIdentifier = $module->getIdentifier();
 
-                    if ($moduleIdentifier === 'Menu') {
-                        $module
-                                ->setModuleSet($authModuleLoader)
-                                ->setCurrentModuleIdentifier($currentModuleIdentifier)
-                        ;
-                    } elseif ($moduleIdentifier === 'Help') {
-                        $module
-                                ->setModuleSet($authModuleLoader)
-                                ->setFileNameResolver($fileNameResolver)
-                        ;
-                    }
-                });
+                if ($moduleIdentifier === 'Menu') {
+                    $module
+                        ->setModuleSet($authModuleLoader)
+                        ->setCurrentModuleIdentifier($currentModuleIdentifier)
+                    ;
+                } elseif ($moduleIdentifier === 'Help') {
+                    $module
+                        ->setModuleSet($authModuleLoader)
+                        ->setFileNameResolver($fileNameResolver)
+                    ;
+                }
+            });
 
         $mainModule = new \Nethgui\Module\Main($this->decoratorTemplate, $authModuleLoader);
         $mainModule->setPlatform($platform);
@@ -393,7 +404,7 @@ class Framework
             $nextPath = $mainModule->nextPath();
             if (is_string($nextPath)) {
                 $rootView->getCommandList('/Main')
-                        ->sendQuery($rootView->getModuleUrl($nextPath));
+                    ->sendQuery($rootView->getModuleUrl($nextPath));
             }
         } elseif ( ! $request->isValidated()) {
             // Only validation errors notification has to be shown: clear
@@ -404,8 +415,8 @@ class Framework
             // FIXME: check if we are in FAST-CGI module:
             // @see http://php.net/manual/en/function.header.php
             $rootView->getCommandList('/Notification')
-                    ->showNotification($validationErrorsNotification)
-                    ->httpHeader("HTTP/1.1 400 Request validation error")
+                ->showNotification($validationErrorsNotification)
+                ->httpHeader("HTTP/1.1 400 Request validation error")
             ;
         }
 
@@ -424,7 +435,7 @@ class Framework
                 "HTTP/1.1 200 Success",
                 sprintf('Content-Type: %s', $renderer->getContentType()) . (
                 $renderer->getCharset() ?
-                        sprintf('; charset=%s', $renderer->getCharset()) : ''
+                    sprintf('; charset=%s', $renderer->getCharset()) : ''
                 )
             );
 
@@ -508,12 +519,10 @@ class Framework
     {
         $q = array($view);
 
-        while (count($q) > 0)
-        {
+        while (count($q) > 0) {
             $view = array_pop($q);
 
-            foreach ($view as $key => $value)
-            {
+            foreach ($view as $key => $value) {
                 if ($value instanceof View\View) {
                     $q[] = $value;
                 }
@@ -557,11 +566,10 @@ class Framework
         if (isset($_SERVER['PATH_INFO']) && $_SERVER['PATH_INFO'] != '/') {
             $pathInfo = array_rest(explode('/', $_SERVER['PATH_INFO']));
 
-            foreach ($pathInfo as $pathPart)
-            {
+            foreach ($pathInfo as $pathPart) {
                 if ($pathPart === '.'
-                        || $pathPart === '..'
-                        || $pathPart === '') {
+                    || $pathPart === '..'
+                    || $pathPart === '') {
                     throw new Exception\HttpException('Bad Request', 400, 1322217901);
                 }
             }
@@ -662,7 +670,6 @@ class Framework
     }
 
 }
-
 /*
  * Framework global symbols
  */

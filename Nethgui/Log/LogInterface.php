@@ -74,5 +74,5 @@ interface LogInterface
      * @param string $message The message to be printed
      * @return LogInterface
      */
-    public function warning($message);
+    public function warning($message);       
 }

@@ -20,9 +20,14 @@ namespace Nethgui\Module;
  * along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Create module instances from a given path 
+ * 
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0 
+ */
 class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Log\LogConsumerInterface
 {
-
     /**
      * @var \ArrayObject
      */
@@ -33,11 +38,6 @@ class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utili
      * @var ArrayObject
      */
     private $instanceCache;
-
-    /**
-     * @var \Nethgui\Log\LogInterface
-     */
-    private $log;
 
     /**
      *
@@ -51,17 +51,41 @@ class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utili
      */
     private $onInstantiate = array();
 
+    public function __construct()
+    {
+        $this->namespaceMap = new \ArrayObject();
+        $this->instanceCache = new \ArrayObject();
+        $this->phpWrapper = new \Nethgui\Utility\PhpWrapper(__CLASS__);
+        $this->cacheIsFilled = FALSE;
+    }
+
     /**
      *
-     * @param \ArrayObject $namespaceMap
+     * @param string $nsPrefix
+     * @param string $nsRootPath 
+     * @return \Nethgui\Module\ModuleLoader
      */
-    public function __construct(\ArrayObject $namespaceMap)
+    public function setNamespace($nsPrefix, $nsRootPath)
     {
-        $this->namespaceMap = $namespaceMap;
-        $this->instanceCache = new \ArrayObject();
-        $this->phpWrapper = new \Nethgui\Utility\PhpWrapper();
-        $this->cacheIsFilled = FALSE;
-        $this->onInstantiate;
+        $this->namespaceMap[$nsPrefix] = $nsRootPath;
+        return $this;
+    }
+
+    /**
+     *
+     * @param \Nethgui\Module\ModuleInterface $module
+     * @return \Nethgui\Module\ModuleLoader 
+     */
+    public function setNamespaceFromModule(\Nethgui\Module\ModuleInterface $module)
+    {
+        $ref = new \ReflectionClass($module);
+        $filePath = $ref->getFileName();
+        if ($filePath === FALSE) {
+            throw new \UnexpectedValueException(sprintf('%s: cannot find the file where `%s` is declared', __CLASS__, get_class($module)), 1331035353);
+        }
+        $pathSuffix = str_replace('\\', '/', get_class($module)) . '.php';
+        $this->setNamespace(get_class($module), substr($filePath, 0, strlen($filePath) - strlen($pathSuffix)));
+        return $this;
     }
 
     public function getIterator()
@@ -74,13 +98,12 @@ class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utili
 
     private function fillCache()
     {
-        foreach ($this->namespaceMap as $namespaceName => $namespaceRootPath) {
-            // XXX skip Nethgui modules - must be explicitly picked by getModule() ???
-            if ($namespaceName === 'Nethgui') {
+        foreach ($this->namespaceMap as $nsPrefix => $nsRootPath) {
+            if ($nsRootPath === FALSE) {
                 continue;
             }
 
-            $path = $namespaceRootPath . '/' . $namespaceName . '/Module';
+            $path = $nsRootPath . '/' . str_replace('\\', '/', $nsPrefix);
 
             $files = $this->phpWrapper->scandir($path);
 
@@ -96,11 +119,11 @@ class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utili
                 $moduleIdentifier = substr($fileName, 0, -4);
 
                 if ( ! isset($this->instanceCache[$moduleIdentifier])) {
-                    $className = $namespaceName . '\Module\\' . $moduleIdentifier;
+                    $className = $nsPrefix . '\\' . $moduleIdentifier;
                     $moduleInstance = new $className();
                     $this->getLog()->notice(sprintf('%s::fillCache(): Created "%s" instance', get_class($this), $className));
                     $this->notifyCallbacks($moduleInstance);
-                    $this->instanceCache[$moduleIdentifier] = $moduleInstance;                    
+                    $this->instanceCache[$moduleIdentifier] = $moduleInstance;
                 }
             }
         }
@@ -116,19 +139,13 @@ class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utili
             return $this->instanceCache[$moduleIdentifier];
         }
 
-        $namespaces = array_keys(iterator_to_array($this->namespaceMap));
-
-        $warnings = array();
-
-        set_error_handler(function ($errno, $errstr) use (&$warnings) {
-                $warnings[] = array($errno, $errstr);
-            }, E_WARNING);
+        $nsPrefixList = array_keys(iterator_to_array($this->namespaceMap));
 
         $moduleInstance = NULL;
 
         // Resolve module class namespaces LIFO
-        while ($nsName = array_pop($namespaces)) {
-            $className = $nsName . '\Module\\' . $moduleIdentifier;
+        while ($nsPrefix = array_pop($nsPrefixList)) {
+            $className = $nsPrefix . '\\' . $moduleIdentifier;
 
             if ($this->phpWrapper->class_exists($className)) {
                 $moduleInstance = new $className();
@@ -139,18 +156,8 @@ class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utili
             }
         }
 
-        restore_error_handler();
-
         if ($moduleInstance === NULL) {
             throw new \RuntimeException(sprintf("%s: `%s` is an unknown module identifier", __CLASS__, $moduleIdentifier), 1322231262);
-        }
-
-        if (count($warnings) > 0) {
-            $message = '';
-            foreach ($warnings as $warning) {
-                $message .= sprintf('%s %s; ', $warning[0], $warning[1]);
-            }
-            $this->getLog()->notice(sprintf("%s: %s", __CLASS__, $message));
         }
 
         return $moduleInstance;
@@ -159,19 +166,17 @@ class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utili
     public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
     {
         $this->phpWrapper = $object;
+        return $this;
     }
 
     public function getLog()
     {
-        if ( ! isset($this->log)) {
-            $this->log = new \Nethgui\Log\Nullog();
-        }
-        return $this->log;
+        return $this->phpWrapper->getLog();
     }
 
     public function setLog(\Nethgui\Log\LogInterface $log)
-    {
-        $this->log = $log;
+    {        
+        $this->phpWrapper->setLog($log);
         return $this;
     }
 

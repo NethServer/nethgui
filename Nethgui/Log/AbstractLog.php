@@ -51,7 +51,7 @@ abstract class AbstractLog implements LogInterface, \Nethgui\Utility\PhpConsumer
     public function __construct($level = E_ALL)
     {
         $this->level = $level;
-        $this->phpWrapper = new \Nethgui\Utility\PhpWrapper();
+        $this->phpWrapper = new \Nethgui\Utility\PhpWrapper();        
     }
 
     public function getLevel()

@@ -7,7 +7,6 @@ namespace Nethgui\Test\Unit\Nethgui\Module;
  */
 class ModuleLoaderTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @var \Nethgui\Module\ModuleLoader
      */
@@ -18,10 +17,10 @@ class ModuleLoaderTest extends \PHPUnit_Framework_TestCase
         spl_autoload_register(array($this, 'autoloader'));
 
         $namespaceMap = new \ArrayObject(array(
-            'Vendor00' => '/usr/local/share',
-            'Vendor1B' => '/home/vendor1',
-            'Vendor1A' => '/home/vendor1',
-        ));
+                'Vendor00' => '/usr/local/share',
+                'Vendor1B' => '/home/vendor1',
+                'Vendor1A' => '/home/vendor1',
+            ));
 
         $gfw = $this->getMockBuilder('Nethgui\Utility\PhpWrapper')
             ->disableOriginalConstructor()
@@ -40,7 +39,10 @@ class ModuleLoaderTest extends \PHPUnit_Framework_TestCase
 
         $gfw->expects($this->any())->method('scandir')->will($this->returnCallback($callback));
 
-        $this->object = new \Nethgui\Module\ModuleLoader($namespaceMap);
+        $this->object = new \Nethgui\Module\ModuleLoader();
+        foreach ($namespaceMap as $nsPrefix => $nsRoot) {
+            $this->object->setNamespace($nsPrefix . '\\Module', $nsRoot);
+        }
         $this->object->setPhpWrapper($gfw);
     }
 
@@ -121,4 +123,3 @@ class ModuleLoaderTest extends \PHPUnit_Framework_TestCase
     }
 
 }
-

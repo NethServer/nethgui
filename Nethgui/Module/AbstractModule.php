@@ -155,6 +155,7 @@ abstract class AbstractModule implements \Nethgui\Module\ModuleInterface, \Nethg
     public function setLog(\Nethgui\Log\LogInterface $log)
     {
         $this->log = $log;
+        return $this;
     }
 
     public function getLog()
