@@ -148,8 +148,8 @@ class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\Co
         $db = $this->getPlatform()->getDatabase('configuration');
 //        $customCss = $db->getProp('httpd-admin', 'css');
 //        $view['css']['1theme'] = $pathUrl . ($customCss ? sprintf('css/%s.css', $customCss) : 'css/default.css');
-        $view['company'] = $db->getProp('ldap', 'defaultCompany');
-        $view['address'] = $db->getProp('ldap', 'defaultStreet') . ", " . $db->getProp('ldap', 'defaultCity');
+        $view['company'] = $db->getProp('OrganizationContact', 'Company');
+        $view['address'] = $db->getProp('OrganizationContact', 'Street') . ", " . $db->getProp('OrganizationContact', 'City');
         $view['favicon'] = $view->getPathUrl() . 'images/favicon.ico';
         $view['moduleTitle'] = $view->getTranslator()->translate($currentModule, $currentModule->getAttributesProvider()->getTitle());
 
