@@ -99,7 +99,7 @@ class User implements \Nethgui\Authorization\UserInterface, \Serializable, \Neth
 
         // The default PAM based authentication procedure:
         $this->authenticationProcedure = function ($username, $password, &$credentials) use ($php, $log) {                               
-                $processPipe = $php->popen('/sbin/e-smith/pam-authenticate-pw >/dev/null 2>&1', 'w');
+                $processPipe = $php->popen('/usr/bin/sudo /sbin/e-smith/pam-authenticate-pw >/dev/null 2>&1', 'w');
                 if($processPipe === FALSE) {
                     $log->error(sprintf('%s: %s', __CLASS__, implode(' ', $php->error_get_last())));
                     return FALSE;
