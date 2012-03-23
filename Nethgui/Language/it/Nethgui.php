@@ -91,3 +91,4 @@ $L['Login_label'] = 'Accedi';
 $L['Logout_label'] = 'Esci';
 $L['Welcome on ${0}'] = 'Benvenuto su ${0}';
 $L['Invalid credentials'] = 'Credenziali non valide';
+$L['Empty table'] = 'Tabella vuota';

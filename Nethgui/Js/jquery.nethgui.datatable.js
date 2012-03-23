@@ -107,7 +107,7 @@
             var self = this;            
             
             this._rows = [];            
-            this._dataTable = this.element.children('table').first();
+            this._dataTable = this.element.children('table').first();           
             this._initializeColumnFormatters(this._dataTable);
 
             var language = this.language[$('html').attr('lang')];

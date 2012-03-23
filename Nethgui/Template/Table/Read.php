@@ -10,7 +10,7 @@
     
     echo $view->literal($view['TableActions'])
 
-?><div class="DataTable <?php echo $view['tableClass']?>" ><?php if(count($view['rows']) > 0) : ?><table>
+?><div class="DataTable <?php echo $view['tableClass']?>" ><table>
     <thead><tr>
         <?php
             foreach ($view['columns'] as $columnInfo) {
@@ -20,12 +20,23 @@
             }
         ?>
     </tr></thead>
-    <tbody><?php foreach ($view['rows'] as $rowId => $row): ?>
+    <tbody><?php if(count($view['rows']) > 0) : 
+        foreach ($view['rows'] as $rowId => $row): ?>
     <tr class='<?php echo $row[0]['rowCssClass'];?>' >
         <?php foreach ($row as $colId => $value): 
               if($colId == 0) continue;  ?>
              <td><?php echo $view->literal($value) ?></td>
         <?php endforeach; ?>
     </tr>
-    <?php endforeach; ?></tbody>
-</table><?php else: echo '<p>' . htmlspecialchars($view->translate('Empty table')) . '</p>'; endif ?></div>
+    <?php endforeach; else: echo '<tr class="empty">'; 
+    
+    for($i = 0; $i < count($view['columns']); $i ++) {
+        if($i === 0) {
+            echo '<td><p>' . htmlspecialchars($view->translate('Empty table')) . '</p></td>';
+        } else {
+            echo '<td></td>';
+        }     
+    }
+    
+    echo '</tr>'; endif ?></tbody>
+</table></div>

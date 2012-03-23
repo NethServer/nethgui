@@ -221,7 +221,7 @@ interface PlatformInterface
      * @see exec()
      * @param string $event Event specification <eventName>[@<queueName>][ &]
      * @param array $arguments Optional event arguments
-     * @return ProcessInterface
+     * @return \Nethgui\System\ProcessInterface
      */
     public function signalEvent($event, $arguments = array());
 
