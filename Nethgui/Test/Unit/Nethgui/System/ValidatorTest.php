@@ -378,7 +378,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testPlatform1()
     {
-        $this->object->platform('test');
+        $this->object->platform('test', 'a1', 'a2');
 
         $processMockSuccess = $this->getMock('\Nethgui\System\ProcessInterface', array(
             'getOutput',
@@ -407,7 +407,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $this->platform
             ->expects($this->once())
             ->method('exec')
-            ->with('/usr/bin/sudo /sbin/e-smith/validate ${@}', array('test', 'value1'))
+            ->with('/usr/bin/sudo /sbin/e-smith/validate ${@}', array('test', 'a1', 'a2', 'value1'))
             ->will($this->returnValue($processMockSuccess));
 
         $this->assertTrue($this->object->evaluate('value1'));
@@ -415,7 +415,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testPlatform2()
     {
-        $this->object->platform('test');
+        $this->object->platform('test', 'a1', 'a2');
 
         $processMockFail = $this->getMockBuilder('\Nethgui\System\ProcessInterface')
             //->setMethods(array('getExitStatus', 'getOutput'))
@@ -432,7 +432,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $this->platform
             ->expects($this->once())
             ->method('exec')
-            ->with('/usr/bin/sudo /sbin/e-smith/validate ${@}', array('test', 'value2'))
+            ->with('/usr/bin/sudo /sbin/e-smith/validate ${@}', array('test', 'a1', 'a2', 'value2'))
             ->will($this->returnValue($processMockFail));
 
         $this->assertFalse($this->object->evaluate('value2'));

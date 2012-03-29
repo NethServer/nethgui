@@ -26,7 +26,6 @@ namespace Nethgui\System;
  */
 class Validator implements \Nethgui\System\ValidatorInterface
 {
-
     private $chain = array();
     private $failureInfo;
 
@@ -290,8 +289,26 @@ class Validator implements \Nethgui\System\ValidatorInterface
 
     public function platform($validatorName)
     {
-        $template = array('valid_platform ${0}', array('${0}' => $validatorName));
-        return $this->addToChain(__FUNCTION__, $template, $validatorName);
+        $arguments = func_get_args();
+        
+        if(!is_string($validatorName) && $validatorName !== '') {
+            throw new \InvalidArgumentException(sprintf("%s: must supply a validator name argument", __CLASS__), 1333012309);
+        }
+
+        $message = 'valid_platform';
+        $placeholders = array();
+
+        $i = 0;
+        foreach ($arguments as $arg) {
+            $message .= ' ${' . $i . '}';
+            $placeholders['${' . $i . '}'] = $arg;
+            $i++;
+        }
+
+        $template = array($message, $placeholders);
+        array_unshift($arguments, __FUNCTION__, $template);
+
+        return call_user_func_array(array($this, 'addToChain'), $arguments);
     }
 
     public function getFailureInfo()
@@ -585,12 +602,20 @@ class Validator implements \Nethgui\System\ValidatorInterface
         return preg_match($pattern, $value);
     }
 
-    private function evalPlatform($value, $validatorName)
+    private function evalPlatform($value)
     {
-        $process = $this->platform->exec('/usr/bin/sudo /sbin/e-smith/validate ${@}', array($validatorName, $value));
+        $args = func_get_args();
+        
+        // remove the first argument: $value ..
+        array_shift($args);
+        
+        // .. append to last position
+        $args[] = $value;
+        
+        $process = $this->platform->exec('/usr/bin/sudo /sbin/e-smith/validate ${@}', $args);
 
         if ($process->getExitCode() !== 0 && $this->platform instanceof \Nethgui\Log\LogConsumerInterface) {
-            $this->platform->getLog()->error(sprintf('platformValidator: %s', strtr($process->getOutput(), "\n", " ")));
+            $this->platform->getLog()->notice(sprintf('platformValidator (%s): %s', implode(', ', $args), strtr($process->getOutput(), "\n", " ")));
         }
 
         return $process->getExitCode() === 0;
@@ -604,7 +629,6 @@ class Validator implements \Nethgui\System\ValidatorInterface
  */
 class CollectionValidator implements \Nethgui\System\ValidatorInterface
 {
-
     /**
      *
      * @var \Nethgui\System\ValidatorInterface
@@ -664,7 +688,6 @@ class CollectionValidator implements \Nethgui\System\ValidatorInterface
  */
 class OrValidator implements \Nethgui\System\ValidatorInterface
 {
-
     /**
      *
      * @var \Nethgui\System\ValidatorInterface
