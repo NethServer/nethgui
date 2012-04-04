@@ -389,6 +389,7 @@ class Framework
 
         $targetFormat = $request->getExtension();
         $translator = new \Nethgui\View\Translator($user->getLanguageCode(), $this->getFileNameResolver(), array_keys(iterator_to_array($this->namespaceMap)));
+        $translator->setLog($this->log);
         $rootView = new \Nethgui\View\View($targetFormat, $mainModule, $translator, $this->urlParts);
 
         $commandReceiver = new \Nethgui\Renderer\HttpCommandReceiver(new \Nethgui\Renderer\MarshallingReceiver(new \Nethgui\View\LoggingCommandReceiver($this->log)));
