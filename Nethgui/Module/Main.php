@@ -31,7 +31,6 @@ namespace Nethgui\Module;
  */
 class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\CommandReceiverInterface, \Nethgui\Authorization\PolicyEnforcementPointInterface
 {
-
     /**
      * @var \Nethgui\Module\ModuleSetInterface
      */
@@ -190,13 +189,35 @@ class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\Co
             return $renderer->spawnRenderer($decoratorView)->render();
         }
 
-        // require global javascript resources:
-        $renderer->useFile('js/jquery-1.6.2.min.js')
-            ->useFile('js/jquery-ui-1.8.16.custom.min.js') //->useFile('js/jquery-ui.js')
-            ->useFile('js/jquery.dataTables.min.js')
+        /*
+         * jQuery & jQueryUI libraries: 
+         */
+        if (defined('NETHGUI_DEBUG') && NETHGUI_DEBUG === TRUE) {
+            $renderer->useFile('js/jquery-1.7.1.min.js')
+                ->useFile('js/jquery-ui-1.8.18.custom.js')
+            ;
+        } else {
+            // require global javascript resources:
+            $renderer->useFile('js/jquery-1.7.1.min.js')
+                ->useFile('js/jquery-ui-1.8.18.custom.min.js')
+            ;
+        }
+
+        /*
+         * jQuery plugins
+         */
+        $renderer->useFile('js/jquery.dataTables.min.js')
             ->useFile('js/jquery.qtip.min.js')
-            ->useFile(sprintf('js/jquery.ui.datepicker-%s.js', $decoratorView['lang']))
-            ->includeFile('Nethgui/Js/jquery.nethgui.base.js')
+        ;
+
+        if ($decoratorView['lang'] !== 'en') {
+            $renderer->useFile(sprintf('js/jquery.ui.datepicker-%s.js', $decoratorView['lang']));
+        }
+
+        /*
+         * Basic nethgui js libraries:
+         */
+        $renderer->includeFile('Nethgui/Js/jquery.nethgui.base.js')
             ->includeFile('Nethgui/Js/jquery.nethgui.loading.js')
             ->includeFile('Nethgui/Js/jquery.nethgui.helparea.js')
         ;
