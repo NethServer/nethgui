@@ -267,7 +267,7 @@
         _setOption: function( key, value ) {
             $.Widget.prototype._setOption.apply( this, [key, value] );
             if(key === 'disabled' && this._deep === true) {
-                this.getChildren().Component('option', key, value);
+                this.getChildren().trigger('nethgui' + (value ? 'disable' : 'enable'));
             }
         },
         destroy: function() {

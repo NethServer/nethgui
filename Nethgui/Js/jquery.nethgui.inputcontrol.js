@@ -39,6 +39,9 @@
             }
         }
     });
+    $.widget('nethgui.HiddenConst', $.nethgui.InputControl, {
+        _updateView: function(value) {}        
+    });    
     $.widget('nethgui.CheckBox', $.nethgui.RadioButton, {});
 }( jQuery ) );
 
