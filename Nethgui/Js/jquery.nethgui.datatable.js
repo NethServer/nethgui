@@ -106,7 +106,7 @@
             
             var self = this;            
             
-            this._rows = [];            
+            this._rowMeta = [];            
             this._dataTable = this.element.children('table').first();           
             this._initializeColumnFormatters(this._dataTable);
 
@@ -118,13 +118,14 @@
 
             var defaultSettings = {
                 bJQueryUI: true,
-                fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+                fnRowCallback: function( nRow, aData ) {
                     var $nRow = $(nRow);
+                    var key = aData[0];
+                    //$nRow.children('td:first').remove();
                     self._initializeDeep($nRow.children().toArray());
-                    if(self._rows[iDisplayIndexFull] !== undefined) //apply tr class
-                    {
-                        var tmp = self._rows[iDisplayIndexFull][0];
-                        $nRow.addClass(tmp.rowCssClass);
+                    if(self._rowMeta[key] !== undefined) {
+                        //apply tr class
+                        $nRow.addClass(self._rowMeta[key].rowCssClass);                        
                     }
                     return nRow
                 },
@@ -147,13 +148,14 @@
             this._dataTable.dataTable(defaultSettings);
         },
         _updateView: function(rows, selector) {            
-            this._rows = rows;
+            this._rowMeta = [];
             this._dataTable.fnClearTable(false);
             for(var i = 0; i < rows.length; i++) {
                 var currentRow = [];
+                this._rowMeta[rows[i][1]] = rows[i][0];
                 for(var j = 1; j < rows[i].length; j++) {
                     // invoke the formatter function - see addFormatters():
-                    var formatter = this._formatterFunctions[this._columnFormatters[j-1]];
+                    var formatter = this._formatterFunctions[this._columnFormatters[j-1]];                    
                     currentRow.push(formatter.call(this, rows[i][j]));
                 }
                 this._dataTable.fnAddData(currentRow, false);
