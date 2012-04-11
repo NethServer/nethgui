@@ -34,6 +34,13 @@ class Resource extends \Nethgui\Controller\AbstractController implements \Nethgu
     private $fileName;
     private $cachePath;
 
+    protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
+    {
+        $attributes = new SystemModuleAttributesProvider();
+        $attributes->initializeFromModule($this);
+        return $attributes;
+    }    
+    
     public function __construct()
     {
         parent::__construct(NULL);

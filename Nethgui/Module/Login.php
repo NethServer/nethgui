@@ -37,6 +37,13 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
      */
     private $session;
 
+    protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
+    {
+        $attributes = new SystemModuleAttributesProvider();
+        $attributes->initializeFromModule($this);
+        return $attributes;
+    }    
+    
     public function initialize()
     {
         parent::initialize();

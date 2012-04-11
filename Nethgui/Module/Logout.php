@@ -28,12 +28,18 @@ namespace Nethgui\Module;
  */
 class Logout extends \Nethgui\Controller\AbstractController implements \Nethgui\Utility\SessionConsumerInterface
 {
-
     /**
      *
      * @var \Nethgui\Utility\SessionInterface
      */
     private $session;
+
+    protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
+    {
+        $attributes = new SystemModuleAttributesProvider();
+        $attributes->initializeFromModule($this);
+        return $attributes;
+    }
 
     public function initialize()
     {
@@ -77,10 +83,10 @@ EOJS;
         return '/Login';
     }
 
-
     public function setSession(\Nethgui\Utility\SessionInterface $session)
     {
         $this->session = $session;
         return $this;
     }
+
 }

@@ -136,8 +136,7 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
     }
 
     /**
-     *
-     * @param string $path
+     * Load all modules under the <moduleIdentifier> subdirectory     
      * @return \Nethgui\Module\Composite 
      */
     protected function loadChildrenDirectory()

@@ -67,6 +67,13 @@ class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\Co
      * @var array
      */
     private $systemModules;
+    
+    protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
+    {
+        $attributes = new SystemModuleAttributesProvider();
+        $attributes->initializeFromModule($this);
+        return $attributes;
+    }
 
     public function __construct($template, \Nethgui\Module\ModuleSetInterface $modules)
     {

@@ -31,6 +31,13 @@ namespace Nethgui\Module;
 class Notification extends \Nethgui\Controller\AbstractController implements \Nethgui\View\CommandReceiverInterface, \Nethgui\Utility\SessionConsumerInterface
 {
 
+    protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
+    {
+        $attributes = new SystemModuleAttributesProvider();
+        $attributes->initializeFromModule($this);
+        return $attributes;
+    }    
+    
     public function __construct($identifier = NULL)
     {
         parent::__construct($identifier);

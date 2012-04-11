@@ -81,9 +81,8 @@ interface ModuleInterface
 
     /**
      * Gain access to the attributes of this module
-     *
-     * @return ModuleAttributesInterface
      * @api
+     * @return \Nethgui\Module\ModuleAttributesInterface     
      */
     public function getAttributesProvider();
 }

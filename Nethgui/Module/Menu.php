@@ -42,6 +42,13 @@ class Menu extends \Nethgui\Controller\AbstractController
      */
     private $moduleSet;
 
+    protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
+    {
+        $attributes = new SystemModuleAttributesProvider();
+        $attributes->initializeFromModule($this);
+        return $attributes;
+    }    
+    
     /**
      *
      * @param string $currentModuleIdentifier
