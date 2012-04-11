@@ -31,17 +31,19 @@ interface ModuleAttributesInterface
 {
     /**
      * Gets the Module title
-     *
-     * @return string
+     * 
      * @api
+     * 
+     * @return string
      */
     public function getTitle();
 
     /**
      * Gets the Module description
      *
-     * @return string
      * @api
+     * 
+     * @return string
      */
     public function getDescription();
 
@@ -52,32 +54,36 @@ interface ModuleAttributesInterface
      *
      * Tags are used to search a module among the others
      *
-     * @return string
      * @api
+     * 
+     * @return string
      */
     public function getTags();
 
     /**
      * The category of the aggregated module
      *
-     * @return string Unique parent module identifier
      * @api
+     * 
+     * @return string Unique parent module identifier
      */
     public function getCategory();
     
     /**
      * The menu position of the aggregated module
-     *
-     * @return string
+     * 
      * @api
+     * 
+     * @return string
      */
     public function getMenuPosition();
 
     /**
      * The name of the language catalog where to search the translated strings
      * 
-     * @return string|array The language catalog name, or catalog name list
      * @api
+     * 
+     * @return string|array The language catalog name, or catalog name list
      */
     public function getLanguageCatalog();
 }
