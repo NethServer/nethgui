@@ -173,7 +173,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
 
         $mock->expects($this->once())
                 ->method('popen')
-                ->with('/sbin/e-smith/pam-authenticate-pw >/dev/null 2>&1', 'w')
+                ->with('/usr/bin/sudo /sbin/e-smith/pam-authenticate-pw >/dev/null 2>&1', 'w')
                 ->will($this->returnValue('PipeDescriptor'));
 
         $mock->expects($this->once())
@@ -193,7 +193,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
 
         $phpwrapper->expects($this->once())
                 ->method('popen')
-                ->with('/sbin/e-smith/pam-authenticate-pw >/dev/null 2>&1', 'w')
+                ->with('/usr/bin/sudo /sbin/e-smith/pam-authenticate-pw >/dev/null 2>&1', 'w')
                 ->will($this->returnValue(FALSE));
 
         $phpwrapper->expects($this->once())
