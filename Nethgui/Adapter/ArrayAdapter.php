@@ -20,7 +20,6 @@ namespace Nethgui\Adapter;
  * along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 /**
  * Array adapter maps a PHP array-like interface to a key or prop value
  * where values are separated by a separator character.
@@ -31,23 +30,25 @@ namespace Nethgui\Adapter;
  */
 class ArrayAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate, \Countable
 {
-
     /**
      * The character used as separator to encode/decode the array string value.
      * @var string
      */
     private $separator;
+
     /**
      * This boolean is indeed a tri-state value, where NULL indicates
      * that object state is uninitialized.
      * @var boolean
      */
     private $modified;
+
     /**
      * Keeps the array values.
      * @var ArrayObject
      */
     private $data;
+
     /**
      *
      * @var \Nethgui\Serializer\SerializerInterface
@@ -75,11 +76,11 @@ class ArrayAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
 
     public function set($value)
     {
-        if(empty($value)) {
+        if (empty($value)) {
             $value = array();
         }
-        
-        if ( ! is_array($value) ) {
+
+        if ( ! is_array($value)) {
             throw new \InvalidArgumentException(sprintf('%s: Invalid data type. Expected `array` or `EMPTY`, was `%s`', get_class($this), gettype($value)), 1322148826);
         }
 
@@ -87,14 +88,12 @@ class ArrayAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
             $this->lazyInitialization();
         }
 
-        if (empty($value) && is_null($this->data))
-        {
+        if (empty($value) && is_null($this->data)) {
             $this->modified = FALSE;
             return;
         }
 
-        if (empty($value) && !is_null($this->data))
-        {
+        if (empty($value) && ! is_null($this->data)) {
             $this->modified = TRUE;
             $this->data = NULL;
             return;
@@ -107,7 +106,6 @@ class ArrayAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
             $this->data->exchangeArray($value);
             $this->modified = TRUE;
         }
-
     }
 
     public function delete()
@@ -135,7 +133,7 @@ class ArrayAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
         $this->serializer->write($value);
 
         $this->modified = FALSE;
-        
+
         return TRUE;
     }
 
@@ -220,8 +218,7 @@ class ArrayAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
             $this->data = NULL;
         } elseif ($value === '') {
             $this->data = new \ArrayObject();
-        } else
-        {
+        } else {
             $this->data = new \ArrayObject(explode($this->separator, $value));
         }
 

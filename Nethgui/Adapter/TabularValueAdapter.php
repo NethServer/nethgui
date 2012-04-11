@@ -58,7 +58,7 @@ class TabularValueAdapter implements AdapterInterface, \ArrayAccess, \IteratorAg
     private function lazyInitialization()
     {
         $this->data = new \ArrayObject();
-
+        
         foreach ($this->innerAdapter as $rawRow) {
             $row = explode($this->columnSeparator, $rawRow);
             $key = array_shift($row);
