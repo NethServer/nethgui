@@ -92,3 +92,5 @@ $L['Logout_label'] = 'Esci';
 $L['Welcome on ${0}'] = 'Benvenuto su ${0}';
 $L['Invalid credentials'] = 'Credenziali non valide';
 $L['Empty table'] = 'Tabella vuota';
+
+$L['An object with the same key already exists'] = 'Un oggetto con lo stesso identificatore esiste già';

@@ -103,14 +103,7 @@ class Modify extends AbstractAction
         // The key value is assumed to be the first subpath segment of the request:
         $key = \Nethgui\array_head($request->getPath());
 
-        if ($this->getIdentifier() === 'create') {
-            if ($request->isMutation()) {
-                $key = $request->getParameter($this->key);
-                if (isset($this->tableAdapter[$key])) {
-                    throw new \Nethgui\Exception\HttpException('Conflict', 409, 1325685280);
-                }
-            }
-        } elseif ( ! isset($this->tableAdapter[$key])) {
+        if ( ! isset($this->tableAdapter[$key]) &&  $this->getIdentifier() !== 'create') {
             throw new \Nethgui\Exception\HttpException('Not found', 404, 1325672611);
         }
 
@@ -144,6 +137,18 @@ class Modify extends AbstractAction
             foreach ($this->createDefaults as $paramName => $paramValue) {
                 $this->parameters[$paramName] = $paramValue;
             }
+        }
+    }
+    
+    public function validate(\Nethgui\Controller\ValidationReportInterface $report) {
+        parent::validate($report);
+        
+        $request = $this->getRequest();
+        if ($this->getIdentifier() === 'create' && $request->isMutation() ) {
+                $key = $request->getParameter($this->key);
+                if (isset($this->tableAdapter[$key])) {
+                    $report->addValidationErrorMessage($this, $this->key, 'An object with the same key already exists');
+                }            
         }
     }
 
