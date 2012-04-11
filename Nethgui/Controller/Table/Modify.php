@@ -103,11 +103,15 @@ class Modify extends AbstractAction
         // The key value is assumed to be the first subpath segment of the request:
         $key = \Nethgui\array_head($request->getPath());
 
-        if ( ! isset($this->tableAdapter[$key]) &&  $this->getIdentifier() !== 'create') {
+        if ($this->getIdentifier() === 'create') {
+            if ($request->isMutation()) {
+                $key = $request->getParameter($this->key);
+            }
+        } elseif ( ! isset($this->tableAdapter[$key])) {
             throw new \Nethgui\Exception\HttpException('Not found', 404, 1325672611);
         }
 
-        foreach ($this->parameterSchema as $declarationIndex => $parameterDeclaration) {
+        foreach ($this->parameterSchema as $parameterDeclaration) {
             $parameterName = array_shift($parameterDeclaration);
             $validator = array_shift($parameterDeclaration);
             $valueProvider = array_shift($parameterDeclaration);
@@ -139,16 +143,16 @@ class Modify extends AbstractAction
             }
         }
     }
-    
-    public function validate(\Nethgui\Controller\ValidationReportInterface $report) {
+
+    public function validate(\Nethgui\Controller\ValidationReportInterface $report)
+    {
         parent::validate($report);
-        
+
         $request = $this->getRequest();
-        if ($this->getIdentifier() === 'create' && $request->isMutation() ) {
-                $key = $request->getParameter($this->key);
-                if (isset($this->tableAdapter[$key])) {
-                    $report->addValidationErrorMessage($this, $this->key, 'An object with the same key already exists');
-                }            
+        if ($this->getIdentifier() === 'create' && $request->isMutation()) {
+            if (isset($this->tableAdapter[$this->parameters[$this->key]])) {
+                $report->addValidationErrorMessage($this, $this->key, 'An object with the same key already exists');
+            }
         }
     }
 
@@ -198,7 +202,7 @@ class Modify extends AbstractAction
 
     protected function processUpdate($key)
     {
-
+        
     }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
