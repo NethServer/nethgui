@@ -592,13 +592,13 @@ class Validator implements \Nethgui\System\ValidatorInterface
 
     private function evalIpV4Netmask($value)
     {
-        $pattern = "/^(((128|192|224|240|248|252|254)\.0\.0\.0)|(255\.(0|128|192|224|240|248|252|254)\.0\.0)|(255\.255\.(0|128|192|224|240|248|252|254)\.0)|(255\.255\.255\.(0|128|192|224|240|248|252|254)))$/i";
+        $pattern = '/^(((128|192|224|240|248|252|254)\.0\.0\.0)|(255\.(0|128|192|224|240|248|252|254)\.0\.0)|(255\.255\.(0|128|192|224|240|248|252|254)\.0)|(255\.255\.255\.(0|128|192|224|240|248|252|254)))$/i';
         return preg_match($pattern, $value);
     }
 
     private function evalMacAddress($value)
     {
-        $pattern = "'/^([0-9a-f]{2}([:]|$)){6}$/i'";
+        $pattern = '/^[0-9a-f]{2}(:[0-9a-f]{2}){5}$/i';
         return preg_match($pattern, $value);
     }
 
