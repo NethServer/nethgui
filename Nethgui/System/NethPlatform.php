@@ -340,6 +340,14 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
                 case self::HOSTNAME:
                     $validator->hostname();
                     break;
+                
+                case self::HOSTNAME_FQDN:
+                    $validator->hostname(1);
+                    break;
+                
+                case self::HOSTNAME_SIMPLE:
+                    $validator->hostname(0, 0);
+                    break;
 
                 case self::HOSTADDRESS:
                     $validator->orValidator($this->createValidator()->ipV4Address(), $this->createValidator()->hostname());

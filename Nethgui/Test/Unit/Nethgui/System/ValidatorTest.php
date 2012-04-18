@@ -3,7 +3,6 @@ namespace Nethgui\Test\Unit\Nethgui\System;
 
 class ValidatorTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @var Nethgui_Core_Validator
      */
@@ -30,7 +29,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
             'getDetachedProcesses',
             'runEvents',
             ));
-        
+
         $this->platform
             ->expects($this->any())
             ->method('getDateFormat')
@@ -313,6 +312,63 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->object->evaluate('www.' . str_repeat('.aaa', 100)));
     }
 
+    public function testHostnameFqdn()
+    {
+        $this->object->hostname(1);
+        $this->assertFalse($this->object->evaluate('host123'));
+        $this->assertFalse($this->object->evaluate('davidep1'));
+        $this->assertTrue($this->object->evaluate('host.domain'));        
+        $this->assertTrue($this->object->evaluate('host.domain.co.uk'));     
+    }
+
+    public function testHostnameSimple()
+    {
+        $this->object->hostname(0, 0);
+        $this->assertTrue($this->object->evaluate('host123'));
+        $this->assertFalse($this->object->evaluate('host.domain'));
+    }
+
+    /**
+     * @expectedException \LogicException 
+     */
+    public function testHostnameEx()
+    {
+        $this->object->hostname(15, 7);
+    }
+    
+    public function testFailureInfo1() {
+        $this->object->minLength(3);
+        
+        $this->assertFalse($this->object->evaluate('hi'));
+        
+        $failureInfo = $this->object->getFailureInfo();
+        
+        // failure info is an array
+        $this->assertType('array', $failureInfo);        
+        
+        // one validator, one element
+        $this->assertEquals(1, count($failureInfo));
+        
+        // the array is 0-indexed
+        $this->assertArrayHasKey(0, $failureInfo);
+        
+        // the 0 element is an array        
+        $this->assertType('array', $failureInfo[0]);
+        
+               
+        var_export($failureInfo);
+       
+        // the 0 element contains 0 and 1 indexes:
+        $this->assertArrayHasKey(0, $failureInfo[0]);
+        $this->assertArrayHasKey(1, $failureInfo[0]);
+        
+        // the 1 index is an array too:
+        $this->assertType('array', $failureInfo[0][1]);
+        
+        // the 1 index contains one element
+        $this->assertEquals(1, count($failureInfo[0][1]));
+    }
+
     public function testDateSmallEndian()
     {
         $this->object->date('dd/mm/YYYY');
@@ -439,4 +495,3 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
     }
 
 }
-

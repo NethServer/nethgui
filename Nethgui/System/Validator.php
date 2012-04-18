@@ -139,14 +139,28 @@ class Validator implements \Nethgui\System\ValidatorInterface
 
     /**
      * Check if the given value is a valid host name
+     * @param int $minDots Default 0
+     * @param int $maxDots Default PHP_INT_MAX
      * @return Nethgui_Core_Validator
      */
-    public function hostname()
+    public function hostname($minDots = 0, $maxDots = PHP_INT_MAX)
     {
-        return $this
-                ->addToChain('minLength', NULL, 1)
-                ->addToChain('maxLength', NULL, 255)
-                ->addToChain(__FUNCTION__);
+        if ($minDots > $maxDots) {
+            throw new \LogicException(sprintf('%s: hostname validator: the minDots argument must be less than or equal to maxDots', __CLASS__), 1334737472);
+        }
+
+        $message = 'valid_hostname';
+        if ($minDots > 0) {
+            $message = 'valid_hostname_fqdn';
+        } elseif ($maxDots === 0) {
+            $message = 'valid_hostname_simple';
+        }
+
+        $this
+            ->minLength(1)
+            ->maxLength(255)
+            ->addToChain(__FUNCTION__, array($message, array($minDots, $maxDots)), $minDots, $maxDots)
+        ;
     }
 
     /**
@@ -532,9 +546,15 @@ class Validator implements \Nethgui\System\ValidatorInterface
         return strlen($s) <= $max;
     }
 
-    private function evalHostname($value)
+    private function evalHostname($value, $minDots, $maxDots)
     {
         $parts = explode('.', $value);
+
+        $dotsCount = count($parts) - 1;
+
+        if ($dotsCount < $minDots || $dotsCount > $maxDots) {
+            return FALSE;
+        }
 
         // letter-case ignored.
         // FIXME: allow underscore (_) in hostname?

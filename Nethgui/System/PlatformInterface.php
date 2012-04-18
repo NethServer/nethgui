@@ -65,11 +65,25 @@ interface PlatformInterface
     const POSITIVE_INTEGER = 1248968166;
 
     /**
-     * Valid host name
+     * Valid generic hostname
      *
      * @see #478
      */
     const HOSTNAME = 1248968167;
+    
+    /**
+     * Valid simple hostname without domain part
+     * 
+     * @see #1052 
+     */
+    const HOSTNAME_SIMPLE =  1334736972;
+    
+    /**
+     * Valid hostname with domain part (FQDN)
+     * 
+     * @see #1052 
+     */
+    const HOSTNAME_FQDN = 1334741642;
 
     /**
      * Valid host name or ip address
