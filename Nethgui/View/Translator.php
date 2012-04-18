@@ -113,7 +113,7 @@ class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Utility\
                 $placeholders[$argId] = $argValue;
             }
         }
-
+                
         return strtr($translation, $placeholders);
     }
 

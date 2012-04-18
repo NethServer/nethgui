@@ -35,8 +35,8 @@ interface ValidationReportInterface
      * @api
      * @param ModuleInterface $module
      * @param string $parameterName
-     * @param string The error message template
-     * @param array Optional - Arguments to the error message. ${0}, ${1}, ${2}
+     * @param string $message The error message template
+     * @param array $args Optional - Arguments to the error message
      */
     public function addValidationErrorMessage(\Nethgui\Module\ModuleInterface $module, $parameterName, $message, $args = array());
 

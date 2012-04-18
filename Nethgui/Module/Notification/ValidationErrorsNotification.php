@@ -28,7 +28,6 @@ namespace Nethgui\Module\Notification;
  */
 class ValidationErrorsNotification extends AbstractNotification implements \Nethgui\Controller\ValidationReportInterface
 {
-
     /**
      * Validation error counter
      *
@@ -123,4 +122,3 @@ class ValidationErrorsNotification extends AbstractNotification implements \Neth
     }
 
 }
-

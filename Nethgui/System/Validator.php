@@ -79,7 +79,7 @@ class Validator implements \Nethgui\System\ValidatorInterface
             $setToShow = $set;
         }
 
-        $messageTemplate = array('valid_memberOf ${0}', array('${0}' => implode(', ', $setToShow)));
+        $messageTemplate = array('valid_memberOf', array(implode(', ', $setToShow)));
 
         return $this->addToChain(__FUNCTION__, $messageTemplate, $set);
     }
@@ -91,7 +91,7 @@ class Validator implements \Nethgui\System\ValidatorInterface
      */
     public function regexp($e)
     {
-        $messageTemplate = array('valid_regexp ${0}', array('${0}' => $e));
+        $messageTemplate = array('valid_regexp', array($e));
         return $this->addToChain(__FUNCTION__, $messageTemplate, $e);
     }
 
@@ -202,31 +202,31 @@ class Validator implements \Nethgui\System\ValidatorInterface
 
     public function lessThan($cmp)
     {
-        $template = array('valid_lessThan ${0}', array('${0}' => $cmp));
+        $template = array('valid_lessThan', array($cmp));
         return $this->addToChain(__FUNCTION__, $template, $cmp);
     }
 
     public function greatThan($cmp)
     {
-        $template = array('valid_greatThan ${0}', array('${0}' => $cmp));
+        $template = array('valid_greatThan', array($cmp));
         return $this->addToChain(__FUNCTION__, $template, $cmp);
     }
 
     public function equalTo($cmp)
     {
-        $template = array('valid_equalTo ${0}', array('${0}' => $cmp));
+        $template = array('valid_equalTo', array($cmp));
         return $this->addToChain(__FUNCTION__, $template, $cmp);
     }
 
     public function minLength($length)
     {
-        $template = array('valid_minLength ${0}', array('${0}' => $length));
+        $template = array('valid_minLength', array($length));
         return $this->addToChain(__FUNCTION__, $template, $length);
     }
 
     public function maxLength($length)
     {
-        $template = array('vald_maxLength ${0}', array('${0}' => $length));
+        $template = array('valid_maxLength', array($length));
         return $this->addToChain(__FUNCTION__, $template, $length);
     }
 
@@ -262,7 +262,7 @@ class Validator implements \Nethgui\System\ValidatorInterface
             $format = $this->platform->getDateFormat();
         }
 
-        $template = array('valid_date ${0}', array('${0}' => $format));
+        $template = array('valid_date', array($format));
         return $this->addToChain(__FUNCTION__, $template, $format);
     }
 
@@ -290,8 +290,8 @@ class Validator implements \Nethgui\System\ValidatorInterface
     public function platform($validatorName)
     {
         $arguments = func_get_args();
-        
-        if(!is_string($validatorName) && $validatorName !== '') {
+
+        if ( ! is_string($validatorName) && $validatorName !== '') {
             throw new \InvalidArgumentException(sprintf("%s: must supply a validator name argument", __CLASS__), 1333012309);
         }
 
@@ -302,7 +302,7 @@ class Validator implements \Nethgui\System\ValidatorInterface
         foreach ($arguments as $arg) {
             $message .= ' ${' . $i . '}';
             $placeholders['${' . $i . '}'] = $arg;
-            $i++;
+            $i ++;
         }
 
         $template = array($message, $placeholders);
@@ -605,13 +605,13 @@ class Validator implements \Nethgui\System\ValidatorInterface
     private function evalPlatform($value)
     {
         $args = func_get_args();
-        
+
         // remove the first argument: $value ..
         array_shift($args);
-        
+
         // .. append to last position
         $args[] = $value;
-        
+
         $process = $this->platform->exec('/usr/bin/sudo /sbin/e-smith/validate ${@}', $args);
 
         if ($process->getExitCode() !== 0 && $this->platform instanceof \Nethgui\Log\LogConsumerInterface) {
