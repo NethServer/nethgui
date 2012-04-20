@@ -50,7 +50,6 @@ class Modify extends AbstractAction
      * @var array
      */
     private $createDefaults = array();
-    private $template;
 
     public function __construct($identifier, $parameterSchema = NULL, $viewTemplate = NULL)
     {
@@ -60,8 +59,10 @@ class Modify extends AbstractAction
 
         parent::__construct($identifier);
 
-        $this->template = $viewTemplate;
-
+        if ( ! is_null($viewTemplate)) {
+            $this->setViewTemplate($viewTemplate);
+        }
+        
         if ( ! is_null($parameterSchema)) {
             $this->setSchema($parameterSchema);
         }
@@ -208,9 +209,6 @@ class Modify extends AbstractAction
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
-        if (isset($this->template)) {
-            $view->setTemplate($this->template);
-        }
         if ($view->getTargetFormat() === $view::TARGET_XHTML) {
             $view['__key'] = $this->key;
         }

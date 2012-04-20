@@ -23,7 +23,7 @@ namespace Nethgui\Language\it;
 $L['status_disabled_label'] = 'Disabilitato';
 $L['status_enabled_label'] = 'Abilitato';
 
-$L['Confirm deletion of `${0}`?'] = 'Confermi l\'eliminazione di "${0}"?';
+$L['Confirm deletion of `${0}`?'] = 'Confermi l\'eliminazione di `${0}`?';
 $L['Delete `${0}`'] = 'Elimina "${0}"';
 $L['Actions_label'] = 'Azioni';
 $L['Submit_label'] = 'Salva';
@@ -73,7 +73,6 @@ $L['Please wait...'] = 'Attendere prego...';
 $L['Search'] = 'Cerca';
 $L['Search...'] = 'Cerca...';
 $L['Add'] = 'Aggiungi';
-
 
 $L['create_Title'] = 'Crea';
 $L['read_Title'] = '';
