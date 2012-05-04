@@ -21,7 +21,7 @@ namespace Nethgui\Controller\Table;
  */
 
 /**
- * A Table Action receives a TableAdapter to modify a table
+ * A Table Action asks its parent to get a table adapter
  *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
@@ -62,6 +62,11 @@ abstract class AbstractAction extends \Nethgui\Controller\AbstractController imp
         }
     }
 
+    /**
+     * Return to default "read" action
+     * 
+     * @return string 'read'
+     */
     public function nextPath()
     {
         return 'read';

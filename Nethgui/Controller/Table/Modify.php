@@ -28,23 +28,8 @@ namespace Nethgui\Controller\Table;
  * @since 1.0
  * @api
  */
-class Modify extends AbstractAction
+class Modify extends \Nethgui\Controller\Table\RowAbstractAction
 {
-    const KEY = 1325671618;
-    const FIELD = 1325671619;
-
-    /**
-     *
-     * @var array
-     */
-    private $parameterSchema = array();
-
-    /**
-     * The name of the key parameter to identify the table adapter record
-     * @var string
-     */
-    private $key;
-
     /**
      * Values passed into the view in GET/create
      * @var array
@@ -62,26 +47,27 @@ class Modify extends AbstractAction
         if ( ! is_null($viewTemplate)) {
             $this->setViewTemplate($viewTemplate);
         }
-        
+
         if ( ! is_null($parameterSchema)) {
             $this->setSchema($parameterSchema);
         }
     }
 
-    public function setSchema($parameterSchema)
+    public function getKeyValue(\Nethgui\Controller\RequestInterface $request)
     {
-        $this->parameterSchema = array();
-        $this->key = NULL;
+        // The key value is assumed to be the first subpath segment of the request:
+        $key = \Nethgui\array_head($request->getPath());
+        $tableAdapter = $this->getAdapter();
 
-        foreach ($parameterSchema as $parameterDeclaration) {
-            if (isset($parameterDeclaration[0], $parameterDeclaration[2]) && $parameterDeclaration[2] === self::KEY) {
-                $this->key = $parameterDeclaration[0];
-                $this->parameterSchema = $parameterSchema;
-                return $this;
+        if ($this->getIdentifier() === 'create') {
+            if ($request->isMutation()) {
+                $key = $request->getParameter($this->getKey());
             }
+        } elseif (is_null($tableAdapter) || ! isset($tableAdapter[$key])) {
+            throw new \Nethgui\Exception\HttpException('Not found', 404, 1325672611);
         }
 
-        throw new \LogicException(sprintf('%s: invalid schema. You must declare a KEY field.', __CLASS__), 1325671156);
+        return $key;
     }
 
     /**
@@ -91,50 +77,6 @@ class Modify extends AbstractAction
      */
     public function bind(\Nethgui\Controller\RequestInterface $request)
     {
-        $this->tableAdapter = $this->getAdapter();
-
-        if (is_null($this->tableAdapter)) {
-            throw new \LogicException(sprintf('%s: you must setTableAdapter() on %s before bind().', __CLASS__, $this->getParent()->getIdentifier()), 1325673694);
-        }
-
-        if (is_null($this->key)) {
-            throw new \LogicException(sprintf('%s: you must setSchema() before bind()', get_class($this)), 1325673717);
-        }
-
-        // The key value is assumed to be the first subpath segment of the request:
-        $key = \Nethgui\array_head($request->getPath());
-
-        if ($this->getIdentifier() === 'create') {
-            if ($request->isMutation()) {
-                $key = $request->getParameter($this->key);
-            }
-        } elseif ( ! isset($this->tableAdapter[$key])) {
-            throw new \Nethgui\Exception\HttpException('Not found', 404, 1325672611);
-        }
-
-        foreach ($this->parameterSchema as $parameterDeclaration) {
-            $parameterName = array_shift($parameterDeclaration);
-            $validator = array_shift($parameterDeclaration);
-            $valueProvider = array_shift($parameterDeclaration);
-
-            if ($valueProvider === self::KEY) {
-                $valueProvider = function () use ($key) {
-                        return $key;
-                    };
-            } elseif ($valueProvider === self::FIELD) {
-                $prop = array_shift($parameterDeclaration);
-                $separator = array_shift($parameterDeclaration);
-                // Null prop name falls back into parameterName:
-                if (is_null($prop)) {
-                    $prop = $parameterName;
-                }
-
-                $valueProvider = array($this->tableAdapter, $key, $prop, $separator);
-            }
-
-            $this->declareParameter($parameterName, $validator, $valueProvider);
-        }
-
         parent::bind($request);
 
         if ( ! $request->isMutation()
@@ -151,8 +93,9 @@ class Modify extends AbstractAction
 
         $request = $this->getRequest();
         if ($this->getIdentifier() === 'create' && $request->isMutation()) {
-            if (isset($this->tableAdapter[$this->parameters[$this->key]])) {
-                $report->addValidationErrorMessage($this, $this->key, 'An object with the same key already exists');
+            $tableAdapter = $this->getAdapter();
+            if (isset($tableAdapter[$this->parameters[$this->getKey()]])) {
+                $report->addValidationErrorMessage($this, $this->getKey(), 'An object with the same key already exists');
             }
         }
     }
@@ -164,7 +107,7 @@ class Modify extends AbstractAction
         }
 
         $action = $this->getIdentifier();
-        $key = $this->parameters[$this->key];
+        $key = $this->parameters[$this->getKey()];
 
         if ($action == 'delete') {
             $this->processDelete($key);
@@ -180,7 +123,7 @@ class Modify extends AbstractAction
         $changes = $this->parameters->getModifiedKeys();
 
         $save1 = $this->parameters->save();
-        $save2 = $this->tableAdapter->save();
+        $save2 = $this->getAdapter()->save();
         if ($save1 || $save2) {
             $this->onParametersSaved($changes);
             $this->getParent()->onParametersSaved($this, $changes, $this->parameters->getArrayCopy());
@@ -189,8 +132,9 @@ class Modify extends AbstractAction
 
     protected function processDelete($key)
     {
-        if (isset($this->tableAdapter[$key])) {
-            unset($this->tableAdapter[$key]);
+        $tableAdapter = $this->getAdapter();
+        if (isset($tableAdapter[$key])) {
+            unset($tableAdapter[$key]);
         } else {
             throw new \RuntimeException(sprintf('%s: Cannot delete `%s`.', get_class($this), $key), 1322148216);
         }
@@ -210,7 +154,7 @@ class Modify extends AbstractAction
     {
         parent::prepareView($view);
         if ($view->getTargetFormat() === $view::TARGET_XHTML) {
-            $view['__key'] = $this->key;
+            $view['__key'] = $this->getKey();
         }
     }
 
