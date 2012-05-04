@@ -85,7 +85,8 @@ class PluggableAction extends \Nethgui\Controller\Table\AbstractAction implement
 
     public function addChild(\Nethgui\Module\ModuleInterface $module)
     {
-        return $this->plugins->addChild($module);
+        $this->plugins->addChild($module);
+        return $this;
     }
 
     public function getChildren()

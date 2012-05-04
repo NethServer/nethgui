@@ -37,7 +37,7 @@ abstract class RowAbstractAction extends \Nethgui\Controller\Table\AbstractActio
 {
     const KEY = 1325671618;
     const FIELD = 1325671619;
-    
+
     /**
      *
      * @var array
@@ -50,7 +50,7 @@ abstract class RowAbstractAction extends \Nethgui\Controller\Table\AbstractActio
      */
     private $key;
 
-    /**       
+    /**
      * The name of the key parameter to identify the table adapter record
      * 
      * @param string $parameterName
@@ -79,22 +79,22 @@ abstract class RowAbstractAction extends \Nethgui\Controller\Table\AbstractActio
      * @param \Nethgui\Controller\RequestInterface $request the incoming request
      * @return string the key parameter value
      */
-    abstract public function getKeyValue(\Nethgui\Controller\RequestInterface $request); 
-    
+    abstract public function getKeyValue(\Nethgui\Controller\RequestInterface $request);
+
     public function bind(\Nethgui\Controller\RequestInterface $request)
     {
         $tableAdapter = $this->getAdapter();
-        
+
         if (is_null($tableAdapter)) {
             throw new \LogicException(sprintf('%s: you must setTableAdapter() on %s before bind().', __CLASS__, $this->getParent()->getIdentifier()), 1325673694);
         }
 
         if (is_null($this->getKey())) {
-            throw new \LogicException(sprintf('%s: you must setSchema() before bind()', get_class($this)), 1325673717);
+            throw new \LogicException(sprintf('%s: unknown key field name.', get_class($this)), 1325673717);
         }
 
         $keyValue = $this->getKeyValue($request);
-        
+
         foreach ($this->parameterSchema as $parameterDeclaration) {
             $parameterName = array_shift($parameterDeclaration);
             $validator = array_shift($parameterDeclaration);

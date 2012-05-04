@@ -35,7 +35,6 @@ namespace Nethgui\Controller;
  */
 class TableController extends \Nethgui\Controller\CompositeController implements \Nethgui\Adapter\AdapterAggregateInterface
 {
-
     /**
      *
      * @var Table\Read
@@ -121,7 +120,7 @@ class TableController extends \Nethgui\Controller\CompositeController implements
         $this->addChild($action);
         return $this;
     }
-    
+
     /**
      * Enable $action to be expanded by instantiating all the classes 
      * under the given $path. 
@@ -155,6 +154,20 @@ class TableController extends \Nethgui\Controller\CompositeController implements
         $this->tableActions[] = $a;
         $this->addChild($a);
         return $this;
+    }
+
+    /**
+     * Enable $action to be expanded by instantiating all the classes 
+     * under the given $path. 
+     * 
+     * @see addRowActionPluggable()
+     * @param \Nethgui\Controller\Table\AbstractAction $action
+     * @param string $path
+     * @return \Nethgui\Controller\TableController
+     */
+    public function addTableActionPluggable(\Nethgui\Controller\Table\AbstractAction $action, $path = 'Plugin')
+    {
+        return $this->addTableAction(new \Nethgui\Controller\Table\PluggableAction($action, $path));
     }
 
     /**

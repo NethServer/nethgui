@@ -47,17 +47,17 @@ class PluginCollector extends \Nethgui\Controller\ListComposite implements \Neth
     }
 
     /**
-     * Pass the $request and path to all of its child
+     * Pass the request object and path segments to all of its children
      * 
      * @param \Nethgui\Controller\RequestInterface $request 
      */
     public function bind(\Nethgui\Controller\RequestInterface $request)
     {
-       foreach($this->getChildren() as $module) {
-           if($module instanceof \Nethgui\Controller\RequestHandlerInterface) {
+        foreach ($this->getChildren() as $module) {
+            if ($module instanceof \Nethgui\Controller\RequestHandlerInterface) {
                 $module->bind($request->spawnRequest($module->getIdentifier(), $request->getPath()));
-           }
-       }
+            }
+        }
     }
 
 }
