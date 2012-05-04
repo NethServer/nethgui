@@ -110,14 +110,29 @@ class TableController extends \Nethgui\Controller\CompositeController implements
 
     /**
      * A column action is executed in a row context (i.e. row updating, deletion...)
+     * 
      * @see getRowActions()
-     * @return TableController
+     * @param \Nethgui\Controller\Table\AbstractAction $action
+     * @return \Nethgui\Controller\TableController
      */
-    public function addRowAction(\Nethgui\Module\ModuleInterface $a)
+    public function addRowAction(\Nethgui\Controller\Table\AbstractAction $action)
     {
-        $this->rowActions[] = $a;
-        $this->addChild($a);
+        $this->rowActions[] = $action;
+        $this->addChild($action);
         return $this;
+    }
+    
+    /**
+     * Enable $action to be expanded by instantiating all the classes 
+     * under the given $path. 
+     * 
+     * @param \Nethgui\Controller\Table\AbstractAction $action
+     * @param string $path
+     * @return \Nethgui\Controller\TableController
+     */
+    public function addRowActionPluggable(\Nethgui\Controller\Table\AbstractAction $action, $path = 'Plugin')
+    {
+        return $this->addRowAction(new \Nethgui\Controller\Table\PluggableAction($action, $path));
     }
 
     /**
