@@ -80,7 +80,7 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
 
         if ($this->isInitialized() && ! $childModule->isInitialized()) {
             $childModule->initialize();
-        }       
+        }
         return $this;
     }
 
@@ -136,21 +136,59 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
     }
 
     /**
-     * Load all modules under the <moduleIdentifier> subdirectory     
+     * Search all php files under the "children" directory and instantiates
+     * any class implementing ModuleInterface.
+     * 
+     * The "children" directory has the dirname() of $module php source file,
+     * and by default its name is the basename() of $module php source file 
+     * without .php extension.  You can specify an alternate children directory
+     * name in $childrenDir parameter.
+     * 
+     * @param \Nethgui\Module\ModuleInterface $module Optional the reference module, $this by default
+     * @param string $path Optional the children directory name, same as $module php source file by default
      * @return \Nethgui\Module\Composite 
      */
-    protected function loadChildrenDirectory()
+    public function loadChildrenDirectory(\Nethgui\Module\ModuleInterface $module = NULL, $childrenDir = NULL)
     {
         if ( ! isset($this->childLoader)) {
-            $this->childLoader = new \Nethgui\Module\ModuleLoader();
-            $this->childLoader
-                ->setLog($this->getLog())
-                ->setNamespaceFromModule($this);                                   
+            $this->initChildLoader(is_null($module) ? $this : $module, $childrenDir);
         }
-        foreach ($this->childLoader as  $childInstance) {
+
+        foreach ($this->childLoader as $childInstance) {
             $this->addChild($childInstance);
         }
+
         return $this;
+    }
+
+    private function initChildLoader(\Nethgui\Module\ModuleInterface $module = NULL, $childrenDir = NULL)
+    {
+        $ref = new \ReflectionClass($module);
+        $filePath = $ref->getFileName();
+        if ($filePath === FALSE) {
+            throw new \UnexpectedValueException(sprintf('%s: cannot find the file where `%s` is declared', __CLASS__, get_class($module)), 1331035353);
+        }
+        if (strstr($childrenDir, '.') !== FALSE) {
+            throw new \DomainException(sprintf('%s: $childrenDir parameter value must not contain dots', __CLASS__), 1336125731);
+        }
+
+        if (is_null($childrenDir)) {
+            $childrenDir = basename($filePath, '.php');
+        }
+              
+        $nsRootPath = realpath(substr($filePath, 0, strlen($filePath) - strlen(get_class($module) . '.php')));
+
+        // remove the last namespace segment and replace with $childrenDir
+        $nsPrefixParts = explode('\\', get_class($module));
+        array_pop($nsPrefixParts);                      
+        $nsPrefixParts = array_merge($nsPrefixParts, explode('/', $childrenDir));
+
+        $nsPrefix = implode('\\', $nsPrefixParts);
+        
+        $this->childLoader = new \Nethgui\Module\ModuleLoader();
+        $this->childLoader
+            ->setLog($this->getLog())
+            ->setNamespace($nsPrefix, $nsRootPath);
     }
 
     /**

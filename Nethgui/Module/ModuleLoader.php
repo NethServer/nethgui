@@ -71,23 +71,6 @@ class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utili
         return $this;
     }
 
-    /**
-     *
-     * @param \Nethgui\Module\ModuleInterface $module
-     * @return \Nethgui\Module\ModuleLoader 
-     */
-    public function setNamespaceFromModule(\Nethgui\Module\ModuleInterface $module)
-    {
-        $ref = new \ReflectionClass($module);
-        $filePath = $ref->getFileName();
-        if ($filePath === FALSE) {
-            throw new \UnexpectedValueException(sprintf('%s: cannot find the file where `%s` is declared', __CLASS__, get_class($module)), 1331035353);
-        }
-        $pathSuffix = str_replace('\\', '/', get_class($module)) . '.php';
-        $this->setNamespace(get_class($module), substr($filePath, 0, strlen($filePath) - strlen($pathSuffix)));
-        return $this;
-    }
-
     public function getIterator()
     {
         if ($this->cacheIsFilled !== TRUE) {
