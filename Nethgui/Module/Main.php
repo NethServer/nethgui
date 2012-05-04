@@ -200,12 +200,12 @@ class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\Co
          * jQuery & jQueryUI libraries: 
          */
         if (defined('NETHGUI_DEBUG') && NETHGUI_DEBUG === TRUE) {
-            $renderer->useFile('js/jquery-1.6.2.js')
+            $renderer->useFile('js/jquery-1.7.1.js')
                 ->useFile('js/jquery-ui-1.8.18.custom.js')
             ;
         } else {
             // require global javascript resources:
-            $renderer->useFile('js/jquery-1.6.2.min.js')
+            $renderer->useFile('js/jquery-1.7.1.min.js')
                 ->useFile('js/jquery-ui-1.8.18.custom.min.js')
             ;
         }
