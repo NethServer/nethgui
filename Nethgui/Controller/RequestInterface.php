@@ -27,6 +27,8 @@ namespace Nethgui\Controller;
  * User to a Module (and its submodules).
  *
  * @api
+ * @since 1.0
+ * @author Davide Principi <davide.principi@nethesis.it>
  */
 interface RequestInterface
 {
@@ -57,6 +59,7 @@ interface RequestInterface
      * to the $subsetName parameter.
      *
      * @param string $subsetName The name of parameters/arguments
+     * @param array $path URL path segments values
      * @return RequestInterface
      * @api
      */
