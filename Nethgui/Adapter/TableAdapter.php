@@ -26,7 +26,6 @@ namespace Nethgui\Adapter;
  */
 class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate, \Countable
 {
-
     /**
      *
      * @var \Nethgui\System\EsmithDatabase
@@ -34,11 +33,13 @@ class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
     private $database;
     private $type;
     private $filter;
+
     /**
      *
      * @var ArrayObject
      */
     private $data;
+
     /**
      *
      * @var ArrayObject
@@ -46,13 +47,13 @@ class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
     private $changes;
 
     /**
-    *
-    * @db string Database used for table mapping
-    * @type string Type of the key for mapping
-    * @filter mixed Can be a string or an associative array. When using a string, filter is a fulltext search on db keys, otherwise it's an array in the form ('prop1'=>'val1',...,'propN'=>'valN') where valN it's a regexp. In this case, the adapter will return only rows where all props match all associated regexp.
-    *
-    **/
-    public function __construct(\Nethgui\System\EsmithDatabase $db, $type, $filter = FALSE)
+     *
+     * @param string $db used for table mapping
+     * @param string $type of the key for mapping
+     * @param mixed $filter Can be a string or an associative array. When using a string, filter is a fulltext search on db keys, otherwise it's an array in the form ('prop1'=>'val1',...,'propN'=>'valN') where valN it's a regexp. In this case, the adapter will return only rows where all props match all associated regexp.
+     *
+     */
+    public function __construct(\Nethgui\System\DatabaseInterface $db, $type, $filter = FALSE)
     {
         $this->database = $db;
         $this->type = $type;
@@ -61,10 +62,10 @@ class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
 
     private function filterMatch($value)
     {
-        foreach($this->filter as $prop=>$regexp) {
-             if(!preg_match($regexp,$value[$prop])) {
-                 return false;
-             }
+        foreach ($this->filter as $prop => $regexp) {
+            if ( ! preg_match($regexp, $value[$prop])) {
+                return false;
+            }
         }
         return true;
     }
@@ -72,25 +73,24 @@ class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
     private function lazyInitialization()
     {
         $this->data = new \ArrayObject();
-       
-        if(is_array($this->filter)) { #apply simple filter only if filter is a string
-            $rawData =$this->database->getAll($this->type); 
-            if(is_array($rawData)) {
+
+        if (is_array($this->filter)) { #apply simple filter only if filter is a string
+            $rawData = $this->database->getAll($this->type);
+            if (is_array($rawData)) {
                 // skip the first column, where getAll() returns the key type.
-                foreach($rawData as $key => $row) {
-                    if($this->filterMatch(array_slice($row, 1))) {
-                        $this->data[$key] = array_slice($row, 1);
+                foreach ($rawData as $key => $row) {
+                    if ($this->filterMatch(array_slice($row, 1))) {
+                        $this->data[$key] = new \ArrayObject(array_slice($row, 1));
                     }
                 }
             }
         } else {
-            $rawData =$this->database->getAll($this->type, $this->filter);
-            foreach($rawData as $key => $row) {
-                $this->data[$key] = array_slice($row, 1);
+            $rawData = $this->database->getAll($this->type, $this->filter);
+            foreach ($rawData as $key => $row) {
+                $this->data[$key] = new \ArrayObject(array_slice($row, 1));
             }
-
         }
-                
+
         $this->changes = new \ArrayObject();
     }
 
@@ -108,7 +108,7 @@ class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
         if ( ! isset($this->data)) {
             $this->lazyInitialization();
         }
-                      
+
         foreach (array_keys($this->data->getArrayCopy()) as $key) {
             unset($this[$key]);
         }
@@ -134,6 +134,9 @@ class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
         }
 
         foreach ($value as $key => $props) {
+            if (is_array($props)) {
+                $props = new \ArrayObject($props);
+            }
             $this[$key] = $props;
         }
     }
@@ -153,7 +156,7 @@ class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
         }
 
         $this->changes = new \ArrayObject();
-        
+
         $this->modified = FALSE;
 
         return $saveCount;
