@@ -61,7 +61,7 @@ class ModuleTestCase extends \PHPUnit_Framework_TestCase
 
         foreach ($env->getDatabaseNames() as $database) {
             $dbStub = $env->getDatabase($database);
-            $dbMock = $this->getMockBuilder('Nethgui\System\ConfigurationDatabase')
+            $dbMock = $this->getMockBuilder('Nethgui\System\EsmithDatabase')
                 ->disableOriginalConstructor()
                 ->setMethods(array_keys($databaseMethods))
                 ->getMock();

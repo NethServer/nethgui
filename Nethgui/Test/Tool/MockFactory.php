@@ -30,6 +30,43 @@ class MockFactory
 {
 
     /**
+     * @param \Nethgui\Test\Tool\DB $db The database internal state object
+     * @return \Nethgui\System\DatabaseInterface 
+     */
+    public static function getMockDatabase(\PHPUnit_Framework_TestCase $testcase, \Nethgui\Test\Tool\DB $db)
+    {
+        // Value is TRUE if the method modifies the database state.
+        $databaseMethods = array(
+            'setProp' => TRUE,
+            'delProp' => TRUE,
+            'deleteKey' => TRUE,
+            'setKey' => TRUE,
+            'setType' => TRUE,
+            'getAll' => FALSE,
+            'getKey' => FALSE,
+            'getProp' => FALSE,
+            'getType' => FALSE,
+        );
+
+
+        $dbMock = $testcase->getMockBuilder('Nethgui\System\EsmithDatabase')
+            ->disableOriginalConstructor()
+            ->setMethods(array_keys($databaseMethods))
+            ->getMock();
+
+        $methodStub = new MockObject($db);
+
+        foreach (array_keys($databaseMethods) as $method) {
+            $dbMock
+                ->expects($testcase->any())
+                ->method($method)
+                ->will($methodStub);
+        }
+
+        return $dbMock;
+    }
+
+    /**
      *
      * @param string $username
      * @return \Nethgui\Authorization\UserInterface
