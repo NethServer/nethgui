@@ -158,6 +158,8 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
             } else {
                 $serializer = new \Nethgui\Serializer\PropSerializer($this->getDatabase($database), $key, $prop);
             }
+        } else {
+            throw new \InvalidArgumentException(sprintf('%s: cannot create a SerializerInterface instance', __CLASS__), 1336467547);
         }
 
         return $serializer;
