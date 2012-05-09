@@ -1,8 +1,8 @@
 <?php
 namespace Nethgui\Test\Unit\Nethgui\Serializer;
+
 class ArrayAccessSerializerTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @var \Nethgui\Serializer\ArrayAccessSerializer
      */
@@ -45,23 +45,23 @@ class ArrayAccessSerializerTest extends \PHPUnit_Framework_TestCase
 
     public function testReadNonExistingRow()
     {
-        $object = new \Nethgui\Serializer\ArrayAccessSerializer($this->data, 'X', 'f0');        
+        $object = new \Nethgui\Serializer\ArrayAccessSerializer($this->data, 'X', 'f0');
         $this->assertNull($object->read());
     }
 
     public function testReadNonExistingField()
     {
-        $object = new \Nethgui\Serializer\ArrayAccessSerializer($this->data, 'A', 'x0');        
+        $object = new \Nethgui\Serializer\ArrayAccessSerializer($this->data, 'A', 'x0');
         $this->assertNull($object->read());
     }
-        
+
     public function testWriteUpdate()
     {
         foreach ($this->tests as $args) {
             list($rowKey, $fieldKey, $value, $object) = $args;
-            $this->assertEquals($value, $this->data[$rowKey][$fieldKey]);  
+            $this->assertEquals($value, $this->data[$rowKey][$fieldKey]);
             $object->write('UU');
-            $this->assertEquals('UU', $this->data[$rowKey][$fieldKey]);            
+            $this->assertEquals('UU', $this->data[$rowKey][$fieldKey]);
         }
     }
 
@@ -70,8 +70,7 @@ class ArrayAccessSerializerTest extends \PHPUnit_Framework_TestCase
         $object = new \Nethgui\Serializer\ArrayAccessSerializer($this->data, 'D', 'f0');
         $object->write('AA');
         $this->assertEquals('AA', $this->data['D']['f0']);
-        $this->assertEquals(array('f0'=>'AA'), $this->data['D']);
+        $this->assertEquals(array('f0' => 'AA'), $this->data['D']);
     }
 
 }
-

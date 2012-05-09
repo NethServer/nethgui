@@ -21,60 +21,95 @@ namespace Nethgui\Serializer;
  */
 
 /**
- * Transfers a prop value to/from an object implementing ArrayAccess interface
+ * Serialize a scalar value into a N dimensional array.
+ * 
+ * The first dimension must be an object with ArrayAccess interface.
  *
  * @see \Nethgui\Controller\Table\Modify
  */
 class ArrayAccessSerializer implements SerializerInterface
 {
-
-    private $prop;
-    private $key;
     /**
      *
      * @var \ArrayAccess
      */
-    private $table;
+    private $arr;
 
-    public function __construct(\ArrayAccess $table, $key, $prop)
+    /**
+     * 
+     * 
+     * @var array
+     */
+    private $subscript;
+
+    public function __construct(\ArrayAccess $arr, $subscript)
     {
-        if ( is_null($key)) {
-            throw new \InvalidArgumentException(sprintf('%s: $key parameter must be set', get_class($this)), 1322148741);
+        if ( ! is_string($subscript)) {
+            throw new \InvalidArgumentException(sprintf('%s: $subscript parameter must be a string', get_class($this)), 1322148741);
         }
 
-        if (is_null($prop) || $prop == '' || $prop === FALSE) {
-            throw new \InvalidArgumentException(sprintf('%s: The `prop` argument is invalid', get_class($this)), 1322148742);
-        }
+        $arguments = func_get_args();
 
-        $this->table = $table;
-        $this->key = $key;
-        $this->prop = strval($prop);
+        array_shift($arguments);
+
+        $this->arr = $arr;
+        $this->subscript = $arguments;
     }
 
     public function read()
     {
-        if ( ! $this->table->offsetExists($this->key)) {
+        $arr = $this->arr;
+
+        $subscript = $this->subscript;
+        $last = array_pop($subscript);
+
+        foreach ($subscript as $s) {
+            if ( ! ($arr instanceof \ArrayAccess || is_array($arr))) {
+                throw new \LogicException(sprintf('%s: unexpected type %s. ', __CLASS__, gettype($arr)), 1336398755);
+            }
+
+            if ( ! isset($arr[$s])) {
+                return NULL;
+            }
+
+            $arr = $arr[$s];
+        }
+
+        if ( ! isset($arr[$last])) {
             return NULL;
         }
 
-        $record = $this->table->offsetGet($this->key);
-        if ( ! isset($record[$this->prop])) {
-            return NULL;
-        }
-        return $record[$this->prop];
+        return $arr[$last];
     }
 
     public function write($value)
     {
-        // update or append ?
-        if ($this->table->offsetExists($this->key)) {
-            $record = $this->table->offsetGet($this->key);
-        } else {
-            $record = array();
+        $arr = $this->arr;
+
+        $currentValue = $this->read();
+
+        if ($currentValue === $value) {
+            return;
         }
 
-        $record[$this->prop] = $value;
-        $this->table->offsetSet($this->key, $record);
+        $subscript = $this->subscript;
+        $last = array_pop($subscript);
+
+        foreach ($subscript as $s) {
+            if ( ! isset($arr[$s])) {
+                $arr[$s] = array();
+            }
+
+            if ($arr[$s] instanceof \ArrayAccess) {
+                $arr = $arr[$s];
+            } elseif (is_array($arr[$s])) {
+                $arr = &$arr[$s];
+            } else {
+                throw new \LogicException(sprintf('%s: unexpected type %s. ', __CLASS__, gettype($arr)), 1336398755);
+            }
+        }
+
+        $arr[$last] = $value;
     }
 
 }
