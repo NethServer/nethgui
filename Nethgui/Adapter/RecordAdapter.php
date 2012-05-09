@@ -71,6 +71,7 @@ class RecordAdapter implements \Nethgui\Adapter\AdapterInterface, \ArrayAccess, 
     public function __construct(\Nethgui\Adapter\TableAdapter $tableAdapter)
     {
         $this->tableAdapter = $tableAdapter;
+        $this->data = new \ArrayObject();
     }
 
     public function setKeyValue($value)
@@ -78,8 +79,11 @@ class RecordAdapter implements \Nethgui\Adapter\AdapterInterface, \ArrayAccess, 
         if (isset($this->keyValue)) {
             throw new \LogicException(sprintf('%s: the record key is already set', __CLASS__), 1336463530);
         }
-
         $this->keyValue = $value;
+        
+        // put the missing tableAdapter values into the current data:
+        $this->mergeDatasource();
+        
         return $this;
     }
 
@@ -95,15 +99,7 @@ class RecordAdapter implements \Nethgui\Adapter\AdapterInterface, \ArrayAccess, 
 
     public function get()
     {
-        if (is_null($this->getKeyValue())) {
-            return NULL;
-        }
-
-        if ($this->state === self::CREATED) {
-            $this->lazyInitialization();
-        }
-
-        return $this->data;
+        return $this->data->getArrayCopy();
     }
 
     public function isModified()
@@ -123,22 +119,13 @@ class RecordAdapter implements \Nethgui\Adapter\AdapterInterface, \ArrayAccess, 
 
         if ($this->state === self::DELETED) {
             $this->tableAdapter->offsetUnset($this->getKeyValue());
+            $this->data = new \ArrayObject();
+            $this->keyValue = NULL;
         } else {
-            $current = $this->tableAdapter->offsetGet($this->getKeyValue());
-
-            if (is_null($current)) {
-                $current = new \ArrayObject();
-            }
-
-            // transfer our field values into the table adapter:
-
-            foreach ($this->data as $key => $value) {
-                $current[$key] = $value;
-            }
-
-            $this->tableAdapter->offsetSet($this->getKeyValue(), $current);
+            $this->mergeDatasource();
+            $this->tableAdapter->offsetSet($this->getKeyValue(), $this->data->getArrayCopy());
         }
-        
+
         $this->state = self::CLEAN;
     }
 
@@ -148,7 +135,7 @@ class RecordAdapter implements \Nethgui\Adapter\AdapterInterface, \ArrayAccess, 
             $value = new \ArrayObject($value);
         }
 
-        if ( ! $value instanceof Traversable) {
+        if ( ! $value instanceof \Traversable) {
             throw new \InvalidArgumentException(sprintf('%s: the $value must be an array or an instance of Traversable interface', __CLASS__), 1336388598);
         }
 
@@ -159,19 +146,11 @@ class RecordAdapter implements \Nethgui\Adapter\AdapterInterface, \ArrayAccess, 
 
     public function offsetExists($offset)
     {
-        if ($this->state === self::CREATED) {
-            $this->lazyInitialization();
-        }
-
         return $this->data->offsetExists($offset);
     }
 
     public function offsetGet($offset)
     {
-        if ($this->state === self::CREATED) {
-            $this->lazyInitialization();
-        }
-
         return $this->data->offsetGet($offset);
     }
 
@@ -180,41 +159,27 @@ class RecordAdapter implements \Nethgui\Adapter\AdapterInterface, \ArrayAccess, 
         if ( ! $this->offsetExists($offset) ||
             $this->offsetGet($offset) !== $value) {
             $this->data->offsetSet($offset, $value);
-            $this->state = self::DIRTY;
+            if ($this->state !== self::DELETED) {
+                $this->state = self::DIRTY;
+            }
         }
     }
 
     public function offsetUnset($offset)
     {
-        if (is_null($this->getKeyValue())) {
-            return;
-        }
-
-        if ($this->state === self::CREATED) {
-            $this->lazyInitialization();
-        }
-
         $this->data->offsetUnset($offset);
     }
 
     public function getIterator()
     {
-        if ($this->state === self::CREATED) {
-            $this->lazyInitialization();
-        }
-
         return $this->data->getIterator();
     }
 
-    private function lazyInitialization()
+    private function mergeDatasource()
     {
         $keyValue = $this->getKeyValue();
 
-//        if ($keyValue === NULL) {
-//            throw new \LogicException(sprintf('%s: the key value must be set before initializing the object', __CLASS__), 1336490797);
-//        }
-
-        if ( ! $keyValue === NULL && $this->tableAdapter->offsetExists($keyValue)) {
+        if ($keyValue !== NULL && $this->tableAdapter->offsetExists($keyValue)) {
             $current = $this->tableAdapter->offsetGet($keyValue);
         } else {
             $current = NULL;
@@ -224,16 +189,11 @@ class RecordAdapter implements \Nethgui\Adapter\AdapterInterface, \ArrayAccess, 
             $current = new \ArrayObject();
         }
 
-        if (is_null($this->data)) {
-            $this->data = new \ArrayObject($current);
-            $this->state = self::CLEAN;
-        } else {
-            // transfer DB fields into the object storage. Record state
-            // is unchanged:
-            foreach ($current as $key => $value) {
-                if ( ! $this->data->offsetExists($key)) {
-                    $this->data->offsetSet($key, $value);
-                }
+        // DB fields are transfered into the object storage. Record state
+        // is unchanged and existing values are retained.
+        foreach ($current as $key => $value) {
+            if ( ! $this->data->offsetExists($key)) {
+                $this->data->offsetSet($key, $value);
             }
         }
     }

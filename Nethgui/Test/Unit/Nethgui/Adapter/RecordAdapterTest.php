@@ -27,16 +27,16 @@ class RecordAdapterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return \Nethgui\Test\Tool\DB 
+     * @return \Nethgui\Test\Tool\DB
      */
     protected function getDB()
     {
         $db = new \Nethgui\Test\Tool\DB;
         $type = 'T';
         $initialTable = array();
-        foreach (array(1, 2, 3, 4) as $i) {
+        foreach (array(1, 2) as $i) {
             $initialTable['k' . $i] = array();
-            foreach (array('A', 'B', 'C', 'D', 'E') as $j) {
+            foreach (array('A', 'B', 'C') as $j) {
                 $initialTable['k' . $i]['type'] = $type;
                 $initialTable['k' . $i][$j] = implode(',', array('v', $i, $j));
             }
@@ -52,13 +52,20 @@ class RecordAdapterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \LogicException 
+     * @expectedException \LogicException
      */
     public function testSetKeyValue2()
     {
         $this->object->setKeyValue('k1');
         $this->object->setKeyValue('k2');
     }
+    
+    public function testSetKeyValueNonExisting()
+    {
+        $this->object->offsetSet('Q', '1');
+        $this->object->setKeyValue('NA');
+        $this->assertEquals(array('Q' => '1'), $this->object->get());
+    }    
 
     public function testGetKeyValue()
     {
@@ -67,40 +74,41 @@ class RecordAdapterTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('k2', $this->object->getKeyValue());
     }
 
-    public function testOffsetSet2()
+    public function testDelete1()
     {
-        $this->object->offsetSet('A', 'I');
-        $this->object->offsetSet('B', 'II');
-
-        $this->assertEquals('I', $this->object->offsetGet('A'));
-        $this->assertEquals('II', $this->object->offsetGet('B'));
+        $this->object->setKeyValue('k1');
+        $this->object->delete();
+        $this->assertTrue($this->object->isModified());
+        $this->object->save();
+        $this->assertFalse($this->object->isModified());
     }
 
     /**
-     * @todo Implement testDelete().
+     * Failure when saving a deleted record without a key
+     * @expectedException \LogicException
      */
-    public function testDelete()
+    public function testDelete2()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
+        $this->object->delete();
+        $this->object->save();
+    }
+
+    public function testGetk1()
+    {
+        $expectedRecord = array(
+            'A' => 'v,1,A',
+            'B' => 'v,1,B',
+            'C' => 'v,1,C',
         );
+        $this->object->setKeyValue('k1');
+        $this->assertEquals($expectedRecord, $this->object->get());
     }
 
-    /**
-     * @todo Implement testGet().
-     */
-    public function testGet()
+    public function testGetNull()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $this->assertEquals(array(), $this->object->get());
     }
 
-    /**
-     * @todo Implement testIsModified().
-     */
     public function testIsModified()
     {
         $this->assertFalse($this->object->isModified(), 'clean');
@@ -126,7 +134,7 @@ class RecordAdapterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \LogicException 
+     * @expectedException \LogicException
      */
     public function testSaveDeleted2()
     {
@@ -140,9 +148,9 @@ class RecordAdapterTest extends \PHPUnit_Framework_TestCase
         $this->object->offsetSet('A', 'XXX');
         $this->object->save();
         $this->assertFalse($this->object->isModified());
-        
+
         $row = $this->object->getTableAdapter()->offsetGet('k1');
-        
+
         $this->assertEquals('XXX', $row['A']);
     }
 
@@ -152,87 +160,134 @@ class RecordAdapterTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->object->isModified());
     }
 
-    public function testSaveClean()
+    public function testSet1()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
+        $expectedRecord = array(
+            'A' => 'v,1,A',
+            'B' => 'v,1,B',
+            'C' => 'v,1,C',
         );
+        $this->object->set($expectedRecord);
+    }
+
+    public function testSetEmpty()
+    {
+        $this->object->set(array());
+        $this->assertEquals(array(), $this->object->get());
     }
 
     /**
-     * @todo Implement testSet().
+     * @expectedException \InvalidArgumentException
      */
-    public function testSet()
+    public function testSetInvalidArgumentException1()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $this->object->set('a');
     }
 
     /**
-     * @todo Implement testOffsetExists().
+     * @expectedException \InvalidArgumentException
      */
-    public function testOffsetExists()
+    public function testSetInvalidArgumentException2()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $this->object->set(NULL);
+    }
+
+
+    public function testOffsetExists1()
+    {
+        $this->assertFalse($this->object->offsetExists('A'));
+        $this->object->setKeyValue('k1');
+        $this->assertTrue($this->object->offsetExists('A'));
+    }
+
+    public function testOffsetExists2()
+    {
+        $this->object->setKeyValue('k1');
+        $this->object->delete();
+        $this->assertTrue($this->object->offsetExists('A'));
+        $this->object->save();
+        $this->assertFalse($this->object->offsetExists('A'));
+    }
+
+    public function testOffsetGet1()
+    {
+        $this->object->setKeyValue('k1');
+        $this->assertEquals('v,1,A', $this->object->offsetGet('A'));
     }
 
     /**
-     * @todo Implement testOffsetGet().
+     * @expectedException \PHPUnit_Framework_Error
      */
-    public function testOffsetGet()
+    public function testOffsetGet2()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $this->assertNull($this->object->offsetGet('A'));
     }
 
-    /**
-     * @todo Implement testOffsetSet().
-     */
     public function testOffsetSet1()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $this->object->offsetSet('A', 'Set1');
+        $this->assertTrue($this->object->isModified());
+        $this->assertEquals('Set1', $this->object->offsetGet('A'));
     }
 
-    /**
-     * @todo Implement testOffsetUnset().
-     */
-    public function testOffsetUnset()
+    public function testOffsetSet2()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $this->object->offsetSet('A', 'Set1');
+        $this->object->setKeyValue('k1');
+        $this->object->save();
+        $this->assertEquals('Set1', $this->object->offsetGet('A'));
+    }
+
+    public function testOffsetSet3()
+    {
+        $this->object->offsetSet('A', 'I');
+        $this->object->offsetSet('B', 'II');
+
+        $this->assertEquals('I', $this->object->offsetGet('A'));
+        $this->assertEquals('II', $this->object->offsetGet('B'));
     }
 
     /**
-     * @todo Implement testGetIterator().
+     * Unsetting a field before initialization fails
+     * @expectedException \PHPUnit_Framework_Error
      */
+    public function testOffsetUnset1()
+    {
+        $this->object->offsetUnset('A');
+    }
+
+    public function testOffsetUnset2()
+    {
+        $this->object->setKeyValue('k1');
+        $this->object->offsetUnset('A');
+        $this->assertEquals(array('B' => 'v,1,B', 'C' => 'v,1,C'), $this->object->get());
+    }
+
     public function testGetIterator()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
+        $this->object->setKeyValue('k1');
+        $it = $this->object->getIterator();
+
+        $expectedRecord = array(
+            'A' => 'v,1,A',
+            'B' => 'v,1,B',
+            'C' => 'v,1,C',
         );
+
+        foreach ($it as $key => $value) {
+            $this->assertTrue(isset($expectedRecord[$key]));
+            $this->assertEquals($expectedRecord[$key], $value);
+        }
     }
 
 }
 
-
 class RecordAdapterTester extends \Nethgui\Adapter\RecordAdapter
 {
+
     public function getTableAdapter()
     {
         return $this->tableAdapter;
     }
+
 }
