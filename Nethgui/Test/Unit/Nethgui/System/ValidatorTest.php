@@ -344,7 +344,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $failureInfo = $this->object->getFailureInfo();
         
         // failure info is an array
-        $this->assertType('array', $failureInfo);        
+        $this->assertInternalType('array', $failureInfo);        
         
         // one validator, one element
         $this->assertEquals(1, count($failureInfo));
@@ -353,17 +353,14 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey(0, $failureInfo);
         
         // the 0 element is an array        
-        $this->assertType('array', $failureInfo[0]);
-        
-               
-        var_export($failureInfo);
+        $this->assertInternalType('array', $failureInfo[0]);                     
        
         // the 0 element contains 0 and 1 indexes:
         $this->assertArrayHasKey(0, $failureInfo[0]);
         $this->assertArrayHasKey(1, $failureInfo[0]);
         
         // the 1 index is an array too:
-        $this->assertType('array', $failureInfo[0][1]);
+        $this->assertInternalType('array', $failureInfo[0][1]);
         
         // the 1 index contains one element
         $this->assertEquals(1, count($failureInfo[0][1]));
