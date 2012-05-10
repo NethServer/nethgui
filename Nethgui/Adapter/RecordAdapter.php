@@ -76,14 +76,16 @@ class RecordAdapter implements \Nethgui\Adapter\AdapterInterface, \ArrayAccess, 
 
     public function setKeyValue($value)
     {
-        if (isset($this->keyValue)) {
+        if ($value === $this->keyValue) {
+            return $this;
+        } elseif (isset($this->keyValue)) {
             throw new \LogicException(sprintf('%s: the record key is already set', __CLASS__), 1336463530);
         }
         $this->keyValue = $value;
-        
+
         // put the missing tableAdapter values into the current data:
         $this->mergeDatasource();
-        
+
         return $this;
     }
 

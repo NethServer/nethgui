@@ -60,6 +60,15 @@ class RecordAdapterTest extends \PHPUnit_Framework_TestCase
         $this->object->setKeyValue('k2');
     }
     
+    /**
+     * Setting the key to the same value is allowed: 
+     */
+    public function testSetKeyValue3()
+    {
+        $this->object->setKeyValue('k11');
+        $this->object->setKeyValue('k11');        
+    }    
+    
     public function testSetKeyValueNonExisting()
     {
         $this->object->offsetSet('Q', '1');
