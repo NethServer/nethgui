@@ -30,11 +30,6 @@ namespace Nethgui\Controller\Table;
  */
 class Modify extends \Nethgui\Controller\Table\RowAbstractAction
 {
-    /**
-     * Values passed into the view in GET/create
-     * @var array
-     */
-    private $createDefaults = array();
 
     /**
      * Create a Modify instance that realizes one of the allowed behaviours:
@@ -77,10 +72,6 @@ class Modify extends \Nethgui\Controller\Table\RowAbstractAction
             if ($request->isMutation()) {
                 $keyValue = $request->getParameter($this->getKey());
             } else {
-                // initialize default parameter values
-                foreach ($this->createDefaults as $paramName => $paramValue) {
-                    $this->parameters[$paramName] = $paramValue;
-                }
                 $keyValue = FALSE;
             }
         } else {
@@ -163,8 +154,9 @@ class Modify extends \Nethgui\Controller\Table\RowAbstractAction
      */
     public function setCreateDefaults($defaultValues)
     {
-        $this->createDefaults = $defaultValues;
+        foreach($defaultValues as $parameterName => $value) {
+            $this->setDefaultValue($parameterName, $value);
+        }        
         return $this;
     }
-
 }

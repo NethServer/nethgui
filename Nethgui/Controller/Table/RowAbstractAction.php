@@ -48,6 +48,12 @@ abstract class RowAbstractAction extends \Nethgui\Controller\Table\AbstractActio
     private $key;
 
     /**
+     * Values passed into the view in GET/create
+     * @var array
+     */
+    private $defaultValues = array();
+
+    /**
      *
      * @api
      * @return string The key parameter name
@@ -72,7 +78,6 @@ abstract class RowAbstractAction extends \Nethgui\Controller\Table\AbstractActio
         parent::setAdapter($adapter);
         return $this;
     }
-
 
     public function bind(\Nethgui\Controller\RequestInterface $request)
     {
@@ -104,8 +109,16 @@ abstract class RowAbstractAction extends \Nethgui\Controller\Table\AbstractActio
 
             $this->declareParameter($parameterName, $validator, $valueProvider);
         }
-
+        
         parent::bind($request);
+        
+        if ( ! $request->isMutation() 
+            &&  ! $this->getAdapter()->getKeyValue() ) {
+            // initialize default parameter values
+            foreach ($this->defaultValues as $paramName => $paramValue) {
+                $this->parameters[$paramName] = $paramValue;
+            }
+        }        
     }
 
     /**
@@ -139,7 +152,7 @@ abstract class RowAbstractAction extends \Nethgui\Controller\Table\AbstractActio
 
         throw new \LogicException(sprintf('%s: invalid schema. You must declare a KEY field.', __CLASS__), 1325671156);
     }
- 
+
     /**
      * Get the declared parameter schema
      * 
@@ -151,4 +164,20 @@ abstract class RowAbstractAction extends \Nethgui\Controller\Table\AbstractActio
     {
         return $this->parameterSchema;
     }
+    
+    /**
+     * Set a parameter default value
+     * 
+     * The given value is assigned to the parameter if the request is a QUERY
+     * and the record adapter is missing the identifier (key) value
+     * 
+     * @param string $parameterName
+     * @param string $value
+     * @return \Nethgui\Controller\Table\RowAbstractAction 
+     */
+    public function setDefaultValue($parameterName, $value) {        
+        $this->defaultValues[$parameterName] = $value;
+        return $this;
+    }
+
 }
