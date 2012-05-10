@@ -143,20 +143,20 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
 
     /**
      *
-     * @param string $database
+     * @param mixed  $source
      * @param string $key
      * @param string $prop
      * @return \Nethgui\Serializer\SerializerInterface
      */
-    private function getSerializer($database, $key, $prop = NULL)
+    private function getSerializer($source, $key, $prop = NULL)
     {
-        if ($database instanceof \ArrayAccess) {
-            $serializer = new \Nethgui\Serializer\ArrayAccessSerializer($database, $key, $prop);
-        } elseif (is_string($database)) {
+        if ($source instanceof \ArrayAccess) {
+            $serializer = new \Nethgui\Serializer\ArrayAccessSerializer($source, $key, $prop);
+        } elseif (is_string($source)) {
             if (is_null($prop)) {
-                $serializer = new \Nethgui\Serializer\KeySerializer($this->getDatabase($database), $key);
+                $serializer = new \Nethgui\Serializer\KeySerializer($this->getDatabase($source), $key);
             } else {
-                $serializer = new \Nethgui\Serializer\PropSerializer($this->getDatabase($database), $key, $prop);
+                $serializer = new \Nethgui\Serializer\PropSerializer($this->getDatabase($source), $key, $prop);
             }
         } else {
             throw new \InvalidArgumentException(sprintf('%s: cannot create a SerializerInterface instance', __CLASS__), 1336467547);
