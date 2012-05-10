@@ -21,7 +21,8 @@ namespace Nethgui\Controller\Table;
  */
 
 /**
- * A Table Action asks its parent to get a table adapter
+ * A Table Action receives the table adapter object through the setAdapter()
+ * method.
  *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
@@ -31,15 +32,17 @@ abstract class AbstractAction extends \Nethgui\Controller\AbstractController imp
 {
 
     /**
+     *
+     * @var \Nethgui\Adapter\AdapterInterface
+     */
+    private $adapter;
+    
+    /**
      * @return \Nethgui\Adapter\AdapterInterface
      */
     public function getAdapter()
     {
-        if ( ! $this->getParent() instanceof \Nethgui\Adapter\AdapterAggregateInterface) {
-            throw new \LogicException(sprintf('%s: the parent module must implement \Nethgui\Adapter\AdapterAggregateInterface', __CLASS__), 1326732824);
-        }
-
-        return $this->getParent()->getAdapter();
+        return $this->adapter;
     }
 
     /**
@@ -48,9 +51,25 @@ abstract class AbstractAction extends \Nethgui\Controller\AbstractController imp
      */
     public function hasAdapter()
     {
-        return $this->getAdapter() instanceof \Nethgui\Adapter\AdapterInterface;
+        return $this->adapter instanceof \Nethgui\Adapter\AdapterInterface;
+    }
+    
+    /**
+     * Receive the adapter object from the TableController
+     * 
+     * @param \Nethgui\Adapter\AdapterInterface $adapter
+     * @return \Nethgui\Controller\Table\AbstractAction 
+     */
+    public function setAdapter(\Nethgui\Adapter\AdapterInterface $adapter) {
+        $this->adapter = $adapter;
+        return $this;
     }
 
+    /**
+     * Add default Cancel and FormAction URLs 
+     * 
+     * @param \Nethgui\View\ViewInterface $view 
+     */
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);

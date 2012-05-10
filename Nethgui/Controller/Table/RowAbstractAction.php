@@ -23,11 +23,8 @@ namespace Nethgui\Controller\Table;
 /**
  * Table action that works on a database record identified by a key
  * 
- * Parameters are decleared in bind(), after the key value is known. Clients
+ * Parameters are decleared in bind(). Clients
  * must provide a parameter schema, before bind() is called. See setSchema().
- * 
- * Implement the way a key value is obtained from the request context.
- * See getKeyValue().
  *
  * @api
  * @author Davide Principi <davide.principi@nethesis.it>
@@ -51,18 +48,6 @@ abstract class RowAbstractAction extends \Nethgui\Controller\Table\AbstractActio
     private $key;
 
     /**
-     * The name of the key parameter to identify the table adapter record
-     * 
-     * @param string $parameterName
-     * @return \Nethgui\Controller\Table\RowAbstractAction The object itself
-     */
-    private function setKey($parameterName)
-    {
-        $this->key = $parameterName;
-        return $this;
-    }
-
-    /**
      *
      * @api
      * @return string The key parameter name
@@ -73,37 +58,39 @@ abstract class RowAbstractAction extends \Nethgui\Controller\Table\AbstractActio
     }
 
     /**
-     * Calculate the key value according to the given $request object
+     * Receive the table adapter and convert it into a RecordAdapter
      * 
      * @api
-     * @param \Nethgui\Controller\RequestInterface $request the incoming request
-     * @return string the key parameter value
+     * @param \Nethgui\Adapter\AdapterInterface $adapter
+     * @return \Nethgui\Controller\Table\RowAbstractAction
      */
-    abstract public function getKeyValue(\Nethgui\Controller\RequestInterface $request);
+    public function setAdapter(\Nethgui\Adapter\AdapterInterface $adapter)
+    {
+        if ( ! $adapter instanceof \Nethgui\Adapter\RecordAdapter) {
+            $adapter = new \Nethgui\Adapter\RecordAdapter($adapter);
+        }
+        parent::setAdapter($adapter);
+        return $this;
+    }
+
 
     public function bind(\Nethgui\Controller\RequestInterface $request)
     {
-        $tableAdapter = $this->getAdapter();
-
-        if (is_null($tableAdapter)) {
-            throw new \LogicException(sprintf('%s: you must setTableAdapter() on %s before bind().', __CLASS__, $this->getParent()->getIdentifier()), 1325673694);
+        if ( ! $this->hasAdapter()) {
+            throw new \LogicException(sprintf('%s: in %s you must invoke setAdapter() before bind().', __CLASS__, get_class($this)), 1325673694);
         }
 
         if (is_null($this->getKey())) {
             throw new \LogicException(sprintf('%s: unknown key field name.', get_class($this)), 1325673717);
         }
 
-        $keyValue = $this->getKeyValue($request);
-
-        foreach ($this->parameterSchema as $parameterDeclaration) {
+        foreach ($this->getSchema() as $parameterDeclaration) {
             $parameterName = array_shift($parameterDeclaration);
             $validator = array_shift($parameterDeclaration);
             $valueProvider = array_shift($parameterDeclaration);
 
             if ($valueProvider === self::KEY) {
-                $valueProvider = function () use ($keyValue) {
-                        return $keyValue;
-                    };
+                $valueProvider = new \Nethgui\Adapter\RecordKeyAdapter($this->getAdapter());
             } elseif ($valueProvider === self::FIELD) {
                 $prop = array_shift($parameterDeclaration);
                 $separator = array_shift($parameterDeclaration);
@@ -112,7 +99,7 @@ abstract class RowAbstractAction extends \Nethgui\Controller\Table\AbstractActio
                     $prop = $parameterName;
                 }
 
-                $valueProvider = array($tableAdapter, $keyValue, $prop, $separator);
+                $valueProvider = array($this->getAdapter(), $prop, NULL, $separator);
             }
 
             $this->declareParameter($parameterName, $validator, $valueProvider);
@@ -127,8 +114,7 @@ abstract class RowAbstractAction extends \Nethgui\Controller\Table\AbstractActio
      * The array is a list of array of arguments to declareParameter(). A 
      * special processing is added to the third parameter, $valueProvider:
      * 
-     * - the KEY const is replaced with an anonymous function providing the 
-     *   actual key value;
+     * - the KEY binds the parameter to the record key
      * 
      * - the FIELD const binds the parameter with the corresponding prop. If 
      *   the parameter name differs from the prop name add a 4th, corresponding
@@ -145,7 +131,7 @@ abstract class RowAbstractAction extends \Nethgui\Controller\Table\AbstractActio
 
         foreach ($parameterSchema as $parameterDeclaration) {
             if (isset($parameterDeclaration[0], $parameterDeclaration[2]) && $parameterDeclaration[2] === self::KEY) {
-                $this->setKey($parameterDeclaration[0]);
+                $this->key = $parameterDeclaration[0];
                 $this->parameterSchema = $parameterSchema;
                 return $this;
             }
@@ -153,5 +139,16 @@ abstract class RowAbstractAction extends \Nethgui\Controller\Table\AbstractActio
 
         throw new \LogicException(sprintf('%s: invalid schema. You must declare a KEY field.', __CLASS__), 1325671156);
     }
-
+ 
+    /**
+     * Get the declared parameter schema
+     * 
+     * @api
+     * @see setSchema()
+     * @return array
+     */
+    public function getSchema()
+    {
+        return $this->parameterSchema;
+    }
 }

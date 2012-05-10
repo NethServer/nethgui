@@ -53,51 +53,33 @@ class Modify extends \Nethgui\Controller\Table\RowAbstractAction
         }
     }
 
-    public function getKeyValue(\Nethgui\Controller\RequestInterface $request)
-    {
-        // The key value is assumed to be the first subpath segment of the request:
-        $key = \Nethgui\array_head($request->getPath());
-        $tableAdapter = $this->getAdapter();
-
-        if ($this->getIdentifier() === 'create') {
-            if ($request->isMutation()) {
-                $key = $request->getParameter($this->getKey());
-            }
-        } elseif (is_null($tableAdapter) || ! isset($tableAdapter[$key])) {
-            throw new \Nethgui\Exception\HttpException('Not found', 404, 1325672611);
-        }
-
-        return $key;
-    }
-
     /**
-     * We have to declare all the parmeters of parameterSchema here,
-     * binding the actual key/row from tableAdapter.
+     * Establish what is the key value, then invoke setKeyValue() on the 
+     * RecordAdapter BEFORE parent::bind()
+     * 
      * @param \Nethgui\Controller\RequestInterface $request 
      */
     public function bind(\Nethgui\Controller\RequestInterface $request)
     {
+        if ($this->getIdentifier() === 'create') {
+            if ($request->isMutation()) {
+                $keyValue = $request->getParameter($this->getKey());
+            } else {
+                // initialize default parameter values
+                foreach ($this->createDefaults as $paramName => $paramValue) {
+                    $this->parameters[$paramName] = $paramValue;
+                }
+                $keyValue = FALSE;
+            }
+        } else {
+            $keyValue = \Nethgui\array_head($request->getPath());
+        }
+
+        if (is_null($this->getAdapter()->getKeyValue())) {
+            $this->getAdapter()->setKeyValue($keyValue);
+        }
+
         parent::bind($request);
-
-        if ( ! $request->isMutation()
-            && $this->getIdentifier() === 'create') {
-            foreach ($this->createDefaults as $paramName => $paramValue) {
-                $this->parameters[$paramName] = $paramValue;
-            }
-        }
-    }
-
-    public function validate(\Nethgui\Controller\ValidationReportInterface $report)
-    {
-        parent::validate($report);
-
-        $request = $this->getRequest();
-        if ($this->getIdentifier() === 'create' && $request->isMutation()) {
-            $tableAdapter = $this->getAdapter();
-            if (isset($tableAdapter[$this->parameters[$this->getKey()]])) {
-                $report->addValidationErrorMessage($this, $this->getKey(), 'An object with the same key already exists');
-            }
-        }
     }
 
     public function process()
@@ -107,7 +89,7 @@ class Modify extends \Nethgui\Controller\Table\RowAbstractAction
         }
 
         $action = $this->getIdentifier();
-        $key = $this->parameters[$this->getKey()];
+        $key = $this->getAdapter()->getKeyValue();
 
         if ($action == 'delete') {
             $this->processDelete($key);
@@ -119,12 +101,18 @@ class Modify extends \Nethgui\Controller\Table\RowAbstractAction
             throw new \Nethgui\Exception\HttpException('Not found', 404, 1322148408);
         }
 
-        // Transfer all parameters values into tableAdapter (and DB):
         $changes = $this->parameters->getModifiedKeys();
 
+        // Transfer all parameter values into the adapter:
         $save1 = $this->parameters->save();
+
+        // Transfer adapter value into parent's adapter:
         $save2 = $this->getAdapter()->save();
-        if ($save1 || $save2) {
+
+        // FIXME: Transfer parent adapter values into DB:
+        $save3 = $this->getParent()->getAdapter()->save();
+
+        if ($save1 || $save2 || $save3) {
             $this->onParametersSaved($changes);
             $this->getParent()->onParametersSaved($this, $changes, $this->parameters->getArrayCopy());
         }
@@ -132,12 +120,7 @@ class Modify extends \Nethgui\Controller\Table\RowAbstractAction
 
     protected function processDelete($key)
     {
-        $tableAdapter = $this->getAdapter();
-        if (isset($tableAdapter[$key])) {
-            unset($tableAdapter[$key]);
-        } else {
-            throw new \RuntimeException(sprintf('%s: Cannot delete `%s`.', get_class($this), $key), 1322148216);
-        }
+        $this->getAdapter()->delete();
     }
 
     protected function processCreate($key)

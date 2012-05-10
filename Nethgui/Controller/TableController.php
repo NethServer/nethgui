@@ -96,8 +96,16 @@ class TableController extends \Nethgui\Controller\CompositeController implements
 
     public function initialize()
     {
-        if (is_null($this->tableAdapter)) {
-            throw new \LogicException(sprintf('%s: call setTableAdapter() before %s::initialize()', get_class($this), __CLASS__), 1325610869);
+        if ( ! $this->hasAdapter()) {
+            throw new \LogicException(sprintf('%s: you must call setTableAdapter() before %s::initialize()', get_class($this), __CLASS__), 1325610869);
+        }
+
+        // propagate the adapter to every that is missing it:
+        foreach ($this->getChildren() as $childAction) {
+            if ($childAction instanceof \Nethgui\Controller\Table\AbstractAction
+                && ! $childAction->hasAdapter()) {
+                $childAction->setAdapter($this->getAdapter());
+            }
         }
 
         /**
@@ -108,7 +116,24 @@ class TableController extends \Nethgui\Controller\CompositeController implements
     }
 
     /**
-     * A column action is executed in a row context (i.e. row updating, deletion...)
+     * Add $childAction to the TableController, and propagate the table adapter, 
+     * if it has not been done yet.
+     * 
+     * @param \Nethgui\Module\ModuleInterface $childAction 
+     */
+    public function addChild(\Nethgui\Module\ModuleInterface $childAction)
+    {
+        if ($childAction instanceof \Nethgui\Controller\Table\AbstractAction) {
+            if ($childAction instanceof \Nethgui\Controller\Table\AbstractAction
+                && ! $childAction->hasAdapter()) {
+                $childAction->setAdapter($this->getAdapter());
+            }
+        }
+        return parent::addChild($childAction);
+    }
+
+    /**
+     * A row action is executed in a row context (i.e. row updating, deletion...)
      * 
      * @see getRowActions()
      * @param \Nethgui\Controller\Table\AbstractAction $action
@@ -161,6 +186,7 @@ class TableController extends \Nethgui\Controller\CompositeController implements
      * under the given $path. 
      * 
      * @see addRowActionPluggable()
+     * @see addTableAction()
      * @param \Nethgui\Controller\Table\AbstractAction $action
      * @param string $path
      * @return \Nethgui\Controller\TableController
