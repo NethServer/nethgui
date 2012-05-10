@@ -282,6 +282,9 @@ class RecordAdapterTest extends \PHPUnit_Framework_TestCase
 
 }
 
+/**
+ * Give public access to the internal tableAdapter: 
+ */
 class RecordAdapterTester extends \Nethgui\Adapter\RecordAdapter
 {
 

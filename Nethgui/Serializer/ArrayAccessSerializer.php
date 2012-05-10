@@ -33,6 +33,11 @@ class ArrayAccessSerializer implements SerializerInterface
      *
      * @var \ArrayAccess
      */
+    private $data;
+
+    /**
+     * @var mixed 
+     */
     private $arr;
 
     /**
@@ -40,51 +45,75 @@ class ArrayAccessSerializer implements SerializerInterface
      * 
      * @var array
      */
-    private $subscript;
+    private $subscriptList = array();
 
-    public function __construct(\ArrayAccess $arr, $subscript)
+    /**
+     *
+     * @param \ArrayAccess $data
+     * @param string $... subscripts
+     * @throws \InvalidArgumentException 
+     */
+    public function __construct(\ArrayAccess $data)
     {
-        if ( ! is_string($subscript)) {
-            throw new \InvalidArgumentException(sprintf('%s: $subscript parameter must be a string', get_class($this)), 1322148741);
-        }
-
         $arguments = func_get_args();
 
+        // skip the first $arr argument:
         array_shift($arguments);
 
-        $this->arr = $arr;
-        $this->subscript = $arguments;
+        // subsequent arguments are the subscripts:
+        foreach ($arguments as $s) {
+            // stop on first NULL subscript, skip the followers.
+            if (is_null($s)) {
+                break;
+            } elseif ( ! is_string($s)) {
+                throw new \InvalidArgumentException(sprintf('%s: subscript parameter must be a string', __CLASS__), 1322148741);
+            }
+            $this->subscriptList[] = $s;
+        }
+
+        if (empty($this->subscriptList)) {
+            throw new \InvalidArgumentException(sprintf('%s: you must provide at least one subscript argument', __CLASS__), 1336638118);
+        }
+
+        $this->data = $data;
+    }
+
+    private function lazyInitialization()
+    {
+        $arr = $this->data;
+
+        $subscriptList = $this->subscriptList;
+        array_pop($subscriptList);
+
+        foreach ($subscriptList as $s) {
+            if ( ! isset($arr[$s])) {
+                $arr[$s] = array();
+            }
+
+            if ( ! ($arr[$s] instanceof \ArrayAccess || is_array($arr[$s]))) {
+                throw new \LogicException(sprintf('%s: unexpected type %s. ', __CLASS__, gettype($arr[$s])), 1336398755);
+            }
+
+            $arr = &$arr[$s];
+        }
+
+        $this->arr = &$arr;
     }
 
     public function read()
     {
-        $arr = $this->arr;
-
-        $subscript = $this->subscript;
-        $last = array_pop($subscript);
-
-        foreach ($subscript as $s) {
-            if ( ! ($arr instanceof \ArrayAccess || is_array($arr))) {
-                throw new \LogicException(sprintf('%s: unexpected type %s. ', __CLASS__, gettype($arr)), 1336398755);
-            }
-
-            if ( ! isset($arr[$s])) {
-                return NULL;
-            }
-
-            $arr = $arr[$s];
+        if ( ! isset($this->arr)) {
+            $this->lazyInitialization();
         }
 
-        if ( ! isset($arr[$last])) {
-            return NULL;
-        }
+        $last = \Nethgui\array_end($this->subscriptList);
 
-        return $arr[$last];
+        return isset($this->arr[$last]) ? $this->arr[$last] : NULL;
     }
 
     public function write($value)
     {
-        $arr = $this->arr;
+        $arr = $this->data;
 
         $currentValue = $this->read();
 
@@ -92,24 +121,7 @@ class ArrayAccessSerializer implements SerializerInterface
             return;
         }
 
-        $subscript = $this->subscript;
-        $last = array_pop($subscript);
-
-        foreach ($subscript as $s) {
-            if ( ! isset($arr[$s])) {
-                $arr[$s] = array();
-            }
-
-            if ($arr[$s] instanceof \ArrayAccess) {
-                $arr = $arr[$s];
-            } elseif (is_array($arr[$s])) {
-                $arr = &$arr[$s];
-            } else {
-                throw new \LogicException(sprintf('%s: unexpected type %s. ', __CLASS__, gettype($arr)), 1336398755);
-            }
-        }
-
-        $arr[$last] = $value;
+        $this->arr[\Nethgui\array_end($this->subscriptList)] = $value;
     }
 
 }

@@ -1,6 +1,9 @@
 <?php
 namespace Nethgui\Test\Unit\Nethgui\Serializer;
 
+/**
+ * @covers \Nethgui\Serializer\ArrayAccessSerializer
+ */
 class ArrayAccessSerializerTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -55,6 +58,20 @@ class ArrayAccessSerializerTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($object->read());
     }
 
+    /**
+     * @expectedException \LogicException
+     */
+    public function testReadInvalidData()
+    {
+        $data = array(
+            'A' => 'x0',
+            'B' => array('1', '2'),
+        );
+
+        $object = new \Nethgui\Serializer\ArrayAccessSerializer(new \ArrayObject($data), 'A', 'x0');
+        $object->read();
+    }
+
     public function testWriteUpdate()
     {
         foreach ($this->tests as $args) {
@@ -67,10 +84,43 @@ class ArrayAccessSerializerTest extends \PHPUnit_Framework_TestCase
 
     public function testWriteAppend()
     {
+        $object = new \Nethgui\Serializer\ArrayAccessSerializer($this->data, 'C', 'f2');
+        $object->write('c2');
+        $this->assertEquals('c2', $this->data['C']['f2']);
+    }
+
+    public function testWriteUnchanded()
+    {
         $object = new \Nethgui\Serializer\ArrayAccessSerializer($this->data, 'D', 'f0');
         $object->write('AA');
         $this->assertEquals('AA', $this->data['D']['f0']);
         $this->assertEquals(array('f0' => 'AA'), $this->data['D']);
+    }    
+    
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testInvalidSubscript1()
+    {
+        new \Nethgui\Serializer\ArrayAccessSerializer($this->data, array(), 1.12);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testEmptySubscript1()
+    {
+        new \Nethgui\Serializer\ArrayAccessSerializer($this->data);
+    }
+
+    public function testNullSubscript()
+    {
+        $data = array(
+            'X' => '123',
+            'Y' => '456'
+        );
+        $o = new \Nethgui\Serializer\ArrayAccessSerializer(new \ArrayObject($data), 'X', NULL);
+        $this->assertEquals('123', $o->read());
     }
 
 }
