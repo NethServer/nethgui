@@ -22,13 +22,18 @@ namespace Nethgui\Controller\Table;
 
 /**
  * A collection of modules automatically loaded from a specific directory
+ *
+ * Transfers the parent's adapter to all of its children
  * 
- * Transfers the adapter and the current row key to all of its children
- * 
- * @author Davide Principi <davide.principi@nethesis.it>
- * @since 1.0
+ * Collaborations:
+ * - AdapterAggregateInterface, as the parent module
+ * - AbstractAction, as children members of this composition
  * 
  * Refs #1091
+ * 
+ * @api
+ * @author Davide Principi <davide.principi@nethesis.it>
+ * @since 1.0
  */
 class PluginCollector extends \Nethgui\Controller\ListComposite implements \Nethgui\Adapter\AdapterAggregateInterface
 {
@@ -44,6 +49,21 @@ class PluginCollector extends \Nethgui\Controller\ListComposite implements \Neth
             throw new \LogicException(sprintf('%s: the parent module must implement \Nethgui\Adapter\AdapterAggregateInterface', __CLASS__), 1326732823);
         }
         return $this->getParent()->getAdapter();
+    }
+
+    /**
+     * Add a child module, propagating the adpater settings.
+     * 
+     * @api
+     * @param \Nethgui\Module\ModuleInterface $childModule
+     * @return array
+     */
+    public function addChild(\Nethgui\Module\ModuleInterface $childModule)
+    {
+        if($this->hasAdapter() && $childModule instanceof AbstractAction) {
+            $childModule->setAdapter($this->getAdapter());
+        }
+        return parent::addChild($childModule);
     }
 
     /**

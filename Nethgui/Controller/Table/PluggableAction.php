@@ -21,12 +21,16 @@ namespace Nethgui\Controller\Table;
  */
 
 /**
- * A table action decorator that can be extended other
- * instances
+ * Decorate an AbstractAction, allowing other (plugin) actions to extend it.
+ * 
+ * Collaborates with 
+ * - PluginCollector, that actually holds the plugin actions
+ * - AbstractAction, the decorated module
+ * - TableController,  the parent module 
  *
+ * @api
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
- * @see \Nethgui\Controller\Table\ActionPluginInterface
  * @see Decorator pattern
  */
 class PluggableAction extends \Nethgui\Controller\Table\AbstractAction implements \Nethgui\Module\ModuleCompositeInterface
@@ -41,7 +45,7 @@ class PluggableAction extends \Nethgui\Controller\Table\AbstractAction implement
      * @var \Nethgui\Controller\Table\AbstractAction 
      */
     private $innerAction;
-    
+
     /**
      *
      * @var string
@@ -55,17 +59,33 @@ class PluggableAction extends \Nethgui\Controller\Table\AbstractAction implement
      */
     public function __construct(\Nethgui\Controller\Table\AbstractAction $action, $pluginsPath = NULL)
     {
-        if(is_null($pluginsPath)) {
+        if (is_null($pluginsPath)) {
             $id = \Nethgui\array_end(explode('\\', get_class($action)));
-        } else {        
+        } else {
             $id = \Nethgui\array_end(explode('/', $pluginsPath));
-        }        
-        
+        }
+
         parent::__construct(); // empty identifier
         $this->innerAction = $action;
         $this->plugins = new \Nethgui\Controller\Table\PluginCollector($id);
-        $this->plugins->setParent($action); 
+        $this->plugins->setParent($action);
         $this->pluginsPath = $pluginsPath;
+    }
+
+    public function hasAdapter()
+    {
+        return $this->innerAction->hasAdapter();
+    }
+
+    public function getAdapter()
+    {
+        return $this->innerAction->getAdapter();
+    }
+
+    public function setAdapter(\Nethgui\Adapter\AdapterInterface $adapter)
+    {
+        $this->innerAction->setAdapter($adapter);        
+        return $this;
     }
 
     public function getIdentifier()
@@ -98,17 +118,17 @@ class PluggableAction extends \Nethgui\Controller\Table\AbstractAction implement
     {
         parent::setPlatform($platform);
         $this->plugins->setPlatform($this->getPlatform());
-        $this->innerAction->setPlatform($this->getPlatform());        
+        $this->innerAction->setPlatform($this->getPlatform());
         return $this;
     }
 
     public function initialize()
     {
+        $this->innerAction->setParent($this->getParent());
         parent::initialize();
+        $this->innerAction->initialize();
         $this->plugins->initialize();
         $this->plugins->loadChildrenDirectory($this->innerAction, $this->pluginsPath);
-        $this->innerAction->setParent($this->getParent());
-        $this->innerAction->initialize();        
     }
 
     public function bind(\Nethgui\Controller\RequestInterface $request)
@@ -134,7 +154,7 @@ class PluggableAction extends \Nethgui\Controller\Table\AbstractAction implement
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
-        $this->innerAction->prepareView($view);              
+        $this->innerAction->prepareView($view);
         $this->plugins->prepareView($view->spawnView($this->plugins, TRUE));
     }
 
