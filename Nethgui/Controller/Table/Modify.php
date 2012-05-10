@@ -36,6 +36,18 @@ class Modify extends \Nethgui\Controller\Table\RowAbstractAction
      */
     private $createDefaults = array();
 
+    /**
+     * Create a Modify instance that realizes one of the allowed behaviours:
+     * 
+     * - create
+     * - delete
+     * - update
+     * 
+     * @param string $identifier One of 'create', 'delete', 'update'
+     * @param array $parameterSchema - DEPRECATED
+     * @param mixed $viewTemplate - DEPRECATED 
+     * @throws \InvalidArgumentException 
+     */
     public function __construct($identifier, $parameterSchema = NULL, $viewTemplate = NULL)
     {
         if ( ! in_array($identifier, array('create', 'delete', 'update'))) {
