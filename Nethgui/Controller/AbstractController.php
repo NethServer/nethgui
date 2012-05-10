@@ -55,11 +55,6 @@ abstract class AbstractController extends \Nethgui\Module\AbstractModule impleme
     private $request;
 
     /**
-     * @var \Nethgui\System\PlatformInterface
-     */
-    private $platform;
-
-    /**
      * @param string $identifier
      */
     public function __construct($identifier = NULL)
@@ -168,7 +163,7 @@ abstract class AbstractController extends \Nethgui\Module\AbstractModule impleme
             $adapterObject = $this->getPlatform()->getIdentityAdapter($database, $key, $prop, $separator);
         }
 
-        if (is_null($adapterObject)) {
+        if ( ! $adapterObject instanceof \Nethgui\Adapter\AdapterInterface) {
             throw new \InvalidArgumentException(sprintf('%s: Cannot create an adapter for parameter `%s`', get_class($this), $parameterName), 1322149696);
         }
 
