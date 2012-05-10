@@ -299,7 +299,7 @@ class RecordAdapterTester extends \Nethgui\Adapter\RecordAdapter
 
     public function getTableAdapter()
     {
-        return $this->tableAdapter;
+        return $this->arr;
     }
 
 }

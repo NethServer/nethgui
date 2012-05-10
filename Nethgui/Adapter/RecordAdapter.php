@@ -48,7 +48,7 @@ class RecordAdapter implements \Nethgui\Adapter\AdapterInterface, \ArrayAccess, 
      *
      * @var \Nethgui\Adapter\TableAdapter
      */
-    protected $tableAdapter;
+    protected $arr;
 
     /**
      *
@@ -68,9 +68,9 @@ class RecordAdapter implements \Nethgui\Adapter\AdapterInterface, \ArrayAccess, 
      */
     private $data = NULL;
 
-    public function __construct(\Nethgui\Adapter\TableAdapter $tableAdapter)
+    public function __construct(\ArrayAccess $arr)
     {
-        $this->tableAdapter = $tableAdapter;
+        $this->arr = $arr;
         $this->data = new \ArrayObject();
     }
 
@@ -120,12 +120,12 @@ class RecordAdapter implements \Nethgui\Adapter\AdapterInterface, \ArrayAccess, 
         }
 
         if ($this->state === self::DELETED) {
-            $this->tableAdapter->offsetUnset($this->getKeyValue());
+            $this->arr->offsetUnset($this->getKeyValue());
             $this->data = new \ArrayObject();
             $this->keyValue = NULL;
         } else {
             $this->mergeDatasource();
-            $this->tableAdapter->offsetSet($this->getKeyValue(), $this->data->getArrayCopy());
+            $this->arr->offsetSet($this->getKeyValue(), $this->data->getArrayCopy());
         }
 
         $this->state = self::CLEAN;
@@ -181,8 +181,8 @@ class RecordAdapter implements \Nethgui\Adapter\AdapterInterface, \ArrayAccess, 
     {
         $keyValue = $this->getKeyValue();
 
-        if ($keyValue !== NULL && $this->tableAdapter->offsetExists($keyValue)) {
-            $current = $this->tableAdapter->offsetGet($keyValue);
+        if ($keyValue !== NULL && $this->arr->offsetExists($keyValue)) {
+            $current = $this->arr->offsetGet($keyValue);
         } else {
             $current = NULL;
         }

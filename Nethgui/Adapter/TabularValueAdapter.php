@@ -33,7 +33,7 @@ namespace Nethgui\Adapter;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class TabularValueAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate, \Countable
+class TabularValueAdapter implements \Nethgui\Adapter\AdapterInterface, \ArrayAccess, \IteratorAggregate, \Countable
 {
 
     /**
@@ -104,7 +104,7 @@ class TabularValueAdapter implements AdapterInterface, \ArrayAccess, \IteratorAg
         $this->modified = TRUE;
 
         if ( ! is_array($value) && ! $value instanceof \Traversable) {
-            throw new \InvalidArgumentException(sprintf('%s: Value must be an array!', __CLASS__), 1322149790);
+            throw new \InvalidArgumentException(sprintf('%s: Value must be an array or a Traversable object!', __CLASS__), 1322149790);
         }
 
         foreach ($value as $key => $row) {
@@ -175,7 +175,7 @@ class TabularValueAdapter implements AdapterInterface, \ArrayAccess, \IteratorAg
         }
 
         if ( ! is_array($value) && ! $value instanceof \Traversable) {
-            throw new \InvalidArgumentException(sprintf('%s: Value must be an array!', __CLASS__), 1322149888);
+            throw new \InvalidArgumentException(sprintf('%s: Value must be an array or a Traversable object!', __CLASS__), 1322149888);
         }
 
         $this->modified = TRUE;
