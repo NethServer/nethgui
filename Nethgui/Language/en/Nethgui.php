@@ -58,3 +58,5 @@ $L['Logout_label'] = 'Logout';
 $L['Welcome on ${0}'] = 'Welcome on ${0}';
 
 $L['An object with the same key already exists'] = 'An object with the same key already exists';
+
+$L['Configure_label'] = 'Configure';
