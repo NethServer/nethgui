@@ -11,6 +11,20 @@
             this._clearWhitespaceNodes();
             this._initializeExpandButton();
             this._expandButton = undefined;
+
+	    // Register a global list of opened popups to close on ESCAPE keyup. Refs #1039
+	    if( $(document).data('ngButtonsetPopupList') === undefined ) {
+		$(document).data('ngButtonsetPopupList', []);
+		$(document).bind('keyup', function () {
+		    if(event.keyCode !== $.ui.keyCode.ESCAPE) {
+			return;
+		    }
+		    $.each($(document).data('ngButtonsetPopupList'), function (index, popup) {
+			$(popup).hide();
+		    });
+		});
+	    }
+
         },
         enable: function () {
             if(this._expandButton !== undefined) {
@@ -73,9 +87,10 @@
                     panel.hide();
                 });
                 panel.show();
+		// add panel to the global list of opened popups:
+		$(document).data('ngButtonsetPopupList').push(panel.get(0));
                 e.stopPropagation();
             });
-
             this._expandButton = expandButton;
             return true;
         }
