@@ -9,6 +9,7 @@
     var SUPER = $.nethgui.Component;
     $.widget('nethgui.FieldsetSwitch', SUPER, {
         _deep: false,
+        _showDisabledState: false,        
         _create: function() {
             SUPER.prototype._create.apply(this);
                                              
@@ -43,6 +44,7 @@
     });
     $.widget('nethgui.FieldsetSwitchPanel', SUPER, {
         _deep: true,
+        _showDisabledState: false,
         _create: function() {
             SUPER.prototype._create.apply(this);
         }

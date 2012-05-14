@@ -5,10 +5,8 @@
  */
 (function( $ ) {
     var SUPER = $.nethgui.Component;
-    $.widget('nethgui.Fieldset', SUPER, {
-        options: {
-            _deep: true
-        },
+    $.widget('nethgui.Fieldset', SUPER, {                    
+        _showDisabledState: false,
         _create: function() {
             SUPER.prototype._create.apply(this);
 
