@@ -116,6 +116,23 @@ abstract class AbstractController extends \Nethgui\Module\AbstractModule impleme
     }
 
     /**
+     * Get the validator object for the given parameter. 
+     * 
+     * You must declare the parameter prior to call this method.
+     * 
+     * @api
+     * @param string $parameterName The name of the validated parameter
+     * @return \Nethgui\System\ValidatorInterface The validator object associated to the given parameter
+     */
+    protected function getValidator($parameterName) {
+        if(! $this->validators[$parameterName] instanceof \Nethgui\System\ValidatorInterface) {
+            throw new \LogicException(sprintf('%s: you must declare a parameter to obtain its validator object', __CLASS__), 1337002629);
+        }
+        return $this->validators[$parameterName];
+    }
+    
+    /**
+     * @param integer $ruleCode See \Nethgui\System\PlatformInterface::createValidator()
      * @return \Nethgui\System\Validator
      */
     protected function createValidator($ruleCode = NULL)
