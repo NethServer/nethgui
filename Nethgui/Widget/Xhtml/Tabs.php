@@ -21,7 +21,13 @@ namespace Nethgui\Widget\Xhtml;
  */
 
 /**
- *
+ * Tabs control
+ * 
+ * 
+ * @see http://jqueryui.com/demos/tabs/
+ * @api
+ * @since 1.0
+ * @author Davide Principi <davide.principi@nethesis.it>
  */
 class Tabs extends \Nethgui\Widget\XhtmlWidget
 {
@@ -60,6 +66,47 @@ class Tabs extends \Nethgui\Widget\XhtmlWidget
         $content .= $this->closeTag('div');
 
         return $content;
+    }
+
+    /**
+     * Insert plugin module views found under the view's $pluginName member
+     * 
+     * @param string $pluginName Optional - Default "Plugin"
+     * @return \Nethgui\Widget\Xhtml\Tabs
+     */
+    public function insertPlugins($pluginName = 'Plugin')
+    {
+
+        $view = $this->view;
+
+        $pluginTabs = array();
+        foreach ($view[$pluginName] as $pluginView) {
+            $pluginModule = $pluginView->getModule();
+            if ($pluginModule instanceof \Nethgui\Module\ModuleInterface) {
+
+                $cat = $pluginModule->getAttributesProvider()->getCategory();
+
+                if ( ! isset($pluginTabs[$cat])) {
+                    // add a panel for the new Category:
+                    $pluginTabs[$cat] = $view->panel()
+                        ->setAttribute('name', $cat)
+                        ->setAttribute('title', $pluginView->translate($cat . '_Title'))
+                    ;
+                }
+
+                // add plugin view to the Category
+                $pluginTabs[$cat]->insert($view->literal($pluginView));
+            } else {
+                $tabs->insert($view->literal($pluginView)); #add a new tab
+            }
+        }
+
+        ksort($pluginTabs);
+        foreach ($pluginTabs as $tab) {
+            $this->insert($tab);
+        }
+
+        return $this;
     }
 
 }
