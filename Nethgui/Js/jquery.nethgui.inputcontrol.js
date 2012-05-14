@@ -30,19 +30,33 @@
         }
     });
     $.widget('nethgui.Hidden', $.nethgui.InputControl, {});
-    $.widget('nethgui.RadioButton', $.nethgui.InputControl, {
+    $.widget('nethgui.CheckBox', $.nethgui.InputControl, {
         _updateView: function(value) {
-            if(this.element.val() == value) {
+            if(this.element.val() === value) {
                 this.element.prop('checked', true);
             } else {
                 this.element.prop('checked', false);
-            }
+            }            
+            this.element.trigger('change');
+        } 
+    });
+    $.widget('nethgui.RadioButton', $.nethgui.CheckBox, {
+        _create: function() {
+            SUPER.prototype._create.apply(this);
+            this._radioGroup = this._findGroup(this.element.get(0));
+            this.element.bind('change.' + this.widgetName, $.proxy(this._change, this));
+        },        
+        _findGroup: function (radio) {
+            return $(radio.form).find('input[name="' + radio.name + '"]').not(radio);
+        },
+        _change: function () {            
+            this._radioGroup.trigger(this.namespace + 'unselect');            
         }
     });
     $.widget('nethgui.HiddenConst', $.nethgui.InputControl, {
         _updateView: function(value) {}        
     });    
-    $.widget('nethgui.CheckBox', $.nethgui.RadioButton, {});
+    
 }( jQuery ) );
 
 /*

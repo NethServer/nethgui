@@ -59,10 +59,13 @@ interface WidgetFactoryInterface
 
     const TEXTINPUT_PASSWORD = 0x100000;
     const FIELDSET_EXPANDABLE = 0x200000;
+    
     const BUTTONSET = 0x400000;
     const BUTTON_DROPDOWN = 0x800000;
     const BUTTON_HELP = 0x1000000;
 
+    const FIELDSETSWITCH_CHECKBOX = 0x4000000; // Refs #1093 
+    const FIELDSETSWITCH_EXPANDABLE = self::FIELDSET_EXPANDABLE;
     /**
      *
      * @return integer

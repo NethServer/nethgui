@@ -11,43 +11,34 @@
         _deep: false,
         _create: function() {
             SUPER.prototype._create.apply(this);
-                                   
-            var mySwitch = this.element.find('input:radio').first();
-
-            this._selected = false;
-            this._otherSwitches = this._findGroup(mySwitch[0]);
+                                             
+            this._switch = this.element.find('input:radio, input:checkbox').first();
             this._panel = this.element.children('fieldset.FieldsetSwitchPanel').first();
 
-            SUPER.prototype._initializeDeep.call(this, [this._panel.get(0), mySwitch.get(0)]);
+            SUPER.prototype._initializeDeep.call(this, [this._panel.get(0), this._switch.get(0)]);
 
-            if(mySwitch.is(':checked'))
-                this.select()
+            this._switch.bind('change.' + this.widgetName, $.proxy(this._toggle, this));
+            this._switch.bind(this.namespace + 'unselect.' + this.widgetName, $.proxy(this._unselect, this));
+            
+            this._toggle();
+        },
+        _toggle: function() {
+            if(this._switch.is(':checked'))
+                this._select()
             else
                 this._unselect()
-
-            mySwitch.bind('change.' + this.widgetName, $.proxy(this.select, this));
-            mySwitch.bind('unselect.' + this.widgetName, $.proxy(this._unselect, this));
         },
-        _findGroup: function (radio) {
-            return $(radio.form).find('input[name="' + radio.name + '"]').not(radio);
-        },
-        select: function () {
-            this._selected = true;
-            $.each(this._otherSwitches, function(index, checkbox) {
-                $(checkbox).trigger('unselect');
-            });
+        _select: function () {
             this._panel.trigger('nethguienable');
-            this._panel.show();
+            if(this.element.hasClass('expandable')) {
+                this._panel.show();
+            }
         },
         _unselect: function () {
-            this._selected = false;
-            this._panel.hide();
-            this._panel.trigger('nethguidisable');
-        },
-        _updateView: function(value) {
-            if(value == this.element.val()) {
-                this.select();
+            if(this.element.hasClass('expandable')) {
+                this._panel.hide();
             }
+            this._panel.trigger('nethguidisable');
         }
     });
     $.widget('nethgui.FieldsetSwitchPanel', SUPER, {

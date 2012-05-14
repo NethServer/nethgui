@@ -30,24 +30,39 @@ class FieldsetSwitch extends \Nethgui\Widget\XhtmlWidget
     {
         $name = $this->getAttribute('name');
         $value = $this->getAttribute('value');
-        $flags = $this->getAttribute('flags');
+        $flags = $this->getAttribute('flags');        
         $content = '';
 
-        $content .= $this->openTag('div', array('class' => 'FieldsetSwitch'));
+        
 
-        $chooser = new RadioButton($this->view);
+        if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::FIELDSETSWITCH_CHECKBOX) {
+            $chooser = new CheckBox($this->view);           
+            if($this->hasAttribute('uncheckedValue')) {
+                $chooser->setAttribute('uncheckedValue', $this->getAttribute('uncheckedValue'));
+            }
+        } else {
+            $chooser = new RadioButton($this->view);
+        }
+
         $chooser
             ->setAttribute('name', $name)
             ->setAttribute('value', $value)
             ->setAttribute('flags', $flags)
         ;
 
+        $className = 'FieldsetSwitch';
+        
+        if($flags & \Nethgui\Renderer\WidgetFactoryInterface::FIELDSETSWITCH_EXPANDABLE) {
+            $className .= ' expandable';
+        }
+        
+        $content .= $this->openTag('div', array('class' => $className));
         $content .= $chooser->renderContent();
         $content .= $this->openTag('fieldset', array('class' => 'FieldsetSwitchPanel'));
-        $content .= $this->renderChildren();        
+        $content .= $this->renderChildren();
         $content .= $this->closeTag('fieldset');
         $content .= $this->closeTag('div');
-        
+
         return $content;
     }
 
