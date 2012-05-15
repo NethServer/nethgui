@@ -31,9 +31,7 @@ class FieldsetSwitch extends \Nethgui\Widget\XhtmlWidget
         $name = $this->getAttribute('name');
         $value = $this->getAttribute('value');
         $flags = $this->getAttribute('flags');        
-        $content = '';
-
-        
+        $content = '';        
 
         if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::FIELDSETSWITCH_CHECKBOX) {
             $chooser = new CheckBox($this->view);           
@@ -49,6 +47,10 @@ class FieldsetSwitch extends \Nethgui\Widget\XhtmlWidget
             ->setAttribute('value', $value)
             ->setAttribute('flags', $flags)
         ;
+        
+        if($this->hasAttribute('label')) {
+            $chooser->setAttribute('label', $this->getAttribute('label'));
+        }
 
         $className = 'FieldsetSwitch';
         
