@@ -44,7 +44,10 @@ class TabsController extends \Nethgui\Controller\CompositeController
                 $flags |= \Nethgui\Renderer\WidgetFactoryInterface::INSET_FORM;
             }
 
-            $action = $view->inset($moduleIdentifier, $flags)->setAttribute('class', 'Action');
+            $action = $view->inset($moduleIdentifier, $flags)
+                ->setAttribute('class', 'Action')
+                ->setAttribute('title', $view->getTranslator()->translate($module, $moduleIdentifier . '_Title'))
+                ;
 
             $tabs->insert($action);
         }
