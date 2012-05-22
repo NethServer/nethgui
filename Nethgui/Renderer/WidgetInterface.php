@@ -29,10 +29,13 @@ namespace Nethgui\Renderer;
  * to the key of the view element. 
  *
  * Widgets:
+ * 
  * - Can be nested in a hierarchical way through the insert() method.
+ * 
  * - Are configured through the attributes API {set,get,has}Attribute.
  *
  * Basic attribute:
+ * 
  * - name
  *
  * Implementations can extend the attribute list with their own semantics.
@@ -45,6 +48,9 @@ interface WidgetInterface
 {
 
     /**
+     * Nest $widget into the current object
+     * 
+     * @api
      * @param \Nethgui\Renderer\WidgetInterface $widget Another widget to be nested inside the current object
      * @return \Nethgui\Renderer\WidgetInterface the current object
      */
@@ -53,6 +59,7 @@ interface WidgetInterface
     /**
      * Set the given $attribute to $value
      *
+     * @api
      * @param string $attribute The attribute name
      * @param mixed $value Any value to be assigned to the attribute
      * @return \Nethgui\Renderer\WidgetInterface the current object
@@ -62,6 +69,7 @@ interface WidgetInterface
     /**
      * Checks if the widget has the given $attribute
      *
+     * @api
      * @param string $attribute The attribute name
      * @return boolean TRUE, if the $attribute has been set to any value
      */
@@ -76,6 +84,7 @@ interface WidgetInterface
      * if a default value is needed, and is expected to return that value. The
      * attribute name will be passed as first function argument.
      *
+     * @api
      * @param string $attribute The attribute name
      * @param mixed $default The default value or callable closure/function.
      */
@@ -84,6 +93,7 @@ interface WidgetInterface
     /**
      * Transform the current object in a string value.
      *
+     * @api
      * @return string
      */
     public function render();

@@ -38,6 +38,7 @@ abstract class AbstractRenderer extends ReadonlyView
     /**
      * Render the object as a string
      *
+     * @api
      * @see getContentType()
      * @see getCharset()
      * @return string
@@ -48,6 +49,7 @@ abstract class AbstractRenderer extends ReadonlyView
      * Convert the given hash to the array format accepted from UI widgets as
      * "datasource".
      *
+     * @api
      * @param array $h
      * @return array
      */
@@ -67,11 +69,21 @@ abstract class AbstractRenderer extends ReadonlyView
     }
 
     /**
+     * Get the view content mime type
+     * 
+     * EG: application/json
+     * 
+     * @api
      * @return string
      */
     abstract public function getContentType();
 
     /**
+     * Get the view content charset enconding 
+     * 
+     * EG: UTF-8
+     * 
+     * @api
      * @return string
      */
     abstract public function getCharset();

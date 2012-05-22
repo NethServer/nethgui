@@ -31,42 +31,50 @@ interface PlatformInterface
 {
     /**
      * A valid service status is a 'disabled' or 'enabled' string.
+     * @api
      */
     const SERVICESTATUS = 1248968160;
 
     /**
      * A valid *nix username token
+     * @api
      */
     const USERNAME = 1248968161;
 
     /**
      * A not empty value
+     * @api
      */
     const NOTEMPTY = 1248968162;
 
     /**
      * Accepts any value
+     * @api
      */
     const ANYTHING = 1248968163;
 
     /**
      * Accept a value that represents a collection of any thing
+     * @api
      */
     const ANYTHING_COLLECTION = 1248968164;
 
     /**
      * Accept a value that represents a collection of any Unix usernames
+     * @api
      */
     const USERNAME_COLLECTION = 1248968165;
 
     /**
      * Accept positive integer
+     * @api
      */
     const POSITIVE_INTEGER = 1248968166;
 
     /**
      * Valid generic hostname
      *
+     * @api
      * @see #478
      */
     const HOSTNAME = 1248968167;
@@ -74,6 +82,7 @@ interface PlatformInterface
     /**
      * Valid simple hostname without domain part
      * 
+     * @api
      * @see #1052 
      */
     const HOSTNAME_SIMPLE =  1334736972;
@@ -81,6 +90,7 @@ interface PlatformInterface
     /**
      * Valid hostname with domain part (FQDN)
      * 
+     * @api
      * @see #1052 
      */
     const HOSTNAME_FQDN = 1334741642;
@@ -88,6 +98,7 @@ interface PlatformInterface
     /**
      * Valid host name or ip address
      *
+     * @api
      * @see #478
      */
     const HOSTADDRESS = 1248968168;
@@ -95,6 +106,7 @@ interface PlatformInterface
     /**
      * Valid date
      *
+     * @api
      * @see #513
      */
     const DATE = 1248968169;
@@ -102,6 +114,7 @@ interface PlatformInterface
     /**
      * Valid time
      *
+     * @api
      * @see #513
      */
     const TIME = 1248968170;
@@ -109,52 +122,71 @@ interface PlatformInterface
     /**
      * Boolean validator.
      * 
+     * @api
      * '', '0', FALSE are FALSE boolean values. Other values are TRUE.
      */
     const BOOLEAN = 1248968171;
 
     /**
      * A valid IPv4 address like '192.168.1.1' 
+     * 
+     * @api
      */
     const IPv4 = 1248968172;
 
     /**
      * A valid IPv4 address like '192.168.1.1' ore empty
+     * 
+     * @api
      */
     const IPv4_OR_EMPTY = 1248968173;
 
     /**
      * Alias for VALID_IPv4 
+     * 
+     * @api
      */
     const IP = 1248968174;
 
     /**
      * Alias for VALID_IPv4_OR_EMPTY
+     * 
+     * @api
      */
     const IP_OR_EMPTY = 1248968175;
 
     /**
      * A valid TCP/UDP port number 0-65535
+     * 
+     * @api
      */
     const PORTNUMBER = 1248968176;
 
     /**
      * A choice between 'yes' and 'no' values
+     * 
+     * @api
      */
     const YES_NO = 1248968177;
 
     /**
      * A valid ipv4 netmask address like '255.255.255.0'
+     * 
+     * @api
      */
     const IPv4_NETMASK = 1248968178;
 
     /**
      * Alias for VALID_IPv4_NETMASK
+     * 
+     * @api
      */
     const NETMASK = 1248968179;
 
     /**
-     * A valid mac address like 00:16:3E:78:7A:7B 
+     * A valid mac address like 00:16:3E:78:7A:7B
+     * 
+     * @api 
      */
     const MACADDRESS = 1248968180;
 

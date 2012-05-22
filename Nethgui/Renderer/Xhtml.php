@@ -32,7 +32,6 @@ namespace Nethgui\Renderer;
  */
 class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
 {
-
     /**
      *
      * @var integer
@@ -46,7 +45,8 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
     }
 
     /**
-     *
+     * 
+     * @api
      * @param \Nethgui\View\ViewInterface $view
      * @return \Nethgui\Renderer\Xhtml
      */
@@ -70,6 +70,8 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
 
     /**
      * Append a Javascript code fragment to the global .js temporary file
+     * 
+     * @api
      * @param string $jsCode Raw Javascript code
      * @return Xhtml
      */
@@ -82,6 +84,7 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
     /**
      * Append a CSS code fragment to the global .css temporary file
      *
+     * @api
      * @param string $cssCode Raw Css code
      * @return Xhtml
      */
@@ -97,11 +100,12 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
      * The file path is relative to the <namespace>/Resource/ directory. The
      * <namespace> is assumed to be the same of the module.
      * 
+     * @api
      * @param string $fileName
      * @return Xhtml
      */
     public function includeFile($fileName)
-    {        
+    {
         $filePath = call_user_func($this->getTemplateResolver(), $fileName);
         $ext = pathinfo($fileName, PATHINFO_EXTENSION);
         $ext = $ext ? $ext : 'default';
@@ -109,12 +113,27 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
         return $this;
     }
 
+    /**
+     * $flag bits are ORed on the widget that include this view.
+     * 
+     * @api
+     * @param integer $flags
+     * @return \Nethgui\Renderer\Xhtml 
+     */
     public function requireFlag($flags)
     {
         $this->view->getCommandList()->requireFlag($flags);
         return $this;
     }
 
+    /**
+     * $flag bits are masked on the widget that include this view.
+     * 
+     * @see requireFlag()
+     * @api
+     * @param integer $flags
+     * @return \Nethgui\Renderer\Xhtml 
+     */
     public function rejectFlag($flags)
     {
         $this->view->getCommandList()->rejectFlag($flags);
@@ -126,7 +145,8 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
      *
      * The XHTML tag generated depends on the file extension. Javascript (.js)
      * needs the SCRIPT tag, External stylesheets (.css) a LINK tag.
-     *
+     * 
+     * @api
      * @param string $fileName
      * @return Xhtml
      */

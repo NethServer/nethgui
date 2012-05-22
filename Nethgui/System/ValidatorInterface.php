@@ -32,6 +32,7 @@ interface ValidatorInterface {
     /**
      * Test if $value is accepted by this validator.
      *
+     * @api
      * @param mixed $value
      * @return boolean
      */
@@ -43,6 +44,7 @@ interface ValidatorInterface {
      * If evaluate() returns FALSE the validator object must return
      * an explanation of the problem as an array of arrays.
      * 
+     * @api
      * @see evaluate()
      * @return array An array of arrays of two elements: a template string and an array of arguments, to invoke strtr().
      */

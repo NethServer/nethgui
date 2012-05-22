@@ -23,6 +23,7 @@ namespace Nethgui\Log;
 /**
  * Provides message formatting capabilities without specify the log message destination
  *
+ * @api
  * @since 1.0
  * @author Davide Principi <davide.principi@nethesis.it>
  */
@@ -32,6 +33,7 @@ abstract class AbstractLog implements LogInterface, \Nethgui\Utility\PhpConsumer
     /**
      * Implementors must send the given message and level strings to the log facility
      *
+     * @api
      * @param string $level
      * @param string $message
      * @return AbstractLog

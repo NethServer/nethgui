@@ -26,6 +26,7 @@ namespace Nethgui\Log;
  * NOTE: when implementing this interface remind that getLog() must return always
  * a valid LogInterface object: instantiate Nullog as last resort.
  *
+ * @see \Nethgui\Log\Nullog
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  * @api 

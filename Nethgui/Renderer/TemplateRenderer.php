@@ -63,9 +63,11 @@ class TemplateRenderer extends AbstractRenderer implements \Nethgui\Utility\PhpC
     }
 
     /**
-     *
+     * Crete a new instance of the Renderer, bound to the given $view
+     * 
+     * @api
      * @param \Nethgui\View\ViewInterface $view
-     * @return \Nethgui\Renderer\Xhtml
+     * @return \Nethgui\Renderer\TemplateRenderer
      */
     public function spawnRenderer(\Nethgui\View\ViewInterface $view)
     {

@@ -21,6 +21,12 @@ namespace Nethgui\View;
  */
 
 /**
+ * Search for a string translation looking to all the language catalogs provided
+ * by a hierarchy of modules.
+ * 
+ * The string lookup procedes up to the root of the hierarchy by invoking 
+ * the module getParent() method.
+ * 
  * @author Davide Principi <davide.principi@nethesis.it>
  */
 class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Log\LogConsumerInterface
@@ -71,7 +77,7 @@ class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Utility\
      * correspondent value.
      *
      * @see strtr()
-     *
+     * 
      * @param \Nethgui\Module\ModuleInterface $module
      * @param string $string The string to be translated
      * @param array $args Values substituted in output string.

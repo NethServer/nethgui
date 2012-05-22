@@ -25,6 +25,7 @@ namespace Nethgui\Log;
  * 
  * @since 1.0
  * @author Davide Principi <davide.principi@nethesis.it>
+ * @api
  */
 class Nullog extends AbstractLog
 {

@@ -21,7 +21,7 @@ namespace Nethgui\View;
  */
 
 /**
- * 
+ * Translate strings by looking at the language catalogs provided by a module
  *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
@@ -31,13 +31,14 @@ interface TranslatorInterface
 {
 
     /**
-     *
+     * Translate a string
+     * 
      * @api
-     * @param ModuleInterface $module
-     * @param string $string
-     * @param array $args
-     * @param string $languageCode
-     * @return string
+     * @param ModuleInterface $module The module providing the language catalog(s)
+     * @param string $string The string to be translated
+     * @param array $args Hash of placeholders. Each key is replaced with the corresponding value. See PHP strtr()
+     * @param string $languageCode The language of the returned string
+     * @return string The translated string
      */
     public function translate(\Nethgui\Module\ModuleInterface $module, $string, $args = array(), $languageCode = NULL);
 

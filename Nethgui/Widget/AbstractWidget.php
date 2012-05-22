@@ -22,6 +22,10 @@ namespace Nethgui\Widget;
 
 /**
  * Abstract Widget class
+ * 
+ * @api
+ * @since 1.0
+ * @author Davide Principi <davide.principi@nethesis.it>
  */
 abstract class AbstractWidget implements \Nethgui\Renderer\WidgetInterface, \Nethgui\Log\LogConsumerInterface
 {

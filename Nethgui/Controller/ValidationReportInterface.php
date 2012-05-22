@@ -51,6 +51,7 @@ interface ValidationReportInterface
 
     /**
      * Check if a validation error has been added.
+     * @api
      * @return boolean
      */
     public function hasValidationErrors();

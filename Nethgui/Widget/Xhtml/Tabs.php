@@ -25,7 +25,6 @@ namespace Nethgui\Widget\Xhtml;
  * 
  * 
  * @see http://jqueryui.com/demos/tabs/
- * @api
  * @since 1.0
  * @author Davide Principi <davide.principi@nethesis.it>
  */

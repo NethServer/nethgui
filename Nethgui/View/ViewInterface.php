@@ -26,9 +26,9 @@ namespace Nethgui\View;
  *
  * - primitive types (int, string, array, boolean..)
  *
- * - ViewInterface
+ * - ViewInterface objects
  *
- * - CommandInterface
+ * - Traversable objects
  *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0

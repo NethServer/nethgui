@@ -31,6 +31,8 @@ abstract class AbstractController extends \Nethgui\Module\AbstractModule impleme
 {
     /**
      * This collection holds the parameter values as primitive datatype or adapter objects.
+     *
+     * @api
      * @var \Nethgui\Adapter\ParameterSet
      */
     protected $parameters;
