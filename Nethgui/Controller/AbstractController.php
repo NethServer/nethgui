@@ -214,7 +214,7 @@ abstract class AbstractController extends \Nethgui\Module\AbstractModule impleme
 
             $isValid = $validator->evaluate($this->parameters[$parameterName]);
             if ($isValid !== TRUE) {
-                $report->addValidationError(new \Nethgui\Module\Notification\ModuleSurrogate($this), $parameterName, $validator);
+                $report->addValidationError($this, $parameterName, $validator);
                 $this->invalidParameters[] = $parameterName;
             }
         }
