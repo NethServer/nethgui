@@ -44,7 +44,7 @@ class Validator implements \Nethgui\System\ValidatorInterface
      *
      * @param \Nethgui\System\ValidatorInterface $v1
      * @param \Nethgui\System\ValidatorInterface $v2
-     * @return Nethgui_Core_Validator
+     * @return \Nethgui\System\Validator
      */
     public function orValidator(\Nethgui\System\ValidatorInterface $v1, \Nethgui\System\ValidatorInterface $v2)
     {
@@ -59,7 +59,7 @@ class Validator implements \Nethgui\System\ValidatorInterface
      * Otherwise you can pass arbitrary arguments. It will be checked if the
      * current value matches any of them.
      *
-     * @return  Nethgui_Core_Validator
+     * @return  \Nethgui\System\Validator
      */
     public function memberOf()
     {
@@ -87,7 +87,7 @@ class Validator implements \Nethgui\System\ValidatorInterface
     /**
      * @see preg_match
      * @param string $e A PHP preg_match compatible regular expression
-     * @return Nethgui_Core_Validator
+     * @return \Nethgui\System\Validator
      */
     public function regexp($e)
     {
@@ -99,7 +99,7 @@ class Validator implements \Nethgui\System\ValidatorInterface
      * Checks if current value is not empty
      * 
      * @see PHP empty
-     * @return Nethgui_Core_Validator
+     * @return \Nethgui\System\Validator
      */
     public function notEmpty()
     {
@@ -110,7 +110,7 @@ class Validator implements \Nethgui\System\ValidatorInterface
      * Checks if current value is empty
      * 
      * @see PHP empty
-     * @return Nethgui_Core_Validator
+     * @return \Nethgui\System\Validator
      */
     public function isEmpty()
     {
@@ -120,7 +120,7 @@ class Validator implements \Nethgui\System\ValidatorInterface
     /**
      * Force the evaluation result
      * @param bool exit status
-     * @return Nethgui_Core_Validator
+     * @return \Nethgui\System\Validator
      */
     public function forceResult($result)
     {
@@ -130,7 +130,7 @@ class Validator implements \Nethgui\System\ValidatorInterface
 
     /**
      * Check if the given value is a valid IPv4 address
-     * @return Nethgui_Core_Validator
+     * @return \Nethgui\System\Validator
      */
     public function ipV4Address()
     {
@@ -141,7 +141,7 @@ class Validator implements \Nethgui\System\ValidatorInterface
      * Check if the given value is a valid host name
      * @param int $minDots Default 0
      * @param int $maxDots Default PHP_INT_MAX
-     * @return Nethgui_Core_Validator
+     * @return \Nethgui\System\Validator
      */
     public function hostname($minDots = 0, $maxDots = PHP_INT_MAX)
     {
@@ -165,7 +165,7 @@ class Validator implements \Nethgui\System\ValidatorInterface
 
     /**
      * @todo
-     * @return Nethgui_Core_Validator
+     * @return \Nethgui\System\Validator
      */
     public function ipV6Address()
     {
@@ -174,7 +174,7 @@ class Validator implements \Nethgui\System\ValidatorInterface
 
     /**
      * @todo
-     * @return Nethgui_Core_Validator
+     * @return \Nethgui\System\Validator
      */
     public function ipV4Netmask()
     {
@@ -183,7 +183,7 @@ class Validator implements \Nethgui\System\ValidatorInterface
 
     /**
      * @todo
-     * @return Nethgui_Core_Validator
+     * @return \Nethgui\System\Validator
      */
     public function macAddress()
     {
@@ -192,7 +192,7 @@ class Validator implements \Nethgui\System\ValidatorInterface
 
     /**
      * @todo
-     * @return Nethgui_Core_Validator
+     * @return \Nethgui\System\Validator
      */
     public function ipV6Netmask()
     {
@@ -246,7 +246,7 @@ class Validator implements \Nethgui\System\ValidatorInterface
 
     /**
      * Invert the evaluation result for the next rule.
-     * @return Nethgui_Core_Validator
+     * @return \Nethgui\System\Validator
      */
     public function not()
     {
@@ -256,7 +256,7 @@ class Validator implements \Nethgui\System\ValidatorInterface
 
     /**
      * Check if the value is a valid Unix user name
-     * @return Nethgui_Core_Validator
+     * @return \Nethgui\System\Validator
      */
     public function username()
     {
@@ -309,20 +309,9 @@ class Validator implements \Nethgui\System\ValidatorInterface
             throw new \InvalidArgumentException(sprintf("%s: must supply a validator name argument", __CLASS__), 1333012309);
         }
 
-        $message = 'valid_platform';
-        $placeholders = array();
-
-        $i = 0;
-        foreach ($arguments as $arg) {
-            $message .= ' ${' . $i . '}';
-            $placeholders['${' . $i . '}'] = $arg;
-            $i ++;
-        }
-
-        $template = array($message, $placeholders);
-        array_unshift($arguments, __FUNCTION__, $template);
-
+        array_unshift($arguments, __FUNCTION__, NULL);
         return call_user_func_array(array($this, 'addToChain'), $arguments);
+        
     }
 
     public function getFailureInfo()
@@ -351,32 +340,31 @@ class Validator implements \Nethgui\System\ValidatorInterface
                 // 1. a callable
                 // 2. an optional array of arguments
                 // 3. the error message template plus arguments
-                $args = array();
-                if (isset($expression[2]) && is_array($expression[2])) {
-                    $args = $expression[2];
-                } else {
-                    $args = array();
+
+                list($methodName, $evalFunction, $argList, $errorTemplate) = $expression;
+
+                if ( ! is_array($argList)) {
+                    $argList = array();
                 }
 
-                // If error message template and arguments is missing create a default one:
-                if ( ! isset($expression[3]) || ! is_array($expression[3])) {
-                    $expression[3] = array('valid_' . $expression[0], array());
-                }
+                array_unshift($argList, $value);
 
-                array_unshift($args, $value);
-                $isValid = call_user_func_array($expression[1], $args);
+                $isValid = call_user_func_array($evalFunction, $argList);
+
                 if (($isValid XOR $notFlag) === FALSE) {
-                    $this->failureInfo[] = $expression[3];
+                    if (is_array($errorTemplate)) {
+                        $this->addFailureInfo($errorTemplate[0], $errorTemplate[1]);
+                    } 
                     return FALSE;
                 }
             } elseif ($expression instanceof \Nethgui\System\ValidatorInterface) {
                 $isValid = $expression->evaluate($value);
                 if (($isValid XOR $notFlag) === FALSE) {
-                    $this->failureInfo = array_merge($this->failureInfo, $expression->getFailureInfo());
+                    $this->mergeFailureInfo($expression);
                     return FALSE;
                 }
             } elseif ($expression === FALSE) {
-                $this->failureInfo[] = array('valid_forced_failure', array());
+                $this->addFailureInfo('valid_forced_failure');
                 return FALSE;
             } elseif ($expression === TRUE) {
                 break;
@@ -389,13 +377,31 @@ class Validator implements \Nethgui\System\ValidatorInterface
         return TRUE;
     }
 
+    protected function mergeFailureInfo(\Nethgui\System\ValidatorInterface $validator) {               
+        foreach($validator->getFailureInfo() as $elem) {
+            $this->addFailureInfo($elem[0], $elem[1]);
+        }
+        return $this;
+    }
+    
+    protected function addFailureInfo($template, $args = array())
+    {
+        if ( ! is_string($template)) {
+            throw new \InvalidArgumentException(sprintf('%s: $template argument must be a string', __CLASS__), 1337766431);
+        } elseif ( ! is_array($args)) {
+            throw new \InvalidArgumentException(sprintf('%s: $args argument must be an array', __CLASS__), 1337766432);
+        }
+        $this->failureInfo[] = array($template, $args);
+        return $this;
+    }
+
     /**
      * In development environment a not implemented rule is simply ignored,
      * otherwise an exception is raised.
      * 
      * @codeCoverageIgnore
      * @param string $method
-     * @return Nethgui_Core_Validator
+     * @return \Nethgui\System\Validator
      */
     private function notImplemented($method)
     {
@@ -420,10 +426,10 @@ class Validator implements \Nethgui\System\ValidatorInterface
         $methodName = 'eval' . ucfirst($originalMethodName);
 
         $this->chain[] = array(
-            $originalMethodName,
-            array($this, $methodName),
-            $args,
-            $errorMessageTemplate,
+            $originalMethodName, // 0 
+            array($this, $methodName), // 1
+            $args, // 2 
+            $errorMessageTemplate, // 3
         );
 
         return $this;
@@ -636,7 +642,12 @@ class Validator implements \Nethgui\System\ValidatorInterface
 
         if ($process->getExitCode() !== 0 && $this->platform instanceof \Nethgui\Log\LogConsumerInterface) {
             $this->platform->getLog()->notice(sprintf('platformValidator (%s): %s', implode(', ', $args), strtr($process->getOutput(), "\n", " ")));
-        }
+            $outputArray = $process->getOutputArray();
+            $reason = array_pop($outputArray);
+            // inject reason message in failure template arguments. Refs #1058
+            $args['${reason}'] = substr(implode("\n", $outputArray), 0, 64);
+            $this->addFailureInfo('valid_platform,' . $reason, $args);
+        }                
 
         return $process->getExitCode() === 0;
     }
