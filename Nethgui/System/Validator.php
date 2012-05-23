@@ -419,10 +419,16 @@ class Validator implements \Nethgui\System\ValidatorInterface
     private function addToChain()
     {
         $args = func_get_args();
-
+        
         $originalMethodName = array_shift($args);
-        $errorMessageTemplate = array_shift($args);
-
+        
+        // if only the method name is passed, add a default template
+        if(func_num_args() === 1) {
+            $errorMessageTemplate = array('valid_' . $originalMethodName, array());
+        } else {
+            $errorMessageTemplate = array_shift($args);
+        }     
+        
         $methodName = 'eval' . ucfirst($originalMethodName);
 
         $this->chain[] = array(
@@ -494,12 +500,13 @@ class Validator implements \Nethgui\System\ValidatorInterface
     }
 
     /**
-     * Check if $value is a valid Linux username
+     * Check if $value starts with a letter and contains only alphanumeric
+     * characters plus - and _
      * @param string $value 
      */
     private function evalUsername($value)
     {
-        return strlen($value) < 32 && $this->evalRegexp($value, '/^[a-z][-_a-z0-9]*$/');
+        return strlen($value) < 256 && $this->evalRegexp($value, '/^[a-z][-_a-z0-9]*$/');
     }
 
     /**
