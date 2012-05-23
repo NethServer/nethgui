@@ -83,6 +83,9 @@ class Modify extends \Nethgui\Controller\Table\RowAbstractAction
         }
 
         parent::bind($request);
+
+        // ensure Path and Parameter value are the same
+        $this->getValidator($this->getKey())->equalTo($keyValue);       
     }
 
     public function process()
