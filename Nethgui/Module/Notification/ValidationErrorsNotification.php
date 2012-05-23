@@ -53,9 +53,14 @@ class ValidationErrorsNotification extends AbstractNotification implements \Neth
 
     public function addValidationError(\Nethgui\Module\ModuleInterface $module, $parameterName, \Nethgui\System\ValidatorInterface $validator)
     {
-        foreach ($validator->getFailureInfo() as $failureInfo) {
+        $failureInfoList = $validator->getFailureInfo();
+        if(empty($failureInfoList)) {
+            throw new \LogicException(sprintf('%s: the validator does not have any failure information', __CLASS__), 1337790933);
+        }
+        
+        foreach ($failureInfoList as $failureInfo) {
             if ( ! isset($failureInfo[1])) {
-                $failureInfo[1] = array();
+                throw new \LogicException(sprintf('%s: invalid failure info struct', __CLASS__), 1337790799);
             }
             $this->addValidationErrorMessage($module, $parameterName, $failureInfo[0], $failureInfo[1]);
         }
