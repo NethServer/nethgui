@@ -1,4 +1,9 @@
 <?php
+    // skip tables on HELP templates
+    if($view instanceof \Nethgui\Module\Help\Renderer) {
+        return;
+    }
+
     $view
         ->includeFile('Nethgui/Js/jquery.nethgui.datatable.js')
         ->rejectFlag($view::INSET_FORM)
