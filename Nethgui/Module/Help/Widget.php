@@ -29,16 +29,21 @@ class Widget extends \Nethgui\Widget\AbstractWidget
     protected function renderContent()
     {
         $whatToDo = $this->getAttribute('do');
-
+        $view = NULL;
+        
+        
         if ($whatToDo === 'inset') {
             $view = $this->view->offsetGet($this->getAttribute('name'));
-            if ($view instanceof \Nethgui\View\ViewInterface) {
-                $renderer = $this->view->spawnRenderer($view);
-                $renderer->nestingLevel = $this->view->nestingLevel + 1;
-                return $renderer->render();
-            }
+        } elseif ($whatToDo === 'literal' && $this->getAttribute('isPlugin') === TRUE) {
+            $view = $this->getAttribute('data');
         }
 
+        if ($view instanceof \Nethgui\View\ViewInterface) {                       
+            $renderer = $this->view->spawnRenderer($view);
+            $renderer->nestingLevel = $this->view->nestingLevel + 1;
+            return $renderer->render();
+        }
+        
         return parent::renderContent();
     }
 
