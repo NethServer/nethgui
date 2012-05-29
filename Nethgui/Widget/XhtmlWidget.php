@@ -384,5 +384,41 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
         return $unobstrusiveRequired && $unobstrusiveApplying;
     }
 
-}
+    public function insertPlugins($name = 'Plugin')
+    {
+        $pluginList = array();
 
+        foreach ($this->view[$name] as $pluginView) {
+            if ($pluginView instanceof \Nethgui\View\ViewInterface) {
+                $pluginModule = $pluginView->getModule();
+
+                $cat = $pluginModule->getAttributesProvider()->getCategory();
+
+                if ( ! isset($pluginList[$cat])) {
+                    // add a panel for the new Category:
+                    $pluginList[$cat] = $this->view->panel()
+                        ->setAttribute('name', $cat)
+                        ->setAttribute('title', $pluginView->translate($cat . '_Title'))
+                        ->setAttribute('isPluginPlaceholder', TRUE)
+                    ;
+                }
+
+                $pluginLiteral = $this->view->literal($pluginView);
+                $pluginLiteral->setAttribute('isPlugin', TRUE);
+
+                // add plugin view to the Category
+                $pluginList[$cat]->insert($pluginLiteral);
+            } else {
+                $this->insert($this->view->literal($pluginView)); // add a new element
+            }
+        }
+
+        ksort($pluginList);
+        foreach ($pluginList as $plugin) {
+            $this->insert($plugin);
+        }
+
+        return $this;
+    }
+
+}

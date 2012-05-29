@@ -30,21 +30,28 @@ class Widget extends \Nethgui\Widget\AbstractWidget
     {
         $whatToDo = $this->getAttribute('do');
         $view = NULL;
-        
-        
+
+
         if ($whatToDo === 'inset') {
             $view = $this->view->offsetGet($this->getAttribute('name'));
-        } elseif ($whatToDo === 'literal' && $this->getAttribute('isPlugin') === TRUE) {
-            $view = $this->getAttribute('data');
+            if ($view instanceof \Nethgui\View\ViewInterface) {
+                $renderer = $this->view->spawnRenderer($view);
+                $renderer->nestingLevel = $this->view->nestingLevel + 1;
+                return $renderer->render();
+            }
+        } elseif ($whatToDo === 'literal' && $this->getAttribute('isPluginPlaceholder') === TRUE) {
+            return $this->getAttribute('data');
         }
 
-        if ($view instanceof \Nethgui\View\ViewInterface) {                       
-            $renderer = $this->view->spawnRenderer($view);
-            $renderer->nestingLevel = $this->view->nestingLevel + 1;
-            return $renderer->render();
-        }
-        
         return parent::renderContent();
+    }
+
+    public function insertPlugins($name = 'Plugin')
+    {
+        $pluginPlaceholder = $this->view->literal('{{{INCLUDE ' . $name . '}}}');
+        $pluginPlaceholder->setAttribute('isPluginPlaceholder', TRUE);
+        $this->insert($pluginPlaceholder);
+        return $this;
     }
 
 }

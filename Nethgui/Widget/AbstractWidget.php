@@ -161,40 +161,5 @@ abstract class AbstractWidget implements \Nethgui\Renderer\WidgetInterface, \Net
      * @param string $name Optional - Default "Plugin"
      * @return \Nethgui\Widget\AbstractWidget the widget itself.
      */
-    public function insertPlugins($name = 'Plugin')
-    {
-        $pluginList = array();
-
-        foreach ($this->view[$name] as $pluginView) {
-            if ($pluginView instanceof \Nethgui\View\ViewInterface) {
-                $pluginModule = $pluginView->getModule();
-
-                $cat = $pluginModule->getAttributesProvider()->getCategory();
-
-                if ( ! isset($pluginList[$cat])) {
-                    // add a panel for the new Category:
-                    $pluginList[$cat] = $this->view->panel()
-                        ->setAttribute('name', $cat)
-                        ->setAttribute('title', $pluginView->translate($cat . '_Title'))
-                    ;
-                }
-
-                $pluginLiteral = $this->view->literal($pluginView);
-                $pluginLiteral->setAttribute('isPlugin', TRUE);
-                
-                // add plugin view to the Category
-                $pluginList[$cat]->insert($pluginLiteral);
-            } else {
-                $this->insert($this->view->literal($pluginView)); // add a new element
-            }
-        }
-
-        ksort($pluginList);
-        foreach ($pluginList as $plugin) {
-            $this->insert($plugin);
-        }
-
-        return $this;
-    }
-
+    abstract public function insertPlugins($name = 'Plugin');
 }
