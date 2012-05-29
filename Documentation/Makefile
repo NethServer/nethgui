@@ -52,5 +52,5 @@ ${PDEPEND_OUTPUT}:
 	  --summary-xml=Metrics/summary.xml  \
 	  --jdepend-chart=Metrics/jdepend.svg  \
 	  --overview-pyramid=Metrics/pyramid.svg  \
-	  --ignore=../Nethgui/Language/ \
+	  --ignore=../Nethgui/Test,../Nethgui/Language \
 	  ../Nethgui/
