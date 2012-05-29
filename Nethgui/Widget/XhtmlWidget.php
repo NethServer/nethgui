@@ -21,13 +21,17 @@ namespace Nethgui\Widget;
  */
 
 /**
- * Abstract Xhtml Widget class
+ * An abstract widget that renders an XHTML string
+ * 
+ * @api
  */
 abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\CommandReceiverInterface
 {
 
     /**
-     *
+     * Get the object that renders the widget's view.
+     * 
+     * @api
      * @return \Nethgui\Renderer\Xhtml
      */
     protected function getRenderer()
@@ -36,7 +40,7 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
     }
 
     /**
-     * Push a LABEL tag
+     * Get a LABEL tag
      *
      * @see http://www.w3.org/TR/html401/interact/forms.html#h-17.9.1
      * @param string $name
@@ -58,7 +62,9 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
     }
 
     /**
-     *
+     * Generate XHTML markup fragment for a FORM control with a LABEL tag
+     * 
+     * @api
      * @see controlTag()
      * @param string $label The label text
      * @param string $tag The XHTML tag of the control.
@@ -111,8 +117,9 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
     }
 
     /**
-     * Push an HTML tag for parameter $name.
+     * Generate XHTML markup for a FORM control, such as INPUT, BUTTON, TEXTAREA
      *
+     * @api
      * @param string $tag The XHTML tag of the control.
      * @param string|array $name The name of the view parameter that holds the data
      * @param integer $flags Flags bitmask {STATE_CHECKED, STATE_DISABLED}
@@ -181,6 +188,13 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
         return $content;
     }
 
+    /**
+     * If no LABEL_* bit is set, apply $default bit
+     * 
+     * @param int $flags The input bits
+     * @param int $default The default LABEL bit
+     * @return type The output bits
+     */
     protected function applyDefaultLabelAlignment($flags, $default)
     {
         return (\Nethgui\Renderer\WidgetFactoryInterface::LABEL_NONE | \Nethgui\Renderer\WidgetFactoryInterface::LABEL_ABOVE | \Nethgui\Renderer\WidgetFactoryInterface::LABEL_LEFT | \Nethgui\Renderer\WidgetFactoryInterface::LABEL_RIGHT) & $flags ? $flags : $flags | $default;
@@ -189,6 +203,7 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
     /**
      * Get an XHTML opening tag string
      *
+     * @api
      * @param string $tag The tag name (DIV, P, FORM...)
      * @param array $attributes The HTML attributes (id, name, for...)
      * @param string $content Raw content string
@@ -204,6 +219,7 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
     /**
      * Get an XHTML self-closing tag string
      *
+     * @api
      * @see openTag()
      * @param string $tag
      * @param array $attributes
@@ -218,6 +234,7 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
     /**
      * Get an XHTML closing tag string
      *
+     * @api
      * @param string $tag Tag to be closed.
      * @return string
      */
@@ -234,7 +251,7 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
      *
      * @see htmlspecialchars()
      * @param array $attributes
-     * @return string
+     * @return string The XHTML formatted attributes
      */
     private function prepareXhtmlAttributes($attributes)
     {
@@ -254,6 +271,7 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
      * Generate a control name for the given $parts. If no parts are given
      * the name is generated from the module referenced by the view.
      * 
+     * @api
      * @param string $parts
      * @return string
      */
@@ -265,9 +283,12 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
     }
 
     /**
+     * Get the js types required by this widget class.
+     * 
      * Each element of the returned array is a string <namespace>:<widgetType>
      * 
-     * @return array
+     * @api
+     * @return array An array of required js widget types
      */
     protected function getJsWidgetTypes()
     {

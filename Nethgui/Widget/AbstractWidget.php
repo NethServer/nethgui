@@ -21,7 +21,13 @@ namespace Nethgui\Widget;
  */
 
 /**
- * Abstract Widget class
+ * This abstract widget implementation collaborates with a ViewInterface object. 
+ * 
+ * In this collaboration the Widget plays the "view" role and the ViewInterface object
+ * the "model" role, where data is stored.  
+ * 
+ * Concrete implementations of an abstract widget specify how the data of the 
+ * model is rendered into a string.
  * 
  * @api
  * @since 1.0
@@ -147,10 +153,13 @@ abstract class AbstractWidget implements \Nethgui\Renderer\WidgetInterface, \Net
     }
 
     /**
-     * Insert plugin module views found under the view's $pluginName member
+     * Insert any (sub)view object found in the view $name collection
+     * into the widget.
      * 
+     * @see insert()
+     * @api
      * @param string $name Optional - Default "Plugin"
-     * @return \Nethgui\Widget\Xhtml\Tabs
+     * @return \Nethgui\Widget\AbstractWidget the widget itself.
      */
     public function insertPlugins($name = 'Plugin')
     {

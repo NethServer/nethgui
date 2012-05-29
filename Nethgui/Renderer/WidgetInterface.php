@@ -21,24 +21,15 @@ namespace Nethgui\Renderer;
  */
 
 /**
- * Help in the creation of the view output.
- *
- * A widget object can be rendered to a string through 
- *
- * Usually, a widget is associated to a view element by setting its "name" attribute
- * to the key of the view element. 
- *
- * Widgets:
+ * Help in the creation of the view output. A widget
  * 
- * - Can be nested in a hierarchical way through the insert() method.
+ * - is rendered as a string
  * 
- * - Are configured through the attributes API {set,get,has}Attribute.
- *
- * Basic attribute:
+ * - can be nested in a hierarchical way through the insert() method
  * 
- * - name
+ * - is configured by setting its attributes
  *
- * Implementations can extend the attribute list with their own semantics.
+ * Implementations define the attribute semantic.
  *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
