@@ -30,11 +30,11 @@ class Read extends Common
 {
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
-    {        
+    {
         $view->setTemplate(FALSE);
-        
+
         $module = $this->getTargetModule();
-        if (is_null($module)) {            
+        if (is_null($module)) {
             return;
         }
 
@@ -42,6 +42,7 @@ class Read extends Common
         $view->getCommandList('/Main')->setDecoratorTemplate(function(\Nethgui\View\ViewInterface $renderer) {
                 return $renderer['Help']['Read']['contents'];
             });
+
         if (NETHGUI_ENABLE_HTTP_CACHE_HEADERS) {
             $view->getCommandList()
                 ->httpHeader(sprintf('Last-Modified: %s', date(DATE_RFC1123, $this->getPhpWrapper()->filemtime($filePath))))
@@ -49,11 +50,14 @@ class Read extends Common
             ;
         }
 
-        $meta = array();
-        $view['contents'] = $this->getPhpWrapper()->file_get_contents_extended($filePath, $meta);
+        $view['contents'] = $this->expandIncludes(
+            $this->getPhpWrapper()->file_get_contents($filePath)
+        );
 
-        if ($meta['size'] > 0) {
-            $view->getCommandList()->httpHeader(sprintf('Content-Length: %d', $meta['size']));
+        $contentLength = strlen($view['contents']);
+
+        if ($contentLength > 0) {
+            $view->getCommandList()->httpHeader(sprintf('Content-Length: %d', $contentLength));
         }
     }
 

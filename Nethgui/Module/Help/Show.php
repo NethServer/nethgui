@@ -31,39 +31,18 @@ class Show extends Common
      * @var string
      */
     private $helpContent = '';
-    
+
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
         if (is_null($this->getTargetModule())) {
             $view->setTemplate(array($this, 'renderIndex'));
         } else {
-            $this->helpContent = $this->readHelpDocument();
+            $this->helpContent = $this->readHelpDocument(
+                $this->getHelpDocumentPath($this->getTargetModule()
+                ));
             $view->setTemplate(array($this, 'renderDocument'));
         }
-    }
-    
-    private function readHelpDocument() {
-        
-        $document = new \XMLReader();
-                
-        set_error_handler(function ($errno, $errstr)  {}, E_WARNING | E_NOTICE);        
-        
-        $filePath = $this->getHelpDocumentPath($this->getTargetModule());
-        if ($document->open('file://' . $filePath, 'utf-8', LIBXML_NOENT) === TRUE) {
-            // Advance to BODY tag:
-            while ($document->name != 'body' && $document->read());
-            while ($document->name != 'div' && $document->read());
-
-            $content = $document->readInnerXml();
-        } else {
-            $content = 'Not found';                
-            throw new \Nethgui\Exception\HttpException(sprintf("%s: resource not found", __CLASS__), 404, 1333119424);
-        }
-        
-        restore_error_handler();
-        
-        return $content;
     }
 
     public function renderIndex(\Nethgui\Renderer\Xhtml $renderer)
@@ -97,7 +76,7 @@ class Show extends Common
 
     public function renderDocument(\Nethgui\Renderer\Xhtml $renderer)
     {
-        
+
         $renderer->rejectFlag($renderer::INSET_FORM);
         return $renderer->panel()->setAttribute('class', 'HelpDocument')->insert($renderer->literal($this->helpContent));
     }

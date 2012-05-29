@@ -25,6 +25,13 @@ namespace Nethgui\Module\Help;
  */
 class Common extends \Nethgui\Controller\AbstractController
 {
+    /**
+     * Holds the included file list for {{{INCLUDE}}} directive processing
+     * 
+     * @see expandIncludes()
+     * @var array
+     */
+    private $includes = array();
 
     /**
      *
@@ -93,18 +100,75 @@ class Common extends \Nethgui\Controller\AbstractController
         $lang = $this->getRequest()->getUser()->getLanguageCode();
         $fileName = implode('_', $parts) . '.html';
 
-        return call_user_func($this->fileNameResolver, "${ns}\\Help\\${lang}\\${fileName}");
+        return call_user_func($this->fileNameResolver, implode("\\", array($ns, 'Help', $lang, $fileName)));
     }
 
     protected function getFileNameResolver()
     {
         return $this->fileNameResolver;
     }
+    
+    /**
+     * Extract the contents of the first div tag in the XHTML help document
+     * 
+     * @return string
+     * @throws \Nethgui\Exception\HttpException 
+     */
+    protected function readHelpDocument($filePath) {
+        
+        $document = new \XMLReader();
+                
+        set_error_handler(function ($errno, $errstr)  {}, E_WARNING | E_NOTICE);        
+                 
+        if ($document->open('file://' . $filePath, 'utf-8', LIBXML_NOENT) === TRUE) {
+            // Advance to BODY tag:
+            while ($document->name != 'body' && $document->read());
+            while ($document->name != 'div' && $document->read());
 
-    public function renderFileContent(\Nethgui\Renderer\AbstractRenderer $renderer)
+            $content = $document->readInnerXml();
+        } else {
+            $content = 'Not found';                
+            throw new \Nethgui\Exception\HttpException(sprintf("%s: resource not found", __CLASS__), 404, 1333119424);
+        }
+        
+        restore_error_handler();
+        
+        return $this->expandIncludes($content);
+    }    
+    
+    
+    protected function expandIncludes($contents)
     {
-        return $this->getPhpWrapper()->file_get_contents($this->getCachePath($this->fileName));
+        $self = $this;
+        return preg_replace_callback(
+                '/{{{INCLUDE\s+([^}\s]+)}}}/', function($matches) use ($self, $contents) {
+                    return $self->readHelpDocumentsByPattern($matches[1], $contents);
+                }, $contents);
     }
 
+    public function readHelpDocumentsByPattern($pattern)
+    {
+        if (strstr($pattern, '/') !== FALSE) {
+            throw new \UnexpectedValueException(sprintf('%s: Forbidden slash "/" character in INCLUDE pattern', __CLASS__), 1338288914);
+        }
+
+        $absolutePattern = dirname($this->getHelpDocumentPath($this->getTargetModule())) . '/' . $pattern;
+
+        $expansion = '';
+        
+        foreach ($this->getPhpWrapper()->glob($absolutePattern) as $fileName) {
+            if (substr($fileName, -5) !== '.html') {
+                throw new \UnexpectedValueException(sprintf('%s: Forbidden file name extension in help document `%s`.', __CLASS__, basename($fileName)), 1338288817);
+            }
+            if (isset($this->includes[$fileName])) {
+                throw new \RuntimeException(sprintf('%s: the file has already been included: `%s`.', __CLASS__, basename($fileName)), 1338289668);
+            }
+            $this->includes[$fileName] = TRUE;
+            
+            $expansion .= $this->readHelpDocument($fileName);
+        }
+        
+        return $expansion;
+    }    
 }
 

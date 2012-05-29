@@ -31,16 +31,18 @@ class Widget extends \Nethgui\Widget\AbstractWidget
         $whatToDo = $this->getAttribute('do');
         $view = NULL;
 
-
         if ($whatToDo === 'inset') {
             $view = $this->view->offsetGet($this->getAttribute('name'));
-            if ($view instanceof \Nethgui\View\ViewInterface) {
-                $renderer = $this->view->spawnRenderer($view);
-                $renderer->nestingLevel = $this->view->nestingLevel + 1;
-                return $renderer->render();
-            }
         } elseif ($whatToDo === 'literal' && $this->getAttribute('isPluginPlaceholder') === TRUE) {
             return $this->getAttribute('data');
+        } elseif ($whatToDo === 'literal' && $this->getAttribute('isPlugin') === TRUE) {
+            $view = $this->getAttribute('data');
+        }
+
+        if ($view instanceof \Nethgui\View\ViewInterface) {
+            $renderer = $this->view->spawnRenderer($view);
+            $renderer->nestingLevel = $this->view->nestingLevel + 1;
+            return $renderer->render();
         }
 
         return parent::renderContent();
@@ -48,9 +50,31 @@ class Widget extends \Nethgui\Widget\AbstractWidget
 
     public function insertPlugins($name = 'Plugin')
     {
-        $pluginPlaceholder = $this->view->literal('{{{INCLUDE ' . $name . '}}}');
+        $module = $this->view->getModule();
+
+        if ($module instanceof \Nethgui\Controller\Table\PluggableAction) {
+            $module = $module->getParent();
+        }
+
+        $pattern = str_replace('\\', '_', get_class($module)) . '_' . $name . '_*.html';
+
+        $pluginPlaceholder = $this->view->literal('{{{INCLUDE ' . $pattern . '}}}');
         $pluginPlaceholder->setAttribute('isPluginPlaceholder', TRUE);
         $this->insert($pluginPlaceholder);
+
+        $pluginsPanel = $this->view->panel();
+        
+        foreach ($this->view[$name] as $pluginView) {
+            if ($pluginView instanceof \Nethgui\View\ViewInterface) {
+                $pluginsPanel->insert(
+                    $this->view->literal($pluginView)
+                        ->setAttribute('isPlugin', TRUE)
+                );
+            }
+        }
+
+        $this->insert($pluginsPanel);
+        
         return $this;
     }
 
