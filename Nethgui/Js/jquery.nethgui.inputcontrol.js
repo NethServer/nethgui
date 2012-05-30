@@ -89,7 +89,7 @@
             }
 
             if(this.element.get(0).tagName.toLowerCase() === 'input' 
-            && (this.element.attr('type') === 'checkbox' || this.element.attr('type') === 'radio')) {
+                && this.element.parent().hasClass('label-right')) {
                 qtipTarget = this.element.siblings('label[for=' + this.element.attr('id') + ']').first();
             } else {
                 qtipTarget = false;
