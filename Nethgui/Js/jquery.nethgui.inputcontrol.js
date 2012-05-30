@@ -80,6 +80,7 @@
             SUPER.prototype._create.apply(this);
 
             var self = this;
+            var qtipTarget;
             
             // error-state forces color to "red"
             if(this.options.style & 2) {
@@ -87,11 +88,19 @@
                 this.options.color = 'red';
             }
 
+            if(this.element.get(0).tagName.toLowerCase() === 'input' 
+            && (this.element.attr('type') === 'checkbox' || this.element.attr('type') === 'radio')) {
+                qtipTarget = this.element.siblings('label[for=' + this.element.attr('id') + ']').first();
+            } else {
+                qtipTarget = false;
+            }
+
             this.element.qtip({
                 position: {
                     my: 'left center',
                     at: 'right center',
-                    container: this.element.parents('.ui-tabs-panel, .Action, #CurrentModule, .Inset').first()
+                    container: this.element.parents('.ui-tabs-panel, .Action, #CurrentModule, .Inset').first(),
+                    target: qtipTarget
                 },
                 style: {
                     classes: 'ui-tooltip-${color} ui-tooltip-shadow'.replacePlaceholders({
