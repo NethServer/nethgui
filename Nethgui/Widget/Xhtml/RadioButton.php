@@ -38,7 +38,7 @@ class RadioButton extends \Nethgui\Widget\XhtmlWidget
         $flags = $this->getAttribute('flags');
         $label = $this->getAttribute('label', $this->getTranslateClosure($name . '_' . $value . '_label'));
         $content = '';
-
+        
         $attributes = array(
             'type' => 'radio',
             'value' => strval($value),
@@ -49,6 +49,12 @@ class RadioButton extends \Nethgui\Widget\XhtmlWidget
             $flags |= \Nethgui\Renderer\WidgetFactoryInterface::STATE_CHECKED;
         }
 
+        // default helpId is built as name + value to distinguish the checkbox 
+        // in the same set.
+        if ( ! $this->hasAttribute('helpId') ) {
+            $this->setAttribute('helpId', $name . '_' . $value);
+        }
+        
         $flags = $this->applyDefaultLabelAlignment($flags, \Nethgui\Renderer\WidgetFactoryInterface::LABEL_RIGHT);
 
         $content .= $this->labeledControlTag($label, 'input', $name, $flags, 'RadioButton', $attributes);
