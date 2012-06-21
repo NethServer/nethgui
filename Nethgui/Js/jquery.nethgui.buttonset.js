@@ -15,7 +15,7 @@
 	    // Register a global list of opened popups to close on ESCAPE keyup. Refs #1039
 	    if( $(document).data('ngButtonsetPopupList') === undefined ) {
 		$(document).data('ngButtonsetPopupList', []);
-		$(document).bind('keyup', function () {
+		$(document).bind('keyup', function (event) {
 		    if(event.keyCode !== $.ui.keyCode.ESCAPE) {
 			return;
 		    }
