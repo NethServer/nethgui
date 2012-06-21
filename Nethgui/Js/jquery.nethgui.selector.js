@@ -21,16 +21,28 @@
         },
         _renderDatasourceDropdown: function (value) {
             var self = this;
-            if(!$.isArray(value)) {
+            if( ! $.isArray(value)) {
                 return;
             }
             this.element.empty();
-            $.each(value, function (index, element) {
-                self.element.append($('<option />', {
-                    value: element[0],
-                    selected: $.inArray(element[0], self._selection) >= 0 ? 'selected' : undefined
-                }).text(element[1]));
-            });
+            
+            this._renderOptgroup(this.element, value);           
+        },
+        _renderOptgroup: function(element, items) {
+            var self = this;            
+            $.each(items, function (index, item) {
+                var optgroup;
+                if($.isArray(item[0])) {
+                    optgroup = $('<optgroup />', {label: item[1]});
+                    element.append(optgroup);
+                    self._renderOptgroup(optgroup, item[0]);
+                } else {
+                    element.append($('<option />', {
+                        value: item[0],
+                        selected: $.inArray(item[0], self._selection) >= 0 ? 'selected' : undefined
+                    }).text(item[1]));
+                }
+            });            
         },
         _renderDatasourceWidgetList: function (value) {
             var $this = this.element;

@@ -171,8 +171,11 @@ interface WidgetFactoryInterface
     /**
      * Create a checkbox control
      * 
+     * Optionally specify the "uncheckedValue" to get a value from the form
+     * when the checkbox is unchecked.
+     * 
      * @param string $name The view member name
-     * @param string $value The value assigned to the control, when selected.
+     * @param string $value The value assigned to the control, when checked.
      * @param integer $flags Optional {STATE_DISABLED, STATE_CHECKED}
      * @return \Nethgui\Renderer\WidgetInterface
      * @api
@@ -181,8 +184,11 @@ interface WidgetFactoryInterface
 
     /**
      * Create a selectable fieldset container.
+     * 
+     * Set FIELDSETSWITCH_CHECKBOX flag to get a checkbox switch, otherwise
+     * a radioButton is rendered.
      *
-     * @see checkbox()
+     * @see checkbox(), radioButton()
      * @param string $name
      * @param string $value
      * @param integer $flags
