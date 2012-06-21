@@ -51,18 +51,25 @@ abstract class AbstractRenderer extends ReadonlyView
      *
      * @api
      * @param array $h
+     * @param boolean $sort -- default FALSE
      * @return array
      */
-    public static function hashToDatasource($H)
+    public static function hashToDatasource($H, $sort = FALSE)
     {
         $D = array();
 
         foreach ($H as $k => $v) {
             if (is_array($v)) {
-                $D[] = array(self::hashToDatasource($v), $k);
+                $D[] = array(self::hashToDatasource($v, $sort), $k);
             } elseif (is_string($v)) {
                 $D[] = array($k, $v);
             }
+        }
+        
+        if($sort === TRUE) {
+           usort($D, function($a, $b) {
+               return strcasecmp($a[1], $b[1]);
+           }); 
         }
 
         return $D;
