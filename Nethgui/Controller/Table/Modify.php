@@ -70,7 +70,7 @@ class Modify extends \Nethgui\Controller\Table\RowAbstractAction
     {
         if ($this->getIdentifier() === 'create') {
             if ($request->isMutation()) {
-                $keyValue = $request->getParameter($this->getKey());
+                $keyValue = $this->calculateKeyFromRequest($request);
             } else {
                 $keyValue = FALSE;
             }
@@ -86,6 +86,24 @@ class Modify extends \Nethgui\Controller\Table\RowAbstractAction
 
         // ensure Path and Parameter value are the same
         $this->getValidator($this->getKey())->equalTo($keyValue);       
+    }
+    
+    /**
+     * Calculate the key value for a new record from the given $request 
+     * object.
+     * 
+     * Override this function whenever the key value requires some kind of 
+     * processing.  
+     * 
+     * This implementation returns the value of the key parameter.
+     * 
+     * @api
+     * @param \Nethgui\Controller\RequestInterface $request
+     * @return string
+     */
+    protected function calculateKeyFromRequest(\Nethgui\Controller\RequestInterface $request)
+    {
+        return $request->getParameter($this->getKey());
     }
 
     public function process()
