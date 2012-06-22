@@ -321,7 +321,7 @@ class Validator implements \Nethgui\System\ValidatorInterface
      */
     public function email()
     {
-        return $this->addToChain(__FUNCTION__);
+        return $this->addToChain(__FUNCTION__, FALSE);
     }
 
     public function getFailureInfo()
@@ -447,11 +447,11 @@ class Validator implements \Nethgui\System\ValidatorInterface
     private function addToChain($originalMethodName, $errorMessageTemplate = NULL)
     {
         $args = array_slice(func_get_args(), 2);
-        
+
         // if only the method name is passed, add a default template
         if (is_null($errorMessageTemplate)) {
             $errorMessageTemplate = array('valid_' . $originalMethodName, array());
-        } 
+        }
 
         $methodName = 'eval' . ucfirst($originalMethodName);
 
@@ -685,7 +685,38 @@ class Validator implements \Nethgui\System\ValidatorInterface
 
     private function evalEmail($value)
     {
-        list($localPart, $domainPart) = split('@', $value);
+        if (strlen($value) > 254) {
+            $this->addFailureInfo('valid_email,too-long');
+            return FALSE;
+        }
+
+        $parts = explode('@', $value, 2);
+
+        if ( ! isset($parts[0]) || $parts[0] === '') {
+            $this->addFailureInfo('valid_email,missing-localpart');
+            return FALSE;
+        }
+
+        $localPart = $parts[0];
+
+        if (strlen($localPart) > 64 || preg_match('/^[A-Za-z0-9_-](\.?[A-Za-z0-9_-]+)*$/', $localPart) == 0) {
+            $this->addFailureInfo('valid_email,malformed-localpart');
+            return FALSE;
+        }
+
+        if ( ! isset($parts[1])) {
+            $this->addFailureInfo('valid_email,missing-domainpart');
+            return FALSE;
+        }
+
+        $domainPart = $parts[1];
+        
+        if ( ! $this->evalHostname($domainPart, 0, PHP_INT_MAX)) {
+            $this->addFailureInfo('valid_email,malformed-domainpart');
+            return FALSE;
+        }
+
+        return TRUE;
     }
 
 }

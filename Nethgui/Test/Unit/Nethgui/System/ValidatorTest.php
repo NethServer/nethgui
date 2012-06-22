@@ -317,8 +317,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $this->object->hostname(1);
         $this->assertFalse($this->object->evaluate('host123'));
         $this->assertFalse($this->object->evaluate('davidep1'));
-        $this->assertTrue($this->object->evaluate('host.domain'));        
-        $this->assertTrue($this->object->evaluate('host.domain.co.uk'));     
+        $this->assertTrue($this->object->evaluate('host.domain'));
+        $this->assertTrue($this->object->evaluate('host.domain.co.uk'));
     }
 
     public function testHostnameSimple()
@@ -335,33 +335,34 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
     {
         $this->object->hostname(15, 7);
     }
-    
-    public function testFailureInfo1() {
+
+    public function testFailureInfo1()
+    {
         $this->object->minLength(3);
-        
+
         $this->assertFalse($this->object->evaluate('hi'));
-        
+
         $failureInfo = $this->object->getFailureInfo();
-        
+
         // failure info is an array
-        $this->assertInternalType('array', $failureInfo);        
-        
+        $this->assertInternalType('array', $failureInfo);
+
         // one validator, one element
         $this->assertEquals(1, count($failureInfo));
-        
+
         // the array is 0-indexed
         $this->assertArrayHasKey(0, $failureInfo);
-        
+
         // the 0 element is an array        
-        $this->assertInternalType('array', $failureInfo[0]);                     
-       
+        $this->assertInternalType('array', $failureInfo[0]);
+
         // the 0 element contains 0 and 1 indexes:
         $this->assertArrayHasKey(0, $failureInfo[0]);
         $this->assertArrayHasKey(1, $failureInfo[0]);
-        
+
         // the 1 index is an array too:
         $this->assertInternalType('array', $failureInfo[0][1]);
-        
+
         // the 1 index contains one element
         $this->assertEquals(1, count($failureInfo[0][1]));
     }
@@ -489,6 +490,45 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($processMockFail));
 
         $this->assertFalse($this->object->evaluate('value2'));
+    }
+
+    public function testEmailValid()
+    {
+        $this->object->email();
+        $eval = $this->object->evaluate('my_valid.e-m4il@domain.tld');
+        $failureInfo = $this->object->getFailureInfo();
+        $this->assertTrue($eval, 'Validation failed. Reason: ' . ($eval === FALSE ? $failureInfo[0][0] : ''));
+    }
+
+    public function testEmailInvalid()
+    {
+        $this->object->email();
+
+        $invalidEmails = array(
+            // no domain            
+            array('invalidUserName', 'valid_email,missing-domainpart'),
+            // no localpart
+            array('@domain.tld', 'valid_email,missing-localpart'),
+            // start with letter 
+            array('.invalidusername@domain.tld', 'valid_email,malformed-localpart'),
+            // no symbols           
+            array('in(valid)@domain.tld', 'valid_email,malformed-localpart'),
+            // no double-dots
+            array('in..valid@domain.tld', 'valid_email,malformed-localpart'),
+            // no dot at end
+            array('invalid.@domain.tld', 'valid_email,malformed-localpart'),
+            // localpart <= 64 chars 
+            array(str_repeat('x', 65) . '@domain.tld', 'valid_email,malformed-localpart'),
+            // localpart <= 254 chars 
+            array(str_repeat('x', 244) . '@domain.tld', 'valid_email,too-long'),
+            // invalid domain name 
+            array('my.email@.domain', 'valid_email,malformed-domainpart'),
+        );
+
+        foreach ($invalidEmails as $test) {
+            $this->assertFalse($this->object->evaluate($test[0]), "Invalid email address: " . $test[0]);
+            $this->assertEquals(array(array($test[1], array())), $this->object->getFailureInfo(), 'Testing ' . $test[0]);
+        }
     }
 
 }
