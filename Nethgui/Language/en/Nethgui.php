@@ -60,3 +60,7 @@ $L['Welcome on ${0}'] = 'Welcome on ${0}';
 $L['An object with the same key already exists'] = 'An object with the same key already exists';
 
 $L['Configure_label'] = 'Configure';
+
+$L['valid_email,too-long'] = 'email address to long';
+$L['valid_email,malformed-localpart'] = 'invalid email address';
+$L['valid_email,missing-localpart'] = 'missing email address';
