@@ -78,15 +78,15 @@ interface PlatformInterface
      * @see #478
      */
     const HOSTNAME = 1248968167;
-    
+
     /**
      * Valid simple hostname without domain part
      * 
      * @api
      * @see #1052 
      */
-    const HOSTNAME_SIMPLE =  1334736972;
-    
+    const HOSTNAME_SIMPLE = 1334736972;
+
     /**
      * Valid hostname with domain part (FQDN)
      * 
@@ -190,10 +190,21 @@ interface PlatformInterface
      */
     const MACADDRESS = 1248968180;
 
-    /*
-     * Define new constant values assigning
-     * the current Unix timestamp (`/bin/date +%s` ouput)
+    /**
+     * Valid email address 
+     * 
+     * A restricted set of RFC5322 dot-atom form (sect 3.4.1)
+     * 
+     * @api 
      */
+    const EMAIL = 1340359603;
+
+    /* ---------------------------------------8<-------------------------
+         !!! TO DEVELOPERS !!!
+
+         Define new constant values assigning
+         the current Unix timestamp (`/bin/date +%s` ouput)
+       -----8<----------------------------------------------------------- */
 
     /**
      * @api
@@ -326,4 +337,3 @@ interface PlatformInterface
      */
     public function getDetachedProcess($identifier);
 }
-

@@ -402,6 +402,10 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
                     $validator->memberOf('yes', 'no');
                     break;
 
+                case self::EMAIL:
+                    $validator->email();
+                    break;
+                
                 case NULL:
                     continue;
 
