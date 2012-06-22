@@ -311,7 +311,17 @@ class Validator implements \Nethgui\System\ValidatorInterface
 
         array_unshift($arguments, __FUNCTION__, NULL);
         return call_user_func_array(array($this, 'addToChain'), $arguments);
-        
+    }
+
+    /**
+     * The restricted mail address validator
+     * 
+     * @see #1249
+     * @return Validator
+     */
+    public function email()
+    {
+        return $this->addToChain(__FUNCTION__);
     }
 
     public function getFailureInfo()
@@ -354,7 +364,7 @@ class Validator implements \Nethgui\System\ValidatorInterface
                 if (($isValid XOR $notFlag) === FALSE) {
                     if (is_array($errorTemplate)) {
                         $this->addFailureInfo($errorTemplate[0], $errorTemplate[1]);
-                    } 
+                    }
                     return FALSE;
                 }
             } elseif ($expression instanceof \Nethgui\System\ValidatorInterface) {
@@ -377,13 +387,14 @@ class Validator implements \Nethgui\System\ValidatorInterface
         return TRUE;
     }
 
-    protected function mergeFailureInfo(\Nethgui\System\ValidatorInterface $validator) {               
-        foreach($validator->getFailureInfo() as $elem) {
+    protected function mergeFailureInfo(\Nethgui\System\ValidatorInterface $validator)
+    {
+        foreach ($validator->getFailureInfo() as $elem) {
             $this->addFailureInfo($elem[0], $elem[1]);
         }
         return $this;
     }
-    
+
     protected function addFailureInfo($template, $args = array())
     {
         if ( ! is_string($template)) {
@@ -409,26 +420,39 @@ class Validator implements \Nethgui\System\ValidatorInterface
     }
 
     /**
+     * Add an eval function to the chain. 
+     * 
+     * The invoked function name is "eval" + $originalMethodName
+     * 
+     * The second argument is an array of two elements
+     * 
+     * - The message text template
+     * 
+     * - The array of placeholders for the template
+     * 
+     * If the 2nd argument is NULL generate a default template is generated. This
+     * is for single failure reason.
+     * 
+     * If the 2nd argument is FALSE, you must provide the failure message in
+     * the "eval*" function, calling addFailureInfo(). This is useful for multiple
+     * failure reasons.
+     * 
      * @param string the calling Method name
-     * @param string Optional the error message template applyed to sprintf()
+     * @param mixed Optional the default error message template: other values NULL and FALSE.
      * @param mixed Optional - First argument to evaluation function
      * @param mixed Optional - Second argument to evaluation function
      * @param mixed Optional - ...
-     *
+     * @return Validator
      */
-    private function addToChain()
+    private function addToChain($originalMethodName, $errorMessageTemplate = NULL)
     {
-        $args = func_get_args();
-        
-        $originalMethodName = array_shift($args);
+        $args = array_slice(func_get_args(), 2);
         
         // if only the method name is passed, add a default template
-        if(func_num_args() === 1) {
+        if (is_null($errorMessageTemplate)) {
             $errorMessageTemplate = array('valid_' . $originalMethodName, array());
-        } else {
-            $errorMessageTemplate = array_shift($args);
-        }     
-        
+        } 
+
         $methodName = 'eval' . ucfirst($originalMethodName);
 
         $this->chain[] = array(
@@ -654,9 +678,14 @@ class Validator implements \Nethgui\System\ValidatorInterface
             // inject reason message in failure template arguments. Refs #1058
             $args['${reason}'] = substr(implode("\n", $outputArray), 0, 64);
             $this->addFailureInfo('valid_platform,' . $reason, $args);
-        }                
+        }
 
         return $process->getExitCode() === 0;
+    }
+
+    private function evalEmail($value)
+    {
+        list($localPart, $domainPart) = split('@', $value);
     }
 
 }
