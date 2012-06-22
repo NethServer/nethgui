@@ -85,6 +85,7 @@ abstract class AbstractController extends \Nethgui\Module\AbstractModule impleme
      * @param string $parameterName The name of the parameter
      * @param mixed $validator Optional - A regular expression catching the correct value format OR An constant-integer corresponding to a predefined validator OR boolean FALSE for a readonly parameter
      * @param mixed $valueProvider Optional - A callback function, an adapter instance or an array of arguments to create an adapter
+     * @return AbstractController
      */
     protected function declareParameter($parameterName, $validator = FALSE, $valueProvider = NULL)
     {
@@ -115,6 +116,8 @@ abstract class AbstractController extends \Nethgui\Module\AbstractModule impleme
         } else {
             throw new \InvalidArgumentException(sprintf('%s: Invalid `valueProvider` argument', get_class($this)), 1322149487);
         }
+        
+        return $this;
     }
 
     /**
