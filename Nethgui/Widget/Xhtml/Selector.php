@@ -30,7 +30,7 @@ class Selector extends \Nethgui\Widget\XhtmlWidget
     {
         $name = $this->getAttribute('name');
         $flags = $this->getAttribute('flags');
-        $choices = $this->getAttribute('choices', $name . 'Datasource');
+        
         $value = $this->view[$name];
 
         if ($value instanceof \Traversable) {
@@ -44,21 +44,8 @@ class Selector extends \Nethgui\Widget\XhtmlWidget
                 $value = '';
             }
         }
-
-        if (is_string($choices)) {
-            // Get the choices from the view member
-            $dataSourceName = $choices;
-            $choices = $this->view[$dataSourceName];
-        } else {
-            // The data source name is the selector name with 'Datasource' suffix.
-            $dataSourceName = $name . 'Datasource';
-        }
-
-        if ($choices instanceof \Traversable) {
-            $choices = iterator_to_array($this->view[$choices]);
-        } elseif ( ! is_array($choices)) {
-            $choices = array();
-        }
+        
+        $choices = $this->getChoices($name, $dataSourceName);
 
         $cssClass = 'Selector '
             . ($flags & \Nethgui\Renderer\WidgetFactoryInterface::SELECTOR_MULTIPLE ? 'multiple ' : '')

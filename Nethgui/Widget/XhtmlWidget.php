@@ -434,6 +434,10 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
     {
         $tagContent = '';
 
+        if ( ! is_array($choices)) {
+            throw new \InvalidArgumentException(sprintf('%s: invalid choices type (%s). Must be an array', __CLASS__, gettype($choices)), 1340631080);
+        }
+
         foreach (array_values($choices) as $choice) {
             $labelText = ! empty($choice[1]) ? $choice[1] : htmlspecialchars(strval($choice[0]));
             if (is_array($choice[0])) {
@@ -449,6 +453,36 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
         }
 
         return $tagContent;
+    }
+
+    /**
+     * Construct the choices
+     * 
+     * @param string $name Name of the view member where the currently selected value is stored
+     * @param string &$dataSourceName Output parameter, where the effective datasource name is stored
+     * @return array The datasource choices.
+     * @api
+     */
+    protected function getChoices($name, &$dataSourceName)
+    {
+        $choices = $this->getAttribute('choices', $name . 'Datasource');
+
+        if (is_string($choices)) {
+            // Get the choices from the view member
+            $dataSourceName = $choices;
+            $choices = $this->view[$dataSourceName];
+        } else {
+            // The data source name is the selector name with 'Datasource' suffix.
+            $dataSourceName = $name . 'Datasource';
+        }
+
+        if ($choices instanceof \Traversable) {
+            $choices = iterator_to_array($this->view[$choices]);
+        } elseif ( ! is_array($choices)) {
+            $choices = array();
+        }
+
+        return $choices;
     }
 
 }
