@@ -38,12 +38,35 @@ class Slider extends \Nethgui\Widget\XhtmlWidget
 
     protected function renderContent()
     {
+        $flags = $this->getAttribute('flags');
+        if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::SLIDER_ENUMERATIVE) {
+            return $this->renderEnumerative();
+        }
+        return $this->renderRange();
+    }
+
+    private function renderEnumerative()
+    {
+        $flags = $this->getAttribute('flags');
         $name = $this->getAttribute('name');
         $value = $this->getAttribute('value');
-        $flags = $this->getAttribute('flags');
         $label = $this->getAttribute('label', $this->getTranslateClosure($name . '_label'));
         $cssClass = $this->getAttribute('class', '');
-        $cssClass = trim('Slider ' . $cssClass);
+        $cssClass = trim('Slider Enumerative ' . $cssClass);
+
+        $choices = $this->getChoices($name, $dataSourceName);        
+        $tagContent = $this->optGroups($value, $choices);
+        return $this->labeledControlTag($label, 'select', $name, $flags, $cssClass, array(), $tagContent);
+    }
+
+    private function renderRange()
+    {
+        $flags = $this->getAttribute('flags');
+        $name = $this->getAttribute('name');
+        $value = $this->getAttribute('value');
+        $label = $this->getAttribute('label', $this->getTranslateClosure($name . '_label'));
+        $cssClass = $this->getAttribute('class', '');
+        $cssClass = trim('Slider Range ' . $cssClass);
 
         $range = array(
             'min' => $this->getAttribute('min', 0),
@@ -61,7 +84,7 @@ class Slider extends \Nethgui\Widget\XhtmlWidget
             'data-settings' => json_encode($range),
         );
 
-        $flags = $this->applyDefaultLabelAlignment($flags, \Nethgui\Renderer\WidgetFactoryInterface::LABEL_ABOVE);
+        $flags = $this->applyDefaultLabelAlignment($flags, \Nethgui\Renderer\WidgetFactoryInterface::LABEL_RIGHT);
 
         return $this->labeledControlTag($label, 'input', $name, $flags, $cssClass, $attributes);
     }
