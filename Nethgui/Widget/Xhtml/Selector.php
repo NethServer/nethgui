@@ -88,7 +88,7 @@ class Selector extends \Nethgui\Widget\XhtmlWidget
         if (count($choices) == 0) {
             $tagContent = '<option selected="selected" value=""/>';
         } else {
-            $tagContent = $this->generateSelectorContentDropdown($name, $value, $choices, $flags);
+            $tagContent = $this->optGroups($name, $value, $choices);
         }
         $content = $this->labeledControlTag($label, 'select', $name, $flags, '', $attributes, $tagContent);
         return $content;
@@ -178,32 +178,6 @@ class Selector extends \Nethgui\Widget\XhtmlWidget
         $content .= $this->closeTag('ul');
 
         return $content;
-    }
-
-    /**
-     * Dropdown list layout
-     * 
-     * @see redmine #348
-     */
-    private function generateSelectorContentDropdown($name, $value, $choices, $flags)
-    {
-        $tagContent = '';
-
-        foreach (array_values($choices) as $index => $choice) {
-            $labelText = ! empty($choice[1]) ? $choice[1] : htmlspecialchars(strval($choice[0]));
-            if (is_array($choice[0])) {
-                // nested options => create optgroup
-                $tagContent .= $this->openTag('optgroup', array('label' => $labelText));
-                $tagContent .= $this->generateSelectorContentDropdown($name, $value, $choice[0], $flags);
-                $tagContent .= $this->closeTag('optgroup');
-            } else {
-                $tagContent .= $this->openTag('option', array('value' => $choice[0], 'selected' => $value == $choice[0] ? 'selected' : FALSE));
-                $tagContent .= $labelText;
-                $tagContent .= $this->closeTag('option');
-            }
-        }
-
-        return $tagContent;
     }
 
 }

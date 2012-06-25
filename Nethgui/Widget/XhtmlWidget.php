@@ -421,4 +421,34 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
         return $this;
     }
 
+    /**
+     * Return a string of OPTGROUP and OPTION tags.
+     * 
+     * @param string $value The "selected" value
+     * @param array The options and groups of options
+     * @return string 
+     * 
+     * @see redmine #348
+     */
+    protected function optGroups($value, $choices)
+    {
+        $tagContent = '';
+
+        foreach (array_values($choices) as $choice) {
+            $labelText = ! empty($choice[1]) ? $choice[1] : htmlspecialchars(strval($choice[0]));
+            if (is_array($choice[0])) {
+                // nested options => create optgroup
+                $tagContent .= $this->openTag('optgroup', array('label' => $labelText));
+                $tagContent .= $this->optGroups($value, $choice[0]);
+                $tagContent .= $this->closeTag('optgroup');
+            } else {
+                $tagContent .= $this->openTag('option', array('value' => $choice[0], 'selected' => $value == $choice[0] ? 'selected' : FALSE));
+                $tagContent .= $labelText;
+                $tagContent .= $this->closeTag('option');
+            }
+        }
+
+        return $tagContent;
+    }
+
 }
