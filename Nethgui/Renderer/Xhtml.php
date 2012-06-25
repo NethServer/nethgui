@@ -340,4 +340,11 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
         return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags, 'icon-before' => 'ui-icon-triangle-1-s'));
     }
 
+    public function slider($name, $flags = 0)
+    {
+        $flags |= $this->inheritFlags;
+        return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags));
+    }
+
+
 }

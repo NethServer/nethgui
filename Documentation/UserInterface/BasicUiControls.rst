@@ -110,12 +110,16 @@ Progress bar NG554_::
   [ ########## 50% __________ ]
 
 
+Slider NG1242_::
+
+  [ ----O-------------------- ] Value label
+
 .. _NG554: http://dev.nethesis.it/issues/554
 .. _NG476: http://dev.nethesis.it/issues/476
 .. _NG528: http://dev.nethesis.it/issues/528
 .. _NG348: http://dev.nethesis.it/issues/348
 .. _NG556: http://dev.nethesis.it/issues/556
-
+.. _NG1242: http://dev.nethesis.it/issues/1242
 
 Containers
 ----------

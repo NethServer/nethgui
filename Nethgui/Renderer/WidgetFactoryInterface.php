@@ -320,5 +320,19 @@ interface WidgetFactoryInterface
      * @api
      */
     public function objectPicker($name = NULL, $flags = 0);
+    
+    /**
+     * Select a value in the given range.
+     * 
+     * Set attributes
+     * - min
+     * - max
+     * - step
+     * 
+     * @see Feature #1242
+     * @return \Nethgui\Renderer\WidgetInterface
+     * @api 
+     */
+    public function slider($name, $flags);
 }
 define('NETHGUI_INHERITABLE_FLAGS', WidgetFactoryInterface::STATE_DISABLED | WidgetFactoryInterface::LABEL_ABOVE | WidgetFactoryInterface::LABEL_LEFT | WidgetFactoryInterface::LABEL_RIGHT | WidgetFactoryInterface::LABEL_NONE | WidgetFactoryInterface::STATE_UNOBSTRUSIVE);

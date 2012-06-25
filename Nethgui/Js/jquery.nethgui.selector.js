@@ -1,5 +1,5 @@
 /*
- * ${widgetName}
+ * Selector
  *
  * Copyright (C) 2011 Nethesis S.r.l.
  */
