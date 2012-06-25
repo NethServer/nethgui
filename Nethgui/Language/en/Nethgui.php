@@ -30,6 +30,7 @@ $L['Apply_label'] = 'Apply';
 $L['Cancel_label'] = 'Cancel';
 $L['Help_label'] = 'Help';
 $L['Hide_label'] = 'Hide';
+$L['Find_label'] = 'Find';
 $L['update_label'] = 'Update';
 $L['delete_label'] = 'Delete';
 $L['create_label'] = 'Create new';

@@ -31,6 +31,7 @@ $L['Apply_label'] = 'Applica';
 $L['Cancel_label'] = 'Annulla';
 $L['Help_label'] = 'Aiuto';
 $L['Hide_label'] = 'Nascondi';
+$L['Find_label'] = 'Trova';
 $L['update_label'] = 'Modifica';
 $L['delete_label'] = 'Elimina';
 $L['create_label'] = 'Crea nuovo';
