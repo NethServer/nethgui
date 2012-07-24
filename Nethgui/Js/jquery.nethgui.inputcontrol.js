@@ -36,7 +36,7 @@
                 this.element.prop('checked', true);
             } else {
                 this.element.prop('checked', false);
-            }            
+            }                        
             this.element.trigger('change');
         } 
     });
@@ -49,8 +49,10 @@
         _findGroup: function (radio) {
             return $(radio.form).find('input[name="' + radio.name + '"]').not(radio);
         },
-        _change: function () {            
-            this._radioGroup.trigger(this.namespace + 'unselect');            
+        _change: function () {        
+            if(this.element.is(':checked')) {
+                this._radioGroup.trigger(this.namespace + 'unselect');            
+            }
         }
     });
     $.widget('nethgui.HiddenConst', $.nethgui.InputControl, {
