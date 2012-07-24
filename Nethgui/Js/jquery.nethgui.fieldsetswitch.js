@@ -18,16 +18,17 @@
 
             SUPER.prototype._initializeDeep.call(this, [this._panel.get(0), this._switch.get(0)]);
 
-            this._switch.bind('change.' + this.widgetName, $.proxy(this._toggle, this));
+            this._switch.bind('change.' + this.widgetName, $.proxy(this._updatePanelState, this));
             this._switch.bind(this.namespace + 'unselect.' + this.widgetName, $.proxy(this._unselect, this));
             
-            this._toggle();
+            this._updatePanelState();
         },
-        _toggle: function() {
-            if(this._switch.is(':checked'))
-                this._select()
-            else
-                this._unselect()
+        _updatePanelState: function() {
+            if(this._switch.is(':checked')) {
+                this._select();
+            } else {
+                this._unselect();
+            }
         },
         _select: function () {
             this._panel.trigger('nethguienable');
