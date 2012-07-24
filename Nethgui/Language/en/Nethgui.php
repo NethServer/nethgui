@@ -62,6 +62,8 @@ $L['An object with the same key already exists'] = 'An object with the same key 
 
 $L['Configure_label'] = 'Configure';
 
-$L['valid_email,too-long'] = 'email address to long';
+$L['valid_email,too-long'] = 'email address too long';
 $L['valid_email,malformed-localpart'] = 'invalid email address';
-$L['valid_email,missing-localpart'] = 'missing email address';
+$L['valid_email,missing-localpart'] = 'invalid email address';
+$L['valid_email,missing-domainpart'] = 'invalid email address';
+$L['valid_email,malformed-domainpart'] = 'invalid email address';

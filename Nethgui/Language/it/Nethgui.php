@@ -64,8 +64,10 @@ $L['valid_memberOf'] = 'un valore tra ${0}';
 $L['valid_isEmpty'] = 'vuoto';
 $L['valid_macAddress'] = 'indirizzo MAC valido';
 $L['valid_email,too-long'] = 'indirizzo email troppo lungo';
-$L['valid_email,malformed-localpart'] = 'indirizzo non valido';
-$L['valid_email,missing-localpart'] = 'indirizzo mancante';
+$L['valid_email,malformed-localpart'] = 'indirizzo email non valido';
+$L['valid_email,missing-localpart'] = 'indirizzo email non valido';
+$L['valid_email,missing-domainpart'] = 'indirizzo email non valido';
+$L['valid_email,malformed-domainpart'] = 'indirizzo email non valido';
 
 $L['Incorrect value'] = 'Valore non corretto';
 $L['Incorrect values'] = 'Valori non corretti';
