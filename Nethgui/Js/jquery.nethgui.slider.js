@@ -32,8 +32,10 @@
                 settings = {
                     min: 0,
                     max: options.length > 0 ? options.length - 1 : 0,
-                    step: 1
+                    step: 1,
+                    value: this.element.children('[selected]').index()
                 }
+                this._repaintLabel(this.element.children('[selected]').attr('value'))
             } else {
                 settings = {
                     min: 0,
@@ -66,7 +68,7 @@
                     self.element.val(ui.value);
                 }
             });           
-                        
+                                    
         },
         _repaintLabel: function(value) {
             if(this._isEnumerative) {

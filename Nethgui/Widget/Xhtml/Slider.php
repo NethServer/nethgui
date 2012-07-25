@@ -38,7 +38,9 @@ class Slider extends \Nethgui\Widget\XhtmlWidget
 
     protected function renderContent()
     {
-        $flags = $this->getAttribute('flags');
+        $flags = $this->getAttribute('flags');        
+        $flags = $this->applyDefaultLabelAlignment($flags, \Nethgui\Renderer\WidgetFactoryInterface::LABEL_RIGHT);        
+        
         if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::SLIDER_ENUMERATIVE) {
             return $this->renderEnumerative();
         }
@@ -49,8 +51,8 @@ class Slider extends \Nethgui\Widget\XhtmlWidget
     {
         $flags = $this->getAttribute('flags');
         $name = $this->getAttribute('name');
-        $value = $this->getAttribute('value');
-        $label = $this->getAttribute('label', $this->getTranslateClosure($name . '_label'));
+        $value = $this->view[$name];
+        $label = $this->getAttribute('label', '${0}');
         $cssClass = $this->getAttribute('class', '');
         $cssClass = trim('Slider Enumerative ' . $cssClass);
 
@@ -83,9 +85,7 @@ class Slider extends \Nethgui\Widget\XhtmlWidget
             'type' => 'input',
             'data-settings' => json_encode($range),
         );
-
-        $flags = $this->applyDefaultLabelAlignment($flags, \Nethgui\Renderer\WidgetFactoryInterface::LABEL_RIGHT);
-
+       
         return $this->labeledControlTag($label, 'input', $name, $flags, $cssClass, $attributes);
     }
 

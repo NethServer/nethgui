@@ -446,7 +446,7 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
                 $tagContent .= $this->optGroups($value, $choice[0]);
                 $tagContent .= $this->closeTag('optgroup');
             } else {
-                $tagContent .= $this->openTag('option', array('value' => $choice[0], 'selected' => $value == $choice[0] ? 'selected' : FALSE));
+                $tagContent .= $this->openTag('option', array('value' => $choice[0], 'selected' => ($value == $choice[0] ? 'selected' : FALSE)));
                 $tagContent .= $labelText;
                 $tagContent .= $this->closeTag('option');
             }
@@ -470,14 +470,16 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
         if (is_string($choices)) {
             // Get the choices from the view member
             $dataSourceName = $choices;
-            $choices = $this->view[$dataSourceName];
+            if (isset($this->view[$dataSourceName])) {
+                $choices = $this->view[$dataSourceName];
+            }
         } else {
             // The data source name is the selector name with 'Datasource' suffix.
             $dataSourceName = $name . 'Datasource';
         }
 
         if ($choices instanceof \Traversable) {
-            $choices = iterator_to_array($this->view[$choices]);
+            $choices = iterator_to_array($choices);
         } elseif ( ! is_array($choices)) {
             $choices = array();
         }
