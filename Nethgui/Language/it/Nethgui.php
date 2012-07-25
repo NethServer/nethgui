@@ -41,6 +41,8 @@ $L['Ok_label'] = 'Ok';
 $L['Ignore_label'] = 'Ignora';
 $L['All changes have been saved'] = 'Tutte le modifiche sono state salvate';
 $L['Reset_label'] = 'Ripristina';
+$L['Description_label'] = 'Descrizione';
+
 
 $L['valid_regexp'] = 'espressione regolare ${0}';
 $L['valid_positive'] = 'numero positivo';

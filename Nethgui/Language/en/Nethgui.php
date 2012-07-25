@@ -37,6 +37,7 @@ $L['create_label'] = 'Create new';
 
 $L['Ignore_label'] = 'Ignore';
 $L['All changes have been saved'] = 'All changes have been saved';
+$L['Description_label'] = 'Description';
 
 $L['regexp "${0}"'] = 'regular expression \'${0}\'';
 
