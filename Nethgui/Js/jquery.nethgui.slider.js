@@ -48,8 +48,12 @@
                 } catch (e) {
                     $.debug('Slider: malformed "data-settings" attribute; got ' + this.element.attr('data-settings'), e);
                 }          
-            
+
                 settings.value = settings.min;                
+            }
+            
+            if(this.element.hasClass('keepdisabled')) {
+                settings.disabled = true;
             }
                                  
             this._theSlider.slider(settings)
@@ -70,6 +74,12 @@
             });           
                                     
         },
+        _setOption: function( key, value ) {
+            SUPER.prototype._setOption.apply( this, arguments );
+            if(key === 'disabled' && ! this.element.hasClass('keepdisabled')) {
+                this._theSlider.slider('option', 'disabled', value);
+            }
+        },        
         _repaintLabel: function(value) {
             if(this._isEnumerative) {
                 this._label.text(this._labelTemplate.replacePlaceholders(this.element.children('[value="' + value + '"]').text()));

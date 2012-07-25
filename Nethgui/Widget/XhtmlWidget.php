@@ -164,6 +164,7 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
         if (in_array($tag, array('input', 'button', 'textarea', 'select', 'optgroup', 'option'))) {
             if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_DISABLED) {
                 $attributes['disabled'] = 'disabled';
+                $cssClass .= ' keepdisabled';
             }
 
             if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_VALIDATION_ERROR) {

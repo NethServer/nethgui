@@ -266,6 +266,9 @@
             }
         },
         _setOption: function( key, value ) {
+            if(key === 'disabled' && this.element.hasClass('keepdisabled')) {
+                return;
+            }
             if(key !== 'disabled' || this._showDisabledState === true) {
                 $.Widget.prototype._setOption.apply( this, [key, value] );
             }
