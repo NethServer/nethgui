@@ -75,7 +75,7 @@ class Selector extends \Nethgui\Widget\XhtmlWidget
         if (count($choices) == 0) {
             $tagContent = '<option selected="selected" value=""/>';
         } else {
-            $tagContent = $this->optGroups($name, $value, $choices);
+            $tagContent = $this->optGroups($value, $choices);
         }
         $content = $this->labeledControlTag($label, 'select', $name, $flags, '', $attributes, $tagContent);
         return $content;
