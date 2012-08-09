@@ -137,19 +137,19 @@ For instance::
 Choose and fill
 ---------------
 
-1. A set of exclusive choices represented by radio buttons is displayed.
+1. A set of exclusive choices represented by radio buttons or a checkbox is displayed.
 
-2. The User chooses, by clicking on a radio button or on its textual label.
+2. The User chooses, by clicking on the control or its textual label.
 
 3. A fieldset appears.
 
-Initial state::
+Initial state (radio buttons)::
 
   (o) Unselected  
   ( ) Selected
 
 
-Since the User has clicked on "Selected" a fieldset appears::
+Since the User has clicked on "Selected" a fieldset appears (radio buttons)::
 
   ( ) Unselected  
   (o) Selected
@@ -163,9 +163,21 @@ Since the User has clicked on "Selected" a fieldset appears::
      |  [ ] Option 3
      |
 
+Initial state (checkbox)::
+   
+  [ ] Activate feature
 
+Checkbox is checked::
 
-
+  [x] Activate feature
+     .--------------------
+     |
+     |       Insert text [__________]
+     | Another insertion [__________]
+     .
+     .
+     .
+  
 
 Table CRUD
 ----------

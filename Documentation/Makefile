@@ -41,7 +41,7 @@ Api/Nethgui.svg: Api/Nethgui.dot
 	dot -Tsvg $< > Api/Nethgui.svg
 
 sync:
-	rsync -zar -e "ssh -p 2222 -c blowfish -l git"  -stats ${PWD} git@dev.nethesis.it:/var/www/html/nethgui
+	rsync -Caz -e "ssh -p 2222 -c blowfish -l git"  -stats ${PWD}/ git@dev.nethesis.it:/var/www/html/nethgui/Documentation/
 
 clean:
 	rm -f ${HTMLFILES} ${PDEPEND_OUTPUT}
