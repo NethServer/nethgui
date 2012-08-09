@@ -184,10 +184,13 @@ interface WidgetFactoryInterface
     public function checkBox($name, $value, $flags = 0);
 
     /**
-     * Create a selectable fieldset container.
+     * Create a selectable fieldset container
      * 
      * Set FIELDSETSWITCH_CHECKBOX flag to get a checkbox switch, otherwise
-     * a radioButton is rendered.
+     * a radioButton is rendered
+     * 
+     * Set FIELDSETSWITCH_EXPANDABLE flag to fold out the fieldset, when 
+     * selected
      *
      * @see checkbox(), radioButton()
      * @param string $name

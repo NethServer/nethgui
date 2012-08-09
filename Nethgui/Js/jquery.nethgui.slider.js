@@ -49,7 +49,8 @@
                     $.debug('Slider: malformed "data-settings" attribute; got ' + this.element.attr('data-settings'), e);
                 }          
 
-                settings.value = settings.min;                
+                settings.value = this.element.attr('value') ? this.element.attr('value') : settings.min;  
+                this._repaintLabel(settings.value);
             }
             
             if(this.element.hasClass('keepdisabled')) {
