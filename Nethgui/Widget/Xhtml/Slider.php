@@ -71,14 +71,10 @@ class Slider extends \Nethgui\Widget\XhtmlWidget
         $cssClass = trim('Slider Range ' . $cssClass);
 
         $range = array(
-            'min' => $this->getAttribute('min', 0),
-            'max' => $this->getAttribute('max', 100),
-            'step' => $this->getAttribute('step', 1),
+            'min' => floatval($this->getAttribute('min', 0)),
+            'max' => floatval($this->getAttribute('max', 100)),
+            'step' => floatval($this->getAttribute('step', 1)),
         );
-
-        if (is_null($value)) {
-            $value = $this->view[$name];
-        }
 
         $attributes = array(
             'value' => strval($value),
