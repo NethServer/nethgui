@@ -102,6 +102,7 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
                 ->showMessage($view->translate('Invalid credentials'), \Nethgui\Module\Notification\AbstractNotification::NOTIFY_ERROR);
         } elseif ($user->isAuthenticated()
             && ! $this->getRequest()->isMutation()) {
+            // FIXME davidep 20120830: try to substitute httpHeader() calls with sendQuery()..
             $view->getCommandList()
                 ->httpHeader('HTTP/1.1 302 Found')
                 ->httpHeader('Location: ' . $view->getSiteUrl() . $view->getModuleUrl('/'));

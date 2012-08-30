@@ -23,8 +23,8 @@ namespace Nethgui\Renderer;
 /**
  * Prepare Command invocations for the client-side framework.
  *
- * Each command invocation is registered. Clients obtain marshalled commands
- * calling getMarshalledCommands()
+ * Each command invocation is registered. Client objects obtain marshalled 
+ * commands calling getMarshalledCommands()
  *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
