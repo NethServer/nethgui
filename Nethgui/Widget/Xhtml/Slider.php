@@ -78,7 +78,7 @@ class Slider extends \Nethgui\Widget\XhtmlWidget
 
         $attributes = array(
             'value' => strval($value),
-            'type' => 'input',
+            'type' => 'text',
             'data-settings' => json_encode($range),
         );
 
