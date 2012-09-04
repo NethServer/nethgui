@@ -19,7 +19,7 @@
                     title: text,
                     message: '',
                     style: style,
-                    type: 'Message',
+                    type: 'TextNotification',
                     'transient': true
                 });
             });
@@ -48,7 +48,7 @@
                     data: v
                 });
             } else {
-                notification.Message({
+                notification.TextNotification({
                     data: v
                 });
             }
@@ -61,13 +61,13 @@
 }( jQuery ));
 
 /*
- * Message
+ * TextNotification
  *
  * Copyright (C) 2011 Nethesis S.r.l.
  */
 (function( $ ) {
     var SUPER = $.nethgui.Component;
-    $.widget('nethgui.Message', SUPER, {
+    $.widget('nethgui.TextNotification', SUPER, {
         _deep: true,
         options: {
             data: {}
@@ -125,7 +125,7 @@
  * Copyright (C) 2011 Nethesis S.r.l.
  */
 (function( $ ) {
-    var SUPER = $.nethgui.Message;
+    var SUPER = $.nethgui.TextNotification;
     $.widget('nethgui.ValidationErrors', SUPER, {
         _deep: true,
         _create: function() {

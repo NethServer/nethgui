@@ -32,14 +32,13 @@ namespace Nethgui\Module\Notification;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class DialogBox extends \Nethgui\Module\Notification\AbstractNotification
+class TextNotification extends \Nethgui\Module\Notification\AbstractNotification
 {
 
     private $message;
-    private $actions;
     private $module;
 
-    public function __construct(\Nethgui\Module\ModuleInterface $module, $message, $actions = array(), $style = 0)
+    public function __construct(\Nethgui\Module\ModuleInterface $module, $message, $style = 0)
     {
         if ( ! $module instanceof ModuleSurrogate) {
             $module = new ModuleSurrogate($module);
@@ -51,43 +50,14 @@ class DialogBox extends \Nethgui\Module\Notification\AbstractNotification
         }
 
         $this->module = $module;
-        $this->actions = $this->sanitizeActions($actions);
         $this->message = $message;
 
-        parent::__construct($style, 'Message', count($this->actions) === 0);
-    }
-
-    private function sanitizeActions($actions)
-    {
-        $sanitizedActions = array();
-
-        foreach ($actions as $action) {
-            if (is_string($action)) {
-                $action = array($action, '', array());
-            }
-
-            if ( ! isset($action[1])) {
-                $action[1] = '';
-            }
-
-            if ( ! isset($action[2])) {
-                $action[2] = array();
-            }
-
-            $sanitizedActions[] = $action;
-        }
-
-        return $sanitizedActions;
+        parent::__construct($style, NULL, TRUE);
     }
 
     public function getModule()
     {
         return $this->module;
-    }
-
-    public function getActions()
-    {
-        return $this->actions;
     }
 
     public function getMessage()
@@ -99,7 +69,6 @@ class DialogBox extends \Nethgui\Module\Notification\AbstractNotification
     {
         parent::prepareView($view);
         $view['title'] = $view->translate($this->message[0], $this->message[1]);
-        $view['actions'] = $this->actions;
     }
 
     public function renderXhtml(\Nethgui\Renderer\Xhtml $renderer)
@@ -112,12 +81,12 @@ class DialogBox extends \Nethgui\Module\Notification\AbstractNotification
     public function serialize()
     {
         $p = parent::serialize();
-        return serialize(array($p, $this->module, $this->actions, $this->message));
+        return serialize(array($p, $this->module, $this->message));
     }
 
     public function unserialize($serialized)
     {
-        list($p, $this->module, $this->actions, $this->message) = unserialize($serialized);
+        list($p, $this->module, $this->message) = unserialize($serialized);
         parent::unserialize($p);
     }
 }
