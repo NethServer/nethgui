@@ -12,7 +12,7 @@
             this.element.bind('focus.' + this.namespace, $.proxy(this._onFocus, this));
         },
         _updateView: function(value) {
-            this.element.attr('value', value ? value : '');
+            this.element.val(value ? value : '');
         },
         _setOption: function( key, value ) {
             SUPER.prototype._setOption.apply( this, arguments );

@@ -11,19 +11,20 @@
             this._clearWhitespaceNodes();
             this._initializeExpandButton();
             this._expandButton = undefined;
+            this._panel = undefined;
 
-	    // Register a global list of opened popups to close on ESCAPE keyup. Refs #1039
-	    if( $(document).data('ngButtonsetPopupList') === undefined ) {
-		$(document).data('ngButtonsetPopupList', []);
-		$(document).bind('keyup', function (event) {
-		    if(event.keyCode !== $.ui.keyCode.ESCAPE) {
-			return;
-		    }
-		    $.each($(document).data('ngButtonsetPopupList'), function (index, popup) {
-			$(popup).hide();
-		    });
-		});
-	    }
+            // Register a global list of opened popups to close on ESCAPE keyup. Refs #1039
+            if( $(document).data('ngButtonsetPopupList') === undefined ) {
+                $(document).data('ngButtonsetPopupList', []);
+                $(document).bind('keyup', function (event) {
+                    if(event.keyCode !== $.ui.keyCode.ESCAPE) {
+                        return;
+                    }
+                    $.each($(document).data('ngButtonsetPopupList'), function (index, popup) {
+                        $(popup).hide();
+                    });
+                });
+            }
 
         },
         enable: function () {
@@ -37,7 +38,9 @@
             }
         },
         _clearWhitespaceNodes: function() {
-            this.element.contents().filter(function() { return this.nodeType === 3 }).remove();
+            this.element.contents().filter(function() {
+                return this.nodeType === 3
+            }).remove();
         },
         /**
          * Add a button that pops up the a menu.
@@ -87,11 +90,12 @@
                     panel.hide();
                 });
                 panel.show();
-		// add panel to the global list of opened popups:
-		$(document).data('ngButtonsetPopupList').push(panel.get(0));
+                // add panel to the global list of opened popups:
+                $(document).data('ngButtonsetPopupList').push(panel.get(0));
                 e.stopPropagation();
             });
             this._expandButton = expandButton;
+            this._panel = panel;
             return true;
         }
     });
