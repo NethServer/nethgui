@@ -38,7 +38,7 @@
             }
 
             for (var i in o) {
-                s = s.replace('${' + i + '}' , o[i]);
+                s = s.replace(new RegExp('\\$\\{' + i + '\\}', 'g') , o[i]);
             }
             return s;
         }
