@@ -288,10 +288,24 @@ interface WidgetFactoryInterface
      * - appendOnly
      *
      * @see #556
+     * @param string $name
+     * @param int $flags
      * @return \Nethgui\Renderer\WidgetInterface
      * @api
      */
     public function textArea($name, $flags = 0);
+
+    /**
+     * A javascript-configurable object collection editor, with a TEXTAREA
+     * backend.
+     * 
+     * @api
+     * @see #1446
+     * @param string $name
+     * @param int $flags
+     * @return \Nethgui\Renderer\WidgetInterface
+     */
+    public function collectionEditor($name, $flags = 0);
 
     /**
      * Create a console-like text area
