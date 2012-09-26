@@ -66,6 +66,7 @@ interface WidgetFactoryInterface
      * @api
      * @return integer
      */
+
     public function getDefaultFlags();
 
     /**

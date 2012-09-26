@@ -114,6 +114,32 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
     }
 
     /**
+     * Transfer the given translation strings to the javascript environment.
+     *
+     * @see $.Nethgui.Translator in jquery.nethgui.base.js
+     * 
+     * @param array|Traversable $keys
+     * @return Xhtml
+     */
+    public function includeTranslations($keys)
+    {
+        $out = array();
+
+        foreach ($keys as $key) {
+            $out[$key] = $this->view->translate($key);
+        }
+
+        $this->includeJavascript('
+// Translations from ' . $this->view->getClientEventTarget('') . '
+(function ($) {
+ $.Nethgui.Translator.extendCatalog(' . json_encode($out) . ');
+} ( jQuery ));
+');
+
+        return $this;
+    }
+
+    /**
      * $flag bits are ORed on the widget that include this view.
      * 
      * @api
@@ -351,6 +377,5 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
         $flags |= $this->inheritFlags;
         return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags));
     }
-
 
 }

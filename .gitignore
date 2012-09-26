@@ -1,5 +1,6 @@
 Documentation/Metrics/
 Documentation/CodeCoverage/
+Documentation/Coverage/
 Documentation/Api/
 Documentation/*/*.html
 www-NethServer/Documentation
