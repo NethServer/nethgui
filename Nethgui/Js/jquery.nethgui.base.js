@@ -152,9 +152,9 @@
 
 
         /**
-             * Replace the path suffix on the given url with newSuffix
-             * @return string the new url string
-             */
+         * Replace the path suffix on the given url with newSuffix
+         * @return string the new url string
+         */
         var replaceFormatSuffix = function(url, newSuffix) {
 
             var urlParts = url.split('?',2);
@@ -194,13 +194,38 @@
         });
     };
 
+
+    var Translator = function () {
+        this.catalog = {};
+    };
+
+    Translator.prototype.translate = function(message) {
+        if(typeof this.catalog[message] === "string") {
+            message = this.catalog[message];
+        }
+        return '' + String.prototype.replacePlaceholders.apply(message, Array.prototype.slice.call(arguments, 1));
+    };
+
+    Translator.prototype.extendCatalog = function(extension) {
+        this.catalog= $.extend(this.catalog, extension);
+        return this;
+    };
+
+    $.Nethgui = {
+        Server: new Server(),
+        Translator: new Translator()
+    };
+
     $.widget('nethgui.Component', {
-        _server: new Server(),
+        _server: $.Nethgui.Server,
         _deep: true,
         _showDisabledState: true,
         _create: function () {
             var self = this;
-
+            
+            // language translation function:
+            this.T = this.translate;
+            
             this.widgetEventPrefix = this.namespace;
             this._id = ++counter;
             this._children = [];
@@ -238,8 +263,8 @@
             return typeFound;
         },
         /**
-         * Find and initialize any descendant component
-         */
+     * Find and initialize any descendant component
+     */
         _initializeDeep: function (nodeQueue) {
             
             var node = nodeQueue.shift();
@@ -280,6 +305,7 @@
             $.Widget.prototype.destroy.call( this );
             this.widget().unbind(this.namespace);
             this.element.unbind(this.namespace);
+            this._children = undefined;
         },
         _updateView: function(value, selector) {
         // free to override
@@ -292,6 +318,9 @@
         },
         _readHelp: function (url) {
             
+        },
+        translate: function() {
+            return Translator.prototype.translate.apply($.Nethgui.Translator, Array.prototype.slice.call(arguments, 0))
         }
     });
 
