@@ -131,7 +131,7 @@ class Notification extends \Nethgui\Controller\AbstractController implements \Ne
                 $arguments[1] = \Nethgui\Module\Notification\AbstractNotification::NOTIFY_SUCCESS;
             }
 
-            $notification = new \Nethgui\Module\Notification\TextNotification($origin->getModule(), $arguments[0], array(), $arguments[1]);
+            $notification = new \Nethgui\Module\Notification\TextNotification($origin->getModule(), $arguments[0], $arguments[1]);
 
             $this->showNotification($notification);
         } elseif ($name === 'dismissNotification') {

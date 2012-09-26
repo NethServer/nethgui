@@ -38,6 +38,12 @@ class TextNotification extends \Nethgui\Module\Notification\AbstractNotification
     private $message;
     private $module;
 
+    /**
+     * 
+     * @param \Nethgui\Module\ModuleInterface $module
+     * @param array|string $message
+     * @param integer $style
+     */
     public function __construct(\Nethgui\Module\ModuleInterface $module, $message, $style = 0)
     {
         if ( ! $module instanceof ModuleSurrogate) {
