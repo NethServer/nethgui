@@ -37,8 +37,8 @@
             // bind to submit event to update TEXTAREA before POSTing data:
             $(this.formControl[0].form).on('submit.' + this.namespace, $.proxy(this._transferToControl, this));
                        
-            // prepare the elements container:
-            this.elements = $('<div class="elements"></div>').appendTo(this.element);
+            // get the elements container:
+            this.elements = this.element.children('.elements');
 
             // element action template dock. Template node is moved to
             // the elements collection, when action begins:

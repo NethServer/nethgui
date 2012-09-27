@@ -59,6 +59,12 @@ class CollectionEditor extends \Nethgui\Widget\XhtmlWidget
         ));        
         $content .= htmlspecialchars($this->view[$name]);
         $content .= $this->closeTag('textarea');
+
+
+        $content .= $this->selfClosingTag('div', array(
+           'class'  => 'elements',
+            'id' => $this->view->getUniqueId($name)
+        ));
         
         $content .= $this->closeTag('div');
         
