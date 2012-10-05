@@ -102,6 +102,10 @@ class Selector extends \Nethgui\Widget\XhtmlWidget
             ->insert($hiddenWidget)
             ->insert($contentWidget);
 
+        if($this->getAttribute('flags') & \Nethgui\Renderer\WidgetFactoryInterface::LABEL_NONE) {
+            return $panelWidget->renderContent();
+        }
+        
         $fieldsetWidget = new Fieldset($this->view);
         $fieldsetWidget->setAttribute('template', $this->getAttribute('label', $this->getTranslateClosure($name . '_label')))
             ->setAttribute('flags', $this->getAttribute('flags'));

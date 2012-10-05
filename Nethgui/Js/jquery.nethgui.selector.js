@@ -52,7 +52,7 @@
             var prefixId = this._valueTarget;
             var prefixName = this._meta.attr('name');
 
-            if(!$.isArray(value)) {
+            if( ! $.isArray(value) || ! $.isPlainObject(value)) {
                 return;
             }
 

@@ -51,7 +51,7 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
     {
         $attributes = array(
             'for' => $id,
-            'class' => 'TextLabel ' . $this->getAttribute('helpId', $this->getAttribute('name', FALSE))
+            'class' => 'TextLabel ' . $this->getAttribute('helpId', $this->view->getUniqueId($this->getAttribute('name', FALSE)))
         );
 
         $content = '';
