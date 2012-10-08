@@ -47,8 +47,9 @@ class PhpWrapper implements \Nethgui\Log\LogConsumerInterface
     {
         $this->identifier = $identifier;
     }
-    
-    public function class_exists($className) {
+
+    public function class_exists($className)
+    {
         $warnings = array();
         $this->wrapBegin($warnings, E_NOTICE);
         $retval = class_exists($className);
@@ -67,9 +68,6 @@ class PhpWrapper implements \Nethgui\Log\LogConsumerInterface
 
     protected function wrapBegin(&$messages, $forceErrno = 0)
     {
-        if ($this->getLog() instanceof \Nethgui\Log\Nullog) {
-            return;
-        }
         set_error_handler(function ($errno, $errstr) use (&$messages, $forceErrno) {
                 $messages[] = array($forceErrno > 0 ? $forceErrno : $errno, $errstr);
             }, E_WARNING | E_NOTICE);
@@ -77,10 +75,13 @@ class PhpWrapper implements \Nethgui\Log\LogConsumerInterface
 
     protected function wrapEnd($messages)
     {
-        if ($this->getLog() instanceof \Nethgui\Log\Nullog) {
+        restore_error_handler();
+
+        $log = $this->getLog();
+        if ($log instanceof \Nethgui\Log\Nullog) {
             return;
         }
-        restore_error_handler();
+        
         if (count($messages) > 0) {
             $message = '';
             foreach ($messages as $msg) {
@@ -89,7 +90,7 @@ class PhpWrapper implements \Nethgui\Log\LogConsumerInterface
                 } else {
                     $level = 'notice';
                 }
-                $this->getLog()->$level(sprintf("%s: %s", $this->identifier, $msg[1]));
+                $log->$level(sprintf("%s: %s", $this->identifier, $msg[1]));
             }
         }
     }

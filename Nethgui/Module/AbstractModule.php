@@ -28,7 +28,6 @@ namespace Nethgui\Module;
  */
 abstract class AbstractModule implements \Nethgui\Module\ModuleInterface, \Nethgui\View\ViewableInterface, \Nethgui\Log\LogConsumerInterface, \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Authorization\AuthorizationAttributesProviderInterface, \Nethgui\System\PlatformConsumerInterface
 {
-
     /**
      * @var string
      */
@@ -72,7 +71,7 @@ abstract class AbstractModule implements \Nethgui\Module\ModuleInterface, \Nethg
 
     public function __construct($identifier = NULL)
     {
-        $this->php = new \Nethgui\Utility\PhpWrapper();
+        $this->php = new \Nethgui\Utility\PhpWrapper(get_class($this));
         $this->viewTemplate = NULL;
         if (isset($identifier)) {
             $this->identifier = $identifier;
