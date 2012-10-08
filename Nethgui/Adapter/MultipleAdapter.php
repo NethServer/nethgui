@@ -36,7 +36,6 @@ namespace Nethgui\Adapter;
  */
 class MultipleAdapter implements AdapterInterface
 {
-
     private $innerAdapters = array();
     private $readerCallback;
     private $writerCallback;
@@ -114,6 +113,8 @@ class MultipleAdapter implements AdapterInterface
                     $saved = $this->innerAdapters[$index]->save() ? TRUE : $saved;
                     $index ++;
                 }
+            } elseif ($values === TRUE) {
+                $saved = TRUE;
             }
         } else {
             $saved = TRUE;

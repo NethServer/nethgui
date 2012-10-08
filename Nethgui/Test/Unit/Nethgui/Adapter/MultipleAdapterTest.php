@@ -6,7 +6,6 @@ namespace Nethgui\Test\Unit\Nethgui\Adapter;
  */
 class MultipleAdapterTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @var \Nethgui\Adapter\MultipleAdapter
      */
@@ -166,11 +165,24 @@ class MultipleAdapterTest extends \PHPUnit_Framework_TestCase
 
     public function testNoWriter()
     {
-         $object = new \Nethgui\Adapter\MultipleAdapter(function () {return '88';});
-         $this->assertFalse($object->save());
-         $object->set('99');
-         $this->assertTrue($object->save());
+        $object = new \Nethgui\Adapter\MultipleAdapter(function () {
+                    return '88';
+                });
+        $this->assertFalse($object->save());
+        $object->set('99');
+        $this->assertTrue($object->save());
+    }
+
+    public function testNoSerializer()
+    {
+        $object = new \Nethgui\Adapter\MultipleAdapter(function () {
+                    return '88';
+                }, function ($value) {
+                    return TRUE;
+                }, array());
+        $this->assertFalse($object->save());
+        $object->set('99');
+        $this->assertTrue($object->save());
     }
 
 }
-
