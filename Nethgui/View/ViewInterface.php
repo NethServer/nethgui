@@ -194,6 +194,10 @@ interface ViewInterface extends \ArrayAccess, \IteratorAggregate
      *
      * The returned command list is ready to execute().
      *
+     * NOTE: only view objects correctly deliver commands to the client-side.
+     * Widget commands are delivered to widget objects and executed server-side
+     * only.
+     *
      * @api
      * @param string $selector Routes the command list to the receiver appointed by this parameter.
      * @return \Nethgui\View\ViewCommandInterface
