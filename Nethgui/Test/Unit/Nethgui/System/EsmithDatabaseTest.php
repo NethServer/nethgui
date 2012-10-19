@@ -7,7 +7,6 @@ namespace Nethgui\Test\Unit\Nethgui\System;
  */
 class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @var \Nethgui\System\EsmithDatabase
      */
@@ -16,7 +15,7 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
     /**
      * @var PHPUnit_Framework_MockObject_MockObject
      */
-    private $globalsMock;
+    private $execw;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -24,23 +23,23 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->globalsMock = $this->getMock('\Nethgui\Utility\PhpWrapper', array('exec'));
+
+        $this->execw = new PhpWrapperExec();
         $this->object = new \Nethgui\System\EsmithDatabase('MOCKDB', $this->getMock('\Nethgui\Authorization\UserInterface'));
-        $this->object->setPhpWrapper($this->globalsMock);
-        $this->object->setPolicyDecisionPoint(new \Nethgui\Test\Tool\PermissivePolicyDecisionPoint());
+        $this->object
+            ->setPolicyDecisionPoint(new \Nethgui\Test\Tool\PermissivePolicyDecisionPoint())
+            ->setPhpWrapper($this->execw)
+        ;
     }
 
     public function testGetAll1()
     {
-        $this->globalsMock
-                ->expects($this->once())
-                ->method('exec')
-                ->with($this->getCommandMatcher('print', array()))
-                ->will($this->returnCallBack(array($this, 'exec_getAllCallback')));
+        $this->execw
+            ->setCommandMatcher('print', array())
+            ->setExecImplementation(array($this, 'exec_getAllCallback'));
 
         $expected = array();
-        for ($i = 0; $i < 5; $i ++ )
-        {
+        for ($i = 0; $i < 5; $i ++ ) {
             $expected['K' . $i] = array('type' => ($i == 3 ? 'F' : 'T'), 'PA' . $i => 'VA' . $i, 'PB' . $i => 'VB' . $i, 'PC' . $i => 'VC' . $i);
         }
 
@@ -51,11 +50,10 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
 
     public function testGetAll2()
     {
-        $this->globalsMock
-                ->expects($this->once())
-                ->method('exec')
-                ->with($this->getCommandMatcher('print', array()))
-                ->will($this->returnCallBack(array($this, 'exec_getAllCallback')));
+        $this->execw
+            ->setCommandMatcher('print', array())
+            ->setExecImplementation(array($this, 'exec_getAllCallback'));
+
 
         $expected = array();
         $i = 3;
@@ -72,27 +70,16 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetAll3()
     {
-//        $this->globalsMock
-//            ->expects($this->once())
-//            ->method('exec')
-//            ->with($this->getCommandMatcher('print', array()))
-//            ->will($this->returnCallBack(array($this, 'exec_getAllCallback')));
-//
-//        $expected = array();
-//        $i = 2;
-//        $expected['K' . $i] = array('type' => 'T', 'PA' . $i => 'VA' . $i, 'PB' . $i => 'VB' . $i, 'PC' . $i => 'VC' . $i);
-
         $ret = $this->object->getAll('T', 'VA2');
-
-        //$this->assertEquals($expected, $ret);
     }
 
     public function exec_getAllCallback($command, &$output, &$retval)
     {
-        $output = array();
+        if ( ! isset($output)) {
+            $output = array();
+        }
 
-        for ($i = 0; $i < 5; $i ++ )
-        {
+        for ($i = 0; $i < 5; $i ++ ) {
             $output[] = strtr('Ki=T|PAi|VAi|PBi|VBi|PCi|VCi', array('i' => $i, 'T' => ($i == 3 ? 'F' : 'T')));
         }
 
@@ -102,11 +89,9 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
 
     public function testGetKey1()
     {
-        $this->globalsMock
-                ->expects($this->once())
-                ->method('exec')
-                ->with($this->getCommandMatcher('get', explode(' ', 'K')))
-                ->will($this->returnCallBack(array($this, 'exec_getKeyCallback')));
+        $this->execw
+            ->setCommandMatcher('get', explode(' ', 'K'))
+            ->setExecImplementation(array($this, 'exec_getKeyCallback'));
 
         $ret = $this->object->getKey('K');
 
@@ -125,11 +110,10 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetKey()
     {
-        $this->globalsMock
-                ->expects($this->once())
-                ->method('exec')
-                ->with($this->getCommandMatcher('set', explode(' ', 'K T p1 v1 p2 v2')))
-                ->will($this->returnCallBack(array($this, 'exec_success')));
+        $this->execw
+            ->setCommandMatcher('set', explode(' ', 'K T p1 v1 p2 v2'))
+            ->setExecImplementation(array($this, 'exec_success'));
+
 
         $ret = $this->object->setKey('K', 'T', array('p1' => 'v1', 'p2' => 'v2'));
 
@@ -141,11 +125,10 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
      */
     public function testDeleteKey()
     {
-        $this->globalsMock
-                ->expects($this->once())
-                ->method('exec')
-                ->with($this->getCommandMatcher('delete', array('K')))
-                ->will($this->returnCallBack(array($this, 'exec_success')));
+        $this->execw
+            ->setCommandMatcher('delete', array('K'))
+            ->setExecImplementation(array($this, 'exec_success'));
+
 
         $ret = $this->object->deleteKey('K');
 
@@ -158,11 +141,9 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetType()
     {
-        $this->globalsMock
-                ->expects($this->once())
-                ->method('exec')
-                ->with($this->getCommandMatcher('gettype', explode(' ', 'K')))
-                ->will($this->returnCallBack(array($this, 'exec_getTypeCallback')));
+        $this->execw
+            ->setCommandMatcher('gettype', explode(' ', 'K'))
+            ->setExecImplementation(array($this, 'exec_getTypeCallback'));
 
         $ret = $this->object->getType('K');
 
@@ -178,11 +159,9 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
 
     public function testSetType()
     {
-        $this->globalsMock
-                ->expects($this->once())
-                ->method('exec')
-                ->with($this->getCommandMatcher('settype', explode(' ', 'K T')))
-                ->will($this->returnCallBack(array($this, 'exec_success')));
+        $this->execw
+            ->setCommandMatcher('settype', explode(' ', 'K T'))
+            ->setExecImplementation(array($this, 'exec_success'));
 
         $ret = $this->object->setType('K', 'T');
 
@@ -191,11 +170,9 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
 
     public function testGetProp1()
     {
-        $this->globalsMock
-                ->expects($this->once())
-                ->method('exec')
-                ->with($this->getCommandMatcher('getprop', explode(' ', 'K P')))
-                ->will($this->returnCallback(array($this, 'exec_getpropCallback')));
+        $this->execw
+            ->setCommandMatcher('getprop', explode(' ', 'K P'))
+            ->setExecImplementation(array($this, 'exec_getpropCallback'));
 
         $ret = $this->object->getProp("K", "P");
 
@@ -211,11 +188,8 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
 
     public function testSetProp1()
     {
-        $this->globalsMock
-                ->expects($this->once())
-                ->method('exec')
-                ->with($this->getCommandMatcher('setprop', explode(' ', 'K p1 1 p2 2')))
-                ->will($this->returnValue(''));
+        $this->execw
+            ->setCommandMatcher('setprop', explode(' ', 'K p1 1 p2 2'));
 
         $ret = $this->object->setProp("K", array('p1' => '1', 'p2' => '2'));
 
@@ -224,11 +198,9 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
 
     public function testDelProp()
     {
-        $this->globalsMock
-                ->expects($this->once())
-                ->method('exec')
-                ->with($this->getCommandMatcher('delprop', explode(' ', 'K A B C')))
-                ->will($this->returnCallBack(array($this, 'exec_success')));
+        $this->execw
+            ->setCommandMatcher('delprop', explode(' ', 'K A B C'))
+            ->setExecImplementation(array($this, 'exec_success'));
 
         $ret = $this->object->delProp('K', array('A', 'B', 'C'));
 
@@ -242,11 +214,37 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
         return array_slice($output, -1, 1);
     }
 
-    private function getCommandMatcher($command, $args)
+}
+
+class PhpWrapperExec extends \Nethgui\Utility\PhpWrapper
+{
+    /**
+     * @var callable
+     */
+    private $execImplementation;
+    private $commandLine;
+
+    public function setExecImplementation($execImplementation)
+    {
+        $this->execImplementation = $execImplementation;
+        return $this;
+    }
+
+    public function setCommandMatcher($command, $args)
     {
         array_unshift($args, 'MOCKDB', $command);
         $commandLine = "/usr/bin/sudo /sbin/e-smith/db " . implode(' ', array_map('escapeshellarg', $args));
-        return new \PHPUnit_Framework_Constraint_StringMatches($commandLine);
+        $this->commandLine = $commandLine;
+        return $this;
+    }
+
+    public function exec($command, &$output, &$retval)
+    {
+        \PHPUnit_Framework_Assert::assertEquals($this->commandLine, $command);
+        if ( ! is_callable($this->execImplementation)) {
+            return 0;
+        }
+        return call_user_func_array($this->execImplementation, array($command, &$output, &$retval));
     }
 
 }
