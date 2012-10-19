@@ -160,6 +160,7 @@ class Process implements ProcessInterface, \Nethgui\Utility\PhpConsumerInterface
     public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
     {
         $this->phpWrapper = $object;
+        return $this;
     }
 
     public function readOutput()

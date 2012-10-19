@@ -283,6 +283,7 @@ class EsmithDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Auth
     public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
     {
         $this->phpWrapper = $object;
+        return $this;
     }
 
     private function dbExec($command, $args, &$output)
