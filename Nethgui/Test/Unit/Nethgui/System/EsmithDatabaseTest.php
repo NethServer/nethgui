@@ -32,6 +32,31 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
         ;
     }
 
+    public function testFailPdp()
+    {
+        $object = new \Nethgui\System\EsmithDatabase('MOCKDB', $this->getMock('\Nethgui\Authorization\UserInterface'));
+        $this->object->setPolicyDecisionPoint(new \Nethgui\Test\Tool\StaticPolicyDecisionPoint(FALSE))
+            ->setPhpWrapper($this->execw);
+
+        foreach (array(
+        array('delProp', array('K', array('pi'))),
+        array('deleteKey', array('K')),
+        array('getAll', array()),
+        array('getKey', array('K')),
+        array('getType', array('K')),
+        array('setKey', array('K', 'T', array('p1', 'v1'))),
+        array('setProp', array('K', array())),
+        array('setType', array('K', 'T')),
+        ) as $method) {
+            try {
+                call_user_func_array(array($this->object, $method[0]), $method[1]);
+            } catch (\Nethgui\Exception\AuthorizationException $e) {
+                continue;
+            }
+            $this->fail($method[0]);
+        }
+    }
+
     public function testGetAll1()
     {
         $this->execw
