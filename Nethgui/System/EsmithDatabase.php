@@ -38,7 +38,6 @@ namespace Nethgui\System;
  */
 class EsmithDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Authorization\PolicyEnforcementPointInterface, \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Authorization\AuthorizationAttributesProviderInterface
 {
-
     const PERM_READ = 'READ';
     const PERM_WRITE = 'WRITE';
 
@@ -136,7 +135,10 @@ class EsmithDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Auth
         }
 
         $output = NULL;
-        $ret = $this->dbExec('print', array(), $output);
+        $ret = $this->dbExec('printjson', array(), $output);
+        if ($ret !== 0) {
+            throw new \UnexpectedValueException(sprintf("%s: internal database command failed!", __CLASS__), 1350896938);
+        }
 
         if (empty($output)) {
             return array();
@@ -144,21 +146,18 @@ class EsmithDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Auth
 
         $result = array();
 
-        foreach (explode("\n", $output) as $line) {
-            $line = trim($line);
-            if ($line) {
-                $tokens = explode("=", $line);
-                $key = $tokens[0];
-                $tokens = explode("|", $tokens[1]);
-                if ( ! is_null($type) && $tokens[0] != $type)
-                    continue;
+        $data = json_decode($output, TRUE);
+        if ( ! is_array($data)) {
+            throw new \UnexpectedValueException(sprintf("%s: internal data decoding failed", __CLASS__), 1350896939);
+        }
 
-                $result[$key]['type'] = $tokens[0];
-                for ($i = 1; $i <= count($tokens); $i ++ ) { //skip type
-                    if (isset($tokens[$i])) //avoid outbound tokens
-                        $result[$key][trim($tokens[$i])] = trim($tokens[ ++ $i]);
-                }
+        foreach ($data as $item) {
+            // Apply type check filter:
+            if(isset($type) && $type !== $item['type']) {
+                continue;
             }
+            $props = isset($item['props']) ? $item['props'] : array();
+            $result[$item['name']] = array_merge($props, array('type' => $item['type']));
         }
 
         return $result;

@@ -61,9 +61,10 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
     public function testGetAll0()
     {
         $this->execw
-            ->setCommandMatcher('print', array())
-            ->setExecImplementation(function() {
-                    return 0;
+            ->setCommandMatcher('printjson', array())
+            ->setExecImplementation(function($cmd, &$output, &$retval) {
+                    $retval = 0;
+                    return '';
                 });
 
         $expected = array();
@@ -76,12 +77,12 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
     public function testGetAll1()
     {
         $this->execw
-            ->setCommandMatcher('print', array())
-            ->setExecImplementation(array($this, 'exec_getAllCallback'));
+            ->setCommandMatcher('printjson', array())
+            ->setExecImplementation(array($this, 'exec_printJson'));
 
         $expected = array();
         for ($i = 0; $i < 5; $i ++ ) {
-            $expected['K' . $i] = array('type' => ($i == 3 ? 'F' : 'T'), 'PA' . $i => 'VA' . $i, 'PB' . $i => 'VB' . $i, 'PC' . $i => 'VC' . $i);
+            $expected['K' . $i] = array('type' => 'T' . ($i == 3 ? 'F' : 'T'), 'PA' . $i => 'VA' . $i, 'PB' . $i => 'VB' . $i, 'PC' . $i => 'VC' . $i);
         }
 
         $ret = $this->object->getAll();
@@ -92,15 +93,15 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
     public function testGetAll2()
     {
         $this->execw
-            ->setCommandMatcher('print', array())
-            ->setExecImplementation(array($this, 'exec_getAllCallback'));
+            ->setCommandMatcher('printjson', array())
+            ->setExecImplementation(array($this, 'exec_printJson'));
 
 
         $expected = array();
         $i = 3;
-        $expected['K' . $i] = array('type' => 'F', 'PA' . $i => 'VA' . $i, 'PB' . $i => 'VB' . $i, 'PC' . $i => 'VC' . $i);
+        $expected['K' . $i] = array('type' => 'TF', 'PA' . $i => 'VA' . $i, 'PB' . $i => 'VB' . $i, 'PC' . $i => 'VC' . $i);
 
-        $ret = $this->object->getAll('F');
+        $ret = $this->object->getAll('TF');
 
         $this->assertEquals($expected, $ret);
     }
@@ -111,7 +112,38 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetAll3()
     {
-        $ret = $this->object->getAll('T', 'VA2');
+        $ret = $this->object->getAll('TT', 'VA2');
+    }
+
+    /**
+     * db command return non zero exit code:
+     * @expectedException \UnexpectedValueException
+     */
+    public function testGetAll4()
+    {
+        $this->execw
+            ->setCommandMatcher('printjson', array())
+            ->setExecImplementation(function($cmd, &$output, &$retval) {
+                    $retval = 1;
+                });
+
+        $this->object->getAll('TT');
+    }
+
+    /**
+     * db command return invalid json string
+     * @expectedException \UnexpectedValueException
+     */
+    public function testGetAll5()
+    {
+        $this->execw
+            ->setCommandMatcher('printjson', array())
+            ->setExecImplementation(function($cmd, &$output, &$retval) {
+                    $retval = 0;
+                    $output[] = 'xx';
+                });
+
+        $this->object->getAll('TT');
     }
 
     public function exec_getAllCallback($command, &$output, &$retval)
@@ -126,6 +158,29 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
 
         $retval = 0;
         return array_slice($output, -1, 1);
+    }
+
+    public function exec_printJson($command, &$output, &$retval)
+    {
+        $retval = 0;
+
+        $data = array();
+
+        for ($i = 0; $i < 5; $i ++ ) {
+            $data[] = array(
+                'name' => 'K' . $i,
+                'type' => 'T' . ($i == 3 ? 'F' : 'T'),
+                'props' => array(
+                    'PA' . $i => 'VA' . $i,
+                    'PB' . $i => 'VB' . $i,
+                    'PC' . $i => 'VC' . $i,
+                ),
+            );
+        }
+
+        $output[] = json_encode($data);
+
+        return $output[0];
     }
 
     public function testGetKey1()
@@ -255,14 +310,17 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
         return array_slice($output, -1, 1);
     }
 
-    public function testAsAuthorizationString() {
+    public function testAsAuthorizationString()
+    {
         $this->assertEquals('Nethgui\System\EsmithDatabase:MOCKDB', $this->object->asAuthorizationString());
     }
 
-    public function testGetAuthorizationAttribute() {
+    public function testGetAuthorizationAttribute()
+    {
         $this->assertEquals('MOCKDB', $this->object->getAuthorizationAttribute('dbname'));
         $this->assertNull($this->object->getAuthorizationAttribute('seklfhsjkd'));
     }
+
 }
 
 class PhpWrapperExec extends \Nethgui\Utility\PhpWrapper
