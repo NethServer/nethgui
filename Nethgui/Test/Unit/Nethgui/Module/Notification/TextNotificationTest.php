@@ -2,13 +2,13 @@
 namespace Nethgui\Test\Unit\Nethgui\Module\Notification;
 
 /**
- * @covers Nethgui\Module\Notification\DialogBox
+ * @covers Nethgui\Module\Notification\TextNotification
  */
-class DialogBoxTest extends \PHPUnit_Framework_TestCase
+class TextNotificationBoxTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
-     * @var \Nethgui\Module\Notification\DialogBox
+     * @var \Nethgui\Module\Notification\TextNotification
      */
     protected $object;
 
@@ -21,14 +21,9 @@ class DialogBoxTest extends \PHPUnit_Framework_TestCase
         $userMock = $this->getMockBuilder('Nethgui\Controller\AbstractController')
             ->disableOriginalConstructor()
             ->getMock();
-        $this->object = new \Nethgui\Module\Notification\DialogBox($userMock, 'message');
+        $this->object = new \Nethgui\Module\Notification\TextNotification($userMock, 'message');
     }
     
-    public function testGetActions()
-    {
-        $this->assertEquals(array(), $this->object->getActions());
-    }
-
     
     public function testGetMessage()
     {
@@ -37,7 +32,7 @@ class DialogBoxTest extends \PHPUnit_Framework_TestCase
 
     public function testGetType()
     {
-        $this->assertEquals('Message', $this->object->getType());
+        $this->assertEquals('TextNotification', $this->object->getType());
     }
 
     public function testIsTransient()
