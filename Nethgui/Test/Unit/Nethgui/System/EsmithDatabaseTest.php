@@ -47,6 +47,7 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
         array('setKey', array('K', 'T', array('p1', 'v1'))),
         array('setProp', array('K', array())),
         array('setType', array('K', 'T')),
+        array('getProp', array('K', array('p1', 'p2'))),
         ) as $method) {
             try {
                 call_user_func_array(array($this->object, $method[0]), $method[1]);
@@ -55,6 +56,21 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
             }
             $this->fail($method[0]);
         }
+    }
+
+    public function testGetAll0()
+    {
+        $this->execw
+            ->setCommandMatcher('print', array())
+            ->setExecImplementation(function() {
+                    return 0;
+                });
+
+        $expected = array();
+
+        $ret = $this->object->getAll();
+
+        $this->assertEquals($expected, $ret);
     }
 
     public function testGetAll1()
@@ -239,6 +255,14 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
         return array_slice($output, -1, 1);
     }
 
+    public function testAsAuthorizationString() {
+        $this->assertEquals('Nethgui\System\EsmithDatabase:MOCKDB', $this->object->asAuthorizationString());
+    }
+
+    public function testGetAuthorizationAttribute() {
+        $this->assertEquals('MOCKDB', $this->object->getAuthorizationAttribute('dbname'));
+        $this->assertNull($this->object->getAuthorizationAttribute('seklfhsjkd'));
+    }
 }
 
 class PhpWrapperExec extends \Nethgui\Utility\PhpWrapper
