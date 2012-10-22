@@ -153,7 +153,7 @@ class EsmithDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Auth
 
         foreach ($data as $item) {
             // Apply type check filter:
-            if(isset($type) && $type !== $item['type']) {
+            if (isset($type) && $type !== $item['type']) {
                 continue;
             }
             $props = isset($item['props']) ? $item['props'] : array();
@@ -169,19 +169,24 @@ class EsmithDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Auth
             throw $this->readPermission->asException(1322149166);
         }
 
-        $result = array();
-        $output = NULL;
+        $output = '';
 
-        $ret = $this->dbExec('get', $this->prepareArguments($key), $output);
-
-        if ($output != "") {
-            $tokens = explode("|", $output);
-            for ($i = 1; $i <= count($tokens); $i ++ ) { //skip type
-                if (isset($tokens[$i])) //avoid outbound tokens
-                    $result[trim($tokens[$i])] = trim($tokens[ ++ $i]);
-            }
+        $ret = $this->dbExec('getjson', $this->prepareArguments($key), $output);
+        if ($ret !== 0) {
+            throw new \UnexpectedValueException(sprintf("%s: internal database command failed", __CLASS__), 1350909145);
         }
-        return $result;
+
+        $data = json_decode($output, TRUE);
+
+        if ( ! is_array($data)) {
+            throw new \UnexpectedValueException(sprintf("%s: internal data decoding failed", __CLASS__), 1350909146);
+        }
+
+        if ( ! isset($data['props'])) {
+            throw new \UnexpectedValueException(sprintf("%s: internal data decoding failed", __CLASS__), 1350909146);
+        }
+
+        return $data['props'];
     }
 
     public function setKey($key, $type, $props)
@@ -285,6 +290,13 @@ class EsmithDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Auth
         return $this;
     }
 
+    /**
+     * Execute the db command
+     * @param string $command The command to invoke
+     * @param array $args The command arguments
+     * @param string &$output The output from the command process
+     * @return int  The command exit code
+     */
     private function dbExec($command, $args, &$output)
     {
         // prepend the database name and command

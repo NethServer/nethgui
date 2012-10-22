@@ -13,7 +13,7 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
     protected $object;
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject
+     * @var PhpWrapperExec
      */
     private $execw;
 
@@ -186,12 +186,59 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
     public function testGetKey1()
     {
         $this->execw
-            ->setCommandMatcher('get', explode(' ', 'K'))
-            ->setExecImplementation(array($this, 'exec_getKeyCallback'));
+            ->setCommandMatcher('getjson', explode(' ', 'K'))
+            ->setExecImplementation(array($this, 'exec_getJson'));
 
         $ret = $this->object->getKey('K');
 
         $this->assertEquals(array('p1' => 'v1', 'p2' => 'v2'), $ret);
+    }
+
+    /**
+     * db command fails
+     * @expectedException \UnexpectedValueException
+     */
+    public function testGetKey2()
+    {
+        $this->execw
+            ->setCommandMatcher('getjson', explode(' ', 'K'))
+            ->setExecImplementation(function($command, &$output, &$retval) {
+                    $retval = 1;
+                });
+
+        $ret = $this->object->getKey('K');
+    }
+
+    /**
+     * db command returns invalid json string
+     * @expectedException \UnexpectedValueException
+     */
+    public function testGetKey3()
+    {
+        $this->execw
+            ->setCommandMatcher('getjson', explode(' ', 'K'))
+            ->setExecImplementation(function($command, &$output, &$retval) {
+                    $retval = 0;
+                    $output[] = 'xxx';
+                });
+
+        $ret = $this->object->getKey('K');
+    }
+
+    /**
+     * db command returns a key without props
+     * @expectedException \UnexpectedValueException
+     */
+    public function testGetKey4()
+    {
+        $this->execw
+            ->setCommandMatcher('getjson', explode(' ', 'K'))
+            ->setExecImplementation(function($command, &$output, &$retval) {
+                    $retval = 0;
+                    $output[] = '{"name":"K","type":"valuexxx"}';
+                });
+
+        $ret = $this->object->getKey('K');
     }
 
     public function exec_getKeyCallback($command, &$output, &$retval)
@@ -199,6 +246,18 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
         $output = array('T|p1|v1|p2|v2', '');
         $retval = 0;
         return array_slice($output, -1, 1);
+    }
+
+    public function exec_getJson($command, &$output, &$retval)
+    {
+        $retval = 0;
+        $data = json_encode(array(
+            'name' => 'K',
+            'type' => 'T',
+            'props' => array('p1' => 'v1', 'p2' => 'v2')
+            ));
+        $output[] = $data;
+        return $data;
     }
 
     /**
