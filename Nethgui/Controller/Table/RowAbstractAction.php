@@ -53,6 +53,13 @@ abstract class RowAbstractAction extends \Nethgui\Controller\Table\AbstractActio
      */
     private $defaultValues = array();
 
+
+    /**
+     *
+     * @var \Nethgui\Adapter\AdapterInterface
+     */
+    private $originalAdapter;
+
     /**
      *
      * @api
@@ -65,7 +72,10 @@ abstract class RowAbstractAction extends \Nethgui\Controller\Table\AbstractActio
 
     /**
      * Receive the table adapter and convert it into a RecordAdapter
-     * 
+     *
+     * Invoked by the parent module (i.e. TableController)
+     *
+     * @see \Nethgui\Controller\TableController
      * @api
      * @param \Nethgui\Adapter\AdapterInterface $adapter
      * @return \Nethgui\Controller\Table\RowAbstractAction
@@ -73,7 +83,8 @@ abstract class RowAbstractAction extends \Nethgui\Controller\Table\AbstractActio
     public function setAdapter(\Nethgui\Adapter\AdapterInterface $adapter)
     {
         if ( ! $adapter instanceof \Nethgui\Adapter\RecordAdapter) {
-            $adapter = new \Nethgui\Adapter\RecordAdapter($adapter);
+            $this->originalAdapter = $adapter;
+            $adapter = new \Nethgui\Adapter\RecordAdapter($this->originalAdapter);
         }
         parent::setAdapter($adapter);
         return $this;
@@ -109,16 +120,16 @@ abstract class RowAbstractAction extends \Nethgui\Controller\Table\AbstractActio
 
             $this->declareParameter($parameterName, $validator, $valueProvider);
         }
-        
+
         parent::bind($request);
-        
-        if ( ! $request->isMutation() 
-            &&  ! $this->getAdapter()->getKeyValue() ) {
+
+        if ( ! $request->isMutation()
+            && ! $this->getAdapter()->getKeyValue()) {
             // initialize default parameter values
             foreach ($this->defaultValues as $paramName => $paramValue) {
                 $this->parameters[$paramName] = $paramValue;
             }
-        }        
+        }
     }
 
     /**
@@ -164,7 +175,7 @@ abstract class RowAbstractAction extends \Nethgui\Controller\Table\AbstractActio
     {
         return $this->parameterSchema;
     }
-    
+
     /**
      * Set a parameter default value
      * 
@@ -175,9 +186,22 @@ abstract class RowAbstractAction extends \Nethgui\Controller\Table\AbstractActio
      * @param string $value
      * @return \Nethgui\Controller\Table\RowAbstractAction 
      */
-    public function setDefaultValue($parameterName, $value) {        
+    public function setDefaultValue($parameterName, $value)
+    {
         $this->defaultValues[$parameterName] = $value;
         return $this;
+    }
+
+
+    protected function saveParameters()
+    {
+        $save1 = parent::saveParameters();        
+        if(isset($this->originalAdapter)) {
+            $save2 = $this->originalAdapter->save();
+        } else {
+            $save2 = FALSE;
+        }
+        return $save1 || $save2;
     }
 
 }

@@ -116,7 +116,7 @@ abstract class AbstractController extends \Nethgui\Module\AbstractModule impleme
         } else {
             throw new \InvalidArgumentException(sprintf('%s: Invalid `valueProvider` argument', get_class($this)), 1322149487);
         }
-        
+
         return $this;
     }
 
@@ -129,13 +129,14 @@ abstract class AbstractController extends \Nethgui\Module\AbstractModule impleme
      * @param string $parameterName The name of the validated parameter
      * @return \Nethgui\System\ValidatorInterface The validator object associated to the given parameter
      */
-    protected function getValidator($parameterName) {
-        if(! $this->validators[$parameterName] instanceof \Nethgui\System\ValidatorInterface) {
+    protected function getValidator($parameterName)
+    {
+        if ( ! $this->validators[$parameterName] instanceof \Nethgui\System\ValidatorInterface) {
             throw new \LogicException(sprintf('%s: you must declare a parameter to obtain its validator object', __CLASS__), 1337002629);
         }
         return $this->validators[$parameterName];
     }
-    
+
     /**
      * @param integer $ruleCode See \Nethgui\System\PlatformInterface::createValidator()
      * @return \Nethgui\System\Validator
@@ -229,13 +230,21 @@ abstract class AbstractController extends \Nethgui\Module\AbstractModule impleme
     public function process()
     {
         if ($this->getRequest()->isMutation()) {
-
             $changes = $this->parameters->getModifiedKeys();
-
-            if ($this->parameters->save()) {
+            if ($this->saveParameters()) {
                 $this->onParametersSaved($changes);
             }
         }
+    }
+
+    /**
+     * Save parameters values, transferring data to adapters.
+     * 
+     * @return bool
+     */
+    protected function saveParameters()
+    {
+        return $this->parameters->save();
     }
 
     protected function onParametersSaved($changedParameters)

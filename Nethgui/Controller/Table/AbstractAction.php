@@ -30,13 +30,12 @@ namespace Nethgui\Controller\Table;
  */
 abstract class AbstractAction extends \Nethgui\Controller\AbstractController implements \Nethgui\Adapter\AdapterAggregateInterface
 {
-
     /**
      *
      * @var \Nethgui\Adapter\AdapterInterface
      */
     private $adapter;
-    
+
     /**
      * @return \Nethgui\Adapter\AdapterInterface
      */
@@ -51,16 +50,17 @@ abstract class AbstractAction extends \Nethgui\Controller\AbstractController imp
      */
     public function hasAdapter()
     {
-        return $this->adapter instanceof \Nethgui\Adapter\AdapterInterface;
+        return $this->getAdapter() instanceof \Nethgui\Adapter\AdapterInterface;
     }
-    
+
     /**
      * Receive the adapter object from the TableController
      * 
      * @param \Nethgui\Adapter\AdapterInterface $adapter
      * @return \Nethgui\Controller\Table\AbstractAction 
      */
-    public function setAdapter(\Nethgui\Adapter\AdapterInterface $adapter) {
+    public function setAdapter(\Nethgui\Adapter\AdapterInterface $adapter)
+    {
         $this->adapter = $adapter;
         return $this;
     }
@@ -82,14 +82,16 @@ abstract class AbstractAction extends \Nethgui\Controller\AbstractController imp
     }
 
     /**
-     * Return to default "read" action
-     * 
-     * @return string 'read'
+     * @return bool The adapter save() exit status
      */
-    public function nextPath()
+    protected function saveParameters()
     {
-        return 'read';
+
+        $save1 = parent::saveParameters();
+        $save2 = $this->getAdapter()->save();
+        return $save1 || $save2;
     }
+    
+
 
 }
-

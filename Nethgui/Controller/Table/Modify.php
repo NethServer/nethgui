@@ -85,9 +85,9 @@ class Modify extends \Nethgui\Controller\Table\RowAbstractAction
         parent::bind($request);
 
         // ensure Path and Parameter value are the same
-        $this->getValidator($this->getKey())->equalTo($keyValue);       
+        $this->getValidator($this->getKey())->equalTo($keyValue);
     }
-    
+
     /**
      * Calculate the key value for a new record from the given $request 
      * object.
@@ -127,16 +127,7 @@ class Modify extends \Nethgui\Controller\Table\RowAbstractAction
 
         $changes = $this->parameters->getModifiedKeys();
 
-        // Transfer all parameter values into the adapter:
-        $save1 = $this->parameters->save();
-
-        // Transfer adapter value into parent's adapter:
-        $save2 = $this->getAdapter()->save();
-
-        // FIXME: Transfer parent adapter values into DB:
-        $save3 = $this->getParent()->getAdapter()->save();
-
-        if ($save1 || $save2 || $save3) {
+        if ($this->saveParameters()) {
             $this->onParametersSaved($changes);
             $this->getParent()->onParametersSaved($this, $changes, $this->parameters->getArrayCopy());
         }
@@ -175,9 +166,20 @@ class Modify extends \Nethgui\Controller\Table\RowAbstractAction
      */
     public function setCreateDefaults($defaultValues)
     {
-        foreach($defaultValues as $parameterName => $value) {
+        foreach ($defaultValues as $parameterName => $value) {
             $this->setDefaultValue($parameterName, $value);
-        }        
+        }
         return $this;
     }
+
+    /**
+     * Return to default "read" action
+     *
+     * @return string 'read'
+     */
+    public function nextPath()
+    {
+        return 'read';
+    }
+
 }
