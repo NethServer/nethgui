@@ -101,15 +101,17 @@ class ParameterSet implements \Nethgui\Adapter\AdapterAggregationInterface, \Arr
      */
     public function save()
     {
-        $saved = FALSE;
+        $saved = 0;
 
         foreach ($this->data as $value) {
             if ($value instanceof \Nethgui\Adapter\ModifiableInterface) {
-                $saved = $value->save() ? TRUE : $saved;
+                if($value->save()) {
+                    $saved += 1;
+                }
             }
         }
 
-        return $saved;
+        return $saved > 0;
     }
 
     public function addAdapter(\Nethgui\Adapter\AdapterInterface $adapter, $key)

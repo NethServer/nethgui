@@ -46,7 +46,7 @@ class RecordAdapter implements \Nethgui\Adapter\AdapterInterface, \ArrayAccess, 
 
     /**
      *
-     * @var \Nethgui\Adapter\TableAdapter
+     * @var \ArrayAccess
      */
     protected $arr;
 
