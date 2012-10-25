@@ -37,6 +37,17 @@ class Button extends \Nethgui\Widget\XhtmlWidget
         return array_merge(array('Nethgui:inputcontrol'), parent::getJsWidgetTypes());
     }
 
+    private function getDefaultValue($name) {
+        if(! isset($this->view[$name])) {
+            return NULL;
+        }
+        $value = $this->view[$name];
+        if($value instanceof \Nethgui\View\ViewInterface) {
+            return $value->getModuleUrl();
+        }
+        return $value;
+    }
+
     protected function renderContent()
     {
         $name = $this->getAttribute('name');
@@ -55,7 +66,7 @@ class Button extends \Nethgui\Widget\XhtmlWidget
 
         if ($flags & (\Nethgui\Renderer\WidgetFactoryInterface::BUTTON_LINK | \Nethgui\Renderer\WidgetFactoryInterface::BUTTON_CANCEL | \Nethgui\Renderer\WidgetFactoryInterface::BUTTON_HELP)) {
 
-            $value = $this->getAttribute('value', isset($this->view[$name]) ? $this->view[$name] : NULL);
+            $value = $this->getAttribute('value', $this->getDefaultValue($name));
 
             if (empty($value)) {
                 $value = '';
