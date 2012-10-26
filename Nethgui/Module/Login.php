@@ -30,7 +30,6 @@ use Nethgui\System\PlatformInterface as Valid;
  */
 class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\Utility\SessionConsumerInterface
 {
-
     /**
      *
      * @var \Nethgui\Utility\SessionInterface
@@ -42,8 +41,8 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
         $attributes = new SystemModuleAttributesProvider();
         $attributes->initializeFromModule($this);
         return $attributes;
-    }    
-    
+    }
+
     public function initialize()
     {
         parent::initialize();
@@ -111,7 +110,10 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
 
     public function nextPath()
     {
-        return $this->getRequest()->getUser()->isAuthenticated() ? '/' : FALSE;
+        if ($this->getRequest()->isMutation()) {
+            return $this->getRequest()->getUser()->isAuthenticated() ? '/' : FALSE;
+        }
+        return FALSE;
     }
 
     public function setSession(\Nethgui\Utility\SessionInterface $session)

@@ -80,7 +80,7 @@ EOJS;
 
     public function nextPath()
     {
-        return '/Login';
+        return $this->getRequest()->isMutation() ? '/Login' : FALSE;
     }
 
     public function setSession(\Nethgui\Utility\SessionInterface $session)
