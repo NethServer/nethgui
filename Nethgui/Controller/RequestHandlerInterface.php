@@ -81,7 +81,7 @@ interface RequestHandlerInterface
      * Get the path to the next module, relative to the parent's path
      *
      * Executed after process(), the user agent is directed to the designated
-     * modue.
+     * module.
      *
      * If boolean FALSE is returned the no action take place
      *

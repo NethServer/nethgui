@@ -153,7 +153,7 @@ class PluggableAction extends \Nethgui\Controller\Table\AbstractAction implement
     }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
-    {
+    {        
         $this->innerAction->prepareView($view);
         $this->plugins->prepareView($view->spawnView($this->plugins, TRUE));
     }

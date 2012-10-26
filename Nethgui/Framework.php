@@ -400,14 +400,14 @@ class Framework
         // ..transfer contents and commands into the MAIN view:
         $mainModule->prepareView($rootView);
 
-        if ($request->isMutation() && $request->isValidated()) {
-            // On a valid POST request honorate the nextPath() semantics:
+        if ($request->isValidated()) {
+            // On a valid request honorate the nextPath() semantics:
             $nextPath = $mainModule->nextPath();
             if (is_string($nextPath)) {
                 $rootView->getCommandList('/Main')
                     ->sendQuery($rootView->getModuleUrl($nextPath));
             }
-        } elseif ( ! $request->isValidated()) {
+        } else {
             // Only validation errors notification has to be shown: clear
             // all enqueued commands.
             //$rootView->clearAllCommands();

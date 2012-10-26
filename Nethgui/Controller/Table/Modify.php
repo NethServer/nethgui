@@ -172,14 +172,4 @@ class Modify extends \Nethgui\Controller\Table\RowAbstractAction
         return $this;
     }
 
-    /**
-     * Return to default "read" action
-     *
-     * @return string 'read'
-     */
-    public function nextPath()
-    {
-        return 'read';
-    }
-
 }

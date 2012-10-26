@@ -79,5 +79,5 @@ class PluginCollector extends \Nethgui\Controller\ListComposite implements \Neth
             }
         }
     }
-
+   
 }

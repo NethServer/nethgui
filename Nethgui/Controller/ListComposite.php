@@ -71,7 +71,7 @@ class ListComposite extends \Nethgui\Module\Composite implements \Nethgui\Contro
 
     public function nextPath()
     {
-        return $this->getIdentifier();
+        return FALSE;
     }
 
 

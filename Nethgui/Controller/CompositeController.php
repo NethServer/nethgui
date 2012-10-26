@@ -36,7 +36,6 @@ namespace Nethgui\Controller;
  */
 class CompositeController extends \Nethgui\Module\Composite implements \Nethgui\Controller\RequestHandlerInterface
 {
-
     /**
      * The action where to forward method calls
      * @var \Nethgui\Module\ModuleInterface
@@ -149,15 +148,21 @@ class CompositeController extends \Nethgui\Module\Composite implements \Nethgui\
         }
     }
 
+    /**
+     * The original Framework behaviour is implemented by
+     * prepareNextViewOptimized()
+     *
+     * @see prepareNextViewOptimized()
+     * @return boolean FALSE
+     */
     public function nextPath()
     {
         return FALSE;
     }
 
     /**
-     * Implements prepareView() to display all actions in a disabled 
-     * state (index) if current action is not defined, or to display the 
-     * current action.
+     * Display all actions in a disabled state if current action is not defined,
+     * otherwise display the current action only.
      * 
      * @param \Nethgui\View\ViewInterface $view
      */
@@ -175,15 +180,14 @@ class CompositeController extends \Nethgui\Module\Composite implements \Nethgui\
             }
         } elseif ($this->currentAction instanceof \Nethgui\View\ViewableInterface) {
             $view->setTemplate(array($this, 'renderCurrentAction'));
+
+            // Spawn and prepare the view for the current action:
             $innerView = $view->spawnView($this->currentAction, TRUE);
             $this->currentAction->prepareView($innerView);
 
-            if ($view->getTargetFormat() === $view::TARGET_JSON
-                && ! $this->getRequest()->isMutation()) {
-                // JSON view need a show() command:
-                $view->getCommandList($this->currentAction->getIdentifier())->show();
-            } elseif ($this->getRequest()->isValidated() && $this->getRequest()->isMutation()) {
-                $this->prepareViewOptimized($view, $innerView);
+            // Optimize next view for valid requests:
+            if ($this->getRequest()->isValidated()) {
+                $this->prepareNextViewOptimized($view);
             }
         }
     }
@@ -193,7 +197,7 @@ class CompositeController extends \Nethgui\Module\Composite implements \Nethgui\
      * 
      * @param \Nethgui\View\ViewInterface $view 
      */
-    private function prepareViewOptimized(\Nethgui\View\ViewInterface $view, \Nethgui\View\ViewInterface $currentView)
+    private function prepareNextViewOptimized(\Nethgui\View\ViewInterface $view)
     {
         $np = $this->currentAction->nextPath();
 
@@ -203,15 +207,21 @@ class CompositeController extends \Nethgui\Module\Composite implements \Nethgui\
 
         $nextModule = $this->getAction($np);
         if ($nextModule instanceof \Nethgui\View\ViewableInterface) {
-            // prefetch the next view data:
+            // spawn and prepare the next view data:
             $nextView = $view->spawnView($nextModule, TRUE);
+            $nextModule->prepareView($nextView);
             if ($view->getTargetFormat() === $view::TARGET_JSON) {
-                $nextModule->prepareView($nextView);
-                $nextView->getCommandList()->prefetched();
+                $nextView->getCommandList()->prefetched(); // placeholder.
+                $nextView->getCommandList()->show(); // Display the prefetched view
+            } else {
+                // show is implemented as HTTP redirection. Avoid self-loops:
+                if ($nextModule !== $this->currentAction) {
+                    $nextView->getCommandList()->show();
+                }
             }
-            $nextView->getCommandList()->show();
         } else {
-            // query for the next view data:
+            // next path does not corresponds to a child action: start
+            // a new query request to get the next view data:
             $view->getCommandList($np)->sendQuery($view->getModuleUrl($np));
         }
     }

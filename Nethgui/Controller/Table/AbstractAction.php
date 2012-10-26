@@ -45,7 +45,6 @@ abstract class AbstractAction extends \Nethgui\Controller\AbstractController imp
     }
 
     /**
-     *
      * @return bool
      */
     public function hasAdapter()
@@ -91,7 +90,9 @@ abstract class AbstractAction extends \Nethgui\Controller\AbstractController imp
         $save2 = $this->getAdapter()->save();
         return $save1 || $save2;
     }
-    
 
-
+    public function nextPath()
+    {
+        return $this->getRequest()->isMutation() ? 'read' : $this->getIdentifier();
+    }
 }
