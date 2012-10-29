@@ -58,26 +58,26 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * empty or non-existent database
+     */
     public function testGetAll0()
     {
         $this->execw
-            ->setCommandMatcher('printjson', array())
+            ->setCommandMatcher('getjson', array())
             ->setExecImplementation(function($cmd, &$output, &$retval) {
                     $retval = 0;
-                    return '';
+                    $output = array('[]');
+                    return '[]';
                 });
-
-        $expected = array();
-
         $ret = $this->object->getAll();
-
-        $this->assertEquals($expected, $ret);
+        $this->assertEquals(array(), $ret);
     }
 
     public function testGetAll1()
     {
         $this->execw
-            ->setCommandMatcher('printjson', array())
+            ->setCommandMatcher('getjson', array())
             ->setExecImplementation(array($this, 'exec_printJson'));
 
         $expected = array();
@@ -93,7 +93,7 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
     public function testGetAll2()
     {
         $this->execw
-            ->setCommandMatcher('printjson', array())
+            ->setCommandMatcher('getjson', array())
             ->setExecImplementation(array($this, 'exec_printJson'));
 
 
@@ -122,7 +122,7 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
     public function testGetAll4()
     {
         $this->execw
-            ->setCommandMatcher('printjson', array())
+            ->setCommandMatcher('getjson', array())
             ->setExecImplementation(function($cmd, &$output, &$retval) {
                     $retval = 1;
                 });
@@ -137,7 +137,7 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
     public function testGetAll5()
     {
         $this->execw
-            ->setCommandMatcher('printjson', array())
+            ->setCommandMatcher('getjson', array())
             ->setExecImplementation(function($cmd, &$output, &$retval) {
                     $retval = 0;
                     $output[] = 'xx';
@@ -181,6 +181,25 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
         $output[] = json_encode($data);
 
         return $output[0];
+    }
+
+    /*
+     * key not found
+     */
+
+    public function testGetKey0()
+    {
+        $this->execw
+            ->setCommandMatcher('getjson', explode(' ', 'K'))
+            ->setExecImplementation(function($command, &$output, &$retval) {
+                    $output = array('1');
+                    $retval = 0;
+                    return '1';
+                });
+
+        $ret = $this->object->getKey('K');
+
+        $this->assertEquals(array(), $ret);
     }
 
     public function testGetKey1()
@@ -227,7 +246,6 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
 
     /**
      * db command returns a key without props
-     * @expectedException \UnexpectedValueException
      */
     public function testGetKey4()
     {
@@ -239,6 +257,7 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
                 });
 
         $ret = $this->object->getKey('K');
+        $this->assertEquals(array(), $ret);
     }
 
     public function exec_getKeyCallback($command, &$output, &$retval)

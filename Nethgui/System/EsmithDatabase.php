@@ -126,7 +126,7 @@ class EsmithDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Auth
 
     public function getAll($type = NULL, $filter = NULL)
     {
-        if ( ! is_null($filter)) {
+        if ($filter !== NULL) {
             throw new \InvalidArgumentException(sprintf('%s: $filter argument must be NULL!', get_class($this)), 1322149165);
         }
 
@@ -134,22 +134,19 @@ class EsmithDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Auth
             throw $this->readPermission->asException(1322149164);
         }
 
-        $output = NULL;
-        $ret = $this->dbExec('printjson', array(), $output);
+        $output = "";
+
+        $ret = $this->dbExec('getjson', array(), $output);
         if ($ret !== 0) {
             throw new \UnexpectedValueException(sprintf("%s: internal database command failed!", __CLASS__), 1350896938);
         }
 
-        if (empty($output)) {
-            return array();
+        $data = json_decode($output, TRUE);
+        if ( ! is_array($data)) {
+            throw new \UnexpectedValueException(sprintf("%s: unexpected json string `%s`", __CLASS__, substr($output, 0, 8)), 1350896939);
         }
 
         $result = array();
-
-        $data = json_decode($output, TRUE);
-        if ( ! is_array($data)) {
-            throw new \UnexpectedValueException(sprintf("%s: internal data decoding failed", __CLASS__), 1350896939);
-        }
 
         foreach ($data as $item) {
             // Apply type check filter:
@@ -178,12 +175,14 @@ class EsmithDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Auth
 
         $data = json_decode($output, TRUE);
 
-        if ( ! is_array($data)) {
-            throw new \UnexpectedValueException(sprintf("%s: internal data decoding failed", __CLASS__), 1350909146);
-        }
-
-        if ( ! isset($data['props'])) {
-            throw new \UnexpectedValueException(sprintf("%s: internal data decoding failed", __CLASS__), 1350909146);
+        if ($data === 1) {
+            // Key has not been found
+            return array();
+        } elseif ( ! is_array($data)) {
+            throw new \UnexpectedValueException(sprintf("%s: unexpected json string `%s`", __CLASS__, substr($output, 0, 8)), 1350909146);
+        } elseif ( ! isset($data['props'])) {
+            // No props set
+            return array();
         }
 
         return $data['props'];

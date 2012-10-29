@@ -79,15 +79,17 @@ class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
             if (is_array($rawData)) {
                 // skip the first column, where getAll() returns the key type.
                 foreach ($rawData as $key => $row) {
-                    if ($this->filterMatch(array_slice($row, 1))) {
-                        $this->data[$key] = new \ArrayObject(array_slice($row, 1));
+                    unset($row['type']);
+                    if ($this->filterMatch($row)) {
+                        $this->data[$key] = new \ArrayObject($row);
                     }
                 }
             }
         } else {
             $rawData = $this->database->getAll($this->type, $this->filter);
             foreach ($rawData as $key => $row) {
-                $this->data[$key] = new \ArrayObject(array_slice($row, 1));
+                unset($row['type']);
+                $this->data[$key] = new \ArrayObject($row);
             }
         }
 
