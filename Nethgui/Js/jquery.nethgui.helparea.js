@@ -112,6 +112,8 @@
                     } else {
                         self._helpDoc.empty().append($('<h1 />').text(errorThrown));
                     }
+                    self.element.show();
+                    self._fixBoxHeight();
                 }
             });            
         }

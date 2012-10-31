@@ -76,7 +76,6 @@ class Show extends Common
 
     public function renderDocument(\Nethgui\Renderer\Xhtml $renderer)
     {
-
         $renderer->rejectFlag($renderer::INSET_FORM);
         return $renderer->panel()->setAttribute('class', 'HelpDocument')->insert($renderer->literal($this->helpContent));
     }

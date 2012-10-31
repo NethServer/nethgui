@@ -39,6 +39,11 @@ class Read extends Common
         }
 
         $filePath = $this->getHelpDocumentPath($this->getTargetModule());
+
+        if ( ! $this->getPhpWrapper()->file_exists($filePath)) {
+            throw new \Nethgui\Exception\HttpException(sprintf("%s: resource not found", __CLASS__), 404, 1351702294);
+        }
+
         $view->getCommandList('/Main')->setDecoratorTemplate(function(\Nethgui\View\ViewInterface $renderer) {
                 return $renderer['Help']['Read']['contents'];
             });
