@@ -17,7 +17,7 @@
         _setOption: function( key, value ) {
             SUPER.prototype._setOption.apply( this, arguments );
             if(key === 'disabled' && ! this.element.hasClass('keepdisabled')) {
-                value === true ? this.element.attr('disabled', 'disabled') : this.element.removeAttr('disabled');
+                this.element.prop('disabled', value);
             }
         },
         _onFocus: function (e) {
