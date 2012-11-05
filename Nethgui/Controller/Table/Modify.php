@@ -88,6 +88,20 @@ class Modify extends \Nethgui\Controller\Table\RowAbstractAction
         $this->getValidator($this->getKey())->equalTo($keyValue);
     }
 
+    public function validate(\Nethgui\Controller\ValidationReportInterface $report)
+    {
+        parent::validate($report);
+        // Trigger the validator for the key field even if it has not been posted:
+        $keyValidator = $this->getValidator($this->getKey());
+        if($this->getIdentifier() === 'delete'
+            && ! $this->getRequest()->hasParameter($this->getKey())
+            && $keyValidator instanceof \Nethgui\System\ValidatorInterface) {
+            if(!$keyValidator->evaluate($this->getAdapter()->getKeyValue())) {
+                $report->addValidationError($this, $this->getKey(), $keyValidator);
+            }
+        }
+    }
+
     /**
      * Calculate the key value for a new record from the given $request 
      * object.
