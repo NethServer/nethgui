@@ -45,10 +45,9 @@
             });            
         },
         _renderDatasourceWidgetList: function (value) {
-            var $this = this.element;
             var self = this;
             var inputType = self._multiple ? 'checkbox' : 'radio';
-            var ul = $this.children('ul').first();
+            var ul = this.element.children('ul').first();
             var prefixId = this._valueTarget;
             var prefixName = this._meta.attr('name');
 
@@ -62,7 +61,7 @@
             } else {
                 // create a new UL tag and append it
                 ul = $('<ul/>');
-                $this.append(ul);
+                this.element.append(ul);
             }
 
 
@@ -120,24 +119,24 @@
          * Transfer the selection from the object internal state to UI
          */
         refresh: function () {
-            var selectedAttr, widgetSelector;
+            var selectedProp, widgetSelector;
             var self = this;
 
             if(this._mode == 'list') {
-                selectedAttr = 'checked';
+                selectedProp = 'checked';
                 widgetSelector = 'li input.choice';
             } else if(this._mode == 'dropdown') {
-                selectedAttr = 'selected';
+                selectedProp = 'selected';
                 widgetSelector = 'option';
             }
 
-            $(this._choices).find(widgetSelector).each(function() {
+            this.element.find(widgetSelector).each(function() {
                 var option = $(this);
 
                 if($.inArray(option.attr('value'), self._selection ) >= 0) {
-                    option.attr(selectedAttr, selectedAttr);
+                    option.prop(selectedProp, true);
                 } else {
-                    option.removeAttr(selectedAttr);
+                    option.prop(selectedProp, false);
                 }
 
             });
