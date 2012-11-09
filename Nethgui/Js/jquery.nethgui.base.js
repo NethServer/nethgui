@@ -220,6 +220,7 @@
         _server: $.Nethgui.Server,
         _deep: true,
         _showDisabledState: true,
+        _propagateDisabledState: true,
         _create: function () {
             var self = this;
             
@@ -297,7 +298,7 @@
             if(key !== 'disabled' || this._showDisabledState === true) {
                 $.Widget.prototype._setOption.apply( this, [key, value] );
             }
-            if(key === 'disabled' && this._deep === true) {
+            if(key === 'disabled' && this._deep === true && this._propagateDisabledState === true) {
                 this.getChildren().trigger('nethgui' + (value ? 'disable' : 'enable'));
             }
         },

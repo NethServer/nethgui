@@ -28,19 +28,23 @@
                 this._unselect();
             }
         },
-        _select: function () {            
-            if(this._switch.prop('disabled') === false) {
-                this._panel.trigger('nethguienable');
-            }
+        _select: function () {
+            this._panel.FieldsetSwitchPanel('setPropagateDisabledState', true);
+            this._panel.trigger('nethguienable');
             if(this.element.hasClass('expandable')) {
                 this._panel.show();
             }
         },
-        _unselect: function () {
+        _unselect: function () {            
             if(this.element.hasClass('expandable')) {
                 this._panel.hide();
             }
             this._panel.trigger('nethguidisable');
+            this._panel.FieldsetSwitchPanel('setPropagateDisabledState', false);
+        },
+        enable: function() {
+            this._panel.FieldsetSwitchPanel('setPropagateDisabledState', this._switch.prop('checked'));
+            SUPER.prototype.enable.call(this);
         }
     });
     $.widget('nethgui.FieldsetSwitchPanel', SUPER, {
@@ -48,6 +52,9 @@
         _showDisabledState: false,
         _create: function() {
             SUPER.prototype._create.apply(this);
+        },
+        setPropagateDisabledState: function(value) {
+            this._propagateDisabledState = value;
         }
     });
 }( jQuery ) );
