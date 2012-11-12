@@ -76,30 +76,24 @@ class Modify extends \Nethgui\Controller\Table\RowAbstractAction
             }
         } else {
             $keyValue = \Nethgui\array_head($request->getPath());
+            $this->ensureKeyExists($keyValue);
+            $this->getPlatform();
         }
 
+        // bind the record adapter to the row with identifier equal to $keyValue
         if (is_null($this->getAdapter()->getKeyValue())) {
             $this->getAdapter()->setKeyValue($keyValue);
         }
 
-        parent::bind($request);
-
-        // ensure Path and Parameter value are the same
-        $this->getValidator($this->getKey())->equalTo($keyValue);
+        parent::bind($request);       
     }
 
-    public function validate(\Nethgui\Controller\ValidationReportInterface $report)
-    {
-        parent::validate($report);
-        // Trigger the validator for the key field even if it has not been posted:
-        $keyValidator = $this->getValidator($this->getKey());
-        if($this->getIdentifier() === 'delete'
-            && ! $this->getRequest()->hasParameter($this->getKey())
-            && $keyValidator instanceof \Nethgui\System\ValidatorInterface) {
-            if(!$keyValidator->evaluate($this->getAdapter()->getKeyValue())) {
-                $report->addValidationError($this, $this->getKey(), $keyValidator);
-            }
+    protected function ensureKeyExists($keyValue) {
+        // FIXME: use orginalAdapter member from parent class (?)
+        if( ! $this->getParent()->getAdapter()->offsetExists($keyValue) ) {
+            throw new \Nethgui\Exception\HttpException('Not found', 404, 1352715526);
         }
+        return TRUE;
     }
 
     /**
@@ -107,9 +101,7 @@ class Modify extends \Nethgui\Controller\Table\RowAbstractAction
      * object.
      * 
      * Override this function whenever the key value requires some kind of 
-     * processing.  
-     * 
-     * This implementation returns the value of the key parameter.
+     * processing to be calculated.
      * 
      * @api
      * @param \Nethgui\Controller\RequestInterface $request
