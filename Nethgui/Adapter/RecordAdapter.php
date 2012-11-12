@@ -122,7 +122,7 @@ class RecordAdapter implements \Nethgui\Adapter\AdapterInterface, \ArrayAccess, 
         if ($this->state === self::DELETED) {
             $this->arr->offsetUnset($this->getKeyValue());
             $this->data = new \ArrayObject();
-            $this->keyValue = NULL;
+            //$this->keyValue = NULL;
         } else {
             $this->mergeDatasource();
             $this->arr->offsetSet($this->getKeyValue(), $this->data->getArrayCopy());
