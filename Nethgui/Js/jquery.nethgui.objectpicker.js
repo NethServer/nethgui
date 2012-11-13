@@ -52,6 +52,8 @@
         _updateView: function(value, source) {
             if($.isArray(value)) {
                 this._selection[source] = value;
+            } else {
+                this._selection[source] = [];
             }
             this.refresh();
         },
