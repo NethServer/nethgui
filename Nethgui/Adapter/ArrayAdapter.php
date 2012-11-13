@@ -76,11 +76,8 @@ class ArrayAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
 
     public function set($value)
     {
-        if (empty($value)) {
-            $value = array();
-        }
 
-        if ( ! is_array($value)) {
+        if ( ! (is_array($value) || empty($value))) {
             throw new \InvalidArgumentException(sprintf('%s: Invalid data type. Expected `array` or `EMPTY`, was `%s`', get_class($this), gettype($value)), 1322148826);
         }
 
@@ -88,15 +85,20 @@ class ArrayAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
             $this->lazyInitialization();
         }
 
-        if (empty($value) && is_null($this->data)) {
-            $this->modified = FALSE;
+        // handle set-NULL
+        if ($value === NULL) {
+            if ($this->data === NULL) {
+                // nothing to do
+            } else {
+                $this->modified = TRUE;
+                $this->data = NULL;
+            }
             return;
         }
 
-        if (empty($value) && ! is_null($this->data)) {
-            $this->modified = TRUE;
-            $this->data = NULL;
-            return;
+        // empty string translated to empty array
+        if ($value === '') {
+            $value = array();
         }
 
         if (is_null($this->data)) {

@@ -76,9 +76,18 @@ class ArrayAdapterTest extends \PHPUnit_Framework_TestCase
     public function testSetNull()
     {
         $this->fixture->set(NULL);
-        $this->assertEmpty($this->fixture->get());
+        $this->assertNull($this->fixture->get());
         $this->fixture[0] = 'MODIFIED';
         $this->assertEquals('MODIFIED', $this->fixture[0]);
+    }
+
+    public function testSetEmptyString()
+    {
+        $this->fixture->set('');
+        $this->assertEquals(array(), iterator_to_array($this->fixture->get()));
+        $this->fixture[0] = 'MODIFIED';
+        $this->assertEquals('MODIFIED', $this->fixture[0]);
+
     }
 
     /**
