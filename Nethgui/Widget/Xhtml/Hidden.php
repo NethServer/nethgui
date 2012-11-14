@@ -28,7 +28,7 @@ class Hidden extends \Nethgui\Widget\XhtmlWidget
 
     protected function getJsWidgetTypes()
     {
-        return array('Nethgui:inputcontrol');
+        return array('Nethgui:inputcontrol', 'Nethgui:tooltip');
     }
 
     protected function renderContent()

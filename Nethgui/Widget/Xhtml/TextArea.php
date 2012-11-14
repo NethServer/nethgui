@@ -37,7 +37,7 @@ class TextArea extends \Nethgui\Widget\XhtmlWidget
 
     protected function getJsWidgetTypes()
     {
-        return array('Nethgui:inputcontrol', 'Nethgui:textarea');
+        return array('Nethgui:inputcontrol', 'Nethgui:tooltip', 'Nethgui:textarea');
     }
 
     protected function renderContent()

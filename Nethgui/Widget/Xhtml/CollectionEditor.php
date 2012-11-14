@@ -34,7 +34,7 @@ class CollectionEditor extends \Nethgui\Widget\XhtmlWidget
 
     protected function getJsWidgetTypes()
     {
-        return array('Nethgui:inputcontrol', 'Nethgui:buttonset', 'Nethgui:collectioneditor');
+        return array('Nethgui:inputcontrol', 'Nethgui:tooltip', 'Nethgui:buttonset', 'Nethgui:collectioneditor');
     }
 
     protected function renderContent()
