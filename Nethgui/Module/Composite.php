@@ -179,11 +179,9 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
         $nsRootPath = realpath(substr($filePath, 0, strlen($filePath) - strlen(get_class($module) . '.php')));
 
         // remove the last namespace segment and replace with $childrenDir
-        $nsPrefixParts = explode('\\', get_class($module));
-        array_pop($nsPrefixParts);                      
-        $nsPrefixParts = array_merge($nsPrefixParts, explode('/', $childrenDir));
-
-        $nsPrefix = implode('\\', $nsPrefixParts);
+        $nsPrefixParts = array_slice(explode('\\', get_class($module)), 0, -1);        
+        $nsParts = array_merge($nsPrefixParts, explode('/', $childrenDir));
+        $nsPrefix = implode('\\', $nsParts);
         
         $this->childLoader = new \Nethgui\Module\ModuleLoader();
         $this->childLoader
