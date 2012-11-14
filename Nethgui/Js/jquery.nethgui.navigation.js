@@ -9,13 +9,18 @@
         _create: function() {
             SUPER.prototype._create.call( this );
             this.element.find('.Button.search')
-                .button({icons: {primary: 'ui-icon-search'}, text: false})
-                .removeClass('ui-corner-all');
+            .button({
+                icons: {
+                    primary: 'ui-icon-search'
+                },
+                text: false
+            })
+            .removeClass('ui-corner-all');
                 
             this._timer = false;
             this._input = this.element.find('.TextInput')
-                .removeClass('ui-corner-all')
-                .bind("keyup paste", $.proxy(this._submitCheck, this));
+            .removeClass('ui-corner-all')
+            .bind("keyup paste", $.proxy(this._submitCheck, this));
            
             this._form.bind('submit', $.proxy(this._clearTimer, this));
         },
@@ -32,12 +37,20 @@
             
             if(event.keyCode === $.ui.keyCode.ENTER) {
                 return true;
+            } else if(event.keyCode === $.ui.keyCode.ESCAPE) {
+                self._input.val('');
+                self._updateView('');
+                return true;
             }
                         
             if(self._input.val().length > 1) {
                 this._timer = window.setTimeout(function () {                
                     self._form.submit();
                 }, 600);
+            } else if(self._input.val().length === 0) {
+                this._timer = window.setTimeout(function () {
+                    self._updateView('');
+                }, 300);
             }
                                                
         },
