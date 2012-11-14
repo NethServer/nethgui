@@ -10,6 +10,7 @@
         _create: function() {
             SUPER.prototype._create.apply(this);
             this.element.bind('focus.' + this.namespace, $.proxy(this._onFocus, this));
+            this.element.on('nethguitooltip.' + this.namespace, $.proxy(this._createTooltip, this));
         },
         _updateView: function(value) {
             this.element.val(value ? value : '');
@@ -27,6 +28,19 @@
                 e.preventDefault();
                 e.takeMeVisible = true;
             }            
+        },
+        _createTooltip: function(e, options) {
+            if( ! this.element.Tooltip) {
+                $.debug('Tooltip type was not found. Maybe jquery.nethgui.tooltip.js is missing?');
+            }
+
+            // Move tooltip on the right edge for right-labeled input controls:
+            if( ! options.target && this.element.get(0).tagName.toLowerCase() === 'input'
+                && this.element.parent().hasClass('label-right')) {
+                options.target = this.element.siblings('label[for=' + this.element.attr('id') + ']').first();
+            }
+
+            this.element.Tooltip(options);
         }
     });
     $.widget('nethgui.Hidden', $.nethgui.InputControl, {});

@@ -13,13 +13,12 @@
             color: 'blue',
             style: 0,
             text: '',
-            destroyOn: 'ajaxStart'
+            destroyOn: 'ajaxStart',
+            target: false
         },
         _create: function() {
             SUPER.prototype._create.apply(this);
-
             var self = this;
-            var qtipTarget;
 
             // error-state forces color to "red"
             if(this.options.style & 2) {
@@ -27,19 +26,12 @@
                 this.options.color = 'red';
             }
 
-            if(this.element.get(0).tagName.toLowerCase() === 'input'
-                && this.element.parent().hasClass('label-right')) {
-                qtipTarget = this.element.siblings('label[for=' + this.element.attr('id') + ']').first();
-            } else {
-                qtipTarget = false;
-            }
-
             this.element.qtip({
                 position: {
                     my: 'left center',
                     at: 'right center',
                     container: this.element.parents('.ui-tabs-panel, .Action, #CurrentModule, .Inset').first(),
-                    target: qtipTarget
+                    target: this.option('target')
                 },
                 style: {
                     classes: 'ui-tooltip-${color} ui-tooltip-shadow'.replacePlaceholders({
@@ -56,7 +48,7 @@
                 }
             });
 
-            if(this.options.show) {
+            if(this.options.show === true) {
                 this.show();
             }
 

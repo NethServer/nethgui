@@ -77,9 +77,9 @@
             } ));
            
             $(controlList).Tooltip( {
-                text: description.text(),
-                sticky: true,
-                show: false
+                    text: description.text(),
+                    sticky: false,
+                    show: false
             } );
         },
         /**

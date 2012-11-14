@@ -96,6 +96,10 @@
                 this._theSlider.slider('option', 'value', value);
             }
             this._repaintLabel(value);
+        },
+        _createTooltip: function(e, options) {
+            options.target = this.element.next('.ui-slider');
+            SUPER.prototype._createTooltip.call(this, e, options);
         }
     });
 }( jQuery ));

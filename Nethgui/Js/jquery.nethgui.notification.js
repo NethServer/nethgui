@@ -143,12 +143,12 @@
             SUPER.prototype._create.apply(this);           
         },
         _addTooltip: function(err) {
-            $('#' + err.widgetId).Tooltip({
+            $('#' + err.widgetId).triggerHandler('nethguitooltip', [{
                 text: err.message,
                 style: 2,
                 show: true,
                 sticky: true
-            });
+            }]);
         }
     });
 }) ( jQuery );
