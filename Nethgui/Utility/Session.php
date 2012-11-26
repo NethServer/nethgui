@@ -50,7 +50,7 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
         $this->php->session_name(self::SESSION_NAME);
     }
 
-    private function isStarted()
+    public function isStarted()
     {
         return $this->getSessionIdentifier() !== '';
     }

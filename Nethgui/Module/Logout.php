@@ -45,6 +45,7 @@ class Logout extends \Nethgui\Controller\AbstractController implements \Nethgui\
     {
         parent::initialize();
         $this->declareParameter('action', '/^logout$/');
+        $this->declareParameter('nextPath', '/.*/');
     }
 
     public function process()
@@ -57,7 +58,7 @@ class Logout extends \Nethgui\Controller\AbstractController implements \Nethgui\
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
-
+        $view['nextPath'] = $_SERVER['PATH_INFO'];
 
         $view->setTemplate(function(\Nethgui\Renderer\Xhtml $renderer) {
                 $buttonId = $renderer->getUniqueId('Logout');
@@ -73,14 +74,15 @@ EOJS;
                 $renderer->includeJavascript($js);
                 $renderer->requireFlag($renderer::INSET_FORM | $renderer::INSET_WRAP);
                 return $renderer->buttonList()
-                        ->insert($renderer->hidden('action')->setAttribute('value', 'logout'))
+                            ->insert($renderer->hidden('action')->setAttribute('value', 'logout'))
+                            ->insert($renderer->hidden('nextPath'))
                         ->insert($renderer->button('Logout', $renderer::BUTTON_SUBMIT)->setAttribute('class', 'Button')->setAttribute('receiver', 'Logout'));
             });
     }
 
     public function nextPath()
     {
-        return $this->getRequest()->isMutation() ? '/Login' : FALSE;
+        return $this->parameters['nextPath'] ? $this->parameters['nextPath'] : FALSE;
     }
 
     public function setSession(\Nethgui\Utility\SessionInterface $session)

@@ -1,14 +1,16 @@
 <?php
 
-echo $view->header('hostname')->setAttribute('template', $T('Welcome on ${0}'));
-echo $view->textInput('username');
-echo $view->textInput('password', $view::TEXTINPUT_PASSWORD);
-echo $view->selector('language', $view::SELECTOR_DROPDOWN);
-echo $view->buttonList()
-    ->insert($view->button('Login', $view::BUTTON_SUBMIT));
+/* @var $view Nethgui\Renderer\Xhtml */
+$this->rejectFlag($view::INSET_FORM);
 
-echo $view->literal($view['Resource']['js']);
-
+echo $view->form()->setAttribute('action', $view['path'])
+    ->insert($view->header('hostname')->setAttribute('template', $T('Welcome on ${0}')))
+    ->insert($view->textInput('username'))
+    ->insert($view->textInput('password', $view::TEXTINPUT_PASSWORD))
+    ->insert($view->selector('language', $view::SELECTOR_DROPDOWN))
+    ->insert($view->buttonList()
+        ->insert($view->button('Login', $view::BUTTON_SUBMIT)))
+;
 
 $images = array('Waves', 'Flow', 'Spring', 'Silk', 'Gulp');
 $backgroundUrl = $view->getPathUrl() . "images/{$images[3]}.png";

@@ -84,6 +84,7 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
+        $view['path'] = $view->getModuleUrl(implode('/', $this->getRequest()->getPath()));
         $user = $this->getRequest()->getUser();
 
         $view->setTemplate('Nethgui\Template\Login');
@@ -93,25 +94,40 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
 //            ->setDecoratorParameter('disableFooter', TRUE)
         ;
 
-        if ( ! $user->isAuthenticated()
+        $isInvalidLoginRequest = ! $user->isAuthenticated()
             && $this->getRequest()->isMutation()
-            && $this->getRequest()->isValidated()) {
+            && $this->getRequest()->isValidated();
+
+        $isAuthenticatedUserLoggingInAgain = $user->isAuthenticated()
+            && ! $this->getRequest()->isMutation();
+
+        $isUnauthUserRequest = ! $user->isAuthenticated()
+            && ! $this->getRequest()->isMutation()
+            && count($this->getRequest()->getPath()) > 0;
+        
+        if ($isInvalidLoginRequest) {
             $view->getCommandList('/Notification')
                 ->httpHeader('HTTP/1.1 400 Invalid credentials supplied')
                 ->showMessage($view->translate('Invalid credentials'), \Nethgui\Module\Notification\AbstractNotification::NOTIFY_ERROR);
-        } elseif ($user->isAuthenticated()
-            && ! $this->getRequest()->isMutation()) {
-            // FIXME davidep 20120830: try to substitute httpHeader() calls with sendQuery()..
+        } elseif ($isAuthenticatedUserLoggingInAgain) {
             $view->getCommandList()
                 ->httpHeader('HTTP/1.1 302 Found')
                 ->httpHeader('Location: ' . $view->getSiteUrl() . $view->getModuleUrl('/'));
+        } elseif ($isUnauthUserRequest) {
+            $view->getCommandList()
+                ->httpHeader('HTTP/1.1 403 Forbidden');
         }
     }
 
     public function nextPath()
     {
         if ($this->getRequest()->isMutation()) {
-            return $this->getRequest()->getUser()->isAuthenticated() ? '/' : FALSE;
+            $path = $this->getRequest()->getPath();
+            if(count($path) === 0) {
+                return '/';
+            } else {
+                return '/' . implode('/', $path);
+            }            
         }
         return FALSE;
     }

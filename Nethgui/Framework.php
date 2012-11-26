@@ -69,6 +69,12 @@ class Framework
      */
     private $moduleSet;
 
+    /**
+     *
+     * @var \Nethgui\Utility\Session
+     */
+    private $session;
+
     public function __construct()
     {
         $this->namespaceMap = new \ArrayObject();
@@ -280,13 +286,35 @@ class Framework
      * @return integer
      */
     public function dispatch(\Nethgui\Controller\RequestInterface $request, &$output = NULL)
-    {        
+    {
         try {
-            return $this->__dispatch($request, $output);
+            $this->initializeModuleLoader();
+            $this->enforceAuthorization();
+            if ( ! $this->session->isStarted()) {
+                $this->session->start();
+            }
+            return $this->processRequest($request, $output);
         } catch (\Nethgui\Exception\AuthorizationException $ex) {
             $this->log->error(sprintf('%s: [%d] %s', __CLASS__, $ex->getCode(), $ex->getMessage()));
-            throw new \Nethgui\Exception\HttpException('Forbidden', 403, 1327681977, $ex);
+            if ($request->getExtension() === 'xhtml' && ! $request->isMutation() && ! $request->getUser()->isAuthenticated()) {
+                return $this->processRequest($this->createLoginRequest($request), $output);
+            } else {
+                throw new \Nethgui\Exception\HttpException('Forbidden', 403, 1327681977, $ex);
+            }
         }
+    }
+
+    private function createLoginRequest(Controller\RequestInterface $originalRequest)
+    {
+        $path = array_merge(array('Login'), $originalRequest->getPath());
+
+        $attributes = array(
+            'extension' => 'xhtml',
+            'submitted' => FALSE,
+            'validated' => FALSE,
+        );
+
+        return new Controller\Request(array(), array(), $path, new \ArrayObject($attributes));
     }
 
     /**
@@ -308,20 +336,16 @@ class Framework
         $this->moduleSet->setLog($this->log);
         $this->moduleSet->addInstantiateCallback(array($this, 'initializeModule'));
         foreach ($this->namespaceMap as $nsName => $nsRoot) {
-            if($nsName === 'Nethgui') {
-                $nsRoot = FALSE;                
+            if ($nsName === 'Nethgui') {
+                $nsRoot = FALSE;
             }
             $this->moduleSet->setNamespace($nsName . '\\Module', $nsRoot);
         }
         return $this;
     }
 
-    private function __dispatch(\Nethgui\Controller\RequestInterface $request, &$output = NULL)
+    private function processRequest(\Nethgui\Controller\RequestInterface $request, &$output = NULL)
     {
-        $this->initializeModuleLoader();
-        $this->enforceAuthorization();
-        $this->session->start();
-
         if ($request instanceof \Nethgui\Utility\SessionConsumerInterface) {
             $request->setSession($this->session);
         }
@@ -329,12 +353,7 @@ class Framework
         $user = $request->getUser();
 
         if (array_head($request->getPath()) === FALSE) {
-            if ($user->isAuthenticated()) {
-                $redirectModule = $this->defaultModuleIdentifier;
-            } else {
-                $redirectModule = 'Login';
-            }
-            $redirectUrl = implode('', $this->urlParts) . $redirectModule;
+            $redirectUrl = implode('', $this->urlParts) . $this->defaultModuleIdentifier;
             $this->sendHttpResponse('', array('HTTP/1.1 302 Found', sprintf('Location: %s', $redirectUrl)), $output);
             return;
         }

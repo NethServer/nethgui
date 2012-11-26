@@ -29,7 +29,6 @@ namespace Nethgui\Controller;
  */
 class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\SessionConsumerInterface
 {
-
     /**
      * @var array
      */
@@ -57,6 +56,14 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
      */
     private $attributes;
 
+    /**
+     *
+     * @param array $postData
+     * @param array $getData
+     * @param array $path
+     * @param \ArrayAccess $attributes
+     * @throws \InvalidArgumentException
+     */
     public function __construct($postData, $getData, $path, \ArrayAccess $attributes)
     {
         if ( ! is_array($postData) && ! is_array($getData)) {
@@ -118,7 +125,7 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
         if (isset($this->session)) {
             $instance->setSession($this->session);
         }
-        
+
         return $instance;
     }
 
@@ -131,7 +138,7 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
         if (isset($this->session) && $user instanceof \Nethgui\Authorization\UserInterface) {
             return $user;
         }
-        
+
         return \Nethgui\Authorization\User::getAnonymousUser();
     }
 
@@ -188,4 +195,3 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
     }
 
 }
-
