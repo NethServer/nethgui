@@ -105,3 +105,21 @@ $L['Empty table'] = 'Tabella vuota';
 $L['An object with the same key already exists'] = 'Un oggetto con lo stesso identificatore esiste già';
 
 $L['Configure_label'] = 'Configura';
+
+$L['Login_Title'] = 'Login';
+$L['Login_Description'] = 'Login';
+$L['Menu_Title'] = 'Menu';
+$L['Menu_Description'] = 'Menu';
+$L['Notification_Title'] = 'Notification';
+$L['Notification_Description'] = 'Notification';
+$L['Resource_Title'] = 'Resource';
+$L['Resource_Description'] = 'Resource';
+$L['Logout_Title'] = 'Logout';
+$L['Logout_Description'] = 'Logout';
+
+$L['Logout_Tags'] = '';
+$L['Menu_Tags'] = '';
+$L['Resource_Tags'] = '';
+$L['Notification_Tags'] = '';
+$L['Login_Tags'] = '';
+
