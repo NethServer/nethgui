@@ -77,7 +77,6 @@ class Modify extends \Nethgui\Controller\Table\RowAbstractAction
         } else {
             $keyValue = \Nethgui\array_head($request->getPath());
             $this->ensureKeyExists($keyValue);
-            $this->getPlatform();
         }
 
         // bind the record adapter to the row with identifier equal to $keyValue

@@ -84,7 +84,7 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
-        $view['path'] = $view->getModuleUrl(implode('/', $this->getRequest()->getPath()));
+        $view['path'] = '/Login/' . implode('/', $this->getRequest()->getPath());
         $user = $this->getRequest()->getUser();
 
         $view->setTemplate('Nethgui\Template\Login');
@@ -121,7 +121,7 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
 
     public function nextPath()
     {
-        if ($this->getRequest()->isMutation()) {
+        if ($this->getRequest()->isMutation() && $this->getRequest()->getUser()->isAuthenticated()) {
             $path = $this->getRequest()->getPath();
             if(count($path) === 0) {
                 return '/';

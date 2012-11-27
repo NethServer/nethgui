@@ -67,7 +67,7 @@ class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\Co
      * @var array
      */
     private $systemModules;
-    
+
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
     {
         $attributes = new SystemModuleAttributesProvider();
@@ -86,11 +86,11 @@ class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\Co
 
     public function bind(\Nethgui\Controller\RequestInterface $request)
     {
-        $idList = array_merge($request->getParameterNames(), $this->systemModules);
         $this->currentModuleIdentifier = \Nethgui\array_head($request->getPath());
-        $idList[] = $this->currentModuleIdentifier;
 
-        $idList = array_unique($idList);
+        $idList = array_unique(array_merge(
+                $request->getParameterNames(), $this->systemModules, array($this->currentModuleIdentifier)
+            ));
 
         try {
             foreach ($idList as $moduleIdentifier) {

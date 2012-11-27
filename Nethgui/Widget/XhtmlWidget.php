@@ -389,6 +389,10 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
     {
         $pluginList = array();
 
+        if(empty($this->view[$name])) {
+            return $this;
+        }
+
         foreach ($this->view[$name] as $pluginView) {
             if ($pluginView instanceof \Nethgui\View\ViewInterface) {
                 $pluginModule = $pluginView->getModule();
