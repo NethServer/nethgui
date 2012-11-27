@@ -37,7 +37,6 @@ $L['create_label'] = 'Create new';
 
 $L['Ignore_label'] = 'Ignore';
 $L['All changes have been saved'] = 'All changes have been saved';
-$L['Reset_label'] = 'Reset';
 $L['Description_label'] = 'Description';
 
 $L['regexp "${0}"'] = 'regular expression \'${0}\'';
@@ -70,6 +69,8 @@ $L['valid_email,missing-localpart'] = 'invalid email address';
 $L['valid_email,missing-domainpart'] = 'invalid email address';
 $L['valid_email,malformed-domainpart'] = 'invalid email address';
 
+$L['Login_Title'] = 'Login';
+$L['Login_Description'] = 'Login';
 $L['Menu_Title'] = 'Menu';
 $L['Menu_Description'] = 'Menu';
 $L['Notification_Title'] = 'Notification';
@@ -83,5 +84,5 @@ $L['Logout_Tags'] = '';
 $L['Menu_Tags'] = '';
 $L['Resource_Tags'] = '';
 $L['Notification_Tags'] = '';
-
+$L['Login_Tags'] = '';
 

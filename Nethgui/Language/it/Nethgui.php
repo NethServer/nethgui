@@ -106,6 +106,8 @@ $L['An object with the same key already exists'] = 'Un oggetto con lo stesso ide
 
 $L['Configure_label'] = 'Configura';
 
+$L['Login_Title'] = 'Login';
+$L['Login_Description'] = 'Login';
 $L['Menu_Title'] = 'Menu';
 $L['Menu_Description'] = 'Menu';
 $L['Notification_Title'] = 'Notification';
@@ -119,4 +121,5 @@ $L['Logout_Tags'] = '';
 $L['Menu_Tags'] = '';
 $L['Resource_Tags'] = '';
 $L['Notification_Tags'] = '';
+$L['Login_Tags'] = '';
 
