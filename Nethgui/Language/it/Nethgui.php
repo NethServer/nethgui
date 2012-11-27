@@ -123,3 +123,5 @@ $L['Resource_Tags'] = '';
 $L['Notification_Tags'] = '';
 $L['Login_Tags'] = '';
 
+$L['search_label']='Cerca';
+
