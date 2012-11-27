@@ -15,6 +15,9 @@
             this.element.children('.Action:eq(0)').trigger('nethguishow');
         },
         _onShow: function (e, cancel) {
+            if( ! e.target.id ) {
+                return;
+            }
             if(cancel !== true) {
                 this.actionHistory.push(e.target.id);
             }
