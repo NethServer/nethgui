@@ -69,6 +69,12 @@ abstract class AbstractModule implements \Nethgui\Module\ModuleInterface, \Nethg
      */
     private $viewTemplate;
 
+    /**
+     *
+     * @var \Nethgui\System\PlatformInterface
+     */
+    private $platform;
+
     public function __construct($identifier = NULL)
     {
         $this->php = new \Nethgui\Utility\PhpWrapper(get_class($this));
