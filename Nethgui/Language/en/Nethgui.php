@@ -93,3 +93,11 @@ $L['Done'] = 'Done';
 $L['Empty table'] = 'Empty table';
 $L['Delete `${0}`'] = 'Delete `${0}`';
 $L['Confirm deletion of `${0}`?'] = 'Confirm deletion of `${0}`';
+
+
+$L['Add'] = 'Add';
+$L['Search...'] = 'Search...';
+$L['Yes_label'] = 'Yes';
+$L['No_label'] = 'No';
+
+
