@@ -86,3 +86,10 @@ $L['Resource_Tags'] = '';
 $L['Notification_Tags'] = '';
 $L['Login_Tags'] = '';
 
+$L['search_label']='Search';
+$L['Delete'] = 'Delete';
+$L['Update'] = 'Update';
+$L['Done'] = 'Done';
+$L['Empty table'] = 'Empty table';
+$L['Delete `${0}`'] = 'Delete `${0}`';
+$L['Confirm deletion of `${0}`?'] = 'Confirm deletion of `${0}`';

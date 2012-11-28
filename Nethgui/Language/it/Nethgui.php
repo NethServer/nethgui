@@ -123,3 +123,8 @@ $L['Resource_Tags'] = '';
 $L['Notification_Tags'] = '';
 $L['Login_Tags'] = '';
 
+$L['search_label']='Cerca';
+$L['Delete'] = 'Elimina';
+$L['Update'] = 'Aggiorna';
+$L['Done'] = 'Fatto';
+
