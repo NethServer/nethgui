@@ -206,8 +206,7 @@ class TableController extends \Nethgui\Controller\CompositeController implements
     }
 
     public function renderIndex(\Nethgui\Renderer\Xhtml $renderer)
-    {
-        $renderer->includeFile('Nethgui/Js/jquery.nethgui.controller.js');
+    {        
         $this->sortChildren(function(\Nethgui\Module\ModuleInterface $a, \Nethgui\Module\ModuleInterface $b) {
                 if ($a->getIdentifier() === 'read') {
                     return -1;
