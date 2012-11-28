@@ -68,10 +68,16 @@ class RecordAdapter implements \Nethgui\Adapter\AdapterInterface, \ArrayAccess, 
      */
     private $data = NULL;
 
-    public function __construct(\ArrayAccess $arr)
+    public function __construct(\ArrayAccess $arr = NULL)
     {
         $this->arr = $arr;
         $this->data = new \ArrayObject();
+    }
+
+    public function setTableData(\ArrayAccess $arr)
+    {
+        $this->arr = $arr;
+        return $this;
     }
 
     public function setKeyValue($value)
@@ -84,7 +90,7 @@ class RecordAdapter implements \Nethgui\Adapter\AdapterInterface, \ArrayAccess, 
         $this->keyValue = $value;
 
         // put the missing tableAdapter values into the current data:
-        $this->mergeDatasource();
+        $this->mergeTableData();
 
         return $this;
     }
@@ -119,12 +125,16 @@ class RecordAdapter implements \Nethgui\Adapter\AdapterInterface, \ArrayAccess, 
             throw new \LogicException(sprintf('%s: you must setKeyValue() before save().', __CLASS__), 1336388582);
         }
 
+        if (is_null($this->arr)) {
+            throw new \LogicException(sprintf('%s: you must setTableData() before save().', __CLASS__), 1354113867);
+        }
+
         if ($this->state === self::DELETED) {
             $this->arr->offsetUnset($this->getKeyValue());
             $this->data = new \ArrayObject();
             //$this->keyValue = NULL;
         } else {
-            $this->mergeDatasource();
+            $this->mergeTableData();
             $this->arr->offsetSet($this->getKeyValue(), $this->data->getArrayCopy());
         }
 
@@ -177,11 +187,11 @@ class RecordAdapter implements \Nethgui\Adapter\AdapterInterface, \ArrayAccess, 
         return $this->data->getIterator();
     }
 
-    private function mergeDatasource()
+    private function mergeTableData()
     {
         $keyValue = $this->getKeyValue();
 
-        if ($keyValue !== NULL && $this->arr->offsetExists($keyValue)) {
+        if ($keyValue !== NULL && $this->arr !== NULL && $this->arr->offsetExists($keyValue)) {
             $current = $this->arr->offsetGet($keyValue);
         } else {
             $current = NULL;

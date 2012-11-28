@@ -51,6 +51,12 @@ class RecordAdapterTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($this->object, $ret);
     }
 
+    public function testSetTableData()
+    {
+        $ret = $this->object->setTableData(new \ArrayObject());
+        $this->assertSame($this->object, $ret);
+    }
+
     /**
      * @expectedException \LogicException
      */
@@ -59,22 +65,22 @@ class RecordAdapterTest extends \PHPUnit_Framework_TestCase
         $this->object->setKeyValue('k1');
         $this->object->setKeyValue('k2');
     }
-    
+
     /**
      * Setting the key to the same value is allowed: 
      */
     public function testSetKeyValue3()
     {
         $this->object->setKeyValue('k11');
-        $this->object->setKeyValue('k11');        
-    }    
-    
+        $this->object->setKeyValue('k11');
+    }
+
     public function testSetKeyValueNonExisting()
     {
         $this->object->offsetSet('Q', '1');
         $this->object->setKeyValue('NA');
         $this->assertEquals(array('Q' => '1'), $this->object->get());
-    }    
+    }
 
     public function testGetKeyValue()
     {
@@ -151,6 +157,17 @@ class RecordAdapterTest extends \PHPUnit_Framework_TestCase
         $this->object->save();
     }
 
+    /**
+     * @expectedException \LogicException
+     */
+    public function testSaveUninitialized()
+    {
+        $fixture = new \Nethgui\Adapter\RecordAdapter();        
+        $fixture->setKeyValue('k1');
+        $fixture['field1'] = 'change something';
+        $fixture->save();
+    }
+
     public function testSaveModified()
     {
         $this->object->setKeyValue('k1');
@@ -200,7 +217,6 @@ class RecordAdapterTest extends \PHPUnit_Framework_TestCase
     {
         $this->object->set(NULL);
     }
-
 
     public function testOffsetExists1()
     {
