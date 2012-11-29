@@ -37,6 +37,7 @@ $extCss = <<<"CSS"
 }
 
 #footer {
+    border: none;
     position: fixed;
     bottom: 5px;
     right: 5px;

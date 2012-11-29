@@ -96,41 +96,8 @@ class User implements \Nethgui\Authorization\UserInterface, \Serializable, \Neth
         }
         $this->setLog($log);
 
-
         // The default PAM based authentication procedure:
-        $this->authenticationProcedure = function ($username, $password, &$credentials) use ($php, $log) {                               
-                $processPipe = $php->popen('/usr/bin/sudo /sbin/e-smith/pam-authenticate-pw >/dev/null 2>&1', 'w');
-                if($processPipe === FALSE) {
-                    $log->error(sprintf('%s: %s', __CLASS__, implode(' ', $php->error_get_last())));
-                    return FALSE;
-                }
-                
-                $php->fwrite($processPipe, $username . "\n" . $password); 
-                
-                $authenticated = $php->pclose($processPipe) === 0;
-                
-                if ($authenticated) {
-
-                    $exitCode = 0;
-                    $output = array();
-
-                    $command = sprintf('/usr/bin/id -G -n %s 2>&1', escapeshellarg($username));
-
-                    $php->exec($command, $output, $exitCode);
-
-                    if ($exitCode === 0) {
-                        $groups = array_filter(array_map('trim', explode(' ',implode(' ', $output))));
-                    } else {
-                        $log->warning(sprintf('%s: failed to execute %s command. Code %d. Output: %s', __CLASS__, $command, $exitCode, implode("\n", $output)));
-                        $groups = array();
-                    }
-
-                    $credentials['groups'] = $groups;
-                    $credentials['username'] = $username;
-                }
-
-                return $authenticated;
-            };
+        $this->authenticationProcedure = array(new \Nethgui\Utility\PamAuthenticator($php, $log), 'authenticate');
     }
 
     public function setAuthenticationProcedure($procedure)

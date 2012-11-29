@@ -99,9 +99,9 @@ class PhpWrapper implements \Nethgui\Log\LogConsumerInterface
     {
         $warnings = array();
         $this->wrapBegin($warnings);
-        $exitCode = exec($command, $output, $retval);
+        $lastLine = exec($command, $output, $retval);
         $this->wrapEnd($warnings);
-        return $exitCode;
+        return $lastLine;
     }
 
     public function phpInclude($filePath, $vars)

@@ -55,6 +55,13 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $this->object = new \Nethgui\Authorization\User($this->php, $this->log);
     }
 
+    public function testNoArgumentsConstructor()
+    {
+        $object = new \Nethgui\Authorization\User();
+        $this->assertTrue($object->getLog() instanceof \Nethgui\Log\LogInterface);
+    }
+
+
     public function testGetAnonymousUser()
     {
         $anon = \Nethgui\Authorization\User::getAnonymousUser();
@@ -166,92 +173,6 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($this->object->getPreference('nopref'));
         $this->object->setPreference('lang', 'fr');
         $this->assertEquals('fr', $this->object->getPreference('lang'));
-    }
-
-    private function addPasswordChatExpectations(\PHPUnit_Framework_MockObject_MockObject $mock)
-    {
-
-        $mock->expects($this->once())
-                ->method('popen')
-                ->with('/usr/bin/sudo /sbin/e-smith/pam-authenticate-pw >/dev/null 2>&1', 'w')
-                ->will($this->returnValue('PipeDescriptor'));
-
-        $mock->expects($this->once())
-                ->method('fwrite')
-                ->with('PipeDescriptor', "user\npass")
-                ->will($this->returnValue(9));
-
-        $mock->expects($this->once())
-                ->method('pclose')
-                ->with('PipeDescriptor')
-                ->will($this->returnValue(0));
-    }
-
-    public function testPam0()
-    {
-        $phpwrapper = $this->getMock('Nethgui\Utility\PhpWrapper', array('popen', 'error_get_last'));
-
-        $phpwrapper->expects($this->once())
-                ->method('popen')
-                ->with('/usr/bin/sudo /sbin/e-smith/pam-authenticate-pw >/dev/null 2>&1', 'w')
-                ->will($this->returnValue(FALSE));
-
-        $phpwrapper->expects($this->once())
-                ->method('error_get_last')
-                ->withAnyParameters()
-                ->will($this->returnValue(array('type' => 'test', 'message' => 'expected failure', 'file' => __FILE__, 'line' => __LINE__)));
-
-        $object = new \Nethgui\Authorization\User($phpwrapper, $this->log);
-        $this->assertFalse($object->authenticate('user', 'pass'));
-    }
-
-    public function testPam1()
-    {
-        $phpwrapper = $this->getMock('Nethgui\Utility\PhpWrapper', array('popen', 'fwrite', 'pclose', 'exec'));
-
-        $this->addPasswordChatExpectations($phpwrapper);
-
-        $phpwrapper->expects($this->once())
-                ->method('exec')
-                ->with($this->stringStartsWith('/usr/bin/id'), $this->anything(), $this->anything())
-                ->will($this->returnCallback(function($cmd, &$output, &$exitCode)
-                                {
-                                    $exitCode = 0;
-                                    $output = array('g1 g2 g3');
-                                }));
-
-        $object = new \Nethgui\Authorization\User($phpwrapper, $this->log);
-
-        $this->assertTrue($object->authenticate('user', 'pass'));
-        $this->assertEquals(array('g1', 'g2', 'g3'), $object->getCredential('groups'));
-    }
-
-    public function testPam2()
-    {
-        $phpwrapper = $this->getMock('Nethgui\Utility\PhpWrapper', array('popen', 'fwrite', 'pclose', 'exec'));
-
-        $this->addPasswordChatExpectations($phpwrapper);
-
-        $phpwrapper->expects($this->once())
-                ->method('exec')
-                ->withAnyParameters()
-                ->will($this->returnCallback(function($cmd, &$output, &$exitCode)
-                                {
-                                    $exitCode = 1;
-                                    $output = array('error');
-                                }));
-
-        $log = $this->getMock('Nethgui\Log\Nullog', array('warning'));
-        $log->expects($this->once())
-                ->method('warning')
-                ->withAnyParameters()
-                ->will($this->returnValue($log))
-        ;
-
-        $object = new \Nethgui\Authorization\User($phpwrapper, $log);
-
-        $this->assertTrue($object->authenticate('user', 'pass'));
-        $this->assertEquals(array(), $object->getCredential('groups'));
     }
 
     public function testSetLog()
