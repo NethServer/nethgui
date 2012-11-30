@@ -201,4 +201,10 @@ class Read extends AbstractAction
         return $buttonList;
     }
 
+    public function nextPath()
+    {
+        // Deferred response must not change the current view, so keep the current view path.
+        return $this->getRequest()->hasArgument('deferred') ? FALSE : parent::nextPath();
+    }
+
 }
