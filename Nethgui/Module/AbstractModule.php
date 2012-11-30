@@ -146,12 +146,21 @@ abstract class AbstractModule implements \Nethgui\Module\ModuleInterface, \Nethg
         }
     }
 
+    /**
+     *
+     * @param string|callable $template
+     * @return \Nethgui\Module\AbstractModule
+     */
     protected function setViewTemplate($template)
     {
         $this->viewTemplate = $template;
         return $this;
     }
 
+    /**
+     *
+     * @return string|callable
+     */
     protected function getViewTemplate()
     {
         return $this->viewTemplate;
