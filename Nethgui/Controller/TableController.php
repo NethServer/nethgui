@@ -82,15 +82,39 @@ class TableController extends \Nethgui\Controller\CompositeController implements
     /**
      *
      * @param array $columns
-     * @return TableController
+     * @return \Nethgui\Controller\TableController
      */
-    protected function setColumns($columns)
+    protected function setColumns(array $columns)
     {
-        if (is_null($this->readAction)) {
-            $this->readAction = new Table\Read('read');
-            $this->addChild($this->readAction);
+        $this->getReadAction()->setColumns($columns);
+        return $this;
+    }
+
+    /**
+     * @return \Nethgui\Controller\Table\AbstractAction
+     */
+    protected function getReadAction()
+    {
+        if($this->readAction === NULL) {
+            $this->setReadAction(new Table\Read('read'));
         }
-        $this->readAction->setColumns($columns);
+        return $this->readAction;
+    }
+
+    /**
+     *
+     * @param \Nethgui\Controller\Table\AbstractAction $action
+     * @return \Nethgui\Controller\TableController
+     * @throws \LogicException
+     */
+    protected function setReadAction(Table\AbstractAction $action)
+    {
+        if($this->readAction !== NULL) {
+            throw new \LogicException(sprintf("%s: the read action has been already set. Call this method before any getReadAction() or setColumns()", __CLASS__), 1354266668);
+        }
+
+        $this->readAction = $action;
+        $this->addChild($this->readAction);
         return $this;
     }
 
@@ -206,7 +230,7 @@ class TableController extends \Nethgui\Controller\CompositeController implements
     }
 
     public function renderIndex(\Nethgui\Renderer\Xhtml $renderer)
-    {        
+    {
         $this->sortChildren(function(\Nethgui\Module\ModuleInterface $a, \Nethgui\Module\ModuleInterface $b) {
                 if ($a->getIdentifier() === 'read') {
                     return -1;
