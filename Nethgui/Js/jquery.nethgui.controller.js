@@ -67,6 +67,8 @@
             e.stopPropagation();
         },
         _onSendQuery: function(e, url, delay, freezeUi) {
+            var self = this;
+            
             if(freezeUi === undefined) {
                 freezeUi = true;
             }
@@ -75,7 +77,7 @@
                 this._sendQuery(url, undefined, freezeUi);
             } else if(parseInt(delay) > 0) {
                 window.setTimeout(function() {
-                    this._sendQuery(url, undefined, freezeUi)
+                    self._sendQuery(url, undefined, freezeUi)
                 }, delay);
             }
             e.stopPropagation();
