@@ -120,13 +120,17 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
             $argumentSubset = array();
         }
 
-        $instance = new static($parameterSubset, $argumentSubset, $path, $this->attributes);
+        $instance = new static($parameterSubset, array_merge($this->getScalarArguments(), $argumentSubset), $path, $this->attributes);
 
         if (isset($this->session)) {
             $instance->setSession($this->session);
         }
 
         return $instance;
+    }
+
+    private function getScalarArguments() {
+        return array_filter($this->getData, 'is_string');
     }
 
     public function getUser()
