@@ -135,7 +135,7 @@ class JsonPolicyDecisionPoint implements PolicyDecisionPointInterface, \Nethgui\
         foreach ($this->rules as $rule) {
             if ($rule instanceof PolicyRule && $rule->isApplicableTo($request)) {
                 if ($rule->isAllow()) {
-                    $message = '';
+                    $message = $rule->getDescription();
                     return 0;
                 } else {
                     $message = $rule->getDescription();

@@ -26,7 +26,7 @@ namespace Nethgui\Module;
  * @since 1.0
  * @api
  */
-abstract class AbstractModule implements \Nethgui\Module\ModuleInterface, \Nethgui\View\ViewableInterface, \Nethgui\Log\LogConsumerInterface, \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Authorization\AuthorizationAttributesProviderInterface, \Nethgui\System\PlatformConsumerInterface
+abstract class AbstractModule implements \Nethgui\Module\ModuleInterface, \Nethgui\View\ViewableInterface, \Nethgui\Log\LogConsumerInterface, \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Authorization\AuthorizationAttributesProviderInterface, \Nethgui\System\PlatformConsumerInterface, \Nethgui\Authorization\PolicyEnforcementPointInterface
 {
     /**
      * @var string
@@ -232,6 +232,32 @@ abstract class AbstractModule implements \Nethgui\Module\ModuleInterface, \Nethg
         }
 
         return NULL;
+    }
+
+    /**
+     *
+     * @var \Nethgui\Authorization\PolicyDecisionPointInterface
+     */
+    private $pdp;
+
+    /**
+     * Access the associated PDP object. If no PDP has been associated to
+     * this object, an always-pass PDP is returned by default.
+     *
+     * @return \Nethgui\Authorization\PolicyDecisionPointInterface
+     */
+    protected function getPolicyDecisionPoint()
+    {
+        if ( ! isset($this->pdp)) {
+            $this->pdp = new \Nethgui\Test\Tool\StaticPolicyDecisionPoint(TRUE);
+        }
+        return $this->pdp;
+    }
+
+    public function setPolicyDecisionPoint(\Nethgui\Authorization\PolicyDecisionPointInterface $pdp)
+    {
+        $this->pdp = $pdp;
+        return $this;
     }
 
 }

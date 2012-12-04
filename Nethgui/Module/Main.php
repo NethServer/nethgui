@@ -29,7 +29,7 @@ namespace Nethgui\Module;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\CommandReceiverInterface, \Nethgui\Authorization\PolicyEnforcementPointInterface
+class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\CommandReceiverInterface
 {
     /**
      * @var \Nethgui\Module\ModuleSetInterface
@@ -55,12 +55,6 @@ class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\Co
      * @var array
      */
     private $decoratorParameter;
-
-    /**
-     *
-     * @var \Nethgui\Authorization\PolicyDecisionPointInterface
-     */
-    private $pdp;
 
     /**
      *
@@ -112,9 +106,9 @@ class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\Co
     {
         foreach ($this->getChildren() as $child) {
             if ($request->isMutation()) {
-                $auth = $this->pdp->authorize($request->getUser(), $child, self::ACTION_MUTATE);
+                $auth = $this->getPolicyDecisionPoint()->authorize($request->getUser(), $child, self::ACTION_MUTATE);
             } else {
-                $auth = $this->pdp->authorize($request->getUser(), $child, self::ACTION_QUERY);
+                $auth = $this->getPolicyDecisionPoint()->authorize($request->getUser(), $child, self::ACTION_QUERY);
             }
 
             if ($auth->isDenied()) {
@@ -270,12 +264,6 @@ class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\Co
             }
         }
         return FALSE;
-    }
-
-    public function setPolicyDecisionPoint(\Nethgui\Authorization\PolicyDecisionPointInterface $pdp)
-    {
-        $this->pdp = $pdp;
-        return $this;
     }
 
 }

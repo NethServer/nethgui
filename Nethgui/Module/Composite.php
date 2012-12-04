@@ -78,6 +78,10 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
             $childModule->setPlatform($this->getPlatform());
         }
 
+        if ($childModule instanceof \Nethgui\Authorization\PolicyEnforcementPointInterface) {
+            $childModule->setPolicyDecisionPoint($this->getPolicyDecisionPoint());
+        }
+
         if ($this->isInitialized() && ! $childModule->isInitialized()) {
             $childModule->initialize();
         }
@@ -175,14 +179,14 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
         if (is_null($childrenDir)) {
             $childrenDir = basename($filePath, '.php');
         }
-              
+
         $nsRootPath = realpath(substr($filePath, 0, strlen($filePath) - strlen(get_class($module) . '.php')));
 
         // remove the last namespace segment and replace with $childrenDir
-        $nsPrefixParts = array_slice(explode('\\', get_class($module)), 0, -1);        
+        $nsPrefixParts = array_slice(explode('\\', get_class($module)), 0, -1);
         $nsParts = array_merge($nsPrefixParts, explode('/', $childrenDir));
         $nsPrefix = implode('\\', $nsParts);
-        
+
         $this->childLoader = new \Nethgui\Module\ModuleLoader();
         $this->childLoader
             ->setLog($this->getLog())
@@ -213,4 +217,13 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
         return parent::setLog($log);
     }
 
+    public function setPolicyDecisionPoint(\Nethgui\Authorization\PolicyDecisionPointInterface $pdp)
+    {
+        parent::setPolicyDecisionPoint($pdp);
+        foreach($this->getChildren() as $child) {
+            if($child instanceof \Nethgui\Authorization\PolicyDecisionPointInterface) {
+                $child->setPolicyDecisionPoint($this->getPolicyDecisionPoint());
+            }
+        }
+    }
 }
