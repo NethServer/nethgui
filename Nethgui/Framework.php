@@ -694,19 +694,24 @@ class Framework
  * Framework global symbols
  */
 
-/*
- * NETHGUI_ENABLE_TARGET_HASH: if set to TRUE pass client names through an hash function
- */
 if ( ! defined('NETHGUI_ENABLE_TARGET_HASH')) {
-    define('NETHGUI_ENABLE_TARGET_HASH', FALSE);
+    // TRUE: pass client names through an hash function
+    define('NETHGUI_ENABLE_TARGET_HASH', TRUE);
 }
 
 if ( ! defined('NETHGUI_ENABLE_INCLUDE_WIDGET')) {
+    // TRUE: widget javascript code is included automatically by Module\Main
     define('NETHGUI_ENABLE_INCLUDE_WIDGET', FALSE);
 }
 
 if ( ! defined('NETHGUI_ENABLE_HTTP_CACHE_HEADERS')) {
+    // TRUE: send cache headers
     define('NETHGUI_ENABLE_HTTP_CACHE_HEADERS', TRUE);
+}
+
+if ( ! defined('NETHGUI_DEBUG')) {
+    // TRUE: more verbose logs, non-minified js and css
+    define('NETHGUI_DEBUG', FALSE);
 }
 
 /**
