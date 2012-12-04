@@ -104,7 +104,7 @@ class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utili
                 if ( ! isset($this->instanceCache[$moduleIdentifier])) {
                     $className = $nsPrefix . '\\' . $moduleIdentifier;
                     $moduleInstance = new $className();
-                    $this->getLog()->notice(sprintf('%s::fillCache(): Created "%s" instance', get_class($this), $className));
+                    NETHGUI_DEBUG && $this->getLog()->notice(sprintf('%s::fillCache(): Created "%s" instance', get_class($this), $className));
                     $this->notifyCallbacks($moduleInstance);
                     $this->instanceCache[$moduleIdentifier] = $moduleInstance;
                 }
@@ -132,7 +132,7 @@ class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utili
 
             if ($this->phpWrapper->class_exists($className)) {
                 $moduleInstance = new $className();
-                $this->getLog()->notice(sprintf('%s::getModule(): Created "%s" instance', get_class($this), $className));
+                NETHGUI_DEBUG && $this->getLog()->notice(sprintf('%s::getModule(): Created "%s" instance', get_class($this), $className));
                 $this->notifyCallbacks($moduleInstance);
                 $this->instanceCache[$moduleIdentifier] = $moduleInstance;
                 break;
@@ -158,7 +158,7 @@ class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utili
     }
 
     public function setLog(\Nethgui\Log\LogInterface $log)
-    {        
+    {
         $this->phpWrapper->setLog($log);
         return $this;
     }

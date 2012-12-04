@@ -295,10 +295,10 @@ class Framework
             }
             return $this->processRequest($request, $output);
         } catch (\Nethgui\Exception\AuthorizationException $ex) {
-            $this->log->error(sprintf('%s: [%d] %s', __CLASS__, $ex->getCode(), $ex->getMessage()));
             if ($request->getExtension() === 'xhtml' && ! $request->isMutation() && ! $request->getUser()->isAuthenticated()) {
                 return $this->processRequest($this->createLoginRequest($request), $output);
             } else {
+                $this->log->error(sprintf('%s: [%d] %s', __CLASS__, $ex->getCode(), $ex->getMessage()));
                 throw new \Nethgui\Exception\HttpException('Forbidden', 403, 1327681977, $ex);
             }
         }

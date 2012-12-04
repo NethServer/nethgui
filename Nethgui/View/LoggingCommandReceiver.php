@@ -39,6 +39,6 @@ class LoggingCommandReceiver implements \Nethgui\View\CommandReceiverInterface
     {
         $argStrings = array_map(function($arg) { return is_object($arg) ? get_class($arg) : gettype($arg); }, $arguments);
         $selectorString = $origin->getClientEventTarget($selector);
-        $this->log->notice(sprintf('%s: %s#%s(%s)', get_class($this), $selectorString, $name, implode(', ', $argStrings)));
+        NETHGUI_DEBUG && $this->log->notice(sprintf('%s: %s#%s(%s)', get_class($this), $selectorString, $name, implode(', ', $argStrings)));
     }
 }

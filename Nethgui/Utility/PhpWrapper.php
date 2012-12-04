@@ -89,6 +89,10 @@ class PhpWrapper implements \Nethgui\Log\LogConsumerInterface
                     $level = 'warning';
                 } else {
                     $level = 'notice';
+                    // skip notice messages, if NETHGUI_DEBUG is TRUE
+                    if(NETHGUI_DEBUG === FALSE) {
+                        continue;
+                    }
                 }
                 $log->$level(sprintf("%s: %s", $this->identifier, $msg[1]));
             }

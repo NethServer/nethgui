@@ -52,7 +52,8 @@ class Logout extends \Nethgui\Controller\AbstractController implements \Nethgui\
     {
         $request = $this->getRequest();
         if ($request->isMutation() && $this->parameters['action'] === 'logout') {
-            $this->session->logout();
+            $this->getLog()->notice(sprintf("%s: user %s logged out", __CLASS__, $request->getUser()->getCredential('username')));
+            $this->session->logout();            
         }
     }
 

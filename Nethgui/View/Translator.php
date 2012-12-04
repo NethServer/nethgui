@@ -165,7 +165,7 @@ class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Utility\
         if ($translation === NULL) {
             // By default prepare an identity-translation
             $translation = $key;
-            $this->getLog()->notice(sprintf("%s: `%s` translation not found for `%s`. Catalogs: [%s]", __CLASS__, $languageCode, $key, implode(', ', $attempts)));
+            NETHGUI_DEBUG && $this->getLog()->notice(sprintf("%s: `%s` translation not found for `%s`. Catalogs: [%s]", __CLASS__, $languageCode, $key, implode(', ', $attempts)));
         }
 
         return $translation;
@@ -186,9 +186,9 @@ class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Utility\
 
         $included = @$this->phpWrapper->phpInclude($filePath, array('L' => &$L));
         if ($included) {
-            //$this->getLog()->notice(sprintf('%s: Loaded language catalog `%s` [%s].', get_class($this), $languageCatalog, $languageCode));
+            NETHGUI_DEBUG && $this->getLog()->notice(sprintf('%s: Loaded language catalog `%s` [%s].', get_class($this), $languageCatalog, $languageCode));
         } else {
-            $this->getLog()->warning(sprintf('%s: Missing language catalog `%s` [%s].', get_class($this), $languageCatalog, $languageCode));
+            NETHGUI_DEBUG && $this->getLog()->warning(sprintf('%s: Missing language catalog `%s` [%s].', get_class($this), $languageCatalog, $languageCode));
         }
         $this->catalogs[$languageCode][$languageCatalog] = &$L;
     }
