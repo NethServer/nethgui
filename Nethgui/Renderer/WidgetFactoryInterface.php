@@ -353,5 +353,15 @@ interface WidgetFactoryInterface
      * @api 
      */
     public function slider($name, $flags);
+
+    /**
+     * Create a text list widget
+     *
+     * @param string $name A view element containing an array value
+     * @param int $flags
+     * @return \Nethgui\Renderer\WidgetInterface
+     * @api
+     */
+    public function textList($name, $flags = 0);
 }
 define('NETHGUI_INHERITABLE_FLAGS', WidgetFactoryInterface::STATE_DISABLED | WidgetFactoryInterface::LABEL_ABOVE | WidgetFactoryInterface::LABEL_LEFT | WidgetFactoryInterface::LABEL_RIGHT | WidgetFactoryInterface::LABEL_NONE | WidgetFactoryInterface::STATE_UNOBSTRUSIVE);

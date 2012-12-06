@@ -378,4 +378,10 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
         return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags));
     }
 
+    public function textList($name, $flags = 0)
+    {
+        $flags |= $this->inheritFlags;
+        return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags));
+    }
+
 }
