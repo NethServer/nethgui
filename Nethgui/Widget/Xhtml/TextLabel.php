@@ -45,12 +45,10 @@ class TextLabel extends \Nethgui\Widget\XhtmlWidget
         $tag = $this->getAttribute('tag', 'span');
         $template = $this->getAttribute('template', '${0}');
         $cssClass = 'TextLabel';
-        $text = '';
 
         if ($this->hasAttribute('class')) {
             $cssClass .= ' ' . $this->getAttribute('class');
         }
-
 
         if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_DISABLED) {
             $cssClass .= ' disabled';
@@ -58,20 +56,23 @@ class TextLabel extends \Nethgui\Widget\XhtmlWidget
 
         $unobstrusive = $flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE;
 
-        $args = array('${0}' => $this->view->offsetExists($name) && ! $unobstrusive ? $this->view[$name] : '${0}');
+        $args = array('${0}' => $this->view->offsetExists($name) ? $this->view[$name] : '');
 
         if ($this->hasAttribute('args')) {
             $args = array();
             if ( ! is_array($this->getAttribute('args'))) {
                 throw new \InvalidArgumentException(sprintf('%s: `args` attribute must be an array!', get_class($this)), 1322149926);
             }
-            $i = 1;
             foreach ($this->getAttribute('args') as $argName => $argValue) {
-                $args['${' . $argName . '}'] = is_null($argValue) || $unobstrusive ? ('${' . $argName . '}') : strval($argValue);
+                $args['${' . $argName . '}'] = strval($argValue);
             }
         }
 
-        $text = strtr($template, $args);
+        if ($unobstrusive) {
+            $text = '';
+        } else {
+            $text = strtr($template, $args);
+        }
 
         if ($hsc) {
             $text = htmlspecialchars($text);
@@ -85,7 +86,7 @@ class TextLabel extends \Nethgui\Widget\XhtmlWidget
             $attributes['id'] = $this->view->getUniqueId($this->getAttribute('receiver'));
         }
 
-        $attributes = array('class' => $cssClass, 'data-template' => $template);
+        $attributes = array('class' => $cssClass, 'data-options' => json_encode(array('template' => $template, 'hsc' => $hsc)));
 
         $content = $this->openTag($tag, $attributes);
         $content .= $text;
@@ -95,4 +96,3 @@ class TextLabel extends \Nethgui\Widget\XhtmlWidget
     }
 
 }
-
