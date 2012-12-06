@@ -28,8 +28,6 @@
             
         },
         _updateView: function(value) {
-            var self = this;            
-
             if( ! $.isArray(value)) {
                 value = [value];
             }
