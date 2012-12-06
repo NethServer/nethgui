@@ -118,9 +118,9 @@ class TextList extends \Nethgui\Widget\XhtmlWidget
         $widgetTag = $this->getTagName($tags[0]);
         if ($widgetTag) {
 
-            $class = implode(' ', array_filter(array('TextList', $addClass, $this->getClientEventTarget())));
+            $cssClass = implode(' ', array_filter(array('TextList', $addClass, $this->getClientEventTarget())));
 
-            $content = $this->openTag($widgetTag, array('class' => $class, 'data-options' => $jsonOptions)) .
+            $content = $this->openTag($widgetTag, array('class' => $cssClass, 'data-options' => $jsonOptions)) .
                 $content .
                 $this->closeTag($widgetTag)
             ;
