@@ -32,7 +32,7 @@
             var s = this;
 
             if(o === undefined) {
-                return s;
+                return s.toString();
             } else if(typeof(o) !== 'object') {
                 o = [o].concat(Array.prototype.slice.call(arguments, 1));
             }
@@ -40,7 +40,7 @@
             for (var i in o) {
                 s = s.replace(new RegExp('\\$\\{' + i + '\\}', 'g') , o[i]);
             }
-            return s;
+            return s.toString();
         }
     }
     
