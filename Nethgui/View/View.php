@@ -269,7 +269,7 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
     public function getClientEventTarget($name)
     {
         if (NETHGUI_ENABLE_TARGET_HASH === FALSE) {
-            return $this->getUniqueId($name);
+            return 'T_' . $this->getUniqueId($name);
         }
         return 'T' . substr(md5($this->getUniqueId($name)), 0, 8);
     }
