@@ -38,8 +38,7 @@ class Slider extends \Nethgui\Widget\XhtmlWidget
 
     protected function renderContent()
     {
-        $flags = $this->getAttribute('flags');
-        $flags = $this->applyDefaultLabelAlignment($flags, \Nethgui\Renderer\WidgetFactoryInterface::LABEL_RIGHT);
+        $flags = $this->applyDefaultLabelAlignment($this->getAttribute('flags'), \Nethgui\Renderer\WidgetFactoryInterface::LABEL_RIGHT);
 
         if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::SLIDER_ENUMERATIVE) {
             return $this->renderEnumerative();
@@ -53,8 +52,7 @@ class Slider extends \Nethgui\Widget\XhtmlWidget
         $name = $this->getAttribute('name');
         $value = $this->getAttribute('value', $this->view[$name]);
         $label = $this->getAttribute('label', '${0}');
-        $cssClass = $this->getAttribute('class', '');
-        $cssClass = trim('Slider Enumerative ' . $cssClass);
+        $cssClass = trim('Slider Enumerative ' . $this->getAttribute('class', ''));
 
         $choices = $this->getChoices($name, $dataSourceName);
         $tagContent = $this->optGroups($value, $choices);
@@ -67,8 +65,7 @@ class Slider extends \Nethgui\Widget\XhtmlWidget
         $name = $this->getAttribute('name');
         $value = $this->getAttribute('value', $this->view[$name]);
         $label = $this->getAttribute('label', $this->getTranslateClosure($name . '_label'));
-        $cssClass = $this->getAttribute('class', '');
-        $cssClass = trim('Slider Range ' . $cssClass);
+        $cssClass = trim('Slider Range ' . $this->getAttribute('class', ''));
 
         $range = array(
             'min' => floatval($this->getAttribute('min', 0)),

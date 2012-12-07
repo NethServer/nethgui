@@ -49,16 +49,20 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
      */
     private function label($text, $id)
     {
-        $attributes = array(
-            'for' => $id,
-            'class' => 'TextLabel ' . $this->getAttribute('helpId', $this->view->getUniqueId($this->getAttribute('name', FALSE)))
-        );
+        $labelWidget = new Xhtml\TextLabel($this->view);
 
-        $content = '';
-        $content .= $this->openTag('label', $attributes);
-        $content .= htmlspecialchars($text);
-        $content .= $this->closeTag('label');
-        return $content;
+        $labelWidget
+            ->setAttribute('template', $text)
+            ->setAttribute('tag', 'label')
+            ->setAttribute('class', $this->getAttribute('helpId', $this->view->getUniqueId($this->getAttribute('name', FALSE))))
+            ->setAttribute('htmlAttributes', array('for' => $id))
+        ;
+
+        if ($this->hasAttribute('flags')) {
+            $labelWidget->setAttribute('flags', $this->getAttribute('flags'));
+        }
+
+        return $labelWidget->render();
     }
 
     /**
@@ -389,7 +393,7 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
     {
         $pluginList = array();
 
-        if(empty($this->view[$name])) {
+        if (empty($this->view[$name])) {
             return $this;
         }
 

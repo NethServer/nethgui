@@ -18,7 +18,6 @@
             var options;
 
             this._label = this.element.siblings('label');
-            this._labelTemplate = this._label.text();
             this._isEnumerative = this.element.hasClass('Enumerative');
                                   
             this.element
@@ -35,7 +34,6 @@
                     step: 1,
                     value: this.element.children('[selected]').index()
                 }
-                this._repaintLabel(this.element.children('[selected]').attr('value'))
             } else {
                 settings = {
                     min: 0,
@@ -49,8 +47,7 @@
                     $.debug('Slider: malformed "data-settings" attribute; got ' + this.element.attr('data-settings'), e);
                 }          
 
-                settings.value = this.element.attr('value') ? this.element.attr('value') : settings.min;  
-                this._repaintLabel(settings.value);
+                settings.value = this.element.prop('value') ? this.element.prop('value') : settings.min;
             }
             
             if(this.element.hasClass('keepdisabled')) {
@@ -59,21 +56,25 @@
                                  
             this._theSlider.slider(settings)
             .insertAfter(this.element)            
-            .on('slide', function(event, ui) {
-                
-                var current;
+            .on('slide slidechange', function(event, ui) {
+                                
+                var valueLabel = '';
                 
                 if(self._isEnumerative) {
-                    self.element.children('[selected]').removeAttr('selected');
-                    current = self.element.children(':eq(' + ui.value + ')');
-                    current.attr('selected', 'selected');
-                    self._repaintLabel(current.attr('value'));
+                    self.element.children('[selected]').prop('selected', false);
+                    var current = self.element.children(':eq(' + ui.value + ')');
+                    current.prop('selected', true);
+                    valueLabel = current.text();
                 } else {
-                    self._repaintLabel(ui.value);
                     self.element.val(ui.value);
+                    valueLabel = ui.value;
                 }
+
+                self._label.triggerHandler('nethguiupdateview', [valueLabel]);
             });           
-                                    
+
+            // update the label
+            self._label.triggerHandler('nethguiupdateview', [this._getValueLabel(settings.value)]);
         },
         _setOption: function( key, value ) {
             SUPER.prototype._setOption.apply( this, arguments );
@@ -81,21 +82,24 @@
                 this._theSlider.slider('option', 'disabled', value);
             }
         },        
-        _repaintLabel: function(value) {
+        _getValueLabel: function(value) {
+            var label;
             if(this._isEnumerative) {
-                this._label.text(this._labelTemplate.replacePlaceholders(this.element.children('[value="' + value + '"]').text()));
+                // value is the child ordinal number:
+                label = this.element.children(':eq(' + value + ')').text();
             } else if($.isNumeric(value)) {
-                this._label.text(this._labelTemplate.replacePlaceholders(value));
+                label = value;
             }
+            return label;
         },
         _updateView: function(value) {
             SUPER.prototype._updateView.apply(this, [value]);
             if(this._isEnumerative) {
+                $.debug(value, this.element.children('[value="' + value + '"]').index());
                 this._theSlider.slider('option', 'value', this.element.children('[value="' + value + '"]').index());
             } else {
                 this._theSlider.slider('option', 'value', value);
             }
-            this._repaintLabel(value);
         },
         _createTooltip: function(e, options) {
             options.target = this.element.next('.ui-slider');

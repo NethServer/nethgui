@@ -44,6 +44,7 @@ class TextLabel extends \Nethgui\Widget\XhtmlWidget
         $hsc = $this->getAttribute('escapeHtml', TRUE);
         $tag = $this->getAttribute('tag', 'span');
         $template = $this->getAttribute('template', '${0}');
+        $htmlAttributes = $this->getAttribute('htmlAttributes', array());
         $cssClass = 'TextLabel';
 
         if ($this->hasAttribute('class')) {
@@ -53,10 +54,8 @@ class TextLabel extends \Nethgui\Widget\XhtmlWidget
         if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_DISABLED) {
             $cssClass .= ' disabled';
         }
-
-        $unobstrusive = $flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE;
-
-        $args = array('${0}' => $this->view->offsetExists($name) ? $this->view[$name] : '');
+       
+        $args = array('${0}' => $this->view->offsetExists($name) && is_string($this->view[$name]) ? $this->view[$name] : '');
 
         if ($this->hasAttribute('args')) {
             $args = array();
@@ -68,25 +67,27 @@ class TextLabel extends \Nethgui\Widget\XhtmlWidget
             }
         }
 
-        if ($unobstrusive) {
-            $text = '';
-        } else {
-            $text = strtr($template, $args);
-        }
-
-        if ($hsc) {
-            $text = htmlspecialchars($text);
-        }
+        $text = '';
 
         if ($this->hasAttribute('name')) {
             $cssClass .= ' ' . $this->getClientEventTarget();
+        }
+
+        $viewIsUnobstrusive = $flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE;
+
+        if ( ! $viewIsUnobstrusive) {
+            // Prepare static text:
+            $text = $hsc ? htmlspecialchars(strtr($template, $args)) : strtr($template, $args);
         }
 
         if ($this->hasAttribute('receiver')) {
             $attributes['id'] = $this->view->getUniqueId($this->getAttribute('receiver'));
         }
 
-        $attributes = array('class' => $cssClass, 'data-options' => json_encode(array('template' => $template, 'hsc' => $hsc)));
+        $attributes = array_merge($htmlAttributes, array(
+            'class' => $cssClass,
+            'data-options' => json_encode(array('template' => $template, 'hsc' => $hsc, 'static' => ! $this->hasAttribute('name') ))
+            ));
 
         $content = $this->openTag($tag, $attributes);
         $content .= $text;

@@ -8,25 +8,33 @@
     $.widget('nethgui.TextLabel', SUPER, {
         _deep: false,
         options: {
-            hsc: false,
-            template: '${0}'
+            'hsc': false,
+            'template': '${0}',
+            'static': true
         },
         _create: function() {
             SUPER.prototype._create.apply(this);
 
-           var options = this.element.attr('data-options') ? $.parseJSON(this.element.attr('data-options')) : {};
+            var options = this.element.attr('data-options') ? $.parseJSON(this.element.attr('data-options')) : {};
 
             if(typeof options === 'object') {
                 this.option(options);
             }
             
+            if(this.option('static')) {
+                this.renderLabel([]);
+            }
+
         },
         _updateView: function(value) {
             if($.isArray(value)) {
-                this.setLabel(String.prototype.replacePlaceholders.apply(this.option('template'), value));
+                this.renderLabel(value);
             } else {
-                this.setLabel(this.option('template').replacePlaceholders(value));
+                this.renderLabel([value]);
             }
+        },
+        renderLabel: function(args) {
+            this.setLabel(String.prototype.replacePlaceholders.apply(this.option('template'), args));
         },
         setLabel: function(text) {
             if(this.option('hsc')) {
