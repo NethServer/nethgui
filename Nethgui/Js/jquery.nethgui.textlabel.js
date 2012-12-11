@@ -34,6 +34,9 @@
             }
         },
         renderLabel: function(args) {
+            if( ! $.isArray(args)) {
+                args = [args];
+            }
             this.setLabel(String.prototype.replacePlaceholders.apply(this.option('template'), args));
         },
         setLabel: function(text) {

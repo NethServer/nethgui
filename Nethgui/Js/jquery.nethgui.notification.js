@@ -70,7 +70,8 @@
     $.widget('nethgui.TextNotification', SUPER, {
         _deep: true,
         options: {
-            data: {}
+            data: {},
+            template: "<span class='Notification_title'><span class='ui-icon ${severityIcon}'></span>${title}</span><span class='Notification_close ui-icon ui-icon-close'></span>"
         },
         _create: function() {           
             var self = this;
@@ -78,6 +79,9 @@
             if(!$.isEmptyObject(this.options.data)) {
                 this._createContent(this.options.data);
             }
+
+            this.element.append(this.option('template').replacePlaceholders(this.option('data')));
+
             SUPER.prototype._create.apply(this);
 
             // Destroy on next ajax call if has transient class:
@@ -95,8 +99,6 @@
             }).button());
         },
         _createContent: function(v) {
-            var template = "<span class='TextLabel Notification_title'><span class='ui-icon ${severityIcon}'></span>${title}</span> ${message}";
-
             this.element.addClass(v.type);
 
             if(v.style & 0x1) {
@@ -113,8 +115,6 @@
             if(v['transient'] === true) {
                 this.element.addClass('transient');
             }
-
-            this.element.append(template.replacePlaceholders(v));
         }
     });
 }) ( jQuery );
@@ -128,19 +128,20 @@
     var SUPER = $.nethgui.TextNotification;
     $.widget('nethgui.ValidationErrors', SUPER, {
         _deep: true,
-        _create: function() {
+        options: {
+            template: "<span class='Notification_title'><span class='ui-icon ${severityIcon}'></span>${title}</span> ${fieldLinks}<span class='Notification_close ui-icon ui-icon-close'></span>"
+        },
+        _createContent: function(v) {            
+            SUPER.prototype._createContent.call(this, v);
             var self = this;
-            var v = this.options.data;
-            var errors = '';
 
+            v.fieldLinks = '';
+
+            // Render v.fieldLinks placeholder content:
             $.isArray(v.errors) && $.each(v.errors, function (index, err) {
-                errors += '<a class="Button givefocus" href="#${widgetId}">${label}</a> '.replacePlaceholders(err);
+                v.fieldLinks += '<a class="Button givefocus" href="#${widgetId}">${label}</a> '.replacePlaceholders(err);
                 self._addTooltip(err);
-            });
-
-            v.message = errors;
-                       
-            SUPER.prototype._create.apply(this);           
+            });            
         },
         _addTooltip: function(err) {
             $('#' + err.widgetId).triggerHandler('nethguitooltip', [{
