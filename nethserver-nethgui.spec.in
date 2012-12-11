@@ -37,36 +37,7 @@ rm -rf ${RPM_BUILD_ROOT}
 %doc COPYING
 %doc Documentation/*
 
+
+
 %changelog
-* Wed Mar  7 2012 Davide Principi <davide.principi@nethesis.it> - 0.9.0-1.nh.gitfed63bd5
-- Authorization: added sudo invokation for pam-authenticate-pw script
-- Controller: added $parameters parameter to onParametersSaved() method. This fixes Group creation.
-- ModuleLoader: changed interface. Framework and Composite classes updated. Refs #841 - Autoloading children from specific directory
-- PhpWrapper: log calls wrapped around global function calls. Refs #841 - Autoloading children from specific directory
-- Main template: fixed company name and address
-- Fixed base URL path guessing with and without URL rewriter enabled.
-- PHP-PAM replaced by /sbin/e-smith/pam-authenticate-pw script
-
-* Mon Feb  7 2012 Davide <davide.principi@nethesis.it> - 0.0.6-2.nh
-- Renamed to nethserver-nethgui
-- Added php-pecl-pam requirement
-- Removed e-smith events
-
-* Tue Nov 22 2011 Giacomo Sanchietti <giacomo@nethesis.it> 0.0.5-1nh
-- Add validate command to sudoers 
-
-* Wed Sep 28 2011 Davide <davide.principi@nethesis.it> - 0.0.4-1nh
-- Updated sources to commit:25f3c2974a8c6e09679e59a504b7b811d1851714
-
-* Fri Aug 05 2011 Giacomo Sanchietti <giacomo@nethesis.it> 0.0.3-1nh
-- Add nethserver-httpd
-- Remove httpd template, add configuration file
-
-* Wed Jul 27 2011 Davide <davide.principi@nethesis.it> - 0.0.2-1.nh
-- Added nethserver-base requirement
-- nethgui version tag Phi
-
-* Thu Apr 07 2011 Giacomo Sanchietti <giacomo@nethesis.it> 0.0.1-1nh
-- First NethGui Framework release
-
 
