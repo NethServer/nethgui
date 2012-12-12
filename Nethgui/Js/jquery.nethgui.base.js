@@ -86,12 +86,18 @@
     /**
      * Perform an AJAX request on given URL
      */
-    Server.prototype.ajaxMessage = function(isMutation, url, data, freezeElement) {
+    Server.prototype.ajaxMessage = function(params) {
+        var isMutation, url, data, freezeElement;
+
+        isMutation = params.isMutation;
+        url = params.url;
+        data = params.data;
+        freezeElement = params.freezeElement;
 
         /**
          * Send the response containing the view data to controls
          */
-        var dispatchResponse = function (response, status, httpStatusCode) {
+        var dispatchResponse = $.isFunction(params.dispatchResponse) ? params.dispatchResponse : function (response, status, httpStatusCode) {
             if(!$.isArray(response)) {
                 alert('Unexpected response format. Please, reload the current page.');
                 throw 'Unexpected response format';
@@ -125,7 +131,7 @@
             });
         };
 
-        var dispatchError = function(jqXHR, textStatus, errorThrown) {
+        var dispatchError = $.isFunction(params.dispatchError) ? params.dispatchError : function(jqXHR, textStatus, errorThrown) {
             if(jqXHR.status == 400 && (errorThrown == "Request validation error" || errorThrown == "Invalid credentials supplied")) {
                 dispatchResponse($.parseJSON(jqXHR.responseText), textStatus, jqXHR.status);
             } else if(jqXHR.status == 403 && errorThrown === 'Forbidden') {
@@ -312,10 +318,20 @@
         // free to override
         },
         _sendQuery: function(url, data, freezeUi) {
-            this._server.ajaxMessage(false, url, typeof data === 'string' ? data : undefined, freezeUi ? this.widget() : undefined);
+            this._server.ajaxMessage({
+                isMutation: false,
+                url: url,
+                data: typeof data === 'string' ? data : undefined,
+                freezeElement: freezeUi ? this.widget() : undefined
+            });
         },
         _sendMutation: function(url, data, freezeUi) {
-            this._server.ajaxMessage(true, url, typeof data === 'string' ? data : undefined, freezeUi ? this.widget() : undefined);
+            this._server.ajaxMessage({
+                isMutation: true,
+                url: url,
+                data: typeof data === 'string' ? data : undefined,
+                freezeElement: freezeUi ? this.widget() : undefined
+            });
         },
         _readHelp: function (url) {
             
