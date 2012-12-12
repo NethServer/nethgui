@@ -15,6 +15,8 @@
 
     var dialog = $('<div id="NethguiOverlayLoadingMessage" style="display: none"/>');
 
+    var activeRequests = 0;
+
     $('body').append(dialog);
     dialog.dialog({
         autoOpen: false,
@@ -28,8 +30,11 @@
         if(! dialog.dialog('isOpen')) {
             dialog.dialog('open');
         }
+        activeRequests += 1;
     }).bind("ajaxStop.nethgui", function() {
-        if(dialog.dialog('isOpen')) {
+        activeRequests -= 1;
+        if(dialog.dialog('isOpen') && activeRequests < 1) {
+            activeRequests = 0;
             dialog.dialog('close');
         }
     });
