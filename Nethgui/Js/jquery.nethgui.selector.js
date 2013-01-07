@@ -109,6 +109,11 @@
 
             if($.isArray(value)) {
                 this._selection = value;
+            } else if($.isPlainObject(value)) {
+                this._selection = [];
+                for(var i in value) {
+                    this._selection.push(value[i]);
+                }
             } else {
                 this._selection = [value];
             }
