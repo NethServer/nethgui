@@ -11,11 +11,15 @@
 This guide is addressed to the Programmer (You) who wants to build a
 web user interface for the administration of a GNU/Linux system.
 
-  |date|
+.. warning:: This document refers to an early framework version. It is
+             outdated and needs reworking.
+             
 
 .. contents:: :depth: 3
-.. |date| date:: %Y-%m-%d %H:%M
+.. |date| date:: Last updated %Y-%m-%d %H:%M
 
+
+          
 
 Overview
 ========
