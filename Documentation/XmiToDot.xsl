@@ -27,6 +27,7 @@
     <xsl:apply-templates mode="declaration" select="xmi:XMI/uml:Model/*">
       <xsl:with-param name="indentation" select="$myIndentation" />
       <xsl:with-param name="url" select="$myUrl" />
+      <xsl:with-param name="namespace" />
     </xsl:apply-templates>
     
     <xsl:text>} /* end of file */&#xA;</xsl:text>
@@ -36,21 +37,24 @@
   <xsl:template mode="declaration" match="packagedElement[@xmi:type='uml:Package']" >
     <xsl:param name="indentation" />
     <xsl:param name="url" />
+    <xsl:param name="namespace" />
 
     <xsl:variable name="myIndentation" select="concat($indentation, '    ')" />
-    <xsl:variable name="myUrl" select="concat($url, @name, '/')" />
+    <xsl:variable name="myUrl" select="$url" />
+    <xsl:variable name="myNamespace"><xsl:value-of select="$namespace" /><xsl:if test="$namespace != ''">.</xsl:if></xsl:variable>
 
     <xsl:value-of select="$myIndentation" />subgraph cluster_<xsl:value-of select="@xmi:id" /> {<xsl:text>&#xA;</xsl:text>
     <xsl:value-of select="$myIndentation" /><xsl:text>     &#xA;</xsl:text>
     <xsl:value-of select="$myIndentation" /><xsl:text>    shape=component;&#xA;</xsl:text>
     <xsl:value-of select="$myIndentation" /><xsl:text>    color=grey;&#xA;</xsl:text>
-    <xsl:value-of select="$myIndentation" /><xsl:text>    URL=&#x22;</xsl:text><xsl:value-of select='concat($myUrl, "package-summary.htm")' /><xsl:text>&#x22;;&#xA;</xsl:text>
+    <xsl:value-of select="$myIndentation" /><xsl:text>    URL=&#x22;</xsl:text><xsl:value-of select="concat($url, 'namespace-', $myNamespace, @name, '.html')" /><xsl:text>&#x22;;&#xA;</xsl:text>
     <xsl:value-of select="$myIndentation" /><xsl:text>    </xsl:text>label = "<xsl:value-of select="@name" />";<xsl:text>&#xA;</xsl:text>
  
     <!-- print out classifier declaration -->
     <xsl:apply-templates mode="declaration" select="packagedElement[@xmi:type='uml:Interface' or @xmi:type='uml:Package']">
         <xsl:with-param name="indentation" select="concat($myIndentation, '    ')" />
         <xsl:with-param name="url" select="$myUrl" />
+        <xsl:with-param name="namespace" select="concat($myNamespace, @name)" />
     </xsl:apply-templates>
 
     <xsl:value-of select="$myIndentation" />} <xsl:text>&#xA;</xsl:text>
@@ -69,16 +73,24 @@
   <xsl:template mode="declaration" match="packagedElement[@xmi:type='uml:Interface']">
     <xsl:param name="indentation" />
     <xsl:param name="url">./</xsl:param>
+    <xsl:param name="namespace" />
+
     <xsl:variable name="myIndentation" select="concat($indentation, '    ')" />
-    <xsl:value-of select="$myIndentation" />n<xsl:value-of select="@xmi:id" /> [label="<xsl:value-of select='@name' />",shape=rect,color=blue,style=rounded,URL=&#x22;<xsl:value-of select="concat($url, 'interface-', @name, '.htm')" />&#x22; ];<xsl:text>&#xA;</xsl:text>
+    <xsl:variable name="myNamespace"><xsl:value-of select="$namespace" /><xsl:if test="$namespace != ''">.</xsl:if></xsl:variable>
+
+    <xsl:value-of select="$myIndentation" />n<xsl:value-of select="@xmi:id" /> [label="<xsl:value-of select='@name' />",shape=rect,color=blue,style=rounded,URL=&#x22;<xsl:value-of select="concat($url, 'class-', $myNamespace, @name, '.html')" />&#x22; ];<xsl:text>&#xA;</xsl:text>
   </xsl:template>
 
   <!-- generate the package class index -->
   <xsl:template mode="declaration" match="packagedElement[@xmi:type='uml:Class']">
     <xsl:param name="indentation" />
     <xsl:param name="url">./</xsl:param>
+    <xsl:param name="namespace" />
+
     <xsl:variable name="myIndentation" select="concat($indentation, '    ')" />
-    <xsl:value-of select="$myIndentation" />n<xsl:value-of select="@xmi:id" /> [label="<xsl:value-of select='@name' />",shape=rect,color=black,URL=&#x22;<xsl:value-of select="concat($url, 'class-', @name, '.htm')" />&#x22;]; <xsl:text>&#xA;</xsl:text>
+    <xsl:variable name="myNamespace"><xsl:value-of select="$namespace" /><xsl:if test="$namespace != ''">.</xsl:if></xsl:variable>
+
+    <xsl:value-of select="$myIndentation" />n<xsl:value-of select="@xmi:id" /> [label="<xsl:value-of select='@name' />",shape=rect,color=black,URL=&#x22;<xsl:value-of select="concat($url, 'class-', $myNamespace, @name, '.html')" />&#x22;]; <xsl:text>&#xA;</xsl:text>
   </xsl:template>
 
   <!-- generalization -->
