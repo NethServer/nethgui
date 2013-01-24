@@ -25,6 +25,10 @@ $extCss = <<<"CSS"
     background: {$bg1} url("{$backgroundUrl}") no-repeat center center !important;
 }
 
+#allWrapper #pageContent {
+    overflow: inherit
+}
+
 #{$actionId} {
     -moz-box-shadow: 5px 5px 15px {$bg1};
     -webkit-box-shadow: 5px 5px 15px {$bg1};
