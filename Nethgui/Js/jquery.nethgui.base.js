@@ -148,6 +148,8 @@
                     ],
                     title: '403 - Forbidden'
                 });
+            } else if(jqXHR.status == 0 ) {
+                $.debug('Server warning: pending request cancelled');
             } else {
                 // TODO: display a way to recover from the error state.
                 $.debug('Server error.', jqXHR, textStatus, errorThrown);
