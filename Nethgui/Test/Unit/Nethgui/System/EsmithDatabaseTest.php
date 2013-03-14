@@ -106,14 +106,6 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $ret);
     }
 
-    /**
-     * Currently the $filter argument is not implemented
-     * @expectedException \InvalidArgumentException
-     */
-    public function testGetAll3()
-    {
-        $ret = $this->object->getAll('TT', 'VA2');
-    }
 
     /**
      * db command return non zero exit code:

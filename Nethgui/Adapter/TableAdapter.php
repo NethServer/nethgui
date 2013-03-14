@@ -32,7 +32,6 @@ class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
      */
     private $database;
     private $type;
-    private $filter;
 
     /**
      *
@@ -86,7 +85,7 @@ class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
                 }
             }
         } else {
-            $rawData = $this->database->getAll($this->type, $this->filter);
+            $rawData = $this->database->getAll($this->type);
             foreach ($rawData as $key => $row) {
                 unset($row['type']);
                 $this->data[$key] = new \ArrayObject($row);

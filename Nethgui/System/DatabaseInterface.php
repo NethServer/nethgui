@@ -29,14 +29,13 @@ interface DatabaseInterface
 {
 
     /**
-     * Retrieve all keys from the database. If needed, you can use filter the results by type and key name.
+     * Retrieve all keys from the database. If needed, you can filter the results by type.
      *
      * @param string $type (optional) type of the key
-     * @param string $filter (optional) case insensitive fulltext search on key value
      * @return array associative array in the form "[KeyName] => array( [type] => [TypeValue], [PropName1] => [PropValue1], [PropName2] => [PropValue2], ...)
      * @api
      */
-    public function getAll($type = NULL, $filter = NULL);
+    public function getAll($type = NULL);
 
     /**
      * Retrieve a key from the database.

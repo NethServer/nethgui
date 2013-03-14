@@ -124,12 +124,8 @@ class EsmithDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Auth
         return $this->user;
     }
 
-    public function getAll($type = NULL, $filter = NULL)
+    public function getAll($type = NULL)
     {
-        if ($filter !== NULL) {
-            throw new \InvalidArgumentException(sprintf('%s: $filter argument must be NULL!', get_class($this)), 1322149165);
-        }
-
         if ($this->readPermission->isDenied()) {
             throw $this->readPermission->asException(1322149164);
         }
