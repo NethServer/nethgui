@@ -38,6 +38,10 @@ rm -rf ${RPM_BUILD_ROOT}
 %doc Documentation/*
 
 %changelog
+* Tue Mar 19 2013 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.0.2-1.ns6
+- Code cleanup
+- Handle cancelled ajax requests.  #1706
+
 * Thu Jan 31 2013 Davide Principi <davide.principi@nethesis.it> - 1.0.1-1.ns6
 - Fix #1628 
 - Selector Widget: convert plain objects to native array.
