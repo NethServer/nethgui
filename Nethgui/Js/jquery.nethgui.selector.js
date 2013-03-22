@@ -19,6 +19,12 @@
             this._multiple = this.element.hasClass('multiple');
             this._meta = this.element.children('input[type="hidden"]').first();           
         },
+        _setOption: function( key, value ) {
+            SUPER.prototype._setOption.apply( this, arguments );
+            if(key === 'disabled' && ! this.element.hasClass('keepdisabled')) {
+                this.element.prop('disabled', value);
+            }
+        },
         _renderDatasourceDropdown: function (value) {
             var self = this;
             if( ! $.isArray(value)) {
