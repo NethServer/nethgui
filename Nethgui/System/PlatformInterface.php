@@ -142,6 +142,13 @@ interface PlatformInterface
     const IPv4_OR_EMPTY = 1248968173;
 
     /**
+     * A valid netmask address like '255.255.255.0' ore empty
+     * 
+     * @api
+     */
+    const NETMASK_OR_EMPTY = 1365512893;
+
+    /**
      * Alias for VALID_IPv4 
      * 
      * @api
@@ -154,6 +161,13 @@ interface PlatformInterface
      * @api
      */
     const IP_OR_EMPTY = 1248968175;
+
+    /**
+     * Alias for NETMASK_OR_EMPTY
+     * 
+     * @api
+     */
+    const IPv4_NETMASK_OR_EMPTY = 1365513038;
 
     /**
      * A valid TCP/UDP port number 0-65535

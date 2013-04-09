@@ -398,6 +398,11 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
                     $validator->orValidator($this->createValidator()->ipV4Address(), $this->createValidator()->isEmpty());
                     break;
 
+                case self::NETMASK_OR_EMPTY:
+                case self::IPv4_NETMASK_OR_EMPTY:
+                    $validator->orValidator($this->createValidator()->ipV4Netmask(), $this->createValidator()->isEmpty());
+                    break;
+
                 case self::YES_NO:
                     $validator->memberOf('yes', 'no');
                     break;
