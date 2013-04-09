@@ -506,10 +506,6 @@ class Validator implements \Nethgui\System\ValidatorInterface
         if (count($ip_segments) != 4) {
             return FALSE;
         }
-        // IP can not start with 0
-        if ($ip_segments[0][0] == '0') {
-            return FALSE;
-        }
 
         // Check each segment
         foreach ($ip_segments as $segment) {
@@ -649,7 +645,7 @@ class Validator implements \Nethgui\System\ValidatorInterface
 
     private function evalIpV4Netmask($value)
     {
-        $pattern = '/^(((128|192|224|240|248|252|254)\.0\.0\.0)|(255\.(0|128|192|224|240|248|252|254)\.0\.0)|(255\.255\.(0|128|192|224|240|248|252|254)\.0)|(255\.255\.255\.(0|128|192|224|240|248|252|254)))$/i';
+        $pattern = '/^(((0|128|192|224|240|248|252|254)\.0\.0\.0)|(255\.(0|128|192|224|240|248|252|254)\.0\.0)|(255\.255\.(0|128|192|224|240|248|252|254)\.0)|(255\.255\.255\.(0|128|192|224|240|248|252|254)))$/i';
         return preg_match($pattern, $value);
     }
 
