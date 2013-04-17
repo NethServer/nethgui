@@ -39,7 +39,7 @@
                 return true;
             });
 
-            objectsContainer.bind('nethguiupdateview.' + this.namespace, function(event, value, source) {                
+            objectsContainer.bind('nethguiupdateview.' + this.namespace, function(event, value, source) {   
                 self._objects = value;
                 self.refresh();
             });
@@ -146,6 +146,9 @@
                         $element.prop('checked', $.isArray(selected) ? $.inArray(eventTarget, selected) >= 0 : false);
                         //$element.prop('checked', elementName !== undefined && selected === elementName.substring(elementName.lastIndexOf('[') + 1, elementName.lastIndexOf(']')))
                         $element.next('label').attr('for', $element.attr('id'));
+
+			// FIXME: this may cause a memory leak!
+			self._initializeDeep([$element.get(0), $element.next('label').get(0)]);
                     }
 
                     // disable the checkbox, if not in "selected" state
