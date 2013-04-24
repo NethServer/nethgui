@@ -87,24 +87,28 @@
      * Perform an AJAX request on given URL
      */
     Server.prototype.ajaxMessage = function(params) {
-        var isMutation, url, data, freezeElement;
+        var isMutation, url, data, freezeElement, dispatchError, formatSuffix, isCacheEnabled;
 
         isMutation = params.isMutation;
         url = params.url;
         data = params.data;
-        freezeElement = params.freezeElement;
+        freezeElement = params.freezeElement;    
+        formatSuffix = params.formatSuffix ? params.formatSuffix : 'json';
+        isCacheEnabled = params.isCacheEnabled ? true : false;
+
 
         /**
          * Send the response containing the view data to controls
          */
-        var dispatchResponse = $.isFunction(params.dispatchResponse) ? params.dispatchResponse : function (response, status, httpStatusCode) {
-            if(!$.isArray(response)) {
+        var jsonDispatchResponse = function (response, status, jqXHR) {
+            if( ! $.isArray(response)) {
                 alert('Unexpected response format. Please, reload the current page.');
                 throw 'Unexpected response format';
             }
 
-            if(httpStatusCode === undefined) {
-                httpStatusCode = 200;
+            // XXX FIXME:
+            if(jqXHR === undefined) {
+                jqXHR = 200;
             }
 
             $.each(response, function (index, item) {
@@ -125,13 +129,13 @@
                     });
                 } else {
                     $('.' + selector).each(function(index, element) {
-                        $(element).triggerHandler('nethguiupdateview', [value, selector, httpStatusCode]);
+                        $(element).triggerHandler('nethguiupdateview', [value, selector, jqXHR]);
                     });
                 }
             });
         };
 
-        var dispatchError = $.isFunction(params.dispatchError) ? params.dispatchError : function(jqXHR, textStatus, errorThrown) {
+        dispatchError = $.isFunction(params.dispatchError) ? params.dispatchError : function(jqXHR, textStatus, errorThrown) {
             if(jqXHR.status == 400 && (errorThrown == "Request validation error" || errorThrown == "Invalid credentials supplied")) {
                 dispatchResponse($.parseJSON(jqXHR.responseText), textStatus, jqXHR.status);
             } else if(jqXHR.status == 403 && errorThrown === 'Forbidden') {
@@ -192,12 +196,12 @@
             freezeElement.trigger('nethguifreezeui');
         }
 
-        $.ajax(replaceFormatSuffix(url, 'json'), {
+        $.ajax(replaceFormatSuffix(url, formatSuffix), {
             type: isMutation ? 'POST' : 'GET',
-            cache: false,
-            dataType: 'json',
+            cache: isCacheEnabled,
+            // dataType: 'json',
             data: data,
-            success: [dispatchResponse],
+            success: $.isFunction(params.dispatchResponse) ? params.dispatchResponse : jsonDispatchResponse,
             error: dispatchError
         });
     };
