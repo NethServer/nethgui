@@ -72,6 +72,12 @@ interface PlatformInterface
     const POSITIVE_INTEGER = 1248968166;
 
     /**
+     * Accept a non-negative integer, an integer greater than or equal to zero
+     * @api
+     */
+    const NONNEGATIVE_INTEGER = 1366805296;
+
+    /**
      * Valid generic hostname
      *
      * @api

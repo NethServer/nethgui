@@ -385,6 +385,10 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
                     $validator->integer()->positive();
                     break;
 
+                case self::NONNEGATIVE_INTEGER:
+                    $validator->integer()->greatThan(-1);
+                    break;
+
                 case self::PORTNUMBER:
                     $validator->integer()->greatThan(0)->lessThan(65535);
                     break;
