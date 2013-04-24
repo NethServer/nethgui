@@ -14,7 +14,7 @@
             if(!this.element.hasClass('givefocus')) {
                 // apply jQueryUi "button" widget
                 this.element.button({
-                    disabled: this.element.hasClass('disabled')
+                    disabled: this.element.hasClass('disabled') || this.element.hasClass('keepdisabled')
                 });
             }
             this.element.click($.proxy(this._onClick, this));
