@@ -99,21 +99,23 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
         } else {
 
             if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::LABEL_RIGHT) {
-                $wrapperClass .= ' label-right';
-                $content .= $this->openTag('div', array('class' => $wrapperClass));
+                $wrapperClass .= ' label-right';                
                 $content .= $this->controlTag($tag, $name, $flags, $cssClass, $attributes, $tagContent);
-                $content .= $this->label($label, $controlId);
-                $content .= $this->closeTag('div');
+                $content .= $this->label($label, $controlId);                
             } else {
                 if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::LABEL_ABOVE) {
                     $wrapperClass .= ' label-above';
                 } elseif ($flags & \Nethgui\Renderer\WidgetFactoryInterface::LABEL_LEFT) {
                     $wrapperClass .= ' label-left';
-                }
-                $content .= $this->openTag('div', array('class' => $wrapperClass));
+                }                
                 $content .= $this->label($label, $controlId);
-                $content .= $this->controlTag($tag, $name, $flags, $cssClass, $attributes, $tagContent);
-                $content .= $this->closeTag('div');
+                $content .= $this->controlTag($tag, $name, $flags, $cssClass, $attributes, $tagContent);                
+            }
+
+            // TODO: set the wrap tag from attributes or flags
+            $wrapTag = 'div';
+            if($wrapTag) {
+                $content = $this->openTag($wrapTag, array('class' => $wrapperClass)) . $content . $this->closeTag($wrapTag);
             }
         }
 
