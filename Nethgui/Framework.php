@@ -509,7 +509,7 @@ class Framework
      * @param string $targetFormat
      * @param \Nethgui\View\ViewInterface $view
      * @param \Nethgui\View\CommandReceiverInterface $receiver
-     * @return Renderer\Text
+     * @return Renderer\AbstractRenderer
      */
     private function getRenderer($targetFormat, \Nethgui\View\ViewInterface $view, \Nethgui\View\CommandReceiverInterface $receiver)
     {
@@ -648,7 +648,7 @@ class Framework
             $ext = substr($lastPart, $dotPos + 1);
 
             // TODO: register handled extension elsewhere:
-            if (in_array($ext, array('js', 'css', 'xhtml', 'json'))) {
+            if (in_array($ext, array('js', 'css', 'xhtml', 'json', 'txt'))) {
                 $lastPart = substr($lastPart, 0, $dotPos);
             } else {
                 $ext = 'xhtml';
