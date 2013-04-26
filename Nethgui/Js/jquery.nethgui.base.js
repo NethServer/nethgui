@@ -196,7 +196,7 @@
             freezeElement.trigger('nethguifreezeui');
         }
 
-        $.ajax(replaceFormatSuffix(url, formatSuffix), {
+        return $.ajax(replaceFormatSuffix(url, formatSuffix), {
             type: isMutation ? 'POST' : 'GET',
             cache: isCacheEnabled,
             // dataType: 'json',
