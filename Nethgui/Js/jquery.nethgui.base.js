@@ -87,7 +87,7 @@
      * Perform an AJAX request on given URL
      */
     Server.prototype.ajaxMessage = function(params) {
-        var isMutation, url, data, freezeElement, dispatchError, formatSuffix, isCacheEnabled;
+        var isMutation, url, data, freezeElement, dispatchError, dispatchResponse, formatSuffix, isCacheEnabled;
 
         isMutation = params.isMutation;
         url = params.url;
@@ -100,7 +100,7 @@
         /**
          * Send the response containing the view data to controls
          */
-        var jsonDispatchResponse = function (response, status, jqXHR) {
+        dispatchResponse = $.isFunction(params.dispatchResponse) ? params.dispatchResponse : function (response, status, jqXHR) {
             if( ! $.isArray(response)) {
                 alert('Unexpected response format. Please, reload the current page.');
                 throw 'Unexpected response format';
@@ -201,7 +201,7 @@
             cache: isCacheEnabled,
             // dataType: 'json',
             data: data,
-            success: $.isFunction(params.dispatchResponse) ? params.dispatchResponse : jsonDispatchResponse,
+            success: dispatchResponse,
             error: dispatchError
         });
     };
