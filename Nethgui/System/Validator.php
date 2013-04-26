@@ -156,7 +156,7 @@ class Validator implements \Nethgui\System\ValidatorInterface
             $message = 'valid_hostname_simple';
         }
 
-        $this
+        return $this
             ->minLength(1)
             ->maxLength(255)
             ->addToChain(__FUNCTION__, array($message, array($minDots, $maxDots)), $minDots, $maxDots)
