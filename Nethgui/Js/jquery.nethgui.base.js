@@ -225,7 +225,10 @@
 
     $.Nethgui = {
         Server: new Server(),
-        Translator: new Translator()
+        Translator: new Translator(),
+        T: function () {
+           return $.Nethgui.Translator.translate.apply($.Nethgui.Translator, Array.prototype.slice.call(arguments, 0));
+        }
     };
 
     $.widget('nethgui.Component', {
