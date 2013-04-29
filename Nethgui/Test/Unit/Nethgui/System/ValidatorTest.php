@@ -44,7 +44,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $v2 = new \Nethgui\System\Validator($this->platform);
         $v1->equalTo(1);
         $v2->equalTo(2);
-        $this->object->orValidator($v1, $v2);
+        $o = $this->object->orValidator($v1, $v2);
+        $this->assertSame($this->object, $o);
 
         $this->assertTrue($this->object->evaluate(1));
         $this->assertTrue($this->object->evaluate(2));
@@ -55,7 +56,9 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testMemberOf1()
     {
-        $this->object->memberOf('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h');
+        $o = $this->object->memberOf('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h');
+        $this->assertSame($this->object, $o);
+
         $this->assertTrue($this->object->evaluate('a'));
         $this->assertTrue($this->object->evaluate('h'));
         $this->assertTrue($this->object->evaluate('d'));
@@ -64,32 +67,42 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testMemberOf2()
     {
-        $this->object->memberOf(array('a', 'b', 'c'));
+        $o = $this->object->memberOf(array('a', 'b', 'c'));
+        $this->assertSame($this->object, $o);
+
         $this->assertTrue($this->object->evaluate('a'));
         $this->assertFalse($this->object->evaluate('z'));
     }
 
     public function testRegexpSuccess()
     {
-        $this->object->regexp('/[0-9]+/');
+        $o = $this->object->regexp('/[0-9]+/');
+        $this->assertSame($this->object, $o);
+
         $this->assertTrue($this->object->evaluate('12345'));
     }
 
     public function testRegexpFail()
     {
-        $this->object->regexp('/[0-9]+/');
+        $o = $this->object->regexp('/[0-9]+/');
+        $this->assertSame($this->object, $o);
+
         $this->assertFalse($this->object->evaluate('aaaaa'));
     }
 
     public function testNotEmpty()
     {
-        $this->object->notEmpty();
+        $o = $this->object->notEmpty();
+        $this->assertSame($this->object, $o);
+
         $this->assertFalse($this->object->evaluate(''));
     }
 
     public function testEmpty()
     {
-        $this->object->isEmpty();
+        $o = $this->object->isEmpty();
+        $this->assertSame($this->object, $o);
+
         $this->assertTrue($this->object->evaluate(''));
         $this->assertTrue($this->object->evaluate(FALSE));
         $this->assertTrue($this->object->evaluate(NULL));
@@ -101,13 +114,17 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testForceResultTrue()
     {
-        $this->object->forceResult(TRUE)->notEmpty();
+        $o = $this->object->forceResult(TRUE)->notEmpty();
+        $this->assertSame($this->object, $o);
+
         $this->assertTrue($this->object->evaluate(''));
     }
 
     public function testForceResultFalse()
     {
-        $this->object->notEmpty()->forceResult(FALSE);
+        $o = $this->object->notEmpty()->forceResult(FALSE);
+        $this->assertSame($this->object, $o);
+
         $this->assertFalse($this->object->evaluate('x'));
     }
 
@@ -116,7 +133,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
      */
     public function testIpV4Address()
     {
-        $this->object->ipV4Address();
+        $o = $this->object->ipV4Address();
+        $this->assertSame($this->object, $o);
 
         $this->assertTrue($this->object->evaluate('1.1.1.1'));
         $this->assertTrue($this->object->evaluate('0.0.0.0'));
@@ -159,13 +177,16 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testUsernameValid()
     {
-        $this->object->username();
+        $o = $this->object->username();
+        $this->assertSame($this->object, $o);
+
         $this->assertTrue($this->object->evaluate('v123alid-user_name'));
     }
 
     public function testUsernameInvalid()
     {
-        $this->object->username();
+        $o = $this->object->username();
+        $this->assertSame($this->object, $o);
 
         $invalidUsernames = array(
             'invalidUserName', // no uppercase
@@ -186,7 +207,9 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         // check members are not empty
         $v->notEmpty();
 
-        $this->object->collectionValidator($v);
+        $cv = $this->object->collectionValidator($v);
+        $this->assertSame($this->object, $cv);
+
 
         $o = new \ArrayObject(array('a', 'b', 'c'));
 
@@ -206,7 +229,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
      */
     public function testInteger()
     {
-        $this->object->integer();
+        $o = $this->object->integer();
+        $this->assertSame($this->object, $o);
 
         $this->assertTrue($this->object->evaluate('123'));
         $this->assertTrue($this->object->evaluate('123.0'));
@@ -217,7 +241,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testPositive()
     {
-        $this->object->positive();
+        $o = $this->object->positive();
+        $this->assertSame($this->object, $o);
 
         $this->assertTrue($this->object->evaluate(1.1));
         $this->assertTrue($this->object->evaluate('1.1'));
@@ -229,7 +254,9 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testNegative()
     {
-        $this->object->negative();
+        $o = $this->object->negative();
+        $this->assertSame($this->object, $o);
+
         $this->assertTrue($this->object->evaluate('-1.2'));
         $this->assertTrue($this->object->evaluate(-1));
 
@@ -241,7 +268,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testGreatThan()
     {
-        $this->object->greatThan('100');
+        $o = $this->object->greatThan('100');
+        $this->assertSame($this->object, $o);
 
         $this->assertTrue($this->object->evaluate('101'));
         $this->assertFalse($this->object->evaluate('100'));
@@ -250,7 +278,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testLessThan()
     {
-        $this->object->lessThan('100');
+        $o = $this->object->lessThan('100');
+        $this->assertSame($this->object, $o);
 
         $this->assertTrue($this->object->evaluate('99'));
         $this->assertFalse($this->object->evaluate('100'));
@@ -259,7 +288,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testEqualTo()
     {
-        $this->object->equalTo('100');
+        $o = $this->object->equalTo('100');
+        $this->assertSame($this->object, $o);
 
         $this->assertTrue($this->object->evaluate('100'));
         $this->assertFalse($this->object->evaluate('101'));
@@ -270,7 +300,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
      */
     public function testMinLength()
     {
-        $this->object->minLength(3);
+        $o = $this->object->minLength(3);
+        $this->assertSame($this->object, $o);
 
         $this->assertFalse($this->object->evaluate(''));
         $this->assertFalse($this->object->evaluate('AA'));
@@ -283,7 +314,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testMaxLength()
     {
-        $this->object->maxLength(3);
+        $o = $this->object->maxLength(3);
+        $this->assertSame($this->object, $o);
 
         $this->assertTrue($this->object->evaluate(''));
         $this->assertTrue($this->object->evaluate('AA'));
@@ -296,7 +328,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testHostname()
     {
-        $this->object->hostname();
+        $o = $this->object->hostname();
+        $this->assertSame($this->object, $o);
 
         $this->assertTrue($this->object->evaluate('www.Nethesis.It'));
         $this->assertTrue($this->object->evaluate('A'));
@@ -314,7 +347,9 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testHostnameFqdn()
     {
-        $this->object->hostname(1);
+        $o = $this->object->hostname(1);
+        $this->assertSame($this->object, $o);
+
         $this->assertFalse($this->object->evaluate('host123'));
         $this->assertFalse($this->object->evaluate('davidep1'));
         $this->assertTrue($this->object->evaluate('host.domain'));
@@ -323,7 +358,9 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testHostnameSimple()
     {
-        $this->object->hostname(0, 0);
+        $o = $this->object->hostname(0, 0);
+        $this->assertSame($this->object, $o);
+
         $this->assertTrue($this->object->evaluate('host123'));
         $this->assertFalse($this->object->evaluate('host.domain'));
     }
@@ -338,7 +375,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testFailureInfo1()
     {
-        $this->object->minLength(3);
+        $o = $this->object->minLength(3);
+        $this->assertSame($this->object, $o);
 
         $this->assertFalse($this->object->evaluate('hi'));
 
@@ -369,7 +407,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testDateSmallEndian()
     {
-        $this->object->date('dd/mm/YYYY');
+        $o = $this->object->date('dd/mm/YYYY');
+        $this->assertSame($this->object, $o);
 
         $this->assertTrue($this->object->evaluate('31/12/1999'));
         $this->assertTrue($this->object->evaluate('1/1/1999'));
@@ -384,7 +423,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testDateMiddleEndian()
     {
-        $this->object->date('mm-dd-YYYY');
+        $o = $this->object->date('mm-dd-YYYY');
+        $this->assertSame($this->object, $o);
 
         $this->assertTrue($this->object->evaluate('12-31-1999'));
         $this->assertTrue($this->object->evaluate('1-1-1999'));
@@ -399,7 +439,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testDateBigEndian()
     {
-        $this->object->date('YYYY-mm-dd');
+        $o = $this->object->date('YYYY-mm-dd');
+        $this->assertSame($this->object, $o);
 
         $this->assertTrue($this->object->evaluate('1999-12-31'));
         $this->assertFalse($this->object->evaluate('1999-31-12'));
@@ -407,7 +448,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testDateDefault()
     {
-        $this->object->date();
+        $o = $this->object->date();
+        $this->assertSame($this->object, $o);
 
         $this->assertTrue($this->object->evaluate('1999-12-31'));
     }
@@ -421,7 +463,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testTime()
     {
-        $this->object->time();
+        $o = $this->object->time();
+        $this->assertSame($this->object, $o);
 
         $this->assertTrue($this->object->evaluate('00:00'));
         $this->assertTrue($this->object->evaluate('23:59'));
@@ -432,7 +475,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testPlatform1()
     {
-        $this->object->platform('test', 'a1', 'a2');
+        $o = $this->object->platform('test', 'a1', 'a2');
+        $this->assertSame($this->object, $o);
 
         $processMockSuccess = $this->getMock('\Nethgui\System\ProcessInterface', array(
             'getOutput',
@@ -469,7 +513,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testPlatform2()
     {
-        $this->object->platform('test', 'a1', 'a2');
+        $o = $this->object->platform('test', 'a1', 'a2');
+        $this->assertSame($this->object, $o);
 
         $processMockFail = $this->getMockBuilder('\Nethgui\System\ProcessInterface')
             //->setMethods(array('getExitStatus', 'getOutput'))
@@ -494,7 +539,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testEmailValid()
     {
-        $this->object->email();
+        $o = $this->object->email();
+        $this->assertSame($this->object, $o);
         $eval = $this->object->evaluate('my_valid.e-m4il@domain.tld');
         $failureInfo = $this->object->getFailureInfo();
         $this->assertTrue($eval, 'Validation failed. Reason: ' . ($eval === FALSE ? $failureInfo[0][0] : ''));
@@ -502,7 +548,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
     public function testEmailInvalid()
     {
-        $this->object->email();
+        $o = $this->object->email();
+        $this->assertSame($this->object, $o);
 
         $invalidEmails = array(
             // no domain            
