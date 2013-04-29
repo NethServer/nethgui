@@ -119,7 +119,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $this->object->ipV4Address();
 
         $this->assertTrue($this->object->evaluate('1.1.1.1'));
-        $this->assertFalse($this->object->evaluate('0.1.1.1'));
+        $this->assertTrue($this->object->evaluate('0.0.0.0'));
         $this->assertFalse($this->object->evaluate(''));
         $this->assertFalse($this->object->evaluate('a.b.c.d'));
     }
