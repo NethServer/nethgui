@@ -38,6 +38,16 @@ rm -rf ${RPM_BUILD_ROOT}
 %doc Documentation/*
 
 %changelog
+* Tue Apr 30 2013 Davide Principi <davide.principi@nethesis.it> - 1.1.0-1.ns6
+- Fixed hostname() validator #1903
+- Support for log viewer module: T() translator helper, enhanced ajaxMessage() #470
+- Button widget: honour "keepdisabled" CSS class #470
+- Framework: log RunTime exceptions; allow "txt" extension #470
+- ObjectPicker JS: initialize dynamically-created widgets to show static labels. Fixes #1880
+- Added NONNEGATIVE_INTEGER, NETMASK_OR_EMPTY validator #1752 #470
+- Relax validator for ip and netmask, accept value 0.0.0.0 #1801
+- Fixed Selector widget JS: disabled state not honoured #1781
+
 * Tue Mar 19 2013 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.0.2-1.ns6
 - Code cleanup
 - Handle cancelled ajax requests.  #1706
