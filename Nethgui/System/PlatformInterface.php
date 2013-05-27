@@ -219,6 +219,15 @@ interface PlatformInterface
      */
     const EMAIL = 1340359603;
 
+    /**
+     * An empty string
+     *
+     * This is useful to compose _OR_EMPTY rules
+     *
+     * @api
+     */
+    const EMPTYSTRING = 1368694834;
+
     /* ---------------------------------------8<-------------------------
          !!! TO DEVELOPERS !!!
 

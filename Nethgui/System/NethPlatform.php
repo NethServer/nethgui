@@ -414,6 +414,10 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
                 case self::EMAIL:
                     $validator->email();
                     break;
+
+                case self::EMPTYSTRING:
+                    $validator->maxLength(0);
+                    break;
                 
                 case NULL:
                     continue;
