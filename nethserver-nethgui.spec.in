@@ -38,6 +38,9 @@ rm -rf ${RPM_BUILD_ROOT}
 %doc Documentation/*
 
 %changelog
+* Wed May 29 2013 Davide Principi <davide.principi@nethesis.it> - 1.1.1-1.ns6
+- System\PlatformInterface: defined EMPTYSTRING validator helper #1746
+
 * Tue Apr 30 2013 Davide Principi <davide.principi@nethesis.it> - 1.1.0-1.ns6
 - Fixed hostname() validator #1903
 - Support for log viewer module: T() translator helper, enhanced ajaxMessage() #470
