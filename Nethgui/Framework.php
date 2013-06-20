@@ -290,9 +290,6 @@ class Framework
         try {
             $this->initializeModuleLoader();
             $this->enforceAuthorization();
-            if ( ! $this->session->isStarted()) {
-                $this->session->start();
-            }
             return $this->processRequest($request, $output);
         } catch (\Nethgui\Exception\HttpException $ex) {
             // no processing is required, rethrow:
@@ -470,6 +467,11 @@ class Framework
 
         // Send response to client
         $this->sendHttpResponse($content, $headers, $output);
+
+        // Accept new requests, by unlocking the session:
+        if ( $this->session->isStarted()) {
+            $this->session->unlock();
+        }
 
         if ($request->isValidated()) {
             // Run the "post-response" event queue (see #506)

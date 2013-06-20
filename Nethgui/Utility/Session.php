@@ -72,6 +72,20 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
         return $this;
     }
 
+    public function unlock()
+    {
+        static $unlocked;
+        if ($this->isStarted() && $unlocked !== TRUE) {
+            $key = get_class($this);
+            if (isset($this->data[$key]) && $this->data[$key] === TRUE) {
+                $this->php->phpWriteGlobalVariable($this->data, '_SESSION', self::SESSION_NAME);
+            }
+            $this->php->session_write_close();
+            $unlocked = TRUE;
+        }
+        return $this;
+    }
+
     public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
     {
         $this->php = $object;
@@ -85,6 +99,10 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
 
     public function retrieve($key)
     {
+        if ( ! $this->isStarted()) {
+            $this->start();
+        }
+        
         if ( ! isset($this->data[$key])) {
             return NULL;
         }
@@ -100,6 +118,9 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
 
     public function store($key, \Serializable $object)
     {
+        if ( ! $this->isStarted()) {
+            $this->start();
+        }
         $this->data[$key] = $object;
         return $this;
     }
@@ -120,10 +141,7 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
 
     public function __destruct()
     {
-        $key = get_class($this);
-        if (isset($this->data[$key]) && $this->data[$key] === TRUE) {
-            $this->php->phpWriteGlobalVariable($this->data, '_SESSION', self::SESSION_NAME);
-        }
+        $this->unlock();
     }
 
 }

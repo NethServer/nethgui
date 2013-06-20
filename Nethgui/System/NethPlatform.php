@@ -43,6 +43,11 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
      * @var \Nethgui\Authorization\UserInterface
      */
     private $user;
+
+    /**
+     *
+     * @var array
+     */
     private $eventQueue;
 
     /**
