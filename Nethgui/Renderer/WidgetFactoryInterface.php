@@ -363,5 +363,13 @@ interface WidgetFactoryInterface
      * @api
      */
     public function textList($name, $flags = 0);
+
+    /**
+     * Create widget that renders the given collection applying a specific template
+     *
+     * @param string $name A view element containing the collection data source
+     * @param int $flags
+     */
+    public function objectsCollection($name, $flags = 0);
 }
 define('NETHGUI_INHERITABLE_FLAGS', WidgetFactoryInterface::STATE_DISABLED | WidgetFactoryInterface::LABEL_ABOVE | WidgetFactoryInterface::LABEL_LEFT | WidgetFactoryInterface::LABEL_RIGHT | WidgetFactoryInterface::LABEL_NONE | WidgetFactoryInterface::STATE_UNOBSTRUSIVE);

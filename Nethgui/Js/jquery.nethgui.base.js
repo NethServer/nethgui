@@ -347,6 +347,14 @@
         },
         translate: function() {
             return Translator.prototype.translate.apply($.Nethgui.Translator, Array.prototype.slice.call(arguments, 0))
+        },
+        startThrobbing: function() {
+            this.element.hide();
+            this.element.after("<div class='throbber'>Loading...</div>");
+        },
+        endThrobbing: function() {
+            this.element.show();
+            this.element.next('.throbber').remove();
         }
     });
 
