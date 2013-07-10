@@ -58,6 +58,10 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
             ->setAttribute('htmlAttributes', array('for' => $id))
         ;
 
+        if($this->hasAttribute('labelSource')) {
+            $labelWidget->setAttribute('name', $this->getAttribute('labelSource'));
+        }
+
         if ($this->hasAttribute('flags')) {
             $labelWidget->setAttribute('flags', $this->getAttribute('flags'));
         }
