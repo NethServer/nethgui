@@ -38,7 +38,7 @@ interface SessionInterface
      * @param \Serializable $object
      * @return SessionInterface The same SessionInterface object
      */
-    public function store($key, \Serializable $object);
+    public function store($key, \Serializable $object = NULL);
 
     /**
      * Get a stored Serializable object

@@ -103,7 +103,7 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
             $this->start();
         }
         
-        if ( ! isset($this->data[$key])) {
+        if ( ! isset($this->data[$key]) || $this->data[$key] === NULL) {
             return NULL;
         }
 
@@ -116,7 +116,7 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
         return $object;
     }
 
-    public function store($key, \Serializable $object)
+    public function store($key, \Serializable $object = NULL)
     {
         if ( ! $this->isStarted()) {
             $this->start();
