@@ -54,17 +54,16 @@ class TextLabel extends \Nethgui\Widget\XhtmlWidget
         if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_DISABLED) {
             $cssClass .= ' disabled';
         }
-       
-        $args = array('${0}' => $this->view->offsetExists($name) && is_string($this->view[$name]) ? $this->view[$name] : '');
 
         if ($this->hasAttribute('args')) {
-            $args = array();
             if ( ! is_array($this->getAttribute('args'))) {
                 throw new \InvalidArgumentException(sprintf('%s: `args` attribute must be an array!', get_class($this)), 1322149926);
             }
-            foreach ($this->getAttribute('args') as $argName => $argValue) {
-                $args['${' . $argName . '}'] = strval($argValue);
-            }
+            $args = $this->prepareArgs($this->getAttribute('args'));
+        } elseif (is_array($this->view[$name])) {
+            $args = $this->prepareArgs($this->view[$name]);
+        } else {
+            $args = array('${0}' => strval($this->view[$name]));
         }
 
         $text = '';
@@ -86,14 +85,23 @@ class TextLabel extends \Nethgui\Widget\XhtmlWidget
 
         $attributes = array_merge($htmlAttributes, array(
             'class' => $cssClass,
-            'data-options' => json_encode(array('template' => $template, 'hsc' => $hsc, 'static' => ! $this->hasAttribute('name') ))
-            ));
+            'data-options' => json_encode(array('template' => $template, 'hsc' => $hsc, 'static' => ! $this->hasAttribute('name')))
+        ));
 
         $content = $this->openTag($tag, $attributes);
         $content .= $text;
         $content .= $this->closeTag($tag);
 
         return $content;
+    }
+
+    private function prepareArgs($inputArgs)
+    {
+        $args = array();
+        foreach ($inputArgs as $argName => $argValue) {
+            $args['${' . $argName . '}'] = strval($argValue);
+        }
+        return $args;
     }
 
 }
