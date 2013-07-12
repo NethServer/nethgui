@@ -30,7 +30,6 @@ namespace Nethgui\Renderer;
  */
 class HttpCommandReceiver extends \Nethgui\View\AbstractReceiverChain
 {
-
     private $headers;
 
     public function __construct(\Nethgui\View\CommandReceiverInterface $nextReceiver = NULL)
@@ -83,6 +82,9 @@ class HttpCommandReceiver extends \Nethgui\View\AbstractReceiverChain
     public function show(\Nethgui\View\ViewInterface $origin, $selector)
     {
         if ($origin->getTargetFormat() !== $origin::TARGET_XHTML) {
+            return;
+        }
+        if ($origin->getModuleUrl() === $origin->getModuleUrl($selector)) {
             return;
         }
         $this->httpRedirection($origin, 302, $origin->getModuleUrl($selector));
@@ -149,4 +151,3 @@ class HttpCommandReceiver extends \Nethgui\View\AbstractReceiverChain
     }
 
 }
-
