@@ -222,7 +222,7 @@ class CompositeController extends \Nethgui\Module\Composite implements \Nethgui\
         } else {
             // next path does not corresponds to a child action: start
             // a new query request to get the next view data:
-            $view->getCommandList($np)->sendQuery($view->getModuleUrl($np));
+            $view->getCommandList()->sendQuery($view->getModuleUrl($np));
         }
     }
 
