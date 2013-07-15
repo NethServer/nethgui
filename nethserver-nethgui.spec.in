@@ -38,6 +38,9 @@ rm -rf ${RPM_BUILD_ROOT}
 %doc Documentation/*
 
 %changelog
+* Mon Jul 15 2013 Davide Principi <davide.principi@nethesis.it> - 1.2.0-1.ns6
+- Collection controller: implemented ObjectsCollection UI widget - Feature #2049 [Nethgui]
+
 * Wed May 29 2013 Davide Principi <davide.principi@nethesis.it> - 1.1.1-1.ns6
 - System\PlatformInterface: defined EMPTYSTRING validator helper #1746
 
