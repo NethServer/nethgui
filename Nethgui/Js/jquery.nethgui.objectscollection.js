@@ -9,7 +9,7 @@
     $.widget('nethgui.ObjectsCollection', SUPER, {
         _deep: true,
         _create: function() {
-            this.state = $.extend({rendered: false, template: ''}, this.element.attr('data-state') ? $.parseJSON(this.element.attr('data-state')) : {});
+            this.state = $.extend({rendered: false, template: '', ifEmpty: ''}, this.element.attr('data-state') ? $.parseJSON(this.element.attr('data-state')) : {});
             SUPER.prototype._create.apply(this);
         },
         _updateView: function(value, selector) {
@@ -35,6 +35,10 @@
                     
                 });
             });
+
+            if(self.element.children().length === 0) {
+                self.element.html(self.state.ifEmpty);
+            }
 
         }
     });

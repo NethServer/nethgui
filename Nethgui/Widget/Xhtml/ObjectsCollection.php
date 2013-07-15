@@ -40,9 +40,12 @@ class ObjectsCollection extends \Nethgui\Widget\XhtmlWidget
         $tag = $this->getAttribute('tag', 'div');
         $cssClass = trim('ObjectsCollection ' . $this->getAttribute('class', ''));
         $key = $this->getAttribute('key', FALSE);
-        $template = $this->getAttribute('template', NULL);
+        $template = $this->getAttribute('template', FALSE);
+        $ifEmpty = $this->getAttribute('ifEmpty', FALSE);
 
         $renderer = new ElementRenderer($this->view, $name, '${key}', $template);
+        $emptyRenderer = new ElementRenderer($this->view, $name, '${key}', $ifEmpty);
+
         $content = '';
         $values = $this->view[$name];
 
@@ -56,7 +59,7 @@ class ObjectsCollection extends \Nethgui\Widget\XhtmlWidget
         return $this->openTag($tag, array(
                 'class' => $cssClass . ' ' . $this->getClientEventTarget(),
                 'id' => $this->view->getUniqueId($name),
-                'data-state' => json_encode(array('rendered' => ! empty($values), 'key' => $key, 'template' => $renderer->render())),
+                'data-state' => json_encode(array('rendered' => ! empty($values), 'key' => $key, 'template' => $renderer->render(), 'ifEmpty' => $emptyRenderer->render())),
             )) . $content . $this->closeTag($tag);
     }
 
