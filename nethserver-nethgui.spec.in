@@ -38,6 +38,9 @@ rm -rf ${RPM_BUILD_ROOT}
 %doc Documentation/*
 
 %changelog
+* Tue Jul 16 2013 Davide Principi <davide.principi@nethesis.it> - 1.2.1-1.ns6
+- Yum transaction aborted while installing nethserver-file-server group - Bug #2041 [Nethgui]
+
 * Mon Jul 15 2013 Davide Principi <davide.principi@nethesis.it> - 1.2.0-1.ns6
 - Collection controller: implemented ObjectsCollection UI widget - Feature #2049 [Nethgui]
 
