@@ -201,7 +201,7 @@ class GlobalFunctionWrapperTimedForDetachedCommand extends \Nethgui\Utility\PhpW
                 $exitCode = 0;
                 $exec = $output[1];
             }
-        } elseif (preg_match('#^/usr/bin/nohup .*#', $command) > 0) {
+        } elseif (preg_match('#^/usr/bin/setsid .*#', $command) > 0) {
             if ($this->getInstantName() === 'START') {
                 $output[] = '1234';
                 $exitCode = 0;

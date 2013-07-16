@@ -122,7 +122,7 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Utility\PhpConsumerI
 
     private function shellBackgroundInvocation($commandTemplate)
     {
-        return sprintf('/usr/bin/nohup %s >%s 2>%s & echo $!', $commandTemplate, escapeshellarg($this->outputFile), escapeshellarg($this->errorFile));
+        return sprintf('/usr/bin/setsid %s >%s 2>%s & echo $!', $commandTemplate, escapeshellarg($this->outputFile), escapeshellarg($this->errorFile));
     }
 
     public function addArgument($arg)
