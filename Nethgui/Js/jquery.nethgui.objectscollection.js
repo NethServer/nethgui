@@ -21,6 +21,10 @@
             var self = this;
             self.element.empty();
 
+	    if( ! $.isArray(value)) {
+		value = [];
+	    }
+
             $.each(value, function(index, record) {
                 var node = $(self.state.template.replacePlaceholders({'key': record[self.state.key]}));
                 node.appendTo(self.element);
