@@ -38,6 +38,9 @@ rm -rf ${RPM_BUILD_ROOT}
 %doc Documentation/*
 
 %changelog
+* Thu Jul 25 2013 Davide Principi <davide.principi@nethesis.it> - 1.2.2-1.ns6
+- ObjectsCollection UI widget: handle non-array values on JS side - Feature #2058 [Nethgui]
+
 * Tue Jul 16 2013 Davide Principi <davide.principi@nethesis.it> - 1.2.1-1.ns6
 - Yum transaction aborted while installing nethserver-file-server group - Bug #2041 [Nethgui]
 
