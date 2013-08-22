@@ -589,6 +589,10 @@ class Framework
      */
     private function createRequestModApache()
     {
+        if(ini_get("magic_quotes_gpc")) {
+            throw new \LogicException("magic_quotes_gpc directive must be disabled!", 1377176328);
+        }
+
         $pathInfo = array();
 
         if (isset($_SERVER['PATH_INFO']) && $_SERVER['PATH_INFO'] != '/') {
