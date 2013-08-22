@@ -61,7 +61,7 @@
                 if(wrap.elementTag) {
                     $('<' + wrap.elementTag + '>',  {
                         'class': wrap.elementClass
-                    }).text(text).appendTo(listNode);
+                    }).text("" + text).appendTo(listNode);
                 } else {
                     listNode.append(text);
                 }
