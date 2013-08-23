@@ -35,17 +35,10 @@ class ListComposite extends \Nethgui\Module\Composite implements \Nethgui\Contro
 
     public function bind(\Nethgui\Controller\RequestInterface $request)
     {
-        $arguments = $request->getPath();
-        $currentModuleIdentifier = \Nethgui\array_head($arguments);        
         foreach ($this->getChildren() as $childModule) {
-            if ( ! $childModule instanceof \Nethgui\Controller\RequestHandlerInterface) {
-                continue;
-            } elseif ($currentModuleIdentifier === $childModule->getIdentifier()) {
-                // Forward arguments to submodule:
-                $childModule->bind($request->spawnRequest($currentModuleIdentifier, \Nethgui\array_rest($arguments)));
-            } else {
+            if ($childModule instanceof \Nethgui\Controller\RequestHandlerInterface) {
                 $childModule->bind($request->spawnRequest($childModule->getIdentifier()));
-            } 
+            }
         }
     }
 
@@ -73,7 +66,6 @@ class ListComposite extends \Nethgui\Module\Composite implements \Nethgui\Contro
     {
         return FALSE;
     }
-
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {

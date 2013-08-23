@@ -42,6 +42,12 @@ class Menu extends \Nethgui\Controller\AbstractController
      */
     private $moduleSet;
 
+    public function initialize()
+    {
+        parent::initialize();
+        $this->declareParameter('search', Validate::ANYTHING);
+    }
+
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
     {
         $attributes = new SystemModuleAttributesProvider();
@@ -69,12 +75,6 @@ class Menu extends \Nethgui\Controller\AbstractController
     {
         $this->moduleSet = $moduleSet;
         return $this;
-    }
-
-    public function bind(\Nethgui\Controller\RequestInterface $request)
-    {
-        parent::bind($request);
-        $this->parameters['search'] = $request->getArgument('search');
     }
 
     private function searchTags(\Nethgui\View\ViewInterface $view, $query)

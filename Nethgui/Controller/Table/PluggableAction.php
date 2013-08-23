@@ -136,8 +136,8 @@ class PluggableAction extends \Nethgui\Controller\Table\AbstractAction implement
         // pass-through $request to inner action:
         $this->innerAction->bind($request);
 
-        // pass a subset to plugins, but keep request path intact:
-        $this->plugins->bind($request->spawnRequest($this->plugins->getIdentifier(), $request->getPath()));
+        // pass request subset to plugins
+        $this->plugins->bind($request->spawnRequest($this->plugins->getIdentifier()));
     }
 
     public function validate(\Nethgui\Controller\ValidationReportInterface $report)

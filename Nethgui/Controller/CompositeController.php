@@ -74,7 +74,7 @@ class CompositeController extends \Nethgui\Module\Composite implements \Nethgui\
         }
 
         if ($this->currentAction instanceof \Nethgui\Controller\RequestHandlerInterface) {
-            $this->currentAction->bind($request->spawnRequest($actionId, \Nethgui\array_rest($request->getPath())));
+            $this->currentAction->bind($request->spawnRequest($actionId));
         }
     }
 

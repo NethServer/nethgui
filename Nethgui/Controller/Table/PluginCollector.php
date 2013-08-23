@@ -75,7 +75,7 @@ class PluginCollector extends \Nethgui\Controller\ListComposite implements \Neth
     {
         foreach ($this->getChildren() as $module) {
             if ($module instanceof \Nethgui\Controller\RequestHandlerInterface) {
-                $module->bind($request->spawnRequest($module->getIdentifier(), $request->getPath()));
+                $module->bind($request->spawnRequest($module->getIdentifier()));
             }
         }
     }
