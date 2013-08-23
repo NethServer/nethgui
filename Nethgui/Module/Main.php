@@ -83,7 +83,7 @@ class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\Co
         $this->currentModuleIdentifier = \Nethgui\array_head($request->getPath());
 
         $idList = array_unique(array_merge(
-                $request->getParameterNames(), $this->systemModules, array($this->currentModuleIdentifier)
+                array_filter($request->getParameterNames(), 'is_array'), $this->systemModules, array($this->currentModuleIdentifier)
             ));
 
         try {

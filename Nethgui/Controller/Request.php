@@ -30,31 +30,12 @@ namespace Nethgui\Controller;
 class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\SessionConsumerInterface, \Nethgui\Log\LogConsumerInterface
 {
     /**
-     * @var array
-     */
-    private $postData;
-
-    /**
-     * @var array
-     */
-    private $getData;
-
-    /**
      *
      * @var \Nethgui\Utility\SessionInterface
      */
     private $session;
-
-    /**
-     * @var array
-     */
-    private $path;
-
-    /**
-     *
-     * @var \ArrayAccess
-     */
-    private $attributes;
+    private $attributes = array('format' => 'xhtml', 'isValidated' => FALSE, 'isMutation' => FALSE);
+    private $data = array();
 
     /**
      *
@@ -62,23 +43,9 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
      */
     private $log;
 
-    /**
-     *
-     * @param array $postData
-     * @param array $getData
-     * @param array $path
-     * @param \ArrayAccess $attributes
-     * @throws \InvalidArgumentException
-     */
-    public function __construct($postData, $getData, $path, \ArrayAccess $attributes)
+    public function __construct($data = array())
     {
-        if ( ! is_array($postData) && ! is_array($getData)) {
-            throw new \InvalidArgumentException(sprintf("%s: parameters and data must be of type `array`.", get_class($this)), 1325242431);
-        }
-        $this->postData = $postData;
-        $this->getData = $getData;
-        $this->path = $path;
-        $this->attributes = $attributes;
+        $this->data = $data;
     }
 
     public function setSession(\Nethgui\Utility\SessionInterface $session)
@@ -89,30 +56,30 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
 
     public function hasParameter($parameterName)
     {
-        return array_key_exists($parameterName, $this->postData);
+        return array_key_exists($parameterName, $this->data);
     }
 
     public function isEmpty()
     {
-        return empty($this->postData) && empty($this->getData);
+        return empty($this->data);
     }
 
     public function isMutation()
     {
-        return $this->getAttribute('submitted') === TRUE;
+        return $this->getAttribute('isMutation') === TRUE;
     }
 
     public function getParameterNames()
     {
-        return array_keys($this->postData);
+        return array_keys($this->data);
     }
 
     public function getParameter($parameterName)
     {
-        if ( ! isset($this->postData[$parameterName])) {
+        if ( ! isset($this->data[$parameterName])) {
             return NULL;
         }
-        return $this->postData[$parameterName];
+        return $this->data[$parameterName];
     }
 
     public function spawnRequest($subsetName, $path = array())
@@ -121,12 +88,9 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
         if ( ! is_array($parameterSubset)) {
             $parameterSubset = array();
         }
-        $argumentSubset = $this->getArgument($subsetName);
-        if ( ! is_array($argumentSubset)) {
-            $argumentSubset = array();
-        }
 
-        $instance = new static($parameterSubset, array_merge($this->getScalarArguments(), $argumentSubset), $path, $this->attributes);
+        $instance = new static($parameterSubset);
+        $instance->attributes = &$this->attributes;
 
         if (isset($this->session)) {
             $instance->setSession($this->session);
@@ -136,12 +100,11 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
             $instance->setLog($this->getLog());
         }
 
-        return $instance;
-    }
+        if (count($path) > 0) {
+            $this->getLog()->deprecated("%s: %s, \$path argument is DEPRECATED");
+        }
 
-    private function getScalarArguments()
-    {
-        return array_filter($this->getData, 'is_string');
+        return $instance;
     }
 
     public function getUser()
@@ -150,26 +113,31 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
 
         $user = $this->session->retrieve($key);
 
-        if (isset($this->session) && $user instanceof \Nethgui\Authorization\UserInterface) {
-            return $user;
+        if ( ! $user instanceof \Nethgui\Authorization\UserInterface) {
+            $user = \Nethgui\Authorization\User::getAnonymousUser();
         }
 
-        return \Nethgui\Authorization\User::getAnonymousUser();
+        if ($user instanceof \Nethgui\Log\LogConsumerInterface) {
+            $user->setLog($this->getLog());
+        }
+
+        return $user;
     }
 
     public function getPath()
     {
         $arr = &$this->data;
         $path = array();
-        while (is_array($arr)) {
+        while (TRUE) {
             reset($arr);
-            if (key($arr) === NULL) {
+            $part = key($arr);
+            if ($part === NULL || ! is_array($arr[$part])) {
                 break;
             }
-            $path[] = key($arr);
-            $arr = &$arr[key($arr)];
-        }
-        reset($this->data);
+            $path[] = $part;
+            $arr = &$arr[$part];
+        };
+
         return $path;
     }
 
@@ -194,33 +162,38 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
 
     public function getExtension()
     {
-        return $this->getAttribute('extension');
+        return $this->getAttribute('format');
+    }
+
+    public function getLanguage()
+    {
+        return $this->getAttribute('language');
     }
 
     public function isValidated()
     {
-        return $this->getAttribute('validated') === TRUE;
+        return $this->getAttribute('isValidated') === TRUE;
     }
 
     public function getArgument($argumentName)
     {
         $this->getLog()->deprecated();
-        if ( ! isset($this->getData[$argumentName])) {
+        if ( ! isset($this->data[$argumentName])) {
             return NULL;
         }
-        return $this->getData[$argumentName];
+        return $this->data[$argumentName];
     }
 
     public function getArgumentNames()
     {
         $this->getLog()->deprecated();
-        return array_keys($this->getData);
+        return array_keys($this->data);
     }
 
     public function hasArgument($argumentName)
     {
         $this->getLog()->deprecated();
-        return array_key_exists($argumentName, $this->getData);
+        return array_key_exists($argumentName, $this->data);
     }
 
     public function getLog()
@@ -235,6 +208,11 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
     {
         $this->log = $log;
         return $this;
+    }
+
+    public function toArray()
+    {
+        return $this->data;
     }
 
 }

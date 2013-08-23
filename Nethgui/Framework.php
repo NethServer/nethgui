@@ -307,17 +307,10 @@ class Framework
         }
     }
 
-    private function createLoginRequest(Controller\RequestInterface $originalRequest)
+    private function createLoginRequest(\Nethgui\Controller\Request $originalRequest)
     {
-        $path = array_merge(array('Login'), $originalRequest->getPath());
-
-        $attributes = array(
-            'extension' => 'xhtml',
-            'submitted' => FALSE,
-            'validated' => FALSE,
-        );
-
-        return new Controller\Request(array(), array(), $path, new \ArrayObject($attributes));
+        //$originalRequest->toArray()
+        return new \Nethgui\Controller\Request(array('Login' => $originalRequest->toArray()));
     }
 
     /**
@@ -403,7 +396,7 @@ class Framework
         $mainModule->validate($validationErrorsNotification);
 
         if ( ! $validationErrorsNotification->hasValidationErrors()) {
-            $request->setAttribute('validated', TRUE);
+            $request->setAttribute('isValidated', TRUE);
             $mainModule->process();
             // Run the "post-process" event queue (see #506)
             $platform->runEvents('post-process');
@@ -594,8 +587,13 @@ class Framework
             throw new \LogicException("magic_quotes_gpc directive must be disabled!", 1377176328);
         }
 
+        $isMutation = FALSE;
+        $postData = array();
+        $getData = $_GET;
+        $log = new \Nethgui\Log\Syslog();
         $pathInfo = array();
 
+        // Split PATH_INFO
         if (isset($_SERVER['PATH_INFO']) && $_SERVER['PATH_INFO'] != '/') {
             $pathInfo = array_rest(explode('/', $_SERVER['PATH_INFO']));
 
@@ -606,12 +604,25 @@ class Framework
             }
         }
 
-        $submitted = FALSE;
-        $postData = array();
-        $getData = array();
+        // Extract the requested output format (xhtml, json...)
+        $format = $this->extractTargetFormat($pathInfo);
+
+        // Transform the splitted PATH_INFO into a nested array, where each
+        // PATH_INFO part is the key of a nested level:
+        $pathInfoMod = array();
+        $cur = &$pathInfoMod;
+        foreach ($pathInfo as $pathPart) {
+            $cur[$pathPart] = array();
+            $cur = &$cur[$pathPart];
+        }
+
+        // FIXME:
+        // Copy root level scalar GET variables into the current module for backward
+        // compatibility:
+        $cur = array_merge(array_filter($_GET, 'is_string'), $cur);
 
         if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
-            $submitted = TRUE;
+            $isMutation = TRUE;
 
             if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/json; charset=UTF-8') {
                 // Decode RAW request
@@ -624,24 +635,14 @@ class Framework
                 // Use PHP global:
                 $postData = $_POST;
             }
-        } elseif (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'GET') {
-            $getData = $_GET;
         }
 
-        $attributes = new \ArrayObject();
-
-        $attributes['extension'] = $this->extractTargetFormat($pathInfo);
-        $attributes['submitted'] = $submitted;
-        $attributes['validated'] = FALSE;
-
-        /*
-         * Clear global variables
-         */
-        $_POST = array();
-        $_GET = array();
-
-        $request = new \Nethgui\Controller\Request($postData, $getData, $pathInfo, $attributes);
-        $request->setLog(new \Nethgui\Log\Syslog());
+        $R = array_replace_recursive($pathInfoMod, $getData, $postData);
+        $request = new \Nethgui\Controller\Request($R);
+        $request->setLog($log)
+            ->setAttribute('isMutation', $isMutation)
+            ->setAttribute('format', $format)
+        ;
 
         return $request;
     }
