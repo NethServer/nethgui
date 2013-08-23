@@ -27,7 +27,7 @@ namespace Nethgui\Controller;
  * @since 1.0
  * @internal
  */
-class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\SessionConsumerInterface
+class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\SessionConsumerInterface, \Nethgui\Log\LogConsumerInterface
 {
     /**
      * @var array
@@ -55,6 +55,12 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
      * @var \ArrayAccess
      */
     private $attributes;
+
+    /**
+     *
+     * @var \Nethgui\Log\LogInterface
+     */
+    private $log;
 
     /**
      *
@@ -126,10 +132,15 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
             $instance->setSession($this->session);
         }
 
+        if (isset($this->log)) {
+            $instance->setLog($this->getLog());
+        }
+
         return $instance;
     }
 
-    private function getScalarArguments() {
+    private function getScalarArguments()
+    {
         return array_filter($this->getData, 'is_string');
     }
 
@@ -148,7 +159,18 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
 
     public function getPath()
     {
-        return $this->path;
+        $arr = &$this->data;
+        $path = array();
+        while (is_array($arr)) {
+            reset($arr);
+            if (key($arr) === NULL) {
+                break;
+            }
+            $path[] = key($arr);
+            $arr = &$arr[key($arr)];
+        }
+        reset($this->data);
+        return $path;
     }
 
     public function getAttribute($name)
@@ -182,6 +204,7 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
 
     public function getArgument($argumentName)
     {
+        $this->getLog()->deprecated();
         if ( ! isset($this->getData[$argumentName])) {
             return NULL;
         }
@@ -190,12 +213,28 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
 
     public function getArgumentNames()
     {
+        $this->getLog()->deprecated();
         return array_keys($this->getData);
     }
 
     public function hasArgument($argumentName)
     {
+        $this->getLog()->deprecated();
         return array_key_exists($argumentName, $this->getData);
+    }
+
+    public function getLog()
+    {
+        if ( ! isset($this->log)) {
+            return new \Nethgui\Log\Nullog();
+        }
+        return $this->log;
+    }
+
+    public function setLog(\Nethgui\Log\LogInterface $log)
+    {
+        $this->log = $log;
+        return $this;
     }
 
 }

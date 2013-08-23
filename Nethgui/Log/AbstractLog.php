@@ -39,12 +39,12 @@ abstract class AbstractLog implements LogInterface, \Nethgui\Utility\PhpConsumer
      * @return AbstractLog
      */
     abstract protected function message($level, $message);
-
     /**
      * @var \Nethgui\Utility\PhpWrapper
      */
     protected $phpWrapper;
     private $level;
+    protected static $emitted = array();
 
     /**
      * @see setLevel()
@@ -53,7 +53,7 @@ abstract class AbstractLog implements LogInterface, \Nethgui\Utility\PhpConsumer
     public function __construct($level = E_ALL)
     {
         $this->level = $level;
-        $this->phpWrapper = new \Nethgui\Utility\PhpWrapper();        
+        $this->phpWrapper = new \Nethgui\Utility\PhpWrapper();
     }
 
     public function getLevel()
@@ -113,6 +113,20 @@ abstract class AbstractLog implements LogInterface, \Nethgui\Utility\PhpConsumer
 
         $this->message(__FUNCTION__, $message);
         return $this;
+    }
+
+    public function deprecated($message = "%s: method %s is DEPRECATED!")
+    {
+
+        $backtrace = debug_backtrace();
+        $caller = $backtrace[2];
+        $callee = $backtrace[1];
+        $calleeInfo = $callee['class'] . '::' . $callee['function'] . '()';
+        $callerInfo = $caller['class'] . '::' . $caller['function'] . '()';
+        if ( ! isset(static::$emitted[$callerInfo])) {
+            $this->warning(sprintf($message, $callerInfo, $calleeInfo));
+            static::$emitted[$callerInfo] = TRUE;
+        }
     }
 
     public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)

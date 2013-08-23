@@ -574,7 +574,7 @@ class Framework
      * @api
      * @see dispatch()
      * @param integer $type - Not used
-     * @return \Nethgui\Controller\RequestInterface
+     * @return \Nethgui\Controller\Request
      */
     public function createRequest($type = NULL)
     {
@@ -582,10 +582,11 @@ class Framework
     }
 
     /**
-     * Creates a new Controller\Request object from current HTTP request.
+     * Creates a new \Nethgui\Controller\Request object from
+     * current HTTP request.
      *
      * @param array $parameters
-     * @return Controller\RequestInterface
+     * @return \Nethgui\Controller\Request
      */
     private function createRequestModApache()
     {
@@ -639,7 +640,10 @@ class Framework
         $_POST = array();
         $_GET = array();
 
-        return new \Nethgui\Controller\Request($postData, $getData, $pathInfo, $attributes);
+        $request = new \Nethgui\Controller\Request($postData, $getData, $pathInfo, $attributes);
+        $request->setLog(new \Nethgui\Log\Syslog());
+
+        return $request;
     }
 
     private function extractTargetFormat(&$pathInfo)

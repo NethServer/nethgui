@@ -49,6 +49,7 @@ interface RequestInterface
      * @param string $parameterName
      * @return mixed
      * @api
+     * @deprecated
      */
     public function getArgument($argumentName);
 
@@ -80,6 +81,7 @@ interface RequestInterface
      * @param string $argumentName
      * @return bool
      * @api
+     * @deprecated
      */
     public function hasArgument($argumentName);
 
@@ -98,6 +100,7 @@ interface RequestInterface
      *
      * @return array
      * @api
+     * @deprecated
      */
     public function getArgumentNames();
 
