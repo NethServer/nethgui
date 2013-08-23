@@ -469,7 +469,7 @@ class Framework
         $this->sendHttpResponse($content, $headers, $output);
 
         // Accept new requests, by unlocking the session:
-        if ( $this->session->isStarted()) {
+        if ($this->session->isStarted()) {
             $this->session->unlock();
         }
 
@@ -589,7 +589,7 @@ class Framework
      */
     private function createRequestModApache()
     {
-        if(ini_get("magic_quotes_gpc")) {
+        if (ini_get("magic_quotes_gpc")) {
             throw new \LogicException("magic_quotes_gpc directive must be disabled!", 1377176328);
         }
 
@@ -599,9 +599,7 @@ class Framework
             $pathInfo = array_rest(explode('/', $_SERVER['PATH_INFO']));
 
             foreach ($pathInfo as $pathPart) {
-                if ($pathPart === '.'
-                    || $pathPart === '..'
-                    || $pathPart === '') {
+                if ($pathPart === '.' || $pathPart === '..' || $pathPart === '') {
                     throw new Exception\HttpException('Bad Request', 400, 1322217901);
                 }
             }
