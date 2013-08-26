@@ -34,7 +34,24 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
      * @var \Nethgui\Utility\SessionInterface
      */
     private $session;
-    private $attributes = array('format' => 'xhtml', 'isValidated' => FALSE, 'isMutation' => FALSE);
+
+    /**
+     *
+     * @var array
+     */
+    private $attributes = array(
+        'format' => 'xhtml',
+        'languageCode' => '',
+        'languageCodeDefault' => 'en',
+        'isValidated' => FALSE,
+        'isMutation' => FALSE,
+        'originalRequest' => FALSE,
+    );
+
+    /**
+     *
+     * @var array
+     */
     private $data = array();
 
     /**
@@ -46,6 +63,7 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
     public function __construct($data = array())
     {
         $this->data = $data;
+        $this->setAttribute('originalRequest', $this);
     }
 
     public function setSession(\Nethgui\Utility\SessionInterface $session)
@@ -162,17 +180,38 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
 
     public function getExtension()
     {
+        return $this->getFormat();
+    }
+
+    public function getFormat()
+    {
         return $this->getAttribute('format');
     }
 
-    public function getLanguage()
+    public function getLanguageCode()
     {
-        return $this->getAttribute('language');
+        $lang = $this->getAttribute('languageCode');
+        if ( ! $lang) {
+            $lang = $this->getUser()->getLanguageCode();
+        }
+        if ( ! $lang) {
+            $lang = $this->getAttribute('languageCodeDefault');
+        }
+        return $lang;
     }
 
     public function isValidated()
     {
         return $this->getAttribute('isValidated') === TRUE;
+    }
+
+    /**
+     * Experimental method that returns the original request path
+     *
+     * @return array
+     */
+    public function getOriginalPath() {
+        return $this->getAttribute('originalRequest')->getPath();
     }
 
     public function getArgument($argumentName)

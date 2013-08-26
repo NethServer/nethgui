@@ -310,7 +310,9 @@ class Framework
     private function createLoginRequest(\Nethgui\Controller\Request $originalRequest)
     {
         //$originalRequest->toArray()
-        return new \Nethgui\Controller\Request(array('Login' => $originalRequest->toArray()));
+        $r = new \Nethgui\Controller\Request(array('Login' => $originalRequest->toArray()));
+        $r->setAttribute('languageCode', $originalRequest->getLanguageCode());
+        return $r;
     }
 
     /**
@@ -402,8 +404,8 @@ class Framework
             $platform->runEvents('post-process');
         }
 
-        $targetFormat = $request->getExtension();
-        $translator = new \Nethgui\View\Translator($user->getLanguageCode(), $this->getFileNameResolver(), array_keys(iterator_to_array($this->namespaceMap)));
+        $targetFormat = $request->getFormat();
+        $translator = new \Nethgui\View\Translator($request->getLanguageCode(), $this->getFileNameResolver(), array_keys(iterator_to_array($this->namespaceMap)));
         $translator->setLog($this->log);
         $rootView = new \Nethgui\View\View($targetFormat, $mainModule, $translator, $this->urlParts);
 
@@ -592,10 +594,22 @@ class Framework
         $getData = $_GET;
         $log = new \Nethgui\Log\Syslog();
         $pathInfo = array();
+        $languageCode = '';
+        $languageCodeDefault = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
 
         // Split PATH_INFO
         if (isset($_SERVER['PATH_INFO']) && $_SERVER['PATH_INFO'] != '/') {
             $pathInfo = array_rest(explode('/', $_SERVER['PATH_INFO']));
+
+            $pathHead = array_head($pathInfo);
+
+            // FIXME: read the language codes from Language/ subdirs
+            if ( ! in_array($pathHead, array('en', 'it'))) {
+                throw new Exception\HttpException('Language not found', 404, 1377519247);
+            }
+            $languageCode = $pathHead;
+            $pathInfo = array_rest($pathInfo);
+
 
             foreach ($pathInfo as $pathPart) {
                 if ($pathPart === '.' || $pathPart === '..' || $pathPart === '') {
@@ -603,6 +617,9 @@ class Framework
                 }
             }
         }
+
+        // Append the language code to the url parts:
+        $this->urlParts[] = ($languageCode ? $languageCode : $languageCodeDefault) . '/';
 
         // Extract the requested output format (xhtml, json...)
         $format = $this->extractTargetFormat($pathInfo);
@@ -642,6 +659,8 @@ class Framework
         $request->setLog($log)
             ->setAttribute('isMutation', $isMutation)
             ->setAttribute('format', $format)
+            ->setAttribute('languageCode', $languageCode)
+            ->setAttribute('languageCodeDefault', $languageCodeDefault)
         ;
 
         return $request;

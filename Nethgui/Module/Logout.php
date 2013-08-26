@@ -59,10 +59,7 @@ class Logout extends \Nethgui\Controller\AbstractController implements \Nethgui\
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
-        if ($view->getTargetFormat() === $view::TARGET_XHTML) {
-            $view['nextPath'] = $_SERVER['PATH_INFO'];
-        }
-
+        $view['nextPath'] = '/' . implode('/', $this->getRequest()->getOriginalPath());
         $view->setTemplate(function(\Nethgui\Renderer\Xhtml $renderer) {
                 $buttonId = $renderer->getUniqueId('Logout');
                 $js = <<<"EOJS"

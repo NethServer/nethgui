@@ -21,10 +21,7 @@ namespace Nethgui\Controller;
  */
 
 /**
- * A User Request.
- *
- * A RequestInterface object carries parameters submitted by the
- * User to a Module (and its submodules).
+ * A Request is the input data to process
  *
  * @api
  * @since 1.0
@@ -48,7 +45,6 @@ interface RequestInterface
      * Get an argument value
      * @param string $parameterName
      * @return mixed
-     * @api
      * @deprecated
      */
     public function getArgument($argumentName);
@@ -91,7 +87,7 @@ interface RequestInterface
      * Values submitted by the User are called "parameters".
      * @see getModuleArguments()
      * @return array
-     * @api
+     * @deprecated
      */
     public function getParameterNames();
 
@@ -99,7 +95,6 @@ interface RequestInterface
      * Get a list of argument names
      *
      * @return array
-     * @api
      * @deprecated
      */
     public function getArgumentNames();
@@ -150,7 +145,25 @@ interface RequestInterface
      *
      * "File extension" is the substring after the last "." character in the
      * URL path.
+     *
+     * @deprecated Use getFormat()
      * @return string
      */
     public function getExtension();
+
+    /**
+     * The requested output language, used to build the Translator
+     *
+     * @api
+     * @return string
+     */
+    public function getLanguageCode();
+
+    /**
+     * The requested output format, used to build the Renderer object
+     *
+     * @api
+     * @return string
+     */
+    public function getFormat();
 }

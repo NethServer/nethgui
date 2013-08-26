@@ -57,7 +57,7 @@ class NullRequest implements \Nethgui\Controller\RequestInterface
 
     public function getExtension()
     {
-        return '';
+        return $this->getFormat();
     }
 
     public function getParameter($parameterName)
@@ -118,6 +118,16 @@ class NullRequest implements \Nethgui\Controller\RequestInterface
     public function getSession()
     {
         throw new \Exception('not implemented');
+    }
+
+    public function getFormat()
+    {
+        return '';
+    }
+
+    public function getLanguageCode()
+    {
+        return '';
     }
     
 }

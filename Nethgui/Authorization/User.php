@@ -28,7 +28,6 @@ namespace Nethgui\Authorization;
  */
 class User implements \Nethgui\Authorization\UserInterface, \Serializable, \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Log\LogConsumerInterface
 {
-
     /**
      *  @var \Nethgui\Log\LogInterface
      */
@@ -116,17 +115,10 @@ class User implements \Nethgui\Authorization\UserInterface, \Serializable, \Neth
 
     public function getLanguageCode()
     {
-        if (isset($this->preferences['lang'])) {
-            return $this->preferences['lang'];
-        }
-
-        $httpLang = $this->php->phpReadGlobalVariable('_SERVER', 'HTTP_ACCEPT_LANGUAGE');
-
-        if (is_null($httpLang)) {
-            return 'en';
-        }
-
-        return strtolower(substr($httpLang, 0, 2));
+        if ( ! isset($this->preferences['lang'])) {
+            return '';
+        }       
+        return $this->preferences['lang'];
     }
 
     /**

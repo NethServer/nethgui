@@ -65,7 +65,7 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
 
     public function getDefaultLanguageCode()
     {
-        return $this->getRequest()->getUser()->getLanguageCode();
+        return $this->getRequest()->getLanguageCode();
     }
 
     public function process()
@@ -127,7 +127,7 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
             if(count($path) === 0) {
                 return '/';
             } else {
-                return '/' . implode('/', $path);
+                return '/' . implode('/', $path) . sprintf(( $this->parameters['language'] !== $this->getRequest()->getLanguageCode() ? '?Language[switch]=%s' : ''), $this->parameters['language']);
             }            
         }
         return FALSE;
