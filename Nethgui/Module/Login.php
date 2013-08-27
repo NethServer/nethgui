@@ -56,6 +56,7 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
 
         $this->declareParameter('username', Valid::NOTEMPTY);
         $this->declareParameter('password', Valid::NOTEMPTY);
+        $this->declareParameter('path', Valid::NOTEMPTY);
         $this->declareParameter('language', $languageValidator, array($this, 'getDefaultLanguageCode'));
         $this->declareParameter('hostname', FALSE, array('configuration', 'SystemName'));
         $this->declareParameter('languageDatasource', FALSE, function () use ($languages) {
@@ -85,7 +86,6 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
-        $view['path'] = '/Login/' . implode('/', $this->getRequest()->getPath());
         $user = $this->getRequest()->getUser();
 
         $view->setTemplate('Nethgui\Template\Login');
@@ -102,10 +102,10 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
         $isAuthenticatedUserLoggingInAgain = $user->isAuthenticated()
             && ! $this->getRequest()->isMutation();
 
-        $isUnauthUserRequest = ! $user->isAuthenticated()
+        $isUnauthUserRequest = ! $user->isAuthenticated() 
             && ! $this->getRequest()->isMutation()
-            && count($this->getRequest()->getPath()) > 0;
-        
+            && $this->parameters['path'];
+
         if ($isInvalidLoginRequest) {
             $view->getCommandList('/Notification')
                 ->httpHeader('HTTP/1.1 400 Invalid credentials supplied')
@@ -123,12 +123,11 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
     public function nextPath()
     {
         if ($this->getRequest()->isMutation() && $this->getRequest()->getUser()->isAuthenticated()) {
-            $path = $this->getRequest()->getPath();
-            if(count($path) === 0) {
+            if ( ! $this->parameters['path']) {
                 return '/';
             } else {
-                return '/' . implode('/', $path) . sprintf(( $this->parameters['language'] !== $this->getRequest()->getLanguageCode() ? '?Language[switch]=%s' : ''), $this->parameters['language']);
-            }            
+                return $this->parameters['path'] . sprintf(( $this->parameters['language'] !== $this->getRequest()->getLanguageCode() ? '?Language[switch]=%s' : ''), $this->parameters['language']);
+            }
         }
         return FALSE;
     }

@@ -309,8 +309,9 @@ class Framework
 
     private function createLoginRequest(\Nethgui\Controller\Request $originalRequest)
     {
-        //$originalRequest->toArray()
-        $r = new \Nethgui\Controller\Request(array('Login' => $originalRequest->toArray()));
+        $m = $originalRequest->toArray();
+        unset($m[\Nethgui\array_head($originalRequest->getPath())]);
+        $r = new \Nethgui\Controller\Request(array_replace_recursive(array('Login' => array('path' => '/' . implode('/',$originalRequest->getPath()))), $m));
         $r->setAttribute('languageCode', $originalRequest->getLanguageCode());
         return $r;
     }

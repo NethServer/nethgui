@@ -3,11 +3,12 @@
 /* @var $view Nethgui\Renderer\Xhtml */
 $this->rejectFlag($view::INSET_FORM);
 
-echo $view->form()->setAttribute('action', $view['path'])
+echo $view->form()
     ->insert($view->header('hostname')->setAttribute('template', $T('Welcome on ${0}')))
     ->insert($view->textInput('username'))
     ->insert($view->textInput('password', $view::TEXTINPUT_PASSWORD))
     ->insert($view->selector('language', $view::SELECTOR_DROPDOWN))
+    ->insert($view->hidden('path'))
     ->insert($view->buttonList()
         ->insert($view->button('Login', $view::BUTTON_SUBMIT)))
 ;
