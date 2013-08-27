@@ -56,12 +56,6 @@ class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\Co
      */
     private $decoratorParameter;
 
-    /**
-     *
-     * @var array
-     */
-    private $systemModules;
-
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
     {
         $attributes = new SystemModuleAttributesProvider();
@@ -75,17 +69,15 @@ class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\Co
         $this->template = $template;
         $this->decoratorParameter = array();
         $this->modules = $modules;
-        $this->systemModules = array('Menu', 'Notification', 'Resource', 'Logout');
     }
 
     public function bind(\Nethgui\Controller\RequestInterface $request)
     {
+        $idList = array_filter($request->getParameterNames(), function($p) use ($request) {
+            return is_array($request->getParameter($p));
+        });
         $this->currentModuleIdentifier = \Nethgui\array_head($request->getPath());
-
-        $idList = array_unique(array_merge(
-                array_filter($request->getParameterNames(), 'is_array'), $this->systemModules, array($this->currentModuleIdentifier)
-            ));
-
+       
         try {
             foreach ($idList as $moduleIdentifier) {
                 $moduleInstance = $this->modules->getModule($moduleIdentifier);

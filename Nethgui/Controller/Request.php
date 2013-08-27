@@ -72,6 +72,14 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
         return $this;
     }
 
+    public function setParameter($name, $value)
+    {
+        if ( ! isset($this->data[$name])) {
+            $this->data[$name] = $value;
+        }        
+        return $this;
+    }
+
     public function hasParameter($parameterName)
     {
         return array_key_exists($parameterName, $this->data);
@@ -171,7 +179,7 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
     public function setAttribute($name, $value)
     {
         if ( ! isset($this->attributes[$name])) {
-            throw new \LogicException(sprintf("%s: Cannot change the unknown attribute `%s`", get_class($this), $name), 1325237327);
+            throw new \LogicException(sprintf("%s: Cannot change the unknown attribute `%s`", __CLASS__, $name), 1325237327);
         }
 
         $this->attributes[$name] = $value;
@@ -210,7 +218,8 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
      *
      * @return array
      */
-    public function getOriginalPath() {
+    public function getOriginalPath()
+    {
         return $this->getAttribute('originalRequest')->getPath();
     }
 
