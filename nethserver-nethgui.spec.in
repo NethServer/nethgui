@@ -38,6 +38,10 @@ rm -rf ${RPM_BUILD_ROOT}
 %doc Documentation/*
 
 %changelog
+* Wed Aug 28 2013 Davide Principi <davide.principi@nethesis.it> - 1.2.3-1.ns6
+- Group (User) UI module: opening a group for update fails - Bug #2082 [NethServer]
+- Single and double quotes characters escaped - Bug #2068 [NethServer]
+
 * Thu Jul 25 2013 Davide Principi <davide.principi@nethesis.it> - 1.2.2-1.ns6
 - ObjectsCollection UI widget: handle non-array values on JS side - Feature #2058 [Nethgui]
 
