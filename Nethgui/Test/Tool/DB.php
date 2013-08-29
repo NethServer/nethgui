@@ -62,9 +62,9 @@ class DB extends \Nethgui\Test\Tool\MockState
         return array('setProp', array($key, $prop));
     }
 
-    public static function getAll($type = NULL, $filter = NULL)
+    public static function getAll($type = NULL)
     {
-        return array('getAll', array($type, $filter));
+        return array('getAll', array($type));
     }
 
     public static function deleteKey($key)

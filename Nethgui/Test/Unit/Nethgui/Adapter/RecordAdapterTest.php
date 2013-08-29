@@ -42,7 +42,7 @@ class RecordAdapterTest extends \PHPUnit_Framework_TestCase
             }
         }
 
-        return $db->set(DB::getAll('T', FALSE), $initialTable);
+        return $db->set(DB::getAll('T'), $initialTable);
     }
 
     public function testSetKeyValue1()
