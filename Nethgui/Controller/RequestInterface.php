@@ -76,7 +76,6 @@ interface RequestInterface
      *
      * @param string $argumentName
      * @return bool
-     * @api
      * @deprecated
      */
     public function hasArgument($argumentName);
@@ -87,7 +86,7 @@ interface RequestInterface
      * Values submitted by the User are called "parameters".
      * @see getModuleArguments()
      * @return array
-     * @deprecated
+     * @api
      */
     public function getParameterNames();
 
