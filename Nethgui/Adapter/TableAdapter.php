@@ -201,14 +201,16 @@ class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
             $this->lazyInitialization();
         }
 
-        if ( ! is_array($value) && ! $value instanceof \Traversable) {
+        if (is_array($value)) {
+            $value = new \ArrayObject($value);
+        } elseif ( ! $value instanceof \Traversable) {
             throw new \InvalidArgumentException(sprintf('%s: Value must be an array!', __CLASS__), 1322149789);
         }
 
         if (isset($this[$offset])) {
-            $this->changes[] = array('setProp', $offset, $value);
+            $this->changes[] = array('setProp', $offset, iterator_to_array($value));
         } else {
-            $this->changes[] = array('setKey', $offset, $this->type, $value);
+            $this->changes[] = array('setKey', $offset, $this->type, iterator_to_array($value));
         }
 
         $this->data->offsetSet($offset, $value);
