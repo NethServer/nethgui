@@ -162,7 +162,7 @@ class RecordAdapterTest extends \PHPUnit_Framework_TestCase
      */
     public function testSaveUninitialized()
     {
-        $fixture = new \Nethgui\Adapter\RecordAdapter();        
+        $fixture = new \Nethgui\Adapter\RecordAdapter();
         $fixture->setKeyValue('k1');
         $fixture['field1'] = 'change something';
         $fixture->save();

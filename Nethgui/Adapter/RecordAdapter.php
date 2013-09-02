@@ -30,6 +30,7 @@ namespace Nethgui\Adapter;
  * 
  * Transactions:
  * CREATED -> CLEAN
+ * CREATED -> DIRTY, when the key has been set and does not exist in arr
  * CLEAN -> DIRTY -> DELETED
  * CLEAN -> DELETED
  * DIRTY -> CLEAN
@@ -45,7 +46,7 @@ class RecordAdapter implements \Nethgui\Adapter\AdapterInterface, \ArrayAccess, 
     const DELETED = 3;
 
     /**
-     *
+     * The records container
      * @var \ArrayAccess
      */
     protected $arr;
@@ -63,7 +64,7 @@ class RecordAdapter implements \Nethgui\Adapter\AdapterInterface, \ArrayAccess, 
     private $state = 0;
 
     /**
-     *
+     * This is our record, the fields container
      * @var \ArrayObject
      */
     private $data = NULL;
@@ -117,16 +118,16 @@ class RecordAdapter implements \Nethgui\Adapter\AdapterInterface, \ArrayAccess, 
 
     public function save()
     {
+        if (is_null($this->arr)) {
+            throw new \LogicException(sprintf('%s: you must setTableData() before save().', __CLASS__), 1354113867);
+        }
+
         if ( ! $this->isModified()) {
             return FALSE;
         }
-
+        
         if (is_null($this->getKeyValue())) {
             throw new \LogicException(sprintf('%s: you must setKeyValue() before save().', __CLASS__), 1336388582);
-        }
-
-        if (is_null($this->arr)) {
-            throw new \LogicException(sprintf('%s: you must setTableData() before save().', __CLASS__), 1354113867);
         }
 
         if ($this->state === self::DELETED) {
@@ -191,19 +192,20 @@ class RecordAdapter implements \Nethgui\Adapter\AdapterInterface, \ArrayAccess, 
     {
         $keyValue = $this->getKeyValue();
 
-        if ($keyValue !== NULL && $this->arr !== NULL && $this->arr->offsetExists($keyValue)) {
-            $current = $this->arr->offsetGet($keyValue);
-        } else {
-            $current = NULL;
+        // Nothing to do if setTableData() has not been called
+        if ($this->arr === NULL) {
+            return;
         }
 
-        if (is_null($current)) {
-            $current = new \ArrayObject();
+        // Mark record as modified if we are a new record
+        if ( ! $this->arr->offsetExists($keyValue)) {
+            $this->state = self::DIRTY;
+            return;
         }
 
         // DB fields are transfered into the object storage. Record state
         // is unchanged and existing values are retained.
-        foreach ($current as $key => $value) {
+        foreach ($this->arr->offsetGet($keyValue) as $key => $value) {
             if ( ! $this->data->offsetExists($key)) {
                 $this->data->offsetSet($key, $value);
             }
