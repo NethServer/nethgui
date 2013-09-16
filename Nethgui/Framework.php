@@ -596,7 +596,7 @@ class Framework
         $log = new \Nethgui\Log\Syslog();
         $pathInfo = array();
         $languageCode = '';
-        $languageCodeDefault = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+        $languageCodeDefault = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2) : 'en';
 
         // Split PATH_INFO
         if (isset($_SERVER['PATH_INFO']) && $_SERVER['PATH_INFO'] != '/') {
