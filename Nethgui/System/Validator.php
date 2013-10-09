@@ -668,7 +668,7 @@ class Validator implements \Nethgui\System\ValidatorInterface
         $process = $this->platform->exec('/usr/bin/sudo /sbin/e-smith/validate ${@}', $args);
 
         if ($process->getExitCode() !== 0 && $this->platform instanceof \Nethgui\Log\LogConsumerInterface) {
-            $this->platform->getLog()->notice(sprintf('platformValidator (%s): %s', implode(', ', $args), strtr($process->getOutput(), "\n", " ")));
+            NETHGUI_DEBUG && $this->platform->getLog()->notice(sprintf('platformValidator (%s): %s', implode(', ', $args), strtr($process->getOutput(), "\n", " ")));
             $outputArray = $process->getOutputArray();
             $reason = array_pop($outputArray);
             // inject reason message in failure template arguments. Refs #1058
