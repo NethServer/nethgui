@@ -56,7 +56,7 @@ interface RequestInterface
      * to the $subsetName parameter.
      *
      * @param string $subsetName The name of parameters/arguments
-     * @param array $path URL path segments values
+     * @param array (DEPRECATED) $path URL path segments values
      * @return RequestInterface
      * @api
      */
