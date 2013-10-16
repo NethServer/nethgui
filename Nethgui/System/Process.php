@@ -90,6 +90,7 @@ class Process implements ProcessInterface, \Nethgui\Utility\PhpConsumerInterface
     public function addArgument($arg)
     {
         $this->arguments[] = $arg;
+        return $this;
     }
 
     public function kill()

@@ -338,6 +338,7 @@ class Framework
 
         $platform = new \Nethgui\System\NethPlatform($user);
         $platform
+            ->setPhpWrapper(new \Nethgui\Utility\PhpWrapper())
             ->setLog($this->log)
             ->setSession($this->session)
             ->setPolicyDecisionPoint($this->pdp)

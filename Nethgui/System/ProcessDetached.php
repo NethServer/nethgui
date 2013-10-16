@@ -1,4 +1,5 @@
 <?php
+
 namespace Nethgui\System;
 
 /*
@@ -27,7 +28,6 @@ namespace Nethgui\System;
  */
 class ProcessDetached implements ProcessInterface, \Nethgui\Utility\PhpConsumerInterface, \Serializable
 {
-
     /**
      * @var string
      */
@@ -42,12 +42,6 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Utility\PhpConsumerI
      * @var integer
      */
     private $state;
-
-    /**
-     *
-     * @var ProcessInterface
-     */
-    private $innerCommand;
 
     /**
      * @var integer
@@ -76,6 +70,18 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Utility\PhpConsumerI
 
     /**
      *
+     * @var array
+     */
+    private $arguments = array();
+
+    /**
+     *
+     * @var string
+     */
+    private $command;
+
+    /**
+     *
      * @var \Nethgui\Utility\PhpWrapper
      */
     protected $phpWrapper;
@@ -89,17 +95,14 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Utility\PhpConsumerI
         $this->outputFile = tempnam($dir, $prefix);
         $this->errorFile = tempnam($dir, $prefix);
         $this->outputPosition = 0;
-        $this->innerCommand = new Process($this->shellBackgroundInvocation($command), $arguments);
-        $this->identifier = strtoupper(uniqid());
-        $this->innerCommand->setPhpWrapper($this->phpWrapper);
+        $this->arguments = $arguments;
+        $this->command = $command;
+        $this->identifier = uniqid();
     }
 
     public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
     {
         $this->phpWrapper = $object;
-        if ($this->innerCommand instanceof \Nethgui\Utility\PhpConsumerInterface) {
-            $this->innerCommand->setPhpWrapper($object);
-        }
         return $this;
     }
 
@@ -122,12 +125,13 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Utility\PhpConsumerI
 
     private function shellBackgroundInvocation($commandTemplate)
     {
-        return sprintf('/usr/bin/setsid %s >%s 2>%s & echo $!', $commandTemplate, escapeshellarg($this->outputFile), escapeshellarg($this->errorFile));
+        return sprintf('/bin/env PTRACK_SOCKETPATH=/var/run/ptrack/%s.sock /usr/bin/setsid /usr/libexec/nethserver/ptrack %s >%s 2>%s & echo $!', $this->getIdentifier(), $commandTemplate, escapeshellarg($this->outputFile), escapeshellarg($this->errorFile));
     }
 
     public function addArgument($arg)
     {
-        $this->innerCommand->addArgument($arg);
+        $this->arguments[] = $arg;
+        return $this;
     }
 
     public function exec()
@@ -136,8 +140,9 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Utility\PhpConsumerI
             throw new \UnexpectedValueException(sprintf('%s: cannot invoke exec() on a running or exited process', __CLASS__), 1326103905);
         }
 
-        $this->innerCommand->exec();
-        $this->processId = intval($this->innerCommand->getOutput());
+        $innerCommand = new \Nethgui\System\Process($this->shellBackgroundInvocation($this->command), $this->arguments);
+        $innerCommand->setPhpWrapper($this->phpWrapper)->exec();
+        $this->processId = intval($innerCommand->getOutput());
 
         if ($this->processId > 0) {
             $this->setExecutionState(self::STATE_RUNNING);

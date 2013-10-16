@@ -1,4 +1,5 @@
 <?php
+
 namespace Nethgui\System;
 
 /*
@@ -26,7 +27,6 @@ namespace Nethgui\System;
  */
 class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEnforcementPointInterface, \Nethgui\Log\LogConsumerInterface, \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Utility\SessionConsumerInterface
 {
-
     /**
      * Cache of configuration database objects
      * @var array
@@ -171,7 +171,7 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
     }
 
     public function signalEvent($eventSpecification, $arguments = array())
-    {        
+    {
         $matches = array();
 
         preg_match('/(?P<event>[^@]+)(@(?P<queue>[^ ]+))?( +(?P<detached>&))?/', $eventSpecification, $matches);
@@ -219,11 +219,8 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
             if ( ! $process instanceof ProcessInterface) {
                 continue;
             }
-
             $process->exec();
-
-            if ($process->readExecutionState() === ProcessInterface::STATE_EXITED
-                && $process->getExitCode() !== 0) {
+            if ($process->readExecutionState() === ProcessInterface::STATE_EXITED && $process->getExitCode() !== 0) {
                 $this->getLog()->error(sprintf("%s: process `%s` on queue `%s` exited with code %d. Output: `%s`", get_class($this), $process->getIdentifier(), $queueName, $process->getExitCode(), implode(' ', $process->getOutputArray())));
             }
         }
@@ -285,6 +282,7 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
     public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
     {
         $this->phpWrapper = $object;
+        return $this;
     }
 
     private function traceProcess(\Nethgui\System\ProcessInterface $process)
@@ -347,11 +345,11 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
                 case self::HOSTNAME:
                     $validator->hostname();
                     break;
-                
+
                 case self::HOSTNAME_FQDN:
                     $validator->hostname(1);
                     break;
-                
+
                 case self::HOSTNAME_SIMPLE:
                     $validator->hostname(0, 0);
                     break;
@@ -423,7 +421,7 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
                 case self::EMPTYSTRING:
                     $validator->maxLength(0);
                     break;
-                
+
                 case NULL:
                     continue;
 
@@ -435,4 +433,3 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
     }
 
 }
-
