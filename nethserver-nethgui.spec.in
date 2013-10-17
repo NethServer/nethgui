@@ -38,6 +38,11 @@ rm -rf ${RPM_BUILD_ROOT}
 %doc Documentation/*
 
 %changelog
+* Thu Oct 17 2013 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.2.4-1.ns6
+- Add language code to URLs #2113
+- TableController: support empty rows (keys only) #2073
+- Hide system validators output when debug mode is disabled #2277
+
 * Wed Aug 28 2013 Davide Principi <davide.principi@nethesis.it> - 1.2.3-1.ns6
 - Group (User) UI module: opening a group for update fails - Bug #2082 [NethServer]
 - Single and double quotes characters escaped - Bug #2068 [NethServer]
