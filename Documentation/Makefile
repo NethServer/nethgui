@@ -40,8 +40,8 @@ sync:
 	rsync -Caz -stats --delete ${PWD}/ $(SYNC_DEST)
 
 clean:
-	rm -f ${HTMLFILES} ${PDEPEND_OUTPUT}
-	rm -rf Api/*
+	rm -f ${HTMLFILES} ${PDEPEND_OUTPUT} 
+	rm -rf Api/* CodeCoverage/*
 
 ${PDEPEND_OUTPUT}:
 	pdepend \

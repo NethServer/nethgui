@@ -78,8 +78,6 @@ class Framework
     public function __construct()
     {
         $this->namespaceMap = new \ArrayObject();
-
-        spl_autoload_register(array($this, 'autoloader'));
         if (basename(__DIR__) !== __NAMESPACE__) {
             throw new \LogicException(sprintf('%s: `%s` is an invalid framework filesystem directory! Must be `%s`.', __CLASS__, basename(__DIR__), __NAMESPACE__), 1322213425);
         }
@@ -93,25 +91,6 @@ class Framework
         $this->session = new \Nethgui\Utility\Session();
         $this->pdp = new \Nethgui\Authorization\JsonPolicyDecisionPoint($this->getFileNameResolver());
         $this->pdp->setLog($this->log);
-    }
-
-    /**
-     * Simple class autoloader
-     *
-     * This function is registered as SPL class autoloader.
-     *
-     * @todo XXX Check for class names cheating!
-     * @param string $className
-     * @return void
-     */
-    public function autoloader($className)
-    {
-        $nsKey = array_head(explode('\\', $className));
-
-        if (isset($this->namespaceMap[$nsKey])) {
-            $filePath = $this->namespaceMap[$nsKey] . '/' . str_replace('\\', '/', $className) . '.php';
-            include $filePath;
-        }
     }
 
     /**
