@@ -145,8 +145,8 @@
                     {
                         text: "Ok",
                         click: function() {
+                            window.location.reload(true);
                             $(this).dialog("close");
-                            
                         }
                     }
                     ],
