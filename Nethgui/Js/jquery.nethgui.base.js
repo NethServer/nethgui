@@ -8,7 +8,7 @@
  * @author Giacomo Sanchietti <giacomo.sanchietti@nethesis.it>
  */
 
-(function( $ ) {
+(function($) {
 
     var counter = 0;
 
@@ -27,72 +27,99 @@
      *
      * Writes "Hello John Doe!".
      */
-    if( ! String.prototype.replacePlaceholders ) {
+    if (!String.prototype.replacePlaceholders) {
         String.prototype.replacePlaceholders = function(o) {
             var s = this;
 
-            if(o === undefined) {
+            if (o === undefined) {
                 return s.toString();
-            } else if(typeof(o) !== 'object') {
+            } else if (typeof (o) !== 'object') {
                 o = [o].concat(Array.prototype.slice.call(arguments, 1));
             }
 
             for (var i in o) {
-                s = s.replace(new RegExp('\\$\\{' + i + '\\}', 'g') , o[i]);
+                s = s.replace(new RegExp('\\$\\{' + i + '\\}', 'g'), o[i]);
             }
             return s.toString();
         }
     }
-    
 
-    if($.debug === undefined) {
+
+    if ($.debug === undefined) {
         $.extend({
-            debug: function () {
-                typeof(console) == 'object' && console.log.apply(console, arguments);
+            debug: function() {
+                typeof (console) == 'object' && console.log.apply(console, arguments);
             }
         });
     }
 
 
-    var Server = function() {};
+    var Server = function() {
+    };
 
     /**
      * Check if url is in the same domain of the current page
      */
-    Server.prototype.isLocalUrl = function (url) {
+    Server.prototype.isLocalUrl = function(url) {
         // site-root relative urls are always accepted:
-        if(url.charAt(0) === '/' || url === '') {
+        if (url.charAt(0) === '/' || url === '') {
             return true;
         }
 
         var currentUrlParts = window.location.href.split('/');
         var urlParts = url.split('/');
 
-        if(!$.isArray(currentUrlParts) || !$.isArray(urlParts)) {
+        if (!$.isArray(currentUrlParts) || !$.isArray(urlParts)) {
             return false;
         }
 
-        for(var i = 0; i < 3; i++)
+        for (var i = 0; i < 3; i++)
         {
-            if(currentUrlParts[i] != urlParts[i]) {
+            if (currentUrlParts[i] != urlParts[i]) {
                 alert('Url is not local: `' + url + '`.');
                 return false;
             }
         }
 
         return true;
-    }
+    };
+
+    Server.prototype.processResponse = function(response, statusCode) {
+        $.each(response, function(index, item) {
+            if (item === null) {
+                return;
+            }
+
+            var selector = item[0];
+            var value = item[1];
+
+            if (selector === '__COMMANDS__') {
+                $.each(value, function(index, command) {
+                    if (command.R === 'Main') {
+                        $(document).trigger('nethgui' + command.M.toLowerCase(), command.A);
+                    } else {
+                        $('#' + command.R).trigger('nethgui' + command.M.toLowerCase(), command.A);
+                    }
+                });
+            } else {
+                $('.' + selector).each(function(index, element) {
+                    $(element).triggerHandler('nethguiupdateview', [value, selector, statusCode]);
+                });
+            }
+        });
+    };
 
     /**
      * Perform an AJAX request on given URL
      */
     Server.prototype.ajaxMessage = function(params) {
         var isMutation, url, data, freezeElement, dispatchError, dispatchResponse, formatSuffix, isCacheEnabled;
+        var self = this;
 
         isMutation = params.isMutation;
         url = params.url;
         data = params.data;
-        freezeElement = params.freezeElement;    
+        freezeElement = params.freezeElement;
         formatSuffix = params.formatSuffix ? params.formatSuffix : 'json';
         isCacheEnabled = params.isCacheEnabled ? true : false;
 
@@ -100,67 +127,80 @@
         /**
          * Send the response containing the view data to controls
          */
-        dispatchResponse = $.isFunction(params.dispatchResponse) ? params.dispatchResponse : function (response, status, jqXHR) {
-            if( ! $.isArray(response)) {
-                alert('Unexpected response format. Please, reload the current page.');
-                throw 'Unexpected response format';
-            }
-
-            // XXX FIXME:
-            if(jqXHR === undefined) {
-                jqXHR = 200;
-            }
-
-            $.each(response, function (index, item) {
-                if(item === null) {
-                    return;
-                }
-
-                var selector = item[0];
-                var value = item[1];
-
-                if(selector === '__COMMANDS__') {
-                    $.each(value, function (index, command) {
-                        if(command.R === 'Main') {
-                            $(document).trigger('nethgui' + command.M.toLowerCase(), command.A);
-                        } else {
-                            $('#' + command.R).trigger('nethgui' + command.M.toLowerCase(), command.A);
-                        }
-                    });
-                } else {
-                    $('.' + selector).each(function(index, element) {
-                        $(element).triggerHandler('nethguiupdateview', [value, selector, jqXHR]);
-                    });
-                }
-            });
-        };
-
-        dispatchError = $.isFunction(params.dispatchError) ? params.dispatchError : function(jqXHR, textStatus, errorThrown) {
-            if(jqXHR.status == 400 && (errorThrown == "Request validation error" || errorThrown == "Invalid credentials supplied")) {
-                dispatchResponse($.parseJSON(jqXHR.responseText), textStatus, jqXHR.status);
-            } else if(jqXHR.status == 403 && errorThrown === 'Forbidden') {
+        dispatchResponse = $.isFunction(params.dispatchResponse) ? params.dispatchResponse : function(response, textStatus, jqXHR) {
+            if ($.isArray(response)) {
+                self.processResponse(response, jqXHR.status);
+            } else {
                 $('<pre></pre>').text(jqXHR.responseText).dialog({
                     modal: true,
                     buttons: [
-                    {
-                        text: "Ok",
-                        click: function() {
-                            window.location.reload(true);
-                            $(this).dialog("close");
+                        {
+                            text: "Ok",
+                            click: function() {
+                                // window.location.reload(true);
+                                $(this).dialog("close").dialog("destroy").remove();
+                            }
                         }
-                    }
+                    ],
+                    title: 'Unexpected response entity! HTTP Status ' + jqXHR.status + ' - ' + jqXHR.statusText
+                })
+            }
+        };
+
+        waitAndRetry = function(delay, settings) {
+            $.debug("Retrying " + settings.url, "Attempt " + settings.failures);
+            window.setTimeout(function() {
+                $.ajax(settings);
+            }, delay);
+        };
+
+        confirmReload = function(message, settings) {
+            if(confirm(message)) {
+                window.location.reload(true);
+            } else {
+                $.ajax(settings);
+            }
+        }
+
+        dispatchError = $.isFunction(params.dispatchError) ? params.dispatchError : function(jqXHR, textStatus, errorThrown) {
+            this.failures += 1;
+            if (jqXHR.status == 400 && (errorThrown == "Request validation error" || errorThrown == "Invalid credentials supplied")) {
+                dispatchResponse($.parseJSON(jqXHR.responseText), errorThrown, jqXHR);
+            } else if (jqXHR.status == 403 && errorThrown === 'Forbidden') {
+                $('<pre></pre>').text(jqXHR.responseText).dialog({
+                    modal: true,
+                    buttons: [
+                        {
+                            text: "Ok",
+                            click: function() {
+                                window.location.reload(true);
+                                $(this).dialog("close").dialog("destroy").remove();
+                            }
+                        }
                     ],
                     title: '403 - Forbidden'
                 });
-            } else if(jqXHR.status == 0 ) {
-                $.debug('Server warning: pending request cancelled');
+            } else if (jqXHR.status == 0) {
+                $.debug('Server warning: pending request cancelled. Failures: ' + this.failures);
+                if (this.failures > 10) {
+                    this.failures = 0;
+                    confirmReload("ERROR - The remote server is not reachable. Abort the request and reload the page.", this);
+                } else {
+                    waitAndRetry(5000, this);
+                }
+            } else if (jqXHR.status == 404) {
+                if (this.failures > 1) {
+                    this.failures = 0;
+                    confirmReload("ERROR - The requested resource was not found. Abort the request and reload the page.", this);
+                } else {
+                    waitAndRetry(5000, this);
+                }
             } else {
-                // TODO: display a way to recover from the error state.
-                $.debug('Server error.', jqXHR, textStatus, errorThrown);
-                alert('Server reported an error. Don\'t know how to recover: please, reload the page.');
-                throw 'Server error. Don\'t know how to recover';
+                confirmReload("ERROR -- Abort the request and reload the page.", this);
+                $.debug(errorThrown);
+                throw errorThrown;
             }
-        }
+        };
 
 
         /**
@@ -169,17 +209,17 @@
          */
         var replaceFormatSuffix = function(url, newSuffix) {
 
-            var urlParts = url.split('?',2);
+            var urlParts = url.split('?', 2);
             var pathParts = urlParts[0].split('/');
             var lastPart = pathParts.pop();
 
-            if(/.+\.(x?html|json)$/.test(lastPart)) {
+            if (/.+\.(x?html|json)$/.test(lastPart)) {
                 lastPart = lastPart.substr(0, lastPart.lastIndexOf('.')) + '.' + newSuffix;
             } else {
                 lastPart += '.' + newSuffix;
             }
 
-            if(urlParts[1] !== undefined) {
+            if (urlParts[1] !== undefined) {
                 lastPart += '?' + urlParts[1];
             }
 
@@ -188,46 +228,49 @@
             return pathParts.join('/');
         };
 
-        if( ! this.isLocalUrl(url)) {
+        if (!this.isLocalUrl(url)) {
             return;
         }
 
-        if(freezeElement instanceof jQuery) {
+        if (freezeElement instanceof jQuery) {
             freezeElement.trigger('nethguifreezeui');
         }
 
-        return $.ajax(replaceFormatSuffix(url, formatSuffix), {
+        var settings = {
+            url: replaceFormatSuffix(url, formatSuffix),
             type: isMutation ? 'POST' : 'GET',
             cache: isCacheEnabled,
-            // dataType: 'json',
             data: data,
             success: dispatchResponse,
-            error: dispatchError
-        });
+            error: dispatchError,
+            crossDomain: false,
+            failures: 0
+        };
+        return $.ajax(settings);
     };
 
 
-    var Translator = function () {
+    var Translator = function() {
         this.catalog = {};
     };
 
     Translator.prototype.translate = function(message) {
-        if(typeof this.catalog[message] === "string") {
+        if (typeof this.catalog[message] === "string") {
             message = this.catalog[message];
         }
         return '' + String.prototype.replacePlaceholders.apply(message, Array.prototype.slice.call(arguments, 1));
     };
 
     Translator.prototype.extendCatalog = function(extension) {
-        this.catalog= $.extend(this.catalog, extension);
+        this.catalog = $.extend(this.catalog, extension);
         return this;
     };
 
     $.Nethgui = {
         Server: new Server(),
         Translator: new Translator(),
-        T: function () {
-           return $.Nethgui.Translator.translate.apply($.Nethgui.Translator, Array.prototype.slice.call(arguments, 0));
+        T: function() {
+            return $.Nethgui.Translator.translate.apply($.Nethgui.Translator, Array.prototype.slice.call(arguments, 0));
         }
     };
 
@@ -236,17 +279,17 @@
         _deep: true,
         _showDisabledState: true,
         _propagateDisabledState: true,
-        _create: function () {
+        _create: function() {
             var self = this;
-            
+
             // language translation function:
             this.T = this.translate;
-            
+
             this.widgetEventPrefix = this.namespace;
             this._id = ++counter;
             this._children = [];
 
-            if(this._deep === true) {
+            if (this._deep === true) {
                 this._initializeDeep(this.element.children().toArray());
             }
             this.element.bind('nethguiupdateview.' + this.namespace, function(e, value, selector) {
@@ -261,17 +304,17 @@
                 e.stopPropagation();
             });
         },
-        getChildren: function () {
+        getChildren: function() {
             return $(this._children);
         },
-        _getChildNodes: function () {
+        _getChildNodes: function() {
             return this._children;
         },
-        _findType: function (jqNode) {
+        _findType: function(jqNode) {
             var typeFound = false;
             // Check whether any class of the node is defined in nethgui namespace:
             $.each(jqNode.prop('class').split(/\s+/), function(index, typeName) {
-                if(typeName in $.nethgui && jqNode.data('nethgui') === undefined) {
+                if (typeName in $.nethgui && jqNode.data('nethgui') === undefined) {
                     typeFound = typeName;
                     return false;
                 }
@@ -279,22 +322,22 @@
             return typeFound;
         },
         /**
-     * Find and initialize any descendant component
-     */
-        _initializeDeep: function (nodeQueue) {
-            
+         * Find and initialize any descendant component
+         */
+        _initializeDeep: function(nodeQueue) {
+
             var node = nodeQueue.shift();
             var typeName = false;
 
             // iterate on descendant nodes: if a component is found,
             // initialize it and discard its branch.
-            while(node !== undefined) {
+            while (node !== undefined) {
                 var jqNode = $(node);
 
                 typeName = this._findType(jqNode)
-                if(typeName !== false) {
+                if (typeName !== false) {
                     // constructor call:
-                    if(typeName in $.fn) {
+                    if (typeName in $.fn) {
                         $.fn[typeName].apply(jqNode);
                     } else {
                         $.debug('Undefined type ' + typeName);
@@ -306,25 +349,25 @@
                 node = nodeQueue.shift();
             }
         },
-        _setOption: function( key, value ) {
-            if(key === 'disabled' && this.element.hasClass('keepdisabled')) {
+        _setOption: function(key, value) {
+            if (key === 'disabled' && this.element.hasClass('keepdisabled')) {
                 return;
             }
-            if(key !== 'disabled' || this._showDisabledState === true) {
-                $.Widget.prototype._setOption.apply( this, [key, value] );
+            if (key !== 'disabled' || this._showDisabledState === true) {
+                $.Widget.prototype._setOption.apply(this, [key, value]);
             }
-            if(key === 'disabled' && this._deep === true && this._propagateDisabledState === true) {
+            if (key === 'disabled' && this._deep === true && this._propagateDisabledState === true) {
                 this.getChildren().trigger('nethgui' + (value ? 'disable' : 'enable'));
             }
         },
         destroy: function() {
-            $.Widget.prototype.destroy.call( this );
+            $.Widget.prototype.destroy.call(this);
             this.widget().unbind(this.namespace);
             this.element.unbind(this.namespace);
             this._children = undefined;
         },
         _updateView: function(value, selector) {
-        // free to override
+            // free to override
         },
         _sendQuery: function(url, data, freezeUi) {
             this._server.ajaxMessage({
@@ -342,8 +385,8 @@
                 freezeElement: freezeUi ? this.widget() : undefined
             });
         },
-        _readHelp: function (url) {
-            
+        _readHelp: function(url) {
+
         },
         translate: function() {
             return Translator.prototype.translate.apply($.Nethgui.Translator, Array.prototype.slice.call(arguments, 0))
@@ -361,9 +404,9 @@
 
     $(document).bind('nethguisendquery.nethgui', function(e, url, delay, freezeUi) {
         var server = new Server();
-        if(server.isLocalUrl(url)) {
+        if (server.isLocalUrl(url)) {
             window.location = url;
         }
     });
 
-}( jQuery ) );
+}(jQuery));
