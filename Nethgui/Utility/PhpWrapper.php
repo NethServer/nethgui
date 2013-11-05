@@ -111,7 +111,11 @@ class PhpWrapper implements \Nethgui\Log\LogConsumerInterface
     public function phpInclude($filePath, $vars)
     {
         extract($vars, EXTR_REFS);
-        return include($filePath);
+        $_nethgui_warnings = array();
+        $this->wrapBegin($_nethgui_warnings);
+        $include = include($filePath);
+        $this->wrapEnd($_nethgui_warnings);
+        return $include;
     }
 
     public function phpExit($code)

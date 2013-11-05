@@ -184,7 +184,10 @@ class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Utility\
         $filePath = call_user_func($this->catalogResolver, sprintf('%s\Language\%s\%s', $prefix, $languageCode, $languageCatalog));
         $L = array();
 
-        $included = @$this->phpWrapper->phpInclude($filePath, array('L' => &$L));
+        $tmp = $this->getLog()->getLevel();
+        $this->getLog()->setLevel($tmp & ~E_WARNING);
+        $included = $this->phpWrapper->phpInclude($filePath, array('L' => &$L));
+        $this->getLog()->setLevel($tmp);
         if ($included) {
             NETHGUI_DEBUG && $this->getLog()->notice(sprintf('%s: Loaded language catalog `%s` [%s].', get_class($this), $languageCatalog, $languageCode));
         } else {
@@ -213,6 +216,7 @@ class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Utility\
     public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
     {
         $this->phpWrapper = $object;
+        return $this;
     }
 
     public function getLog()
@@ -223,6 +227,7 @@ class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Utility\
     public function setLog(\Nethgui\Log\LogInterface $log)
     {
         $this->log = $log;
+        $this->phpWrapper->setLog($log);
         return $this;
     }
 
