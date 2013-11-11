@@ -280,9 +280,9 @@ class Framework
                 $this->log->error(sprintf('%s: [%d] %s', __CLASS__, $ex->getCode(), $ex->getMessage()));
                 throw new \Nethgui\Exception\HttpException('Forbidden', 403, 1327681977, $ex);
             }
-        } catch (\RuntimeException $ex) {
-            $this->log->error(sprintf('%s: [%d] %s', __CLASS__, $ex->getCode(), $ex->getMessage()));
-            throw new \Nethgui\Exception\HttpException('Runtime error', 500, 1366796122, $ex);
+        } catch (\Exception $ex) {
+            $this->log->exception($ex, NETHGUI_DEBUG);
+            throw new \Nethgui\Exception\HttpException('Internal server error', 500, 1366796122, $ex);
         }
     }
 

@@ -137,7 +137,6 @@
                         {
                             text: "Ok",
                             click: function() {
-                                // window.location.reload(true);
                                 $(this).dialog("close").dialog("destroy").remove();
                             }
                         }
@@ -148,18 +147,41 @@
         };
 
         waitAndRetry = function(delay, settings) {
-            $.debug("Retrying " + settings.url, "Attempt " + settings.failures);
+            if (settings.type != 'GET') {
+                return false;
+            }
+
             window.setTimeout(function() {
                 $.ajax(settings);
             }, delay);
+
+            return true;
         };
 
-        confirmReload = function(message, settings) {
-            if(confirm(message)) {
-                window.location.reload(true);
-            } else {
-                $.ajax(settings);
+        confirmReload = function(title, message, settings) {
+            var buttons = [
+                {
+                    text: "Reload page",
+                    click: function() {
+                        window.location.reload(true);
+                        $(this).dialog("close").dialog("destroy").remove();
+                    }
+                }
+            ];
+            if (settings.type === 'GET') {
+                buttons.push({
+                    text: "Try again",
+                    click: function() {
+                        waitAndRetry(100, settings);
+                        $(this).dialog("close").dialog("destroy").remove();
+                    }
+                });
             }
+            $('<pre></pre>').text(message).dialog({
+                modal: true,
+                buttons: buttons,
+                title: title
+            });
         }
 
         dispatchError = $.isFunction(params.dispatchError) ? params.dispatchError : function(jqXHR, textStatus, errorThrown) {
@@ -181,22 +203,21 @@
                     title: '403 - Forbidden'
                 });
             } else if (jqXHR.status == 0) {
-                $.debug('Server warning: pending request cancelled. Failures: ' + this.failures);
                 if (this.failures > 10) {
                     this.failures = 0;
-                    confirmReload("ERROR - The remote server is not reachable. Abort the request and reload the page.", this);
+                    confirmReload("Connection ERROR", "The remote server is not reachable.", this);
                 } else {
                     waitAndRetry(5000, this);
                 }
             } else if (jqXHR.status == 404) {
                 if (this.failures > 1) {
                     this.failures = 0;
-                    confirmReload("ERROR - The requested resource was not found. Abort the request and reload the page.", this);
+                    confirmReload("ERROR 404", jqXHR.responseText, this);
                 } else {
                     waitAndRetry(5000, this);
                 }
             } else {
-                confirmReload("ERROR -- Abort the request and reload the page.", this);
+                confirmReload("Server error", jqXHR.responseText, this);
                 $.debug(errorThrown);
                 throw errorThrown;
             }
