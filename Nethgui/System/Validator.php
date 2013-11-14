@@ -521,12 +521,12 @@ class Validator implements \Nethgui\System\ValidatorInterface
 
     /**
      * Check if $value starts with a letter and contains only alphanumeric
-     * characters plus - and _
+     * characters plus "-", "_", "."
      * @param string $value 
      */
     private function evalUsername($value)
     {
-        return strlen($value) < 256 && $this->evalRegexp($value, '/^[a-z][-_a-z0-9]*$/');
+        return strlen($value) < 256 && $this->evalRegexp($value, '/^[a-z][-_\.a-z0-9]*$/');
     }
 
     /**
