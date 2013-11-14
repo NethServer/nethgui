@@ -73,7 +73,7 @@
                 freezeUi = true;
             }
 
-            if(delay === undefined) {
+            if(delay === undefined || parseInt(delay) === 0) {
                 this._sendQuery(url, undefined, freezeUi);
             } else if(parseInt(delay) > 0) {
                 window.setTimeout(function() {
