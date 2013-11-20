@@ -698,7 +698,7 @@ class Framework
             echo sprintf("Exception backtrace:\n\n%s\n\n", $ex->getTraceAsString());
             $prev = $ex->getPrevious();
             if ($prev instanceof \Exception) {
-                echo sprintf("Previous exception:\n\n    %s [%s]\n\n", $prev->getMessage(), $prev->getCode());
+                echo sprintf("Previous %s:\n\n    %s [%s]\n\n", get_class($prev), $prev->getMessage(), $prev->getCode());
                 echo $prev->getTraceAsString();
             }
         }
