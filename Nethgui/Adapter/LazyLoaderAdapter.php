@@ -123,7 +123,7 @@ class LazyLoaderAdapter implements \Nethgui\Adapter\AdapterInterface, \ArrayAcce
         throw new \LogicException(sprintf("%s: read-only adapter, %s() method is not allowed", __CLASS__, __METHOD__), 1373466609);
     }
 
-    private function lazyInitialization()
+    protected function lazyInitialization()
     {
         if ($this->loader === NULL) {
             $this->data = new \ArrayObject();
