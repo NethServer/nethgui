@@ -64,12 +64,12 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
     public function testGetAll0()
     {
         $this->execw
-            ->setCommandMatcher('getjson', array())
+            ->setSocketMatcher('getjson', array())
             ->setExecImplementation(function($cmd, &$output, &$retval) {
-                    $retval = 0;
-                    $output = array('[]');
-                    return '[]';
-                });
+                $retval = 0;
+                $output = array('[]');
+                return '[]';
+            });
         $ret = $this->object->getAll();
         $this->assertEquals(array(), $ret);
     }
@@ -77,12 +77,13 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
     public function testGetAll1()
     {
         $this->execw
-            ->setCommandMatcher('getjson', array())
+            ->setSocketMatcher('getjson', array())
             ->setExecImplementation(array($this, 'exec_printJson'));
 
         $expected = array();
         for ($i = 0; $i < 5; $i ++ ) {
-            $expected['K' . $i] = array('type' => 'T' . ($i == 3 ? 'F' : 'T'), 'PA' . $i => 'VA' . $i, 'PB' . $i => 'VB' . $i, 'PC' . $i => 'VC' . $i);
+            $expected['K' . $i] = array('type' => 'T' . ($i == 3 ? 'F' : 'T'), 'PA' . $i => 'VA' . $i,
+                'PB' . $i => 'VB' . $i, 'PC' . $i => 'VC' . $i);
         }
 
         $ret = $this->object->getAll();
@@ -93,19 +94,19 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
     public function testGetAll2()
     {
         $this->execw
-            ->setCommandMatcher('getjson', array())
+            ->setSocketMatcher('getjson', array())
             ->setExecImplementation(array($this, 'exec_printJson'));
 
 
         $expected = array();
         $i = 3;
-        $expected['K' . $i] = array('type' => 'TF', 'PA' . $i => 'VA' . $i, 'PB' . $i => 'VB' . $i, 'PC' . $i => 'VC' . $i);
+        $expected['K' . $i] = array('type' => 'TF', 'PA' . $i => 'VA' . $i, 'PB' . $i => 'VB' . $i,
+            'PC' . $i => 'VC' . $i);
 
         $ret = $this->object->getAll('TF');
 
         $this->assertEquals($expected, $ret);
     }
-
 
     /**
      * db command return non zero exit code:
@@ -114,10 +115,10 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
     public function testGetAll4()
     {
         $this->execw
-            ->setCommandMatcher('getjson', array())
+            ->setSocketMatcher('getjson', array())
             ->setExecImplementation(function($cmd, &$output, &$retval) {
-                    $retval = 1;
-                });
+                $retval = 1;
+            });
 
         $this->object->getAll('TT');
     }
@@ -129,11 +130,11 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
     public function testGetAll5()
     {
         $this->execw
-            ->setCommandMatcher('getjson', array())
+            ->setSocketMatcher('getjson', array())
             ->setExecImplementation(function($cmd, &$output, &$retval) {
-                    $retval = 0;
-                    $output[] = 'xx';
-                });
+                $retval = 0;
+                $output[] = 'xx';
+            });
 
         $this->object->getAll('TT');
     }
@@ -182,12 +183,12 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
     public function testGetKey0()
     {
         $this->execw
-            ->setCommandMatcher('getjson', explode(' ', 'K'))
+            ->setSocketMatcher('getjson', explode(' ', 'K'))
             ->setExecImplementation(function($command, &$output, &$retval) {
-                    $output = array('1');
-                    $retval = 0;
-                    return '1';
-                });
+                $output = array('1');
+                $retval = 0;
+                return '1';
+            });
 
         $ret = $this->object->getKey('K');
 
@@ -197,7 +198,7 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
     public function testGetKey1()
     {
         $this->execw
-            ->setCommandMatcher('getjson', explode(' ', 'K'))
+            ->setSocketMatcher('getjson', explode(' ', 'K'))
             ->setExecImplementation(array($this, 'exec_getJson'));
 
         $ret = $this->object->getKey('K');
@@ -212,10 +213,10 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
     public function testGetKey2()
     {
         $this->execw
-            ->setCommandMatcher('getjson', explode(' ', 'K'))
+            ->setSocketMatcher('getjson', explode(' ', 'K'))
             ->setExecImplementation(function($command, &$output, &$retval) {
-                    $retval = 1;
-                });
+                $retval = 1;
+            });
 
         $ret = $this->object->getKey('K');
     }
@@ -227,11 +228,11 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
     public function testGetKey3()
     {
         $this->execw
-            ->setCommandMatcher('getjson', explode(' ', 'K'))
+            ->setSocketMatcher('getjson', explode(' ', 'K'))
             ->setExecImplementation(function($command, &$output, &$retval) {
-                    $retval = 0;
-                    $output[] = 'xxx';
-                });
+                $retval = 0;
+                $output[] = 'xxx';
+            });
 
         $ret = $this->object->getKey('K');
     }
@@ -242,11 +243,11 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
     public function testGetKey4()
     {
         $this->execw
-            ->setCommandMatcher('getjson', explode(' ', 'K'))
+            ->setSocketMatcher('getjson', explode(' ', 'K'))
             ->setExecImplementation(function($command, &$output, &$retval) {
-                    $retval = 0;
-                    $output[] = '{"name":"K","type":"valuexxx"}';
-                });
+                $retval = 0;
+                $output[] = '{"name":"K","type":"valuexxx"}';
+            });
 
         $ret = $this->object->getKey('K');
         $this->assertEquals(array(), $ret);
@@ -266,7 +267,7 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
             'name' => 'K',
             'type' => 'T',
             'props' => array('p1' => 'v1', 'p2' => 'v2')
-            ));
+        ));
         $output[] = $data;
         return $data;
     }
@@ -308,7 +309,7 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
     public function testGetType()
     {
         $this->execw
-            ->setCommandMatcher('gettype', explode(' ', 'K'))
+            ->setSocketMatcher('gettype', explode(' ', 'K'))
             ->setExecImplementation(array($this, 'exec_getTypeCallback'));
 
         $ret = $this->object->getType('K');
@@ -318,7 +319,7 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
 
     public function exec_getTypeCallback($command, &$output, &$retval)
     {
-        $output = array('T', '');
+        $output = array('"T"', '');
         $retval = 0;
         return array_slice($output, -1, 1);
     }
@@ -337,7 +338,7 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
     public function testGetProp1()
     {
         $this->execw
-            ->setCommandMatcher('getprop', explode(' ', 'K P'))
+            ->setSocketMatcher('getprop', explode(' ', 'K P'))
             ->setExecImplementation(array($this, 'exec_getpropCallback'));
 
         $ret = $this->object->getProp("K", "P");
@@ -347,7 +348,7 @@ class EsmithDatabaseTest extends \PHPUnit_Framework_TestCase
 
     public function exec_getpropCallback($command, &$output, &$retval)
     {
-        $output = array('V', '');
+        $output = array('"V"', '');
         $retval = 0;
         return array_slice($output, -1, 1);
     }
@@ -400,6 +401,10 @@ class PhpWrapperExec extends \Nethgui\Utility\PhpWrapper
      */
     private $execImplementation;
     private $commandLine;
+    private $requestMatcher;
+    private $readBuffer;
+    private $writeBuffer;
+    private $socketPath = 123456;
 
     public function setExecImplementation($execImplementation)
     {
@@ -415,13 +420,56 @@ class PhpWrapperExec extends \Nethgui\Utility\PhpWrapper
         return $this;
     }
 
+    public function setSocketMatcher($action, $args)
+    {
+        $this->requestMatcher = array_merge(array('MOCKDB', $action), $args);
+        return $this;
+    }
+
     public function exec($command, &$output, &$retval)
     {
         \PHPUnit_Framework_Assert::assertEquals($this->commandLine, $command);
         if ( ! is_callable($this->execImplementation)) {
             return 0;
         }
-        return call_user_func_array($this->execImplementation, array($command, &$output, &$retval));
+        return call_user_func_array($this->execImplementation, array($command, &$output,
+            &$retval));
+    }
+
+    public function fsockopen($socketPath, $port, &$errno, &$errstr)
+    {
+        return $this->socketPath;
+    }
+
+    public function fread($socket, $len)
+    {
+        \PHPUnit_Framework_Assert::assertEquals($this->socketPath, $socket);
+        if ($this->readBuffer === NULL) {
+            assert(is_callable($this->execImplementation));
+            $retval = NULL;
+            $output = NULL;
+            call_user_func_array($this->execImplementation, array("fread",
+                &$output,
+                &$retval));
+            if ( ! is_array($output)) {
+                return FALSE;
+            }
+            $data = implode("\n", $output);
+            $this->readBuffer = pack("CN", (int) 0x11, (int) strlen($data)) . $data;
+        }
+        \PHPUnit_Framework_Assert::assertLessThanOrEqual(strlen($this->readBuffer), $len);
+        $chunk = substr($this->readBuffer, 0, $len);
+        $this->readBuffer = substr($this->readBuffer, $len);
+        return $chunk;
+    }
+
+    public function fwrite($socket, $data)
+    {
+        \PHPUnit_Framework_Assert::assertEquals($this->socketPath, $socket);
+        $this->writeBuffer = $data;
+        $request = json_decode(substr($data, 5), TRUE);
+        \PHPUnit_Framework_Assert::assertEquals($this->requestMatcher, $request);
+        return strlen($data);
     }
 
 }

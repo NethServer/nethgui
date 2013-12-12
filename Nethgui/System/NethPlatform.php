@@ -1,5 +1,4 @@
 <?php
-
 namespace Nethgui\System;
 
 /*
@@ -99,7 +98,10 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
     {
         if ( ! isset($this->databases[$database])) {
             $object = new EsmithDatabase($database, $this->user);
-            $object->setPolicyDecisionPoint($this->policyDecisionPoint);
+            $object
+                ->setPolicyDecisionPoint($this->policyDecisionPoint)
+                ->setPhpWrapper($this->phpWrapper);
+            ;
             $this->databases[$database] = $object;
         }
 

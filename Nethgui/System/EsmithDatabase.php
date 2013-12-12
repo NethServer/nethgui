@@ -36,7 +36,7 @@ namespace Nethgui\System;
  * @since 1.0
  * @internal
  */
-class EsmithDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Authorization\PolicyEnforcementPointInterface, \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Authorization\AuthorizationAttributesProviderInterface
+class EsmithDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Authorization\PolicyEnforcementPointInterface, \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Authorization\AuthorizationAttributesProviderInterface, \Nethgui\Log\LogConsumerInterface
 {
     const PERM_READ = 'READ';
     const PERM_WRITE = 'WRITE';
@@ -79,6 +79,19 @@ class EsmithDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Auth
     private $user;
 
     /**
+     * This static class variable shares a socket connection to smwingsd
+     *
+     * @var resource
+     */
+    private static $socket;
+
+    /**
+     *
+     * @var \Nethgui\Log\LogInterface
+     */
+    private $log;
+
+    /**
      * setPolicyDecisionPoint 
      * 
      * @param \Nethgui\Authorization\PolicyDecisionPointInterface $pdp 
@@ -105,8 +118,9 @@ class EsmithDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Auth
 
         $this->db = $database;
         $this->user = $user;
+        $this->log = new \Nethgui\Log\Nullog();
         $this->readPermission = \Nethgui\Authorization\LazyAccessControlResponse::createDenyResponse();
-        $this->writePermission = \Nethgui\Authorization\LazyAccessControlResponse::createDenyResponse();
+        $this->writePermission = \Nethgui\Authorization\LazyAccessControlResponse::createDenyResponse();        
     }
 
     private function authorizeDbAccess()
@@ -132,7 +146,7 @@ class EsmithDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Auth
 
         $output = "";
 
-        $ret = $this->dbExec('getjson', array(), $output);
+        $ret = $this->dbRead('getjson', array(), $output);
         if ($ret !== 0) {
             throw new \UnexpectedValueException(sprintf("%s: internal database command failed!", __CLASS__), 1350896938);
         }
@@ -164,7 +178,7 @@ class EsmithDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Auth
 
         $output = '';
 
-        $ret = $this->dbExec('getjson', $this->prepareArguments($key), $output);
+        $ret = $this->dbRead('getjson', array($key), $output);
         if ($ret !== 0) {
             throw new \UnexpectedValueException(sprintf("%s: internal database command failed", __CLASS__), 1350909145);
         }
@@ -222,7 +236,7 @@ class EsmithDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Auth
         }
 
         $output = NULL;
-        $ret = $this->dbExec('gettype', $this->prepareArguments($key), $output);
+        $ret = $this->dbRead('gettype', array($key), $output);
         return trim($output);
     }
 
@@ -253,7 +267,7 @@ class EsmithDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Auth
         }
 
         $output = NULL;
-        $ret = $this->dbExec('getprop', $this->prepareArguments($key, $prop), $output);
+        $ret = $this->dbRead('getprop', array($key, $prop), $output);
         return trim($output);
     }
 
@@ -306,6 +320,79 @@ class EsmithDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Auth
     }
 
     /**
+     * Read db data from memory cache daemon
+     * @param string $command The command to invoke
+     * @param array $args The command arguments
+     * @param string &$output The output from the read socket
+     * @return int  The command exit code
+     */
+    private function dbRead($command, $args, &$output)
+    {
+        if ( ! isset(self::$socket)) {
+            $socketPath = '/var/run/smwingsd.sock';
+            $errno = 0;
+            $errstr = '';
+            self::$socket = $this->phpWrapper->fsockopen('unix://' . $socketPath, -1, $errno, $errstr);
+            if ( ! self::$socket) {
+                throw new \RuntimeException(sprintf("Invalid socket (%d): %s", $errno, $errstr));
+            }
+        }
+
+        // prepend the database name and command
+        array_unshift($args, $this->db, $command);
+
+        try {
+            $this->sendMessage(self::$socket, 0x10, $args);
+            if ($command === 'getjson') {
+                $output = $this->recvMessage(self::$socket);
+            } else {
+                $output = json_decode($this->recvMessage(self::$socket), TRUE);
+            }
+        } catch (\Exception $ex) {
+            $this->log->exception($ex);
+            return 1;
+        }
+
+        return 0;
+    }
+
+    private function sendMessage($socket, $type, $args = array())
+    {
+        $payload = json_encode($args);
+        $data = pack('CN', (int) $type, strlen($payload)) . $payload;
+        $written = $this->phpWrapper->fwrite($socket, $data);
+        if ($written !== strlen($data)) {
+            throw new \RuntimeException('Socket write error', 1383145263);
+        }
+        return TRUE;
+    }
+
+    private function recvMessage($socket)
+    {
+        $buf = $this->phpWrapper->fread($socket, 5);
+        if ($buf === FALSE) {
+            throw new \RuntimeException('Socket read error', 1383145266);
+        }
+
+        $header = unpack('Ctype/Nsize', $buf);
+        if ( ! is_array($header)) {
+            throw new \RuntimeException('Socket read error', 1383145264);
+        }
+
+        $message = NULL;
+        $message = $this->phpWrapper->fread($socket, $header['size']);
+        if ($message === FALSE) {
+            throw new \RuntimeException('Socket read error', 1383145265);
+        }
+
+        if ($header['type'] & 0x02) {
+            return NULL;
+        }
+
+        return $message;
+    }
+
+    /**
      * Take arbitrary arguments and flattenize to an array
      *
      * @param mixed $_
@@ -341,6 +428,17 @@ class EsmithDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Auth
         }
 
         return NULL;
+    }
+
+    public function setLog(\Nethgui\Log\LogInterface $log)
+    {
+        $this->log = $log;
+        return $this;
+    }
+
+    public function getLog()
+    {
+        return $this->log;
     }
 
 }
