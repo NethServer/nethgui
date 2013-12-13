@@ -108,6 +108,11 @@ class PhpWrapper implements \Nethgui\Log\LogConsumerInterface
         return $lastLine;
     }
 
+    public function fsockopen($host, $port, &$errno=NULL, &$errstr=NULL)
+    {
+        return fsockopen($host, $port, $errno, $errstr);
+    }
+
     public function phpInclude($filePath, $vars)
     {
         extract($vars, EXTR_REFS);
