@@ -108,7 +108,7 @@ class PhpWrapper implements \Nethgui\Log\LogConsumerInterface
         return $lastLine;
     }
 
-    public function fsockopen($host, $port, &$errno=NULL, &$errstr=NULL)
+    public function fsockopen($host, $port=-1, &$errno=NULL, &$errstr=NULL)
     {
         return fsockopen($host, $port, $errno, $errstr);
     }
