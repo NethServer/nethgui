@@ -99,8 +99,9 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
         if ( ! isset($this->databases[$database])) {
             $object = new EsmithDatabase($database, $this->user);
             $object
+                ->setLog($this->getLog())
                 ->setPolicyDecisionPoint($this->policyDecisionPoint)
-                ->setPhpWrapper($this->phpWrapper);
+                ->setPhpWrapper($this->phpWrapper)
             ;
             $this->databases[$database] = $object;
         }

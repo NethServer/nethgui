@@ -333,8 +333,9 @@ class EsmithDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Auth
             $errno = 0;
             $errstr = '';
             self::$socket = $this->phpWrapper->fsockopen('unix://' . $socketPath, -1, $errno, $errstr);
-            if ( ! self::$socket) {
-                throw new \RuntimeException(sprintf("Invalid socket (%d): %s", $errno, $errstr));
+            if ( ! is_resource(self::$socket)) {
+                $this->getLog()->warning(sprintf("Invalid socket (%d): %s. Fall back to exec().", $errno, $errstr));
+                return $this->dbExec($command, call_user_func_array(array($this, 'prepareArguments'), $args), $output);
             }
         }
 
