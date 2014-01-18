@@ -56,6 +56,9 @@
 
             // for each class check if a LABEL tag exists and try to attach a click handler to DT.
             $.each($dt.attr('class').split('/ +/'), function(index, helpId) {
+		if( ! helpId) { 
+		    return true; 
+		}
                 $('label.' + helpId).each(function (index, labelElement) {
                     var controlElement = $('#' + $(labelElement).attr('for'))[0];
                     if($.inArray(controlElement, controlList) === -1) {
