@@ -150,6 +150,7 @@ class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\Co
         $view['helpAreaOutput'] = 'helpAreaOutput';
         $view['notificationOutput'] = 'notificationOutput';
         $view['logoutOutput'] = 'logoutOutput';
+
     }
 
     /**
@@ -207,8 +208,18 @@ class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\Co
 
         // Override menuOutput
         $decoratorView['menuOutput'] = (String) $renderer->inset('Menu');
-
         $decoratorView['logoutOutput'] = (String) $renderer->inset('Logout');
+
+        // Set default partial view visibility:
+        if( ! isset($decoratorView['disableHeader'])) {
+            $decoratorView['disableHeader'] = FALSE;
+        }
+        if( ! isset($decoratorView['disableMenu'])) {
+            $decoratorView['disableMenu'] = FALSE;
+        }
+        if( ! isset($decoratorView['disableFooter'])) {
+            $decoratorView['disableFooter'] = TRUE;
+        }
 
         return $renderer->spawnRenderer($decoratorView)->render();
     }

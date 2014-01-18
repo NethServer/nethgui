@@ -92,7 +92,7 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
         $view->getCommandList('/Main')
             ->setDecoratorParameter('disableHeader', TRUE)
             ->setDecoratorParameter('disableMenu', TRUE)
-//            ->setDecoratorParameter('disableFooter', TRUE)
+            ->setDecoratorParameter('disableFooter', FALSE)
         ;
 
         $isInvalidLoginRequest = ! $user->isAuthenticated()
