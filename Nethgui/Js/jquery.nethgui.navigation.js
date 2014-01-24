@@ -17,6 +17,7 @@
             })
             .removeClass('ui-corner-all');
                 
+            this._pending = null;
             this._timer = false;
             this._input = this.element.find('.TextInput')
             .removeClass('ui-corner-all')
@@ -52,7 +53,29 @@
                     self._updateView('');
                 }, 300);
             }
-                                               
+
+        },
+        _onSubmit: function(e, restart) {
+            e.preventDefault();
+            e.stopPropagation();
+            var form = $(e.target);
+
+            if (this._pending === null || this._pending.state() === "rejected" || this._pending.state() === "resolved") {
+                // start a new request
+                this._pending = this._server.ajaxMessage({
+                    isMutation: form.attr('method').toUpperCase() === 'POST',
+                    url: form.attr('action'),
+                    data: form.serialize(),
+                    freezeElement: false
+                });
+            } else if(this._pending.state() === "pending") {
+                // cancel pending request
+                this._pending.abort();
+                // when cancel completes restart this event handler
+                this._pending.fail($.proxy(this._onSubmit, this, e, true));
+            } 
+
+            return false;
         },
         _updateView: function(value) {
             // if the response is empty show all items:

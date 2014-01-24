@@ -203,7 +203,9 @@
                     title: '403 - Forbidden'
                 });
             } else if (jqXHR.status == 0) {
-                if (this.failures > 10) {
+                if(textStatus === 'abort') {
+                    // pass
+                } else if (this.failures > 10) {
                     this.failures = 0;
                     confirmReload("Connection ERROR", "The remote server is not reachable.", this);
                 } else {
