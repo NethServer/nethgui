@@ -42,6 +42,8 @@
                 self._input.val('');
                 self._updateView('');
                 return true;
+            } else if ( ! String.fromCharCode(event.keyCode).match(/[a-z0-9]/i)) {
+                return true;
             }
 
             if (self._input.val().length > 1) {
