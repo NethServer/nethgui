@@ -29,61 +29,13 @@
         },
         close: function() {
             this.element.hide();
-            if($.fn.Tooltip !== undefined) {
-                $.each(this._tooltipControls,function (index, element) {
-                    $(element).Tooltip('destroy');
-                });
-            }
-            this._tooltipControls = [];
         },
         _onHelpDocumentResponse: function(responseData) {
             var responseDocument = $($.parseXML(responseData));
-            var helpNode = responseDocument.find('#HelpDocument').detach();
-            this._helpDoc.empty().append(helpNode.children());
-            
-            // loop on field descriptions to find targets:
-            this._helpDoc.find('dt').each($.proxy(this._initializeDtNode, this));
-            $.unique(this._tooltipControls);
-
+            var helpNode = responseDocument.find('body > div:first-child').detach();
+            this._helpDoc.empty().append(helpNode.children());            
             this.element.show();
             this._fixBoxHeight();
-        },
-        _initializeDtNode: function(index, element) {
-            var $dt = $(element);
-            var description = $(element).next('dd');
-            
-            var controlList = [];
-
-            // for each class check if a LABEL tag exists and try to attach a click handler to DT.
-            $.each($dt.attr('class').split('/ +/'), function(index, helpId) {
-		if( ! helpId) { 
-		    return true; 
-		}
-                $('label.' + helpId).each(function (index, labelElement) {
-                    var controlElement = $('#' + $(labelElement).attr('for'))[0];
-                    if($.inArray(controlElement, controlList) === -1) {
-                        controlList.push(controlElement);
-                    }
-                });
-            });
-
-            if(controlList.length === 0 || $.fn.Tooltip === undefined) {
-                $dt.wrapInner('<u />');
-                return;
-            }
-            
-            this._tooltipControls = this._tooltipControls.concat(controlList);
-
-            $dt.wrapInner($('<a href="#" />').click( function (e) {
-                $(controlList).Tooltip('show').focus();
-                return false;
-            } ));
-           
-            $(controlList).Tooltip( {
-                    text: description.text(),
-                    sticky: false,
-                    show: false
-            } );
         },
         /**
          * Calculate window height and set help wievport
