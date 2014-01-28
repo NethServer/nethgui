@@ -27,9 +27,11 @@
         // Todo: open dialog after a small timeout, to avoid flashes on cached responses.
         if(! dialog.dialog('isOpen')) {
             dialog.dialog('open');
+            $('body').css('cursor', 'progress');
         }
     }).bind("ajaxStop.nethgui", function() {
         if(dialog.dialog('isOpen')) {
+            $('body').css('cursor', 'auto');
             dialog.dialog('close');
         }
     });
