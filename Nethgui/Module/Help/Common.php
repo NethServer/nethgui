@@ -97,7 +97,7 @@ class Common extends \Nethgui\Controller\AbstractController
         $parts = explode('\\', get_class($module));
 
         $ns = \Nethgui\array_head($parts);
-        $lang = $this->getRequest()->getUser()->getLanguageCode();
+        $lang = $this->getRequest()->getLanguageCode();
         $fileName = implode('_', $parts) . '.html';
 
         return call_user_func($this->fileNameResolver, implode("\\", array($ns, 'Help', $lang, $fileName)));
