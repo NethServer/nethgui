@@ -328,15 +328,18 @@ class EsmithDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Auth
      */
     private function dbRead($command, $args, &$output)
     {
-        if ( ! isset(self::$socket)) {
+        if ( ! isset(self::$socket) ) {
             $socketPath = '/var/run/smwingsd.sock';
             $errno = 0;
             $errstr = '';
             self::$socket = $this->phpWrapper->fsockopen('unix://' . $socketPath, -1, $errno, $errstr);
-            if ( ! is_resource(self::$socket)) {
+            if( ! is_resource(self::$socket)) {
                 $this->getLog()->warning(sprintf("Invalid socket (%d): %s. Fall back to exec().", $errno, $errstr));
-                return $this->dbExec($command, call_user_func_array(array($this, 'prepareArguments'), $args), $output);
             }
+        }
+         
+        if ( ! is_resource(self::$socket)) {
+            return $this->dbExec($command, call_user_func_array(array($this, 'prepareArguments'), $args), $output);            
         }
 
         // prepend the database name and command

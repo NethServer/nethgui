@@ -110,7 +110,11 @@ class PhpWrapper implements \Nethgui\Log\LogConsumerInterface
 
     public function fsockopen($host, $port=-1, &$errno=NULL, &$errstr=NULL)
     {
-        return fsockopen($host, $port, $errno, $errstr);
+        $warnings = array();
+        $this->wrapBegin($warnings);
+        $resource = fsockopen($host, $port, $errno, $errstr);
+        $this->wrapEnd($warnings);
+        return $resource;
     }
 
     public function phpInclude($filePath, $vars)
