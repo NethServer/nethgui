@@ -38,6 +38,9 @@ rm -rf ${RPM_BUILD_ROOT}
 %doc Documentation/*
 
 %changelog
+* Fri Feb 07 2014 Davide Principi <davide.principi@nethesis.it> - 1.3.2-1.ns6
+- Give wings to server-manager - Enhancement #2460 [NethServer]
+
 * Wed Feb 05 2014 Davide Principi <davide.principi@nethesis.it> - 1.3.1-1.ns6
 - RST format for help files - Enhancement #2627 [NethServer]
 - NethCamp 2014 - Task #2618 [NethServer]
