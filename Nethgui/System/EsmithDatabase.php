@@ -373,18 +373,18 @@ class EsmithDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Auth
 
     private function recvMessage($socket)
     {
-        $buf = $this->phpWrapper->fread($socket, 5);
+        $buf = $this->safeRead($socket, 5);
         if ($buf === FALSE) {
             throw new \RuntimeException('Socket read error', 1383145266);
         }
 
         $header = unpack('Ctype/Nsize', $buf);
         if ( ! is_array($header)) {
-            throw new \RuntimeException('Socket read error', 1383145264);
+            throw new \RuntimeException('Invalid message header', 1383145264);
         }
 
         $message = NULL;
-        $message = $this->phpWrapper->fread($socket, $header['size']);
+        $message = $this->safeRead($socket, $header['size']);
         if ($message === FALSE) {
             throw new \RuntimeException('Socket read error', 1383145265);
         }
@@ -395,6 +395,25 @@ class EsmithDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Auth
 
         return $message;
     }
+
+    private function safeRead($socket, $size) 
+    {
+        $buffer = "";
+        $count = 0;
+        while($count < $size) {
+            if(feof($socket)) {
+                return FALSE;
+            }
+            $chunk = $this->phpWrapper->fread($socket, $size - $count);
+            $count += strlen($chunk);
+            if($chunk === FALSE) {
+                return FALSE;
+            }
+            $buffer .= $chunk;
+        }
+        return $buffer;
+    }
+
 
     /**
      * Take arbitrary arguments and flattenize to an array
