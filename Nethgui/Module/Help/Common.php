@@ -98,7 +98,7 @@ class Common extends \Nethgui\Controller\AbstractController
 
         $ns = \Nethgui\array_head($parts);
         $lang = $this->getRequest()->getLanguageCode();
-        $fileName = implode('_', $parts) . '.rst';
+        $fileName = implode('_', $parts) . '.html';
 
         return call_user_func($this->fileNameResolver, implode("\\", array($ns, 'Help', $lang, $fileName)));
     }
@@ -157,7 +157,7 @@ class Common extends \Nethgui\Controller\AbstractController
         $expansion = '';
         
         foreach ($this->getPhpWrapper()->glob($absolutePattern) as $fileName) {
-            if (substr($fileName, -4) !== '.rst') {
+            if (substr($fileName, -4) !== '.rst' && substr($fileName, -5) !== '.html')  {
                 throw new \UnexpectedValueException(sprintf('%s: Forbidden file name extension in help document `%s`.', __CLASS__, basename($fileName)), 1338288817);
             }
             if (isset($this->includes[$fileName])) {
