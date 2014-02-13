@@ -61,12 +61,12 @@ class Common extends \Nethgui\Controller\AbstractController
 
         $fileName = \Nethgui\array_head($request->getPath());
 
-        if (preg_match('/[a-z][a-z0-9]+(.html)/i', $fileName) == 0) {
+        if (preg_match('/[a-z][a-z0-9]+(.rst)/i', $fileName) == 0) {
             throw new \Nethgui\Exception\HttpException('Not found', 404, 1322148405);
         }
 
-        // Now assuming a trailing ".html" suffix.
-        $this->module = $this->getModuleSet()->getModule(substr($fileName, 0, -5));
+        // Now assuming a trailing ".rst" suffix.
+        $this->module = $this->getModuleSet()->getModule(substr($fileName, 0, -4));
 
         if (is_null($this->module)) {
             throw new \Nethgui\Exception\HttpException('Not found', 404, 1322148406);
@@ -98,7 +98,7 @@ class Common extends \Nethgui\Controller\AbstractController
 
         $ns = \Nethgui\array_head($parts);
         $lang = $this->getRequest()->getLanguageCode();
-        $fileName = implode('_', $parts) . '.html';
+        $fileName = implode('_', $parts) . '.rst';
 
         return call_user_func($this->fileNameResolver, implode("\\", array($ns, 'Help', $lang, $fileName)));
     }
@@ -157,7 +157,7 @@ class Common extends \Nethgui\Controller\AbstractController
         $expansion = '';
         
         foreach ($this->getPhpWrapper()->glob($absolutePattern) as $fileName) {
-            if (substr($fileName, -5) !== '.html') {
+            if (substr($fileName, -4) !== '.rst') {
                 throw new \UnexpectedValueException(sprintf('%s: Forbidden file name extension in help document `%s`.', __CLASS__, basename($fileName)), 1338288817);
             }
             if (isset($this->includes[$fileName])) {

@@ -46,6 +46,7 @@ class Template extends Common
         $module->prepareView($moduleView);
         $renderer = new Renderer($moduleView, $this->getFileNameResolver(), 0);
 
+        $view->getCommandList()->httpHeader('Content-Type:text/plain; charset=UTF-8');
         $view['title'] = $renderer->getTitle();
         $view['lang'] = $this->getRequest()->getUser()->getLanguageCode();
         $view['url'] = $view->getSiteUrl() . $view->getModuleUrl($module->getIdentifier() . '.html');

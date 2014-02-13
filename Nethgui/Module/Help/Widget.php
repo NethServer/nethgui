@@ -56,7 +56,7 @@ class Widget extends \Nethgui\Widget\AbstractWidget
             $module = $module->getParent();
         }
 
-        $pattern = str_replace('\\', '_', get_class($module)) . '_' . $name . '_*.html';
+        $pattern = str_replace('\\', '_', get_class($module)) . '_' . $name . '_*.rst';
 
         $pluginPlaceholder = $this->view->literal('{{{INCLUDE ' . $pattern . '}}}');
         $pluginPlaceholder->setAttribute('isPluginPlaceholder', TRUE);

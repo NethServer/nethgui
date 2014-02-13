@@ -1,9 +1,36 @@
-<h<?php echo $view['titleLevel']; ?>><?php echo htmlspecialchars($view['title']) ?></h<?php echo $view['titleLevel']; ?>>
-<p><?php echo htmlspecialchars($view['description']) ?></p>
-<?php if(count($view['fields']) == 0) return; ?>
-<dl>
-    <?php foreach ($view['fields'] as $field): ?>
-        <dt class="<?php echo $field['helpId'] ?>" ><?php echo htmlspecialchars($field['label']); ?></dt>
-        <dd><?php echo $T('Describe <tt>${0}</tt> here..', array($field['label'])) ?></dd>
-    <?php endforeach; ?>
-</dl>
+<?php
+if (!function_exists('writeHeader')) {
+    function writeHeader($str, $level = 1) {
+        $levels = array(
+            1 => '=',
+            2 => '=',
+            3 => '-',
+            4 => '^',
+            5 => '~'
+        );
+        $count = strlen($str);
+        $char = isset($levels[$level])?$levels[$level]:"'"; # fallback character is '
+        if ($level == 1) { # write also overline
+            for ($i = 0; $i < $count; $i++) {
+                echo $char;
+            }
+        }
+        echo "\n$str\n";
+        for ($i = 0; $i < $count; $i++) {
+            echo $char;
+        }
+        echo "\n";
+    }
+}
+
+writeHeader($view['title'],$view['titleLevel']);
+echo "\n";
+echo $view['description'];
+echo "\n\n";
+foreach ($view['fields'] as $field) {
+    echo $field['label'];
+    echo "\n";
+    echo "    ".$T('Describe *${0}* here..', array($field['label']));
+    echo "\n\n";
+}
+?>

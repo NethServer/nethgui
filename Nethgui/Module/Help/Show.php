@@ -62,8 +62,8 @@ class Show extends Common
             }
 
             $template = '<a href="%URL">%LABEL</a>';
-            $args1 = array('%URL' => $renderer->getModuleUrl($module->getIdentifier()) . '.html', '%LABEL' => $translator->translate($module, $module->getAttributesProvider()->getTitle()));
-            $args2 = array('%URL' => $renderer->getModuleUrl('../Template/' . $module->getIdentifier()) . '.html', '%LABEL' => $translator->translate($module, $module->getAttributesProvider()->getTitle()));
+            $args1 = array('%URL' => $renderer->getModuleUrl($module->getIdentifier()) . '.rst', '%LABEL' => $translator->translate($module, $module->getAttributesProvider()->getTitle()));
+            $args2 = array('%URL' => $renderer->getModuleUrl('../Template/' . $module->getIdentifier()) . '.rst', '%LABEL' => $translator->translate($module, $module->getAttributesProvider()->getTitle()));
             $moduleList->insert($renderer->literal(strtr($template, $args1)));
             $templateList->insert($renderer->literal(strtr($template, $args2)));
         }
