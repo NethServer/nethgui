@@ -61,12 +61,16 @@ class Common extends \Nethgui\Controller\AbstractController
 
         $fileName = \Nethgui\array_head($request->getPath());
 
-        if (preg_match('/[a-z][a-z0-9]+(.rst)/i', $fileName) == 0) {
+        if (preg_match('/[a-z][a-z0-9]+(.rst)/i', $fileName) == 0 && preg_match('/[a-z][a-z0-9]+(.html)/i', $fileName) == 0) {
             throw new \Nethgui\Exception\HttpException('Not found', 404, 1322148405);
         }
 
-        // Now assuming a trailing ".rst" suffix.
-        $this->module = $this->getModuleSet()->getModule(substr($fileName, 0, -4));
+        // Now assuming a trailing ".rst" or ".html" suffix.
+        if (substr($fileName, -3) == 'rst') {
+            $this->module = $this->getModuleSet()->getModule(substr($fileName, 0, -4));
+        } else { //html
+            $this->module = $this->getModuleSet()->getModule(substr($fileName, 0, -5));
+        }
 
         if (is_null($this->module)) {
             throw new \Nethgui\Exception\HttpException('Not found', 404, 1322148406);
