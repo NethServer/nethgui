@@ -129,7 +129,8 @@
                     }
                     return nRow
                 },
-                oLanguage: language
+                oLanguage: language,
+                iDisplayLength: 25
             };
 
             if(this.element.hasClass('small-dataTable')) {

@@ -138,8 +138,13 @@ class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\Co
 
         //read css from db
         $db = $this->getPlatform()->getDatabase('configuration');
-//        $customCss = $db->getProp('httpd-admin', 'css');
-//        $view['css']['1theme'] = $pathUrl . ($customCss ? sprintf('css/%s.css', $customCss) : 'css/default.css');
+        $colors = $db->getProp('httpd-admin', 'colors');
+        if ($colors) {
+            $colors = explode(',',$colors);
+            $view['colors'] = $colors;
+        }  
+        $logo = $db->getProp('httpd-admin', 'logo');
+        $view['logo'] = ($logo ? sprintf('/images/%s', $logo) : '/images/logo.png') ;
         $view['company'] = $db->getProp('OrganizationContact', 'Company');
         $view['address'] = $db->getProp('OrganizationContact', 'Street') . ", " . $db->getProp('OrganizationContact', 'City');
         $view['favicon'] = $view->getPathUrl() . 'images/favicon.ico';
