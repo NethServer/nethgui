@@ -13,32 +13,38 @@ echo $view->form()
         ->insert($view->button('Login', $view::BUTTON_SUBMIT)))
 ;
 
-$images = array('Waves', 'Flow', 'Spring', 'Silk', 'Gulp');
-$backgroundUrl = $view->getPathUrl() . "images/{$images[3]}.png";
 $actionId = $view->getUniqueId();
-$bg1 = '#1d247c';
+$bg1 = '#3D4547';
 
 $extCss = <<<"CSS"
 /*
  * Login.php
  */
-#allWrapper {
-    background: {$bg1} url("{$backgroundUrl}") no-repeat center center !important;
-}
-
-#allWrapper #pageContent {
-    overflow: inherit
-}
 
 #{$actionId} {
-    -moz-box-shadow: 5px 5px 15px {$bg1};
-    -webkit-box-shadow: 5px 5px 15px {$bg1};
-    box-shadow: 5px 5px 15px {$bg1};
     background: white;
     padding: 1em;
     border: 1px solid {$bg1};
-    border-radius: 4px;
+    border-radius: 2px;
     position: absolute;
+}
+
+#{$actionId} .Button.submit {
+    font-size: 130%;
+}
+#{$actionId} .Buttonlist {
+    margin-top: 20px;
+    text-align: center;    
+}
+#{$actionId} .ui-widget-header {
+    margin-left: -10px;
+    margin-right: -10px;
+    margin-top: -10px;
+    padding: 10px;
+    color: #fff;
+    font-size: 120%;
+    text-align: center;
+    background: {$bg1};
 }
 
 #footer {
@@ -71,7 +77,9 @@ $extJs = <<<"JS"
             x = w.innerWidth || e.clientWidth || g.clientWidth,
             y = w.innerHeight || e.clientHeight || g.clientHeight;
 
-            $('#allWrapper').css({'height': y, 'width': x});
+            var bg = $('#Login .ui-widget-header').css('background');
+            $('#allWrapper').css({'height': y, 'width': x, 'background': bg});
+
     };
 
     $(window).resize(adjust).scroll(adjust);
