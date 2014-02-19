@@ -77,7 +77,7 @@ $extJs = <<<"JS"
             x = w.innerWidth || e.clientWidth || g.clientWidth,
             y = w.innerHeight || e.clientHeight || g.clientHeight;
 
-            var bg = $('#Login .ui-widget-header').css('background');
+            var bg = $('#Login .ui-widget-header').css('background-color');
             $('#allWrapper').css({'height': y, 'width': x, 'background': bg});
 
     };
