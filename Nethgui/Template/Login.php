@@ -41,7 +41,7 @@ $extCss = <<<"CSS"
     margin-right: -10px;
     margin-top: -10px;
     padding: 10px;
-    color: #fff;
+    color: #fff !important;
     font-size: 120%;
     text-align: center;
     background: {$bg1};
