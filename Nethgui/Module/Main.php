@@ -144,10 +144,11 @@ class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\Co
             $view['colors'] = $colors;
         }  
         $logo = $db->getProp('httpd-admin', 'logo');
-        $view['logo'] = ($logo ? sprintf('/images/%s', $logo) : '/images/logo.png') ;
+        $view['logo'] = $view->getPathUrl() . ($logo ? sprintf('images/%s', $logo) : 'images/logo.png') ;
         $view['company'] = $db->getProp('OrganizationContact', 'Company');
         $view['address'] = $db->getProp('OrganizationContact', 'Street') . ", " . $db->getProp('OrganizationContact', 'City');
-        $view['favicon'] = $view->getPathUrl() . 'images/favicon.ico';
+        $favicon = $db->getProp('httpd-admin', 'favicon');
+        $view['favicon'] = $view->getPathUrl() . ($favicon ? sprintf('images/%s', $favicon) : 'images/favicon.png') ;
         $view['moduleTitle'] = $view->getTranslator()->translate($currentModule, $currentModule->getAttributesProvider()->getTitle());
 
         $view['currentModuleOutput'] = 'currentModuleOutput';
