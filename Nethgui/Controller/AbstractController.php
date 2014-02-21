@@ -261,8 +261,23 @@ abstract class AbstractController extends \Nethgui\Module\AbstractModule impleme
     {
         parent::prepareView($view);
         $view->copyFrom($this->parameters);
+
+        $mandatoryFields = array();
+        foreach ($this->parameters->getKeys() as $parameter) {
+            $v = $this->getValidator($parameter);
+            if ($v instanceof \Nethgui\System\MandatoryValidatorInterface) {
+                $mandatoryFields[$view->getUniqueId($parameter)] = $v->isMandatory();
+            }
+        }
         if ($view->getTargetFormat() === $view::TARGET_XHTML) {
             $view['__invalidParameters'] = $this->invalidParameters;
+            if ( ! empty($mandatoryFields)) {
+                $view['__mandatoryFields'] = $mandatoryFields;                
+            }
+        } else {
+            if ( ! empty($mandatoryFields)) {
+                $view->getCommandList()->setMandatoryFields($mandatoryFields);
+            }
         }
     }
 

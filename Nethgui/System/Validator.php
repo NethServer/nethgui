@@ -21,10 +21,31 @@ namespace Nethgui\System;
  */
 
 /**
- * 
+ * This interface will be merged into ValidatorInterface
+ *
+ * @api
+ * @since 1.3
+ * @deprecated
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class Validator implements \Nethgui\System\ValidatorInterface
+interface MandatoryValidatorInterface extends ValidatorInterface
+{
+
+    /**
+     * Tell if an empty value is NOT allowed.
+     *
+     * @api
+     * @return boolean FALSE if empty is allowed, TRUE otherwise.
+     */
+    public function isMandatory();
+}
+
+/**
+ * Check a list of conditions that must be satisfied.
+ *
+ * @author Davide Principi <davide.principi@nethesis.it>
+ */
+class Validator implements \Nethgui\System\MandatoryValidatorInterface
 {
     private $chain = array();
     private $failureInfo;
@@ -157,9 +178,9 @@ class Validator implements \Nethgui\System\ValidatorInterface
         }
 
         return $this
-            ->minLength(1)
-            ->maxLength(255)
-            ->addToChain(__FUNCTION__, array($message, array($minDots, $maxDots)), $minDots, $maxDots)
+                ->minLength(1)
+                ->maxLength(255)
+                ->addToChain(__FUNCTION__, array($message, array($minDots, $maxDots)), $minDots, $maxDots)
         ;
     }
 
@@ -706,10 +727,50 @@ class Validator implements \Nethgui\System\ValidatorInterface
         }
 
         $domainPart = $parts[1];
-        
+
         if ( ! $this->evalHostname($domainPart, 0, PHP_INT_MAX)) {
             $this->addFailureInfo('valid_email,malformed-domainpart');
             return FALSE;
+        }
+
+        return TRUE;
+    }
+
+    protected function setMandatoryConditional($value)
+    {
+        if ( ! isset($this->mandatory)) {
+            $this->mandatory = $value;
+        }
+        return $this;
+    }
+
+    public function isMandatory()
+    {
+        $notFlag = FALSE;
+        foreach ($this->chain as $expression) {
+            if (is_integer($expression) && $expression < 0) {
+                $notFlag = TRUE;
+                continue;
+            } elseif (is_array($expression) && is_callable($expression[1])) {
+                list($methodName, $evalFunction, $argList, $errorTemplate) = $expression;
+
+                if ( ! is_array($argList)) {
+                    $argList = array();
+                }
+                
+                if ($methodName === 'maxLength' && $argList[0] === 0 ) {
+                    return FALSE;
+                } else {
+                    return (preg_match('/^isEmpty$/', $methodName) === 0) XOR $notFlag;
+                }
+
+            } elseif ($expression instanceof \Nethgui\System\MandatoryValidatorInterface) {
+                return $expression->isMandatory();
+            } elseif (is_bool($expression)) {
+                return FALSE;
+            }
+            // reset $notFlag flag
+            $notFlag = FALSE;
         }
 
         return TRUE;
@@ -721,7 +782,7 @@ class Validator implements \Nethgui\System\ValidatorInterface
  * @author Davide Principi <davide.principi@nethesis.it>
  * @internal
  */
-class CollectionValidator implements \Nethgui\System\ValidatorInterface
+class CollectionValidator implements \Nethgui\System\MandatoryValidatorInterface
 {
     /**
      *
@@ -773,6 +834,14 @@ class CollectionValidator implements \Nethgui\System\ValidatorInterface
         return $this->failureInfo;
     }
 
+    public function isMandatory()
+    {
+        if ($this->memberValidator instanceof MandatoryValidatorInterface) {
+            return $this->memberValidator->isMandatory();
+        }
+        return TRUE;
+    }
+
 }
 
 /**
@@ -780,7 +849,7 @@ class CollectionValidator implements \Nethgui\System\ValidatorInterface
  * @see Validator::orValidator()
  * @internal
  */
-class OrValidator implements \Nethgui\System\ValidatorInterface
+class OrValidator implements \Nethgui\System\MandatoryValidatorInterface
 {
     /**
      *
@@ -822,6 +891,13 @@ class OrValidator implements \Nethgui\System\ValidatorInterface
     public function getFailureInfo()
     {
         return $this->failureInfo;
+    }
+
+    public function isMandatory()
+    {
+        $m1 = ($this->v1 instanceof MandatoryValidatorInterface) ? $this->v1->isMandatory() : TRUE;
+        $m2 = ($this->v2 instanceof MandatoryValidatorInterface) ? $this->v2->isMandatory() : TRUE;
+        return ($m1 && $m2);
     }
 
 }

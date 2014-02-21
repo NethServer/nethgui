@@ -49,7 +49,20 @@
             this.element.bind('nethguihide.' + this.namespace, $.proxy(this['_onHide' + behaviour], this));            
             this.element.bind('nethguireloaddata.' + this.namespace, $.proxy(this._onReloadData, this));
             this.element.bind('nethguisendquery.' + this.namespace, $.proxy(this._onSendQuery, this));
-
+            this.element.bind('nethguisetmandatoryfields.' + this.namespace, $.proxy(this._onSetMandatoryFields, this))
+        },
+        _onSetMandatoryFields: function(e, fields) {
+            if( ! $.isPlainObject(fields)) {
+                return;
+            }
+            e.stopPropagation();
+            $.each(fields, function(index, value) {
+                if(value) {
+                    $('#' + index).addClass('mandatory')
+                } else {
+                    $('#' + index).removeClass('mandatory')
+                }
+            });
         },
         _onReloadData: function (e, delay) {
             var url = this._form.attr('action');

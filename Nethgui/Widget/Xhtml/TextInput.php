@@ -25,6 +25,7 @@ namespace Nethgui\Widget\Xhtml;
  */
 class TextInput extends \Nethgui\Widget\XhtmlWidget
 {
+
     protected function getJsWidgetTypes()
     {
         return array_merge(array('Nethgui:inputcontrol', 'Nethgui:tooltip'), parent::getJsWidgetTypes());
@@ -33,17 +34,19 @@ class TextInput extends \Nethgui\Widget\XhtmlWidget
     protected function renderContent()
     {
         $name = $this->getAttribute('name');
-        $value = $this->getAttribute('value');
         $flags = $this->getAttribute('flags');
         $label = $this->getAttribute('label', $this->getTranslateClosure($name . '_label'));
-        $cssClass = $this->getAttribute('class', '');
-        $cssClass = trim('TextInput ' . $cssClass);
-        $content ='';
 
-        if (is_null($value)) {
-            $value = $this->view[$name];
-        }
+        $defaultMandatory = $this->getAttribute('mandatory',
+            isset($this->view['__mandatoryFields']) 
+            && $this->view['__mandatoryFields'][$this->view->getUniqueId($name)]);
         
+        $cssClass = trim(sprintf('TextInput %s %s',
+                $this->getAttribute('class', ''),
+                $defaultMandatory === TRUE ? 'mandatory' : ''
+        ));
+        $content = '';
+
         $attributes = array(
             'value' => strval($this->view[$name]),
             'type' => ($flags & \Nethgui\Renderer\WidgetFactoryInterface::TEXTINPUT_PASSWORD) ? 'password' : 'text',
@@ -63,4 +66,3 @@ class TextInput extends \Nethgui\Widget\XhtmlWidget
     }
 
 }
-

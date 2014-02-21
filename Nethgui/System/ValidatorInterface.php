@@ -23,6 +23,10 @@ namespace Nethgui\System;
 /**
  * Test if an input value is grammatically and/or logically valid
  *
+ * WARNING: implementors must also implement isMandatory() method!
+ * This interface will be merged with MandatoryValidatorInterface
+ *
+ * @see MandatoryValidatorInterface
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  * @api
