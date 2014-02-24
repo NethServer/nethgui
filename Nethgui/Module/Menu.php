@@ -21,7 +21,6 @@ namespace Nethgui\Module;
  */
 
 use Nethgui\System\PlatformInterface as Validate;
-use Nethgui\Authorization\PolicyDecisionPointInterface as Permission;
 
 /**
  *
@@ -187,12 +186,6 @@ class Menu extends \Nethgui\Controller\AbstractController
 
     public function sortItems($a, $b)
     {
-        $position = strcmp($a['position'], $b['position']);
-
-        if ($position !== 0) {
-            return $position;
-        }
-
         return strcmp($a['title'], $b['title']);
     }
 
