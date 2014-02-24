@@ -11,6 +11,10 @@
             SUPER.prototype._create.apply(this);
             this.element.bind('focus.' + this.namespace, $.proxy(this._onFocus, this));
             this.element.on('nethguitooltip.' + this.namespace, $.proxy(this._createTooltip, this));
+            this.element.on('nethguimandatory.' + this.namespace, $.proxy(this._updateMandatoryState, this))
+        },
+        _updateMandatoryState: function(e, isEnabled) {
+            this.element.toggleClass('mandatory', isEnabled);
         },
         _updateView: function(value) {
             this.element.val(value ? value : '');

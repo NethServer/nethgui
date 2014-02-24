@@ -57,11 +57,7 @@
             }
             e.stopPropagation();
             $.each(fields, function(index, value) {
-                if(value) {
-                    $('#' + index).addClass('mandatory')
-                } else {
-                    $('#' + index).removeClass('mandatory')
-                }
+                $('#' + index).triggerHandler('nethguimandatory', [value ? true : false]);
             });
         },
         _onReloadData: function (e, delay) {

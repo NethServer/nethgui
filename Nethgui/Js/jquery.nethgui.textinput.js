@@ -23,6 +23,15 @@
                     });
                 }
             }
+            this._onContentChange();
+            this.element.on('nethguimandatory.' + this.namespace + ' keyup.' + this.namespace, $.proxy(this._onContentChange, this));
+        },
+        _onContentChange: function() {
+            if(this.element.hasClass('mandatory') && ! this.element.val()) {
+                this.element.addClass('active');
+            } else {
+                this.element.removeClass('active');
             }
+        }
     });
 }( jQuery ) );
