@@ -38,6 +38,13 @@ rm -rf ${RPM_BUILD_ROOT}
 %doc Documentation/*
 
 %changelog
+* Wed Feb 26 2014 Davide Principi <davide.principi@nethesis.it> - 1.4.0-1.ns6
+- Web interface: menu items sorted by name - Enhancement #2663 [NethServer]
+- Revamp web UI style - Enhancement #2656 [NethServer]
+- Help templates in RST format - Enhancement #2640 [NethServer]
+- Translator fallback language - Enhancement #2638 [NethServer]
+- Emphasized visual style for mandatory text input fields - Feature #1753 [NethServer]
+
 * Fri Feb 07 2014 Davide Principi <davide.principi@nethesis.it> - 1.3.2-1.ns6
 - Give wings to server-manager - Enhancement #2460 [NethServer]
 
