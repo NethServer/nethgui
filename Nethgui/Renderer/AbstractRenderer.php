@@ -58,6 +58,10 @@ abstract class AbstractRenderer extends ReadonlyView
     {
         $D = array();
 
+        if( ! is_array($H) && ! $H instanceof \Traversable) {
+            return $D;
+        }
+
         foreach ($H as $k => $v) {
             if (is_array($v)) {
                 $D[] = array(self::hashToDatasource($v, $sort), $k);
