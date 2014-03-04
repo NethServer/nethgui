@@ -70,10 +70,12 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
         $this->eventQueue = array();
         $this->processes = new \Nethgui\Utility\ArrayDisposable();
         $this->user = $user;
+        $this->databases = array('SESSION' => new SessionDatabase());
     }
 
     public function setSession(\Nethgui\Utility\SessionInterface $session)
     {
+        $this->databases['SESSION']->setSession($session);
         $key = get_class($this);
 
         $s = $session->retrieve($key);
@@ -96,17 +98,16 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
      */
     public function getDatabase($database)
     {
-        if ( ! isset($this->databases[$database])) {
-            $object = new EsmithDatabase($database, $this->user);
-            $object
-                ->setLog($this->getLog())
-                ->setPolicyDecisionPoint($this->policyDecisionPoint)
-                ->setPhpWrapper($this->phpWrapper)
-            ;
-            $this->databases[$database] = $object;
+        if (isset($this->databases[$database])) {
+            return $this->databases[$database];
         }
-
-        return $this->databases[$database];
+        $object = new EsmithDatabase($database, $this->user);
+        $object
+            ->setLog($this->getLog())
+            ->setPolicyDecisionPoint($this->policyDecisionPoint)
+            ->setPhpWrapper($this->phpWrapper)
+        ;
+        return $this->databases[$database] = $object;
     }
 
     public function getIdentityAdapter($database, $key, $prop = NULL, $separator = NULL)
