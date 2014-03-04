@@ -166,7 +166,7 @@ class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Utility\
             if ($languageCode === 'en' || NETHGUI_DEBUG === TRUE) {
                 // By default prepare an identity-translation
                 $translation = $key;
-                $this->getLog()->notice(sprintf("%s: `%s` translation not found for `%s`. Catalogs: [%s]",
+                NETHGUI_DEBUG && $this->getLog()->notice(sprintf("%s: `%s` translation not found for `%s`. Catalogs: [%s]",
                             __CLASS__, $languageCode, $key,
                             implode(', ', $attempts)));
             } else {
