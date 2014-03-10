@@ -73,7 +73,8 @@ abstract class AbstractLog implements LogInterface, \Nethgui\Utility\PhpConsumer
             return $this;
         }
 
-        $message = sprintf('%s : file %s; line %d', $ex->getMessage(), $ex->getFile(), $ex->getLine());
+        $message = sprintf('%s: %s (in %s:%d)', get_class($ex),
+            $ex->getMessage(), $ex->getFile(), $ex->getLine());
         $this->message(__FUNCTION__, $message);
 
         if ($stackTrace) {
@@ -117,7 +118,6 @@ abstract class AbstractLog implements LogInterface, \Nethgui\Utility\PhpConsumer
 
     public function deprecated($message = "%s: method %s is DEPRECATED!")
     {
-
         $backtrace = debug_backtrace();
         $caller = $backtrace[2];
         $callee = $backtrace[1];
