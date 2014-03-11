@@ -49,7 +49,7 @@ class CompositeController extends \Nethgui\Module\Composite implements \Nethgui\
      */
     protected function getRequest()
     {
-        return $this->request;
+        return isset($this->request) ? $this->request : NullRequest::getInstance();;
     }
 
     /**
