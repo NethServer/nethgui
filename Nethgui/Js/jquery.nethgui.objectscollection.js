@@ -13,10 +13,6 @@
             SUPER.prototype._create.apply(this);
         },
         _updateView: function(value, selector) {
-            if(this.state.rendered === true) {
-                return;
-            }
-
             SUPER.prototype._updateView.call(this, value, selector);
             var self = this;
             self.element.empty();
