@@ -21,7 +21,9 @@
             if(cancel !== true) {
                 this.actionHistory.push(e.target.id);
             }
-            this.getChildren().not('#' + e.target.id).trigger('nethguihide');
+            this.getChildren().filter(function (index) {
+                return this.id !== e.target.id && $(this).find('#' + e.target.id).length === 0;
+            }).trigger('nethguihide');
         },
         _onCancel: function () {
             this.actionHistory.pop(); // pops the current action
