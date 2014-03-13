@@ -191,7 +191,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $invalidUsernames = array(
             'invalidUserName', // no uppercase
             '0invalidusername', // start with letter
-            'in.valid', // no symbols           
+            'in*valid', // no symbols
             str_repeat('x', 256), // < 256 characters            
         );
 
