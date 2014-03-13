@@ -758,7 +758,7 @@ class Validator implements \Nethgui\System\MandatoryValidatorInterface
                     $argList = array();
                 }
                 
-                if ($methodName === 'maxLength' && $argList[0] === 0 ) {
+                if ($methodName === 'maxLength' && $argList[0] >= 0 ) {
                     return FALSE;
                 } else {
                     return (preg_match('/^isEmpty$/', $methodName) === 0) XOR $notFlag;
