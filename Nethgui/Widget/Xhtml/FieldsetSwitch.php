@@ -62,6 +62,10 @@ class FieldsetSwitch extends \Nethgui\Widget\XhtmlWidget
             $className .= ' expandable';
         }
 
+        if($this->hasAttribute('class')) {
+            $className .= ' ' . trim($this->getAttribute('class'));
+        }
+
         $content .= $this->openTag('div', array('class' => $className));
         $content .= $chooser->renderContent();
         $content .= $this->openTag('fieldset', array('class' => 'FieldsetSwitchPanel'));
