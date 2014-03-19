@@ -178,14 +178,14 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
     {
         $matches = array();
 
-        preg_match('/(?P<event>[^@]+)(@(?P<queue>[^ ]+))?( +(?P<detached>&))?/', $eventSpecification, $matches);
+        preg_match('/(?P<event>[^@ ]+)(@(?P<queue>[^ ]+))?( +(?P<detached>&))?/', $eventSpecification, $matches);
 
         if ( ! isset($matches['event'])) {
             throw new \InvalidArgumentException(sprintf("%s: invalid event specification", get_class($this)), 1325578497);
         }
 
-        $queue = isset($matches['queue']) ? $matches['queue'] : 'now';
-        $detached = isset($matches['detached']) ? TRUE : FALSE;
+        $queue = isset($matches['queue']) && $matches['queue'] ? $matches['queue'] : 'now';
+        $detached = isset($matches['detached']) && $matches['detached'] === '&' ? TRUE : FALSE;
 
         // prepend the event name to the argument list:
         array_unshift($arguments, $matches['event']);
