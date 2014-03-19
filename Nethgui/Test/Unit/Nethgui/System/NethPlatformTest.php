@@ -30,7 +30,7 @@ class NethPlatformTest extends \PHPUnit_Framework_TestCase
 
         $mockSession->expects($this->atLeastOnce())
             ->method('retrieve')
-            ->with('Nethgui\System\NethPlatform')
+            ->with($this->anything())
             ->will($this->returnValue(new \ArrayObject()));
 
         $pdpMock = $this->getMock('Nethgui\Authorization\PolicyDecisionPointInterface');
