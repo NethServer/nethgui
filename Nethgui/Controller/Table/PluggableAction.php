@@ -33,7 +33,7 @@ namespace Nethgui\Controller\Table;
  * @since 1.0
  * @see Decorator pattern
  */
-class PluggableAction extends \Nethgui\Controller\Table\AbstractAction implements \Nethgui\Module\ModuleCompositeInterface
+class PluggableAction extends \Nethgui\Controller\Table\AbstractAction implements \Nethgui\Module\ModuleCompositeInterface, \Nethgui\Component\DependencyInjectorAggregate
 {
     /**
      * @var \Nethgui\Controller\Table\ActionPluginLoader
@@ -51,6 +51,12 @@ class PluggableAction extends \Nethgui\Controller\Table\AbstractAction implement
      * @var string
      */
     private $pluginsPath;
+
+    /**
+     *
+     * @var \Nethgui\Component\DependencyInjectorInterface
+     */
+    private $moduleInjector;
 
     /**
      * 
@@ -171,6 +177,13 @@ class PluggableAction extends \Nethgui\Controller\Table\AbstractAction implement
     public function getAuthorizationAttribute($attributeName)
     {
         return $this->innerAction->getAuthorizationAttribute($attributeName);
+    }
+
+    public function setDependencyInjector(\Nethgui\Component\DependencyInjectorInterface $di)
+    {
+        $this->moduleInjector = $di;
+        $this->plugins->setDependencyInjector($di);
+        return $this;
     }
 
 }

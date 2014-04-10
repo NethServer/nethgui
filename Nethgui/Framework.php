@@ -70,6 +70,11 @@ class Framework
     private $moduleSet;
 
     /**
+     * @var \Nethgui\Component\DependencyInjector
+     */
+    private $moduleInjector;
+
+    /**
      *
      * @var \Nethgui\Utility\Session
      */
@@ -86,11 +91,29 @@ class Framework
         $this->urlParts = $this->guessUrlParts();
 
         $this->decoratorTemplate = 'Nethgui\Template\Main';
+        $this->moduleInjector = new \Nethgui\Component\DependencyInjector();
 
         $this->log = new \Nethgui\Log\Syslog(E_WARNING | E_ERROR);
         $this->session = new \Nethgui\Utility\Session();
         $this->pdp = new \Nethgui\Authorization\JsonPolicyDecisionPoint($this->getFileNameResolver());
         $this->pdp->setLog($this->log);
+
+        // Add some commonly used dependencies:
+        $this->moduleInjector['Log'] = $this->log;
+        $this->moduleInjector['Session'] = $this->session;
+        $this->moduleInjector['PolicyDecisionPoint'] = $this->pdp;
+    }
+
+    /**
+     * 
+     * 
+     * @api
+     * @since 1.6
+     * @return \ArrayAccess
+     */
+    public function getModuleDependenciesBag()
+    {
+        return $this->moduleInjector;
     }
 
     /**
@@ -310,9 +333,10 @@ class Framework
 
     private function initializeModuleLoader()
     {
-        $this->moduleSet = new \Nethgui\Module\ModuleLoader();
+        $this->moduleInjector['initializeModuleCallback'] = array($this, 'initializeModule');
+        $this->moduleSet = new \Nethgui\Module\ModuleLoader($this->moduleInjector);
         $this->moduleSet->setLog($this->log);
-        $this->moduleSet->addInstantiateCallback(array($this, 'initializeModule'));
+
         foreach ($this->namespaceMap as $nsName => $nsRoot) {
             if ($nsName === 'Nethgui') {
                 $nsRoot = FALSE;
@@ -351,25 +375,39 @@ class Framework
         $fileNameResolver = $this->getFileNameResolver();
         $currentModuleIdentifier = array_head($request->getPath());
 
-        $this->moduleSet->addInstantiateCallback(function (Module\ModuleInterface $module) use ($authModuleLoader, $currentModuleIdentifier, $fileNameResolver) {
-                $moduleIdentifier = $module->getIdentifier();
-
-                if ($moduleIdentifier === 'Menu') {
-                    $module
+        if ( ! isset($this->moduleInjector['injectSystemModulesCallback'])) {
+            $this->moduleInjector['injectSystemModulesCallback'] = function ($object, $context) use ($authModuleLoader, $currentModuleIdentifier, $fileNameResolver) {
+                if ($object instanceof \Nethgui\Module\Menu) {
+                    $object
                         ->setModuleSet($authModuleLoader)
                         ->setCurrentModuleIdentifier($currentModuleIdentifier)
                     ;
-                } elseif ($moduleIdentifier === 'Help') {
-                    $module
+                } elseif ($object instanceof \Nethgui\Module\Help) {
+                    $object
                         ->setModuleSet($authModuleLoader)
                         ->setFileNameResolver($fileNameResolver)
                     ;
                 }
-            });
+            };
+
+            $this->moduleInjector['injectFrameworkModulesCallback'] = function($object, $context) use($platform) {
+                if ($object instanceof \Nethgui\System\PlatformConsumerInterface) {
+                    $object->setPlatform($platform);
+                }
+
+                if (isset($context['PolicyDecisionPoint']) && $object instanceof \Nethgui\Authorization\PolicyEnforcementPointInterface) {
+                    $object->setPolicyDecisionPoint($context['PolicyDecisionPoint']);
+                }
+
+            };
+        }
+
+
 
         $mainModule = new \Nethgui\Module\Main($this->decoratorTemplate, $authModuleLoader);
         $mainModule->setPlatform($platform);
         $mainModule->setPolicyDecisionPoint($this->pdp);
+        $mainModule->setDependencyInjector($this->moduleInjector);
 
         $mainModule->initialize();
         $mainModule->bind($request);
@@ -457,14 +495,14 @@ class Framework
         return 0;
     }
 
-    public function initializeModule(Module\ModuleInterface $module)
+    public function initializeModule($module, $context)
     {
         if ($module instanceof \Nethgui\Utility\SessionConsumerInterface) {
-            $module->setSession($this->session);
+            $module->setSession($context['Session']);
         }
 
         if ($module instanceof Authorization\PolicyEnforcementPointInterface) {
-            $module->setPolicyDecisionPoint($this->pdp);
+            $module->setPolicyDecisionPoint($context['PolicyDecisionPoint']);
         }
     }
 
@@ -508,6 +546,8 @@ class Framework
         } else {
             $renderer = new Renderer\TemplateRenderer($view, $this->getFileNameResolver(), 'text/plain', 'UTF-8');
         }
+
+        $this->moduleInjector->inject($renderer);
 
         return $renderer;
     }

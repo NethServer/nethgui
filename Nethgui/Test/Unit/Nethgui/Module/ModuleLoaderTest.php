@@ -39,7 +39,9 @@ class ModuleLoaderTest extends \PHPUnit_Framework_TestCase
 
         $gfw->expects($this->any())->method('scandir')->will($this->returnCallback($callback));
 
-        $this->object = new \Nethgui\Module\ModuleLoader();
+        $di = $this->getMockBuilder('Nethgui\Component\DependencyInjector')->getMock();
+
+        $this->object = new \Nethgui\Module\ModuleLoader($di);
         foreach ($namespaceMap as $nsPrefix => $nsRoot) {
             $this->object->setNamespace($nsPrefix . '\\Module', $nsRoot);
         }
@@ -83,7 +85,9 @@ class ModuleLoaderTest extends \PHPUnit_Framework_TestCase
 
         $gfw->expects($this->any())->method('scandir')->will($this->returnValue(FALSE));
 
-        $object = new \Nethgui\Module\ModuleLoader(new \ArrayObject(array('NonExists' => '/non-exists')));
+        $di = $this->getMockBuilder('Nethgui\Component\DependencyInjector')->getMock();
+
+        $object = new \Nethgui\Module\ModuleLoader($di);
         $object->setPhpWrapper($gfw);
 
         try {

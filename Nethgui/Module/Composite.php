@@ -31,7 +31,7 @@ namespace Nethgui\Module;
  * @see Controller
  * @see List
  */
-abstract class Composite extends \Nethgui\Module\AbstractModule implements \Nethgui\Module\ModuleCompositeInterface
+abstract class Composite extends \Nethgui\Module\AbstractModule implements \Nethgui\Module\ModuleCompositeInterface, \Nethgui\Component\DependencyInjectorAggregate
 {
     private $children = array();
 
@@ -40,6 +40,12 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
      * @var ModuleLoader
      */
     private $childLoader;
+
+    /**
+     *
+     * @var \Nethgui\Component\DependencyInjectorInterface
+     */
+    private $moduleInjector;
 
     /**
      * Propagates initialize() message to children.
@@ -52,6 +58,7 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
         parent::initialize();
         foreach ($this->children as $child) {
             if ( ! $child->isInitialized()) {
+                $this->moduleInjector->inject($child);
                 $child->initialize();
             }
         }
@@ -74,15 +81,9 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
         $this->children[$childModule->getIdentifier()] = $childModule;
 
         $childModule->setParent($this);
-        if ($this->hasPlatform() && $childModule instanceof \Nethgui\System\PlatformConsumerInterface) {
-            $childModule->setPlatform($this->getPlatform());
-        }
-
-        if ($childModule instanceof \Nethgui\Authorization\PolicyEnforcementPointInterface) {
-            $childModule->setPolicyDecisionPoint($this->getPolicyDecisionPoint());
-        }
-
+       
         if ($this->isInitialized() && ! $childModule->isInitialized()) {
+            $this->moduleInjector->inject($childModule);
             $childModule->initialize();
         }
         return $this;
@@ -186,8 +187,8 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
         $nsPrefixParts = array_slice(explode('\\', get_class($module)), 0, -1);
         $nsParts = array_merge($nsPrefixParts, explode('/', $childrenDir));
         $nsPrefix = implode('\\', $nsParts);
-
-        $this->childLoader = new \Nethgui\Module\ModuleLoader();
+        
+        $this->childLoader = new \Nethgui\Module\ModuleLoader($this->moduleInjector);
         $this->childLoader
             ->setLog($this->getLog())
             ->setNamespace($nsPrefix, $nsRootPath);
@@ -225,5 +226,11 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
                 $child->setPolicyDecisionPoint($this->getPolicyDecisionPoint());
             }
         }
+    }
+
+    public function setDependencyInjector(\Nethgui\Component\DependencyInjectorInterface $di)
+    {
+        $this->moduleInjector = $di;
+        return $this;
     }
 }
