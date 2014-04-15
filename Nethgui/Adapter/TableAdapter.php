@@ -1,4 +1,5 @@
 <?php
+
 namespace Nethgui\Adapter;
 
 /*
@@ -47,19 +48,40 @@ class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
 
     /**
      *
+     * @var callable
+     */
+    private $filter = NULL;
+
+    /**
+     *
+     * The $filter argument can be
+     * - NULL, no filter is applied
+     * - an array in the form ('prop1'=>'val1',...,'propN'=>'valN') where
+     *   valN it's a regexp. In this case, the adapter will return only rows
+     *   where all props match all associated regexp.
+     * - a callable, filter is invoked on each row and must return a TRUE/FALSE
+     *   value that determines if a record is accepted (TRUE) or not (FALSE).
+     *   The filter prototype is (bool) filter($row) {};
+     *
      * @param string $db used for table mapping
-     * @param string $type of the key for mapping
-     * @param mixed $filter Can be a string or an associative array. When using a string, filter is a fulltext search on db keys, otherwise it's an array in the form ('prop1'=>'val1',...,'propN'=>'valN') where valN it's a regexp. In this case, the adapter will return only rows where all props match all associated regexp.
+     * @param mixed $types The types of records to load. Can be a string or an array or NULL.
+     * @param mixed $filter Can be NULL, an associative array, or callable.
+     * @throws \InvalidArgumentException
      *
      */
-    public function __construct(\Nethgui\System\DatabaseInterface $db, $type, $filter = FALSE)
+    public function __construct(\Nethgui\System\DatabaseInterface $db, $types = NULL, $filter = NULL)
     {
         $this->database = $db;
-        $this->type = $type;
-        $this->filter = $filter;
+        $this->type = $types;
+        // Fix wrong filter datatype, for backward compatibility
+        $filter = $filter === FALSE ? NULL : $filter;
+        $this->filter = is_array($filter) ? array($this, 'defaultFilterMatch') : $filter;
+        if( ! ($this->filter === NULL || is_callable($this->filter))) {
+            throw new \InvalidArgumentException(sprintf("%s: filter argument must be an array or NULL, or a callable object.", __CLASS__), 1398679653);
+        }
     }
 
-    private function filterMatch($value)
+    public function defaultFilterMatch($value)
     {
         foreach ($this->filter as $prop => $regexp) {
             if ( ! preg_match($regexp, $value[$prop])) {
@@ -72,27 +94,23 @@ class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
     private function lazyInitialization()
     {
         $this->data = new \ArrayObject();
-
-        if (is_array($this->filter)) { #apply simple filter only if filter is a string
-            $rawData = $this->database->getAll($this->type);
-            if (is_array($rawData)) {
-                // skip the first column, where getAll() returns the key type.
-                foreach ($rawData as $key => $row) {
-                    unset($row['type']);
-                    if ($this->filterMatch($row)) {
-                        $this->data[$key] = new \ArrayObject($row);
-                    }
-                }
-            }
-        } else {
-            $rawData = $this->database->getAll($this->type);
-            foreach ($rawData as $key => $row) {
+        $this->changes = new \ArrayObject();
+       
+        $rawData = $this->database->getAll($this->type);
+        if ( ! is_array($rawData)) {
+            return;
+        }
+            // skip the first column, where getAll() returns the key type.
+        foreach ($rawData as $key => $row) {
+            if ($this->type !== NULL) {
                 unset($row['type']);
+            }
+            if ($this->filter === NULL) {
+                $this->data[$key] = new \ArrayObject($row);
+            } elseif (call_user_func($this->filter, $row)) {
                 $this->data[$key] = new \ArrayObject($row);
             }
         }
-
-        $this->changes = new \ArrayObject();
     }
 
     public function count()
@@ -209,8 +227,14 @@ class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
 
         if (isset($this[$offset])) {
             $this->changes[] = array('setProp', $offset, iterator_to_array($value));
-        } else {
+        } elseif (isset($this->type)) {
             $this->changes[] = array('setKey', $offset, $this->type, iterator_to_array($value));
+        } elseif (isset($value['type'])) {
+            $props = iterator_to_array($value);
+            unset($props['type']);
+            $this->changes[] = array('setKey', $offset, $value['type'], $props);
+        } else {
+            throw new \LogicException(sprintf('%s: New record `type` was not specified!', __CLASS__), 1397569441);
         }
 
         $this->data->offsetSet($offset, $value);

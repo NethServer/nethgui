@@ -7,7 +7,7 @@ use \Nethgui\Test\Tool\MockFactory;
 /**
  * @covers \Nethgui\Adapter\TableAdapter
  */
-class TableAdapterTest extends \PHPUnit_Framework_TestCase
+class TableAdapter1Test extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var TableAdapter
@@ -20,7 +20,7 @@ class TableAdapterTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new \Nethgui\Adapter\TableAdapter(MockFactory::getMockDatabase($this, $this->getDB()), 'T', FALSE);
+        $this->object = new \Nethgui\Adapter\TableAdapter(MockFactory::getMockDatabase($this, $this->getDB()), 'T');
     }
 
     /**
