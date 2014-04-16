@@ -96,6 +96,9 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
         }
 
         $wrapperClass = 'labeled-control';
+        if($this->hasAttribute('labelWrapClass')) {
+            $wrapperClass = $this->getAttribute('labelWrapClass');
+        }
         $content = '';
 
         if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::LABEL_NONE) {
@@ -116,8 +119,7 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
                 $content .= $this->controlTag($tag, $name, $flags, $cssClass, $attributes, $tagContent);                
             }
 
-            // TODO: set the wrap tag from attributes or flags
-            $wrapTag = 'div';
+            $wrapTag = $this->getAttribute('labelWrapTag', 'div');
             if($wrapTag) {
                 $content = $this->openTag($wrapTag, array('class' => $wrapperClass)) . $content . $this->closeTag($wrapTag);
             }
