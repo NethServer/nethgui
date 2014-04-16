@@ -82,6 +82,7 @@
                 input.attr('value', value[i][0]);
                 input.attr('id', inputId);
                 input.attr('name',  prefixName + (self._multiple ? '[' + i + ']' : ''));
+                input.attr('class', 'choice');
 
                 if($.inArray(value[i][0], self._selection) >= 0) {
                     input.attr('checked', 'checked');
