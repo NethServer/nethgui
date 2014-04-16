@@ -49,9 +49,11 @@ class ObjectsCollection extends \Nethgui\Widget\XhtmlWidget
         $content = '';
         $values = $this->view[$name];
 
-        if ( ! empty($values)) {
-            foreach ($values as $data) {
-                $vR = new ElementRenderer($this->view, $name, $data[$key], $template);
+        if (empty($values)) {
+            $content = $emptyRenderer->render();
+        } else {
+            foreach ($values as $defaultKey => $data) {
+                $vR = new ElementRenderer($this->view, $name, $key ? $data[$key] : $defaultKey, $template);
                 $content .= $vR->copyFrom($data)->render();
             }
         }
@@ -83,7 +85,7 @@ class ElementRenderer extends \Nethgui\Renderer\Xhtml
     {
         parent::__construct($renderer->view, $renderer->getTemplateResolver(), $renderer->getDefaultFlags());
         // Replace the inner view with a new instance:
-        $module = $this->createModule($name, $key);
+        $module = $this->createModule($name, $key, $renderer->getModule()->getAttributesProvider());
         $this->view = $renderer->view->spawnView($module)->setTemplate($template);
     }
 
@@ -92,10 +94,10 @@ class ElementRenderer extends \Nethgui\Renderer\Xhtml
         return $name;
     }
 
-    private function createModule($name, $id)
+    private function createModule($name, $id, \Nethgui\Module\ModuleAttributesInterface $ap)
     {
-        $n = new ElementModule($name);
-        $m = new ElementModule($id);
+        $n = new ElementModule($name, $ap);
+        $m = new ElementModule($id, $ap);
         $n->setParent($this->view->getModule());
         return $m->setParent($n);
     }
@@ -111,14 +113,15 @@ class ElementModule implements \Nethgui\Module\ModuleInterface
 {
     private $identifier, $parent;
 
-    public function __construct($id)
+    public function __construct($id, \Nethgui\Module\ModuleAttributesInterface $attributesProvider)
     {
         $this->identifier = $id;
+        $this->attributesProvider = $attributesProvider;
     }
 
     public function getAttributesProvider()
     {
-        throw new \LogicException(sprintf('%s: not implemented', __CLASS__), 1373462811);
+        return $this->attributesProvider;
     }
 
     public function getIdentifier()
