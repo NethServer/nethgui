@@ -49,7 +49,9 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
 
         $languages = array(
             'en' => 'English',
-            'it' => 'Italiano'
+            'it' => 'Italiano',
+            'es' => 'Espa&ntilde;ol'
+            
         );
 
         $languageValidator = $this->createValidator()->memberOf(array_keys($languages));
