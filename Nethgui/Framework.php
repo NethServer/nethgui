@@ -584,8 +584,25 @@ class Framework
 
             $pathHead = array_head($pathInfo);
 
-            // FIXME: read the language codes from Language/ subdirs
-            if ( ! in_array($pathHead, array('en', 'it'))) {
+            //try to read language list from Language/ subdirs
+            $langPath = '/usr/share/nethesis/NethServer/Language/';
+            if ($handle = opendir($langPath))
+            {
+                while (false !== ($entry = readdir($handle)))
+                {
+                    if ($entry != "." && $entry != ".." && is_dir($langPath.$entry))
+                    {
+                        $availableLanguages[] = $entry;
+                    }
+                }
+                closedir($handle);
+            }
+            else
+            {
+                //can't open Language dir, use an hardcoded languages array
+                $availableLanguages=array('en', 'it');
+            }
+            if ( ! in_array($pathHead, $availableLanguages)) {
                 throw new Exception\HttpException('Language not found', 404, 1377519247);
             }
             $languageCode = $pathHead;
