@@ -34,6 +34,7 @@ namespace Nethgui\View;
  *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
+ * @deprecated since version 1.6
  */
 interface CommandInterface
 {

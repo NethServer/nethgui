@@ -25,6 +25,7 @@ namespace Nethgui\View;
  *
  * @since 1.0
  * @internal
+ * @deprecated since version 1.6
  */
 class LoggingCommandReceiver implements \Nethgui\View\CommandReceiverInterface
 {

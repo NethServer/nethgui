@@ -352,15 +352,18 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
 
     public function getCommandList($selector = '')
     {
+        $this->getLog()->deprecated();
         $fullSelector = $this->getUniqueId($selector);
         if ( ! isset($this->commands[$fullSelector]) || $this->commands[$fullSelector]->isExecuted()) {
             $this->commands[$fullSelector] = new \Nethgui\View\ViewCommandSequence($this, $selector);
+            $this->commands[$fullSelector]->setLog($this->getLog());
         }
         return $this->commands[$fullSelector];
     }
 
     public function hasCommandList($selector = '')
     {
+        $this->getLog()->deprecated();
         return isset($this->commands[$this->getUniqueId($selector)]);
     }
 

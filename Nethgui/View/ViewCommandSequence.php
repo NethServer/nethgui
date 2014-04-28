@@ -28,8 +28,9 @@ namespace Nethgui\View;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  * @internal
+ * @deprecated since version 1.6
  */
-class ViewCommandSequence implements \Nethgui\View\ViewCommandInterface
+class ViewCommandSequence implements \Nethgui\View\ViewCommandInterface, \Nethgui\Log\LogConsumerInterface
 {
 
     private $commands = array();
@@ -53,10 +54,12 @@ class ViewCommandSequence implements \Nethgui\View\ViewCommandInterface
         $this->executed = FALSE;
         $this->origin = $origin;
         $this->selector = $selector;
+        $this->log = new \Nethgui\Log\Nullog();
     }
 
     public function __call($name, $arguments)
     {
+        $this->getLog()->deprecated(sprintf("%s: added %s%s DEPRECATED command invocation", __CLASS__, $name, json_encode($arguments)));
         $command = new \Nethgui\View\Command($this->origin, $this->selector, $name, $arguments);
         $this->commands[] = $command;
         return $this;
@@ -90,6 +93,17 @@ class ViewCommandSequence implements \Nethgui\View\ViewCommandInterface
     public function getSelector()
     {
         return $this->selector;
+    }
+
+    public function getLog()
+    {
+        return $this->log;
+    }
+
+    public function setLog(\Nethgui\Log\LogInterface $log)
+    {
+        $this->log = $log;
+        return $this;
     }
 
 }

@@ -26,6 +26,7 @@ namespace Nethgui\View;
  * @see http://en.wikipedia.org/wiki/Chain-of-responsibility_pattern
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
+ * @deprecated since version 1.6
  */
 abstract class AbstractReceiverChain implements \Nethgui\View\CommandReceiverInterface, \Nethgui\Log\LogConsumerInterface
 {

@@ -26,6 +26,7 @@ namespace Nethgui\View;
  * @see http://en.wikipedia.org/wiki/Command_pattern
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
+ * @deprecated since version 1.6
  */
 interface CommandReceiverInterface
 {
