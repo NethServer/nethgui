@@ -335,7 +335,11 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
         return $content;
     }
 
-    protected function invokeCommands()
+    /**
+     *
+     * @deprecated since version 1.6
+     */
+    private function invokeCommands()
     {
         if ( ! $this->hasAttribute('receiver')) {
             return;
@@ -356,6 +360,7 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
 
     public function executeCommand(\Nethgui\View\ViewInterface $origin, $selector, $name, $arguments)
     {
+        $this->getLog()->deprecated(sprintf("%%s %%s: %s() command is DEPRECATED on Xhtml widget!", __CLASS__, $name));
         if ($name === 'requireFlag') {
             $flags = intval($arguments[0]);
             $this->setAttribute('flags', $flags | $this->getAttribute('flags', 0));

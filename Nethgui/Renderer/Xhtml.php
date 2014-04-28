@@ -37,6 +37,14 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
      * @var integer
      */
     private $inheritFlags = 0;
+    private $requireFlags = 0;
+    private $rejectFlags = 0;
+
+    /**
+     *
+     * @var \Nethgui\Module\Resource;
+     */
+    private $resource;
 
     public function __construct(\Nethgui\View\ViewInterface $view, $templateResolver, $inheritFlags)
     {
@@ -52,7 +60,9 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
      */
     public function spawnRenderer(\Nethgui\View\ViewInterface $view)
     {
-        return new self($view, $this->getTemplateResolver(), $this->getDefaultFlags());
+        $renderer = new self($view, $this->getTemplateResolver(), $this->getDefaultFlags());
+        $renderer->setResourceModule($this->resource);
+        return $renderer;
     }
 
     protected function createWidget($widgetType, $attributes = array())
@@ -68,6 +78,14 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
         return $o;
     }
 
+    public function setResourceModule(\Nethgui\Module\Resource $resource) {
+        if($this->resource !== NULL) {
+            $this->getLog()->warning("Resource handler already set. Expected NULL.");
+        }
+        $this->resource = $resource;
+        return $this;
+    }
+
     /**
      * Append a Javascript code fragment to the global .js temporary file
      * 
@@ -77,7 +95,11 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
      */
     public function includeJavascript($jsCode)
     {
-        $this->view->getCommandList('/Resource/js')->appendCode($jsCode, 'js');
+        if($this->resource === NULL) {
+            $this->getLog()->warning("NULL Resource handler");
+            return;
+        }
+        $this->resource->appendCode($jsCode, 'js');
         return $this;
     }
 
@@ -90,7 +112,11 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
      */
     public function includeCss($cssCode)
     {
-        $this->view->getCommandList('/Resource/css')->appendCode($cssCode, 'css');
+        if($this->resource === NULL) {
+            $this->getLog()->warning("NULL Resource handler");
+            return;
+        }
+        $this->resource->appendCode($cssCode, 'css');
         return $this;
     }
 
@@ -106,10 +132,12 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
      */
     public function includeFile($fileName)
     {
+        if($this->resource === NULL) {
+            $this->getLog()->warning("NULL Resource handler");
+            return;
+        }
         $filePath = call_user_func($this->getTemplateResolver(), $fileName);
-        $ext = pathinfo($fileName, PATHINFO_EXTENSION);
-        $ext = $ext ? $ext : 'default';
-        $this->view->getCommandList('/Resource/' . $ext)->includeFile($filePath);
+        $this->resource->includeFile($filePath);
         return $this;
     }
 
@@ -148,7 +176,7 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
      */
     public function requireFlag($flags)
     {
-        $this->view->getCommandList()->requireFlag($flags);
+        $this->requireFlags |= $flags;
         return $this;
     }
 
@@ -162,8 +190,18 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
      */
     public function rejectFlag($flags)
     {
-        $this->view->getCommandList()->rejectFlag($flags);
+        $this->rejectFlags |= $flags;
         return $this;
+    }
+
+    /**
+     * Calculate flags for view inclusion
+     * @see \Nethgui\Widget\Xhtml\Inset
+     * @param integer $widgetFlags
+     */
+    public function calculateIncludeFlags($widgetFlags)
+    {
+        return ($widgetFlags | $this->requireFlags) & (~ $this->rejectFlags);
     }
 
     /**
@@ -178,9 +216,7 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
      */
     public function useFile($fileName)
     {
-        $ext = pathinfo($fileName, PATHINFO_EXTENSION);
-        $ext = $ext ? $ext : 'default';
-        $this->view->getCommandList('/Resource/' . $ext)->useFile($this->getPathUrl() . $fileName);
+        $this->resource->useFile($this->getPathUrl() . $fileName);
         return $this;
     }
 

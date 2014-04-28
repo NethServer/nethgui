@@ -45,15 +45,13 @@ class Inset extends \Nethgui\Widget\XhtmlWidget
 
         $value = $this->view[$name];
 
-        $content = '';
         if ($value instanceof \Nethgui\View\ViewInterface) {
             // Render the view:
             $insetRenderer = $this->getRenderer()
                 ->spawnRenderer($value)
                 ->setDefaultFlags($flags | $this->getRenderer()->getDefaultFlags())
             ;
-            $value = $insetRenderer->render();
-            $this->invokeCommands();
+            $value = $insetRenderer->render();            
         } else {
             $insetRenderer = $this->getRenderer();
         }
@@ -69,22 +67,23 @@ class Inset extends \Nethgui\Widget\XhtmlWidget
             ->setAttribute('receiver', $this->getAttribute('receiver'))
         ;
         $flags = $this->getAttribute('flags');
+        $wrapFlags = $insetRenderer->calculateIncludeFlags($flags);
 
         $contentWidget = $this->getRenderer()->literal($content, $flags);
 
-        if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::INSET_FORM) {
+        if ($wrapFlags & \Nethgui\Renderer\WidgetFactoryInterface::INSET_FORM) {
             $contentWidget = $insetRenderer->form($flags)->setAttribute('tag', FALSE)->insert($contentWidget);
         }
 
         $panel->insert($contentWidget);
 
-        if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::INSET_WRAP) {
+        if ($wrapFlags & \Nethgui\Renderer\WidgetFactoryInterface::INSET_WRAP) {
             $panel
                 ->setAttribute('tag', 'div');
 
             $cssClass = $this->getAttribute('class', 'Inset');
 
-            if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::INSET_DIALOG) {
+            if ($wrapFlags & \Nethgui\Renderer\WidgetFactoryInterface::INSET_DIALOG) {
                 $cssClass .= ' Dialog';
             }
 

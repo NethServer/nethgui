@@ -1,4 +1,5 @@
 <?php
+
 namespace Nethgui\Module;
 
 /*
@@ -26,9 +27,8 @@ namespace Nethgui\Module;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Resource extends \Nethgui\Controller\AbstractController implements \Nethgui\View\CommandReceiverInterface
+class Resource extends \Nethgui\Controller\AbstractController implements \Nethgui\View\CommandReceiverInterface, \Nethgui\Component\DependencyInjectorAggregate
 {
-
     private $code;
     private $useList;
     private $fileName;
@@ -39,8 +39,8 @@ class Resource extends \Nethgui\Controller\AbstractController implements \Nethgu
         $attributes = new SystemModuleAttributesProvider();
         $attributes->initializeFromModule($this);
         return $attributes;
-    }    
-    
+    }
+
     public function __construct()
     {
         parent::__construct(NULL);
@@ -84,26 +84,20 @@ class Resource extends \Nethgui\Controller\AbstractController implements \Nethgu
             $thisModule = $this;
 
             $templateClosure = function(\Nethgui\Renderer\AbstractRenderer $renderer)
-                use ($ext, $thisModule, $fragments)
-                {
-                    $renderer
-                        ->getCommandList($ext)
-                        ->setReceiver($thisModule)
-                        ->execute()
-                    ;
+                use ($ext, $thisModule, $fragments) {
 
-                    $uriList = $thisModule->getUseList($ext);
-                    $cachedFile = $thisModule->getFileName($ext);
-                    if ($cachedFile !== FALSE) {
-                        $uriList[] = $renderer->getModuleUrl('/Resource/' . $cachedFile);
-                    }
-                    $output = '';
+                $uriList = $thisModule->getUseList($ext);
+                $cachedFile = $thisModule->getFileName($ext);
+                if ($cachedFile !== FALSE) {
+                    $uriList[] = $renderer->getModuleUrl('/Resource/' . $cachedFile);
+                }
+                $output = '';
 
-                    foreach ($uriList as $uri) {
-                        $output .= strtr($fragments[$ext], array('%URI' => $uri));
-                    }
-                    return $output;
-                };
+                foreach ($uriList as $uri) {
+                    $output .= strtr($fragments[$ext], array('%URI' => $uri));
+                }
+                return $output;
+            };
 
             $view[$ext]->setTemplate($templateClosure);
         }
@@ -121,8 +115,8 @@ class Resource extends \Nethgui\Controller\AbstractController implements \Nethgu
             $filePath = $this->getCachePath($this->fileName);
 
             $view->getCommandList('/Main')->setDecoratorTemplate(function(\Nethgui\View\ViewInterface $renderer) {
-                    return $renderer['Resource']['contents'];
-                });
+                return $renderer['Resource']['contents'];
+            });
 
             $meta = array();
             $view['contents'] = $this->getPhpWrapper()->file_get_contents_extended($filePath, $meta);
@@ -193,7 +187,7 @@ class Resource extends \Nethgui\Controller\AbstractController implements \Nethgu
         $this->getPhpWrapper()->fclose($resource);
     }
 
-    protected function includeFile($fileName)
+    public function includeFile($fileName)
     {
         $ext = pathinfo($fileName, PATHINFO_EXTENSION);
 
@@ -206,9 +200,10 @@ class Resource extends \Nethgui\Controller\AbstractController implements \Nethgu
             'tstamp' => 0,
             'data' => FALSE
         );
+        return $this;
     }
 
-    protected function appendCode($code, $ext)
+    public function appendCode($code, $ext)
     {
         if ( ! isset($this->code[$ext])) {
             $this->code[$ext] = array();
@@ -218,6 +213,7 @@ class Resource extends \Nethgui\Controller\AbstractController implements \Nethgu
             'tstamp' => 0,
             'data' => $code
         );
+        return $this;
     }
 
     public function getFileName($ext)
@@ -238,8 +234,8 @@ class Resource extends \Nethgui\Controller\AbstractController implements \Nethgu
     public function getUseList($ext)
     {
         return array_filter($this->useList, function($uri) use ($ext) {
-                    return $ext === pathinfo($uri, PATHINFO_EXTENSION);
-                });
+            return $ext === pathinfo($uri, PATHINFO_EXTENSION);
+        });
     }
 
     public function useFile($fullPath)
@@ -257,7 +253,7 @@ class Resource extends \Nethgui\Controller\AbstractController implements \Nethgu
      * @deprecated since version 1.6
      */
     public function executeCommand(\Nethgui\View\ViewInterface $origin, $selector, $name, $arguments)
-    {        
+    {
         if ($name === 'includeFile') {
             $this->includeFile($arguments[0]);
         } elseif ($name === 'appendCode') {
@@ -265,6 +261,20 @@ class Resource extends \Nethgui\Controller\AbstractController implements \Nethgu
         } elseif ($name === 'useFile' && isset($arguments[0])) {
             $this->useFile($arguments[0]);
         }
+    }
+
+    public function setDependencyInjector(\Nethgui\Component\DependencyInjectorInterface $di)
+    {
+        $this->di = $di;
+        if( ! isset($this->di[__CLASS__])) {
+            $resourceModule = $this;
+            $this->di[__CLASS__] = function($object, $context) use($resourceModule) {
+                if ($object instanceof \Nethgui\Renderer\Xhtml) {
+                    $object->setResourceModule($resourceModule);
+                }
+            };
+        }
+        return $this;
     }
 
 }
