@@ -242,14 +242,28 @@ class Resource extends \Nethgui\Controller\AbstractController implements \Nethgu
                 });
     }
 
-    public function executeCommand(\Nethgui\View\ViewInterface $origin, $selector, $name, $arguments)
+    public function useFile($fullPath)
     {
+        $this->useList[] = $fullPath;
+        return $this;
+    }
+
+    /**
+     *
+     * @param \Nethgui\View\ViewInterface $origin
+     * @param string $selector
+     * @param string $name
+     * @param array $arguments
+     * @deprecated since version 1.6
+     */
+    public function executeCommand(\Nethgui\View\ViewInterface $origin, $selector, $name, $arguments)
+    {        
         if ($name === 'includeFile') {
             $this->includeFile($arguments[0]);
         } elseif ($name === 'appendCode') {
             $this->appendCode($arguments[0], $arguments[1]);
         } elseif ($name === 'useFile' && isset($arguments[0])) {
-            $this->useList[] = $origin->getPathUrl() . $arguments[0];
+            $this->useFile($arguments[0]);
         }
     }
 

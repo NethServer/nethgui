@@ -180,7 +180,7 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
     {
         $ext = pathinfo($fileName, PATHINFO_EXTENSION);
         $ext = $ext ? $ext : 'default';
-        $this->view->getCommandList('/Resource/' . $ext)->useFile($fileName);
+        $this->view->getCommandList('/Resource/' . $ext)->useFile($this->getPathUrl() . $fileName);
         return $this;
     }
 
