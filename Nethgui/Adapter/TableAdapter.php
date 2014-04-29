@@ -32,7 +32,7 @@ class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
      * @var \Nethgui\System\EsmithDatabase
      */
     private $database;
-    private $type;
+    private $types;
 
     /**
      *
@@ -65,30 +65,35 @@ class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
      *
      * @param string $db used for table mapping
      * @param mixed $types The types of records to load. Can be a string or an array or NULL.
-     * @param mixed $filter Can be NULL, an associative array, or callable.
+     * @param mixed $filter Can be NULL, an associative array, or callable c($key, $props) returning TRUE/FALSE value.
      * @throws \InvalidArgumentException
      *
      */
     public function __construct(\Nethgui\System\DatabaseInterface $db, $types = NULL, $filter = NULL)
     {
         $this->database = $db;
-        $this->type = $types;
+        $this->types = is_string($types) ? array($types) : (is_null($types) ? array() : $types);
         // Fix wrong filter datatype, for backward compatibility
         $filter = $filter === FALSE ? NULL : $filter;
-        $this->filter = is_array($filter) ? array($this, 'defaultFilterMatch') : $filter;
+        if (is_array($filter)) {
+            // This is the old-default prop/regexp match filter implementation:
+            $this->filter = function($key, $value) use ($filter) {
+                foreach ($filter as $prop => $regexp) {
+                    if ( ! preg_match($regexp, $value[$prop])) {
+                        return FALSE;
+                    }
+                }
+                return TRUE;
+            };
+        } else {
+            $this->filter = $filter;
+        }
         if( ! ($this->filter === NULL || is_callable($this->filter))) {
             throw new \InvalidArgumentException(sprintf("%s: filter argument must be an array or NULL, or a callable object.", __CLASS__), 1398679653);
         }
-    }
-
-    public function defaultFilterMatch($value)
-    {
-        foreach ($this->filter as $prop => $regexp) {
-            if ( ! preg_match($regexp, $value[$prop])) {
-                return false;
-            }
+        if( ! is_array($this->types)) {
+            throw new \InvalidArgumentException(sprintf("%s: type argument must be an array or string.", __CLASS__), 1398679654);
         }
-        return true;
     }
 
     private function lazyInitialization()
@@ -96,18 +101,25 @@ class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
         $this->data = new \ArrayObject();
         $this->changes = new \ArrayObject();
        
-        $rawData = $this->database->getAll($this->type);
+        // use type filter from DB
+        $dbType = count($this->types) === 1 ? $this->types[0] : NULL;
+
+        $rawData = $this->database->getAll($dbType);
         if ( ! is_array($rawData)) {
             return;
         }
-            // skip the first column, where getAll() returns the key type.
+        
         foreach ($rawData as $key => $row) {
-            if ($this->type !== NULL) {
+            if (count($this->types) === 1) {
                 unset($row['type']);
+            } elseif (count($this->types) > 1 && ! in_array($row['type'], $this->types)) {
+                // skip record if not in required set of types
+                continue;
             }
+
             if ($this->filter === NULL) {
                 $this->data[$key] = new \ArrayObject($row);
-            } elseif (call_user_func($this->filter, $row)) {
+            } elseif (call_user_func($this->filter, $key, $row)) {
                 $this->data[$key] = new \ArrayObject($row);
             }
         }
@@ -227,8 +239,8 @@ class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
 
         if (isset($this[$offset])) {
             $this->changes[] = array('setProp', $offset, iterator_to_array($value));
-        } elseif (isset($this->type)) {
-            $this->changes[] = array('setKey', $offset, $this->type, iterator_to_array($value));
+        } elseif (count($this->types) === 1) {
+            $this->changes[] = array('setKey', $offset, $this->types[0], iterator_to_array($value));
         } elseif (isset($value['type'])) {
             $props = iterator_to_array($value);
             unset($props['type']);
