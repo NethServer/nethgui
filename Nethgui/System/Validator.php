@@ -488,15 +488,18 @@ class Validator implements \Nethgui\System\MandatoryValidatorInterface
 
     private function evalNotEmpty($value)
     {
-        if ( ! empty($value)) {
-            return TRUE;
+        if($value instanceof \Countable) {
+            return $value->count() > 0;
         }
-        return FALSE;
+        return empty($value) ? FALSE : TRUE;
     }
 
     private function evalIsEmpty($value)
     {
-        return empty($value);
+        if($value instanceof \Countable) {
+            return $value->count() == 0;
+        }
+        return empty($value) ? TRUE : FALSE;
     }
 
     private function evalRegexp($value, $exp)

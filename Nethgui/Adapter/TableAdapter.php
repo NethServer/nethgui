@@ -238,7 +238,11 @@ class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
         }
 
         if (isset($this[$offset])) {
-            $this->changes[] = array('setProp', $offset, iterator_to_array($value));
+            $props = iterator_to_array($value);
+            if(isset($props['type'])) {
+                unset($props['type']);
+            }
+            $this->changes[] = array('setProp', $offset, $props);
         } elseif (count($this->types) === 1) {
             $this->changes[] = array('setKey', $offset, $this->types[0], iterator_to_array($value));
         } elseif (isset($value['type'])) {
