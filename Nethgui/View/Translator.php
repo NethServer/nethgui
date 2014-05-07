@@ -113,13 +113,9 @@ class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Utility\
          */
         $placeholders = array();
         foreach ($args as $argId => $argValue) {
-            if (is_numeric($argId)) {
-                $placeholders[sprintf('${%d}', $argId)] = $argValue;
-            } else {
-                $placeholders[$argId] = $argValue;
-            }
+            $placeholders[sprintf('${%s}', $argId)] = $argValue;
         }
-                
+
         return strtr($translation, $placeholders);
     }
 
