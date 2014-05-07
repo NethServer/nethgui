@@ -266,4 +266,9 @@ class TableAdapter implements AdapterInterface, \ArrayAccess, \IteratorAggregate
         $this->changes[] = array('deleteKey', $offset);
     }
 
+    public function flush()
+    {
+        unset($this->data);
+        return $this;
+    }
 }
