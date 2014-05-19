@@ -1,4 +1,5 @@
 <?php
+
 namespace Nethgui\System;
 
 /*
@@ -41,8 +42,11 @@ class SessionDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Uti
 
     public function delProp($key, $props)
     {
-        foreach ($props as $p) {
-            unset($this->data[$key][$p]);
+        $k = isset($this->data[$key]) ? $this->data[$key] : NULL;
+        if ($k) {
+            foreach ($props as $p) {
+                unset($k[$p]);
+            }
         }
         return TRUE;
     }
