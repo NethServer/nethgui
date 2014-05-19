@@ -205,7 +205,7 @@ class CompositeController extends \Nethgui\Module\Composite implements \Nethgui\
             return;
         }
 
-        $nextModule = $this->getAction($np);
+        $nextModule = $this->getAction(\Nethgui\array_head(explode('/', $np)));
         if ($nextModule instanceof \Nethgui\View\ViewableInterface) {
             // spawn and prepare the next view data:
             $nextView = $view->spawnView($nextModule, TRUE);
