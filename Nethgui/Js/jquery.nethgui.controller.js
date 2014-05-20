@@ -8,30 +8,18 @@
     $.widget('nethgui.Controller', SUPER, {
         _create: function () {
             SUPER.prototype._create.apply(this);
-            this.actionHistory = [];
             this.element.children('ul.ActionList').remove();
             this.element.bind('nethguishow.' + this.namespace, $.proxy(this._onShow, this));
-            this.element.bind('nethguicancel.' + this.namespace, $.proxy(this._onCancel, this));
             this.element.children('.Action:eq(0)').trigger('nethguishow');
+            $(document).trigger('nethguiinitstate', [this.element.children('.Action:eq(0)')]);
         },
         _onShow: function (e, cancel) {
             if( ! e.target.id ) {
                 return;
             }
-            if(cancel !== true) {
-                this.actionHistory.push(e.target.id);
-            }
             this.getChildren().filter(function (index) {
                 return this.id !== e.target.id && $(this).find('#' + e.target.id).length === 0;
             }).trigger('nethguihide');
-        },
-        _onCancel: function () {
-            this.actionHistory.pop(); // pops the current action
-            var id = this.actionHistory[this.actionHistory.length - 1];
-            if(id === undefined) {
-                return;
-            }                        
-            this.getChildren().filter('#' + id).trigger('nethguishow', true);
         }
     });
 }( jQuery ));

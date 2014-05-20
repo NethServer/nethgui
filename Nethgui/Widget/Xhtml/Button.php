@@ -74,6 +74,7 @@ class Button extends \Nethgui\Widget\XhtmlWidget
 
             if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::BUTTON_CANCEL) {
                 $cssClass .= ' cancel';
+                $flags |= \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE;
             } elseif ($flags & \Nethgui\Renderer\WidgetFactoryInterface::BUTTON_HELP) {
                 if ($value === '') {
                     $value = $this->view->getModuleUrl('/Help/Read/' . \Nethgui\array_head($this->view->getModulePath()) . '.html');
@@ -123,6 +124,9 @@ class Button extends \Nethgui\Widget\XhtmlWidget
             }
         }
 
+        if($this->canEscapeUnobstrusive($flags)) {
+            return $this->escapeUnobstrusive($content);
+        }
         return $content;
     }
 

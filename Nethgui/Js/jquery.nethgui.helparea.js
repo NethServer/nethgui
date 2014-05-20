@@ -27,8 +27,11 @@
             $(document).unbind(this._proxyHelpHandler);
             $(window).unbind(this.widgetName);
         },
-        close: function() {
+        close: function(e) {
             this.element.hide();
+            if(e) {
+                e.stopPropagation();
+            }
         },
         _onHelpDocumentResponse: function(responseData) {
             var responseDocument = $($.parseXML(responseData));
