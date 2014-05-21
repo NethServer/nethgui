@@ -34,6 +34,18 @@ class ObjectsCollection extends \Nethgui\Widget\XhtmlWidget
         return array('Nethgui:objectscollection');
     }
 
+    private function normalizePlaceholders($placeholders)
+    {
+        $sanitized = array();
+        foreach ($placeholders as $p => $f) {
+            if (is_numeric($p)) {
+                $p = $f;
+            }
+            $sanitized[$p] = $f;
+        }
+        return $sanitized;
+    }
+
     protected function renderContent()
     {
         $name = $this->getAttribute('name');
@@ -42,7 +54,7 @@ class ObjectsCollection extends \Nethgui\Widget\XhtmlWidget
         $key = $this->getAttribute('key', FALSE);
         $template = $this->getAttribute('template', FALSE);
         $ifEmpty = $this->getAttribute('ifEmpty', FALSE);
-
+        $placeholders = $this->normalizePlaceholders($this->getAttribute('placeholders', array()));
         $renderer = new ElementRenderer($this->view, $name, '${key}', $template);
         $emptyRenderer = new ElementRenderer($this->view, $name, '${key}', $ifEmpty);
 
@@ -53,15 +65,19 @@ class ObjectsCollection extends \Nethgui\Widget\XhtmlWidget
             $content = $emptyRenderer->render();
         } else {
             foreach ($values as $defaultKey => $data) {
+                $placeHolderValues = array();
+                foreach ($placeholders as $p => $f) {
+                    $placeHolderValues[sprintf('${%s}', $p)] = $data[$f];
+                }
                 $vR = new ElementRenderer($this->view, $name, $key ? $data[$key] : $defaultKey, $template);
-                $content .= $vR->copyFrom($data)->render();
+                $content .= strtr((String) $vR->copyFrom($data)->render(), $placeHolderValues);
             }
         }
 
         return $this->openTag($tag, array(
                 'class' => $cssClass . ' ' . $this->getClientEventTarget(),
                 'id' => $this->view->getUniqueId($name),
-                'data-state' => json_encode(array('rendered' => ! empty($values), 'key' => $key, 'template' => $renderer->render(), 'ifEmpty' => $emptyRenderer->render())),
+                'data-state' => json_encode(array('rendered' => ! empty($values), 'key' => $key, 'template' => $renderer->render(), 'ifEmpty' => $emptyRenderer->render(), 'placeholders' => $placeholders)),
             )) . $content . $this->closeTag($tag);
     }
 

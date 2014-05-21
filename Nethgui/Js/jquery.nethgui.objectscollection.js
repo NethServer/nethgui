@@ -22,7 +22,11 @@
 	    }
 
             $.each(value, function(index, record) {
-                var node = $(self.state.template.replacePlaceholders({'key': record[self.state.key]}));
+                var placeholderValues = {};
+                for(var p in self.state.placeholders) {
+                   placeholderValues[p] = record[self.state.placeholders[p]];
+                }
+                var node = $(self.state.template.replacePlaceholders($.extend(placeholderValues, {'key': record[self.state.key]})));
                 node.appendTo(self.element);
                 SUPER.prototype._initializeDeep.call(self, node.toArray());
                 $.each(record, function(rkey, rval) {                    
