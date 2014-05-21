@@ -70,6 +70,9 @@ class Button extends \Nethgui\Widget\XhtmlWidget
 
             if (empty($value)) {
                 $value = '';
+            } elseif (is_array($value)) {
+                $label = $value[1];
+                $value = $value[0];
             }
 
             if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::BUTTON_CANCEL) {

@@ -24,6 +24,10 @@
             });
         },
         _updateView: function(value, selector) {
+            if($.isArray(value)) {
+                this.element.button("option", "label", value[1]);
+                value = value[0];
+            }            
             if(this._server.isLocalUrl(value) && this.element[0].tagName.toLowerCase() === 'a') {
                 this.element.attr('href', value);
             }
