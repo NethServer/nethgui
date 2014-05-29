@@ -37,7 +37,7 @@
             if( ! $.isArray(args)) {
                 args = [args];
             }
-            this.setLabel(String.prototype.replacePlaceholders.apply(this.option('template'), args));
+            this.setLabel(String.prototype.replacePlaceholders.apply(this.option('template') ? this.option('template') : '', args));
         },
         setLabel: function(text) {
             if(this.option('hsc')) {
