@@ -53,7 +53,9 @@ class SessionDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Uti
 
     public function deleteKey($key)
     {
-        unset($this->data[$key]);
+        if (isset($this->data[$key])) {
+            unset($this->data[$key]);
+        }
         return TRUE;
     }
 
