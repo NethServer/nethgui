@@ -216,7 +216,7 @@ class CompositeController extends \Nethgui\Module\Composite implements \Nethgui\
             } else {
                 // show is implemented as HTTP redirection. Avoid self-loops:
                 if ($nextModule !== $this->currentAction) {
-                    $nextView->getCommandList()->show();
+                    $view->getCommandList()->sendQuery($view->getModuleUrl($np));
                 }
             }
         } else {
