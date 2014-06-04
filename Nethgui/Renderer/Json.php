@@ -115,7 +115,7 @@ class Json extends AbstractRenderer
       
         if (count($commands) > 0) {
             $output[] = array('__COMMANDS__', $commands);
-            $output[] = array('__STATE__', md5(serialize($output)));
+            $output[] = array('__STATE__', md5(json_encode($output)));
         }
 
         return json_encode($output);
