@@ -586,6 +586,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($o->evaluate('12.13.14.15/24'));
         $this->assertFalse($o->evaluate('12.13.14.15'));
         $this->assertFalse($o->evaluate('12.13.14.15/'));
+        $this->assertFalse($o->evaluate('12.13.14.15/2aaa'));
         $this->assertFalse($o->evaluate('12.13.14.15/q'));
         $this->assertFalse($o->evaluate('1/1'));
         $this->assertFalse($o->evaluate('12.13.14.300/12'));

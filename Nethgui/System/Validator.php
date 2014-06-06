@@ -348,7 +348,7 @@ class Validator implements \Nethgui\System\MandatoryValidatorInterface
 
     public function cidrBlock()
     {
-        return $this->addToChain(__FUNCTION__, FALSE);
+        return $this->addToChain(__FUNCTION__);
     }
 
     public function getFailureInfo()
@@ -748,7 +748,7 @@ class Validator implements \Nethgui\System\MandatoryValidatorInterface
     private function evalCidrBlock($value)
     {
         $parts = explode('/', $value);
-        $validMask = isset($parts[1]) && (($parts[1] > 1 && $parts[1] < 33) || $parts[1] === "0");
+        $validMask = isset($parts[1]) && preg_match('/^[0-9]+$/', $parts[1]) && (($parts[1] > 1 && $parts[1] < 33) || $parts[1] === "0");
         return $validMask && $this->evalIpV4Address($parts[0]);
     }
 
