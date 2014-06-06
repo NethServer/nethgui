@@ -345,6 +345,12 @@ class Validator implements \Nethgui\System\MandatoryValidatorInterface
         return $this->addToChain(__FUNCTION__, FALSE);
     }
 
+
+    public function cidrBlock()
+    {
+        return $this->addToChain(__FUNCTION__, FALSE);
+    }
+
     public function getFailureInfo()
     {
         return $this->failureInfo;
@@ -737,6 +743,13 @@ class Validator implements \Nethgui\System\MandatoryValidatorInterface
         }
 
         return TRUE;
+    }
+
+    private function evalCidrBlock($value)
+    {
+        $parts = explode('/', $value);
+        $validMask = isset($parts[1]) && (($parts[1] > 1 && $parts[1] < 33) || $parts[1] === "0");
+        return $validMask && $this->evalIpV4Address($parts[0]);
     }
 
     protected function setMandatoryConditional($value)
