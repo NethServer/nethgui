@@ -228,6 +228,16 @@ interface PlatformInterface
      */
     const EMPTYSTRING = 1368694834;
 
+    /**
+     * CIDR block validator
+     *
+     * Eg 192.144.33.0/24
+     *
+     * @api
+     */
+    const CIDR_BLOCK = 1402048238;
+
+
     /* ---------------------------------------8<-------------------------
          !!! TO DEVELOPERS !!!
 

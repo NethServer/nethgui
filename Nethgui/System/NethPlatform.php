@@ -426,6 +426,10 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
                     $validator->maxLength(0);
                     break;
 
+                case self::CIDR_BLOCK:
+                    $validator->cidrBlock();
+                    break;
+
                 case NULL:
                     continue;
 
