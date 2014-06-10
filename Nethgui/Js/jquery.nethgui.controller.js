@@ -34,7 +34,7 @@
         _create: function () {
             SUPER.prototype._create.apply(this);
             var behaviour = this.element.hasClass('Dialog') ? 'Dialog' : 'Default';
-            this._form = this.element.children('form').bind('submit.' + this.namespace, $.proxy(this._onSubmit, this));
+            this._form = this.element.children('form').on('submit.' + this.namespace, $.proxy(this._onSubmit, this));
             this.element.bind('nethguishow.' + this.namespace, $.proxy(this['_onShow' + behaviour], this));
             this.element.bind('nethguihide.' + this.namespace, $.proxy(this['_onHide' + behaviour], this));            
             this.element.bind('nethguireloaddata.' + this.namespace, $.proxy(this._onReloadData, this));
@@ -81,11 +81,16 @@
             }
             e.stopPropagation();
         },
-        _onSubmit: function (e) {
+        _onSubmit: function (e, additionalData) {
             e.preventDefault();
             e.stopPropagation();            
-            var form = $(e.target);            
-            this['_send' + (form.attr('method').toUpperCase() === 'POST' ? 'Mutation' : 'Query')](form.attr('action'), form.serialize(), true);
+            var form = e.target.tagName.toLowerCase() === 'form' ? $(e.target) : $(e.target).closest('form');
+            var formData = form.serializeArray();
+            if($.isArray(additionalData)) {
+                $.merge(formData, additionalData);
+            }
+
+            this['_send' + (form.attr('method').toUpperCase() === 'POST' ? 'Mutation' : 'Query')](form.attr('action'), formData, true);
             return false;
         },
         _onHideDefault: function (e) {

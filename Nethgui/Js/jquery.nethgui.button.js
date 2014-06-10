@@ -55,7 +55,11 @@
                 }
                 e.stopPropagation();
                 e.preventDefault();
-            }                       
+            } else if(tagName === 'button' && this.element.attr('type') === 'submit') {
+                e.stopPropagation();
+                e.preventDefault();
+                this.element.trigger('submit', [[{name: this.element.attr('name'), value: this.element.val()}]]);
+            }
         }
 
     });

@@ -105,7 +105,6 @@ class Button extends \Nethgui\Widget\XhtmlWidget
             if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::BUTTON_SUBMIT) {
                 $attributes['type'] = 'submit';
                 $cssClass .= ' submit';
-                $attributes['name'] = FALSE;
             } elseif ($flags & \Nethgui\Renderer\WidgetFactoryInterface::BUTTON_RESET) {
                 $attributes['type'] = 'reset';
                 $cssClass .= ' reset';

@@ -425,7 +425,7 @@
             this._server.ajaxMessage({
                 isMutation: true,
                 url: url,
-                data: typeof data === 'string' ? data : undefined,
+                data: typeof data === 'string' ? data : ($.isArray(data) ? data : undefined),
                 freezeElement: freezeUi ? this.widget() : undefined
             });
         },
