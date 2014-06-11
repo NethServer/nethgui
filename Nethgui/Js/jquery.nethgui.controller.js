@@ -90,7 +90,15 @@
                 $.merge(formData, additionalData);
             }
 
-            this['_send' + (form.attr('method').toUpperCase() === 'POST' ? 'Mutation' : 'Query')](form.attr('action'), formData, true);
+            if(form.attr('method').toUpperCase() === 'POST') {
+                this._sendMutation(form.attr('action'), formData, true);
+            } else {
+                var url = form.attr('action');
+                if(formData.length > 0) {
+                    url += '?' + $.param(formData);
+                }
+                this._sendQuery(url, undefined, true);
+            }
             return false;
         },
         _onHideDefault: function (e) {
