@@ -330,7 +330,7 @@ class Validator implements \Nethgui\System\MandatoryValidatorInterface
             throw new \InvalidArgumentException(sprintf("%s: must supply a validator name argument", __CLASS__), 1333012309);
         }
 
-        array_unshift($arguments, __FUNCTION__, NULL);
+        array_unshift($arguments, __FUNCTION__, FALSE);
         return call_user_func_array(array($this, 'addToChain'), $arguments);
     }
 

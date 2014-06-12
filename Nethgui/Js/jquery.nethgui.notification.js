@@ -136,11 +136,15 @@
             var self = this;
 
             v.fieldLinks = '';
-
             // Render v.fieldLinks placeholder content:
             $.isArray(v.errors) && $.each(v.errors, function (index, err) {
-                v.fieldLinks += '<a class="Button givefocus" href="#${widgetId}">${label}</a> '.replacePlaceholders(err);
-                self._addTooltip(err);
+
+                if($('#' + err.widgetId).length > 0) {
+                    v.fieldLinks += '<a class="Button givefocus" href="#${widgetId}">${label}</a> '.replacePlaceholders(err);
+                    self._addTooltip(err);
+                } else {
+                    v.fieldLinks += '<span>${label} (${message})</span> '.replacePlaceholders(err);
+                }
             });            
         },
         _addTooltip: function(err) {
