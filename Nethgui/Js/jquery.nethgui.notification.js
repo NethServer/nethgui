@@ -86,9 +86,9 @@
 
             // Destroy on next ajax call if has transient class:
             if(this.element.hasClass('transient')) {
-                this.element.one('ajaxStart.' + this.namespace, function(e) {
+                $(document).one('ajaxStart.' + this.namespace, function() {
                     self.element.fadeOut(function() {
-                        $(this).remove()
+                        self.element.remove()
                     });
                 });
             }
