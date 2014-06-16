@@ -63,4 +63,7 @@
         }
 
     });
+    $(document).on('submit', function (e) {        
+        $(e.target.form).trigger('submit');
+    });
 }( jQuery ));
