@@ -60,7 +60,7 @@
         _onSubmit: function(e, restart) {
             e.preventDefault();
             e.stopPropagation();
-            var form = $(e.target);
+            var form = e.target.tagName.toLowerCase() === 'form' ? $(e.target) : $(e.target).closest('form');
 
             if (this._pending === null || this._pending.state() === "rejected" || this._pending.state() === "resolved") {
                 // start a new request
