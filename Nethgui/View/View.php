@@ -342,6 +342,7 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
 
     public function executeCommand(\Nethgui\View\ViewInterface $origin, $selector, $name, $arguments)
     {
+        $this->getLog()->deprecated(sprintf("%%s %%s: %s() command is DEPRECATED on Xhtml widget!", __CLASS__, $name));
         $module = $this->getModule();
         if ($module instanceof \Nethgui\View\CommandReceiverInterface) {
             $module->executeCommand($origin, $selector, $name, $arguments);

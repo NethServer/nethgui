@@ -38,6 +38,7 @@ class LoggingCommandReceiver implements \Nethgui\View\CommandReceiverInterface
 
     public function executeCommand(\Nethgui\View\ViewInterface $origin, $selector, $name, $arguments)
     {
+        $this->log->deprecated(sprintf("%%s %%s: %s() command is DEPRECATED on Xhtml widget!", __CLASS__, $name));
         $argStrings = array_map(function($arg) { return is_object($arg) ? get_class($arg) : gettype($arg); }, $arguments);
         $selectorString = $origin->getClientEventTarget($selector);
         NETHGUI_DEBUG && $this->log->notice(sprintf('%s: %s#%s(%s)', get_class($this), $selectorString, $name, implode(', ', $argStrings)));
