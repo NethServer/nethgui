@@ -1,4 +1,5 @@
 <?php
+
 namespace Nethgui;
 
 /*
@@ -70,11 +71,6 @@ class Framework
     private $moduleSet;
 
     /**
-     * @var \Nethgui\Component\DependencyInjector
-     */
-    private $moduleInjector;
-
-    /**
      *
      * @var \Nethgui\Utility\Session
      */
@@ -91,29 +87,8 @@ class Framework
         $this->urlParts = $this->guessUrlParts();
 
         $this->decoratorTemplate = 'Nethgui\Template\Main';
-        $this->moduleInjector = new \Nethgui\Component\DependencyInjector();
-
         $this->log = new \Nethgui\Log\Syslog(E_WARNING | E_ERROR);
         $this->session = new \Nethgui\Utility\Session();
-        $this->pdp = new \Nethgui\Authorization\JsonPolicyDecisionPoint($this->getFileNameResolver());
-        $this->pdp->setLog($this->log);
-
-        // Add some commonly used dependencies:
-        $this->moduleInjector['Log'] = $this->log;
-        $this->moduleInjector['Session'] = $this->session;
-        $this->moduleInjector['PolicyDecisionPoint'] = $this->pdp;
-    }
-
-    /**
-     * 
-     * 
-     * @api
-     * @since 1.6
-     * @return \ArrayAccess
-     */
-    public function getModuleDependenciesBag()
-    {
-        return $this->moduleInjector;
     }
 
     /**
@@ -290,8 +265,6 @@ class Framework
     public function dispatch(\Nethgui\Controller\RequestInterface $request, &$output = NULL)
     {
         try {
-            $this->initializeModuleLoader();
-            $this->enforceAuthorization();
             return $this->processRequest($request, $output);
         } catch (\Nethgui\Exception\HttpException $ex) {
             // no processing is required, rethrow:
@@ -313,28 +286,15 @@ class Framework
     {
         $m = $originalRequest->toArray();
         unset($m[\Nethgui\array_head($originalRequest->getPath())]);
-        $r = new \Nethgui\Controller\Request(array_replace_recursive(array('Login' => array('path' => '/' . implode('/',$originalRequest->getPath()))), $m));
+        $r = new \Nethgui\Controller\Request(array_replace_recursive(array('Login' => array('path' => '/' . implode('/', $originalRequest->getPath()))), $m));
         $r->setAttribute('languageCode', $originalRequest->getLanguageCode());
         return $r;
     }
 
-    /**
-     * Load all json files in \Authorization subdirs as authorization policies
-     * 
-     * @return \Nethgui\Framework
-     */
-    private function enforceAuthorization()
+    private function initializeModuleLoader(\Nethgui\Component\DependencyInjectorInterface $moduleInjector)
     {
-        foreach ($this->namespaceMap as $nsName => $nsPath) {
-            $this->pdp->loadPolicy($nsName . '\Authorization\*.json');
-        }
-        return $this;
-    }
-
-    private function initializeModuleLoader()
-    {
-        $this->moduleInjector['initializeModuleCallback'] = array($this, 'initializeModule');
-        $this->moduleSet = new \Nethgui\Module\ModuleLoader($this->moduleInjector);
+        $moduleInjector['initializeModuleCallback'] = array($this, 'initializeModule');
+        $this->moduleSet = new \Nethgui\Module\ModuleLoader($moduleInjector);
         $this->moduleSet->setLog($this->log);
 
         foreach ($this->namespaceMap as $nsName => $nsRoot) {
@@ -348,6 +308,21 @@ class Framework
 
     private function processRequest(\Nethgui\Controller\RequestInterface $request, &$output = NULL)
     {
+        $pdp = new \Nethgui\Authorization\JsonPolicyDecisionPoint($this->getFileNameResolver());
+        $pdp->setLog($this->log);
+        foreach ($this->namespaceMap as $nsName => $nsPath) {
+            $pdp->loadPolicy($nsName . '\Authorization\*.json');
+        }
+
+        $moduleInjector = new \Nethgui\Component\DependencyInjector();
+        // Add some commonly used dependencies:
+        $moduleInjector['Log'] = $this->log;
+        $moduleInjector['Session'] = $this->session;
+        $moduleInjector['PolicyDecisionPoint'] = $pdp;
+
+        $this->initializeModuleLoader($moduleInjector);
+
+
         if ($request instanceof \Nethgui\Utility\SessionConsumerInterface) {
             $request->setSession($this->session);
         }
@@ -365,49 +340,44 @@ class Framework
             ->setPhpWrapper(new \Nethgui\Utility\PhpWrapper())
             ->setLog($this->log)
             ->setSession($this->session)
-            ->setPolicyDecisionPoint($this->pdp)
+            ->setPolicyDecisionPoint($pdp)
         ;
 
         // Enforce authorization policy on moduleSet:
         $authModuleLoader = new \Nethgui\Authorization\AuthorizedModuleSet($this->moduleSet, $user);
-        $authModuleLoader->setPolicyDecisionPoint($this->pdp);
+        $authModuleLoader->setPolicyDecisionPoint($pdp);
 
         $fileNameResolver = $this->getFileNameResolver();
         $currentModuleIdentifier = array_head($request->getPath());
 
-        if ( ! isset($this->moduleInjector['injectSystemModulesCallback'])) {
-            $this->moduleInjector['injectSystemModulesCallback'] = function ($object, $context) use ($authModuleLoader, $currentModuleIdentifier, $fileNameResolver) {
-                if ($object instanceof \Nethgui\Module\Menu) {
-                    $object
-                        ->setModuleSet($authModuleLoader)
-                        ->setCurrentModuleIdentifier($currentModuleIdentifier)
-                    ;
-                } elseif ($object instanceof \Nethgui\Module\Help) {
-                    $object
-                        ->setModuleSet($authModuleLoader)
-                        ->setFileNameResolver($fileNameResolver)
-                    ;
-                }
-            };
+        $moduleInjector['injectSystemModulesCallback'] = function ($object, $context) use ($authModuleLoader, $currentModuleIdentifier, $fileNameResolver) {
+            if ($object instanceof \Nethgui\Module\Menu) {
+                $object
+                    ->setModuleSet($authModuleLoader)
+                    ->setCurrentModuleIdentifier($currentModuleIdentifier)
+                ;
+            } elseif ($object instanceof \Nethgui\Module\Help) {
+                $object
+                    ->setModuleSet($authModuleLoader)
+                    ->setFileNameResolver($fileNameResolver)
+                ;
+            }
+        };
 
-            $this->moduleInjector['injectFrameworkModulesCallback'] = function($object, $context) use($platform) {
-                if ($object instanceof \Nethgui\System\PlatformConsumerInterface) {
-                    $object->setPlatform($platform);
-                }
+        $moduleInjector['injectFrameworkModulesCallback'] = function($object, $context) use($platform) {
+            if ($object instanceof \Nethgui\System\PlatformConsumerInterface) {
+                $object->setPlatform($platform);
+            }
 
-                if (isset($context['PolicyDecisionPoint']) && $object instanceof \Nethgui\Authorization\PolicyEnforcementPointInterface) {
-                    $object->setPolicyDecisionPoint($context['PolicyDecisionPoint']);
-                }
-
-            };
-        }
-
-
+            if (isset($context['PolicyDecisionPoint']) && $object instanceof \Nethgui\Authorization\PolicyEnforcementPointInterface) {
+                $object->setPolicyDecisionPoint($context['PolicyDecisionPoint']);
+            }
+        };
 
         $mainModule = new \Nethgui\Module\Main($this->decoratorTemplate, $authModuleLoader);
         $mainModule->setPlatform($platform);
-        $mainModule->setPolicyDecisionPoint($this->pdp);
-        $mainModule->setDependencyInjector($this->moduleInjector);
+        $mainModule->setPolicyDecisionPoint($pdp);
+        $mainModule->setDependencyInjector($moduleInjector);
 
         $mainModule->initialize();
         $mainModule->bind($request);
@@ -465,7 +435,7 @@ class Framework
             $headers = $commandReceiver->getHttpHeaders();
         } else {
             // Render the view as Xhtml or Json
-            $renderer = $this->getRenderer($targetFormat, $rootView, $commandReceiver);
+            $renderer = $this->getRenderer($targetFormat, $rootView, $commandReceiver, $moduleInjector);
             $content = $renderer->render();
             // execute all non-executed commands:
             $defaultHeaders = array(
@@ -533,7 +503,7 @@ class Framework
      * @param \Nethgui\View\CommandReceiverInterface $receiver
      * @return Renderer\AbstractRenderer
      */
-    private function getRenderer($targetFormat, \Nethgui\View\ViewInterface $view, \Nethgui\View\CommandReceiverInterface $receiver)
+    private function getRenderer($targetFormat, \Nethgui\View\ViewInterface $view, \Nethgui\View\CommandReceiverInterface $receiver, \Nethgui\Component\DependencyInjectorInterface $moduleInjector)
     {
         if ($targetFormat === 'json') {
             $renderer = new Renderer\Json($view, $receiver);
@@ -547,7 +517,7 @@ class Framework
             $renderer = new Renderer\TemplateRenderer($view, $this->getFileNameResolver(), 'text/plain', 'UTF-8');
         }
 
-        $this->moduleInjector->inject($renderer);
+        $moduleInjector->inject($renderer);
 
         return $renderer;
     }
@@ -799,4 +769,3 @@ function array_rest($arr)
     array_shift($arr);
     return $arr;
 }
-
