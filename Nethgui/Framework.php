@@ -66,12 +66,6 @@ class Framework
 
     /**
      *
-     * @var \Nethgui\Module\ModuleLoader;
-     */
-    private $moduleSet;
-
-    /**
-     *
      * @var \Nethgui\Utility\Session
      */
     private $session;
@@ -291,21 +285,6 @@ class Framework
         return $r;
     }
 
-    private function initializeModuleLoader(\Nethgui\Component\DependencyInjectorInterface $moduleInjector)
-    {
-        $moduleInjector['initializeModuleCallback'] = array($this, 'initializeModule');
-        $this->moduleSet = new \Nethgui\Module\ModuleLoader($moduleInjector);
-        $this->moduleSet->setLog($this->log);
-
-        foreach ($this->namespaceMap as $nsName => $nsRoot) {
-            if ($nsName === 'Nethgui') {
-                $nsRoot = FALSE;
-            }
-            $this->moduleSet->setNamespace($nsName . '\\Module', $nsRoot);
-        }
-        return $this;
-    }
-
     private function processRequest(\Nethgui\Controller\RequestInterface $request, &$output = NULL)
     {
         $pdp = new \Nethgui\Authorization\JsonPolicyDecisionPoint($this->getFileNameResolver());
@@ -319,8 +298,25 @@ class Framework
         $moduleInjector['Log'] = $this->log;
         $moduleInjector['Session'] = $this->session;
         $moduleInjector['PolicyDecisionPoint'] = $pdp;
+        $moduleInjector['initializeModuleCallback'] = function ($module, $context) {
+            if ($module instanceof \Nethgui\Utility\SessionConsumerInterface) {
+                $module->setSession($context['Session']);
+            }
 
-        $this->initializeModuleLoader($moduleInjector);
+            if ($module instanceof Authorization\PolicyEnforcementPointInterface) {
+                $module->setPolicyDecisionPoint($context['PolicyDecisionPoint']);
+            }
+        };
+
+        $moduleLoader = new \Nethgui\Module\ModuleLoader($moduleInjector);
+        $moduleLoader->setLog($this->log);
+
+        foreach ($this->namespaceMap as $nsName => $nsRoot) {
+            if ($nsName === 'Nethgui') {
+                $nsRoot = FALSE;
+            }
+            $moduleLoader->setNamespace($nsName . '\\Module', $nsRoot);
+        }
 
 
         if ($request instanceof \Nethgui\Utility\SessionConsumerInterface) {
@@ -344,7 +340,7 @@ class Framework
         ;
 
         // Enforce authorization policy on moduleSet:
-        $authModuleLoader = new \Nethgui\Authorization\AuthorizedModuleSet($this->moduleSet, $user);
+        $authModuleLoader = new \Nethgui\Authorization\AuthorizedModuleSet($moduleLoader, $user);
         $authModuleLoader->setPolicyDecisionPoint($pdp);
 
         $fileNameResolver = $this->getFileNameResolver();
@@ -463,17 +459,6 @@ class Framework
         }
 
         return 0;
-    }
-
-    public function initializeModule($module, $context)
-    {
-        if ($module instanceof \Nethgui\Utility\SessionConsumerInterface) {
-            $module->setSession($context['Session']);
-        }
-
-        if ($module instanceof Authorization\PolicyEnforcementPointInterface) {
-            $module->setPolicyDecisionPoint($context['PolicyDecisionPoint']);
-        }
     }
 
     /**
