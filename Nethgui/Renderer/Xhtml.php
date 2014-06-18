@@ -30,7 +30,7 @@ namespace Nethgui\Renderer;
  * @since 1.0
  * @api
  */
-class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
+class Xhtml extends \Nethgui\Renderer\TemplateRenderer implements \Nethgui\Renderer\WidgetFactoryInterface
 {
     /**
      *

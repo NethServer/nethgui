@@ -29,7 +29,7 @@ namespace Nethgui\Module;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\CommandReceiverInterface
+class Main extends \Nethgui\Controller\ListComposite
 {
     /**
      * @var \Nethgui\Module\ModuleSetInterface
@@ -159,23 +159,15 @@ class Main extends \Nethgui\Controller\ListComposite implements \Nethgui\View\Co
 
     }
 
-    /**
-     * Available commands:
-     * - setDecoratorTemplate ( string|callable $template )
-     *
-     * @param \Nethgui\View\ViewInterface $origin
-     * @param type $selector
-     * @param type $name
-     * @param type $arguments
-     */
-    public function executeCommand(\Nethgui\View\ViewInterface $origin, $selector, $name, $arguments)
+    public function setDecoratorTemplate($template)
     {
-        if ($name === 'setDecoratorTemplate'
-            && isset($arguments[0])) {
-            $this->template = $arguments[0];
-        } elseif ($name === 'setDecoratorParameter') {
-            $this->decoratorParameter[$arguments[0]] = $arguments[1];
-        }
+        $this->template = $template;
+        return $this;
+    }
+
+    public function setDecoratorParameter($paramName, $paramValue)
+    {
+        $this->decoratorParameter[$paramName] = $paramValue;
     }
 
     public function renderDecorated(\Nethgui\Renderer\TemplateRenderer $renderer)

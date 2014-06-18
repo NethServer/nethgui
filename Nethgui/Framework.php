@@ -394,18 +394,12 @@ class Framework
         $translator->setLog($this->log);
         $rootView = new \Nethgui\View\View($targetFormat, $mainModule, $translator, $this->urlParts);
 
-        $commandReceiver = new \Nethgui\Renderer\HttpCommandReceiver(new \Nethgui\Renderer\MarshallingReceiver(new \Nethgui\View\LoggingCommandReceiver($this->log)));
-        $commandReceiver->setLog($this->log);
-
-        $rootView->setReceiver($commandReceiver);
-
-        // ..transfer contents and commands into the MAIN view:
         $mainModule->prepareView($rootView);
 
         if ($request->isValidated()) {
             // On a valid request honorate the nextPath() semantics:
             $nextPath = $mainModule->nextPath();
-            if (is_string($nextPath)) {
+            if (is_string($nextPath)) {                
                 $rootView->getCommandList('/Main')
                     ->sendQuery($rootView->getModuleUrl($nextPath));
             }
@@ -423,17 +417,13 @@ class Framework
             ;
         }
 
-        // ..Execute commands sent to views. These do not include commands sent to widgets:
-        $this->executeViewCommands($rootView);
-
-        if ($targetFormat === 'xhtml' && $commandReceiver->hasLocation()) {
-            $content = '';
-            $headers = $commandReceiver->getHttpHeaders();
+        // FIXME: see if a redirect is pending:
+        if ($this->hasRedirect($rootView->getCommands()->httpHeaders)) {
+            $headers = $rootView->getCommands()->httpHeaders;
         } else {
             // Render the view as Xhtml or Json
-            $renderer = $this->getRenderer($targetFormat, $rootView, $commandReceiver, $moduleInjector);
+            $renderer = $this->getRenderer($targetFormat, $rootView, $moduleInjector);
             $content = $renderer->render();
-            // execute all non-executed commands:
             $defaultHeaders = array(
                 "HTTP/1.1 200 Success",
                 sprintf('Content-Type: %s', $renderer->getContentType()) . (
@@ -442,7 +432,9 @@ class Framework
                 )
             );
 
-            $headers = array_merge($defaultHeaders, $commandReceiver->getHttpHeaders());
+            // FIXME: read headers from commands:
+            $headersFromCommands = $rootView->getCommands()->httpHeaders;
+            $headers = array_merge($defaultHeaders, $headersFromCommands);
         }
 
         // Send response to client
@@ -459,6 +451,16 @@ class Framework
         }
 
         return 0;
+    }
+
+    private function hasRedirect($headers)
+    {
+        foreach($headers as $h) {
+            if(substr(strtolower($h), 0, 8) === 'Location') {
+                return TRUE;
+            }
+        }
+        return FALSE;
     }
 
     /**
@@ -485,13 +487,12 @@ class Framework
      *
      * @param string $targetFormat
      * @param \Nethgui\View\ViewInterface $view
-     * @param \Nethgui\View\CommandReceiverInterface $receiver
      * @return Renderer\AbstractRenderer
      */
-    private function getRenderer($targetFormat, \Nethgui\View\ViewInterface $view, \Nethgui\View\CommandReceiverInterface $receiver, \Nethgui\Component\DependencyInjectorInterface $moduleInjector)
+    private function getRenderer($targetFormat, \Nethgui\View\ViewInterface $view, \Nethgui\Component\DependencyInjectorInterface $moduleInjector)
     {
         if ($targetFormat === 'json') {
-            $renderer = new Renderer\Json($view, $receiver);
+            $renderer = new Renderer\Json($view);
         } elseif ($targetFormat === 'xhtml') {
             $renderer = new Renderer\Xhtml($view, $this->getFileNameResolver(), 0);
         } else if ($targetFormat === 'js') {
@@ -505,38 +506,6 @@ class Framework
         $moduleInjector->inject($renderer);
 
         return $renderer;
-    }
-
-    /**
-     * Vist all sub-views and execute their commands.
-     * 
-     * These does not include ALL possible commands!
-     * 
-     * @param View\View $view
-     */
-    private function executeViewCommands(View\View $view)
-    {
-        $q = array($view);
-
-        while (count($q) > 0) {
-            $view = array_pop($q);
-
-            foreach ($view as $key => $value) {
-                if ($value instanceof View\View) {
-                    $q[] = $value;
-                }
-            }
-
-            if (strlen($view->getModule()->getIdentifier()) == 0) {
-                $command = $view->getCommandList('/' . array_end(explode('\\', get_class($view->getModule()))));
-            } else {
-                $command = $view->getCommandList();
-            }
-
-            if ( ! $command->isExecuted()) {
-                $command->setReceiver($view)->execute();
-            }
-        }
     }
 
     /**

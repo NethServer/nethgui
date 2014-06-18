@@ -200,7 +200,7 @@ interface ViewInterface extends \ArrayAccess, \IteratorAggregate
      *
      * @api
      * @param string $selector Routes the command list to the receiver appointed by this parameter.
-     * @return \Nethgui\View\ViewCommandInterface
+     * @return \Nethgui\View\LegacyCommandBag
      * @deprecated since version 1.6
      */
     public function getCommandList($selector = '');
@@ -218,6 +218,7 @@ interface ViewInterface extends \ArrayAccess, \IteratorAggregate
      * Get the requested resource format
      *
      * @api
+     * @deprecated since 1.6
      * @return string
      */
     public function getTargetFormat();

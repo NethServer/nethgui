@@ -1,4 +1,5 @@
 <?php
+
 namespace Nethgui\View;
 
 /*
@@ -42,7 +43,6 @@ namespace Nethgui\View;
  */
 class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInterface, \Nethgui\View\CommandReceiverInterface
 {
-
     /**
      * Reference to associated module
      * @var \Nethgui\Module\ModuleInterface
@@ -85,16 +85,9 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
      */
     private $urlParts;
 
-
     /**
      *
-     * @var \Nethgui\View\CommandReceiverInterface
-     */
-    private $receiver;
-
-    /**
-     *
-     * @var \ArrayObject
+     * @var \Nethgui\View\LegacyCommandBag
      */
     private $commands;
 
@@ -115,16 +108,16 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
     {
         $this->module = $module;
         $this->translator = $translator;
-        $this->receiver = \Nethgui\View\NullReceiver::getNullInstance();
         $this->urlParts = $urlParts;
         $this->template = str_replace('\Module\\', '\Template\\', get_class($module));
         $this->data = array();
         $this->targetFormat = $targetFormat;
-        $this->commands = new \ArrayObject();
+        $this->commands = new \Nethgui\View\LegacyCommandBag($this);
     }
 
     public function getTargetFormat()
     {
+        $this->getLog()->deprecated();
         return $this->targetFormat;
     }
 
@@ -150,7 +143,6 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
     public function spawnView(\Nethgui\Module\ModuleInterface $module, $register = FALSE)
     {
         $spawnedView = new static($this->targetFormat, $module, $this->translator, $this->urlParts);
-        $spawnedView->setReceiver($this->receiver);
         $spawnedView->commands = $this->commands;
         if ($register === TRUE) {
             $this[$module->getIdentifier()] = $spawnedView;
@@ -217,7 +209,7 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
             $module = $this->getModule();
 
             while ( ! (is_null($module))) {
-                if ( ++ $watchdog > 20) {
+                if (++ $watchdog > 20) {
                     throw new \LogicException(sprintf("%s: Too many nested modules or cyclic module structure.", get_class($this)), 1322150445);
                 }
 
@@ -295,7 +287,7 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
         $segments = $this->resolvePath($path);
 
         $url = implode('', \Nethgui\array_rest($this->urlParts)) . implode('/', $segments);
-        
+
         if ( ! empty($parameters)) {
             $url .= '?' . http_build_query($parameters);
         }
@@ -334,42 +326,31 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
         }
     }
 
-    public function setReceiver(\Nethgui\View\CommandReceiverInterface $receiver)
-    {
-        $this->receiver = $receiver;
-        return $this;
-    }
-
     public function executeCommand(\Nethgui\View\ViewInterface $origin, $selector, $name, $arguments)
     {
-        $this->getLog()->deprecated(sprintf("%%s %%s: %s() command is DEPRECATED on Xhtml widget!", __CLASS__, $name));
+        $this->getLog()->deprecated(sprintf("%%s %%s: %s() command is DEPRECATED", __CLASS__, $name));
         $module = $this->getModule();
         if ($module instanceof \Nethgui\View\CommandReceiverInterface) {
             $module->executeCommand($origin, $selector, $name, $arguments);
         }
-
-        $this->receiver->executeCommand($origin, $selector, $name, $arguments);
     }
 
     public function getCommandList($selector = '')
     {
         $this->getLog()->deprecated();
-        $fullSelector = $this->getUniqueId($selector);
-        if ( ! isset($this->commands[$fullSelector]) || $this->commands[$fullSelector]->isExecuted()) {
-            $this->commands[$fullSelector] = new \Nethgui\View\ViewCommandSequence($this, $selector);
-            $this->commands[$fullSelector]->setLog($this->getLog());
-        }
-        return $this->commands[$fullSelector];
+        $this->commands->setContext($this, $selector);
+        return $this->commands;
     }
 
     public function hasCommandList($selector = '')
     {
         $this->getLog()->deprecated();
-        return isset($this->commands[$this->getUniqueId($selector)]);
+        return FALSE;
     }
 
     public function getCommands()
     {
+        $this->getLog()->deprecated();
         return $this->commands;
     }
 

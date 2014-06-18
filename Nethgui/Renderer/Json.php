@@ -28,19 +28,6 @@ namespace Nethgui\Renderer;
  */
 class Json extends AbstractRenderer
 {
-
-    /**
-     *
-     * @var \Nethgui\Renderer\MarshallingReceiver
-     */
-    private $receiver;
-
-    public function __construct(\Nethgui\View\View $view, \Nethgui\View\CommandReceiverInterface $receiver)
-    {
-        parent::__construct($view);
-        $this->receiver = $receiver;
-    }
-
     private function deepWalk(&$events)
     {
         // iterative tree walk - $q is the node queue:
@@ -69,15 +56,6 @@ class Json extends AbstractRenderer
 
                 $events[] = array($eventTarget, $eventData);
             }
-        }
-
-        foreach ($this->view->getCommands() as $command) {
-            if ( ! $command instanceof \Nethgui\View\CommandInterface || $command->isExecuted()) {
-                continue;
-            }
-
-            // Execute all still-unexecuted commands sent to widgets and renderers:
-            $command->setReceiver($this->receiver)->execute();
         }
     }
 
@@ -108,15 +86,13 @@ class Json extends AbstractRenderer
         if (count($events) > 0) {
             $output = $events;
         }
-
-        $commands = array();
         
-        $this->receiver->executeCommand($this->view, NULL, 'getMarshalledCommands', array(&$commands));
-      
+        $commands = $this->getCommandList();
         if (count($commands) > 0) {
-            $output[] = array('__COMMANDS__', $commands);
-            $output[] = array('__STATE__', md5(json_encode($output)));
+            $output[] = array('__COMMANDS__', $commands);            
         }
+
+        $output[] = array('__STATE__', md5(json_encode($output)));
 
         return json_encode($output);
     }
