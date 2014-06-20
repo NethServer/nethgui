@@ -1,4 +1,5 @@
 <?php
+
 namespace Nethgui\Module;
 
 /*
@@ -28,7 +29,7 @@ namespace Nethgui\Module;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Notification extends \Nethgui\Controller\AbstractController implements \Nethgui\View\CommandReceiverInterface, \Nethgui\Utility\SessionConsumerInterface
+class Notification extends \Nethgui\Controller\AbstractController implements \Nethgui\Utility\SessionConsumerInterface
 {
 
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
@@ -36,8 +37,8 @@ class Notification extends \Nethgui\Controller\AbstractController implements \Ne
         $attributes = new SystemModuleAttributesProvider();
         $attributes->initializeFromModule($this);
         return $attributes;
-    }    
-    
+    }
+
     public function __construct($identifier = NULL)
     {
         parent::__construct($identifier);
@@ -111,8 +112,7 @@ class Notification extends \Nethgui\Controller\AbstractController implements \Ne
         $panel = $renderer->panel()->setAttribute('name', 'Pane')->setAttribute('receiver', '');
 
         foreach ($renderer as $offset => $innerView) {
-            if ( ! $innerView instanceof \Nethgui\View\ViewInterface
-                || $innerView['dismissed'] === TRUE) {
+            if ( ! $innerView instanceof \Nethgui\View\ViewInterface || $innerView['dismissed'] === TRUE) {
                 continue;
             }
 
@@ -122,24 +122,13 @@ class Notification extends \Nethgui\Controller\AbstractController implements \Ne
         return (String) $panel;
     }
 
-    public function executeCommand(\Nethgui\View\ViewInterface $origin, $selector, $name, $arguments)
+    public function showMessage($text, $type = \Nethgui\Module\Notification\AbstractNotification::NOTIFY_SUCCESS)
     {
-        if ($name === 'showNotification') {
-            $this->showNotification($arguments[0]);
-        } elseif ($name === 'showMessage') {
-            if ( ! isset($arguments[1])) {
-                $arguments[1] = \Nethgui\Module\Notification\AbstractNotification::NOTIFY_SUCCESS;
-            }
-
-            $notification = new \Nethgui\Module\Notification\TextNotification($origin->getModule(), $arguments[0], $arguments[1]);
-
-            $this->showNotification($notification);
-        } elseif ($name === 'dismissNotification') {
-            $this->dismissNotification($arguments[0]);
-        }
+        $notification = new \Nethgui\Module\Notification\TextNotification($origin->getModule(), $text, $type);
+        $this->showNotification($notification);
     }
 
-    protected function dismissNotification($notificationId)
+    public function dismissNotification($notificationId)
     {
         if (isset($this->notifications[$notificationId])) {
             $this->notifications[$notificationId]->dismiss();
@@ -147,7 +136,7 @@ class Notification extends \Nethgui\Controller\AbstractController implements \Ne
         }
     }
 
-    protected function showNotification(\Nethgui\Module\Notification\AbstractNotification $notification)
+    public function showNotification(\Nethgui\Module\Notification\AbstractNotification $notification)
     {
         $id = $notification->getIdentifier();
         $this->notifications[$id] = $notification;

@@ -86,10 +86,11 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
     private $urlParts;
 
     /**
-     *
+     * Provided for backward compatibility
+     * @deprecated since 1.6
      * @var \Nethgui\View\LegacyCommandBag
      */
-    private $commands;
+    public $commands;
 
     /**
      *
@@ -112,7 +113,6 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
         $this->template = str_replace('\Module\\', '\Template\\', get_class($module));
         $this->data = array();
         $this->targetFormat = $targetFormat;
-        $this->commands = new \Nethgui\View\LegacyCommandBag($this);
     }
 
     public function getTargetFormat()
@@ -143,7 +143,7 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
     public function spawnView(\Nethgui\Module\ModuleInterface $module, $register = FALSE)
     {
         $spawnedView = new static($this->targetFormat, $module, $this->translator, $this->urlParts);
-        $spawnedView->commands = $this->commands;
+        $spawnedView->commands = $this->getCommands();
         if ($register === TRUE) {
             $this[$module->getIdentifier()] = $spawnedView;
         } elseif (is_string($register)) {
@@ -338,8 +338,8 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
     public function getCommandList($selector = '')
     {
         $this->getLog()->deprecated();
-        $this->commands->setContext($this, $selector);
-        return $this->commands;
+        $this->getCommands()->setContext($this, $selector);
+        return $this->getCommands();
     }
 
     public function hasCommandList($selector = '')
@@ -361,7 +361,7 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
      */
     public function clearAllCommands()
     {
-        $this->commands->exchangeArray(array());
+        $this->getCommands()->exchangeArray(array());
         return $this;
     }
 

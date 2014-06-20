@@ -64,6 +64,8 @@ class Framework
      */
     private $decoratorTemplate;
 
+    private $log;
+
     /**
      *
      * @var \Nethgui\Utility\Session
@@ -258,14 +260,14 @@ class Framework
      */
     public function dispatch(\Nethgui\Controller\RequestInterface $request, &$output = NULL)
     {
-        try {
-            return $this->processRequest($request, $output);
+        try {                     
+            return $this->processRequest($request);
         } catch (\Nethgui\Exception\HttpException $ex) {
             // no processing is required, rethrow:
             throw $ex;
         } catch (\Nethgui\Exception\AuthorizationException $ex) {
             if ($request->getExtension() === 'xhtml' && ! $request->isMutation() && ! $request->getUser()->isAuthenticated()) {
-                return $this->processRequest($this->createLoginRequest($request), $output);
+                return $this->processRequest($this->createLoginRequest($request));
             } else {
                 $this->log->error(sprintf('%s: [%d] %s', __CLASS__, $ex->getCode(), $ex->getMessage()));
                 throw new \Nethgui\Exception\HttpException('Forbidden', 403, 1327681977, $ex);
@@ -285,7 +287,7 @@ class Framework
         return $r;
     }
 
-    private function processRequest(\Nethgui\Controller\RequestInterface $request, &$output = NULL)
+    private function processRequest(\Nethgui\Controller\RequestInterface $request)
     {
         $pdp = new \Nethgui\Authorization\JsonPolicyDecisionPoint($this->getFileNameResolver());
         $pdp->setLog($this->log);
@@ -297,7 +299,7 @@ class Framework
         // Add some commonly used dependencies:
         $moduleInjector['Log'] = $this->log;
         $moduleInjector['Session'] = $this->session;
-        $moduleInjector['PolicyDecisionPoint'] = $pdp;
+        $moduleInjector['PolicyDecisionPoint'] = $pdp;        
         $moduleInjector['initializeModuleCallback'] = function ($module, $context) {
             if ($module instanceof \Nethgui\Utility\SessionConsumerInterface) {
                 $module->setSession($context['Session']);
@@ -327,7 +329,7 @@ class Framework
 
         if (array_head($request->getPath()) === FALSE) {
             $redirectUrl = implode('', $this->urlParts) . $this->defaultModuleIdentifier;
-            $this->sendHttpResponse('', array('HTTP/1.1 302 Found', sprintf('Location: %s', $redirectUrl)), $output);
+            // FIXME: $response->redirect($redirectUrl);
             return;
         }
 
@@ -389,125 +391,45 @@ class Framework
             $platform->runEvents('post-process');
         }
 
+        // FIXME: dependency MESS...
         $targetFormat = $request->getFormat();
         $translator = new \Nethgui\View\Translator($request->getLanguageCode(), $this->getFileNameResolver(), array_keys(iterator_to_array($this->namespaceMap)));
         $translator->setLog($this->log);
         $rootView = new \Nethgui\View\View($targetFormat, $mainModule, $translator, $this->urlParts);
+        $response = new \Nethgui\Renderer\HttpResponse($request, $rootView, $moduleInjector);
+        $response->filenameResolver = $fileNameResolver;
+        $rootView->commands = new \Nethgui\View\LegacyCommandBag($rootView, $response);
 
         $mainModule->prepareView($rootView);
 
         if ($request->isValidated()) {
-            // On a valid request honorate the nextPath() semantics:
+            /*
+             * FIXME: @deprecated since 1.6
+             */
             $nextPath = $mainModule->nextPath();
-            if (is_string($nextPath)) {                
+            if (is_string($nextPath)) {
                 $rootView->getCommandList('/Main')
                     ->sendQuery($rootView->getModuleUrl($nextPath));
             }
+            /*
+             *
+             */
         } else {
-            // Only validation errors notification has to be shown: clear
-            // all enqueued commands.
-            //$rootView->clearAllCommands();
-            // Validation error http status.
-            // See RFC2616, section 10.4 "Client Error 4xx"
-            // FIXME: check if we are in FAST-CGI module:
-            // @see http://php.net/manual/en/function.header.php
             $rootView->getCommandList('/Notification')
-                ->showNotification($validationErrorsNotification)
-                ->httpHeader("HTTP/1.1 400 Request validation error")
-            ;
+                ->showNotification($validationErrorsNotification);
+            $response->setError(new \Nethgui\Exception\HttpException('Request validation error', 400, 1403528189));
         }
 
-        // FIXME: see if a redirect is pending:
-        if ($this->hasRedirect($rootView->getCommands()->httpHeaders)) {
-            $headers = $rootView->getCommands()->httpHeaders;
-        } else {
-            // Render the view as Xhtml or Json
-            $renderer = $this->getRenderer($targetFormat, $rootView, $moduleInjector);
-            $content = $renderer->render();
-            $defaultHeaders = array(
-                "HTTP/1.1 200 Success",
-                sprintf('Content-Type: %s', $renderer->getContentType()) . (
-                $renderer->getCharset() ?
-                    sprintf('; charset=%s', $renderer->getCharset()) : ''
-                )
-            );
-
-            // FIXME: read headers from commands:
-            $headersFromCommands = $rootView->getCommands()->httpHeaders;
-            $headers = array_merge($defaultHeaders, $headersFromCommands);
-        }
-
-        // Send response to client
-        $this->sendHttpResponse($content, $headers, $output);
+        $response->send();
 
         // Accept new requests, by unlocking the session:
         if ($this->session->isStarted()) {
             $this->session->unlock();
         }
 
-        if ($request->isValidated()) {
-            // Run the "post-response" event queue (see #506)
-            $platform->runEvents('post-response');
-        }
-
-        return 0;
+        $platform->runEvents('post-response');       
     }
-
-    private function hasRedirect($headers)
-    {
-        foreach($headers as $h) {
-            if(substr(strtolower($h), 0, 8) === 'Location') {
-                return TRUE;
-            }
-        }
-        return FALSE;
-    }
-
-    /**
-     *
-     * @param string $content
-     * @param array $headers
-     * @param array $output
-     */
-    private function sendHttpResponse($content, $headers, &$output)
-    {
-        if (is_array($output)) {
-            // put HTTP response into the output array:
-            $output['content'] = $content;
-            $output['headers'] = $headers;
-        } else {
-            // send HTTP response to stdout:
-            array_map('header', $headers);
-            echo $content;
-            flush();
-        }
-    }
-
-    /**
-     *
-     * @param string $targetFormat
-     * @param \Nethgui\View\ViewInterface $view
-     * @return Renderer\AbstractRenderer
-     */
-    private function getRenderer($targetFormat, \Nethgui\View\ViewInterface $view, \Nethgui\Component\DependencyInjectorInterface $moduleInjector)
-    {
-        if ($targetFormat === 'json') {
-            $renderer = new Renderer\Json($view);
-        } elseif ($targetFormat === 'xhtml') {
-            $renderer = new Renderer\Xhtml($view, $this->getFileNameResolver(), 0);
-        } else if ($targetFormat === 'js') {
-            $renderer = new Renderer\TemplateRenderer($view, $this->getFileNameResolver(), 'application/javascript', 'UTF-8');
-        } elseif ($targetFormat === 'css') {
-            $renderer = new Renderer\TemplateRenderer($view, $this->getFileNameResolver(), 'text/css', 'UTF-8');
-        } else {
-            $renderer = new Renderer\TemplateRenderer($view, $this->getFileNameResolver(), 'text/plain', 'UTF-8');
-        }
-
-        $moduleInjector->inject($renderer);
-
-        return $renderer;
-    }
-
+    
     /**
      * Create a default Request object for dispatch()
      *

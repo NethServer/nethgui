@@ -36,12 +36,17 @@ class LegacyCommandBag extends \ArrayObject
     private $view;
     private $currentSelector, $currentOrigin;
 
-    public $httpHeaders = array();
+    /**
+     *
+     * @var \Nethgui\Controller\ResponseInterface
+     */
+    private $response;
 
-    public function __construct(\Nethgui\View\View $view)
+    public function __construct(\Nethgui\View\View $view, \Nethgui\Controller\ResponseInterface $response)
     {
         parent::__construct(array());
         $this->view = $view;
+        $this->response = $response;
     }
 
     public function setContext($origin, $selector)
@@ -94,7 +99,10 @@ class LegacyCommandBag extends \ArrayObject
     public function httpHeader($value)
     {
         $this->getLog()->deprecated();
-        $this->httpHeaders[] = $value;
+        if($this->response instanceof \Nethgui\Controller\HttpResponse) {
+            list($headerName, $headerValue) = explode(':', $value, 2);
+            $this->response->setHttpHeaders(array($headerName => $headerValue));
+        }
         return $this;
     }
 
@@ -123,6 +131,40 @@ class LegacyCommandBag extends \ArrayObject
         return $this;
     }
 
+    public function showMessage($text, $type)
+    {
+        $this->getLog()->deprecated();
+        if ($this->view->getTargetFormat() !== \Nethgui\View\View::TARGET_XHTML) {
+            return $this->__call('showMessage', array($text, $type));
+        }
+
+        $notificationModuleInstance = \Nethgui\array_head(array_filter($this->view->getModule()->getChildren(), function (\Nethgui\Module\ModuleInterface $child) {
+           return $child->getIdentifier() === 'Notification';
+        }));
+
+        if($notificationModuleInstance instanceof \Nethgui\Module\Notification) {
+            $notificationModuleInstance->showMessage($text, $type);
+        }
+    }
+
+    public function showNotification(\Nethgui\Module\Notification\AbstractNotification $notification)
+    {
+        $this->getLog()->deprecated();
+        if ($this->view->getTargetFormat() !== \Nethgui\View\View::TARGET_XHTML) {
+            $v = $this->view->spawnView($this->view->getModule(), FALSE);
+            $notification->prepareView($v);
+            return $this->__call('showNotification', iterator_to_array($v));
+        }
+
+        $notificationModuleInstance = \Nethgui\array_head(array_filter($this->view->getModule()->getChildren(), function (\Nethgui\Module\ModuleInterface $child) {
+           return $child->getIdentifier() === 'Notification';
+        }));
+
+        if($notificationModuleInstance instanceof \Nethgui\Module\Notification) {
+            $notificationModuleInstance->showNotification($notification);
+        }
+    }
+
 
     /**
      * @param integer $code
@@ -130,28 +172,15 @@ class LegacyCommandBag extends \ArrayObject
      */
     private function httpRedirection($code, $location)
     {
-        $messages = array(
-            '201' => 'Created',
-            '205' => 'Reset Content',
-            '301' => 'Moved Permanently',
-            '302' => 'Found',
-            '303' => 'See Other',
-            '307' => 'Temporary Redirect'
-        );
-
-        if (isset($messages[strval($code)])) {
-            $codeMessage = $messages[strval($code)];
-        } else {
-            throw new \DomainException(sprintf('Unknown status code for redirection: %d', intval($code)), 1322149333);
-        }
-
         // Prefix the site URL to $location:
         if ( ! in_array(parse_url($location, PHP_URL_SCHEME), array('http', 'https'))) {
             $location = $this->view->getSiteUrl() . $location;
         }
 
-        $this->httpHeaders[] = sprintf('HTTP/1.1 %d %s', $code, $codeMessage);
-        $this->httpHeaders[] = 'Location: ' . $location;
+        if($this->response instanceof \Nethgui\Controller\HttpResponse) {
+            $this->response->setHttpStatus($code)->setHttpHeaders(array('Location' => $location));
+        }
+        return $this;
     }
 
 }

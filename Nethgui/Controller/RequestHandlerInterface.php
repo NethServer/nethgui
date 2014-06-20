@@ -78,15 +78,17 @@ interface RequestHandlerInterface
 
 
     /**
-     * Get the path to the next module, relative to the parent's path
+     * Get the path to the next module. Relative paths resolving is deferred
+     * to implementors.
      *
      * Executed after process(), the user agent is directed to the designated
      * module.
      *
-     * If boolean FALSE is returned the no action take place
+     * If boolean FALSE is returned then no action takes place.
      *
      * @api
-     * @return bool|string The path string or boolean FALSE
+     * @return mixed The path as a string or the boolean FALSE
+     * @deprecated since 1.6
      */
     public function nextPath();
 }
