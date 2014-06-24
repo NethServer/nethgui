@@ -166,7 +166,7 @@ class HttpResponse implements \Nethgui\Controller\ResponseInterface
         if (isset($this->httpStatusMessages[strval($httpStatus)])) {
             $statusMessage = $this->httpStatusMessages[strval($httpStatus)];
         } else {
-            $statusMessage = 'Unknown ' . $status . ' response message';
+            $statusMessage = 'Unknown ' . $httpStatus . ' response message';
         }
 
         header(sprintf('HTTP/1.1 %d %s', $httpStatus, $statusMessage));
@@ -185,6 +185,11 @@ class HttpResponse implements \Nethgui\Controller\ResponseInterface
     {
         $this->handler = $handler;
         return $this;
+    }
+
+    public function getHandler()
+    {
+        return $this->handler;
     }
 
     public function setNext($path)

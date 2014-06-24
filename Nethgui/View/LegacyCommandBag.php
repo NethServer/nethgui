@@ -99,9 +99,12 @@ class LegacyCommandBag extends \ArrayObject
     public function httpHeader($value)
     {
         $this->getLog()->deprecated();
-        if($this->response instanceof \Nethgui\Controller\HttpResponse) {
-            list($headerName, $headerValue) = explode(':', $value, 2);
-            $this->response->setHttpHeaders(array($headerName => $headerValue));
+        if($this->response instanceof \Nethgui\Renderer\HttpResponse) {
+            $originalHandler = $this->response->getHandler();
+            $this->response->setHandler(function ($content, $httpStatus, $httpHeaders) use ($originalHandler, $value) {
+                $httpHeaders[] = $value;
+                call_user_func($originalHandler, $content, $httpStatus, $httpHeaders);
+            });
         }
         return $this;
     }
@@ -177,8 +180,11 @@ class LegacyCommandBag extends \ArrayObject
             $location = $this->view->getSiteUrl() . $location;
         }
 
-        if($this->response instanceof \Nethgui\Controller\HttpResponse) {
-            $this->response->setHttpStatus($code)->setHttpHeaders(array('Location' => $location));
+        if($this->response instanceof \Nethgui\Renderer\HttpResponse) {
+            $o = $this->response;
+            $this->response->setHandler(function ($content, $httpStatus, $httpHeaders) use ($o, $code, $location) {
+                call_user_func(array($o, 'defaultHandler'), '', $code, array('Location: ' . $location));
+            });
         }
         return $this;
     }
