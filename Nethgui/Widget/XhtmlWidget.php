@@ -1,4 +1,5 @@
 <?php
+
 namespace Nethgui\Widget;
 
 /*
@@ -58,7 +59,7 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
             ->setAttribute('htmlAttributes', array('for' => $id))
         ;
 
-        if($this->hasAttribute('labelSource')) {
+        if ($this->hasAttribute('labelSource')) {
             $labelWidget->setAttribute('name', $this->getAttribute('labelSource'));
         }
 
@@ -96,7 +97,7 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
         }
 
         $wrapperClass = 'labeled-control';
-        if($this->hasAttribute('labelWrapClass')) {
+        if ($this->hasAttribute('labelWrapClass')) {
             $wrapperClass = $this->getAttribute('labelWrapClass');
         }
         $content = '';
@@ -106,21 +107,21 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
         } else {
 
             if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::LABEL_RIGHT) {
-                $wrapperClass .= ' label-right';                
+                $wrapperClass .= ' label-right';
                 $content .= $this->controlTag($tag, $name, $flags, $cssClass, $attributes, $tagContent);
-                $content .= $this->label($label, $controlId);                
+                $content .= $this->label($label, $controlId);
             } else {
                 if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::LABEL_ABOVE) {
                     $wrapperClass .= ' label-above';
                 } elseif ($flags & \Nethgui\Renderer\WidgetFactoryInterface::LABEL_LEFT) {
                     $wrapperClass .= ' label-left';
-                }                
+                }
                 $content .= $this->label($label, $controlId);
-                $content .= $this->controlTag($tag, $name, $flags, $cssClass, $attributes, $tagContent);                
+                $content .= $this->controlTag($tag, $name, $flags, $cssClass, $attributes, $tagContent);
             }
 
             $wrapTag = $this->getAttribute('labelWrapTag', 'div');
-            if($wrapTag) {
+            if ($wrapTag) {
                 $content = $this->openTag($wrapTag, array('class' => $wrapperClass)) . $content . $this->closeTag($wrapTag);
             }
         }
@@ -386,8 +387,8 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
     {
         $view = $this->view;
         $f = function($attributeName) use ($view, $message, $args) {
-                return $view->translate($message, $args);
-            };
+            return $view->translate($message, $args);
+        };
         return $f;
     }
 
@@ -476,6 +477,31 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
         }
 
         return $tagContent;
+    }
+
+    public static function hashToDatasource($H, $sort = FALSE)
+    {
+        $D = array();
+
+        if ( ! is_array($H) && ! $H instanceof \Traversable) {
+            return $D;
+        }
+
+        foreach ($H as $k => $v) {
+            if (is_array($v)) {
+                $D[] = array(self::hashToDatasource($v, $sort), $k);
+            } elseif (is_string($v)) {
+                $D[] = array($k, $v);
+            }
+        }
+
+        if ($sort === TRUE) {
+            usort($D, function($a, $b) {
+                return strcasecmp($a[1], $b[1]);
+            });
+        }
+
+        return $D;
     }
 
     /**

@@ -49,34 +49,20 @@ abstract class AbstractRenderer extends ReadonlyView
      * Convert the given hash to the array format accepted from UI widgets as
      * "datasource".
      *
+     * Deprecated here. Moved to \Nethgui\Widget\XhtmlWidget::hashToDatasource.
+     *
      * @api
      * @param array $h
      * @param boolean $sort -- default FALSE
      * @return array
+     * @deprecated since 1.6
+     * @see \Nethgui\Widget\XhtmlWidget::hashToDatasource
      */
     public static function hashToDatasource($H, $sort = FALSE)
     {
-        $D = array();
-
-        if( ! is_array($H) && ! $H instanceof \Traversable) {
-            return $D;
-        }
-
-        foreach ($H as $k => $v) {
-            if (is_array($v)) {
-                $D[] = array(self::hashToDatasource($v, $sort), $k);
-            } elseif (is_string($v)) {
-                $D[] = array($k, $v);
-            }
-        }
-        
-        if($sort === TRUE) {
-           usort($D, function($a, $b) {
-               return strcasecmp($a[1], $b[1]);
-           }); 
-        }
-
-        return $D;
+        $log = new \Nethgui\Log\Syslog(E_WARNING);
+        $log->deprecated();
+        return \Nethgui\Widget\XhtmlWidget::hashToDatasource($H, $sort);
     }
 
     /**
