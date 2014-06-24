@@ -63,7 +63,6 @@ class Framework
      * @var string
      */
     private $decoratorTemplate;
-
     private $log;
 
     /**
@@ -255,19 +254,27 @@ class Framework
      *
      * @api
      * @param \Nethgui\Controller\RequestInterface $request
-     * @param array $arguments Optional - This array is filled with the output, instead of echo()ing it
-     * @return integer
+     * @param array $output DEPRECATED since 1.6
+     * @return integer DEPRECATED since 1.6
      */
     public function dispatch(\Nethgui\Controller\RequestInterface $request, &$output = NULL)
     {
-        try {                     
-            return $this->processRequest($request);
+        try {
+
+            if (array_head($request->getPath()) === FALSE) {
+                $redirectUrl = implode('', $this->urlParts) . $this->defaultModuleIdentifier;
+                header('HTTP/1.1 302 Found');
+                header('Location: ' . $redirectUrl);
+                return 1;
+            }
+
+            $this->handle($request)->send();
         } catch (\Nethgui\Exception\HttpException $ex) {
             // no processing is required, rethrow:
             throw $ex;
         } catch (\Nethgui\Exception\AuthorizationException $ex) {
             if ($request->getExtension() === 'xhtml' && ! $request->isMutation() && ! $request->getUser()->isAuthenticated()) {
-                return $this->processRequest($this->createLoginRequest($request));
+                $this->handle($this->createLoginRequest($request))->send();
             } else {
                 $this->log->error(sprintf('%s: [%d] %s', __CLASS__, $ex->getCode(), $ex->getMessage()));
                 throw new \Nethgui\Exception\HttpException('Forbidden', 403, 1327681977, $ex);
@@ -287,7 +294,12 @@ class Framework
         return $r;
     }
 
-    private function processRequest(\Nethgui\Controller\RequestInterface $request)
+    /**
+     *
+     * @param \Nethgui\Controller\RequestInterface $request
+     * @return \Nethgui\Controller\ResponseInterface 
+     */
+    public function handle(\Nethgui\Controller\RequestInterface $request)
     {
         $pdp = new \Nethgui\Authorization\JsonPolicyDecisionPoint($this->getFileNameResolver());
         $pdp->setLog($this->log);
@@ -299,7 +311,7 @@ class Framework
         // Add some commonly used dependencies:
         $moduleInjector['Log'] = $this->log;
         $moduleInjector['Session'] = $this->session;
-        $moduleInjector['PolicyDecisionPoint'] = $pdp;        
+        $moduleInjector['PolicyDecisionPoint'] = $pdp;
         $moduleInjector['initializeModuleCallback'] = function ($module, $context) {
             if ($module instanceof \Nethgui\Utility\SessionConsumerInterface) {
                 $module->setSession($context['Session']);
@@ -326,12 +338,6 @@ class Framework
         }
 
         $user = $request->getUser();
-
-        if (array_head($request->getPath()) === FALSE) {
-            $redirectUrl = implode('', $this->urlParts) . $this->defaultModuleIdentifier;
-            // FIXME: $response->redirect($redirectUrl);
-            return;
-        }
 
         $platform = new \Nethgui\System\NethPlatform($user);
         $platform
@@ -377,11 +383,18 @@ class Framework
         $mainModule->setPolicyDecisionPoint($pdp);
         $mainModule->setDependencyInjector($moduleInjector);
 
-        $mainModule->initialize();
-        $mainModule->bind($request);
-
         $validationErrorsNotification = new \Nethgui\Module\Notification\ValidationErrorsNotification();
 
+        // FIXME: dependency MESS...
+        $translator = new \Nethgui\View\Translator($request->getLanguageCode(), $this->getFileNameResolver(), array_keys(iterator_to_array($this->namespaceMap)));
+        $translator->setLog($this->log);
+        $rootView = new \Nethgui\View\View($request->getFormat(), $mainModule, $translator, $this->urlParts);
+        $response = new \Nethgui\Renderer\HttpResponse($request, $rootView, $moduleInjector);
+        $response->filenameResolver = $fileNameResolver;
+        $rootView->commands = new \Nethgui\View\LegacyCommandBag($rootView, $response);
+
+        $mainModule->initialize();
+        $mainModule->bind($request);
         $mainModule->validate($validationErrorsNotification);
 
         if ( ! $validationErrorsNotification->hasValidationErrors()) {
@@ -390,15 +403,6 @@ class Framework
             // Run the "post-process" event queue (see #506)
             $platform->runEvents('post-process');
         }
-
-        // FIXME: dependency MESS...
-        $targetFormat = $request->getFormat();
-        $translator = new \Nethgui\View\Translator($request->getLanguageCode(), $this->getFileNameResolver(), array_keys(iterator_to_array($this->namespaceMap)));
-        $translator->setLog($this->log);
-        $rootView = new \Nethgui\View\View($targetFormat, $mainModule, $translator, $this->urlParts);
-        $response = new \Nethgui\Renderer\HttpResponse($request, $rootView, $moduleInjector);
-        $response->filenameResolver = $fileNameResolver;
-        $rootView->commands = new \Nethgui\View\LegacyCommandBag($rootView, $response);
 
         $mainModule->prepareView($rootView);
 
@@ -420,16 +424,22 @@ class Framework
             $response->setError(new \Nethgui\Exception\HttpException('Request validation error', 400, 1403528189));
         }
 
-        $response->send();
+        $session = $this->session;
+        $currentHandler = $response->getHandler();
+        $response->setHandler(function ($content, $httpStatus, $httpHeaders) use($platform, $session, $currentHandler, $request) {
+            call_user_func($currentHandler, $content, $httpStatus, $httpHeaders);
+            // Accept new requests, by unlocking the session:
+            if ($session->isStarted()) {
+                $session->unlock();
+            }
+            if ($request->isValidated()) {
+                $platform->runEvents('post-response');
+            }
+        });
 
-        // Accept new requests, by unlocking the session:
-        if ($this->session->isStarted()) {
-            $this->session->unlock();
-        }
-
-        $platform->runEvents('post-response');       
+        return $response;
     }
-    
+
     /**
      * Create a default Request object for dispatch()
      *

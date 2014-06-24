@@ -121,11 +121,18 @@ class HttpResponse implements \Nethgui\Controller\ResponseInterface
         $httpStatus = 200;
         $httpHeaders = array();
 
-        if($this->error instanceof \Nethgui\Exception\HttpException) {
+        if ($this->error instanceof \Nethgui\Exception\HttpException) {
             $httpStatus = $this->error->getHttpStatusCode();
             $this->httpStatusMessages[$httpStatus] = $this->error->getMessage();
             $renderer = $this->createRenderer();
             $content = $renderer->render();
+
+            $httpHeaders = array(
+                sprintf('Content-Type: %s', $renderer->getContentType()) . (
+                $renderer->getCharset() ?
+                    sprintf('; charset=%s', $renderer->getCharset()) : ''
+                )
+            );
         } elseif ($this->error instanceof \Exception) {
             $this->handler = array($this, 'exceptionHandler');
         } else {
