@@ -1,4 +1,5 @@
 <?php
+
 namespace Nethgui\Log;
 
 /*
@@ -28,9 +29,17 @@ namespace Nethgui\Log;
  */
 class Syslog extends AbstractLog
 {
+    private $syslogLevels = array(
+        'warning' => LOG_WARNING,
+        'notice' => LOG_NOTICE,
+        'error' => LOG_ERR,
+        'exception' => LOG_ERR
+    );
+
     protected function message($level, $message)
     {
-        $this->phpWrapper->error_log(sprintf('[%s] %s', strtoupper($level), $message));
+        $this->phpWrapper->syslog(isset($this->syslogLevels[$level]) ? $this->syslogLevels[$level] : LOG_NOTICE, sprintf('[%s] %s', strtoupper($level), $message));
         return $this;
     }
+
 }

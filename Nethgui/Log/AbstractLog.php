@@ -118,6 +118,9 @@ abstract class AbstractLog implements LogInterface, \Nethgui\Utility\PhpConsumer
 
     public function deprecated($message = "%s: method %s is DEPRECATED!")
     {
+        if( ! NETHGUI_DEBUG) {
+            return $this;
+        }
         $backtrace = debug_backtrace();
         $caller = $backtrace[2];
         $callee = $backtrace[1];
@@ -127,6 +130,7 @@ abstract class AbstractLog implements LogInterface, \Nethgui\Utility\PhpConsumer
             $this->warning(sprintf($message, $callerInfo, $calleeInfo));
             static::$emitted[$callerInfo] = TRUE;
         }
+        return $this;
     }
 
     public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
