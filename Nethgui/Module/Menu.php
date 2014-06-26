@@ -25,7 +25,7 @@ use Nethgui\System\PlatformInterface as Validate;
 /**
  *
  */
-class Menu extends \Nethgui\Controller\AbstractController
+class Menu extends \Nethgui\Controller\AbstractController implements \Nethgui\Component\DependencyConsumer
 {
 
     /**
@@ -56,12 +56,12 @@ class Menu extends \Nethgui\Controller\AbstractController
     
     /**
      *
-     * @param string $currentModuleIdentifier
-     * @return Menu
+     * @param \Nethgui\Controller\RequestInterface $originalRequest
+     * @return \Nethgui\Module\Menu
      */
-    public function setCurrentModuleIdentifier($currentModuleIdentifier)
+    public function setCurrentModuleIdentifier(\Nethgui\Controller\RequestInterface $originalRequest)
     {
-        $this->currentItem = $currentModuleIdentifier;
+        $this->currentItem = \Nethgui\array_head($originalRequest->getPath());
         return $this;
     }
 
@@ -245,4 +245,11 @@ class Menu extends \Nethgui\Controller\AbstractController
         return $view->literal(strtr($tpl, $placeholders))->setAttribute('hsc', FALSE);
     }
 
+    public function getDependencySetters()
+    {
+        return array(
+            'OriginalRequest' => array($this, 'setCurrentModuleIdentifier'),
+            'ModuleSet' => array($this, 'setModuleSet'),
+        );
+    }
 }

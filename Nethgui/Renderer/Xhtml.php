@@ -1,5 +1,4 @@
-<?php
-namespace Nethgui\Renderer;
+<?php namespace Nethgui\Renderer;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -30,7 +29,7 @@ namespace Nethgui\Renderer;
  * @since 1.0
  * @api
  */
-class Xhtml extends \Nethgui\Renderer\TemplateRenderer implements \Nethgui\Renderer\WidgetFactoryInterface
+class Xhtml extends \Nethgui\Renderer\TemplateRenderer implements \Nethgui\Renderer\WidgetFactoryInterface, \Nethgui\Component\DependencyConsumer
 {
     /**
      *
@@ -42,9 +41,9 @@ class Xhtml extends \Nethgui\Renderer\TemplateRenderer implements \Nethgui\Rende
 
     /**
      *
-     * @var \Nethgui\Module\Resource;
+     * @var \Nethgui\Model\StaticFiles
      */
-    private $resource;
+    protected $staticFiles;
 
     public function __construct(\Nethgui\View\ViewInterface $view, $templateResolver, $inheritFlags)
     {
@@ -61,7 +60,8 @@ class Xhtml extends \Nethgui\Renderer\TemplateRenderer implements \Nethgui\Rende
     public function spawnRenderer(\Nethgui\View\ViewInterface $view)
     {
         $renderer = new self($view, $this->getTemplateResolver(), $this->getDefaultFlags());
-        $renderer->setResourceModule($this->resource);
+        $renderer->httpResponse = $this->httpResponse;
+        $renderer->staticFiles = $this->staticFiles;
         return $renderer;
     }
 
@@ -78,14 +78,6 @@ class Xhtml extends \Nethgui\Renderer\TemplateRenderer implements \Nethgui\Rende
         return $o;
     }
 
-    public function setResourceModule(\Nethgui\Module\Resource $resource) {
-        if($this->resource !== NULL) {
-            $this->getLog()->warning("Resource handler already set. Expected NULL.");
-        }
-        $this->resource = $resource;
-        return $this;
-    }
-
     /**
      * Append a Javascript code fragment to the global .js temporary file
      * 
@@ -95,11 +87,11 @@ class Xhtml extends \Nethgui\Renderer\TemplateRenderer implements \Nethgui\Rende
      */
     public function includeJavascript($jsCode)
     {
-        if($this->resource === NULL) {
-            $this->getLog()->warning("NULL Resource handler");
+        if ($this->staticFiles === NULL) {
+            $this->getLog()->warning(sprintf("%s::%s() NULL Resource handler", __CLASS__, __FUNCTION__));
             return;
         }
-        $this->resource->appendCode($jsCode, 'js');
+        $this->staticFiles->appendCode($jsCode, 'js');
         return $this;
     }
 
@@ -112,11 +104,11 @@ class Xhtml extends \Nethgui\Renderer\TemplateRenderer implements \Nethgui\Rende
      */
     public function includeCss($cssCode)
     {
-        if($this->resource === NULL) {
-            $this->getLog()->warning("NULL Resource handler");
+        if ($this->staticFiles === NULL) {
+            $this->getLog()->warning(sprintf("%s::%s() NULL Resource handler", __CLASS__, __FUNCTION__));
             return;
         }
-        $this->resource->appendCode($cssCode, 'css');
+        $this->staticFiles->appendCode($cssCode, 'css');
         return $this;
     }
 
@@ -132,12 +124,12 @@ class Xhtml extends \Nethgui\Renderer\TemplateRenderer implements \Nethgui\Rende
      */
     public function includeFile($fileName)
     {
-        if($this->resource === NULL) {
-            $this->getLog()->warning("NULL Resource handler");
+        if ($this->staticFiles === NULL) {
+            $this->getLog()->warning(sprintf("%s::%s() NULL Resource handler", __CLASS__, __FUNCTION__));
             return;
         }
         $filePath = call_user_func($this->getTemplateResolver(), $fileName);
-        $this->resource->includeFile($filePath);
+        $this->staticFiles->includeFile($filePath);
         return $this;
     }
 
@@ -216,7 +208,7 @@ class Xhtml extends \Nethgui\Renderer\TemplateRenderer implements \Nethgui\Rende
      */
     public function useFile($fileName)
     {
-        $this->resource->useFile($this->getPathUrl() . $fileName);
+        $this->staticFiles->useFile($this->getPathUrl() . $fileName);
         return $this;
     }
 
@@ -424,6 +416,17 @@ class Xhtml extends \Nethgui\Renderer\TemplateRenderer implements \Nethgui\Rende
     {
         $flags |= $this->inheritFlags;
         return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags));
+    }
+
+    public function getDependencySetters()
+    {
+        return array('StaticFiles' => array($this, 'setStaticFilesModel'));
+    }
+
+    public function setStaticFilesModel(\Nethgui\Model\StaticFiles $model)
+    {
+        $this->staticFiles = $model;
+        return $this;
     }
 
 }

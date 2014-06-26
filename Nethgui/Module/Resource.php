@@ -1,6 +1,4 @@
-<?php
-
-namespace Nethgui\Module;
+<?php namespace Nethgui\Module;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -27,25 +25,21 @@ namespace Nethgui\Module;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Resource extends \Nethgui\Controller\AbstractController implements \Nethgui\View\CommandReceiverInterface, \Nethgui\Component\DependencyInjectorAggregate
+class Resource extends \Nethgui\Controller\AbstractController implements \Nethgui\Component\DependencyConsumer
 {
-    private $code;
-    private $useList;
     private $fileName;
     private $cachePath;
+    /**
+     *
+     * @var \Nethgui\Model\StaticFiles
+     */
+    private $staticFiles;
 
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
     {
         $attributes = new SystemModuleAttributesProvider();
         $attributes->initializeFromModule($this);
         return $attributes;
-    }
-
-    public function __construct()
-    {
-        parent::__construct(NULL);
-        $this->code = array();
-        $this->useList = array();
     }
 
     public function bind(\Nethgui\Controller\RequestInterface $request)
@@ -134,12 +128,22 @@ class Resource extends \Nethgui\Controller\AbstractController implements \Nethgu
         }
     }
 
+    public function getUseList($ext)
+    {
+        return $this->staticFiles->getUseList($ext);
+    }
+
+    private function getCode($ext)
+    {
+        return $this->staticFiles->getCode($ext);
+    }
+
     protected function calcFileName($ext)
     {
-        if ( ! isset($this->code[$ext])) {
+        if ( ! $this->getCode($ext)) {
             return FALSE;
         }
-        $fileName = substr(md5(serialize($this->code[$ext])), 0, 8) . '.' . $ext;
+        $fileName = substr(md5(serialize($this->getCode($ext))), 0, 8) . '.' . $ext;
         return $fileName;
     }
 
@@ -170,7 +174,7 @@ class Resource extends \Nethgui\Controller\AbstractController implements \Nethgu
             throw new \UnexpectedValueException(sprintf('%s: cannot open a file in Cache directory - %s', get_class($this), $message), 1324393391);
         }
 
-        foreach ($this->code[$ext] as $part) {
+        foreach ($this->getCode($ext) as $part) {
 
             if ($part['file']) {
                 $data = @$this->getPhpWrapper()->file_get_contents($part['file']);
@@ -185,35 +189,6 @@ class Resource extends \Nethgui\Controller\AbstractController implements \Nethgu
         }
 
         $this->getPhpWrapper()->fclose($resource);
-    }
-
-    public function includeFile($fileName)
-    {
-        $ext = pathinfo($fileName, PATHINFO_EXTENSION);
-
-        if ( ! isset($this->code[$ext])) {
-            $this->code[$ext] = array();
-        }
-
-        $this->code[$ext][$fileName] = array(
-            'file' => $fileName,
-            'tstamp' => 0,
-            'data' => FALSE
-        );
-        return $this;
-    }
-
-    public function appendCode($code, $ext)
-    {
-        if ( ! isset($this->code[$ext])) {
-            $this->code[$ext] = array();
-        }
-        $this->code[$ext][] = array(
-            'file' => FALSE,
-            'tstamp' => 0,
-            'data' => $code
-        );
-        return $this;
     }
 
     public function getFileName($ext)
@@ -231,50 +206,15 @@ class Resource extends \Nethgui\Controller\AbstractController implements \Nethgu
         return $fileNames[$ext];
     }
 
-    public function getUseList($ext)
+    public function setStaticFilesModel(\Nethgui\Model\StaticFiles $staticFiles)
     {
-        return array_filter($this->useList, function($uri) use ($ext) {
-            return $ext === pathinfo($uri, PATHINFO_EXTENSION);
-        });
-    }
-
-    public function useFile($fullPath)
-    {
-        $this->useList[] = $fullPath;
+        $this->staticFiles = $staticFiles;
         return $this;
     }
 
-    /**
-     *
-     * @param \Nethgui\View\ViewInterface $origin
-     * @param string $selector
-     * @param string $name
-     * @param array $arguments
-     * @deprecated since version 1.6
-     */
-    public function executeCommand(\Nethgui\View\ViewInterface $origin, $selector, $name, $arguments)
+    public function getDependencySetters()
     {
-        if ($name === 'includeFile') {
-            $this->includeFile($arguments[0]);
-        } elseif ($name === 'appendCode') {
-            $this->appendCode($arguments[0], $arguments[1]);
-        } elseif ($name === 'useFile' && isset($arguments[0])) {
-            $this->useFile($arguments[0]);
-        }
-    }
-
-    public function setDependencyInjector(\Nethgui\Component\DependencyInjectorInterface $di)
-    {
-        $this->di = $di;
-        if( ! isset($this->di[__CLASS__])) {
-            $resourceModule = $this;
-            $this->di[__CLASS__] = function($object, $context) use($resourceModule) {
-                if ($object instanceof \Nethgui\Renderer\Xhtml) {
-                    $object->setResourceModule($resourceModule);
-                }
-            };
-        }
-        return $this;
+        return array('StaticFiles' => array($this, 'setStaticFilesModel'));
     }
 
 }

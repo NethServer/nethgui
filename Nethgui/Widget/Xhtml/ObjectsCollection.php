@@ -86,6 +86,8 @@ class ElementRenderer extends \Nethgui\Renderer\Xhtml
         parent::__construct($renderer->view, $renderer->getTemplateResolver(), $renderer->getDefaultFlags());
         // Replace the inner view with a new instance:
         $module = $this->createModule($name, $key, $renderer->getModule()->getAttributesProvider());
+        $this->httpResponse = $renderer->httpResponse;
+        $this->staticFiles = $renderer->staticFiles;
         $this->view = $renderer->view->spawnView($module)->setTemplate($template);
     }
 

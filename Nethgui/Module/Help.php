@@ -1,5 +1,4 @@
-<?php
-namespace Nethgui\Module;
+<?php namespace Nethgui\Module;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -23,9 +22,8 @@ namespace Nethgui\Module;
 /**
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class Help extends \Nethgui\Controller\CompositeController
+class Help extends \Nethgui\Controller\CompositeController implements \Nethgui\Component\DependencyConsumer
 {
-
     /**
      *
      * @var \Nethgui\Module\ModuleSetInterface
@@ -63,6 +61,14 @@ class Help extends \Nethgui\Controller\CompositeController
                 $child->setFileNameResolver($this->fileNameResolver);
             }
         }
+    }
+
+    public function getDependencySetters()
+    {
+        return array(
+            'FilenameResolver' => array($this, 'setFileNameResolver'),
+            'ModuleSet' => array($this, 'setModuleSet'),
+        );
     }
 
 }
