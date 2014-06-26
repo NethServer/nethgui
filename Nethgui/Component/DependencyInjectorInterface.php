@@ -32,6 +32,25 @@ namespace Nethgui\Component;
 interface DependencyInjectorInterface extends \ArrayAccess {
     /**
      * @param object $object The object to initialize
+     * @return \Nethgui\Component\DependencyInjectorInterface
      */
     public function inject($object);
+
+    /**
+     * Create an object of the given class, injecting dependencies into it.
+     *
+     * The class constructor is invoked with the arguments.
+     * 
+     * @param string $className
+     * @param array $constructorArgs
+     * @return an object of class $className
+     */
+    public function create($className, $constructorArgs = array());
+
+    /**
+     *
+     * @param callable $callback
+     * @param string $name
+     */
+    public function setInjector($callback, $name = NULL);
 }

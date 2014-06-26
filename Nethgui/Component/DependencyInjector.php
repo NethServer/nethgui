@@ -1,6 +1,4 @@
-<?php
-
-namespace Nethgui\Component;
+<?php namespace Nethgui\Component;
 
 /*
  * Copyright (C) 2014  Nethesis S.r.l.
@@ -35,22 +33,44 @@ namespace Nethgui\Component;
  */
 class DependencyInjector extends \ArrayObject implements \Nethgui\Component\DependencyInjectorInterface
 {
-    public function inject($object)
-    {
-        $callbacks = array_filter(\iterator_to_array($this), 'is_callable');
 
-        if($object instanceof \Nethgui\Component\DependencyInjectorAggregate) {
+    private $injectors = array();
+
+    public function setInjector($callback, $name = NULL)
+    {
+        if($name === NULL) {
+            $name = sprintf('I%04d',  count($this->injectors));
+        }
+        $this->injectors[$name] = $callback;
+        return $this;
+    }
+
+    public function create($className, $constructorArgs = array())
+    {
+        $r = new \ReflectionClass($className);
+        if( ! empty($constructorArgs)) {
+            $o = $r->newInstanceArgs($constructorArgs);
+        } else {
+            $o = $r->newInstance();
+        }
+        $this->inject($o);
+        return $o;
+    }
+
+    public function inject($object)
+    {       
+        if ($object instanceof \Nethgui\Component\DependencyInjectorAggregate) {
             $object->setDependencyInjector($this);
         }
 
-        foreach($callbacks as $f) {
+        foreach ($this->injectors as $f) {
             call_user_func($f, $object, $this->getArrayCopy());
         }
     }
 
     public function offsetSet($index, $newval)
     {
-        if($this->offsetExists($index)) {
+        if ($this->offsetExists($index)) {
             // Forbid to replace existing offsets:
             throw new \LogicException(sprintf("%s: item `%s` replacement is forbidden!", __CLASS__, $index), 1397143248);
         }
