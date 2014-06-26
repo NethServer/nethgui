@@ -71,6 +71,7 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
         $this->processes = new \Nethgui\Utility\ArrayDisposable();
         $this->user = $user;
         $this->databases = array('SESSION' => new SessionDatabase());
+        $this->phpWrapper = new \Nethgui\Utility\PhpWrapper(__CLASS__);
     }
 
     public function setSession(\Nethgui\Utility\SessionInterface $session)
