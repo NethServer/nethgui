@@ -34,6 +34,12 @@ class ReadonlyView implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsu
      */
     protected $view;
 
+    /**
+     *
+     * @var \Nethgui\Log\LogInterface
+     */
+    private $log;
+
     public function __construct(\Nethgui\View\ViewInterface $view)
     {
         if ($view instanceof ReadonlyView) {
@@ -126,12 +132,15 @@ class ReadonlyView implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsu
 
     public function setLog(\Nethgui\Log\LogInterface $log)
     {
-        throw new \LogicException(sprintf('Cannot invoke setLog() on %s', get_class($this)), 1322149485);
+        $this->log = $log;
+        return $this;
     }
 
     public function getLog()
     {
-        if ($this->view instanceof \Nethgui\Log\LogConsumerInterface) {
+        if(isset($this->log)) {
+            return $this->log;
+        } elseif ($this->view instanceof \Nethgui\Log\LogConsumerInterface) {
             return $this->view->getLog();
         } else {
             return new \Nethgui\Log\Nullog();
