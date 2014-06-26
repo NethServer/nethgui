@@ -27,13 +27,13 @@ namespace Nethgui\Controller;
  * @since 1.0
  * @internal
  */
-class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\SessionConsumerInterface, \Nethgui\Log\LogConsumerInterface
+class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Log\LogConsumerInterface
 {
     /**
      *
-     * @var \Nethgui\Utility\SessionInterface
+     * @var \Nethgui\Authorization\UserInterface
      */
-    private $session;
+    private $user;
 
     /**
      *
@@ -64,12 +64,6 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
     {
         $this->data = $data;
         $this->setAttribute('originalRequest', $this);
-    }
-
-    public function setSession(\Nethgui\Utility\SessionInterface $session)
-    {
-        $this->session = $session;
-        return $this;
     }
 
     public function setParameter($name, $value)
@@ -117,10 +111,7 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
 
         $instance = new static($parameterSubset);
         $instance->attributes = &$this->attributes;
-
-        if (isset($this->session)) {
-            $instance->setSession($this->session);
-        }
+        $instance->user = $this->user;
 
         if (isset($this->log)) {
             $instance->setLog($this->getLog());
@@ -135,19 +126,13 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
 
     public function getUser()
     {
-        $key = \Nethgui\Authorization\UserInterface::ID;
+        return $this->user;
+    }
 
-        $user = $this->session->retrieve($key);
-
-        if ( ! $user instanceof \Nethgui\Authorization\UserInterface) {
-            $user = \Nethgui\Authorization\User::getAnonymousUser();
-        }
-
-        if ($user instanceof \Nethgui\Log\LogConsumerInterface) {
-            $user->setLog($this->getLog());
-        }
-
-        return $user;
+    public function setUser(\Nethgui\Authorization\UserInterface $user)
+    {
+        $this->user = $user;
+        return $this;
     }
 
     public function getPath()
