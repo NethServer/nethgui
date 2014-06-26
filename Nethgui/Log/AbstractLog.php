@@ -124,8 +124,8 @@ abstract class AbstractLog implements LogInterface, \Nethgui\Utility\PhpConsumer
         $backtrace = debug_backtrace();
         $caller = $backtrace[2];
         $callee = $backtrace[1];
-        $calleeInfo = $callee['class'] . '::' . $callee['function'] . '()';
-        $callerInfo = $caller['class'] . '::' . $caller['function'] . '()';
+        $calleeInfo = isset($callee['class'], $callee['function']) ? ($callee['class'] . '::' . $callee['function'] . '()') : '[no callee infos]';
+        $callerInfo = isset($caller['class'], $caller['function']) ? ($caller['class'] . '::' . $caller['function'] . '()') : '[no caller infos]';
         if ( ! isset(static::$emitted[$callerInfo])) {
             $this->warning(sprintf($message, $callerInfo, $calleeInfo));
             static::$emitted[$callerInfo] = TRUE;
