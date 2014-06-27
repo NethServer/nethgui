@@ -312,12 +312,15 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
 
     public function setLog(\Nethgui\Log\LogInterface $log)
     {
-        throw new \LogicException(sprintf('Cannot invoke setLog() on %s', get_class($this)));
+        $this->log = $log;
+        return $this;
     }
 
     public function getLog()
     {
-        if ($this->getModule() instanceof \Nethgui\Log\LogConsumerInterface) {
+        if (isset($this->log)) {
+            return $this->log;
+        } elseif ($this->getModule() instanceof \Nethgui\Log\LogConsumerInterface) {
             return $this->getModule()->getLog();
         } elseif ($this->translator instanceof \Nethgui\Log\LogConsumerInterface) {
             return $this->translator->getLog();
