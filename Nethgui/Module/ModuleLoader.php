@@ -44,14 +44,15 @@ class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utili
      * @var GlobalFunctionWrapper
      */
     private $phpWrapper;
+    private $objectInjector;
 
     /**
      * 
-     * @param \Nethgui\Component\DependencyInjectorInterface $di
+     * @param callable $objectInjector
      */
-    public function __construct(\Nethgui\Component\DependencyInjectorInterface $di)
+    public function __construct($objectInjector)
     {
-        $this->di = $di;
+        $this->objectInjector = $objectInjector;
         $this->namespaceMap = new \ArrayObject();
         $this->instanceCache = new \ArrayObject();
         $this->phpWrapper = new \Nethgui\Utility\PhpWrapper(__CLASS__);
@@ -104,7 +105,7 @@ class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utili
                     $className = $nsPrefix . '\\' . $moduleIdentifier;
                     $moduleInstance = new $className();
                     NETHGUI_DEBUG && $this->getLog()->notice(sprintf('%s::fillCache(): Created "%s" instance', get_class($this), $className));
-                    $this->di->inject($moduleInstance);
+                    call_user_func($this->objectInjector, $moduleInstance);
                     $this->instanceCache[$moduleIdentifier] = $moduleInstance;
                 }
             }
@@ -132,7 +133,7 @@ class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utili
             if ($this->phpWrapper->class_exists($className)) {
                 $moduleInstance = new $className();
                 NETHGUI_DEBUG && $this->getLog()->notice(sprintf('%s::getModule(): Created "%s" instance', get_class($this), $className));
-                $this->di->inject($moduleInstance);
+                call_user_func($this->objectInjector, $moduleInstance);
                 $this->instanceCache[$moduleIdentifier] = $moduleInstance;
                 break;
             }

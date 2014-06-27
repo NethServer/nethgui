@@ -54,9 +54,9 @@ class PluggableAction extends \Nethgui\Controller\Table\AbstractAction implement
 
     /**
      *
-     * @var \Nethgui\Component\DependencyInjectorInterface
+     * @var callable
      */
-    private $moduleInjector;
+    private $dependencyInjector;
 
     /**
      * 
@@ -179,9 +179,9 @@ class PluggableAction extends \Nethgui\Controller\Table\AbstractAction implement
         return $this->innerAction->getAuthorizationAttribute($attributeName);
     }
 
-    public function setDependencyInjector(\Nethgui\Component\DependencyInjectorInterface $di)
+    public function setDependencyInjector($di)
     {
-        $this->moduleInjector = $di;
+        $this->dependencyInjector = $di;
         $this->plugins->setDependencyInjector($di);
         return $this;
     }

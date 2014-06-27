@@ -32,8 +32,8 @@ namespace Nethgui\Component;
 interface DependencyInjectorAggregate
 {
     /**
-     * @param \Nethgui\Component\DependencyInjectorInterface $di
+     * @param callable $di
      * @return \Nethgui\Component\DependencyInjectorAggregate The object itself
      */
-    public function setDependencyInjector(\Nethgui\Component\DependencyInjectorInterface $di);
+    public function setDependencyInjector($di);
 }

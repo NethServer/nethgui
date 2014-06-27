@@ -87,8 +87,7 @@ interface RequestHandlerInterface
      * If boolean FALSE is returned then no action takes place.
      *
      * @api
-     * @return mixed The path as a string or the boolean FALSE
-     * @deprecated since 1.6
+     * @return mixed boolean FALSE, string path (absolute), array request
      */
     public function nextPath();
 }

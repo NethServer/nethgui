@@ -1,4 +1,5 @@
 <?php
+
 namespace Nethgui\Module;
 
 /*
@@ -43,9 +44,9 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
 
     /**
      *
-     * @var \Nethgui\Component\DependencyInjectorInterface
+     * @var callable
      */
-    private $moduleInjector;
+    private $dependencyInjector;
 
     /**
      * Propagates initialize() message to children.
@@ -58,7 +59,7 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
         parent::initialize();
         foreach ($this->children as $child) {
             if ( ! $child->isInitialized()) {
-                $this->moduleInjector->inject($child);
+                call_user_func($this->dependencyInjector, $child);
                 $child->initialize();
             }
         }
@@ -81,9 +82,9 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
         $this->children[$childModule->getIdentifier()] = $childModule;
 
         $childModule->setParent($this);
-       
+
         if ($this->isInitialized() && ! $childModule->isInitialized()) {
-            $this->moduleInjector->inject($childModule);
+            call_user_func($this->dependencyInjector, $childModule);
             $childModule->initialize();
         }
         return $this;
@@ -187,8 +188,8 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
         $nsPrefixParts = array_slice(explode('\\', get_class($module)), 0, -1);
         $nsParts = array_merge($nsPrefixParts, explode('/', $childrenDir));
         $nsPrefix = implode('\\', $nsParts);
-        
-        $this->childLoader = new \Nethgui\Module\ModuleLoader($this->moduleInjector);
+
+        $this->childLoader = new \Nethgui\Module\ModuleLoader($this->dependencyInjector);
         $this->childLoader
             ->setLog($this->getLog())
             ->setNamespace($nsPrefix, $nsRootPath);
@@ -221,16 +222,17 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
     public function setPolicyDecisionPoint(\Nethgui\Authorization\PolicyDecisionPointInterface $pdp)
     {
         parent::setPolicyDecisionPoint($pdp);
-        foreach($this->getChildren() as $child) {
-            if($child instanceof \Nethgui\Authorization\PolicyDecisionPointInterface) {
+        foreach ($this->getChildren() as $child) {
+            if ($child instanceof \Nethgui\Authorization\PolicyDecisionPointInterface) {
                 $child->setPolicyDecisionPoint($this->getPolicyDecisionPoint());
             }
         }
     }
 
-    public function setDependencyInjector(\Nethgui\Component\DependencyInjectorInterface $di)
+    public function setDependencyInjector($di)
     {
-        $this->moduleInjector = $di;
+        $this->dependencyInjector = $di;
         return $this;
     }
+
 }
