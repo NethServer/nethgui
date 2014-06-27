@@ -1,4 +1,5 @@
 <?php
+
 namespace Nethgui\Renderer;
 
 /*
@@ -29,9 +30,8 @@ namespace Nethgui\Renderer;
  * @since 1.0
  * @api
  */
-class TemplateRenderer extends AbstractRenderer implements \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Module\ModuleAttributesInterface
+class TemplateRenderer extends AbstractRenderer implements \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Module\ModuleAttributesInterface, \Nethgui\Component\DependencyConsumer
 {
-
     /**
      *
      * @var callable
@@ -42,6 +42,12 @@ class TemplateRenderer extends AbstractRenderer implements \Nethgui\Utility\PhpC
      * @var \Nethgui\Utility\PhpWrapper
      */
     protected $phpWrapper;
+
+    /**
+     *
+     * @var \Nethgui\Utility\HttpResponse
+     */
+    protected $httpResponse;
 
     /**
      *
@@ -71,7 +77,9 @@ class TemplateRenderer extends AbstractRenderer implements \Nethgui\Utility\PhpC
      */
     public function spawnRenderer(\Nethgui\View\ViewInterface $view)
     {
-        return new self($view, $this->getTemplateResolver(), $this->getContentType(), $this->getCharset());
+        $o = new self($view, $this->getTemplateResolver(), $this->getContentType(), $this->getCharset());
+        $o->httpResponse = $this->httpResponse;
+        return $o;
     }
 
     protected function getTemplateResolver()
@@ -81,15 +89,15 @@ class TemplateRenderer extends AbstractRenderer implements \Nethgui\Utility\PhpC
 
     public function render()
     {
-        return $this->renderView($this->getTemplate(), array('view' => $this, 'T' => $this->getTranslateClosure()));
+        return $this->renderView($this->getTemplate(), array('view' => $this, 'T' => $this->getTranslateClosure(), 'response' => $this->httpResponse));
     }
 
     private function getTranslateClosure()
     {
         $view = $this->view;
         $T = function($string, $args = array()) use ($view) {
-                return $view->translate($string, $args);
-            };
+            return $view->translate($string, $args);
+        };
 
         return $T;
     }
@@ -171,6 +179,16 @@ class TemplateRenderer extends AbstractRenderer implements \Nethgui\Utility\PhpC
     public function getContentType()
     {
         return $this->contentType;
+    }
+
+    public function getDependencySetters()
+    {
+        $myHttpResponse = &$this->httpResponse;
+        return array(
+            'HttpResponse' => function (\Nethgui\Utility\HttpResponse $o) use (&$myHttpResponse) {
+            $myHttpResponse = $o;
+        }
+        );
     }
 
 }

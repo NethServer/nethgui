@@ -36,7 +36,7 @@ class Framework
     /**
      * Associate each namespace root name to a filesystem directory where
      * the namespace resides.
-     * 
+     *
      * @var array
      */
     private $namespaceMap;
@@ -50,30 +50,8 @@ class Framework
      */
     private $urlParts;
 
-    /**
-     * If no module identifier is provided fall back to this value
-     *
-     * @var string
-     */
-    private $defaultModuleIdentifier;
-
-    /**
-     * Identifier of the layout decorator module
-     *
-     * @var string
-     */
-    private $decoratorTemplate;
-    private $log;
-
-    /**
-     *
-     * @var \Nethgui\Utility\Session
-     */
-    private $session;
-
     public function __construct()
     {
-        $this->namespaceMap = new \ArrayObject();
         if (basename(__DIR__) !== __NAMESPACE__) {
             throw new \LogicException(sprintf('%s: `%s` is an invalid framework filesystem directory! Must be `%s`.', __CLASS__, basename(__DIR__), __NAMESPACE__), 1322213425);
         }
@@ -81,9 +59,251 @@ class Framework
 
         $this->urlParts = $this->guessUrlParts();
 
-        $this->decoratorTemplate = 'Nethgui\Template\Main';
-        $this->log = new \Nethgui\Log\Syslog(E_WARNING | E_ERROR);
-        $this->session = new \Nethgui\Utility\Session();
+        $nsMap = &$this->namespaceMap;
+        $urlParts = &$this->urlParts;
+
+        $dc = new \Pimple\Container();
+
+        $dc['decorator.xhtml.template'] = 'Nethgui\Template\Main';
+
+        $dc['Log'] = function($c) {
+            return new \Nethgui\Log\Syslog($c['log.level']);
+        };
+
+        $dc['namespaceMap'] = function ($c) use (&$nsMap) {
+            return $nsMap;
+        };
+
+        $dc['Session'] = function ($c) {
+            $s = new \Nethgui\Utility\Session();
+            $s->setLog($c['Log']);
+            return $s;
+        };
+
+        $dc['Pdp'] = function ($c) {
+            $pdp = new \Nethgui\Authorization\JsonPolicyDecisionPoint($c['FilenameResolver']);
+            $pdp->setLog($c['Log']);
+            foreach ($c['namespaceMap'] as $nsName => $nsPath) {
+                $pdp->loadPolicy($nsName . '\Authorization\*.json');
+            }
+            return $pdp;
+        };
+
+        $dc['User'] = function ($c) {
+            $user = $c['Session']->retrieve(\Nethgui\Authorization\UserInterface::ID);
+
+            if ( ! $user instanceof \Nethgui\Authorization\UserInterface) {
+                $user = \Nethgui\Authorization\User::getAnonymousUser();
+            }
+
+            if ($user instanceof \Nethgui\Log\LogConsumerInterface) {
+                $user->setLog($c['Log']);
+            }
+
+            return $user;
+        };
+
+        $objectInjector = function($o) use ($dc) {
+            if ($o instanceof \Nethgui\Component\DependencyInjectorAggregate) {
+                $o->setDependencyInjector($dc['objectInjector']);
+            }
+
+            if ($o instanceof \Nethgui\Component\DependencyConsumer) {
+                foreach ($o->getDependencySetters() as $key => $setter) {
+                    if ( ! isset($dc[$key])) {
+                        continue;
+                    }
+                    call_user_func($setter, $dc[$key]);
+                }
+            }
+
+            if ($o instanceof \Nethgui\Log\LogConsumerInterface) {
+                $o->setLog($dc['Log']);
+            }
+
+            if ($o instanceof \Nethgui\Utility\SessionConsumerInterface) {
+                $o->setSession($dc['Session']);
+            }
+
+            if ($o instanceof Authorization\PolicyEnforcementPointInterface) {
+                $o->setPolicyDecisionPoint($dc['Pdp']);
+            }
+
+            if ($o instanceof \Nethgui\System\PlatformConsumerInterface) {
+                $o->setPlatform($dc['Platform']);
+            }
+
+            return $o;
+        };
+
+        $dc['objectInjector'] = $dc->protect($objectInjector);
+
+        $dc['StaticFiles'] = function ($c) {
+            return $c['objectInjector'](new \Nethgui\Model\StaticFiles(), $c);
+        };
+
+        $dc['UserNotifications'] = function ($c) {
+            return $c['objectInjector'](new \Nethgui\Model\UserNotifications(), $c);
+        };
+
+        $dc['ValidationErrors'] = function ($c) {
+            return $c['objectInjector'](new \Nethgui\Model\ValidationErrors($c['UserNotifications']), $c);
+        };
+
+        $dc['FilenameResolver'] = $this->getFileNameResolver();
+
+        $dc['ModuleSet'] = function ($c) {
+            $moduleSet = new \Nethgui\Module\ModuleLoader($c['objectInjector']);
+            foreach ($c['namespaceMap'] as $nsName => $nsRoot) {
+                if ($nsName === 'Nethgui') {
+                    $nsRoot = FALSE;
+                }
+                $moduleSet->setNamespace($nsName . '\\Module', $nsRoot);
+            }
+            return $c['objectInjector'](new \Nethgui\Authorization\AuthorizedModuleSet($moduleSet, $c['User']), $c);
+        };
+
+        $dc['Platform'] = function ($c) {
+            return $c['objectInjector'](new \Nethgui\System\NethPlatform($c['User']), $c);
+        };
+
+        $dc['Translator'] = function ($c) {
+            return $c['objectInjector'](new \Nethgui\View\Translator($c['OriginalRequest']->getLanguageCode(), $c['FilenameResolver'], array_keys($c['namespaceMap'])), $c);
+        };
+
+        $dc['HttpResponse'] = function ($c) {
+            return new \Nethgui\Utility\HttpResponse();
+        };
+
+        $dc['Main'] = function ($c) {
+            return $c['objectInjector'](new \Nethgui\Module\Main($c['ModuleSet']), $c);
+        };
+
+        $dc['View'] = function ($c) use (&$urlParts) {
+            $rootView = $c['objectInjector'](new \Nethgui\View\View($c['OriginalRequest']->getFormat(), $c['Main'], $c['Translator'], $urlParts), $c);
+            $rootView->setTemplate(FALSE);
+            /*
+             *  FIXME: remove deprecated features in version 2.0
+             */
+            $rootView->commands = $c['objectInjector'](new \Nethgui\View\LegacyCommandBag($rootView), $c);
+            /*
+             *
+             */
+            return $rootView;
+        };
+
+        $dc['decorator.xhtml.params'] = function ($dc) {
+            return new \ArrayObject(array(
+                'disableHeader' => FALSE,
+                'disableMenu' => FALSE,
+                'disableFooter' => TRUE
+            ));
+        };
+
+        $dc['main.xhtml.template'] = $dc->protect(function (\Nethgui\Renderer\Xhtml $renderer) use ($dc, &$urlParts) {
+            $decoratorView = $dc['objectInjector'](new \Nethgui\View\View($dc['OriginalRequest']->getFormat(), $dc['Main'], $dc['Translator'], $urlParts), $dc);
+            $decoratorView->setTemplate($dc['decorator.xhtml.template']);
+
+            $decoratorView->copyFrom($renderer);
+            $decoratorView->copyFrom($dc['decorator.xhtml.params']);
+
+            $decoratorView['lang'] = $dc['Translator']->getLanguageCode();
+
+
+            $decoratorView['currentModuleOutput'] = 'currentModule';
+
+            // Override helpAreaOutput
+            $decoratorView['helpAreaOutput'] = (String) $renderer->panel($renderer::STATE_UNOBSTRUSIVE)
+                    ->setAttribute('class', 'HelpArea')
+                    ->insert(
+                        $renderer->panel()
+                        ->setAttribute('class', 'wrap')
+                        ->insert(
+                            $renderer->buttonList($renderer::BUTTONSET)->insert($renderer->button('Hide', $renderer::BUTTON_CANCEL))
+                        )
+            );
+
+            $currentModule = $dc['Main']->getCurrentModule();
+
+            // Override currentModuleOutput
+            // - We must render CurrentModule before NotificationArea to catch notifications
+            if ($currentModule instanceof \Nethgui\Module\ModuleCompositeInterface) {
+                $decoratorView['currentModuleOutput'] = (String) $renderer->inset($currentModule->getIdentifier());
+            } else {
+                $decoratorView['currentModuleOutput'] = (String) $renderer->panel()->setAttribute('class', 'Controller')
+                        ->insert($renderer->inset($currentModule->getIdentifier(), $renderer::INSET_FORM | $renderer::INSET_WRAP)->setAttribute('class', 'Action'));
+            }
+
+            // Override notificationOutput
+            $decoratorView['notificationOutput'] = (String) $renderer->inset('Notification');
+            $decoratorView['moduleTitle'] = $decoratorView->getTranslator()->translate($currentModule, $currentModule->getAttributesProvider()->getTitle());
+
+            // Override menuOutput
+            $decoratorView['menuOutput'] = (String) $renderer->inset('Menu');
+            $decoratorView['logoutOutput'] = (String) $renderer->inset('Logout');
+
+            //read css from db
+            $db = $dc['Main']->getPlatform()->getDatabase('configuration');
+
+            $colors = $db->getProp('httpd-admin', 'colors');
+            if ($colors) {
+                $colors = explode(',', $colors);
+                $decoratorView['colors'] = $colors;
+            }
+            $logo = $db->getProp('httpd-admin', 'logo');
+            $decoratorView['logo'] = $decoratorView->getPathUrl() . ($logo ? sprintf('images/%s', $logo) : 'images/logo.png');
+            $decoratorView['company'] = $db->getProp('OrganizationContact', 'Company');
+            $decoratorView['address'] = $db->getProp('OrganizationContact', 'Street') . ", " . $db->getProp('OrganizationContact', 'City');
+            $favicon = $db->getProp('httpd-admin', 'favicon');
+            $decoratorView['favicon'] = $decoratorView->getPathUrl() . ($favicon ? sprintf('images/%s', $favicon) : 'images/favicon.png');
+
+            return $renderer->spawnRenderer($decoratorView)->render();
+        });
+
+
+        $dc['main.css.template'] = $dc->protect(function(\Nethgui\Renderer\TemplateRenderer $renderer, $T, \Nethgui\Utility\HttpResponse $httpResponse) use ($dc) {
+            $content = '';
+            foreach ($renderer as $value) {
+                if ($value instanceof \Nethgui\View\ViewInterface) {
+                    $content .= $renderer->spawnRenderer($value)->render();
+                } else {
+                    $content .= (String) $value;
+                }
+            }
+            return $content;
+        });
+
+        $dc['main.js.template'] = $dc['main.css.template'];
+
+        $dc['Renderer'] = function ($dc) {
+            $filenameResolver = $dc['FilenameResolver'];
+            $targetFormat = $dc['OriginalRequest']->getFormat();
+
+            // Set the decorator
+            if (isset($dc[sprintf('main.%s.template', $targetFormat)])) {
+                $dc['View']->setTemplate($dc[sprintf('main.%s.template', $targetFormat)]);
+            }
+
+            if ($targetFormat === 'json') {
+                $renderer = new \Nethgui\Renderer\Json($dc['View']);
+            } elseif ($targetFormat === 'xhtml') {
+                $renderer = new \Nethgui\Renderer\Xhtml($dc['View'], $filenameResolver, 0);
+            } else if ($targetFormat === 'js') {
+                $renderer = new \Nethgui\Renderer\TemplateRenderer($dc['View'], $filenameResolver, 'application/javascript', 'UTF-8');
+            } elseif ($targetFormat === 'css') {
+                $renderer = new \Nethgui\Renderer\TemplateRenderer($dc['View'], $filenameResolver, 'text/css', 'UTF-8');
+            } else {
+                $renderer = new \Nethgui\Renderer\TemplateRenderer($dc['View'], $filenameResolver, 'text/plain', 'UTF-8');
+            }
+
+            $dc['HttpResponse']->addHeader(sprintf('Content-Type: %s', $renderer->getContentType()) . (
+                $renderer->getCharset() ? sprintf('; charset=%s', $renderer->getCharset()) : '')
+            );
+
+            return $dc['objectInjector']($renderer, $dc);
+        };
+
+        $this->dc = $dc;
     }
 
     /**
@@ -185,7 +405,7 @@ class Framework
      */
     public function setDefaultModule($moduleIdentifier)
     {
-        $this->defaultModuleIdentifier = $moduleIdentifier;
+        $this->dc['defaultModuleIdentifier'] = $moduleIdentifier;
         return $this;
     }
 
@@ -198,7 +418,7 @@ class Framework
      */
     public function setDecoratorTemplate($template)
     {
-        $this->decoratorTemplate = $template;
+        $this->dc['decorator.xhtml.template'] = $template;
         return $this;
     }
 
@@ -211,7 +431,7 @@ class Framework
      */
     public function setLogLevel($level)
     {
-        $this->log->setLevel($level);
+        $this->dc['log.level'] = $level;
         return $this;
     }
 
@@ -231,11 +451,11 @@ class Framework
         $symbol = str_replace('\\', '/', $symbol);
         $nsKey = array_head(explode('/', $symbol));
 
-        if ( ! isset($this->namespaceMap[$nsKey])) {
+        if ( ! isset($this->dc['namespaceMap'][$nsKey])) {
             return FALSE;
         }
 
-        $absolutePath = $this->namespaceMap[$nsKey] . '/' . $symbol;
+        $absolutePath = $this->dc['namespaceMap'][$nsKey] . '/' . $symbol;
         if (pathinfo($symbol, PATHINFO_EXTENSION) === '') {
             $absolutePath .= '.php';
         }
@@ -259,30 +479,40 @@ class Framework
      */
     public function dispatch(\Nethgui\Controller\RequestInterface $request, &$output = NULL)
     {
-        try {
+        /* @var $log \Nethgui\Log\LogInterface */
+        $log = $this->dc['Log'];
 
-            if (array_head($request->getPath()) === FALSE) {
-                $redirectUrl = implode('', $this->urlParts) . $this->defaultModuleIdentifier;
-                header('HTTP/1.1 302 Found');
-                header('Location: ' . $redirectUrl);
-                return 1;
-            }
+        $this->dc['OriginalRequest'] = $request;
+        $request->setUser($this->dc['User']);
 
-            $this->handle($request)->send();
-        } catch (\Nethgui\Exception\HttpException $ex) {
-            // no processing is required, rethrow:
-            throw $ex;
-        } catch (\Nethgui\Exception\AuthorizationException $ex) {
-            if ($request->getExtension() === 'xhtml' && ! $request->isMutation() && ! $request->getUser()->isAuthenticated()) {
-                $this->handle($this->createLoginRequest($request))->send();
-            } else {
-                $this->log->error(sprintf('%s: [%d] %s', __CLASS__, $ex->getCode(), $ex->getMessage()));
-                throw new \Nethgui\Exception\HttpException('Forbidden', 403, 1327681977, $ex);
-            }
-        } catch (\Exception $ex) {
-            $this->log->exception($ex, NETHGUI_DEBUG);
-            throw new \Nethgui\Exception\HttpException('Internal server error', 500, 1366796122, $ex);
+        if ($request instanceof \Nethgui\Utility\SessionConsumerInterface) {
+            $request->setSession($this->dc['Session']);
         }
+
+        if (array_head($request->getPath()) === FALSE && $request->getFormat() === 'xhtml') {
+            $redirectUrl = implode('', $this->urlParts) . $this->dc['defaultModuleIdentifier'];
+            $response = new \Nethgui\Utility\HttpResponse('', 302, array('Location: ' . $redirectUrl));
+        } else {
+            try {
+                $response = $this->handle($request);
+            } catch (\Nethgui\Exception\HttpException $ex) {
+                // no processing is required, rethrow:
+                throw $ex;
+            } catch (\Nethgui\Exception\AuthorizationException $ex) {
+                if ($request->getExtension() === 'xhtml' && ! $request->isMutation() && ! $request->getUser()->isAuthenticated()) {
+                    $response = $this->handle($this->createLoginRequest($request));
+                } else {
+                    $log->error(sprintf('%s: [%d] %s', __CLASS__, $ex->getCode(), $ex->getMessage()));
+                    throw new \Nethgui\Exception\HttpException('Forbidden', 403, 1327681977, $ex);
+                }
+//            }
+            } catch (\Exception $ex) {
+                $log->exception($ex, NETHGUI_DEBUG);
+                throw new \Nethgui\Exception\HttpException('Internal server error', 500, 1366796122, $ex);
+            }
+        }
+
+        $response->send();
     }
 
     private function createLoginRequest(\Nethgui\Controller\Request $originalRequest)
@@ -291,151 +521,63 @@ class Framework
         unset($m[\Nethgui\array_head($originalRequest->getPath())]);
         $r = new \Nethgui\Controller\Request(array_replace_recursive(array('Login' => array('path' => '/' . implode('/', $originalRequest->getPath()))), $m));
         $r->setAttribute('languageCode', $originalRequest->getLanguageCode());
+        $r->setUser($this->dc['User']);
         return $r;
     }
 
     /**
      *
      * @param \Nethgui\Controller\RequestInterface $request
-     * @return \Nethgui\Controller\ResponseInterface 
+     * @return \Nethgui\View\ViewInterface
      */
     public function handle(\Nethgui\Controller\RequestInterface $request)
     {
-        $pdp = new \Nethgui\Authorization\JsonPolicyDecisionPoint($this->getFileNameResolver());
-        $pdp->setLog($this->log);
-        foreach ($this->namespaceMap as $nsName => $nsPath) {
-            $pdp->loadPolicy($nsName . '\Authorization\*.json');
+
+        /* @var \Nethgui\Module\Main */
+        $mainModule = $this->dc['Main'];
+
+        if ( ! $mainModule->isInitialized()) {
+            $mainModule->initialize();
         }
-
-        $moduleInjector = new \Nethgui\Component\DependencyInjector();
-        // Add some commonly used dependencies:
-        $moduleInjector['Log'] = $this->log;
-        $moduleInjector['Session'] = $this->session;
-        $moduleInjector['PolicyDecisionPoint'] = $pdp;
-        $moduleInjector['initializeModuleCallback'] = function ($module, $context) {
-            if ($module instanceof \Nethgui\Utility\SessionConsumerInterface) {
-                $module->setSession($context['Session']);
-            }
-
-            if ($module instanceof Authorization\PolicyEnforcementPointInterface) {
-                $module->setPolicyDecisionPoint($context['PolicyDecisionPoint']);
-            }
-        };
-
-        $moduleLoader = new \Nethgui\Module\ModuleLoader($moduleInjector);
-        $moduleLoader->setLog($this->log);
-
-        foreach ($this->namespaceMap as $nsName => $nsRoot) {
-            if ($nsName === 'Nethgui') {
-                $nsRoot = FALSE;
-            }
-            $moduleLoader->setNamespace($nsName . '\\Module', $nsRoot);
-        }
-
-
-        if ($request instanceof \Nethgui\Utility\SessionConsumerInterface) {
-            $request->setSession($this->session);
-        }
-
-        $user = $request->getUser();
-
-        $platform = new \Nethgui\System\NethPlatform($user);
-        $platform
-            ->setPhpWrapper(new \Nethgui\Utility\PhpWrapper())
-            ->setLog($this->log)
-            ->setSession($this->session)
-            ->setPolicyDecisionPoint($pdp)
-        ;
-
-        // Enforce authorization policy on moduleSet:
-        $authModuleLoader = new \Nethgui\Authorization\AuthorizedModuleSet($moduleLoader, $user);
-        $authModuleLoader->setPolicyDecisionPoint($pdp);
-
-        $fileNameResolver = $this->getFileNameResolver();
-        $currentModuleIdentifier = array_head($request->getPath());
-
-        $moduleInjector['injectSystemModulesCallback'] = function ($object, $context) use ($authModuleLoader, $currentModuleIdentifier, $fileNameResolver) {
-            if ($object instanceof \Nethgui\Module\Menu) {
-                $object
-                    ->setModuleSet($authModuleLoader)
-                    ->setCurrentModuleIdentifier($currentModuleIdentifier)
-                ;
-            } elseif ($object instanceof \Nethgui\Module\Help) {
-                $object
-                    ->setModuleSet($authModuleLoader)
-                    ->setFileNameResolver($fileNameResolver)
-                ;
-            }
-        };
-
-        $moduleInjector['injectFrameworkModulesCallback'] = function($object, $context) use($platform) {
-            if ($object instanceof \Nethgui\System\PlatformConsumerInterface) {
-                $object->setPlatform($platform);
-            }
-
-            if (isset($context['PolicyDecisionPoint']) && $object instanceof \Nethgui\Authorization\PolicyEnforcementPointInterface) {
-                $object->setPolicyDecisionPoint($context['PolicyDecisionPoint']);
-            }
-        };
-
-        $mainModule = new \Nethgui\Module\Main($this->decoratorTemplate, $authModuleLoader);
-        $mainModule->setPlatform($platform);
-        $mainModule->setPolicyDecisionPoint($pdp);
-        $mainModule->setDependencyInjector($moduleInjector);
-
-        $validationErrorsNotification = new \Nethgui\Module\Notification\ValidationErrorsNotification();
-
-        // FIXME: dependency MESS...
-        $translator = new \Nethgui\View\Translator($request->getLanguageCode(), $this->getFileNameResolver(), array_keys(iterator_to_array($this->namespaceMap)));
-        $translator->setLog($this->log);
-        $rootView = new \Nethgui\View\View($request->getFormat(), $mainModule, $translator, $this->urlParts);
-        $response = new \Nethgui\Renderer\HttpResponse($request, $rootView, $moduleInjector);
-        $response->filenameResolver = $fileNameResolver;
-        $rootView->commands = new \Nethgui\View\LegacyCommandBag($rootView, $response);
-
-        $mainModule->initialize();
         $mainModule->bind($request);
-        $mainModule->validate($validationErrorsNotification);
+        $mainModule->validate($this->dc['ValidationErrors']);
 
-        if ( ! $validationErrorsNotification->hasValidationErrors()) {
+        if ($this->dc['ValidationErrors']->hasValidationErrors()) {
+            $request->setAttribute('isValidated', FALSE);
+            $nextPath = FALSE;
+        } else {
             $request->setAttribute('isValidated', TRUE);
             $mainModule->process();
             // Run the "post-process" event queue (see #506)
-            $platform->runEvents('post-process');
-        }
-
-        $mainModule->prepareView($rootView);
-
-        if ($request->isValidated()) {
-            /*
-             * FIXME: @deprecated since 1.6
-             */
+            $this->dc['Platform']->runEvents('post-process');
             $nextPath = $mainModule->nextPath();
-            if (is_string($nextPath)) {
-                $rootView->getCommandList('/Main')
-                    ->sendQuery($rootView->getModuleUrl($nextPath));
-            }
-            /*
-             *
-             */
-        } else {
-            $rootView->getCommandList('/Notification')
-                ->showNotification($validationErrorsNotification);
-            $response->setError(new \Nethgui\Exception\HttpException('Request validation error', 400, 1403528189));
         }
 
-        $session = $this->session;
-        $currentHandler = $response->getHandler();
-        $response->setHandler(function ($content, $httpStatus, $httpHeaders) use($platform, $session, $currentHandler, $request) {
-            call_user_func($currentHandler, $content, $httpStatus, $httpHeaders);
-            // Accept new requests, by unlocking the session:
-            if ($session->isStarted()) {
-                $session->unlock();
-            }
+        /* @var \Nethgui\Utility\HttpResponse */
+        $response = $this->dc['HttpResponse'];
+
+
+        $dc = $this->dc;
+        $postResponseTask = function () use ($dc, $request) {
             if ($request->isValidated()) {
-                $platform->runEvents('post-response');
+                if ($dc['Session']->isStarted()) {
+                    $dc['Session']->unlock();
+                }
+                $dc['Platform']->runEvents('post-response');
             }
-        });
+        };
+
+
+        $mainModule->prepareView($this->dc['View']);
+
+        if ($nextPath !== FALSE) {
+            $this->dc['Log']->notice('nextPath: ' . $nextPath);
+            $this->dc['View']->getCommandList('/Main')->sendQuery($this->dc['View']->getModuleUrl($nextPath));
+        }
+
+
+        $response->setContent($this->dc['Renderer']->render());
+        $response->on('post-response', $postResponseTask);
 
         return $response;
     }

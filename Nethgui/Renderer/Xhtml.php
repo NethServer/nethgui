@@ -29,7 +29,7 @@
  * @since 1.0
  * @api
  */
-class Xhtml extends \Nethgui\Renderer\TemplateRenderer implements \Nethgui\Renderer\WidgetFactoryInterface, \Nethgui\Component\DependencyConsumer
+class Xhtml extends \Nethgui\Renderer\TemplateRenderer implements \Nethgui\Renderer\WidgetFactoryInterface
 {
     /**
      *
@@ -420,7 +420,7 @@ class Xhtml extends \Nethgui\Renderer\TemplateRenderer implements \Nethgui\Rende
 
     public function getDependencySetters()
     {
-        return array('StaticFiles' => array($this, 'setStaticFilesModel'));
+        return array_merge(parent::getDependencySetters(), array('StaticFiles' => array($this, 'setStaticFilesModel')));
     }
 
     public function setStaticFilesModel(\Nethgui\Model\StaticFiles $model)

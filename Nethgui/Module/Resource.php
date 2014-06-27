@@ -1,4 +1,6 @@
-<?php namespace Nethgui\Module;
+<?php
+
+namespace Nethgui\Module;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -29,6 +31,7 @@ class Resource extends \Nethgui\Controller\AbstractController implements \Nethgu
 {
     private $fileName;
     private $cachePath;
+
     /**
      *
      * @var \Nethgui\Model\StaticFiles
@@ -106,25 +109,24 @@ class Resource extends \Nethgui\Controller\AbstractController implements \Nethgu
         if ($view->getTargetFormat() == 'xhtml') {
             $this->prepareViewXhtml($view);
         } elseif ($this->fileName) {
+            $phpWrapper = $this->getPhpWrapper();
             $filePath = $this->getCachePath($this->fileName);
+            $view->setTemplate(function(\Nethgui\Renderer\TemplateRenderer $renderer, $T, \Nethgui\Utility\HttpResponse $httpResponse) use ($filePath, $phpWrapper) {
+                $meta = array();
+                $content = $phpWrapper->file_get_contents_extended($filePath, $meta);
 
-            $view->getCommandList('/Main')->setDecoratorTemplate(function(\Nethgui\View\ViewInterface $renderer) {
-                return $renderer['Resource']['contents'];
+                if ($meta['size'] > 0) {
+                    $httpResponse->addHeader(sprintf('Content-Length: %d', $meta['size']));
+                }
+
+                if (NETHGUI_ENABLE_HTTP_CACHE_HEADERS) {
+                    $httpResponse
+                        ->addHeader(sprintf('Last-Modified: %s', date(DATE_RFC1123, $phpWrapper->filemtime($filePath))))
+                        ->addHeader(sprintf('Expires: %s', date(DATE_RFC1123, $phpWrapper->time() + 3600)))
+                    ;
+                }
+                return $content;
             });
-
-            $meta = array();
-            $view['contents'] = $this->getPhpWrapper()->file_get_contents_extended($filePath, $meta);
-
-            if ($meta['size'] > 0) {
-                $view->getCommandList()->httpHeader(sprintf('Content-Length: %d', $meta['size']));
-            }
-
-            if (NETHGUI_ENABLE_HTTP_CACHE_HEADERS) {
-                $view->getCommandList()
-                    ->httpHeader(sprintf('Last-Modified: %s', date(DATE_RFC1123, $this->getPhpWrapper()->filemtime($filePath))))
-                    ->httpHeader(sprintf('Expires: %s', date(DATE_RFC1123, time() + 3600)))
-                ;
-            }
         }
     }
 

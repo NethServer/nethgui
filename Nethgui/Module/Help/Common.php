@@ -1,4 +1,5 @@
 <?php
+
 namespace Nethgui\Module\Help;
 
 /*
@@ -23,7 +24,7 @@ namespace Nethgui\Module\Help;
 /**
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class Common extends \Nethgui\Controller\AbstractController
+class Common extends \Nethgui\Controller\AbstractController implements \Nethgui\Component\DependencyConsumer
 {
     /**
      * Holds the included file list for {{{INCLUDE}}} directive processing
@@ -44,6 +45,18 @@ class Common extends \Nethgui\Controller\AbstractController
      * @var callable
      */
     private $fileNameResolver;
+
+    /**
+     *
+     * @var \Nethgui\Module\Main
+     */
+    protected $mainModule;
+
+    /**
+     *
+     * @var \Nethgui\Utility\HttpResponse
+     */
+    protected $response;
 
     /**
      *
@@ -111,19 +124,22 @@ class Common extends \Nethgui\Controller\AbstractController
     {
         return $this->fileNameResolver;
     }
-    
+
     /**
      * Extract the contents of the first div tag in the XHTML help document
      * 
      * @return string
      * @throws \Nethgui\Exception\HttpException 
      */
-    protected function readHelpDocument($filePath) {
-        
+    protected function readHelpDocument($filePath)
+    {
+
         $document = new \XMLReader();
-                
-        set_error_handler(function ($errno, $errstr)  {}, E_WARNING | E_NOTICE);        
-                 
+
+        set_error_handler(function ($errno, $errstr) {
+            
+        }, E_WARNING | E_NOTICE);
+
         if ($document->open('file://' . $filePath, 'utf-8', LIBXML_NOENT) === TRUE) {
             // Advance to BODY tag:
             while ($document->name != 'body' && $document->read());
@@ -131,23 +147,22 @@ class Common extends \Nethgui\Controller\AbstractController
 
             $content = $document->readInnerXml();
         } else {
-            $content = 'Not found';                
+            $content = 'Not found';
             throw new \Nethgui\Exception\HttpException(sprintf("%s: resource not found", __CLASS__), 404, 1333119424);
         }
-        
+
         restore_error_handler();
-        
+
         return $this->expandIncludes($content);
-    }    
-    
-    
+    }
+
     protected function expandIncludes($contents)
     {
         $self = $this;
         return preg_replace_callback(
-                '/{{{INCLUDE\s+([^}\s]+)}}}/', function($matches) use ($self, $contents) {
-                    return $self->readHelpDocumentsByPattern($matches[1], $contents);
-                }, $contents);
+            '/{{{INCLUDE\s+([^}\s]+)}}}/', function($matches) use ($self, $contents) {
+            return $self->readHelpDocumentsByPattern($matches[1], $contents);
+        }, $contents);
     }
 
     public function readHelpDocumentsByPattern($pattern)
@@ -159,20 +174,34 @@ class Common extends \Nethgui\Controller\AbstractController
         $absolutePattern = dirname($this->getHelpDocumentPath($this->getTargetModule())) . '/' . $pattern;
 
         $expansion = '';
-        
+
         foreach ($this->getPhpWrapper()->glob($absolutePattern) as $fileName) {
-            if (substr($fileName, -4) !== '.rst' && substr($fileName, -5) !== '.html')  {
+            if (substr($fileName, -4) !== '.rst' && substr($fileName, -5) !== '.html') {
                 throw new \UnexpectedValueException(sprintf('%s: Forbidden file name extension in help document `%s`.', __CLASS__, basename($fileName)), 1338288817);
             }
             if (isset($this->includes[$fileName])) {
                 throw new \RuntimeException(sprintf('%s: the file has already been included: `%s`.', __CLASS__, basename($fileName)), 1338289668);
             }
             $this->includes[$fileName] = TRUE;
-            
+
             $expansion .= $this->readHelpDocument($fileName);
         }
-        
-        return $expansion;
-    }    
-}
 
+        return $expansion;
+    }
+
+    public function getDependencySetters()
+    {
+        $myMainModule = &$this->mainModule;
+        $myResponse = &$this->response;
+        return array(
+            'Main' => function ($mainModule) use (&$myMainModule) {
+            $myMainModule = $mainModule;
+        },
+            'Response' => function ($response) use (&$myResponse) {
+            $myResponse = $response;
+        }
+        );
+    }
+
+}

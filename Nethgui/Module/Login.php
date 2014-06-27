@@ -1,4 +1,5 @@
 <?php
+
 namespace Nethgui\Module;
 
 /*
@@ -28,13 +29,31 @@ use Nethgui\System\PlatformInterface as Valid;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\Utility\SessionConsumerInterface
+class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\Utility\SessionConsumerInterface, \Nethgui\Component\DependencyConsumer
 {
     /**
      *
      * @var \Nethgui\Utility\SessionInterface
      */
     private $session;
+
+    /**
+     *
+     * @var \Nethgui\Utility\HttpResponse
+     */
+    private $httpResponse;
+
+    /**
+     *
+     * @var \Nethgui\Model\UserNotifications
+     */
+    private $userNotifications;
+
+    /**
+     *
+     * @var \ArrayAccess
+     */
+    private $xhtmlDecoratorParams;
 
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
     {
@@ -60,8 +79,8 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
         $this->declareParameter('language', $languageValidator, array($this, 'getDefaultLanguageCode'));
         $this->declareParameter('hostname', FALSE, array('configuration', 'SystemName'));
         $this->declareParameter('languageDatasource', FALSE, function () use ($languages) {
-                return \Nethgui\Renderer\AbstractRenderer::hashToDatasource($languages);
-            });
+            return \Nethgui\Renderer\AbstractRenderer::hashToDatasource($languages);
+        });
     }
 
     public function getDefaultLanguageCode()
@@ -89,34 +108,27 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
         $user = $this->getRequest()->getUser();
 
         $view->setTemplate('Nethgui\Template\Login');
-        $view->getCommandList('/Main')
-            ->setDecoratorParameter('disableHeader', TRUE)
-            ->setDecoratorParameter('disableMenu', TRUE)
-            ->setDecoratorParameter('disableFooter', FALSE)
-        ;
 
-        $isInvalidLoginRequest = ! $user->isAuthenticated()
-            && $this->getRequest()->isMutation()
-            && $this->getRequest()->isValidated();
+        $this->xhtmlDecoratorParams['disableHeader'] = TRUE;
+        $this->xhtmlDecoratorParams['disableMenu'] = TRUE;
+        $this->xhtmlDecoratorParams['disableFooter'] = FALSE;
 
-        $isAuthenticatedUserLoggingInAgain = $user->isAuthenticated()
-            && ! $this->getRequest()->isMutation();
+        $isInvalidLoginRequest = ! $user->isAuthenticated() && $this->getRequest()->isMutation() && $this->getRequest()->isValidated();
 
-        $isUnauthUserRequest = ! $user->isAuthenticated() 
-            && ! $this->getRequest()->isMutation()
-            && $this->parameters['path'];
+        $isAuthenticatedUserLoggingInAgain = $user->isAuthenticated() && ! $this->getRequest()->isMutation();
+
+        $isUnauthUserRequest = ! $user->isAuthenticated() && ! $this->getRequest()->isMutation() && $this->parameters['path'];
 
         if ($isInvalidLoginRequest) {
-            $view->getCommandList('/Notification')
-                ->httpHeader('HTTP/1.1 400 Invalid credentials supplied')
-                ->showMessage($view->translate('Invalid credentials'), \Nethgui\Module\Notification\AbstractNotification::NOTIFY_ERROR);
+            $this->httpResponse->addHeader('HTTP/1.1 400 Invalid credentials supplied');
+            $this->userNotifications->error($view->translate('Invalid credentials', array('username' => $this->parameters['username'])));
         } elseif ($isAuthenticatedUserLoggingInAgain) {
-            $view->getCommandList()
-                ->httpHeader('HTTP/1.1 302 Found')
-                ->httpHeader('Location: ' . $view->getSiteUrl() . $view->getModuleUrl('/'));
+            $this->httpResponse
+                ->setStatus(302)
+                ->addHeader('Location: ' . $view->getSiteUrl() . $view->getModuleUrl('/'))
+            ;
         } elseif ($isUnauthUserRequest) {
-            $view->getCommandList()
-                ->httpHeader('HTTP/1.1 403 Forbidden');
+            $this->httpResponse->setStatus(403, 'Forbidden');
         }
     }
 
@@ -136,6 +148,24 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
     {
         $this->session = $session;
         return $this;
+    }
+
+    public function getDependencySetters()
+    {
+        $myHttpResponse = &$this->httpResponse;
+        $myUserNotifications = &$this->userNotifications;
+        $myXhtmlDecoratorParams = &$this->xhtmlDecoratorParams;
+        return array(
+            'HttpResponse' => function (\Nethgui\Utility\HttpResponse $r) use (&$myHttpResponse) {
+            $myHttpResponse = $r;
+        },
+            'UserNotifications' => function(\Nethgui\Model\UserNotifications $n) use (&$myUserNotifications) {
+            $myUserNotifications = $n;
+        },
+            'decorator.xhtml.params' => function(\ArrayAccess $params) use (&$myXhtmlDecoratorParams) {
+            $myXhtmlDecoratorParams = $params;
+        }
+        );
     }
 
 }

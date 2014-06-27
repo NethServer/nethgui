@@ -36,7 +36,14 @@ namespace Nethgui\View;
  */
 interface ViewInterface extends \ArrayAccess, \IteratorAggregate
 {
+    /**
+     * @deprecated since 1.6
+     */
     const TARGET_XHTML = 'xhtml';
+
+    /**
+     * @deprecated since 1.6
+     */
     const TARGET_JSON = 'json';
 
     /**

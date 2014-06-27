@@ -27,7 +27,7 @@ namespace Nethgui\View;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.6
  */
-class LegacyCommandBag extends \ArrayObject
+class LegacyCommandBag extends \ArrayObject implements \Nethgui\Component\DependencyConsumer
 {
     /**
      *
@@ -37,16 +37,20 @@ class LegacyCommandBag extends \ArrayObject
     private $currentSelector, $currentOrigin;
 
     /**
-     *
-     * @var \Nethgui\Controller\ResponseInterface
+     * @var \Nethgui\Model\UserNotifications
      */
-    private $response;
+    private $userNotifications;
 
-    public function __construct(\Nethgui\View\View $view, \Nethgui\Controller\ResponseInterface $response)
+    /**
+     *
+     * @var \Nethgui\Renderer\HttpResponse
+     */
+    public $response;
+
+    public function __construct(\Nethgui\View\View $view)
     {
         parent::__construct(array());
         $this->view = $view;
-        $this->response = $response;
     }
 
     public function setContext($origin, $selector)
@@ -95,17 +99,10 @@ class LegacyCommandBag extends \ArrayObject
         return $a;
     }
 
-
     public function httpHeader($value)
     {
         $this->getLog()->deprecated();
-        if($this->response instanceof \Nethgui\Renderer\HttpResponse) {
-            $originalHandler = $this->response->getHandler();
-            $this->response->setHandler(function ($content, $httpStatus, $httpHeaders) use ($originalHandler, $value) {
-                $httpHeaders[] = $value;
-                call_user_func($originalHandler, $content, $httpStatus, $httpHeaders);
-            });
-        }
+        $this->response->addHeader($value);
         return $this;
     }
 
@@ -123,10 +120,9 @@ class LegacyCommandBag extends \ArrayObject
         return $this;
     }
 
-
     public function sendQuery($location)
-    {
-        if ($this->view->getTargetFormat() !== \Nethgui\View\View::TARGET_XHTML) {
+    {        
+        if ($this->view->getTargetFormat() === \Nethgui\View\View::TARGET_JSON) {
             return $this->__call('sendQuery', array($location));
         }
         $this->httpRedirection(302, $location);
@@ -141,33 +137,12 @@ class LegacyCommandBag extends \ArrayObject
             return $this->__call('showMessage', array($text, $type));
         }
 
-        $notificationModuleInstance = \Nethgui\array_head(array_filter($this->view->getModule()->getChildren(), function (\Nethgui\Module\ModuleInterface $child) {
-           return $child->getIdentifier() === 'Notification';
-        }));
-
-        if($notificationModuleInstance instanceof \Nethgui\Module\Notification) {
-            $notificationModuleInstance->showMessage($text, $type);
+        if ($type === \Nethgui\Module\Notification\AbstractNotification::NOTIFY_ERROR) {
+            $this->userNotifications->error($text);
+        } else {
+            $this->userNotifications->info($text);
         }
     }
-
-    public function showNotification(\Nethgui\Module\Notification\AbstractNotification $notification)
-    {
-        $this->getLog()->deprecated();
-        if ($this->view->getTargetFormat() !== \Nethgui\View\View::TARGET_XHTML) {
-            $v = $this->view->spawnView($this->view->getModule(), FALSE);
-            $notification->prepareView($v);
-            return $this->__call('showNotification', iterator_to_array($v));
-        }
-
-        $notificationModuleInstance = \Nethgui\array_head(array_filter($this->view->getModule()->getChildren(), function (\Nethgui\Module\ModuleInterface $child) {
-           return $child->getIdentifier() === 'Notification';
-        }));
-
-        if($notificationModuleInstance instanceof \Nethgui\Module\Notification) {
-            $notificationModuleInstance->showNotification($notification);
-        }
-    }
-
 
     /**
      * @param integer $code
@@ -177,16 +152,29 @@ class LegacyCommandBag extends \ArrayObject
     {
         // Prefix the site URL to $location:
         if ( ! in_array(parse_url($location, PHP_URL_SCHEME), array('http', 'https'))) {
-            $location = $this->view->getSiteUrl() . $location;
+            $url = $this->view->getSiteUrl() . $location;
         }
 
-        if($this->response instanceof \Nethgui\Renderer\HttpResponse) {
-            $o = $this->response;
-            $this->response->setHandler(function ($content, $httpStatus, $httpHeaders) use ($o, $code, $location) {
-                call_user_func(array($o, 'defaultHandler'), '', $code, array('Location: ' . $location));
-            });
-        }
+        $this->response
+            ->setStatus(302)
+            ->addHeader('Location: ' . $url)
+        ;
         return $this;
+    }
+
+    public function getDependencySetters()
+    {
+        $response = &$this->response;
+        $notifications = &$this->userNotifications;
+
+        return array(
+            'UserNotifications' => function ($n) use (&$notifications) {
+            $notifications = $n;
+        },
+            'HttpResponse' => function ($r) use (&$response) {
+            $response = $r;
+        }
+        );
     }
 
 }

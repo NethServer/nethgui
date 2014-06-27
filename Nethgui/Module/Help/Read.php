@@ -1,4 +1,5 @@
 <?php
+
 namespace Nethgui\Module\Help;
 
 /*
@@ -31,7 +32,7 @@ class Read extends Common
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
-        $view->setTemplate(FALSE);
+
 
         $module = $this->getTargetModule();
         if (is_null($module)) {
@@ -44,26 +45,21 @@ class Read extends Common
             throw new \Nethgui\Exception\HttpException(sprintf("%s: resource not found", __CLASS__), 404, 1351702294);
         }
 
-        $view->getCommandList('/Main')->setDecoratorTemplate(function(\Nethgui\View\ViewInterface $renderer) {
-                return $renderer['Help']['Read']['contents'];
-            });
+        $readModule = $this;
+        $response = $this->response;
 
-        if (NETHGUI_ENABLE_HTTP_CACHE_HEADERS) {
-            $view->getCommandList()
-                ->httpHeader(sprintf('Last-Modified: %s', date(DATE_RFC1123, $this->getPhpWrapper()->filemtime($filePath))))
-                ->httpHeader(sprintf('Expires: %s', date(DATE_RFC1123, time() + 3600)))
-            ;
-        }
+         $view->setTemplate(function(\Nethgui\View\ViewInterface $renderer, \Nethgui\Utility\HttpResponse $response) use ($readModule, $response) {
+            $contents = $readModule->expandIncludes(
+                $readModule->getPhpWrapper()->file_get_contents($filePath)
+            );
 
-        $view['contents'] = $this->expandIncludes(
-            $this->getPhpWrapper()->file_get_contents($filePath)
-        );
-
-        $contentLength = strlen($view['contents']);
-
-        if ($contentLength > 0) {
-            $view->getCommandList()->httpHeader(sprintf('Content-Length: %d', $contentLength));
-        }
+            if (NETHGUI_ENABLE_HTTP_CACHE_HEADERS) {
+                $response->addHeader(sprintf('Last-Modified: %s', date(DATE_RFC1123, $this->getPhpWrapper()->filemtime($filePath))));
+                $response->addHeader(sprintf('Expires: %s', date(DATE_RFC1123, time() + 3600)));
+            }
+            $response->addHeader(sprintf('Content-Length: %d', strlen($contents)));
+            return $contents;
+        });
     }
 
 }
