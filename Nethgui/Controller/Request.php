@@ -70,7 +70,7 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Log\LogC
     {
         if ( ! isset($this->data[$name])) {
             $this->data[$name] = $value;
-        }        
+        }
         return $this;
     }
 
@@ -122,6 +122,27 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Log\LogC
         }
 
         return $instance;
+    }
+
+    public function createSecondaryRequest($path, $requestData = array())
+    {
+        $r = $this->spawnRequest('');
+
+        $pathInfo = explode('/', $path);
+        $pathInfoMod = array();
+        $cur = &$pathInfoMod;
+        foreach ($pathInfo as $pathPart) {
+            $cur[$pathPart] = array();
+            $cur = &$cur[$pathPart];
+        }
+
+        $r->data = array_replace_recursive($pathInfoMod, $requestData);
+        $r
+            ->setAttribute('originalRequest', $this)
+            ->setAttribute('isMutation', FALSE)
+            ->setAttribute('isValidated', FALSE)
+        ;
+        return $r;
     }
 
     public function getUser()
