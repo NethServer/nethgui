@@ -1,4 +1,5 @@
 <?php
+
 namespace Nethgui\Utility;
 
 /*
@@ -27,7 +28,7 @@ namespace Nethgui\Utility;
  * @since 1.0
  * @internal
  */
-class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\PhpConsumerInterface
+class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Log\LogConsumerInterface
 {
     const SESSION_NAME = 'nethgui';
 
@@ -35,7 +36,7 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
      *
      * @var \Nethgui\Utility\PhpWrapper
      */
-    private $php;
+    private $phpWrapper;
 
     /**
      *
@@ -43,11 +44,17 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
      */
     private $data;
 
-    public function __construct(\Nethgui\Utility\PhpWrapper $gfw = NULL)
+    /**
+     *
+     * @var \Nethgui\Log\LogInterface
+     */
+    private $log;
+
+    public function __construct(\Nethgui\Utility\PhpWrapper $phpWrapper = NULL)
     {
-        $this->php = new \Nethgui\Utility\PhpWrapper();
+        $this->phpWrapper = $phpWrapper === NULL ? new \Nethgui\Utility\PhpWrapper(__CLASS__) : $phpWrapper;
         $this->data = new \ArrayObject();
-        $this->php->session_name(self::SESSION_NAME);
+        $this->phpWrapper->session_name(self::SESSION_NAME);
     }
 
     public function isStarted()
@@ -61,9 +68,9 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
             throw new \LogicException(sprintf('%s: cannot start an already started session!', __CLASS__), 1327397142);
         }
 
-        $this->php->session_start();
+        $this->phpWrapper->session_start();
 
-        $this->data = $this->php->phpReadGlobalVariable('_SESSION', self::SESSION_NAME);
+        $this->data = $this->phpWrapper->phpReadGlobalVariable('_SESSION', self::SESSION_NAME);
         if (is_null($this->data)) {
             $this->data = new \ArrayObject();
         } elseif ( ! $this->data instanceof \ArrayObject) {
@@ -78,9 +85,9 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
         if ($this->isStarted() && $unlocked !== TRUE) {
             $key = get_class($this);
             if (isset($this->data[$key]) && $this->data[$key] === TRUE) {
-                $this->php->phpWriteGlobalVariable($this->data, '_SESSION', self::SESSION_NAME);
+                $this->phpWrapper->phpWriteGlobalVariable($this->data, '_SESSION', self::SESSION_NAME);
             }
-            $this->php->session_write_close();
+            $this->phpWrapper->session_write_close();
             $unlocked = TRUE;
         }
         return $this;
@@ -88,13 +95,13 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
 
     public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
     {
-        $this->php = $object;
+        $this->phpWrapper = $object;
         return $this;
     }
 
     private function getSessionIdentifier()
     {
-        return $this->php->session_id();
+        return $this->phpWrapper->session_id();
     }
 
     public function retrieve($key)
@@ -102,7 +109,7 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
         if ( ! $this->isStarted()) {
             $this->start();
         }
-        
+
         if ( ! isset($this->data[$key]) || $this->data[$key] === NULL) {
             return NULL;
         }
@@ -127,14 +134,14 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
 
     public function login()
     {
-        $this->php->session_regenerate_id(TRUE);
+        $this->phpWrapper->session_regenerate_id(TRUE);
         $this->data[get_class($this)] = TRUE;
         return $this;
     }
 
     public function logout()
     {
-        $this->php->session_destroy();
+        $this->phpWrapper->session_destroy();
         $this->data[get_class($this)] = FALSE;
         return $this;
     }
@@ -142,6 +149,20 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
     public function __destruct()
     {
         $this->unlock();
+    }
+
+    public function getLog()
+    {
+        if ( ! isset($this->log)) {
+            $this->log = new \Nethgui\Log\Nullog();
+        }
+        return $this->log;
+    }
+
+    public function setLog(\Nethgui\Log\LogInterface $log)
+    {
+        $this->log = $log;
+        return $log;
     }
 
 }
