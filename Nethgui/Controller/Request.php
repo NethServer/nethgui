@@ -46,6 +46,7 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Log\LogC
         'isValidated' => FALSE,
         'isMutation' => FALSE,
         'originalRequest' => FALSE,
+        'userClosure' => FALSE
     );
 
     /**
@@ -147,13 +148,10 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Log\LogC
 
     public function getUser()
     {
-        return $this->user;
-    }
-
-    public function setUser(\Nethgui\Authorization\UserInterface $user)
-    {
-        $this->user = $user;
-        return $this;
+        if(isset($this->attributes['userClosure'])) {
+            return \call_user_func($this->attributes['userClosure']);
+        }
+        return \Nethgui\Authorization\User::getAnonymousUser();
     }
 
     public function getPath()

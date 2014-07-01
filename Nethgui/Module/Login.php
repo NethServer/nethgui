@@ -91,13 +91,11 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
     public function process()
     {
         $user = $this->getRequest()->getUser();
-        if ( ! $user->isAuthenticated() && $this->getRequest()->isMutation()) {
-            $user = new \Nethgui\Authorization\User($this->getPhpWrapper(), $this->getLog());
+        if ( ! $user->isAuthenticated() && $this->getRequest()->isMutation()) {            
             $authenticated = $user->authenticate($this->parameters['username'], $this->parameters['password']);
             $user->setLanguageCode($this->parameters['language']);
             if ($authenticated) {
                 $this->getLog()->notice(sprintf("%s: user %s logged in", __CLASS__, $this->parameters['username']));
-                $this->session->login()->store(\Nethgui\Authorization\UserInterface::ID, $user);
             }
         }
     }

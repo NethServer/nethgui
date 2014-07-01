@@ -70,6 +70,8 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
 
         $this->phpWrapper->session_start();
 
+        NETHGUI_DEBUG && $this->getLog()->notice(sprintf('%s: session_start()', __CLASS__));
+
         $this->data = $this->phpWrapper->phpReadGlobalVariable('_SESSION', self::SESSION_NAME);
         if (is_null($this->data)) {
             $this->data = new \ArrayObject();
@@ -88,6 +90,7 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
                 $this->phpWrapper->phpWriteGlobalVariable($this->data, '_SESSION', self::SESSION_NAME);
             }
             $this->phpWrapper->session_write_close();
+            NETHGUI_DEBUG && $this->getLog()->notice(sprintf('%s: session_write_close()', __CLASS__));
             $unlocked = TRUE;
         }
         return $this;
@@ -162,6 +165,7 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
     public function setLog(\Nethgui\Log\LogInterface $log)
     {
         $this->log = $log;
+        $this->phpWrapper->setLog($log);
         return $log;
     }
 

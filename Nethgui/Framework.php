@@ -89,17 +89,10 @@ class Framework
             return $pdp;
         };
 
-        $dc['User'] = function ($c) {
-            $user = $c['Session']->retrieve(\Nethgui\Authorization\UserInterface::ID);
-
-            if ( ! $user instanceof \Nethgui\Authorization\UserInterface) {
-                $user = \Nethgui\Authorization\User::getAnonymousUser();
-            }
-
-            if ($user instanceof \Nethgui\Log\LogConsumerInterface) {
-                $user->setLog($c['Log']);
-            }
-
+        $dc['User'] = function ($dc) {
+            $user = $dc['objectInjector'](new \Nethgui\Authorization\User($dc['Session'], $dc['Log']), $dc);
+            $pamAuthenticator = new \Nethgui\Utility\PamAuthenticator($dc['Log']);
+            $user->setAuthenticationProcedure(array($pamAuthenticator, 'authenticate'));
             return $user;
         };
 
@@ -481,9 +474,7 @@ class Framework
     {
         /* @var $log \Nethgui\Log\LogInterface */
         $log = $this->dc['Log'];
-
         $this->dc['OriginalRequest'] = $request;
-        $request->setUser($this->dc['User']);
 
         if ($request instanceof \Nethgui\Utility\SessionConsumerInterface) {
             $request->setSession($this->dc['Session']);
@@ -505,7 +496,6 @@ class Framework
                     $log->error(sprintf('%s: [%d] %s', __CLASS__, $ex->getCode(), $ex->getMessage()));
                     throw new \Nethgui\Exception\HttpException('Forbidden', 403, 1327681977, $ex);
                 }
-//            }
             } catch (\Exception $ex) {
                 $log->exception($ex, NETHGUI_DEBUG);
                 throw new \Nethgui\Exception\HttpException('Internal server error', 500, 1366796122, $ex);
@@ -521,7 +511,7 @@ class Framework
         unset($m[\Nethgui\array_head($originalRequest->getPath())]);
         $r = new \Nethgui\Controller\Request(array_replace_recursive(array('Login' => array('path' => '/' . implode('/', $originalRequest->getPath()))), $m));
         $r->setAttribute('languageCode', $originalRequest->getLanguageCode());
-        $r->setUser($this->dc['User']);
+        $r->setAttribute('userClosure', $originalRequest->getAttribute('userClosure'));
         return $r;
     }
 
@@ -673,6 +663,7 @@ class Framework
             }
         }
 
+        $dc = $this->dc;
         $R = array_replace_recursive($pathInfoMod, $getData, $postData);
         $request = new \Nethgui\Controller\Request($R);
         $request->setLog($log)
@@ -680,6 +671,9 @@ class Framework
             ->setAttribute('format', $format)
             ->setAttribute('languageCode', $languageCode)
             ->setAttribute('languageCodeDefault', $languageCodeDefault)
+            ->setAttribute('userClosure', function () use ($dc) {
+                return $dc['User'];
+            })
         ;
 
         return $request;

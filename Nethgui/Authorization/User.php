@@ -1,4 +1,5 @@
 <?php
+
 namespace Nethgui\Authorization;
 
 /*
@@ -26,18 +27,12 @@ namespace Nethgui\Authorization;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class User implements \Nethgui\Authorization\UserInterface, \Serializable, \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Log\LogConsumerInterface
+class User implements \Nethgui\Authorization\UserInterface
 {
     /**
      *  @var \Nethgui\Log\LogInterface
      */
     private $log;
-
-    /**
-     *
-     * @var bool
-     */
-    private $authenticated = FALSE;
 
     /**
      *
@@ -47,56 +42,34 @@ class User implements \Nethgui\Authorization\UserInterface, \Serializable, \Neth
 
     /**
      *
-     * @var \Nethgui\Utility\PhpWrapper
+     * @var boolean
      */
-    protected $php;
+    private $modified = NULL;
 
     /**
      *
-     * @var array
+     * @var \Nethgui\Utility\SessionInterface
      */
-    private $credentials = array();
+    private $session;
 
     /**
      *
-     * @var array
+     * @var \ArrayObject
      */
-    private $preferences = array();
+    private $state;
 
-    /**
-     * 
-     * @return \Nethgui\Authorization\UserInterface
-     */
-    public static function getAnonymousUser()
+    public function __construct(\Nethgui\Utility\SessionInterface $session, \Nethgui\Log\LogInterface $log)
     {
-        static $anonymous = NULL;
-
-        // @codeCoverageIgnoreStart
-        if ( ! isset($anonymous)) {
-            $anonymous = new static();
-            $anonymous->setAuthenticationProcedure(function() {
-                    return FALSE;
-                });
-        }
-        // @codeCoverageIgnoreEnd
-
-        return $anonymous;
-    }
-
-    public function __construct(\Nethgui\Utility\PhpWrapper $php = NULL, \Nethgui\Log\LogInterface $log = NULL)
-    {
-        if (is_null($php)) {
-            $php = new \Nethgui\Utility\PhpWrapper();
-        }
-        $this->setPhpWrapper($php);
-
-        if (is_null($log)) {
-            $log = new \Nethgui\Log\Nullog();
-        }
-        $this->setLog($log);
-
-        // The default PAM based authentication procedure:
-        $this->authenticationProcedure = array(new \Nethgui\Utility\PamAuthenticator($php, $log), 'authenticate');
+        $this->state = new \ArrayObject(array(
+            'credentials' => array(),
+            'preferences' => array('lang' => ''),
+            'authenticated' => FALSE
+        ));
+        $this->log = $log;
+        $this->session = $session;
+        $this->authenticationProcedure = function () {
+            return FALSE;
+        };
     }
 
     public function setAuthenticationProcedure($procedure)
@@ -105,20 +78,28 @@ class User implements \Nethgui\Authorization\UserInterface, \Serializable, \Neth
         return $this;
     }
 
+    public function hasCredential($credentialName)
+    {
+        if ($this->modified === NULL) {
+            $this->retrieveFromSession();
+        }
+        return isset($this->state['credentials'][$credentialName]);
+    }
+
     public function getCredential($credentialName)
     {
+        if ($this->modified === NULL) {
+            $this->retrieveFromSession();
+        }
         if ( ! $this->hasCredential($credentialName)) {
             return NULL;
         }
-        return $this->credentials[$credentialName];
+        return $this->state['credentials'][$credentialName];
     }
 
     public function getLanguageCode()
     {
-        if ( ! isset($this->preferences['lang'])) {
-            return '';
-        }       
-        return $this->preferences['lang'];
+        return $this->getPreference('lang');
     }
 
     /**
@@ -128,56 +109,46 @@ class User implements \Nethgui\Authorization\UserInterface, \Serializable, \Neth
      */
     public function setLanguageCode($lang)
     {
-        $this->preferences['lang'] = strtolower(substr($lang, 0, 2));
+        $this->setPreference('lang', strtolower(substr($lang, 0, 2)));
         return $this;
-    }
-
-    public function hasCredential($credentialName)
-    {
-        return isset($this->credentials[$credentialName]);
     }
 
     public function authenticate()
     {
         $args = func_get_args();
-        $args[] = &$this->credentials;
-        $this->authenticated = call_user_func_array($this->authenticationProcedure, $args);
-        return $this->authenticated;
+        $args[] = &$this->state['credentials'];
+        $this->state['authenticated'] = call_user_func_array($this->authenticationProcedure, $args);
+        $this->modified = TRUE;
+        return $this->state['authenticated'];
     }
 
     public function isAuthenticated()
     {
-        return $this->authenticated === TRUE;
-    }
-
-    public function serialize()
-    {
-        return serialize(array($this->authenticated, $this->credentials, $this->preferences, $this->php, $this->log));
-    }
-
-    public function unserialize($serialized)
-    {
-        list($this->authenticated, $this->credentials, $this->preferences, $this->php, $this->log) = unserialize($serialized);
-    }
-
-    public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
-    {
-        $this->php = $object;
-        return $this;
+        if ($this->modified === NULL) {
+            $this->retrieveFromSession();
+        }
+        return $this->state['authenticated'] === TRUE;
     }
 
     public function setPreference($name, $value)
     {
-        $this->preferences[$name] = $value;
+        if ($this->modified === NULL) {
+            $this->retrieveFromSession();
+        }
+        $this->state['preferences'][$name] = $value;
+        $this->modified = TRUE;
         return $this;
     }
 
     public function getPreference($name)
     {
-        if ( ! isset($this->preferences[$name])) {
+        if ($this->modified === NULL) {
+            $this->retrieveFromSession();
+        }
+        if ( ! isset($this->state['preferences'][$name])) {
             return NULL;
         }
-        return $this->preferences[$name];
+        return $this->state['preferences'][$name];
     }
 
     public function asAuthorizationString()
@@ -193,15 +164,15 @@ class User implements \Nethgui\Authorization\UserInterface, \Serializable, \Neth
         return $this->getCredential($attributeName);
     }
 
-    public function getLog()
+    private function retrieveFromSession()
     {
-        return $this->log;
-    }
-
-    public function setLog(\Nethgui\Log\LogInterface $log)
-    {
-        $this->log = $log;
-        return $this;
+        $state = $this->session->retrieve(__CLASS__);
+        if ($state instanceof \ArrayObject) {
+            $this->state = $state;
+        } else {
+            $this->session->login()->store(__CLASS__, $this->state);
+        }
+        $this->modified = FALSE;
     }
 
 }

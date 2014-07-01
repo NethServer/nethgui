@@ -29,9 +29,14 @@ namespace Nethgui\Controller;
 class NullRequest implements \Nethgui\Controller\RequestInterface
 {
 
+    /**
+     * @var \Nethgui\Utility\SessionInterface
+     */
+    private $session;
+
     private function __construct()
     {
-
+        $this->session = new \Nethgui\Utility\NullSession();
     }
 
     /**
@@ -77,7 +82,7 @@ class NullRequest implements \Nethgui\Controller\RequestInterface
 
     public function getUser()
     {
-        return \Nethgui\Authorization\User::getAnonymousUser();
+        return new \Nethgui\Authorization\User($this->session);
     }
 
     public function hasParameter($parameterName)
@@ -117,7 +122,7 @@ class NullRequest implements \Nethgui\Controller\RequestInterface
 
     public function getSession()
     {
-        throw new \Exception('not implemented');
+        return $this->session;
     }
 
     public function getFormat()
