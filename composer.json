@@ -1,0 +1,23 @@
+{
+    "name": "nethesis/nethserver-nethgui",
+    "description": "Nethgui is the PHP graphical user interface framework for NethServer.",
+    "require": {
+        "pimple/pimple": "~2.1"
+    },
+    "license": "GPL-3.0+",
+    "authors": [
+        {
+            "name": "Davide Principi",
+            "email": "davide.principi@nethesis.it"
+        }
+    ],
+    "homepage": "http://dev.nethserver.org/projects/nethgui",
+    "support": {
+	"email": "nethserver@googlegroups.com",
+	"irc": "irc://irc.freenode.org/nethserver",
+	"source": "https://github.com/nethesis/nethserver-nethgui"
+    },
+    "archive": {
+	"exclude": ["/Documentation"]
+    }
+}
