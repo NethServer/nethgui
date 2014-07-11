@@ -529,7 +529,12 @@ class Framework
 
         /* @var \Nethgui\Module\Main */
         $mainModule = $dc['Main'];
+
+        /* @var \Nethgui\Renderer\AbstractRenderer */
         $renderer = $dc['Renderer'];
+
+        /* @var \Nethgui\Utility\HttpResponse */
+        $response = $dc['HttpResponse'];
 
         if ( ! $mainModule->isInitialized()) {
             $mainModule->initialize();
@@ -539,6 +544,7 @@ class Framework
 
         if ($dc['ValidationErrors']->hasValidationErrors()) {
             $request->setAttribute('isValidated', FALSE);
+            $response->setStatus(400, 'Request validation error');
             $nextPath = FALSE;
         } else {
             $request->setAttribute('isValidated', TRUE);
@@ -547,12 +553,7 @@ class Framework
             $dc['Platform']->runEvents('post-process');
             $nextPath = $mainModule->nextPath();
         }
-
-        /* @var \Nethgui\Utility\HttpResponse */
-        $response = $dc['HttpResponse'];
-
-
-        
+    
         $postResponseTask = function () use ($dc, $request) {
             if ($request->isValidated()) {
                 if ($dc['Session']->isStarted()) {
@@ -561,7 +562,6 @@ class Framework
                 $dc['Platform']->runEvents('post-response');
             }
         };
-
 
         $mainModule->prepareView($dc['View']);
 
