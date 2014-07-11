@@ -24,7 +24,7 @@ namespace Nethgui\Module\Help;
 /**
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class Common extends \Nethgui\Controller\AbstractController implements \Nethgui\Component\DependencyConsumer
+class Common extends \Nethgui\Controller\AbstractController
 {
     /**
      * Holds the included file list for {{{INCLUDE}}} directive processing
@@ -45,18 +45,6 @@ class Common extends \Nethgui\Controller\AbstractController implements \Nethgui\
      * @var callable
      */
     private $fileNameResolver;
-
-    /**
-     *
-     * @var \Nethgui\Module\Main
-     */
-    protected $mainModule;
-
-    /**
-     *
-     * @var \Nethgui\Utility\HttpResponse
-     */
-    protected $response;
 
     /**
      *
@@ -156,7 +144,7 @@ class Common extends \Nethgui\Controller\AbstractController implements \Nethgui\
         return $this->expandIncludes($content);
     }
 
-    protected function expandIncludes($contents)
+    public function expandIncludes($contents)
     {
         $self = $this;
         return preg_replace_callback(
@@ -188,20 +176,6 @@ class Common extends \Nethgui\Controller\AbstractController implements \Nethgui\
         }
 
         return $expansion;
-    }
-
-    public function getDependencySetters()
-    {
-        $myMainModule = &$this->mainModule;
-        $myResponse = &$this->response;
-        return array(
-            'Main' => function ($mainModule) use (&$myMainModule) {
-            $myMainModule = $mainModule;
-        },
-            'Response' => function ($response) use (&$myResponse) {
-            $myResponse = $response;
-        }
-        );
     }
 
 }

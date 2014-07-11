@@ -27,7 +27,7 @@ namespace Nethgui\Module\Help;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Read extends Common
+class Read extends Common implements \Nethgui\Component\DependencyConsumer
 {
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
@@ -46,20 +46,32 @@ class Read extends Common
         }
 
         $readModule = $this;
-        $response = $this->response;
+        $phpWrapper = $readModule->getPhpWrapper();
 
-         $view->setTemplate(function(\Nethgui\View\ViewInterface $renderer, \Nethgui\Utility\HttpResponse $response) use ($readModule, $response) {
+        // Override the root view template, to skip the default decorator template.
+        $this->rootView->setTemplate(function(\Nethgui\View\ViewInterface $renderer, $T, \Nethgui\Utility\HttpResponse $response) use ($readModule, $phpWrapper, $filePath) {
             $contents = $readModule->expandIncludes(
-                $readModule->getPhpWrapper()->file_get_contents($filePath)
+                $phpWrapper->file_get_contents($filePath)
             );
 
             if (NETHGUI_ENABLE_HTTP_CACHE_HEADERS) {
-                $response->addHeader(sprintf('Last-Modified: %s', date(DATE_RFC1123, $this->getPhpWrapper()->filemtime($filePath))));
+                $response->addHeader(sprintf('Last-Modified: %s', date(DATE_RFC1123, $phpWrapper->filemtime($filePath))));
                 $response->addHeader(sprintf('Expires: %s', date(DATE_RFC1123, time() + 3600)));
             }
             $response->addHeader(sprintf('Content-Length: %d', strlen($contents)));
             return $contents;
         });
+    }
+
+    public function setRootView(\Nethgui\View\ViewInterface $view)
+    {
+        $this->rootView = $view;
+        return $this;
+    }
+
+    public function getDependencySetters()
+    {
+        return array('View' => array($this, 'setRootView'));
     }
 
 }

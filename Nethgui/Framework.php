@@ -193,7 +193,7 @@ class Framework
             ));
         };
 
-        $dc['main.xhtml.template'] = $dc->protect(function (\Nethgui\Renderer\Xhtml $renderer) use ($dc, &$urlParts) {
+        $dc['main.xhtml.template'] = $dc->protect(function (\Nethgui\Renderer\Xhtml $renderer, $T, \Nethgui\Utility\HttpResponse $httpResponse) use ($dc, &$urlParts) {
             $decoratorView = $dc['objectInjector'](new \Nethgui\View\View($dc['OriginalRequest']->getFormat(), $dc['Main'], $dc['Translator'], $urlParts), $dc);
             $decoratorView->setTemplate($dc['decorator.xhtml.template']);
 
@@ -267,12 +267,13 @@ class Framework
         });
 
         $dc['main.js.template'] = $dc['main.css.template'];
+        $dc['main.txt.template'] = $dc['main.css.template'];
 
         $dc['Renderer'] = function ($dc) {
             $filenameResolver = $dc['FilenameResolver'];
             $targetFormat = $dc['OriginalRequest']->getFormat();
 
-            // Set the decorator
+            // Set the default root view template
             if (isset($dc[sprintf('main.%s.template', $targetFormat)])) {
                 $dc['View']->setTemplate($dc[sprintf('main.%s.template', $targetFormat)]);
             }
@@ -525,6 +526,7 @@ class Framework
 
         /* @var \Nethgui\Module\Main */
         $mainModule = $this->dc['Main'];
+        $renderer = $this->dc['Renderer'];
 
         if ( ! $mainModule->isInitialized()) {
             $mainModule->initialize();
@@ -566,7 +568,7 @@ class Framework
         }
 
 
-        $response->setContent($this->dc['Renderer']->render());
+        $response->setContent($renderer->render());
         $response->on('post-response', $postResponseTask);
 
         return $response;
