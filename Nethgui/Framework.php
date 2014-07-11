@@ -168,9 +168,9 @@ class Framework
             return new \Nethgui\Utility\HttpResponse();
         };
 
-        $dc['Main'] = function ($c) {
+        $dc['Main.factory'] = $dc->factory(function ($c) {
             return $c['objectInjector'](new \Nethgui\Module\Main($c['ModuleSet']), $c);
-        };
+        });        
 
         $dc['View'] = function ($c) use (&$urlParts) {
             $rootView = $c['objectInjector'](new \Nethgui\View\View($c['OriginalRequest']->getFormat(), $c['Main'], $c['Translator'], $urlParts), $c);
@@ -523,33 +523,36 @@ class Framework
      */
     public function handle(\Nethgui\Controller\RequestInterface $request)
     {
+        $dc = $this->dc;
+
+        $dc['Main'] = $dc['Main.factory'];
 
         /* @var \Nethgui\Module\Main */
-        $mainModule = $this->dc['Main'];
-        $renderer = $this->dc['Renderer'];
+        $mainModule = $dc['Main'];
+        $renderer = $dc['Renderer'];
 
         if ( ! $mainModule->isInitialized()) {
             $mainModule->initialize();
         }
         $mainModule->bind($request);
-        $mainModule->validate($this->dc['ValidationErrors']);
+        $mainModule->validate($dc['ValidationErrors']);
 
-        if ($this->dc['ValidationErrors']->hasValidationErrors()) {
+        if ($dc['ValidationErrors']->hasValidationErrors()) {
             $request->setAttribute('isValidated', FALSE);
             $nextPath = FALSE;
         } else {
             $request->setAttribute('isValidated', TRUE);
             $mainModule->process();
             // Run the "post-process" event queue (see #506)
-            $this->dc['Platform']->runEvents('post-process');
+            $dc['Platform']->runEvents('post-process');
             $nextPath = $mainModule->nextPath();
         }
 
         /* @var \Nethgui\Utility\HttpResponse */
-        $response = $this->dc['HttpResponse'];
+        $response = $dc['HttpResponse'];
 
 
-        $dc = $this->dc;
+        
         $postResponseTask = function () use ($dc, $request) {
             if ($request->isValidated()) {
                 if ($dc['Session']->isStarted()) {
@@ -560,11 +563,11 @@ class Framework
         };
 
 
-        $mainModule->prepareView($this->dc['View']);
+        $mainModule->prepareView($dc['View']);
 
         if ($nextPath !== FALSE) {
-            $this->dc['Log']->notice('nextPath: ' . $nextPath);
-            $this->dc['View']->getCommandList('/Main')->sendQuery($this->dc['View']->getModuleUrl($nextPath));
+            $dc['Log']->notice('nextPath: ' . $nextPath);
+            $dc['View']->getCommandList('/Main')->sendQuery($dc['View']->getModuleUrl($nextPath));
         }
 
 
