@@ -122,9 +122,11 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
      * @link http://redmine.nethesis.it/issues/196
      * @param type $classList
      * @return \Nethgui\Module\Composite
+     * @deprecated since 1.6
      */
     protected function loadChildren($classList)
     {
+        $this->getLog()->deprecated();
         foreach ($classList as $item) {
             if ( ! is_string($item)) {
                 throw new \InvalidArgumentException(sprintf('%s: $classList elements must be of type String', get_class($this)), 1322148900);
