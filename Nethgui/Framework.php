@@ -140,7 +140,7 @@ class Framework
         };
 
         $dc['ValidationErrors'] = function ($c) {
-            return $c['objectInjector'](new \Nethgui\Model\ValidationErrors($c['UserNotifications']), $c);
+            return $c['objectInjector'](new \Nethgui\Model\ValidationErrors(), $c);
         };
 
         $dc['FilenameResolver'] = $this->getFileNameResolver();

@@ -29,13 +29,19 @@ namespace Nethgui\Module;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Notification extends \Nethgui\Controller\AbstractController implements \Nethgui\Component\DependencyConsumer
+class Notification extends \Nethgui\Module\AbstractModule implements \Nethgui\Component\DependencyConsumer
 {
     /**
      *
      * @var \Nethgui\Model\UserNotifications
      */
     private $notifications;
+
+    public function __construct($identifier = NULL)
+    {
+        parent::__construct($identifier);
+        $this->validationErrors = new \ArrayObject();
+    }
 
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
     {
@@ -47,33 +53,45 @@ class Notification extends \Nethgui\Controller\AbstractController implements \Ne
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
-        if ($view->getTargetFormat() === $view::TARGET_XHTML && count($this->notifications) > 0) {
-            $view->setTemplate(array($this, 'render'));
-        } else {
-            $view->setTemplate(FALSE);
+        if(count($this->validationErrors) > 0) {
+
+            $e = array('fields' => array());
+            foreach($this->validationErrors as $fieldError) {
+                $tmpView = $view->spawnView($fieldError['module']);
+                $e['fields'][] = array(
+                    'label' => $tmpView->translate($fieldError['parameter'] . '_label'),
+                    'name' => $tmpView->getClientEventTarget($fieldError['parameter']),
+                    'parameter' => $tmpView->getUniqueId($fieldError['parameter']),
+                    'reason' => $tmpView->translate($fieldError['message'], $fieldError['args'])
+                );
+            }
+            $this->notifications->validationError($e);
         }
+        $view['notifications'] = \iterator_to_array($this->notifications);
     }
 
-    public function render(\Nethgui\Renderer\Xhtml $renderer)
+    public function setUserNotifications(\Nethgui\Model\UserNotifications $n)
     {
-        $renderer->includeFile('Nethgui/Js/jquery.nethgui.notification.js');
-
-        $panel = $renderer->panel()->setAttribute('tag', 'pre')
-            ->insert($renderer->literal("Notifications:\n\n" . print_r(\iterator_to_array($this->notifications), 1)));
-
-        return (String) $panel;
-    }
-
-    public function setModel(\Nethgui\Model\UserNotifications $model)
-    {
-        $this->notifications = $model;
+        $this->notifications = $n;
         return $this;
+    }
+
+    public function setValidationErrors(\Traversable $errors)
+    {
+        $this->validationErrors = $errors;
+        return $this;
+    }
+
+    public function getTemplates()
+    {
+        return $this->notifications->getTemplates();
     }
 
     public function getDependencySetters()
     {
         return array(
-            'UserNotifications' => array($this, 'setModel')
+            'UserNotifications' => array($this, 'setUserNotifications'),
+            'ValidationErrors' => array($this, 'setValidationErrors')
         );
     }
 

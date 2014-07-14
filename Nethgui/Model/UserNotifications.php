@@ -27,41 +27,28 @@ namespace Nethgui\Model;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.6
  */
-class UserNotifications extends \ArrayObject implements \Nethgui\Log\LogConsumerInterface
+class UserNotifications extends \ArrayObject
 {
 
-    public function error($text)
+    private $templates = array();
+
+    public function defineTemplate($name, $value)
     {
-        $this[] = array(
-            'data' => array(
-                'value' => $text
-                ),
-            'template' => __FUNCTION__
-        );
-        $this->getLog()->error($text);
+        $this->templates[$name] = $value;
         return $this;
     }
 
-    public function info($text)
+    public function getTemplates()
+    {
+        return $this->templates;
+    }
+
+    public function __call($name, $arguments)
     {
         $this[] = array(
-            'data' => array(
-                'value' => $text
-                ),
-            'template' => __FUNCTION__
+            'data' => is_array($arguments[0]) ? $arguments[0] : $arguments,            
+            'template' => $name
         );
-        $this->getLog()->notice($text);
-        return $this;
-    }
-
-    public function getLog()
-    {
-        return $this->log;
-    }
-
-    public function setLog(\Nethgui\Log\LogInterface $log)
-    {
-        $this->log = $log;
         return $this;
     }
 

@@ -1,4 +1,6 @@
-<?php namespace Nethgui\Model;
+<?php
+
+namespace Nethgui\Model;
 
 /*
  * Copyright (C) 2014  Nethesis S.r.l.
@@ -20,34 +22,23 @@
  */
 
 /**
- * This model contains the validation errors
+ * This model keeps the request validation state. A request handler module can
+ * push a validation error it had found here.
  *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.6
  */
-class ValidationErrors implements \Nethgui\Controller\ValidationReportInterface
+class ValidationErrors extends \ArrayObject implements \Nethgui\Controller\ValidationReportInterface
 {
-    private $errors = array();
-
-    public function __construct(\Nethgui\Model\UserNotifications $notifications)
-    {
-        $this->notifications = $notifications;
-    }
-
-    public function getErrors()
-    {
-        return $this->errors;
-    }
 
     public function addValidationErrorMessage(\Nethgui\Module\ModuleInterface $module, $parameterName, $message, $args = array())
     {
-        $this->errors[] = array(
+        $this[] = array(
             'module' => $module,
             'parameter' => $parameterName,
             'message' => $message,
             'args' => $args
         );
-        $this->notifications->error($message);
         return $this;
     }
 
@@ -69,7 +60,7 @@ class ValidationErrors implements \Nethgui\Controller\ValidationReportInterface
 
     public function hasValidationErrors()
     {
-        return count($this->errors) > 0;
+        return count($this) > 0;
     }
 
 }

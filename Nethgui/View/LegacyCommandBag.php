@@ -133,10 +133,6 @@ class LegacyCommandBag extends \ArrayObject implements \Nethgui\Component\Depend
     public function showMessage($text, $type)
     {
         $this->getLog()->deprecated();
-        if ($this->view->getTargetFormat() !== \Nethgui\View\View::TARGET_XHTML) {
-            return $this->__call('showMessage', array($text, $type));
-        }
-
         if ($type === \Nethgui\Module\Notification\AbstractNotification::NOTIFY_ERROR) {
             $this->userNotifications->error($text);
         } else {
