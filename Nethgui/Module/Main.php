@@ -36,7 +36,7 @@ class Main extends \Nethgui\Controller\ListComposite
      * @var \Nethgui\Module\ModuleSetInterface
      */
     private $moduleSet;
-    private $currentModuleIdentifier;
+    private $moduleId;
 
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
     {
@@ -45,10 +45,11 @@ class Main extends \Nethgui\Controller\ListComposite
         return $attributes;
     }
 
-    public function __construct(\Nethgui\Module\ModuleSetInterface $modules)
+    public function __construct(\Nethgui\Module\ModuleSetInterface $modules, $defaultModule = FALSE)
     {
         parent::__construct(FALSE);
         $this->moduleSet = $modules;
+        $this->defaultModule = $defaultModule;
     }
 
     public function bind(\Nethgui\Controller\RequestInterface $request)
@@ -57,10 +58,9 @@ class Main extends \Nethgui\Controller\ListComposite
             return is_array($request->getParameter($p));
         });
 
-        $this->currentModuleIdentifier = \Nethgui\array_head($request->getPath());
-
-        if ( ! $this->currentModuleIdentifier) {
-            throw new \Nethgui\Exception\HttpException('Not found', 404, 1324379721);
+        $this->moduleId = \Nethgui\array_head($request->getPath());
+        if ( ! $this->moduleId) {
+            return;
         }
 
         try {
@@ -94,18 +94,25 @@ class Main extends \Nethgui\Controller\ListComposite
         }
     }
 
-    /**
-     * @return \Nethgui\Module\ModuleInterface
-     */
-    public function getCurrentModule()
+    public function prepareView(\Nethgui\View\ViewInterface $view)
     {
-        return $this->moduleSet->getModule($this->currentModuleIdentifier);
+        parent::prepareView($view);
+        if ($this->moduleId) {
+            $view['moduleView'] = $view[$this->moduleId];
+            unset($view[$this->moduleId]);
+        }
     }
 
     public function nextPath()
     {
+        if ( ! $this->moduleId) {
+            if ($this->defaultModule !== FALSE) {
+                return $this->defaultModule;
+            }
+            throw new \Nethgui\Exception\HttpException('Not found', 404, 1324379721);
+        }
         foreach ($this->getChildren() as $child) {
-            if ($child instanceof \Nethgui\Controller\RequestHandlerInterface && $child->getIdentifier() === $this->currentModuleIdentifier) {
+            if ($child instanceof \Nethgui\Controller\RequestHandlerInterface && $child->getIdentifier() === $this->moduleId) {
                 return $child->nextPath();
             }
         }

@@ -169,7 +169,7 @@ class Framework
         };
 
         $dc['Main.factory'] = $dc->factory(function ($c) {
-            return $c['objectInjector'](new \Nethgui\Module\Main($c['ModuleSet']), $c);
+            return $c['objectInjector'](new \Nethgui\Module\Main($c['ModuleSet'], $c['defaultModuleIdentifier']), $c);
         });        
 
         $dc['View'] = function ($c) use (&$urlParts) {
@@ -216,20 +216,23 @@ class Framework
                         )
             );
 
-            $currentModule = $dc['Main']->getCurrentModule();
+            $currentModule = $renderer['moduleView']->getModule();
 
             // Override currentModuleOutput
             // - We must render CurrentModule before NotificationArea to catch notifications
             if ($currentModule instanceof \Nethgui\Module\ModuleCompositeInterface) {
-                $decoratorView['currentModuleOutput'] = (String) $renderer->inset($currentModule->getIdentifier());
+                $decoratorView['currentModuleOutput'] = (String) $renderer->inset('moduleView');
             } else {
                 $decoratorView['currentModuleOutput'] = (String) $renderer->panel()->setAttribute('class', 'Controller')
-                        ->insert($renderer->inset($currentModule->getIdentifier(), $renderer::INSET_FORM | $renderer::INSET_WRAP)->setAttribute('class', 'Action'));
+                        ->insert($renderer->inset('moduleView', $renderer::INSET_FORM | $renderer::INSET_WRAP)
+                            ->setAttribute('class', 'Action')
+                            ->setAttribute('receiver', $currentModule->getIdentifier()) // FIXME use "id" attribute in Inset widget
+                            );
             }
 
             // Override notificationOutput
             $decoratorView['notificationOutput'] = (String) $renderer->inset('Notification');
-            $decoratorView['moduleTitle'] = $decoratorView->getTranslator()->translate($currentModule, $currentModule->getAttributesProvider()->getTitle());
+            $decoratorView['moduleTitle'] = $dc['Translator']->translate($currentModule, $currentModule->getAttributesProvider()->getTitle());
 
             // Override menuOutput
             $decoratorView['menuOutput'] = (String) $renderer->inset('Menu');
@@ -481,26 +484,21 @@ class Framework
             $request->setSession($this->dc['Session']);
         }
 
-        if (array_head($request->getPath()) === FALSE && $request->getFormat() === 'xhtml') {
-            $redirectUrl = implode('', $this->urlParts) . $this->dc['defaultModuleIdentifier'];
-            $response = new \Nethgui\Utility\HttpResponse('', 302, array('Location: ' . $redirectUrl));
-        } else {
-            try {
-                $response = $this->handle($request);
-            } catch (\Nethgui\Exception\HttpException $ex) {
-                // no processing is required, rethrow:
-                throw $ex;
-            } catch (\Nethgui\Exception\AuthorizationException $ex) {
-                if ($request->getExtension() === 'xhtml' && ! $request->isMutation() && ! $request->getUser()->isAuthenticated()) {
-                    $response = $this->handle($this->createLoginRequest($request));
-                } else {
-                    $log->error(sprintf('%s: [%d] %s', __CLASS__, $ex->getCode(), $ex->getMessage()));
-                    throw new \Nethgui\Exception\HttpException('Forbidden', 403, 1327681977, $ex);
-                }
-            } catch (\Exception $ex) {
-                $log->exception($ex, NETHGUI_DEBUG);
-                throw new \Nethgui\Exception\HttpException('Internal server error', 500, 1366796122, $ex);
+        try {
+            $response = $this->handle($request);
+        } catch (\Nethgui\Exception\HttpException $ex) {
+            // no processing is required, rethrow:
+            throw $ex;
+        } catch (\Nethgui\Exception\AuthorizationException $ex) {
+            if ($request->getExtension() === 'xhtml' && ! $request->isMutation() && ! $request->getUser()->isAuthenticated()) {
+                $response = $this->handle($this->createLoginRequest($request));
+            } else {
+                $log->error(sprintf('%s: [%d] %s', __CLASS__, $ex->getCode(), $ex->getMessage()));
+                throw new \Nethgui\Exception\HttpException('Forbidden', 403, 1327681977, $ex);
             }
+        } catch (\Exception $ex) {
+            $log->exception($ex, NETHGUI_DEBUG);
+            throw new \Nethgui\Exception\HttpException('Internal server error', 500, 1366796122, $ex);
         }
 
         $response->send();
@@ -527,13 +525,13 @@ class Framework
 
         $dc['Main'] = $dc['Main.factory'];
 
-        /* @var \Nethgui\Module\Main */
+        /* @var $mainModule \Nethgui\Module\Main */
         $mainModule = $dc['Main'];
 
-        /* @var \Nethgui\Renderer\AbstractRenderer */
+        /* @var $renderer \Nethgui\Renderer\AbstractRenderer */
         $renderer = $dc['Renderer'];
 
-        /* @var \Nethgui\Utility\HttpResponse */
+        /* @var $response \Nethgui\Utility\HttpResponse */
         $response = $dc['HttpResponse'];
 
         if ( ! $mainModule->isInitialized()) {
@@ -566,7 +564,7 @@ class Framework
         $mainModule->prepareView($dc['View']);
 
         if ($nextPath !== FALSE) {
-            $dc['Log']->notice('nextPath: ' . $nextPath);
+            NETHGUI_DEBUG && $dc['Log']->notice('nextPath: ' . $nextPath);
             $dc['View']->getCommandList('/Main')->sendQuery($dc['View']->getModuleUrl($nextPath));
         }
 
