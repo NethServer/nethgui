@@ -22,10 +22,11 @@ namespace Nethgui\View;
  */
 
 /**
- * TODO: add component description here
+ * This class provides backward support for the View::getCommandList() API
  *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.6
+ * @deprecated since 1.6
  */
 class LegacyCommandBag extends \ArrayObject implements \Nethgui\Component\DependencyConsumer
 {
@@ -47,10 +48,17 @@ class LegacyCommandBag extends \ArrayObject implements \Nethgui\Component\Depend
      */
     public $response;
 
-    public function __construct(\Nethgui\View\View $view)
+    /**
+     *
+     * @var \Pimple\Container
+     */
+    private $dc;
+
+    public function __construct(\Nethgui\View\View $view, \Pimple\Container $dc)
     {
         parent::__construct(array());
         $this->view = $view;
+        $this->dc = $dc;
     }
 
     public function setContext($origin, $selector)
@@ -109,19 +117,23 @@ class LegacyCommandBag extends \ArrayObject implements \Nethgui\Component\Depend
     public function setDecoratorParameter($paramName, $paramValue)
     {
         $this->getLog()->deprecated();
-        $this->view->getModule()->setDecoratorParameter($paramName, $paramValue);
+        $this->dc['decorator.xhtml.params'][$paramName] = $paramValue;
         return $this;
     }
 
     public function setDecoratorTemplate($template)
     {
         $this->getLog()->deprecated();
-        $this->view->getModule()->setDecoratorTemplate($template);
+        if ($this->dc['View']->getTargetFormat() === 'xhtml') {
+            $this->dc['decorator.xhtml.template'] = is_callable($template) ? $this->dc->protect($template) : $template;
+        } else {
+            $this->dc['View']->setTemplate($template);
+        }
         return $this;
     }
 
     public function sendQuery($location)
-    {        
+    {
         if ($this->view->getTargetFormat() === \Nethgui\View\View::TARGET_JSON) {
             return $this->__call('sendQuery', array($location));
         }

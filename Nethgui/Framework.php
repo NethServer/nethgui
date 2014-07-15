@@ -178,7 +178,7 @@ class Framework
             /*
              *  FIXME: remove deprecated features in version 2.0
              */
-            $rootView->commands = $c['objectInjector'](new \Nethgui\View\LegacyCommandBag($rootView), $c);
+            $rootView->commands = $c['objectInjector'](new \Nethgui\View\LegacyCommandBag($rootView, $c), $c);
             /*
              *
              */
