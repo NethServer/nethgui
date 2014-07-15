@@ -276,6 +276,7 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
     public function setLog(\Nethgui\Log\LogInterface $log)
     {
         $this->log = $log;
+        $this->phpWrapper->setLog($log);
         return $this;
     }
 

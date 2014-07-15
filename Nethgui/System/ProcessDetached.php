@@ -228,7 +228,7 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Utility\PhpConsumerI
     }
 
     /**
-     * Dispose the object automatically after five minutes in EXITED states.
+     * Dispose the object automatically after one minute in EXITED states.
      * 
      * @return void
      */
@@ -238,7 +238,7 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Utility\PhpConsumerI
             return;
         }
 
-        if ($this->phpWrapper->microtime(TRUE) - floatval($this->times[self::STATE_EXITED]) > 300.0) {
+        if ($this->phpWrapper->microtime(TRUE) - floatval($this->times[self::STATE_EXITED]) > 60.0) {
             $this->dispose();
         }
     }
@@ -314,8 +314,8 @@ class ProcessDetached implements ProcessInterface, \Nethgui\Utility\PhpConsumerI
             return;
         }
 
-        @$this->phpWrapper->unlink($this->errorFile);
-        @$this->phpWrapper->unlink($this->outputFile);
+        $this->phpWrapper->unlink($this->errorFile);
+        $this->phpWrapper->unlink($this->outputFile);
     }
 
 }
