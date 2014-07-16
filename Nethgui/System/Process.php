@@ -53,7 +53,7 @@ class Process implements ProcessInterface, \Nethgui\Utility\PhpConsumerInterface
      * @var integer
      */
     private $state;
-    private $outputRed;
+    private $outputRead;
 
     /**
      *
@@ -82,7 +82,7 @@ class Process implements ProcessInterface, \Nethgui\Utility\PhpConsumerInterface
         $this->changeState(self::STATE_NEW);
         $this->output = array();
         $this->exitStatus = FALSE;
-        $this->outputRed = FALSE;
+        $this->outputRead = FALSE;
         $this->identifier = uniqid();
         $this->times = array();
     }
@@ -166,8 +166,8 @@ class Process implements ProcessInterface, \Nethgui\Utility\PhpConsumerInterface
 
     public function readOutput()
     {
-        if ($this->outputRed === FALSE) {
-            $this->outputRed = TRUE;
+        if ($this->outputRead === FALSE) {
+            $this->outputRead = TRUE;
             return $this->getOutput();
         }
 
