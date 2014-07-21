@@ -17,9 +17,9 @@ $t['validationError'] = '{{#data}}<dl class="fields">{{#fields}}
 ';
 
 $view->includeCss("
-#Notification .error, 
-#Notification .validationError {color: #cd0a0a; background-color: #fef1ec; border-color: #cd0a0a}
-#Notification .validationError a {color: #cd0a0a}
+#Notification li.error,
+#Notification li.validationError {color: #cd0a0a; background-color: #fef1ec; border-color: #cd0a0a}
+#Notification li.validationError a {color: #cd0a0a}
 #Notification dd {margin-bottom: .25em}
 ");
 
@@ -45,3 +45,7 @@ foreach($view['notifications'] as $n) {
 
 echo sprintf('<div id="%s" class="Notifications %s"><ul>%s</ul></div>', $panelId, $viewTarget, $contents);
 
+$view->includeJavascript("
+jQuery(document).ready(function($) {
+    $('#${panelId} li').Component();
+});");

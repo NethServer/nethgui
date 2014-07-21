@@ -29,6 +29,7 @@
                 $('<li />', {'class': 'notification ' + notification.template}).appendTo(ul)
                         .append($('<span />', {'class': 'pre fa ' + notification.icon}))
                         .append($('<span />', {'class': 'content'}).html(Mustache.render(tmpl, notification)))
+                        .Component()
                 ;
                 if($.nethgui.Notification.callbacks[notification.template]) {
                      $.nethgui.Notification.callbacks[notification.template].call(self, notification)
