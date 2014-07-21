@@ -143,6 +143,10 @@ class Framework
             return $c['objectInjector'](new \Nethgui\Model\ValidationErrors(), $c);
         };
 
+        $dc['SystemTasks'] = function ($c) {
+            return $c['objectInjector'](new \Nethgui\Model\SystemTasks($c['Log']), $c);
+        };
+
         $dc['FilenameResolver'] = $this->getFileNameResolver();
 
         $dc['ModuleSet'] = function ($c) {
@@ -157,7 +161,7 @@ class Framework
         };
 
         $dc['Platform'] = function ($c) {
-            return $c['objectInjector'](new \Nethgui\System\NethPlatform($c['User']), $c);
+            return $c['objectInjector'](new \Nethgui\System\NethPlatform($c['User'], $c['SystemTasks']), $c);
         };
 
         $dc['Translator'] = function ($c) {

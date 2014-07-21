@@ -4,7 +4,8 @@
     "require": {
         "pimple/pimple": "~2.1",
 	"mustache/mustache": "~2.6",
-	"koala-framework/library-mustache-js": "~0.8"
+	"koala-framework/library-mustache-js": "~0.8",
+	"symfony/Process": "v2.5.2"
     },
     "license": "GPL-3.0+",
     "authors": [
