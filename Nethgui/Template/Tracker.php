@@ -1,0 +1,62 @@
+<?php
+
+/* @var $view \Nethgui\Renderer\Xhtml  */
+$target = $view->getClientEventTarget('dialog');
+
+echo  $view->panel()->setAttribute('receiver', '')->setAttribute('class', $target)
+    ->insert($view->progressBar('progress'))
+    ->insert($view->textLabel('message'));
+
+$view->includeCss("
+/*.trackerDialog .ui-dialog-titlebar-close  {display: none}*/
+#Tracker {display:none}
+#Notification li.trackerError {color: #cd0a0a; background-color: #fef1ec; border-color: #cd0a0a}
+");
+
+$closeLabel = json_encode($view->translate("Close_label"));
+
+$view->includeJavascript("
+jQuery(document).ready(function($) {
+
+    var tid;  // the timeout id
+    var xhr;  // the last ajax request
+
+    $('#Tracker').dialog({
+        autoOpen: false,
+        closeOnEscape: false,
+        modal: true,
+        dialogClass: 'trackerDialog',
+        buttons: {
+            $closeLabel: function () {
+                $(this).dialog('close');
+                if(tid) {
+                    window.clearTimeout(tid);
+                }
+                tid = false;
+                if(xhr) {
+                    try {
+                        xhr.abort();
+                    } catch (e) {
+                        //pass
+                    }
+                }
+                xhr = false;
+            }
+        }
+    }).on('nethguiupdateview', function (e, value, selector) {
+        if( ! $.isPlainObject(value)) {
+            $(this).dialog('close');
+            return;
+        }
+        
+        $(this).dialog(value.action).dialog('option', 'title', value.title);
+
+        if(value.nextPath) {
+            tid = window.setTimeout(function() {
+                xhr = $.Nethgui.Server.ajaxMessage({
+                    url: value.nextPath
+                });
+            }, value.sleep);
+        }
+    }).Component();
+});");

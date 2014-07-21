@@ -233,6 +233,9 @@ class Framework
                             ->setAttribute('receiver', $currentModule->getIdentifier()) // FIXME use "id" attribute in Inset widget
                             );
             }
+            if($currentModule->getIdentifier() !== 'Tracker') {
+                $decoratorView['currentModuleOutput'] .= (String) $renderer->inset('Tracker');
+            }
 
             // Override notificationOutput
             $decoratorView['notificationOutput'] = (String) $renderer->inset('Notification');
@@ -300,7 +303,7 @@ class Framework
             $dc['HttpResponse']->addHeader(sprintf('Content-Type: %s', $renderer->getContentType()) . (
                 $renderer->getCharset() ? sprintf('; charset=%s', $renderer->getCharset()) : '')
             );
-
+            
             return $dc['objectInjector']($renderer, $dc);
         };
 
