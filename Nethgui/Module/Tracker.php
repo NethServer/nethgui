@@ -99,13 +99,18 @@ class Tracker extends \Nethgui\Controller\AbstractController implements \Nethgui
         $errors = array();
         $nodes = $data['tasks'];
 
-        while($elem = array_shift($nodes)) {
-            if ($elem['code'] !== 0) {
-                $errors[] = array(
-                    'title' => $elem['title'],
-                    'message' => $elem['message']
-                );
-                $nodes = array_merge($nodes, $elem['children']);
+        while ($elem = array_shift($nodes)) {
+            if ($elem['code'] !== NULL && $elem['code'] !== 0) {
+                if (count($elem['children']) > 0) {
+                    $nodes = array_merge($nodes, $elem['children']);
+                } else {
+                    $errors[] = array(
+                        'title' => $elem['title'],
+                        'message' => $elem['message'],
+                        'code' => $elem['code'],
+                        'id' => $elem['id']
+                    );
+                }
             }
         }
 
@@ -143,7 +148,7 @@ class Tracker extends \Nethgui\Controller\AbstractController implements \Nethgui
             '{{btnLabel}}' => $view->translate('Tracker_button_label')
         )));
 
-        $this->notifications->defineTemplate('trackerError', strtr('<span>{{genericLabel}}</span> <dl>{{#data.failedTasks}}<dt>{{title}}</dt><dd class="wspreline">{{message}}</dd>{{/data.failedTasks}}</dl>', array(
+        $this->notifications->defineTemplate('trackerError', strtr('<span>{{genericLabel}}</span> <dl>{{#data.failedTasks}}<dt>{{title}} #{{id}} (code {{code}})</dt><dd class="wspreline">{{message}}</dd>{{/data.failedTasks}}</dl>', array(
             '{{genericLabel}}' => $view->translate('Tracker_task_error_message')
         )));
 

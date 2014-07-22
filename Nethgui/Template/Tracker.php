@@ -5,12 +5,17 @@ $target = $view->getClientEventTarget('dialog');
 
 echo  $view->panel()->setAttribute('receiver', '')->setAttribute('class', $target)
     ->insert($view->progressBar('progress'))
-    ->insert($view->textLabel('message')->setAttribute('class', 'wspreline'));
+    ->insert($view->textLabel('message')->setAttribute('class', 'wspreline')->setAttribute('tag', 'div'));
+
+$messageTarget = $view->getClientEventTarget('message');
 
 $view->includeCss("
-/*.trackerDialog .ui-dialog-titlebar-close  {display: none}*/
 #Tracker {display:none}
 #Notification li.trackerError {color: #cd0a0a; background-color: #fef1ec; border-color: #cd0a0a}
+.trackerError dt:before { content: \"\\2192\\20\" }
+.trackerError dt { margin-top: .2em}
+.trackerError dd { margin: 0 0 0 1em }
+.${messageTarget} { min-height: 2.5em }
 ");
 
 $closeLabel = json_encode($view->translate("Close_label"));
