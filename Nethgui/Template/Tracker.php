@@ -5,7 +5,7 @@ $target = $view->getClientEventTarget('dialog');
 
 echo  $view->panel()->setAttribute('receiver', '')->setAttribute('class', $target)
     ->insert($view->progressBar('progress'))
-    ->insert($view->textLabel('message'));
+    ->insert($view->textLabel('message')->setAttribute('class', 'wspreline'));
 
 $view->includeCss("
 /*.trackerDialog .ui-dialog-titlebar-close  {display: none}*/

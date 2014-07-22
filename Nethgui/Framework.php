@@ -234,7 +234,7 @@ class Framework
                             );
             }
             if($currentModule->getIdentifier() !== 'Tracker') {
-                $decoratorView['currentModuleOutput'] .= (String) $renderer->inset('Tracker');
+                $decoratorView['currentModuleOutput'] .= (String) $renderer->inset('Tracker', $renderer::STATE_UNOBSTRUSIVE);
             }
 
             // Override notificationOutput

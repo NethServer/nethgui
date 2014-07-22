@@ -89,7 +89,7 @@ class Tracker extends \Nethgui\Controller\AbstractController implements \Nethgui
             }
         } else {
             $view['progress'] = intval(100 * $data['progress']);
-            $view['message'] = $data['last']['title'];
+            $view['message'] = trim($data['last']['title'] . "\n" . $data['last']['message']);
             $view['dialog'] = array('title' => $view->translate('Tracker_title_taskRunning'), 'action' => 'open', 'sleep' => 4000, 'nextPath' => $view->getModuleUrl($this->taskId));
         }
     }
@@ -119,6 +119,8 @@ class Tracker extends \Nethgui\Controller\AbstractController implements \Nethgui
             // Notify that the task is running:
             $this->notifications->trackerRunning(array('taskId' => $firstRunningTask));
             $view['dialog'] = FALSE;
+            $view['progress'] = FALSE;
+            $view['message'] = '';
             return;
         }
 
