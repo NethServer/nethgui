@@ -81,11 +81,11 @@ class Tracker extends \Nethgui\Controller\AbstractController implements \Nethgui
     {
         $data = $this->systemTasks->getTaskStatus($this->taskId);
         if (isset($data['exit_code'])) {
-            $view['progress'] = intval(100 * $data['progress']['progress']);
+            $view['progress'] = intval(100 * $data['progress']);
             $view['message'] = $view->translate('Tracker_title_taskCompleted');
             $view['dialog'] = array('title' => $view->translate('Tracker_title_taskFinished'), 'action' => 'close');
             if ($data['exit_code'] !== 0) {
-                $this->notifications->trackerError(array('failedTasks' => $this->findFailedSubtasks($data)));
+                $this->notifications->trackerError(array('failedTasks' => $this->findFailures($data)));
             }
         } else {
             $view['progress'] = intval(100 * $data['progress']);
@@ -94,14 +94,24 @@ class Tracker extends \Nethgui\Controller\AbstractController implements \Nethgui
         }
     }
 
-    private function findFailedSubtasks($data)
+    /**
+     * Walk into the task tree dump, and find what has gone wrong.
+     *
+     * Recursion stops on non-leaf tasks for any of the following conditions:
+     * - task has null/zero exit code
+     * - task has non-zero exit code AND an error message (reason)
+     *
+     * @param array $data
+     * @return array
+     */
+    private function findFailures($data)
     {
         $errors = array();
-        $nodes = $data['tasks'];
+        $nodes = array($data);
 
         while ($elem = array_shift($nodes)) {
-            if ($elem['code'] !== NULL && $elem['code'] !== 0) {
-                if (count($elem['children']) > 0) {
+            if (isset($elem['exit_code']) || intval($elem['code']) != 0) {                
+                if (count($elem['children']) > 0 && ! $elem['message']) {
                     $nodes = array_merge($nodes, $elem['children']);
                 } else {
                     $errors[] = array(

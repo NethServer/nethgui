@@ -73,7 +73,7 @@ abstract class AbstractLog implements LogInterface, \Nethgui\Utility\PhpConsumer
             return $this;
         }
 
-        $message = sprintf('%s: %s (in %s:%d)', get_class($ex),
+        $message = sprintf('%s %s: %s (in %s:%d)', get_class($ex), $ex->getCode(),
             $ex->getMessage(), $ex->getFile(), $ex->getLine());
         $this->message(__FUNCTION__, $message);
 
