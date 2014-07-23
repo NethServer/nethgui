@@ -51,12 +51,10 @@ class Process extends \Symfony\Component\Process\Process implements ProcessInter
         $this->log->deprecated();
         if ($this->background === TRUE) {
             // Bypass Symfony Process harness and let it go:
-            exec($this->getCommandLine() . ' </dev/null >/dev/null 2>/dev/null &');
+            exec(sprintf('/bin/env PTRACK_SOCKETPATH=/var/run/ptrack/%s.sock /usr/bin/setsid /usr/libexec/nethserver/ptrack %s </dev/null >/dev/null 2>/dev/null &', $this->getIdentifier(), $this->getCommandLine()));
         } else {
             $this->run();
         }
-        $this->log->notice(__CLASS__ . ' ' . $this->getCommandLine() . ' ' . $this->getStatus() . ' pid ' . $this->getPid());
-
         return $this;
     }
 

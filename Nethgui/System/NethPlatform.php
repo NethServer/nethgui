@@ -266,20 +266,15 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
      */
     private function createCommandObject($command, $arguments, $detached)
     {
-        if ($detached === TRUE) {
-            $identifier = 'B' . md5(uniqid());
-            $commandObject = new \Nethgui\System\Process(sprintf('/bin/env PTRACK_SOCKETPATH=/var/run/ptrack/%s.sock /usr/bin/setsid /usr/libexec/nethserver/ptrack %s', $identifier, $command), $arguments);
+        $process = new \Nethgui\System\Process($command, $arguments);
+        $identifier = ($detached ? 'B' : 'F') . md5(uniqid());
+        if ($detached === TRUE) {            
             $this->tasks->setTaskStarting($identifier);
-        } else {
-            $identifier = 'F' . md5(uniqid());
-            $commandObject = new \Nethgui\System\Process($command, $arguments);
         }
-
-        $commandObject->setIdentifier($identifier);
-        $commandObject->background = $detached;
-        $commandObject->log = $this->getLog();
-
-        return $commandObject;
+        $process->setIdentifier($identifier);
+        $process->background = $detached;
+        $process->log = $this->getLog();
+        return $process;
     }
 
     public function getLog()
