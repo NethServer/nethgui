@@ -149,20 +149,13 @@ class Tracker extends \Nethgui\Controller\AbstractController implements \Nethgui
         }
     }
 
+    public function defineNotificationTemplate($name, $value) {
+        $this->notifications->defineTemplate($name, $value);
+        return $this;
+    }
+
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
-        // Define a notification template that opens the first running task details:
-        $this->notifications->defineTemplate('trackerRunning', strtr('<span>{{message}}</span> <a class="Button link" href="{{btnLink}}">{{btnLabel}}</a>', array(
-            '{{message}}' => $view->translate('Tracker_running_tasks_message'),
-            '{{btnLink}}' => $view->getModuleUrl('/Tracker/{{data.taskId}}'),
-            '{{btnLabel}}' => $view->translate('Tracker_button_label')
-        )));
-
-        $this->notifications->defineTemplate('trackerError', strtr('<span>{{genericLabel}}</span> <dl>{{#data.failedTasks}}<dt>{{title}} #{{id}} (code {{code}})</dt><dd class="wspreline">{{message}}</dd>{{/data.failedTasks}}</dl>', array(
-            '{{genericLabel}}' => $view->translate('Tracker_task_error_message')
-        )));
-
-
         parent::prepareView($view);
         if ($this->taskId === FALSE) {
             $this->prepareInitializationView($view);
@@ -183,11 +176,18 @@ class Tracker extends \Nethgui\Controller\AbstractController implements \Nethgui
         return $this;
     }
 
+    public function setModuleSet(\Nethgui\Module\ModuleSetInterface $s)
+    {
+        $this->moduleSet = $s;
+        return $this;
+    }
+
     public function getDependencySetters()
     {
         return array(
             'SystemTasks' => array($this, 'setSystemTasks'),
-            'UserNotifications' => array($this, 'setUserNotifications')
+            'UserNotifications' => array($this, 'setUserNotifications'),
+            'ModuleSet' => array($this, 'setModuleSet')
         );
     }
 

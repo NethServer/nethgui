@@ -27,10 +27,10 @@ $jsCode = '';
 foreach($t as $templateName => $templateValue) {
     $escn = json_encode($templateName);
     $escv = json_encode($templateValue);
-    $jsCode .= "\n    $.nethgui.Notification.templates[$escn] = $escv;\n";
+    $jsCode .= "\n    $.nethgui.Notification.templates[$escn] = $escv;";
 }
 
-$view->includeJavascript(sprintf("\n(function( $ ) {\n%s\n}( jQuery ));\n", $jsCode));
+$view->includeJavascript(sprintf("\n(function( $ ) {%s\n}( jQuery ));\n", $jsCode));
 
 if(empty($view['notifications'])) {
     echo sprintf('<div id="%s" class="Notifications %s" ></div>', $panelId, $viewTarget);
