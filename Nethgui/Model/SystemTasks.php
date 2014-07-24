@@ -114,7 +114,6 @@ class SystemTasks
         return $this;
     }
 
-
     private function fetchTaskStatus($taskId)
     {
         $socketPath = sprintf(self::PTRACK_PATH_TEMPLATE, $taskId);

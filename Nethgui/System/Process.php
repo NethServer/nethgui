@@ -46,12 +46,31 @@ class Process extends \Symfony\Component\Process\Process implements ProcessInter
         throw new \LogicException(sprintf("%s: %s is not supported", __CLASS__, __FUNCTION__), 1405516179);
     }
 
+    private $conditions = array();
+
+    public function on($condition, $description)
+    {
+        $this->conditions[$condition] = $description;
+        return $this;
+    }
+
     public function exec()
     {
         $this->log->deprecated();
         if ($this->background === TRUE) {
             // Bypass Symfony Process harness and let it go:
-            exec(sprintf('/bin/env PTRACK_SOCKETPATH=/var/run/ptrack/%s.sock /usr/bin/setsid /usr/libexec/nethserver/ptrack %s </dev/null >/dev/null 2>/dev/null &', $this->getIdentifier(), $this->getCommandLine()));
+            $cmd = sprintf('/usr/libexec/nethserver/ptrack %s', $this->getCommandLine());
+            $p = popen($cmd, 'w');
+            $ui = array(
+                'socketPath' => sprintf('/var/run/ptrack/%s.sock', $this->getIdentifier()),
+                'conditions' => $this->conditions,
+                'starttime' => microtime(TRUE),
+                'taskId' => $this->getIdentifier(),
+                'debug' => \NETHGUI_DEBUG
+            );
+            fwrite($p, json_encode($ui));
+            pclose($p);
+
         } else {
             $this->run();
         }

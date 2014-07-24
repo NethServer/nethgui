@@ -77,20 +77,96 @@ class Tracker extends \Nethgui\Controller\AbstractController implements \Nethgui
         }
     }
 
+    private function applyTaskUiDefaults($ui, $context)
+    {
+        extract($context, EXTR_REFS);
+
+        return array_replace_recursive(array('conditions' => array(
+            'running' => array(
+                'dialog' => array(
+                    'action' => 'open',
+                    'title' => $view->translate('Tracker_title_taskRunning'),
+                ),
+                'location' => array(
+                    'url' => function($data) use ($view) {
+                        return $view->getModuleUrl($data['taskInfo']['id']);
+                    },
+                    'sleep' => 4000,
+                    'freeze' => FALSE,
+                ),
+                'message' => function($data) {
+                return trim($data['last']['title'] . "\n" . $data['last']['message']);
+            },
+                'notification' => FALSE
+            ),
+            'success' => array(
+                'dialog' => array(
+                    'action' => 'close',
+                    'title' => '',
+                ),
+                'location' => FALSE,
+                'message' => "",
+                'notification' => FALSE,
+            ),
+            'failure' => array(
+                'dialog' => array(
+                    'action' => 'close',
+                    'title' => '',
+                ),
+                'location' => FALSE,
+                'message' => "",
+                'notification' => array(
+                    'data' => function($data) {
+                        return array('failedTasks' => \Nethgui\Module\Tracker::findFailures($data));
+                    },
+                    'template' => 'trackerError',
+                ),
+            ),
+            )), is_array($ui) ? $ui : array());
+    }
+
+    private function evalUiStatus($A, $data)
+    {
+        array_walk_recursive($A, function(&$v) use ($data) {
+            if (is_callable($v)) {
+                $v = call_user_func($v, $data);
+            }
+        });
+
+        if(isset($A['location']['url'])) {
+            $url = &$A['location']['url'];
+            $url = strtr($url, array('{taskId}' => $this->taskId));
+        }
+
+        return $A;
+    }
+
     private function prepareRunningTaskView(\Nethgui\View\ViewInterface $view)
     {
         $data = $this->systemTasks->getTaskStatus($this->taskId);
+        $ui = $this->applyTaskUiDefaults(isset($data['ui']) ? $data['ui'] : array(), array('view' => $view, 'notifications' => $this->notifications));
+        
+        $status = 'running';
         if (isset($data['exit_code'])) {
-            $view['progress'] = intval(100 * $data['progress']);
-            $view['message'] = $view->translate('Tracker_title_taskCompleted');
-            $view['dialog'] = array('title' => $view->translate('Tracker_title_taskFinished'), 'action' => 'close');
-            if ($data['exit_code'] !== 0) {
-                $this->notifications->trackerError(array('failedTasks' => $this->findFailures($data)));
-            }
-        } else {
-            $view['progress'] = intval(100 * $data['progress']);
-            $view['message'] = trim($data['last']['title'] . "\n" . $data['last']['message']);
-            $view['dialog'] = array('title' => $view->translate('Tracker_title_taskRunning'), 'action' => 'open', 'sleep' => 4000, 'nextPath' => $view->getModuleUrl($this->taskId));
+            $status = $data['exit_code'] ? 'failure' : 'success';
+        }
+
+        $data['taskInfo'] = array('id' => $this->taskId);
+        $s = $this->evalUiStatus($ui['conditions'][$status], $data);
+
+
+        $view['progress'] = intval(100 * $data['progress']);
+        $view['message'] = $s['message'];
+        $view['trackerState'] = array(
+            'dialog' => $s['dialog'],
+            'location' => $s['location']
+        );
+
+        if(is_array($s['notification'])) {
+            call_user_func(array($this->notifications, $s['notification']['template']), $s['notification']['data']);
+            unset($view['notification']);
+        } elseif(is_string($s['notification'])) {
+            $this->notifications->notice($s['notification']);
         }
     }
 
@@ -104,13 +180,13 @@ class Tracker extends \Nethgui\Controller\AbstractController implements \Nethgui
      * @param array $data
      * @return array
      */
-    private function findFailures($data)
+    public static function findFailures($data)
     {
         $errors = array();
         $nodes = array($data);
 
         while ($elem = array_shift($nodes)) {
-            if (isset($elem['exit_code']) || intval($elem['code']) != 0) {                
+            if (isset($elem['exit_code']) || intval($elem['code']) != 0) {
                 if (count($elem['children']) > 0 && ! $elem['message']) {
                     $nodes = array_merge($nodes, $elem['children']);
                 } else {
@@ -133,7 +209,7 @@ class Tracker extends \Nethgui\Controller\AbstractController implements \Nethgui
         if ($firstRunningTask) {
             // Notify that the task is running:
             $this->notifications->trackerRunning(array('taskId' => $firstRunningTask));
-            $view['dialog'] = FALSE;
+            $view['trackerState'] = FALSE;
             $view['progress'] = FALSE;
             $view['message'] = '';
             return;
@@ -143,13 +219,17 @@ class Tracker extends \Nethgui\Controller\AbstractController implements \Nethgui
         if ($firstStartingTask) {
             $view['progress'] = 0;
             $view['message'] = '...';
-            $view['dialog'] = array('title' => $view->translate('Tracker_title_taskStarting'), 'action' => 'open', 'sleep' => 2000, 'nextPath' => $view->getModuleUrl($firstStartingTask));
+            $view['trackerState'] = array(
+                'dialog' => array('title' => $view->translate('Tracker_title_taskStarting'), 'action' => 'open'),
+                'location' => array('sleep' => 2000, 'url' => $view->getModuleUrl($firstStartingTask))
+            );
             $this->notifications->trackerRunning(array('taskId' => $firstStartingTask));
             return;
         }
     }
 
-    public function defineNotificationTemplate($name, $value) {
+    public function defineNotificationTemplate($name, $value)
+    {
         $this->notifications->defineTemplate($name, $value);
         return $this;
     }

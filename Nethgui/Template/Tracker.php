@@ -1,9 +1,9 @@
 <?php
 
 /* @var $view \Nethgui\Renderer\Xhtml  */
-$target = $view->getClientEventTarget('dialog');
+$trackerStateTarget = $view->getClientEventTarget('trackerState');
 
-echo  $view->panel()->setAttribute('receiver', '')->setAttribute('class', $target)
+echo  $view->panel()->setAttribute('receiver', '')->setAttribute('class', $trackerStateTarget)
     ->insert($view->progressBar('progress'))
     ->insert($view->textLabel('message')->setAttribute('class', 'wspreline')->setAttribute('tag', 'div'));
 
@@ -37,6 +37,35 @@ jQuery(document).ready(function($) {
     var tid;  // the timeout id
     var xhr;  // the last ajax request
 
+    var updateDialog = function(value) {
+        $('body > .ui-widget-overlay').css('cursor', value.action == 'open' ? 'progress' : 'auto');
+
+        if(value.action) {
+            $(this).dialog(value.action);
+        }
+
+        if(value.title) {
+            $(this).dialog('option', 'title', value.title);
+        }
+    };
+
+    var updateLocation = function(value) {
+        if( ! value.url) {
+            return;
+        }
+        var sendQuery = function() {
+            xhr = $.Nethgui.Server.ajaxMessage({
+                url: value.url,
+                freezeElement: value.freeze ? $('#Tracker') : false
+            });
+        };
+        if(value.sleep > 0) {
+            tid = window.setTimeout(sendQuery, value.sleep);
+        } else {
+            tid = false; sendQuery();
+        }
+    };
+
     $('#Tracker').dialog({
         autoOpen: false,
         closeOnEscape: false,
@@ -64,15 +93,11 @@ jQuery(document).ready(function($) {
             $(this).dialog('close');
             return;
         }
-        
-        $(this).dialog(value.action).dialog('option', 'title', value.title);
-
-        if(value.nextPath) {
-            tid = window.setTimeout(function() {
-                xhr = $.Nethgui.Server.ajaxMessage({
-                    url: value.nextPath
-                });
-            }, value.sleep);
+        if($.isPlainObject(value.dialog)) {
+            updateDialog.call(this, value.dialog);
+        }
+        if($.isPlainObject(value.location)) {
+            updateLocation.call(this, value.location);
         }
     }).Component();
 });");
