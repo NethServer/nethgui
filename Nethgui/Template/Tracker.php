@@ -58,6 +58,11 @@ jQuery(document).ready(function($) {
                 url: value.url,
                 freezeElement: value.freeze ? $('#Tracker') : false
             });
+            if( value.show ) {
+                xhr.done(function () {
+                    $('#' + value.show).trigger('nethguishow');
+                });
+            }
         };
         if(value.sleep > 0) {
             tid = window.setTimeout(sendQuery, value.sleep);
