@@ -1,4 +1,5 @@
 <?php
+
 namespace Nethgui\Module;
 
 /*
@@ -28,140 +29,70 @@ namespace Nethgui\Module;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class Notification extends \Nethgui\Controller\AbstractController implements \Nethgui\View\CommandReceiverInterface, \Nethgui\Utility\SessionConsumerInterface
+class Notification extends \Nethgui\Module\AbstractModule implements \Nethgui\Component\DependencyConsumer
 {
+    /**
+     *
+     * @var \Nethgui\Model\UserNotifications
+     */
+    private $notifications;
+
+    public function __construct($identifier = NULL)
+    {
+        parent::__construct($identifier);
+        $this->validationErrors = new \ArrayObject();
+    }
 
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
     {
         $attributes = new SystemModuleAttributesProvider();
         $attributes->initializeFromModule($this);
         return $attributes;
-    }    
-    
-    public function __construct($identifier = NULL)
-    {
-        parent::__construct($identifier);
-        $this->notifications = new \ArrayObject();
-    }
-
-    public function setSession(\Nethgui\Utility\SessionInterface $session)
-    {
-        $key = get_class($this);
-
-        $s = $session->retrieve($key);
-
-        if ($s instanceof $this->notifications) {
-            $this->notifications = $s;
-        } else {
-            $session->store($key, $this->notifications);
-        }
-
-        // Update notification state after retrieving objects from session:
-        foreach (new \ArrayIterator($this->notifications) as $index => $notification) {
-            if ( ! $notification instanceof \Nethgui\Module\Notification\AbstractNotification) {
-                throw new \UnexpectedValueException(sprintf('%s: notifications must be instances of class \Nethgui\Module\Notification\AbstractNotification', get_class($this)), 1323168952);
-            }
-
-            // Transient notifications are dismissed:
-            if ($notification->isTransient()) {
-                $notification->dismiss();
-            }
-
-            // Dismissed notifications are dropped:
-            if ($notification->isDismissed()) {
-                unset($this->notifications[$index]);
-            }
-        }
-        return $this;
-    }
-
-    public function initialize()
-    {
-        parent::initialize();
-        $this->declareParameter('dismiss', '/^[a-zA-Z0-9]+$/');
     }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
-        if ($view->getTargetFormat() === $view::TARGET_XHTML) {
-            $view->setTemplate(array($this, 'render'));
-        } else {
-            $view->setTemplate(FALSE);
-        }
+        if(count($this->validationErrors) > 0) {
 
-        // Sends a dismiss command to itself:
-        if ($this->parameters['dismiss']) {
-            unset($view['dismiss']);
-            $view->getCommandList()->dismissNotification($this->parameters['dismiss']);
-        }
-
-        $this->view = $view;
-
-        // Transfer notification attributes into the view
-        foreach ($this->notifications as $notification) {
-            $this->updateViewData($notification);
-        }
-    }
-
-    public function render(\Nethgui\Renderer\Xhtml $renderer)
-    {
-        $renderer->includeFile('Nethgui/Js/jquery.nethgui.notification.js');
-
-        $panel = $renderer->panel()->setAttribute('name', 'Pane')->setAttribute('receiver', '');
-
-        foreach ($renderer as $offset => $innerView) {
-            if ( ! $innerView instanceof \Nethgui\View\ViewInterface
-                || $innerView['dismissed'] === TRUE) {
-                continue;
+            $e = array('fields' => array());
+            foreach($this->validationErrors as $fieldError) {
+                $tmpView = $view->spawnView($fieldError['module']);
+                $e['fields'][] = array(
+                    'label' => $tmpView->translate($fieldError['parameter'] . '_label'),
+                    'name' => $tmpView->getClientEventTarget($fieldError['parameter']),
+                    'parameter' => $tmpView->getUniqueId($fieldError['parameter']),
+                    'reason' => $tmpView->translate($fieldError['message'], $fieldError['args'])
+                );
             }
-
-            $panel->insert($renderer->inset($offset));
+            $this->notifications->validationError($e);
         }
-
-        return (String) $panel;
+        $view['notifications'] = \iterator_to_array($this->notifications);
     }
 
-    public function executeCommand(\Nethgui\View\ViewInterface $origin, $selector, $name, $arguments)
+    public function setUserNotifications(\Nethgui\Model\UserNotifications $n)
     {
-        if ($name === 'showNotification') {
-            $this->showNotification($arguments[0]);
-        } elseif ($name === 'showMessage') {
-            if ( ! isset($arguments[1])) {
-                $arguments[1] = \Nethgui\Module\Notification\AbstractNotification::NOTIFY_SUCCESS;
-            }
-
-            $notification = new \Nethgui\Module\Notification\TextNotification($origin->getModule(), $arguments[0], $arguments[1]);
-
-            $this->showNotification($notification);
-        } elseif ($name === 'dismissNotification') {
-            $this->dismissNotification($arguments[0]);
-        }
+        $this->notifications = $n;
+        return $this;
     }
 
-    protected function dismissNotification($notificationId)
+    public function setValidationErrors(\Traversable $errors)
     {
-        if (isset($this->notifications[$notificationId])) {
-            $this->notifications[$notificationId]->dismiss();
-            $this->updateViewData($this->notifications[$notificationId]);
-        }
+        $this->validationErrors = $errors;
+        return $this;
     }
 
-    protected function showNotification(\Nethgui\Module\Notification\AbstractNotification $notification)
+    public function getTemplates()
     {
-        $id = $notification->getIdentifier();
-        $this->notifications[$id] = $notification;
-        $this->updateViewData($notification);
+        return $this->notifications->getTemplates();
     }
 
-    protected function updateViewData(\Nethgui\Module\Notification\AbstractNotification $notification)
+    public function getDependencySetters()
     {
-        if ( ! isset($this->view)) {
-            return;
-        }
-        $innerView = $this->view->spawnView($this);
-        $notification->prepareView($innerView);
-        $this->view[$notification->getIdentifier()] = $innerView;
+        return array(
+            'UserNotifications' => array($this, 'setUserNotifications'),
+            'ValidationErrors' => array($this, 'setValidationErrors')
+        );
     }
 
 }

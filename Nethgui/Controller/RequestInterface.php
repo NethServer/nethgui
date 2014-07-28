@@ -76,7 +76,7 @@ interface RequestInterface
      *
      * @param string $argumentName
      * @return bool
-     * @deprecated
+     * @deprecated since 1.2.4
      */
     public function hasArgument($argumentName);
 
@@ -94,7 +94,7 @@ interface RequestInterface
      * Get a list of argument names
      *
      * @return array
-     * @deprecated
+     * @deprecated since 1.2.4
      */
     public function getArgumentNames();
 
@@ -145,7 +145,8 @@ interface RequestInterface
      * "File extension" is the substring after the last "." character in the
      * URL path.
      *
-     * @deprecated Use getFormat()
+     * @see getFormat()
+     * @deprecated since 1.2.4
      * @return string
      */
     public function getExtension();

@@ -1,4 +1,5 @@
 <?php
+
 namespace Nethgui\System;
 
 /*
@@ -60,34 +61,28 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
     private $phpWrapper;
 
     /**
-     * Traced processes
-     * @var \ArrayObject
+     *
+     * @var \Nethgui\Model\SystemTasks
      */
-    private $processes;
+    private $tasks;
 
-    public function __construct(\Nethgui\Authorization\UserInterface $user)
+    /**
+     *
+     * @param \Nethgui\Authorization\UserInterface $user
+     * @param \Nethgui\Model\SystemTasks $tasks
+     */
+    public function __construct(\Nethgui\Authorization\UserInterface $user, \Nethgui\Model\SystemTasks $tasks)
     {
-        $this->eventQueue = array();
-        $this->processes = new \Nethgui\Utility\ArrayDisposable();
+        $this->eventQueue = array('post-process' => array(), 'post-response' => array());
         $this->user = $user;
+        $this->tasks = $tasks;
         $this->databases = array('SESSION' => new SessionDatabase());
+        $this->phpWrapper = new \Nethgui\Utility\PhpWrapper(__CLASS__);
     }
 
     public function setSession(\Nethgui\Utility\SessionInterface $session)
     {
         $this->databases['SESSION']->setSession($session);
-        $key = get_class($this);
-
-        $s = $session->retrieve($key);
-
-        if ($s instanceof $this->processes) {
-            if (count($this->processes) > 0) {
-                throw new \UnexpectedValueException(sprintf('%s: some processes are still traced, cannot set the session.', __CLASS__), 1327406381);
-            }
-            $this->processes = $s;
-        } else {
-            $session->store($key, $this->processes);
-        }
         return $this;
     }
 
@@ -184,28 +179,38 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
             throw new \InvalidArgumentException(sprintf("%s: invalid event specification", get_class($this)), 1325578497);
         }
 
-        $queue = isset($matches['queue']) && $matches['queue'] ? $matches['queue'] : 'now';
         $detached = isset($matches['detached']) && $matches['detached'] === '&' ? TRUE : FALSE;
 
+        // default queue is "post-response" for detached events,
+        // "now" for syncronous events:
+        if ($detached) {
+            $queue = 'post-response';
+        } else {
+            $queue = 'now';
+        }
+
+        // override default queue
+        if (isset($matches['queue']) && $matches['queue']) {
+            $queue = $matches['queue'];
+        }
+        
         // prepend the event name to the argument list:
         array_unshift($arguments, $matches['event']);
 
-        $command = $this
-            ->createCommandObject('/usr/bin/sudo /sbin/e-smith/signal-event ${@}', $arguments, $detached)
-            ->setIdentifier(uniqid($matches['event'] . '-'))
+        $process = $this
+            ->createCommandObject('/usr/bin/sudo -n /sbin/e-smith/signal-event ${@}', $arguments, $detached)
         ;
 
         if ($queue === 'now') {
-            $command->exec();
+            $process->exec();
         } else {
             if ( ! isset($this->eventQueue[$queue])) {
                 $this->eventQueue[$queue] = array();
             }
-
-            $this->eventQueue[$queue][] = $command;
+            $this->eventQueue[$queue][] = $process;
         }
 
-        return $command;
+        return $process;
     }
 
     /**
@@ -217,6 +222,10 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
     {
         if ( ! isset($this->eventQueue[$queueName])) {
             return;
+        }
+
+        if (count($this->eventQueue[$queueName]) > 0) {
+            $this->getLog()->notice(sprintf("%s::%s() %s", __CLASS__, __FUNCTION__, $queueName));
         }
 
         foreach ($this->eventQueue[$queueName] as $process) {
@@ -238,7 +247,14 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
 
     public function exec($command, $arguments = array(), $detached = FALSE)
     {
-        return $this->createCommandObject($command, $arguments, $detached)->exec();
+        $this->tasks->flushStatus();
+        $o = $this->createCommandObject($command, $arguments, $detached);
+        if ($detached) {
+            $this->eventQueue['post-response'][] = $o;
+        } else {
+            $o->run();
+        }
+        return $o;
     }
 
     /**
@@ -250,18 +266,15 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
      */
     private function createCommandObject($command, $arguments, $detached)
     {
-        if ($detached === TRUE) {
-            $commandObject = new ProcessDetached($command, $arguments);
-            $this->traceProcess($commandObject);
-        } else {
-            $commandObject = new Process($command, $arguments);
+        $process = new \Nethgui\System\Process($command, $arguments);
+        $identifier = ($detached ? 'B' : 'F') . md5(uniqid());
+        if ($detached === TRUE) {            
+            $this->tasks->setTaskStarting($identifier);
         }
-
-        if (isset($this->phpWrapper)) {
-            $commandObject->setPhpWrapper($this->phpWrapper);
-        }
-
-        return $commandObject;
+        $process->setIdentifier($identifier);
+        $process->background = $detached;
+        $process->log = $this->getLog();
+        return $process;
     }
 
     public function getLog()
@@ -275,6 +288,7 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
     public function setLog(\Nethgui\Log\LogInterface $log)
     {
         $this->log = $log;
+        $this->phpWrapper->setLog($log);
         return $this;
     }
 
@@ -289,29 +303,14 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
         return $this;
     }
 
-    private function traceProcess(\Nethgui\System\ProcessInterface $process)
-    {
-        $this->processes[] = $process;
-        return $this;
-    }
-
     public function getDetachedProcesses()
     {
-        return $this->processes->getArrayCopy();
+        return array();
     }
 
     public function getDetachedProcess($identifier)
     {
-        // scan the process list
-        $returnProcess = FALSE;
-
-        foreach ($this->processes as $process) {
-            if ($process->getIdentifier() === $identifier) {
-                $returnProcess = $process;
-            }
-        }
-
-        return $returnProcess;
+        return NULL;
     }
 
     /**

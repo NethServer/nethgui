@@ -1,5 +1,4 @@
-<?php
-namespace Nethgui\Renderer;
+<?php namespace Nethgui\Renderer;
 
 /*
  * Copyright (C) 2011 Nethesis S.r.l.
@@ -30,13 +29,21 @@ namespace Nethgui\Renderer;
  * @since 1.0
  * @api
  */
-class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
+class Xhtml extends \Nethgui\Renderer\TemplateRenderer implements \Nethgui\Renderer\WidgetFactoryInterface
 {
     /**
      *
      * @var integer
      */
     private $inheritFlags = 0;
+    private $requireFlags = 0;
+    private $rejectFlags = 0;
+
+    /**
+     *
+     * @var \Nethgui\Model\StaticFiles
+     */
+    protected $staticFiles;
 
     public function __construct(\Nethgui\View\ViewInterface $view, $templateResolver, $inheritFlags)
     {
@@ -52,7 +59,10 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
      */
     public function spawnRenderer(\Nethgui\View\ViewInterface $view)
     {
-        return new self($view, $this->getTemplateResolver(), $this->getDefaultFlags());
+        $renderer = new self($view, $this->getTemplateResolver(), $this->getDefaultFlags());
+        $renderer->httpResponse = $this->httpResponse;
+        $renderer->staticFiles = $this->staticFiles;
+        return $renderer;
     }
 
     protected function createWidget($widgetType, $attributes = array())
@@ -77,7 +87,11 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
      */
     public function includeJavascript($jsCode)
     {
-        $this->view->getCommandList('/Resource/js')->appendCode($jsCode, 'js');
+        if ($this->staticFiles === NULL) {
+            $this->getLog()->warning(sprintf("%s::%s() NULL Resource handler", __CLASS__, __FUNCTION__));
+            return;
+        }
+        $this->staticFiles->appendCode($jsCode, 'js');
         return $this;
     }
 
@@ -90,7 +104,11 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
      */
     public function includeCss($cssCode)
     {
-        $this->view->getCommandList('/Resource/css')->appendCode($cssCode, 'css');
+        if ($this->staticFiles === NULL) {
+            $this->getLog()->warning(sprintf("%s::%s() NULL Resource handler", __CLASS__, __FUNCTION__));
+            return;
+        }
+        $this->staticFiles->appendCode($cssCode, 'css');
         return $this;
     }
 
@@ -106,10 +124,12 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
      */
     public function includeFile($fileName)
     {
+        if ($this->staticFiles === NULL) {
+            $this->getLog()->warning(sprintf("%s::%s() NULL Resource handler", __CLASS__, __FUNCTION__));
+            return;
+        }
         $filePath = call_user_func($this->getTemplateResolver(), $fileName);
-        $ext = pathinfo($fileName, PATHINFO_EXTENSION);
-        $ext = $ext ? $ext : 'default';
-        $this->view->getCommandList('/Resource/' . $ext)->includeFile($filePath);
+        $this->staticFiles->includeFile($filePath);
         return $this;
     }
 
@@ -148,7 +168,7 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
      */
     public function requireFlag($flags)
     {
-        $this->view->getCommandList()->requireFlag($flags);
+        $this->requireFlags |= $flags;
         return $this;
     }
 
@@ -162,8 +182,18 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
      */
     public function rejectFlag($flags)
     {
-        $this->view->getCommandList()->rejectFlag($flags);
+        $this->rejectFlags |= $flags;
         return $this;
+    }
+
+    /**
+     * Calculate flags for view inclusion
+     * @see \Nethgui\Widget\Xhtml\Inset
+     * @param integer $widgetFlags
+     */
+    public function calculateIncludeFlags($widgetFlags)
+    {
+        return ($widgetFlags | $this->requireFlags) & (~ $this->rejectFlags);
     }
 
     /**
@@ -178,9 +208,7 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
      */
     public function useFile($fileName)
     {
-        $ext = pathinfo($fileName, PATHINFO_EXTENSION);
-        $ext = $ext ? $ext : 'default';
-        $this->view->getCommandList('/Resource/' . $ext)->useFile($fileName);
+        $this->staticFiles->useFile($this->getPathUrl() . $fileName);
         return $this;
     }
 
@@ -388,6 +416,17 @@ class Xhtml extends TemplateRenderer implements WidgetFactoryInterface
     {
         $flags |= $this->inheritFlags;
         return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags));
+    }
+
+    public function getDependencySetters()
+    {
+        return array_merge(parent::getDependencySetters(), array('StaticFiles' => array($this, 'setStaticFilesModel')));
+    }
+
+    public function setStaticFilesModel(\Nethgui\Model\StaticFiles $model)
+    {
+        $this->staticFiles = $model;
+        return $this;
     }
 
 }

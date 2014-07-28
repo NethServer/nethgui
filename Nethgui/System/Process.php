@@ -1,8 +1,9 @@
 <?php
+
 namespace Nethgui\System;
 
 /*
- * Copyright (C) 2011 Nethesis S.r.l.
+ * Copyright (C) 2014 Nethesis S.r.l.
  * 
  * This script is part of NethServer.
  * 
@@ -21,106 +22,77 @@ namespace Nethgui\System;
  */
 
 /**
- * Internal class for exec() return value
- *
- * @see NethPlatform::exec()
+ * Backward compatible API to \Symfony\Component\Process\Process
  */
-class Process implements ProcessInterface, \Nethgui\Utility\PhpConsumerInterface
+class Process extends \Symfony\Component\Process\Process implements ProcessInterface
 {
-
-    /**
-     * @var array
-     */
-    private $output;
-
-    /**
-     * @var int
-     */
-    private $exitStatus;
-
-    /**
-     * @var string
-     */
-    private $command;
-
-    /**
-     * @var array
-     */
-    private $arguments;
-
-    /**
-     *
-     * @var integer
-     */
-    private $state;
-    private $outputRed;
-
-    /**
-     *
-     * @var string
-     */
-    private $identifier;
-
-    /**
-     *
-     * @var array
-     */
-    private $times;
-    private $disposed = FALSE;
-
-    /**
-     *
-     * @var \Nethgui\Utility\PhpWrapper
-     */
-    private $phpWrapper;
+    public $background = FALSE;
+    public $log;
 
     public function __construct($command, $arguments = array())
     {
-        $this->phpWrapper = new \Nethgui\Utility\PhpWrapper();
-        $this->arguments = $arguments;
-        $this->command = $command;
-        $this->changeState(self::STATE_NEW);
-        $this->output = array();
-        $this->exitStatus = FALSE;
-        $this->outputRed = FALSE;
-        $this->identifier = uniqid();
-        $this->times = array();
+        parent::__construct($this->prepareEscapedCommand($command, $arguments));
+        $this->identifier = md5(uniqid());
+        $this->log = new \Nethgui\Log\Nullog();
     }
 
     public function addArgument($arg)
     {
-        $this->arguments[] = $arg;
-        return $this;
+        throw new \LogicException(sprintf("%s: %s is not supported", __CLASS__, __FUNCTION__), 1405516178);
     }
 
-    public function kill()
+    public function dispose()
     {
-        return FALSE;
+        throw new \LogicException(sprintf("%s: %s is not supported", __CLASS__, __FUNCTION__), 1405516179);
+    }
+
+    private $conditions = array();
+
+    public function on($condition, $description)
+    {
+        $this->conditions[$condition] = $description;
+        return $this;
     }
 
     public function exec()
     {
-        if ($this->readExecutionState() !== self::STATE_NEW) {
-            return FALSE;
-        }
+        $this->log->deprecated();
+        if ($this->background === TRUE) {
+            // Bypass Symfony Process harness and let it go:
+            $cmd = sprintf('/usr/libexec/nethserver/ptrack %s', $this->getCommandLine());
+            $p = popen($cmd, 'w');
+            $ui = array(
+                'socketPath' => sprintf('/var/run/ptrack/%s.sock', $this->getIdentifier()),
+                'conditions' => $this->conditions,
+                'starttime' => microtime(TRUE),
+                'taskId' => $this->getIdentifier(),
+                'debug' => \NETHGUI_DEBUG
+            );
+            fwrite($p, json_encode($ui));
+            pclose($p);
 
-        $this->changeState(self::STATE_RUNNING);
-        $this->phpWrapper->exec($this->prepareEscapedCommand(), $this->output, $this->exitStatus);
-        $this->changeState(self::STATE_EXITED);
+        } else {
+            $this->run();
+        }
         return $this;
     }
 
-    private function changeState($newState)
+    public function getExitCode()
     {
-        $this->times[$newState] = microtime();
-        $this->state = $newState;
+        $code = parent::getExitCode();
+        return $code === NULL ? FALSE : $code;
     }
 
-    private function prepareEscapedCommand()
+    public function getIdentifier()
+    {
+        return $this->identifier;
+    }
+
+    private function prepareEscapedCommand($command, $arguments)
     {
         $escapedArguments = array();
         $i = 1;
-        foreach ($this->arguments as $arg) {
+        foreach ($arguments as $arg) {
 
             if (is_string($arg)) {
                 $argOutput = $arg;
@@ -135,53 +107,62 @@ class Process implements ProcessInterface, \Nethgui\Utility\PhpConsumerInterface
         }
         $escapedArguments['${@}'] = implode(' ', $escapedArguments);
 
-        return strtr($this->command, $escapedArguments);
-    }
-
-    public function getExitCode()
-    {
-        return $this->exitStatus;
+        return strtr($command, $escapedArguments);
     }
 
     public function getOutput()
     {
-        return implode("\n", $this->output);
+        if ($this->isOutputDisabled()) {
+            $this->log->deprecated();
+            return '';
+        }
+        return parent::getOutput();
     }
 
     public function getOutputArray()
     {
-        return $this->output;
-    }
-
-    public function readExecutionState()
-    {
-        return $this->state;
-    }
-
-    public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
-    {
-        $this->phpWrapper = $object;
-        return $this;
-    }
-
-    public function readOutput()
-    {
-        if ($this->outputRed === FALSE) {
-            $this->outputRed = TRUE;
-            return $this->getOutput();
-        }
-
-        return FALSE;
-    }
-
-    public function getIdentifier()
-    {
-        return $this->identifier;
+        $this->log->deprecated();
+        return explode("\n", trim($this->getOutput()));
     }
 
     public function getTimes()
     {
-        return $this->times;
+        throw new \LogicException(sprintf("%s: %s is not supported", __CLASS__, __FUNCTION__), 1405516180);
+    }
+
+    public function isDisposed()
+    {
+        throw new \LogicException(sprintf("%s: %s is not supported", __CLASS__, __FUNCTION__), 1405516181);
+    }
+
+    public function kill()
+    {
+        $this->log->deprecated();
+        if ($this->isRunning()) {
+            $this->stop();
+            return TRUE;
+        }
+        return FALSE;
+    }
+
+    public function readExecutionState()
+    {
+        $this->log->deprecated();
+        $s = $this->getStatus();
+        if ($s === self::STATUS_READY) {
+            return self::STATE_NEW;
+        } elseif ($s === self::STATUS_STARTED) {
+            return self::STATE_RUNNING;
+        } elseif ($s === self::STATUS_TERMINATED) {
+            return self::STATE_EXITED;
+        }
+        throw new \RuntimeException(sprintf("%s::%s() unknown execution state: %s", __CLASS__, __FUNCTION__, $s), 1405516182);
+    }
+
+    public function readOutput()
+    {
+        $this->log->deprecated();
+        return $this->getIncrementalOutput();
     }
 
     public function setIdentifier($identifier)
@@ -190,14 +171,9 @@ class Process implements ProcessInterface, \Nethgui\Utility\PhpConsumerInterface
         return $this;
     }
 
-    public function isDisposed()
+    public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
     {
-        return $this->disposed === TRUE;
-    }
-
-    public function dispose()
-    {
-        $this->disposed = TRUE;
         return $this;
     }
+
 }

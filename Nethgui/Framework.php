@@ -1,4 +1,5 @@
 <?php
+
 namespace Nethgui;
 
 /*
@@ -35,7 +36,7 @@ class Framework
     /**
      * Associate each namespace root name to a filesystem directory where
      * the namespace resides.
-     * 
+     *
      * @var array
      */
     private $namespaceMap;
@@ -49,35 +50,8 @@ class Framework
      */
     private $urlParts;
 
-    /**
-     * If no module identifier is provided fall back to this value
-     *
-     * @var string
-     */
-    private $defaultModuleIdentifier;
-
-    /**
-     * Identifier of the layout decorator module
-     *
-     * @var string
-     */
-    private $decoratorTemplate;
-
-    /**
-     *
-     * @var \Nethgui\Module\ModuleLoader;
-     */
-    private $moduleSet;
-
-    /**
-     *
-     * @var \Nethgui\Utility\Session
-     */
-    private $session;
-
     public function __construct()
     {
-        $this->namespaceMap = new \ArrayObject();
         if (basename(__DIR__) !== __NAMESPACE__) {
             throw new \LogicException(sprintf('%s: `%s` is an invalid framework filesystem directory! Must be `%s`.', __CLASS__, basename(__DIR__), __NAMESPACE__), 1322213425);
         }
@@ -85,12 +59,255 @@ class Framework
 
         $this->urlParts = $this->guessUrlParts();
 
-        $this->decoratorTemplate = 'Nethgui\Template\Main';
+        $nsMap = &$this->namespaceMap;
+        $urlParts = &$this->urlParts;
 
-        $this->log = new \Nethgui\Log\Syslog(E_WARNING | E_ERROR);
-        $this->session = new \Nethgui\Utility\Session();
-        $this->pdp = new \Nethgui\Authorization\JsonPolicyDecisionPoint($this->getFileNameResolver());
-        $this->pdp->setLog($this->log);
+        $dc = new \Pimple\Container();
+
+        $dc['decorator.xhtml.template'] = 'Nethgui\Template\Main';
+
+        $dc['Log'] = function($c) {
+            return new \Nethgui\Log\Syslog($c['log.level']);
+        };
+
+        $dc['namespaceMap'] = function ($c) use (&$nsMap) {
+            return $nsMap;
+        };
+
+        $dc['Session'] = function ($c) {
+            $s = new \Nethgui\Utility\Session();
+            $s->setLog($c['Log']);
+            return $s;
+        };
+
+        $dc['Pdp'] = function ($c) {
+            $pdp = new \Nethgui\Authorization\JsonPolicyDecisionPoint($c['FilenameResolver']);
+            $pdp->setLog($c['Log']);
+            foreach ($c['namespaceMap'] as $nsName => $nsPath) {
+                $pdp->loadPolicy($nsName . '\Authorization\*.json');
+            }
+            return $pdp;
+        };
+
+        $dc['User'] = function ($dc) {
+            $user = $dc['objectInjector'](new \Nethgui\Authorization\User($dc['Session'], $dc['Log']), $dc);
+            $pamAuthenticator = new \Nethgui\Utility\PamAuthenticator($dc['Log']);
+            $user->setAuthenticationProcedure(array($pamAuthenticator, 'authenticate'));
+            return $user;
+        };
+
+        $objectInjector = function($o) use ($dc) {
+            if ($o instanceof \Nethgui\Component\DependencyInjectorAggregate) {
+                $o->setDependencyInjector($dc['objectInjector']);
+            }
+
+            if ($o instanceof \Nethgui\Component\DependencyConsumer) {
+                foreach ($o->getDependencySetters() as $key => $setter) {
+                    if ( ! isset($dc[$key])) {
+                        continue;
+                    }
+                    call_user_func($setter, $dc[$key]);
+                }
+            }
+
+            if ($o instanceof \Nethgui\Log\LogConsumerInterface) {
+                $o->setLog($dc['Log']);
+            }
+
+            if ($o instanceof \Nethgui\Utility\SessionConsumerInterface) {
+                $o->setSession($dc['Session']);
+            }
+
+            if ($o instanceof Authorization\PolicyEnforcementPointInterface) {
+                $o->setPolicyDecisionPoint($dc['Pdp']);
+            }
+
+            if ($o instanceof \Nethgui\System\PlatformConsumerInterface) {
+                $o->setPlatform($dc['Platform']);
+            }
+
+            return $o;
+        };
+
+        $dc['objectInjector'] = $dc->protect($objectInjector);
+
+        $dc['StaticFiles'] = function ($c) {
+            return $c['objectInjector'](new \Nethgui\Model\StaticFiles(), $c);
+        };
+
+        $dc['UserNotifications'] = function ($c) {
+            return $c['objectInjector'](new \Nethgui\Model\UserNotifications(), $c);
+        };
+
+        $dc['ValidationErrors'] = function ($c) {
+            return $c['objectInjector'](new \Nethgui\Model\ValidationErrors(), $c);
+        };
+
+        $dc['SystemTasks'] = function ($c) {
+            return $c['objectInjector'](new \Nethgui\Model\SystemTasks($c['Log']), $c);
+        };
+
+        $dc['FilenameResolver'] = $this->getFileNameResolver();
+
+        $dc['ModuleSet'] = function ($c) {
+            $moduleSet = new \Nethgui\Module\ModuleLoader($c['objectInjector']);
+            foreach ($c['namespaceMap'] as $nsName => $nsRoot) {
+                if ($nsName === 'Nethgui') {
+                    $nsRoot = FALSE;
+                }
+                $moduleSet->setNamespace($nsName . '\\Module', $nsRoot);
+            }
+            return $c['objectInjector'](new \Nethgui\Authorization\AuthorizedModuleSet($moduleSet, $c['User']), $c);
+        };
+
+        $dc['Platform'] = function ($c) {
+            return $c['objectInjector'](new \Nethgui\System\NethPlatform($c['User'], $c['SystemTasks']), $c);
+        };
+
+        $dc['Translator'] = function ($c) {
+            return $c['objectInjector'](new \Nethgui\View\Translator($c['OriginalRequest']->getLanguageCode(), $c['FilenameResolver'], array_keys($c['namespaceMap'])), $c);
+        };
+
+        $dc['HttpResponse'] = function ($c) {
+            return new \Nethgui\Utility\HttpResponse();
+        };
+
+        $dc['Main.factory'] = $dc->factory(function ($c) {
+            return $c['objectInjector'](new \Nethgui\Module\Main($c['ModuleSet'], $c['defaultModuleIdentifier']), $c);
+        });        
+
+        $dc['View'] = function ($c) use (&$urlParts) {
+            $rootView = $c['objectInjector'](new \Nethgui\View\View($c['OriginalRequest']->getFormat(), $c['Main'], $c['Translator'], $urlParts), $c);
+            $rootView->setTemplate(FALSE);
+            /*
+             *  FIXME: remove deprecated features in version 2.0
+             */
+            $rootView->commands = $c['objectInjector'](new \Nethgui\View\LegacyCommandBag($rootView, $c), $c);
+            /*
+             *
+             */
+            return $rootView;
+        };
+
+        $dc['decorator.xhtml.params'] = function ($dc) {
+            return new \ArrayObject(array(
+                'disableHeader' => FALSE,
+                'disableMenu' => FALSE,
+                'disableFooter' => TRUE
+            ));
+        };
+
+        $dc['main.xhtml.template'] = $dc->protect(function (\Nethgui\Renderer\Xhtml $renderer, $T, \Nethgui\Utility\HttpResponse $httpResponse) use ($dc, &$urlParts) {
+            $decoratorView = $dc['objectInjector'](new \Nethgui\View\View($dc['OriginalRequest']->getFormat(), $dc['Main'], $dc['Translator'], $urlParts), $dc);
+            $decoratorView->setTemplate($dc['decorator.xhtml.template']);
+
+            $decoratorView->copyFrom($renderer);
+            $decoratorView->copyFrom($dc['decorator.xhtml.params']);
+
+            $decoratorView['lang'] = $dc['Translator']->getLanguageCode();
+
+
+            $decoratorView['currentModuleOutput'] = 'currentModule';
+
+            // Override helpAreaOutput
+            $decoratorView['helpAreaOutput'] = (String) $renderer->panel($renderer::STATE_UNOBSTRUSIVE)
+                    ->setAttribute('class', 'HelpArea')
+                    ->insert(
+                        $renderer->panel()
+                        ->setAttribute('class', 'wrap')
+                        ->insert(
+                            $renderer->buttonList($renderer::BUTTONSET)->insert($renderer->button('Hide', $renderer::BUTTON_CANCEL))
+                        )
+            );
+
+            $currentModule = $renderer['moduleView']->getModule();
+
+            // Override currentModuleOutput
+            // - We must render CurrentModule before NotificationArea to catch notifications
+            if ($currentModule instanceof \Nethgui\Module\ModuleCompositeInterface) {
+                $decoratorView['currentModuleOutput'] = (String) $renderer->inset('moduleView');
+            } else {
+                $decoratorView['currentModuleOutput'] = (String) $renderer->panel()->setAttribute('class', 'Controller')
+                        ->insert($renderer->inset('moduleView', $renderer::INSET_FORM | $renderer::INSET_WRAP)
+                            ->setAttribute('class', 'Action')
+                            ->setAttribute('receiver', $currentModule->getIdentifier()) // FIXME use "id" attribute in Inset widget
+                            );
+            }
+            if($currentModule->getIdentifier() !== 'Tracker') {
+                $decoratorView['currentModuleOutput'] .= (String) $renderer->inset('Tracker', $renderer::STATE_UNOBSTRUSIVE);
+            }
+
+            // Override notificationOutput
+            $decoratorView['notificationOutput'] = (String) $renderer->inset('Notification');
+            $decoratorView['moduleTitle'] = $dc['Translator']->translate($currentModule, $currentModule->getAttributesProvider()->getTitle());
+
+            // Override menuOutput
+            $decoratorView['menuOutput'] = (String) $renderer->inset('Menu');
+            $decoratorView['logoutOutput'] = (String) $renderer->inset('Logout');
+
+            //read css from db
+            $db = $dc['Main']->getPlatform()->getDatabase('configuration');
+
+            $colors = $db->getProp('httpd-admin', 'colors');
+            if ($colors) {
+                $colors = explode(',', $colors);
+                $decoratorView['colors'] = $colors;
+            }
+            $logo = $db->getProp('httpd-admin', 'logo');
+            $decoratorView['logo'] = $decoratorView->getPathUrl() . ($logo ? sprintf('images/%s', $logo) : 'images/logo.png');
+            $decoratorView['company'] = $db->getProp('OrganizationContact', 'Company');
+            $decoratorView['address'] = $db->getProp('OrganizationContact', 'Street') . ", " . $db->getProp('OrganizationContact', 'City');
+            $favicon = $db->getProp('httpd-admin', 'favicon');
+            $decoratorView['favicon'] = $decoratorView->getPathUrl() . ($favicon ? sprintf('images/%s', $favicon) : 'images/favicon.png');
+
+            return $renderer->spawnRenderer($decoratorView)->render();
+        });
+
+
+        $dc['main.css.template'] = $dc->protect(function(\Nethgui\Renderer\TemplateRenderer $renderer, $T, \Nethgui\Utility\HttpResponse $httpResponse) use ($dc) {
+            $content = '';
+            foreach ($renderer as $value) {
+                if ($value instanceof \Nethgui\View\ViewInterface) {
+                    $content .= $renderer->spawnRenderer($value)->render();
+                } else {
+                    $content .= (String) $value;
+                }
+            }
+            return $content;
+        });
+
+        $dc['main.js.template'] = $dc['main.css.template'];
+        $dc['main.txt.template'] = $dc['main.css.template'];
+
+        $dc['Renderer'] = function ($dc) {
+            $filenameResolver = $dc['FilenameResolver'];
+            $targetFormat = $dc['OriginalRequest']->getFormat();
+
+            // Set the default root view template
+            if (isset($dc[sprintf('main.%s.template', $targetFormat)])) {
+                $dc['View']->setTemplate($dc[sprintf('main.%s.template', $targetFormat)]);
+            }
+
+            if ($targetFormat === 'json') {
+                $renderer = new \Nethgui\Renderer\Json($dc['View']);
+            } elseif ($targetFormat === 'xhtml') {
+                $renderer = new \Nethgui\Renderer\Xhtml($dc['View'], $filenameResolver, 0);
+            } else if ($targetFormat === 'js') {
+                $renderer = new \Nethgui\Renderer\TemplateRenderer($dc['View'], $filenameResolver, 'application/javascript', 'UTF-8');
+            } elseif ($targetFormat === 'css') {
+                $renderer = new \Nethgui\Renderer\TemplateRenderer($dc['View'], $filenameResolver, 'text/css', 'UTF-8');
+            } else {
+                $renderer = new \Nethgui\Renderer\TemplateRenderer($dc['View'], $filenameResolver, 'text/plain', 'UTF-8');
+            }
+
+            $dc['HttpResponse']->addHeader(sprintf('Content-Type: %s', $renderer->getContentType()) . (
+                $renderer->getCharset() ? sprintf('; charset=%s', $renderer->getCharset()) : '')
+            );
+            
+            return $dc['objectInjector']($renderer, $dc);
+        };
+
+        $this->dc = $dc;
     }
 
     /**
@@ -192,7 +409,7 @@ class Framework
      */
     public function setDefaultModule($moduleIdentifier)
     {
-        $this->defaultModuleIdentifier = $moduleIdentifier;
+        $this->dc['defaultModuleIdentifier'] = $moduleIdentifier;
         return $this;
     }
 
@@ -205,7 +422,7 @@ class Framework
      */
     public function setDecoratorTemplate($template)
     {
-        $this->decoratorTemplate = $template;
+        $this->dc['decorator.xhtml.template'] = $template;
         return $this;
     }
 
@@ -218,7 +435,7 @@ class Framework
      */
     public function setLogLevel($level)
     {
-        $this->log->setLevel($level);
+        $this->dc['log.level'] = $level;
         return $this;
     }
 
@@ -238,11 +455,11 @@ class Framework
         $symbol = str_replace('\\', '/', $symbol);
         $nsKey = array_head(explode('/', $symbol));
 
-        if ( ! isset($this->namespaceMap[$nsKey])) {
+        if ( ! isset($this->dc['namespaceMap'][$nsKey])) {
             return FALSE;
         }
 
-        $absolutePath = $this->namespaceMap[$nsKey] . '/' . $symbol;
+        $absolutePath = $this->dc['namespaceMap'][$nsKey] . '/' . $symbol;
         if (pathinfo($symbol, PATHINFO_EXTENSION) === '') {
             $absolutePath .= '.php';
         }
@@ -261,287 +478,108 @@ class Framework
      *
      * @api
      * @param \Nethgui\Controller\RequestInterface $request
-     * @param array $arguments Optional - This array is filled with the output, instead of echo()ing it
-     * @return integer
+     * @param array $output DEPRECATED since 1.6
+     * @return integer DEPRECATED since 1.6
      */
     public function dispatch(\Nethgui\Controller\RequestInterface $request, &$output = NULL)
     {
+        /* @var $log \Nethgui\Log\LogInterface */
+        $log = $this->dc['Log'];
+        $this->dc['OriginalRequest'] = $request;
+
+        if ($request instanceof \Nethgui\Utility\SessionConsumerInterface) {
+            $request->setSession($this->dc['Session']);
+        }
+
         try {
-            $this->initializeModuleLoader();
-            $this->enforceAuthorization();
-            return $this->processRequest($request, $output);
+            $response = $this->handle($request);
         } catch (\Nethgui\Exception\HttpException $ex) {
             // no processing is required, rethrow:
             throw $ex;
         } catch (\Nethgui\Exception\AuthorizationException $ex) {
             if ($request->getExtension() === 'xhtml' && ! $request->isMutation() && ! $request->getUser()->isAuthenticated()) {
-                return $this->processRequest($this->createLoginRequest($request), $output);
+                $response = $this->handle($this->createLoginRequest($request));
             } else {
-                $this->log->error(sprintf('%s: [%d] %s', __CLASS__, $ex->getCode(), $ex->getMessage()));
+                $log->error(sprintf('%s: [%d] %s', __CLASS__, $ex->getCode(), $ex->getMessage()));
                 throw new \Nethgui\Exception\HttpException('Forbidden', 403, 1327681977, $ex);
             }
         } catch (\Exception $ex) {
-            $this->log->exception($ex, NETHGUI_DEBUG);
+            $log->exception($ex, NETHGUI_DEBUG);
             throw new \Nethgui\Exception\HttpException('Internal server error', 500, 1366796122, $ex);
         }
+
+        $response->send();
     }
 
     private function createLoginRequest(\Nethgui\Controller\Request $originalRequest)
     {
         $m = $originalRequest->toArray();
         unset($m[\Nethgui\array_head($originalRequest->getPath())]);
-        $r = new \Nethgui\Controller\Request(array_replace_recursive(array('Login' => array('path' => '/' . implode('/',$originalRequest->getPath()))), $m));
+        $r = new \Nethgui\Controller\Request(array_replace_recursive(array('Login' => array('path' => '/' . implode('/', $originalRequest->getPath()))), $m));
         $r->setAttribute('languageCode', $originalRequest->getLanguageCode());
+        $r->setAttribute('userClosure', $originalRequest->getAttribute('userClosure'));
         return $r;
     }
 
     /**
-     * Load all json files in \Authorization subdirs as authorization policies
-     * 
-     * @return \Nethgui\Framework
+     *
+     * @param \Nethgui\Controller\RequestInterface $request
+     * @return \Nethgui\View\ViewInterface
      */
-    private function enforceAuthorization()
+    public function handle(\Nethgui\Controller\RequestInterface $request)
     {
-        foreach ($this->namespaceMap as $nsName => $nsPath) {
-            $this->pdp->loadPolicy($nsName . '\Authorization\*.json');
+        $dc = $this->dc;
+
+        $dc['Main'] = $dc['Main.factory'];
+
+        /* @var $mainModule \Nethgui\Module\Main */
+        $mainModule = $dc['Main'];
+
+        /* @var $renderer \Nethgui\Renderer\AbstractRenderer */
+        $renderer = $dc['Renderer'];
+
+        /* @var $response \Nethgui\Utility\HttpResponse */
+        $response = $dc['HttpResponse'];
+
+        if ( ! $mainModule->isInitialized()) {
+            $mainModule->initialize();
         }
-        return $this;
-    }
-
-    private function initializeModuleLoader()
-    {
-        $this->moduleSet = new \Nethgui\Module\ModuleLoader();
-        $this->moduleSet->setLog($this->log);
-        $this->moduleSet->addInstantiateCallback(array($this, 'initializeModule'));
-        foreach ($this->namespaceMap as $nsName => $nsRoot) {
-            if ($nsName === 'Nethgui') {
-                $nsRoot = FALSE;
-            }
-            $this->moduleSet->setNamespace($nsName . '\\Module', $nsRoot);
-        }
-        return $this;
-    }
-
-    private function processRequest(\Nethgui\Controller\RequestInterface $request, &$output = NULL)
-    {
-        if ($request instanceof \Nethgui\Utility\SessionConsumerInterface) {
-            $request->setSession($this->session);
-        }
-
-        $user = $request->getUser();
-
-        if (array_head($request->getPath()) === FALSE) {
-            $redirectUrl = implode('', $this->urlParts) . $this->defaultModuleIdentifier;
-            $this->sendHttpResponse('', array('HTTP/1.1 302 Found', sprintf('Location: %s', $redirectUrl)), $output);
-            return;
-        }
-
-        $platform = new \Nethgui\System\NethPlatform($user);
-        $platform
-            ->setPhpWrapper(new \Nethgui\Utility\PhpWrapper())
-            ->setLog($this->log)
-            ->setSession($this->session)
-            ->setPolicyDecisionPoint($this->pdp)
-        ;
-
-        // Enforce authorization policy on moduleSet:
-        $authModuleLoader = new \Nethgui\Authorization\AuthorizedModuleSet($this->moduleSet, $user);
-        $authModuleLoader->setPolicyDecisionPoint($this->pdp);
-
-        $fileNameResolver = $this->getFileNameResolver();
-        $currentModuleIdentifier = array_head($request->getPath());
-
-        $this->moduleSet->addInstantiateCallback(function (Module\ModuleInterface $module) use ($authModuleLoader, $currentModuleIdentifier, $fileNameResolver) {
-                $moduleIdentifier = $module->getIdentifier();
-
-                if ($moduleIdentifier === 'Menu') {
-                    $module
-                        ->setModuleSet($authModuleLoader)
-                        ->setCurrentModuleIdentifier($currentModuleIdentifier)
-                    ;
-                } elseif ($moduleIdentifier === 'Help') {
-                    $module
-                        ->setModuleSet($authModuleLoader)
-                        ->setFileNameResolver($fileNameResolver)
-                    ;
-                }
-            });
-
-        $mainModule = new \Nethgui\Module\Main($this->decoratorTemplate, $authModuleLoader);
-        $mainModule->setPlatform($platform);
-        $mainModule->setPolicyDecisionPoint($this->pdp);
-
-        $mainModule->initialize();
         $mainModule->bind($request);
+        $mainModule->validate($dc['ValidationErrors']);
 
-        $validationErrorsNotification = new \Nethgui\Module\Notification\ValidationErrorsNotification();
-
-        $mainModule->validate($validationErrorsNotification);
-
-        if ( ! $validationErrorsNotification->hasValidationErrors()) {
+        if ($dc['ValidationErrors']->hasValidationErrors()) {
+            $request->setAttribute('isValidated', FALSE);
+            $response->setStatus(400, 'Request validation error');
+            $nextPath = FALSE;
+        } else {
             $request->setAttribute('isValidated', TRUE);
             $mainModule->process();
             // Run the "post-process" event queue (see #506)
-            $platform->runEvents('post-process');
-        }
-
-        $targetFormat = $request->getFormat();
-        $translator = new \Nethgui\View\Translator($request->getLanguageCode(), $this->getFileNameResolver(), array_keys(iterator_to_array($this->namespaceMap)));
-        $translator->setLog($this->log);
-        $rootView = new \Nethgui\View\View($targetFormat, $mainModule, $translator, $this->urlParts);
-
-        $commandReceiver = new \Nethgui\Renderer\HttpCommandReceiver(new \Nethgui\Renderer\MarshallingReceiver(new \Nethgui\View\LoggingCommandReceiver($this->log)));
-        $commandReceiver->setLog($this->log);
-
-        $rootView->setReceiver($commandReceiver);
-
-        // ..transfer contents and commands into the MAIN view:
-        $mainModule->prepareView($rootView);
-
-        if ($request->isValidated()) {
-            // On a valid request honorate the nextPath() semantics:
+            $dc['Platform']->runEvents('post-process');
             $nextPath = $mainModule->nextPath();
-            if (is_string($nextPath)) {
-                $rootView->getCommandList('/Main')
-                    ->sendQuery($rootView->getModuleUrl($nextPath));
-            }
-        } else {
-            // Only validation errors notification has to be shown: clear
-            // all enqueued commands.
-            //$rootView->clearAllCommands();
-            // Validation error http status.
-            // See RFC2616, section 10.4 "Client Error 4xx"
-            // FIXME: check if we are in FAST-CGI module:
-            // @see http://php.net/manual/en/function.header.php
-            $rootView->getCommandList('/Notification')
-                ->showNotification($validationErrorsNotification)
-                ->httpHeader("HTTP/1.1 400 Request validation error")
-            ;
         }
-
-        // ..Execute commands sent to views. These do not include commands sent to widgets:
-        $this->executeViewCommands($rootView);
-
-        if ($targetFormat === 'xhtml' && $commandReceiver->hasLocation()) {
-            $content = '';
-            $headers = $commandReceiver->getHttpHeaders();
-        } else {
-            // Render the view as Xhtml or Json
-            $renderer = $this->getRenderer($targetFormat, $rootView, $commandReceiver);
-            $content = $renderer->render();
-            // execute all non-executed commands:
-            $defaultHeaders = array(
-                "HTTP/1.1 200 Success",
-                sprintf('Content-Type: %s', $renderer->getContentType()) . (
-                $renderer->getCharset() ?
-                    sprintf('; charset=%s', $renderer->getCharset()) : ''
-                )
-            );
-
-            $headers = array_merge($defaultHeaders, $commandReceiver->getHttpHeaders());
-        }
-
-        // Send response to client
-        $this->sendHttpResponse($content, $headers, $output);
-
-        // Accept new requests, by unlocking the session:
-        if ($this->session->isStarted()) {
-            $this->session->unlock();
-        }
-
-        if ($request->isValidated()) {
-            // Run the "post-response" event queue (see #506)
-            $platform->runEvents('post-response');
-        }
-
-        return 0;
-    }
-
-    public function initializeModule(Module\ModuleInterface $module)
-    {
-        if ($module instanceof \Nethgui\Utility\SessionConsumerInterface) {
-            $module->setSession($this->session);
-        }
-
-        if ($module instanceof Authorization\PolicyEnforcementPointInterface) {
-            $module->setPolicyDecisionPoint($this->pdp);
-        }
-    }
-
-    /**
-     *
-     * @param string $content
-     * @param array $headers
-     * @param array $output
-     */
-    private function sendHttpResponse($content, $headers, &$output)
-    {
-        if (is_array($output)) {
-            // put HTTP response into the output array:
-            $output['content'] = $content;
-            $output['headers'] = $headers;
-        } else {
-            // send HTTP response to stdout:
-            array_map('header', $headers);
-            echo $content;
-            flush();
-        }
-    }
-
-    /**
-     *
-     * @param string $targetFormat
-     * @param \Nethgui\View\ViewInterface $view
-     * @param \Nethgui\View\CommandReceiverInterface $receiver
-     * @return Renderer\AbstractRenderer
-     */
-    private function getRenderer($targetFormat, \Nethgui\View\ViewInterface $view, \Nethgui\View\CommandReceiverInterface $receiver)
-    {
-        if ($targetFormat === 'json') {
-            $renderer = new Renderer\Json($view, $receiver);
-        } elseif ($targetFormat === 'xhtml') {
-            $renderer = new Renderer\Xhtml($view, $this->getFileNameResolver(), 0);
-        } else if ($targetFormat === 'js') {
-            $renderer = new Renderer\TemplateRenderer($view, $this->getFileNameResolver(), 'application/javascript', 'UTF-8');
-        } elseif ($targetFormat === 'css') {
-            $renderer = new Renderer\TemplateRenderer($view, $this->getFileNameResolver(), 'text/css', 'UTF-8');
-        } else {
-            $renderer = new Renderer\TemplateRenderer($view, $this->getFileNameResolver(), 'text/plain', 'UTF-8');
-        }
-
-        return $renderer;
-    }
-
-    /**
-     * Vist all sub-views and execute their commands.
-     * 
-     * These does not include ALL possible commands!
-     * 
-     * @param View\View $view
-     */
-    private function executeViewCommands(View\View $view)
-    {
-        $q = array($view);
-
-        while (count($q) > 0) {
-            $view = array_pop($q);
-
-            foreach ($view as $key => $value) {
-                if ($value instanceof View\View) {
-                    $q[] = $value;
+    
+        $postResponseTask = function () use ($dc, $request) {
+            if ($request->isValidated()) {
+                if ($dc['Session']->isStarted()) {
+                    $dc['Session']->unlock();
                 }
+                $dc['Platform']->runEvents('post-response');
             }
+        };
 
-            if (strlen($view->getModule()->getIdentifier()) == 0) {
-                $command = $view->getCommandList('/' . array_end(explode('\\', get_class($view->getModule()))));
-            } else {
-                $command = $view->getCommandList();
-            }
+        $mainModule->prepareView($dc['View']);
 
-            if ( ! $command->isExecuted()) {
-                $command->setReceiver($view)->execute();
-            }
+        if ($nextPath !== FALSE) {
+            NETHGUI_DEBUG && $dc['Log']->notice('nextPath: ' . $nextPath);
+            $dc['View']->getCommandList('/Main')->sendQuery($dc['View']->getModuleUrl($nextPath));
         }
+
+
+        $response->setContent($renderer->render());
+        $response->on('post-response', $postResponseTask);
+
+        return $response;
     }
 
     /**
@@ -635,6 +673,7 @@ class Framework
             }
         }
 
+        $dc = $this->dc;
         $R = array_replace_recursive($pathInfoMod, $getData, $postData);
         $request = new \Nethgui\Controller\Request($R);
         $request->setLog($log)
@@ -642,6 +681,9 @@ class Framework
             ->setAttribute('format', $format)
             ->setAttribute('languageCode', $languageCode)
             ->setAttribute('languageCodeDefault', $languageCodeDefault)
+            ->setAttribute('userClosure', function () use ($dc) {
+                return $dc['User'];
+            })
         ;
 
         return $request;
@@ -759,4 +801,3 @@ function array_rest($arr)
     array_shift($arr);
     return $arr;
 }
-

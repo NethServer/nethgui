@@ -21,12 +21,16 @@ namespace Nethgui\System;
  */
 
 /**
- * Brings the output and exit status of an external command
+ * Brings the output and exit status of an external command.
+ *
+ * Deprecated since version 1.6: use Symfony/Process component API. Where possible
+ * the old interface methods are mapped to equivalent Symfony/Process methods.
  *
  * @author Davide Principi <davide.principi@nethesis.it>
  * @see \Nethgui\System\PlatformInterface::exec()
  * @since 1.0
- * @api 
+ * @api
+ * @deprecated since version 1.6
  */
 interface ProcessInterface extends \Nethgui\Utility\DisposableInterface
 {
@@ -62,7 +66,7 @@ interface ProcessInterface extends \Nethgui\Utility\DisposableInterface
      * The exit status code
      *
      * @api
-     * @return int
+     * @return mixed The process exit code (integer) or FALSE if the process has not exited yet.
      */
     public function getExitCode();
 
@@ -123,5 +127,7 @@ interface ProcessInterface extends \Nethgui\Utility\DisposableInterface
      */
     public function getTimes();
 
+
+   
 }
 

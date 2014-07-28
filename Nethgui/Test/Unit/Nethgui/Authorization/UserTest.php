@@ -61,18 +61,6 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($object->getLog() instanceof \Nethgui\Log\LogInterface);
     }
 
-
-    public function testGetAnonymousUser()
-    {
-        $anon = \Nethgui\Authorization\User::getAnonymousUser();
-        $this->assertFalse($anon->isAuthenticated());
-        $this->assertFalse($anon->authenticate());
-
-        $anon2 = \Nethgui\Authorization\User::getAnonymousUser();
-
-        $this->assertSame($anon, $anon2);
-    }
-
     public function testSetAuthenticationProcedure()
     {
         $this->assertSame($this->object, $this->object->setAuthenticationProcedure(function ()

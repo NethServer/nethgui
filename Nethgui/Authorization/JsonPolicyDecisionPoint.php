@@ -39,7 +39,7 @@ class JsonPolicyDecisionPoint implements PolicyDecisionPointInterface, \Nethgui\
      *
      * @var \Nethgui\Utility\PhpWrapper
      */
-    private $php;
+    private $phpWrapper;
 
     /**
      *
@@ -53,11 +53,11 @@ class JsonPolicyDecisionPoint implements PolicyDecisionPointInterface, \Nethgui\
      */
     private $log;
 
-    public function __construct($fileNameResolver, \Nethgui\Utility\PhpWrapper $php = NULL)
+    public function __construct($fileNameResolver, \Nethgui\Utility\PhpWrapper $phpWrapper = NULL)
     {
         $this->rules = new \ArrayObject();
         $this->fileNameResolver = $fileNameResolver;
-        $this->php = is_null($php) ? new \Nethgui\Utility\PhpWrapper() : $php;
+        $this->phpWrapper = $phpWrapper === NULL ? new \Nethgui\Utility\PhpWrapper(__CLASS__) : $phpWrapper;
     }
 
     /**
@@ -72,7 +72,7 @@ class JsonPolicyDecisionPoint implements PolicyDecisionPointInterface, \Nethgui\
         if (strpos($policyFileSpec, '*') === FALSE) {
             $policyFiles = array($policyFileSpec);
         } else {
-            $policyFiles = $this->php->glob($policyFileSpec);
+            $policyFiles = $this->phpWrapper->glob($policyFileSpec);
             if ($policyFiles === FALSE) {
                 $this->getLog()->warning(sprintf('%s: invalid policy file specification `%s`', __CLASS__, $policyFileSpec));
                 $policyFiles = array();
@@ -80,7 +80,7 @@ class JsonPolicyDecisionPoint implements PolicyDecisionPointInterface, \Nethgui\
         }
         
         foreach ($policyFiles as $policyFile) {
-            $data = $this->php->file_get_contents($policyFile);
+            $data = $this->phpWrapper->file_get_contents($policyFile);
             $this->loadJsonString(basename($policyFile), $data);
         }
 
@@ -167,7 +167,7 @@ class JsonPolicyDecisionPoint implements PolicyDecisionPointInterface, \Nethgui\
 
     public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)
     {
-        $this->php = $object;
+        $this->phpWrapper = $object;
         return $this;
     }
 

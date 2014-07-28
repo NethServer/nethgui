@@ -1,8 +1,7 @@
 <?php
-namespace Nethgui\Module\Notification;
-
+namespace Nethgui\Component;
 /*
- * Copyright (C) 2011 Nethesis S.r.l.
+ * Copyright (C) 2014  Nethesis S.r.l.
  *
  * This script is part of NethServer.
  *
@@ -21,17 +20,20 @@ namespace Nethgui\Module\Notification;
  */
 
 /**
- * TODO: add component description here
+ * Objects implementing this interface are injected with required Models, by
+ * invoking the returned setters methods.
  *
  * @author Davide Principi <davide.principi@nethesis.it>
- * @since 1.0
- * @deprecated since 1.6
+ * @since 1.6
  */
-abstract class AbstractNotification 
+interface DependencyConsumer
 {
-    const NOTIFY_SUCCESS = 0x0;
-    const NOTIFY_WARNING = 0x1;
-    const NOTIFY_ERROR = 0x2;
-    const MASK_SEVERITY = 0x3;
-    const NOTIFY_MODAL = 0x4;
+    /**
+     * The returned hash is indexed by the model class name and has a callable
+     * objects as value.  Each callable is invoked with the model instance as
+     * only argument.
+     *
+     * @return array
+     */
+    public function getDependencySetters();
 }

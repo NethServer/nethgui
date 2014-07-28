@@ -134,6 +134,7 @@ class Button extends \Nethgui\Widget\XhtmlWidget
 
     public function executeCommand(\Nethgui\View\ViewInterface $origin, $selector, $name, $arguments)
     {
+        $this->getLog()->deprecated(sprintf("%%s %%s: %s() command is DEPRECATED on Xhtml widget!", __CLASS__, $name));
         switch ($name) {
             case 'setLabel':
                 $this->setAttribute('label', $arguments[0]);

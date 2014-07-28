@@ -366,6 +366,7 @@ interface PlatformInterface
      * 
      * @return array An array of \Nethgui\System\ProcessInterface traced objects
      * @see \Nethgui\System\ProcessInterface
+     * @deprecated since version 1.6
      */
     public function getDetachedProcesses();
 
@@ -373,6 +374,7 @@ interface PlatformInterface
      * @api
      * @param string $name The identifier of the process
      * @return \Nethgui\System\ProcessInterface
+     * @deprecated since version 1.6
      */
     public function getDetachedProcess($identifier);
 }

@@ -20,13 +20,39 @@ $extCss = <<<"CSS"
 /*
  * Login.php
  */
+html,body {
+    height:100%;
+    background: {$bg1}
+}
+
+#allWrapper {
+    margin: 0;
+    height:100%;
+    display: flex !important;
+    flex-flow: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#Notification {
+    width: 99%;
+}
+
+#footer {
+    align-self: flex-end;
+    border: none;
+    color: #eee;
+    background: transparent;
+    padding: 0.5em;
+}
+
+.primaryContent { margin: 0 }
 
 #{$actionId} {
     background: white;
     padding: 1em;
     border: 1px solid {$bg1};
     border-radius: 2px;
-    position: absolute;
 }
 
 #{$actionId} .Button.submit {
@@ -47,52 +73,10 @@ $extCss = <<<"CSS"
     background: {$bg1};
 }
 
-#footer {
-    border: none;
-    position: fixed;
-    bottom: 5px;
-    right: 5px;
-    color: #eee;
-    background: transparent;
-}
+
 CSS;
 
-$extJs = <<<"JS"
-/**
- * Login.php
- */
-(function ( $ ) {
-    var adjust = function (e) {
-
-            $('#{$actionId}').position({
-                my: 'center center',
-                at: 'center center',
-                of: $(window)
-            });
-
-            var w = window,
-            d = document,
-            e = d.documentElement,
-            g = d.getElementsByTagName('body')[0],
-            x = w.innerWidth || e.clientWidth || g.clientWidth,
-            y = w.innerHeight || e.clientHeight || g.clientHeight;
-
-            var bg = $('#Login .ui-widget-header').css('background-color');
-            $('#allWrapper').css({'height': y, 'width': x, 'background': bg});
-
-    };
-
-    $(window).resize(adjust).scroll(adjust);
-    
-    $(document).ready(function() {
-        window.setTimeout(adjust, 1);
-    });
-    
-} ( jQuery ));
-JS;
-
 $view->includeCss($extCss);
-$view->includeJavascript($extJs);
 
 
 

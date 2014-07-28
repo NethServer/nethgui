@@ -1,4 +1,5 @@
 <?php
+
 namespace Nethgui\View;
 
 /*
@@ -42,7 +43,6 @@ namespace Nethgui\View;
  */
 class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInterface, \Nethgui\View\CommandReceiverInterface
 {
-
     /**
      * Reference to associated module
      * @var \Nethgui\Module\ModuleInterface
@@ -85,18 +85,12 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
      */
     private $urlParts;
 
-
     /**
-     *
-     * @var \Nethgui\View\CommandReceiverInterface
+     * Provided for backward compatibility
+     * @deprecated since 1.6
+     * @var \Nethgui\View\LegacyCommandBag
      */
-    private $receiver;
-
-    /**
-     *
-     * @var \ArrayObject
-     */
-    private $commands;
+    public $commands;
 
     /**
      *
@@ -115,16 +109,15 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
     {
         $this->module = $module;
         $this->translator = $translator;
-        $this->receiver = \Nethgui\View\NullReceiver::getNullInstance();
         $this->urlParts = $urlParts;
         $this->template = str_replace('\Module\\', '\Template\\', get_class($module));
         $this->data = array();
         $this->targetFormat = $targetFormat;
-        $this->commands = new \ArrayObject();
     }
 
     public function getTargetFormat()
     {
+        $this->getLog()->deprecated();
         return $this->targetFormat;
     }
 
@@ -150,8 +143,7 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
     public function spawnView(\Nethgui\Module\ModuleInterface $module, $register = FALSE)
     {
         $spawnedView = new static($this->targetFormat, $module, $this->translator, $this->urlParts);
-        $spawnedView->setReceiver($this->receiver);
-        $spawnedView->commands = $this->commands;
+        $spawnedView->commands = $this->getCommands();
         if ($register === TRUE) {
             $this[$module->getIdentifier()] = $spawnedView;
         } elseif (is_string($register)) {
@@ -217,7 +209,7 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
             $module = $this->getModule();
 
             while ( ! (is_null($module))) {
-                if ( ++ $watchdog > 20) {
+                if (++ $watchdog > 20) {
                     throw new \LogicException(sprintf("%s: Too many nested modules or cyclic module structure.", get_class($this)), 1322150445);
                 }
 
@@ -295,7 +287,7 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
         $segments = $this->resolvePath($path);
 
         $url = implode('', \Nethgui\array_rest($this->urlParts)) . implode('/', $segments);
-        
+
         if ( ! empty($parameters)) {
             $url .= '?' . http_build_query($parameters);
         }
@@ -320,12 +312,15 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
 
     public function setLog(\Nethgui\Log\LogInterface $log)
     {
-        throw new \LogicException(sprintf('Cannot invoke setLog() on %s', get_class($this)));
+        $this->log = $log;
+        return $this;
     }
 
     public function getLog()
     {
-        if ($this->getModule() instanceof \Nethgui\Log\LogConsumerInterface) {
+        if (isset($this->log)) {
+            return $this->log;
+        } elseif ($this->getModule() instanceof \Nethgui\Log\LogConsumerInterface) {
             return $this->getModule()->getLog();
         } elseif ($this->translator instanceof \Nethgui\Log\LogConsumerInterface) {
             return $this->translator->getLog();
@@ -334,38 +329,31 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
         }
     }
 
-    public function setReceiver(\Nethgui\View\CommandReceiverInterface $receiver)
-    {
-        $this->receiver = $receiver;
-        return $this;
-    }
-
     public function executeCommand(\Nethgui\View\ViewInterface $origin, $selector, $name, $arguments)
     {
+        $this->getLog()->deprecated(sprintf("%%s %%s: %s() command is DEPRECATED", __CLASS__, $name));
         $module = $this->getModule();
         if ($module instanceof \Nethgui\View\CommandReceiverInterface) {
             $module->executeCommand($origin, $selector, $name, $arguments);
         }
-
-        $this->receiver->executeCommand($origin, $selector, $name, $arguments);
     }
 
     public function getCommandList($selector = '')
     {
-        $fullSelector = $this->getUniqueId($selector);
-        if ( ! isset($this->commands[$fullSelector]) || $this->commands[$fullSelector]->isExecuted()) {
-            $this->commands[$fullSelector] = new \Nethgui\View\ViewCommandSequence($this, $selector);
-        }
-        return $this->commands[$fullSelector];
+        $this->getLog()->deprecated();
+        $this->getCommands()->setContext($this, $selector);
+        return $this->getCommands();
     }
 
     public function hasCommandList($selector = '')
     {
-        return isset($this->commands[$this->getUniqueId($selector)]);
+        $this->getLog()->deprecated();
+        return FALSE;
     }
 
     public function getCommands()
     {
+        $this->getLog()->deprecated();
         return $this->commands;
     }
 
@@ -376,7 +364,7 @@ class View implements \Nethgui\View\ViewInterface, \Nethgui\Log\LogConsumerInter
      */
     public function clearAllCommands()
     {
-        $this->commands->exchangeArray(array());
+        $this->getCommands()->exchangeArray(array());
         return $this;
     }
 

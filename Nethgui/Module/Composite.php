@@ -1,4 +1,5 @@
 <?php
+
 namespace Nethgui\Module;
 
 /*
@@ -31,7 +32,7 @@ namespace Nethgui\Module;
  * @see Controller
  * @see List
  */
-abstract class Composite extends \Nethgui\Module\AbstractModule implements \Nethgui\Module\ModuleCompositeInterface
+abstract class Composite extends \Nethgui\Module\AbstractModule implements \Nethgui\Module\ModuleCompositeInterface, \Nethgui\Component\DependencyInjectorAggregate
 {
     private $children = array();
 
@@ -40,6 +41,12 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
      * @var ModuleLoader
      */
     private $childLoader;
+
+    /**
+     *
+     * @var callable
+     */
+    private $dependencyInjector;
 
     /**
      * Propagates initialize() message to children.
@@ -52,6 +59,7 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
         parent::initialize();
         foreach ($this->children as $child) {
             if ( ! $child->isInitialized()) {
+                call_user_func($this->dependencyInjector, $child);
                 $child->initialize();
             }
         }
@@ -74,15 +82,9 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
         $this->children[$childModule->getIdentifier()] = $childModule;
 
         $childModule->setParent($this);
-        if ($this->hasPlatform() && $childModule instanceof \Nethgui\System\PlatformConsumerInterface) {
-            $childModule->setPlatform($this->getPlatform());
-        }
-
-        if ($childModule instanceof \Nethgui\Authorization\PolicyEnforcementPointInterface) {
-            $childModule->setPolicyDecisionPoint($this->getPolicyDecisionPoint());
-        }
 
         if ($this->isInitialized() && ! $childModule->isInitialized()) {
+            call_user_func($this->dependencyInjector, $childModule);
             $childModule->initialize();
         }
         return $this;
@@ -120,9 +122,11 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
      * @link http://redmine.nethesis.it/issues/196
      * @param type $classList
      * @return \Nethgui\Module\Composite
+     * @deprecated since 1.6
      */
     protected function loadChildren($classList)
     {
+        $this->getLog()->deprecated();
         foreach ($classList as $item) {
             if ( ! is_string($item)) {
                 throw new \InvalidArgumentException(sprintf('%s: $classList elements must be of type String', get_class($this)), 1322148900);
@@ -187,7 +191,7 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
         $nsParts = array_merge($nsPrefixParts, explode('/', $childrenDir));
         $nsPrefix = implode('\\', $nsParts);
 
-        $this->childLoader = new \Nethgui\Module\ModuleLoader();
+        $this->childLoader = new \Nethgui\Module\ModuleLoader($this->dependencyInjector);
         $this->childLoader
             ->setLog($this->getLog())
             ->setNamespace($nsPrefix, $nsRootPath);
@@ -220,10 +224,17 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
     public function setPolicyDecisionPoint(\Nethgui\Authorization\PolicyDecisionPointInterface $pdp)
     {
         parent::setPolicyDecisionPoint($pdp);
-        foreach($this->getChildren() as $child) {
-            if($child instanceof \Nethgui\Authorization\PolicyDecisionPointInterface) {
+        foreach ($this->getChildren() as $child) {
+            if ($child instanceof \Nethgui\Authorization\PolicyDecisionPointInterface) {
                 $child->setPolicyDecisionPoint($this->getPolicyDecisionPoint());
             }
         }
     }
+
+    public function setDependencyInjector($di)
+    {
+        $this->dependencyInjector = $di;
+        return $this;
+    }
+
 }

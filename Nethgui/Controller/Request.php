@@ -27,13 +27,13 @@ namespace Nethgui\Controller;
  * @since 1.0
  * @internal
  */
-class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\SessionConsumerInterface, \Nethgui\Log\LogConsumerInterface
+class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Log\LogConsumerInterface
 {
     /**
      *
-     * @var \Nethgui\Utility\SessionInterface
+     * @var \Nethgui\Authorization\UserInterface
      */
-    private $session;
+    private $user;
 
     /**
      *
@@ -46,6 +46,7 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
         'isValidated' => FALSE,
         'isMutation' => FALSE,
         'originalRequest' => FALSE,
+        'userClosure' => FALSE
     );
 
     /**
@@ -66,17 +67,11 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
         $this->setAttribute('originalRequest', $this);
     }
 
-    public function setSession(\Nethgui\Utility\SessionInterface $session)
-    {
-        $this->session = $session;
-        return $this;
-    }
-
     public function setParameter($name, $value)
     {
         if ( ! isset($this->data[$name])) {
             $this->data[$name] = $value;
-        }        
+        }
         return $this;
     }
 
@@ -117,10 +112,7 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
 
         $instance = new static($parameterSubset);
         $instance->attributes = &$this->attributes;
-
-        if (isset($this->session)) {
-            $instance->setSession($this->session);
-        }
+        $instance->user = $this->user;
 
         if (isset($this->log)) {
             $instance->setLog($this->getLog());
@@ -133,21 +125,33 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Utility\
         return $instance;
     }
 
+    public function createSecondaryRequest($path, $requestData = array())
+    {
+        $r = $this->spawnRequest('');
+
+        $pathInfo = explode('/', $path);
+        $pathInfoMod = array();
+        $cur = &$pathInfoMod;
+        foreach ($pathInfo as $pathPart) {
+            $cur[$pathPart] = array();
+            $cur = &$cur[$pathPart];
+        }
+
+        $r->data = array_replace_recursive($pathInfoMod, $requestData);
+        $r
+            ->setAttribute('originalRequest', $this)
+            ->setAttribute('isMutation', FALSE)
+            ->setAttribute('isValidated', FALSE)
+        ;
+        return $r;
+    }
+
     public function getUser()
     {
-        $key = \Nethgui\Authorization\UserInterface::ID;
-
-        $user = $this->session->retrieve($key);
-
-        if ( ! $user instanceof \Nethgui\Authorization\UserInterface) {
-            $user = \Nethgui\Authorization\User::getAnonymousUser();
+        if(isset($this->attributes['userClosure'])) {
+            return \call_user_func($this->attributes['userClosure']);
         }
-
-        if ($user instanceof \Nethgui\Log\LogConsumerInterface) {
-            $user->setLog($this->getLog());
-        }
-
-        return $user;
+        return \Nethgui\Authorization\User::getAnonymousUser();
     }
 
     public function getPath()

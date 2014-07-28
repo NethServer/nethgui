@@ -44,15 +44,15 @@ class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utili
      * @var GlobalFunctionWrapper
      */
     private $phpWrapper;
+    private $objectInjector;
 
     /**
-     *
-     * @var array
+     * 
+     * @param callable $objectInjector
      */
-    private $onInstantiate = array();
-
-    public function __construct()
+    public function __construct($objectInjector)
     {
+        $this->objectInjector = $objectInjector;
         $this->namespaceMap = new \ArrayObject();
         $this->instanceCache = new \ArrayObject();
         $this->phpWrapper = new \Nethgui\Utility\PhpWrapper(__CLASS__);
@@ -105,7 +105,7 @@ class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utili
                     $className = $nsPrefix . '\\' . $moduleIdentifier;
                     $moduleInstance = new $className();
                     NETHGUI_DEBUG && $this->getLog()->notice(sprintf('%s::fillCache(): Created "%s" instance', get_class($this), $className));
-                    $this->notifyCallbacks($moduleInstance);
+                    call_user_func($this->objectInjector, $moduleInstance);
                     $this->instanceCache[$moduleIdentifier] = $moduleInstance;
                 }
             }
@@ -133,7 +133,7 @@ class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utili
             if ($this->phpWrapper->class_exists($className)) {
                 $moduleInstance = new $className();
                 NETHGUI_DEBUG && $this->getLog()->notice(sprintf('%s::getModule(): Created "%s" instance', get_class($this), $className));
-                $this->notifyCallbacks($moduleInstance);
+                call_user_func($this->objectInjector, $moduleInstance);
                 $this->instanceCache[$moduleIdentifier] = $moduleInstance;
                 break;
             }
@@ -161,24 +161,6 @@ class ModuleLoader implements \Nethgui\Module\ModuleSetInterface, \Nethgui\Utili
     {
         $this->phpWrapper->setLog($log);
         return $this;
-    }
-
-    /**
-     *
-     * @param callable $callable
-     * @return ModuleLoader
-     */
-    public function addInstantiateCallback($callable)
-    {
-        $this->onInstantiate[] = $callable;
-        return $this;
-    }
-
-    private function notifyCallbacks(ModuleInterface $module)
-    {
-        foreach ($this->onInstantiate as $callback) {
-            call_user_func($callback, $module);
-        }
     }
 
 }

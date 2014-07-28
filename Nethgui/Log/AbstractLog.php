@@ -73,7 +73,7 @@ abstract class AbstractLog implements LogInterface, \Nethgui\Utility\PhpConsumer
             return $this;
         }
 
-        $message = sprintf('%s: %s (in %s:%d)', get_class($ex),
+        $message = sprintf('%s %s: %s (in %s:%d)', get_class($ex), $ex->getCode(),
             $ex->getMessage(), $ex->getFile(), $ex->getLine());
         $this->message(__FUNCTION__, $message);
 
@@ -118,15 +118,19 @@ abstract class AbstractLog implements LogInterface, \Nethgui\Utility\PhpConsumer
 
     public function deprecated($message = "%s: method %s is DEPRECATED!")
     {
+        if( ! NETHGUI_DEBUG) {
+            return $this;
+        }
         $backtrace = debug_backtrace();
         $caller = $backtrace[2];
         $callee = $backtrace[1];
-        $calleeInfo = $callee['class'] . '::' . $callee['function'] . '()';
-        $callerInfo = $caller['class'] . '::' . $caller['function'] . '()';
+        $calleeInfo = isset($callee['class'], $callee['function']) ? ($callee['class'] . '::' . $callee['function'] . '()') : '[no callee infos]';
+        $callerInfo = isset($caller['class'], $caller['function']) ? ($caller['class'] . '::' . $caller['function'] . '()') : '[no caller infos]';
         if ( ! isset(static::$emitted[$callerInfo])) {
             $this->warning(sprintf($message, $callerInfo, $calleeInfo));
             static::$emitted[$callerInfo] = TRUE;
         }
+        return $this;
     }
 
     public function setPhpWrapper(\Nethgui\Utility\PhpWrapper $object)

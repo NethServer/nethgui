@@ -1,8 +1,9 @@
 <?php
-namespace Nethgui\View;
+
+namespace Nethgui\Model;
 
 /*
- * Copyright (C) 2011 Nethesis S.r.l.
+ * Copyright (C) 2014  Nethesis S.r.l.
  *
  * This script is part of NethServer.
  *
@@ -21,38 +22,34 @@ namespace Nethgui\View;
  */
 
 /**
- * A Receiver that does nothing
+ * TODO: add component description here
  *
  * @author Davide Principi <davide.principi@nethesis.it>
- * @since 1.0
+ * @since 1.6
  */
-class NullReceiver implements \Nethgui\View\CommandReceiverInterface
+class UserNotifications extends \ArrayObject
 {
 
-    /**
-     * Get the NullReceiver singleton
-     * @staticvar NullReceiver $singleton
-     * @return NullReceiver
-     */
-    static public function getNullInstance()
+    private $templates = array();
+
+    public function defineTemplate($name, $value)
     {
-        static $singleton;
-
-        if ( ! isset($singleton)) {
-            $singleton = new self();
-        }
-
-        return $singleton;
+        $this->templates[$name] = $value;
+        return $this;
     }
 
-    protected function __construct()
+    public function getTemplates()
     {
-        // constructor is not publicly available
+        return $this->templates;
     }
 
-    public function executeCommand(\Nethgui\View\ViewInterface $origin, $selector, $name, $arguments)
+    public function __call($name, $arguments)
     {
-        // DO NOTHING
+        $this[] = array(
+            'data' => is_array($arguments[0]) ? $arguments[0] : $arguments,            
+            'template' => $name
+        );
+        return $this;
     }
 
 }

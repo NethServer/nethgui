@@ -1,8 +1,7 @@
 <?php
-namespace Nethgui\Module\Notification;
-
+namespace Nethgui\Utility;
 /*
- * Copyright (C) 2011 Nethesis S.r.l.
+ * Copyright (C) 2014  Nethesis S.r.l.
  *
  * This script is part of NethServer.
  *
@@ -24,14 +23,29 @@ namespace Nethgui\Module\Notification;
  * TODO: add component description here
  *
  * @author Davide Principi <davide.principi@nethesis.it>
- * @since 1.0
- * @deprecated since 1.6
+ * @since 1.6
  */
-abstract class AbstractNotification 
+class NullSession extends \ArrayObject implements \Nethgui\Utility\SessionInterface
 {
-    const NOTIFY_SUCCESS = 0x0;
-    const NOTIFY_WARNING = 0x1;
-    const NOTIFY_ERROR = 0x2;
-    const MASK_SEVERITY = 0x3;
-    const NOTIFY_MODAL = 0x4;
+    public function login()
+    {
+        return $this;
+    }
+
+    public function logout()
+    {
+        return $this;
+    }
+
+    public function retrieve($key)
+    {
+        return isset($this[$key]) ? $this[$key] : NULL;
+    }
+
+    public function store($key, \Serializable $object = NULL)
+    {
+        $this[$key] = $object;
+        return $this;
+    }
+
 }

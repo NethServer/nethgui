@@ -1,7 +1,7 @@
 <?php
-namespace Nethgui\View;
+namespace Nethgui\Component;
 /*
- * Copyright (C) 2011 Nethesis S.r.l.
+ * Copyright (C) 2014  Nethesis S.r.l.
  *
  * This script is part of NethServer.
  *
@@ -20,23 +20,20 @@ namespace Nethgui\View;
  */
 
 /**
- * Records a sequence of method calls through the PHP magic method __call.
+ * The implementor wants to receive a DependencyInjectorInterface object.
+ *
+ * A such DependencyInjectorInterface object is needed if a creator object
+ * wants to create an auxiliary object and initialize it properly.
  *
  * @author Davide Principi <davide.principi@nethesis.it>
- * @since 1.0
+ * @since 1.6
  * @api
  */
-interface ViewCommandInterface
+interface DependencyInjectorAggregate
 {
     /**
-     * A magic method that creates and appends a Command object to a command
-     * sequence.
-     *
-     * @api
-     * @param string $name
-     * @param array $arguments
-     * @return \Nethgui\View\ViewCommandInterface The command sequence, with the registered method call appended
+     * @param callable $di
+     * @return \Nethgui\Component\DependencyInjectorAggregate The object itself
      */
-    public function __call($name, $arguments);
-
+    public function setDependencyInjector($di);
 }

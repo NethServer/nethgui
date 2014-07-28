@@ -21,7 +21,7 @@ class SyslogTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->php = $this->getMock('Nethgui\Utility\PhpWrapper', array('error_log'));
+        $this->php = $this->getMock('Nethgui\Utility\PhpWrapper', array('syslog'));
 
         $this->object = new \Nethgui\Log\Syslog();
         $this->object->setPhpWrapper($this->php);
@@ -30,28 +30,28 @@ class SyslogTest extends \PHPUnit_Framework_TestCase
     public function testMessage()
     {
         $this->php->expects($this->at(0))
-            ->method('error_log')
-            ->with($this->logicalAnd($this->stringContains('NOTICE'), $this->stringContains('HelloWorld')))
+            ->method('syslog')
+            ->with(LOG_NOTICE, $this->logicalAnd($this->stringContains('NOTICE'), $this->stringContains('HelloWorld')))
             ->will($this->returnValue($this->object));
 
         $this->php->expects($this->at(1))
-            ->method('error_log')
-            ->with($this->logicalAnd($this->stringContains('WARNING'), $this->stringContains('WarningWorld')))
+            ->method('syslog')
+            ->with(LOG_WARNING, $this->logicalAnd($this->stringContains('WARNING'), $this->stringContains('WarningWorld')))
             ->will($this->returnValue($this->object));
 
         $this->php->expects($this->at(2))
-            ->method('error_log')
-            ->with($this->logicalAnd($this->stringContains('ERROR'), $this->stringContains('ErrorWorld')))
+            ->method('syslog')
+            ->with(LOG_ERR, $this->logicalAnd($this->stringContains('ERROR'), $this->stringContains('ErrorWorld')))
             ->will($this->returnValue($this->object));
 
         $this->php->expects($this->at(3))
-            ->method('error_log')
-            ->with($this->logicalAnd($this->stringContains('EXCEPTION'), $this->stringContains('Failure1')))
+            ->method('syslog')
+            ->with(LOG_ERR, $this->logicalAnd($this->stringContains('EXCEPTION'), $this->stringContains('Failure1')))
             ->will($this->returnValue($this->object));
 
        $this->php->expects($this->at(4))
-            ->method('error_log')
-            ->with($this->logicalAnd($this->stringContains('EXCEPTION'), $this->stringContains('Failure2')))
+            ->method('syslog')
+            ->with(LOG_ERR, $this->logicalAnd($this->stringContains('EXCEPTION'), $this->stringContains('Failure2')))
             ->will($this->returnValue($this->object));
 
         $r = $this->object->notice('HelloWorld');
