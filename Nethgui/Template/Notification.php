@@ -17,9 +17,24 @@ $t['validationError'] = '{{#data}}<dl class="fields">{{#fields}}
 ';
 
 $view->includeCss("
+#Notification { margin-bottom: 0.5em }
+#Notification li.notification { display: flex; color: #363636; border: 1px solid #fcefa1; background-color: #fbf9ee; padding: .5em; margin: 0; border-radius: 2px; font-size: 1.2em;}
+#Notification li.notification .fa { flex: none }
+#Notification li.notification .pre.fa:before { content: \"\\f05a\"; font-size: 1.2em; }
+#Notification li.notification .post.fa:before { content: \"\\20\";  }
+#Notification li.notification .content { margin: 0 .5em }
+
 #Notification li.error,
-#Notification li.validationError {color: #cd0a0a; background-color: #fef1ec; border-color: #cd0a0a}
-#Notification li.validationError a {color: #cd0a0a}
+#Notification li.validationError {color: #fff; background-color: #cd0a0a; border-color: #cd0a0a}
+#Notification li.validationError a {color: #fff}
+#Notification li.error .pre.fa:before,
+#Notification li.validationError .pre.fa:before { content: \"\\f071\" }
+
+#Notification li.message,
+#Notification li.notice {color: #fff; background-color: #00a21a; border-color: #00a21a }
+#Notification li.message .pre.fa:before,
+#Notification li.notice .pre.fa:before { content: \"\\f058\" }
+
 #Notification dd {margin-bottom: .25em}
 ");
 
@@ -40,7 +55,12 @@ if(empty($view['notifications'])) {
 $mustache = new \Mustache_Engine();
 $contents = '';
 foreach($view['notifications'] as $n) {
-    $contents .=  sprintf('<li class="notification %s"><span class="pre fa %s"></span><span class="content">%s</span></li>', $n['template'], $n['icon'] ? $n['icon'] : 'fa-info-circle', $mustache->render(isset($t[$n['template']]) ? $t[$n['template']] : $t['default'], $n));
+    $contents .=  sprintf('<li class="notification {{template}}"><span class="pre fa"></span><span class="content">{{content}}</span><span class="post fa"></span></li>',
+        array(
+            '{{template}}' => $n['template'],
+            '{{content}}' => $mustache->render(isset($t[$n['template']]) ? $t[$n['template']] : $t['default'], $n)
+            )
+        );
 }
 
 echo sprintf('<div id="%s" class="Notifications %s"><ul>%s</ul></div>', $panelId, $viewTarget, $contents);

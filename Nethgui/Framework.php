@@ -233,17 +233,20 @@ class Framework
                             ->setAttribute('receiver', $currentModule->getIdentifier()) // FIXME use "id" attribute in Inset widget
                             );
             }
-            if($currentModule->getIdentifier() !== 'Tracker') {
-                $decoratorView['currentModuleOutput'] .= (String) $renderer->inset('Tracker', $renderer::STATE_UNOBSTRUSIVE);
-            }
 
-            // Override notificationOutput
-            $decoratorView['notificationOutput'] = (String) $renderer->inset('Notification');
-            $decoratorView['moduleTitle'] = $dc['Translator']->translate($currentModule, $currentModule->getAttributesProvider()->getTitle());
+            if($currentModule->getIdentifier() === 'Tracker') {
+                $decoratorView['trackerOutput'] = '';
+            } else {
+                $decoratorView['trackerOutput'] = (String) $renderer->inset('Tracker', $renderer::STATE_UNOBSTRUSIVE);                
+            }
 
             // Override menuOutput
             $decoratorView['menuOutput'] = (String) $renderer->inset('Menu');
             $decoratorView['logoutOutput'] = (String) $renderer->inset('Logout');
+
+            // Override notificationOutput. Render Notification at the end, to catch notifications from other modules.
+            $decoratorView['notificationOutput'] = (String) $renderer->inset('Notification');
+            $decoratorView['moduleTitle'] = $dc['Translator']->translate($currentModule, $currentModule->getAttributesProvider()->getTitle());
 
             //read css from db
             $db = $dc['Main']->getPlatform()->getDatabase('configuration');

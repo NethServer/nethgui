@@ -34,10 +34,6 @@ html,body {
     align-items: center;
 }
 
-#Notification {
-    width: 99%;
-}
-
 #footer {
     align-self: flex-end;
     border: none;

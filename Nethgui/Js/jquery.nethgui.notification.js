@@ -27,8 +27,9 @@
             $.each(value, function(index, notification) {
                 var tmpl = $.nethgui.Notification.templates[notification.template] ? $.nethgui.Notification.templates[notification.template] : $.nethgui.Notification.templates['default'];
                 $('<li />', {'class': 'notification ' + notification.template}).appendTo(ul)
-                        .append($('<span />', {'class': 'pre fa ' + notification.icon}))
+                        .append($('<span />', {'class': 'pre fa'}))
                         .append($('<span />', {'class': 'content'}).html(Mustache.render(tmpl, notification)))
+                        .append($('<span />', {'class': 'post fa'}))
                         .Component()
                 ;
                 if($.nethgui.Notification.callbacks[notification.template]) {
