@@ -55,10 +55,11 @@ class Tracker extends \Nethgui\Controller\AbstractController implements \Nethgui
         parent::bind($request);
         $taskId = \Nethgui\array_head($request->getPath());
         if ($taskId) {
+            $this->bindTask($request, $taskId);
+        } else {
             if(  ! $request->getUser()->isAuthenticated()) {
                 throw new \Nethgui\Exception\HttpException('Forbidden', 403, 1406800731);
             }
-            $this->bindTask($request, $taskId);
         }
 
         if ($request->isMutation() && count($this->systemTasks->getRunningTasks()) > 0) {
@@ -158,8 +159,8 @@ class Tracker extends \Nethgui\Controller\AbstractController implements \Nethgui
         $data['taskInfo'] = array('id' => $this->taskId);
         $s = $this->evalUiStatus($ui['conditions'][$status], $data);
 
-
         $view['progress'] = intval(100 * $data['progress']);
+
         $view['message'] = $s['message'];
         $view['trackerState'] = array(
             'dialog' => $s['dialog'],
