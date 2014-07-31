@@ -21,7 +21,6 @@ $view->getModule()->defineNotificationTemplate('trackerError', strtr('<span>{{ge
 )));
 
 $view->includeCss("
-#Tracker {display:none}
 #Notification li.trackerError {color: #cd0a0a; background-color: #fef1ec; border-color: #cd0a0a}
 .trackerError dt:before { content: \"\\2192\\20\" }
 .trackerError dt { margin-top: .2em}

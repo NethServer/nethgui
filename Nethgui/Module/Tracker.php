@@ -55,12 +55,16 @@ class Tracker extends \Nethgui\Controller\AbstractController implements \Nethgui
         parent::bind($request);
         $taskId = \Nethgui\array_head($request->getPath());
         if ($taskId) {
+            if(  ! $request->getUser()->isAuthenticated()) {
+                throw new \Nethgui\Exception\HttpException('Forbidden', 403, 1406800731);
+            }
             $this->bindTask($request, $taskId);
         }
 
         if ($request->isMutation() && count($this->systemTasks->getRunningTasks()) > 0) {
             throw new \Nethgui\Exception\HttpException('Service Unavailable', 503, 1405692423);
         }
+
     }
 
     private function bindTask(\Nethgui\Controller\RequestInterface $request, $taskId)

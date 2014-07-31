@@ -234,12 +234,8 @@ class Framework
                             );
             }
 
-            if($currentModule->getIdentifier() === 'Tracker') {
-                $decoratorView['trackerOutput'] = '';
-            } else {
-                $decoratorView['trackerOutput'] = (String) $renderer->inset('Tracker', $renderer::STATE_UNOBSTRUSIVE);                
-            }
-
+            $decoratorView['trackerOutput'] = (String) $renderer->inset('Tracker', $renderer::STATE_UNOBSTRUSIVE);
+            
             // Override menuOutput
             $decoratorView['menuOutput'] = (String) $renderer->inset('Menu');
             $decoratorView['logoutOutput'] = (String) $renderer->inset('Logout');
