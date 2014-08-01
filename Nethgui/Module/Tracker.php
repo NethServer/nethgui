@@ -159,7 +159,11 @@ class Tracker extends \Nethgui\Controller\AbstractController implements \Nethgui
         $data['taskInfo'] = array('id' => $this->taskId);
         $s = $this->evalUiStatus($ui['conditions'][$status], $data);
 
-        $view['progress'] = intval(100 * $data['progress']);
+        if(is_numeric($data['progress'])) {
+            $view['progress'] = intval(100 * $data['progress']);
+        } else {
+            $view['progress'] = '...';
+        }
 
         $view['message'] = $s['message'];
         $view['trackerState'] = array(
