@@ -27,7 +27,7 @@ namespace Nethgui\Authorization;
  * @author Davide Principi <davide.principi@nethesis.it>
  * @since 1.0
  */
-class User implements \Nethgui\Authorization\UserInterface
+class User implements \Nethgui\Authorization\UserInterface, \Serializable
 {
     /**
      *  @var \Nethgui\Log\LogInterface
@@ -170,9 +170,33 @@ class User implements \Nethgui\Authorization\UserInterface
         if ($state instanceof \ArrayObject) {
             $this->state = $state;
         } else {
-            $this->session->login()->store(__CLASS__, $this->state);
+            // TODO: try to resume the session stored in old format:
+            $u = $this->session->retrieve(\Nethgui\Authorization\UserInterface::ID);
+            if ($u instanceof self) {
+                $this->state = $u->state;
+                $this->session->store(__CLASS__, $this->state);
+            } else {
+                $this->session->login()->store(__CLASS__, $this->state);
+            }
         }
         $this->modified = FALSE;
+    }
+
+    public function unserialize($serialized)
+    {
+        list($authenticated, $credentials, $preferences, $php, $log) = unserialize($serialized);
+        $this->modified = FALSE;
+        $this->log = new \Nethgui\Log\Nullog();
+        $this->state = new \ArrayObject(array(
+            'credentials' => $credentials,
+            'preferences' => $preferences,
+            'authenticated' => $authenticated
+        ));
+    }
+
+    public function serialize()
+    {
+        return serialize(array($this->state['authenticated'], $this->state['credentials'], $this->state['preferences'], NULL, NULL));
     }
 
 }
