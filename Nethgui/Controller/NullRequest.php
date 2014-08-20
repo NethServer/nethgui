@@ -34,9 +34,12 @@ class NullRequest implements \Nethgui\Controller\RequestInterface
      */
     private $session;
 
+    private $log;
+
     private function __construct()
     {
         $this->session = new \Nethgui\Utility\NullSession();
+        $this->log = new \Nethgui\Log\Nullog();
     }
 
     /**
@@ -82,7 +85,7 @@ class NullRequest implements \Nethgui\Controller\RequestInterface
 
     public function getUser()
     {
-        return new \Nethgui\Authorization\User($this->session);
+        return new \Nethgui\Authorization\User($this->session, $this->log);
     }
 
     public function hasParameter($parameterName)
