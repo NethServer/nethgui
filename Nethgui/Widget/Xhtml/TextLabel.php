@@ -1,4 +1,5 @@
 <?php
+
 namespace Nethgui\Widget\Xhtml;
 
 /*
@@ -36,6 +37,7 @@ namespace Nethgui\Widget\Xhtml;
  */
 class TextLabel extends \Nethgui\Widget\XhtmlWidget
 {
+    protected $cssClass = 'TextLabel';
 
     protected function renderContent()
     {
@@ -45,7 +47,7 @@ class TextLabel extends \Nethgui\Widget\XhtmlWidget
         $tag = $this->getAttribute('tag', 'span');
         $template = $this->getAttribute('template', '${0}');
         $htmlAttributes = $this->getAttribute('htmlAttributes', array());
-        $cssClass = 'TextLabel';
+        $cssClass = $this->cssClass;
 
         if ($this->hasAttribute('class')) {
             $cssClass .= ' ' . $this->getAttribute('class');

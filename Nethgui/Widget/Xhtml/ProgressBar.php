@@ -23,37 +23,26 @@ namespace Nethgui\Widget\Xhtml;
 /**
  *
  */
-class ProgressBar extends \Nethgui\Widget\XhtmlWidget
+class ProgressBar extends \Nethgui\Widget\Xhtml\TextLabel
 {
+    protected $cssClass = 'TextLabel ProgressbarText';
 
-    protected function renderContent()
+    public function __construct(\Nethgui\View\ViewInterface $view)
     {
-        $name = $this->getAttribute('name');
-        $flags = $this->getAttribute('flags', 0);
-        $template = $this->getAttribute('template', '${0}%');
-
-        $value = $this->view[$name];
-
-        $cssClass = 'Progressbar';
-
-        if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_DISABLED) {
-            $cssClass .= ' disabled';
-        }
-
-        $cssClass .= ' ' . $this->getClientEventTarget();
-
-        $content = $this->openTag('div', array('class' => $cssClass));
-
-        if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE) {
-            $content .= $template;
-        } elseif (is_numeric($value)) {
-            $content .= htmlspecialchars(strtr($template, array('${0}' => $value)));
-        } else {
-            $content .= htmlspecialchars($value);
-        }
-        $content .= $this->closeTag('div');
-
-        return $content;
+        parent::__construct($view);
+        $this->setAttribute('template', '${0}%');
+        $this->setAttribute('tag', 'span');
     }
 
+    public function renderContent()
+    {
+        $cssClass = 'Progressbar';
+        if ($this->hasAttribute('name')) {
+            $cssClass .= ' ' . $this->getClientEventTarget();
+        }
+        $content = $this->openTag('div', array('class' => $cssClass));
+        $content .= parent::renderContent();
+        $content .= $this->closeTag('div');
+        return $content;
+    }
 }
