@@ -116,13 +116,17 @@ class Process extends \Symfony\Component\Process\Process implements ProcessInter
             $this->log->deprecated();
             return '';
         }
-        return parent::getOutput();
+        $output = parent::getOutput();
+        if($output[strlen($output) - 1] === "\n") {
+            return substr($output, 0, -1);
+        }
+        return $output;
     }
 
     public function getOutputArray()
     {
         $this->log->deprecated();
-        return explode("\n", trim($this->getOutput()));
+        return explode("\n", $this->getOutput());
     }
 
     public function getTimes()
