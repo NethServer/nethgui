@@ -38,7 +38,13 @@ class Syslog extends AbstractLog
 
     protected function message($level, $message)
     {
-        $this->phpWrapper->syslog(isset($this->syslogLevels[$level]) ? $this->syslogLevels[$level] : LOG_NOTICE, sprintf('[%s] %s', strtoupper($level), $message));
+        $levelValue = isset($this->syslogLevels[$level]) ? $this->syslogLevels[$level] : LOG_NOTICE;
+        $xmessage = sprintf('[%s] %s', strtoupper($level), $message);
+        if($levelValue <= LOG_WARNING) {
+            // send errors also to SAPI error logger
+            $this->phpWrapper->error_log($xmessage, 4);
+        }
+        $this->phpWrapper->syslog($levelValue, $xmessage);
         return $this;
     }
 
