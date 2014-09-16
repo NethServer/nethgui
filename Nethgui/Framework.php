@@ -733,15 +733,22 @@ class Framework
     {
         header(sprintf('HTTP/1.1 %s %s', $ex->getHttpStatusCode(), $ex->getMessage()));
         header('Content-Type: text/plain; charset=UTF-8');
-        echo sprintf("Nethgui:\n\n    %d - %s [%s]\n\n\n\n", $ex->getHttpStatusCode(), $ex->getMessage(), $ex->getCode());
+
+        $code = $ex->getCode();
+        $prev = $ex->getPrevious();
+
+        if ($prev instanceof \Exception) {
+            $code .= '+' . $prev->getCode();
+        }
+
+        echo sprintf("Nethgui:\n\n    %d - %s\n\n    %s\n", $ex->getHttpStatusCode(), $ex->getMessage(), $code);
 
         if ($backtrace) {
-            echo sprintf("Exception backtrace:\n\n%s\n\n", $ex->getTraceAsString());
-            $prev = $ex->getPrevious();
             if ($prev instanceof \Exception) {
-                echo sprintf("Previous %s:\n\n    %s [%s]\n\n", get_class($prev), $prev->getMessage(), $prev->getCode());
-                echo $prev->getTraceAsString();
+                echo sprintf("\n\n%s [%s]:\n\n    %s \n\n", get_class($prev), $prev->getCode(), $prev->getMessage());
+                echo $prev->getTraceAsString() . "\n\n";;
             }
+            echo $ex->getTraceAsString() . "\n";;
         }
     }
 
