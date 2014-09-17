@@ -84,21 +84,17 @@ class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Utility\
      * @param string $languageCode The language code
      * @return string
      */
-    public function translate(\Nethgui\Module\ModuleInterface $module, $string, $args = array(), $languageCode = NULL)
+    public function translate(\Nethgui\Module\ModuleInterface $module, $key, $args = array(), $languageCode = NULL)
     {
-        if ( ! is_string($string)) {
-            throw new \InvalidArgumentException(sprintf("%s: in translate(); unexpected `%s` type!", get_class($this), gettype($string)), 1322150166);
-        }
-
         if ( ! isset($languageCode)) {
             $languageCode = $this->getLanguageCode();
         }
 
         if (empty($languageCode)) {
-            $translation = $string;
+            $translation = $key;
         } else {
             $catalogStack = $this->extractLanguageCatalogStack($module);
-            $translation = $this->lookupTranslation($string, $languageCode, $catalogStack);
+            $translation = $this->lookupTranslation((string) $key, $languageCode, $catalogStack);
         }
 
         /**
