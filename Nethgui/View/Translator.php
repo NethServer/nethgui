@@ -71,15 +71,16 @@ class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Utility\
     }
 
     /**
-     * Translate $string substituting $args
+     * Translate $key substituting $args
      *
-     * Each key in array $args is searched and replaced in $string with
-     * correspondent value.
+     * Any occurence of "${ID}" in the translated string is
+     * substituted by the value in $args corresponding to 
+     * index "ID".
      *
      * @see strtr()
      * 
      * @param \Nethgui\Module\ModuleInterface $module
-     * @param string $string The string to be translated
+     * @param string $key The string to be translated
      * @param array $args Values substituted in output string.
      * @param string $languageCode The language code
      * @return string
