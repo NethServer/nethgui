@@ -95,7 +95,6 @@
         _updateView: function(value) {
             SUPER.prototype._updateView.apply(this, [value]);
             if(this._isEnumerative) {
-                $.debug(value, this.element.children('[value="' + value + '"]').index());
                 this._theSlider.slider('option', 'value', this.element.children('[value="' + value + '"]').index());
             } else {
                 this._theSlider.slider('option', 'value', value);
