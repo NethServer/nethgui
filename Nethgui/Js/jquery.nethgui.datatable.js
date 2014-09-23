@@ -84,21 +84,24 @@
                 return '<div class="Buttonset v1">' + buttons.join('') + '</div>';
             }
         },
-        _initializeColumnFormatters: function(dataTable) {
-            var self =this;
+        _initializeColumnFormatters: function(columnDefs) {
+            var self = this;
 
             this._columnFormatters = [];
 
             // Extract the formatter name from the class attribute of each TH element:
-            dataTable.children('thead').find('th').each(function(index, th) {
-                var formatterName, classAttr;
-                classAttr =  $(th).attr('class')
-                if(typeof classAttr === 'string') {
-                    formatterName = classAttr.split(' ').shift();
-                } else {
-                    formatterName = 'default';
+            this._dataTable.children('thead').find('th').each(function(index, th) {
+                var options = $.parseJSON($(th).attr('data-options'));
+                options = $.extend({
+                    name: 'column#' + index,
+                    formatter: 'default',
+                    columnDefs: false,
+                },options);
+                if($.isPlainObject(options.columnDefs)) {
+                    options.columnDefs.targets = index;
+                    columnDefs.push(options.columnDefs)
                 }
-                self._columnFormatters.push(formatterName ? formatterName : 'default');
+                self._columnFormatters.push(options.formatter);
             });
         },
         _create: function () {
@@ -107,8 +110,7 @@
             var self = this;            
             
             this._rowMeta = [];            
-            this._dataTable = this.element.children('table').first();           
-            this._initializeColumnFormatters(this._dataTable);
+            this._dataTable = this.element.children('table').first();
 
             var language = this.language[$('html').attr('lang')];
             
@@ -118,6 +120,7 @@
 
             var defaultSettings = {
                 bJQueryUI: true,
+                columnDefs: [],
                 fnRowCallback: function( nRow, aData ) {
                     var $nRow = $(nRow);
                     var key = aData[0];
@@ -125,7 +128,7 @@
                     self._initializeDeep($nRow.children().toArray());
                     if(self._rowMeta[key] !== undefined) {
                         //apply tr class
-                        $nRow.addClass(self._rowMeta[key].rowCssClass);                        
+                        $nRow.addClass(self._rowMeta[key].rowCssClass);
                     }
                     return nRow
                 },
@@ -144,6 +147,8 @@
                     sPaginationType: "full_numbers"
                 });
             }
+
+            this._initializeColumnFormatters(defaultSettings.columnDefs);
 
             // Attach DataTable plugin to the TABLE element:
             this._dataTable.dataTable(defaultSettings);

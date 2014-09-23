@@ -63,7 +63,7 @@ class Read extends AbstractAction
                 $this->columns[] = $columnInfo;
             } else {
                 // FIXME: setting here the default buttonList formatter for Actions column:
-                $this->columns[] = array('name' => strval($columnInfo), 'formatter' => ($columnInfo == 'Actions' ? 'fmtButtonset' : NULL));
+                $this->columns[] = array('name' => strval($columnInfo), 'formatter' => ($columnInfo == 'Actions' ? 'fmtButtonset' : 'default'));
             }
         }
         return $this;

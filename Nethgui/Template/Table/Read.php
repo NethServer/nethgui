@@ -8,15 +8,18 @@ if ($view instanceof \Nethgui\Module\Help\Renderer) {
 
 $view
     ->includeFile('Nethgui/Js/jquery.nethgui.datatable.js')
+    ->useFile('js/percent.js')
+    ->useFile('js/file-size.js')
+    ->useFile('js/ip-address.js')
     ->rejectFlag($view::INSET_FORM)
 ;
 
 echo $view->literal($view['TableActions']);
 ?><div class="DataTable <?php echo $view['tableClass'] ?>" ><table><thead><tr><?php
 foreach ($view['columns'] as $columnInfo) {
-    echo isset($columnInfo['formatter']) ? '<th class="' . $columnInfo['formatter'] . '">' : '<th>';
-    echo htmlspecialchars($view->translate($columnInfo['name'] . '_label'));
-    echo '</th>';
+    $thLabel = htmlspecialchars($view->translate($columnInfo['name'] . '_label'));
+    $configAttr = sprintf(' data-options="%s"', htmlspecialchars(json_encode($columnInfo)));
+    echo sprintf('<th%s>%s</th>', $configAttr, $thLabel);
 }
 ?></tr></thead><tbody><?php
                 if (count($view['rows']) > 0) {
