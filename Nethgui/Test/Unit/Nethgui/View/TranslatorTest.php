@@ -81,11 +81,12 @@ class TranslatorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \InvalidArgumentException
+     *
      */
     public function testTranslate5()
     {
-        $this->object->translate($this->module, 1000, array(), '');
+        $t = $this->object->translate($this->module, 1000, array(), '');
+        $this->assertEquals($t, '1000');
     }
 
     /**
@@ -157,7 +158,7 @@ class TranslatorTestPhpWrapper extends \Nethgui\Utility\PhpWrapper
                 break;
             case 'Nethgui\Language\xy\Nethgui_ModuleCatalog':
                 $vars['L']['SYM_INTERPOLATE1'] = 'SYM_TRANSLATED3 ${0} ${1} ${2}';
-                $vars['L']['SYM_INTERPOLATE2'] = 'SYM_TRANSLATED4 :x :y :z';
+                $vars['L']['SYM_INTERPOLATE2'] = 'SYM_TRANSLATED4 ${:x} ${:y} ${:z}';
                 break;
             case 'Nethgui\Language\en\Nethgui_ModuleCatalog':
                 $vars['L']['SYM_ENGLISH_FALLBACK'] = 'SYM_TRANSLATED2';
