@@ -32,6 +32,7 @@ class Process extends \Symfony\Component\Process\Process implements ProcessInter
     public function __construct($command, $arguments = array())
     {
         parent::__construct($this->prepareEscapedCommand($command, $arguments));
+        $this->setTimeout(0);
         $this->identifier = md5(uniqid());
         $this->log = new \Nethgui\Log\Nullog();
     }
