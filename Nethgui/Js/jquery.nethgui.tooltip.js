@@ -40,11 +40,6 @@
                 },
                 content: {
                     text: this.options.text
-                },
-                events: {
-                    hide: this.options.sticky ? function (e, api) {
-                        e.preventDefault()
-                    } : undefined
                 }
             });
 
