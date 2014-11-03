@@ -68,6 +68,7 @@ class SystemTasks
                     $task = $this->getTaskStatus($matches['taskId']);
                 } catch (\RuntimeException $ex) {
                     $this->log->exception($ex);
+                    $this->phpWrapper->unlink($socketPath);
                     continue;
                 }
                 $running[$matches['taskId']] = $task;
@@ -128,7 +129,7 @@ class SystemTasks
         if ($socket === FALSE) {
             $socketPathExists = $errno != 2;
             if ($socketPathExists) {
-                throw new \RuntimeException(sprintf('%s: Socket %s open error [%d: %s]', __CLASS__, $socketPath, $errno, $errstr), 1405610070);
+                $this->log->error(sprintf('%s: Socket %s exists, but open failed: errno %d, errstr %s', __CLASS__, $socketPath, $errno, $errstr));
             }
             $taskStatus = $this->fetchDumpFile($dumpPath);
         } else {
@@ -149,12 +150,6 @@ class SystemTasks
         $tmp = json_decode($this->phpWrapper->file_get_contents($dumpPath), TRUE);
         if ( ! is_array($tmp)) {
             throw new \RuntimeException(sprintf("%s: dump file decode error", __CLASS__), 1405613539);
-        }
-
-        $stat = $this->phpWrapper->stat($dumpPath);
-        if (is_array($stat) && (time() - $stat['mtime']) > 3600) {
-            // delete stale dump files
-            $this->phpWrapper->unlink($dumpPath);
         }
 
         return $tmp;
