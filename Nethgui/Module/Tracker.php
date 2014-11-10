@@ -53,6 +53,11 @@ class Tracker extends \Nethgui\Controller\AbstractController implements \Nethgui
     public function bind(\Nethgui\Controller\RequestInterface $request)
     {
         parent::bind($request);
+
+        if ( ! $this->getRequest()->getUser()->isAuthenticated()) {
+            return;
+        }
+
         $taskId = \Nethgui\array_head($request->getPath());
         if ($taskId) {
             $this->bindTask($request, $taskId);
@@ -73,7 +78,8 @@ class Tracker extends \Nethgui\Controller\AbstractController implements \Nethgui
             if ($ex->getCode() === 1405613538) {
                 throw new \Nethgui\Exception\HttpException('Not found', 404, 1405612090, $ex);
             } else {
-                throw $ex;
+                $this->getLog()->exception($ex);
+                throw new \Nethgui\Exception\HttpException('Not found', 404, 1415120596, $ex);
             }
         }
     }
@@ -228,7 +234,6 @@ class Tracker extends \Nethgui\Controller\AbstractController implements \Nethgui
                 'dialog' => array('title' => $view->translate('Tracker_title_taskStarting'), 'action' => 'open'),
                 'location' => array('sleep' => 2000, 'url' => $view->getModuleUrl($firstStartingTask))
             );
-            $this->notifications->trackerRunning(array('taskId' => $firstStartingTask));
             return;
         }
     }
