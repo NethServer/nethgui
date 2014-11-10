@@ -25,7 +25,7 @@ namespace Nethgui\System;
  * Implementation of the platform interface for Nethesis products
  *
  */
-class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEnforcementPointInterface, \Nethgui\Log\LogConsumerInterface, \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Utility\SessionConsumerInterface
+class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEnforcementPointInterface, \Nethgui\Log\LogConsumerInterface, \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Utility\SessionConsumerInterface, \Nethgui\Component\DependencyConsumer
 {
     /**
      * Cache of configuration database objects
@@ -64,20 +64,40 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
      *
      * @var \Nethgui\Model\SystemTasks
      */
-    private $tasks;
+    private $systemTasks;
+
+    /**
+     *
+     * @var \Nethgui\Model\UserNotifications
+     */
+    private $notifications;
+
+    /**
+     *
+     * @var \Nethgui\Controller\Request
+     */
+    private $request;
+
+    /**
+     *
+     * @var array
+     */
+    private $conditions;
 
     /**
      *
      * @param \Nethgui\Authorization\UserInterface $user
-     * @param \Nethgui\Model\SystemTasks $tasks
+     * @param \Nethgui\Model\SystemTasks $systemTasks
      */
-    public function __construct(\Nethgui\Authorization\UserInterface $user, \Nethgui\Model\SystemTasks $tasks)
+    public function __construct(\Nethgui\Authorization\UserInterface $user, \Nethgui\Model\SystemTasks $systemTasks)
     {
-        $this->eventQueue = array('post-process' => array(), 'post-response' => array());
+        $this->eventQueue = array('post-process' => array(), 'post-response' => array(), 'now' => array());
         $this->user = $user;
-        $this->tasks = $tasks;
+        $this->systemTasks = $systemTasks;
         $this->databases = array('SESSION' => new SessionDatabase());
         $this->phpWrapper = new \Nethgui\Utility\PhpWrapper(__CLASS__);
+        $this->request = \Nethgui\Controller\NullRequest::getInstance();
+        $this->conditions = array();
     }
 
     public function setSession(\Nethgui\Utility\SessionInterface $session)
@@ -181,36 +201,85 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
 
         $detached = isset($matches['detached']) && $matches['detached'] === '&' ? TRUE : FALSE;
 
-        // default queue is "post-response" for detached events,
-        // "now" for syncronous events:
         if ($detached) {
             $queue = 'post-response';
         } else {
-            $queue = 'now';
+            $queue = isset($matches['queue']) && in_array($matches['queue'], array_keys($this->eventQueue)) ? $matches['queue'] : 'now';
         }
 
-        // override default queue
-        if (isset($matches['queue']) && $matches['queue']) {
-            $queue = $matches['queue'];
-        }
-        
-        // prepend the event name to the argument list:
-        array_unshift($arguments, $matches['event']);
+        $cmd = '/usr/bin/sudo -n /sbin/e-smith/signal-event ${@}';
+        $args = array_merge(array($matches['event']), $arguments);
 
-        $process = $this
-            ->createCommandObject('/usr/bin/sudo -n /sbin/e-smith/signal-event ${@}', $arguments, $detached)
-        ;
-
-        if ($queue === 'now') {
-            $process->exec();
+        if ($queue === 'post-process') {
+            // create a sync event in post-process queue
+            $process = $this->createPtrackProcess($cmd, $args, FALSE);
+            $this->eventQueue['post-process'][] = $process;
         } else {
-            if ( ! isset($this->eventQueue[$queue])) {
-                $this->eventQueue[$queue] = array();
+            $process = $this->createPtrackProcess($cmd, $args, $detached);
+            if ($detached) {
+                $this->eventQueue['post-response'][] = $process;
+            } else {
+                // event queue "now":
+                $process->run();
+                $this->notifyEvent($process);
             }
-            $this->eventQueue[$queue][] = $process;
         }
 
         return $process;
+    }
+
+    private function notifyEvent(\Symfony\Component\Process\Process $process)
+    {
+        if ($process->getExitCode() !== 0) {
+            $this->notifications->trackerError(array('failedTasks' => \Nethgui\Module\Tracker::findFailures($this->systemTasks->getTaskStatus($process->taskId))));
+        }
+    }
+
+    private function createPtrackProcess($command, $args, $detached)
+    {
+        $taskId = md5(uniqid());
+        if ($detached) {
+            $this->systemTasks->setTaskStarting($taskId);
+        }
+        $socketPath = sprintf('/var/run/ptrack/%s.sock', $taskId);
+        $dumpPath = sprintf(\Nethgui\Model\SystemTasks::PTRACK_DUMP_PATH, md5($socketPath));
+        $cmd = strtr('/usr/libexec/nethserver/ptrack %detached -j -s %socketPath -d %dumpPath %verbose -- ', array(
+                '%detached' => $detached ? '-D' : '',
+                '%verbose' => TRUE || \NETHGUI_DEBUG ? '-v' : '',
+                '%dumpPath' => \escapeshellarg($dumpPath),
+                '%socketPath' => \escapeshellarg($socketPath)
+            )) . $this->prepareEscapedCommand($command, $args);
+
+        $process = new \Nethgui\System\Process($cmd);
+        $process->setInput('{}');
+        $process->taskId = $taskId;
+        return $process;
+    }
+
+    private function getProcessInput()
+    {
+        $onSuccessDefault = array(
+            'location' => array('url' => implode('/', $this->request->getPath()) . '?taskStatus=success&taskId={taskId}',
+                'freeze' => TRUE));
+        $onFailureDefault = array(
+            'location' => array('url' => implode('/', $this->request->getPath()) . '?taskStatus=failure&taskId={taskId}',
+                'freeze' => TRUE));
+
+        $input = json_encode(array(
+            'starttime' => microtime(TRUE),
+            'conditions' => array(
+                'success' => isset($this->conditions['success']) ? $this->conditions['success'] : $onSuccessDefault,
+                'failure' => isset($this->conditions['failure']) ? $this->conditions['failure'] : $onFailureDefault
+            )
+        ));
+
+        return $input;
+    }
+
+    public function setDetachedProcessCondition($condition, $values)
+    {
+        $this->conditions[$condition] = $values;
+        return $this;
     }
 
     /**
@@ -224,19 +293,16 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
             return;
         }
 
-        if (count($this->eventQueue[$queueName]) > 0) {
-            $this->getLog()->notice(sprintf("%s::%s() %s", __CLASS__, __FUNCTION__, $queueName));
+        foreach ($this->eventQueue[$queueName] as $process) {
+            $process->setInput($this->getProcessInput());
+            $process->run();
+            if ($process->getExitCode() !== 0) {
+                $this->getLog()->error(sprintf("%s: process on queue `%s` exited with code %d: %s", get_class($this), $queueName, $process->getExitCode(), $process->getCommandLine()));
+            }
+            $this->notifyEvent($process);
         }
 
-        foreach ($this->eventQueue[$queueName] as $process) {
-            if ( ! $process instanceof ProcessInterface) {
-                continue;
-            }
-            $process->exec();
-            if ($process->readExecutionState() === ProcessInterface::STATE_EXITED && $process->getExitCode() !== 0) {
-                $this->getLog()->error(sprintf("%s: process `%s` on queue `%s` exited with code %d. Output: `%s`", get_class($this), $process->getIdentifier(), $queueName, $process->getExitCode(), implode(' ', $process->getOutputArray())));
-            }
-        }
+        $this->eventQueue[$queueName] = array();
     }
 
     public function setPolicyDecisionPoint(\Nethgui\Authorization\PolicyDecisionPointInterface $pdp)
@@ -245,35 +311,39 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
         return $this;
     }
 
-    public function exec($command, $arguments = array(), $detached = FALSE)
+    private function prepareEscapedCommand($command, $arguments)
     {
-        $this->tasks->flushStatus();
-        $o = $this->createCommandObject($command, $arguments, $detached);
-        if ($detached) {
-            $this->eventQueue['post-response'][] = $o;
-        } else {
-            $o->run();
+        $escapedArguments = array();
+        $i = 1;
+        foreach ($arguments as $arg) {
+
+            if (is_string($arg)) {
+                $argOutput = $arg;
+            } elseif (is_callable($arg)) {
+                $argOutput = call_user_func($arg);
+            } else {
+                $argOutput = strval($arg);
+            }
+
+            $escapedArguments[sprintf('${%d}', $i)] = escapeshellarg($argOutput);
+            $i ++;
         }
-        return $o;
+        $escapedArguments['${@}'] = implode(' ', $escapedArguments);
+
+        return strtr($command, $escapedArguments);
     }
 
-    /**
-     *
-     * @param type $command
-     * @param type $arguments
-     * @param type $detached
-     * @return ProcessInterface
-     */
-    private function createCommandObject($command, $arguments, $detached)
+    public function exec($command, $arguments = array(), $detached = FALSE)
     {
-        $process = new \Nethgui\System\Process($command, $arguments);
-        $identifier = ($detached ? 'B' : 'F') . md5(uniqid());
-        if ($detached === TRUE) {            
-            $this->tasks->setTaskStarting($identifier);
+        if ($detached === FALSE) {
+            $process = new \Nethgui\System\Process($this->prepareEscapedCommand($command, $arguments));
+            $process->log = $this->getLog();
+            $process->run();
+        } else {
+            $process = $this->createPtrackProcess($command, $arguments, $detached);
+            $this->eventQueue['post-response'][] = $process;
         }
-        $process->setIdentifier($identifier);
-        $process->background = $detached;
-        $process->log = $this->getLog();
+
         return $process;
     }
 
@@ -437,6 +507,26 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
             }
         }
         return $validator;
+    }
+
+    public function setRequest(\Nethgui\Controller\Request $request)
+    {
+        $this->request = $request;
+        return $this;
+    }
+
+    public function setUserNotifications(\Nethgui\Model\UserNotifications $notifications)
+    {
+        $this->notifications = $notifications;
+        return $this;
+    }
+
+    public function getDependencySetters()
+    {
+        return array(
+            'UserNotifications' => array($this, 'setUserNotifications'),
+            'OriginalRequest' => array($this, 'setRequest')
+        );
     }
 
 }

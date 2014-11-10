@@ -310,13 +310,11 @@ class EsmithDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Auth
     {
         // prepend the database name and command
         array_unshift($args, $this->db, $command);
-        $p = new Process($this->command . ' ${@}', $args);
-        if (isset($this->phpWrapper)) {
-            $p->setPhpWrapper($this->phpWrapper);
-        }
-        $p->exec();
-        $output = $p->getOutput();
-        return $p->getExitCode();
+        $exitCode = 0;
+        $oArr = array();
+        $this->phpWrapper->exec($this->command . ' ' . implode(' ', array_map('escapeshellarg', $args)), $oArr, $exitCode);
+        $output = implode("\n", $oArr);
+        return $exitCode;
     }
 
     /**
@@ -383,7 +381,6 @@ class EsmithDatabase implements \Nethgui\System\DatabaseInterface, \Nethgui\Auth
             throw new \RuntimeException('Invalid message header', 1383145264);
         }
 
-        $message = NULL;
         $message = $this->safeRead($socket, $header['size']);
         if ($message === FALSE) {
             throw new \RuntimeException('Socket read error', 1383145265);
