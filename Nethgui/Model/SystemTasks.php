@@ -109,12 +109,6 @@ class SystemTasks
         return $this;
     }
 
-    public function flushStatus()
-    {
-        $this->tasks = array();
-        return $this;
-    }
-
     private function fetchTaskStatus($taskId)
     {
         $socketPath = sprintf(self::PTRACK_PATH_TEMPLATE, $taskId);

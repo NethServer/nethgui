@@ -26,12 +26,12 @@ namespace Nethgui\System;
  */
 class Process extends \Symfony\Component\Process\Process implements ProcessInterface
 {
-    public $background = FALSE;
     public $log;
 
-    public function __construct($command, $arguments = array())
+    public function __construct($command, $input = NULL)
     {
-        parent::__construct($this->prepareEscapedCommand($command, $arguments));
+        parent::__construct($command);
+        $this->setInput($input);
         $this->setTimeout(0);
         $this->identifier = md5(uniqid());
         $this->log = new \Nethgui\Log\Nullog();
@@ -47,34 +47,10 @@ class Process extends \Symfony\Component\Process\Process implements ProcessInter
         throw new \LogicException(sprintf("%s: %s is not supported", __CLASS__, __FUNCTION__), 1405516179);
     }
 
-    private $conditions = array();
-
-    public function on($condition, $description)
-    {
-        $this->conditions[$condition] = $description;
-        return $this;
-    }
-
     public function exec()
     {
         $this->log->deprecated();
-        if ($this->background === TRUE) {
-            // Bypass Symfony Process harness and let it go:
-            $cmd = sprintf('/usr/libexec/nethserver/ptrack %s', $this->getCommandLine());
-            $p = popen($cmd, 'w');
-            $ui = array(
-                'socketPath' => sprintf('/var/run/ptrack/%s.sock', $this->getIdentifier()),
-                'conditions' => $this->conditions,
-                'starttime' => microtime(TRUE),
-                'taskId' => $this->getIdentifier(),
-                'debug' => \NETHGUI_DEBUG
-            );
-            fwrite($p, json_encode($ui));
-            pclose($p);
-
-        } else {
-            $this->run();
-        }
+        $this->run();
         return $this;
     }
 
@@ -87,28 +63,6 @@ class Process extends \Symfony\Component\Process\Process implements ProcessInter
     public function getIdentifier()
     {
         return $this->identifier;
-    }
-
-    private function prepareEscapedCommand($command, $arguments)
-    {
-        $escapedArguments = array();
-        $i = 1;
-        foreach ($arguments as $arg) {
-
-            if (is_string($arg)) {
-                $argOutput = $arg;
-            } elseif (is_callable($arg)) {
-                $argOutput = call_user_func($arg);
-            } else {
-                $argOutput = strval($arg);
-            }
-
-            $escapedArguments[sprintf('${%d}', $i)] = escapeshellarg($argOutput);
-            $i ++;
-        }
-        $escapedArguments['${@}'] = implode(' ', $escapedArguments);
-
-        return strtr($command, $escapedArguments);
     }
 
     public function getOutput()

@@ -132,7 +132,7 @@ class Tracker extends \Nethgui\Controller\AbstractController implements \Nethgui
             )), is_array($ui) ? $ui : array());
     }
 
-    private function evalUiStatus($A, $data)
+    private function evalUiStatus($A, $data, \Nethgui\View\ViewInterface $view)
     {
         array_walk_recursive($A, function(&$v) use ($data) {
             if (is_callable($v)) {
@@ -143,6 +143,9 @@ class Tracker extends \Nethgui\Controller\AbstractController implements \Nethgui
         if(isset($A['location']['url'])) {
             $url = &$A['location']['url'];
             $url = strtr($url, array('{taskId}' => $this->taskId));
+            if($url{0} != '/') {
+                $url = $view->getModuleUrl('/' . $url);
+            }
         }
 
         return $A;
@@ -159,7 +162,7 @@ class Tracker extends \Nethgui\Controller\AbstractController implements \Nethgui
         }
 
         $data['taskInfo'] = array('id' => $this->taskId);
-        $s = $this->evalUiStatus($ui['conditions'][$status], $data);
+        $s = $this->evalUiStatus($ui['conditions'][$status], $data, $view);
 
         if(is_numeric($data['progress'])) {
             $view['progress'] = intval(100 * $data['progress']);
@@ -233,9 +236,9 @@ class Tracker extends \Nethgui\Controller\AbstractController implements \Nethgui
             $view['trackerState'] = array(
                 'dialog' => array('title' => $view->translate('Tracker_title_taskStarting'), 'action' => 'open'),
                 'location' => array('sleep' => 2000, 'url' => $view->getModuleUrl($firstStartingTask))
-            );
+            );            
             return;
-        }
+        }        
     }
 
     public function defineNotificationTemplate($name, $value)
