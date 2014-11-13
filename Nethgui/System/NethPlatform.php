@@ -278,6 +278,9 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
 
     public function setDetachedProcessCondition($condition, $values)
     {
+        if (isset($this->conditions[$condition])) {
+            return $this;
+        }
         $this->conditions[$condition] = $values;
         return $this;
     }
@@ -294,7 +297,9 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
         }
 
         foreach ($this->eventQueue[$queueName] as $process) {
-            $process->setInput($this->getProcessInput());
+            if($queueName === 'post-response') {
+                $process->setInput($this->getProcessInput());
+            }
             $process->run();
             if ($process->getExitCode() !== 0) {
                 $this->getLog()->error(sprintf("%s: process on queue `%s` exited with code %d: %s", get_class($this), $queueName, $process->getExitCode(), $process->getCommandLine()));

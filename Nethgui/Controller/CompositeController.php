@@ -206,6 +206,7 @@ class CompositeController extends \Nethgui\Module\Composite implements \Nethgui\
         }
 
         $nextModule = $this->getAction(\Nethgui\array_head(explode('/', $np)));
+        $location = $view->getModuleUrl($np);
         if ($nextModule instanceof \Nethgui\View\ViewableInterface) {
             // spawn and prepare the next view data:
             $nextView = $view->spawnView($nextModule, TRUE);
@@ -213,16 +214,20 @@ class CompositeController extends \Nethgui\Module\Composite implements \Nethgui\
             if ($view->getTargetFormat() === $view::TARGET_JSON) {
                 $nextView->getCommandList()->prefetched(); // placeholder.
                 $nextView->getCommandList()->show(); // Display the prefetched view
+                $this->getPlatform()
+                    ->setDetachedProcessCondition('success', array('location' => array('url' => $location . '?taskStatus=success&taskId={taskId}'), 'freeze' => TRUE))
+                    ->setDetachedProcessCondition('failure', array('location' => array('url' => $location . '?taskStatus=failure&taskId={taskId}'), 'freeze' => TRUE))
+                ;
             } else {
                 // show is implemented as HTTP redirection. Avoid self-loops:
                 if ($nextModule !== $this->currentAction) {
-                    $view->getCommandList()->sendQuery($view->getModuleUrl($np));
+                    $view->getCommandList()->sendQuery($location);
                 }
             }
         } else {
             // next path does not corresponds to a child action: start
             // a new query request to get the next view data:
-            $view->getCommandList()->sendQuery($view->getModuleUrl($np));
+            $view->getCommandList()->sendQuery($location);
         }
     }
 
