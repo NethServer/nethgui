@@ -25,7 +25,6 @@ namespace Nethgui\Module\Help;
  */
 class Template extends Common
 {
-
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         $module = $this->getTargetModule();
@@ -34,23 +33,10 @@ class Template extends Common
             $view->setTemplate(FALSE);
             return;
         }
-
-        $view->setTemplate('Nethgui\Template\Help\Schema');
-
-        $view->getCommandList('/Main')->setDecoratorTemplate(function (\Nethgui\Renderer\TemplateRenderer $renderer) {
-                return $renderer->spawnRenderer($renderer['Help']['Template'])->render();
-            }
-        );
-
         $moduleView = $view->spawnView($module);
         $module->prepareView($moduleView);
-        $renderer = new Renderer($moduleView, $this->getFileNameResolver(), 0);
-
-        $view->getCommandList()->httpHeader('Content-Type:text/plain; charset=UTF-8');
-        $view['title'] = $renderer->getTitle();
-        $view['lang'] = $this->getRequest()->getUser()->getLanguageCode();
-        $view['url'] = $view->getSiteUrl() . $view->getModuleUrl($module->getIdentifier() . '.html');
-        $view['content'] = $renderer->render();
+        $renderer = new \Nethgui\Module\Help\Renderer($moduleView, $this->getFileNameResolver(), 0);
+        echo $renderer->render();
+        exit(0); // FIXME not so correct, but works..
     }
-
 }

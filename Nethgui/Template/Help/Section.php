@@ -33,4 +33,3 @@ foreach ($view['fields'] as $field) {
     echo "    ".$T('Describe *${0}* here..', array($field['label']));
     echo "\n\n";
 }
-?>
