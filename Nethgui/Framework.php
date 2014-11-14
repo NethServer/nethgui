@@ -614,6 +614,11 @@ class Framework
         $pathInfo = array();
         $languageCode = '';
         $languageCodeDefault = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2) : 'en';
+        $acceptedLanguages = array('en', 'it');
+
+        if( ! in_array($languageCodeDefault, $acceptedLanguages)) {
+            $languageCodeDefault = 'en';
+        }
 
         // Split PATH_INFO
         if (isset($_SERVER['PATH_INFO']) && $_SERVER['PATH_INFO'] != '/') {
@@ -622,7 +627,7 @@ class Framework
             $pathHead = array_head($pathInfo);
 
             // FIXME: read the language codes from Language/ subdirs
-            if ( ! in_array($pathHead, array('en', 'it'))) {
+            if ( ! in_array($pathHead, $acceptedLanguages)) {
                 throw new Exception\HttpException('Language not found', 404, 1377519247);
             }
             $languageCode = $pathHead;
