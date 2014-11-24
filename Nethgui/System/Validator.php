@@ -541,7 +541,7 @@ class Validator implements \Nethgui\System\MandatoryValidatorInterface
         foreach ($ip_segments as $segment) {
             // IP segments must be digits and can not be
             // longer than 3 digits or greater then 255
-            if ($segment == '' OR preg_match("/[^0-9]/", $segment) OR $segment > 255 OR strlen($segment) > 3) {
+            if ($segment == '' OR ! preg_match("/^(0|[1-9][0-9]?[0-9]?)$/", $segment) OR $segment > 255 OR strlen($segment) > 3) {
                 return FALSE;
             }
         }

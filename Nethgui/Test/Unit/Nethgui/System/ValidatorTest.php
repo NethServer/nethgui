@@ -140,6 +140,9 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->object->evaluate('0.0.0.0'));
         $this->assertFalse($this->object->evaluate(''));
         $this->assertFalse($this->object->evaluate('a.b.c.d'));
+        $this->assertFalse($this->object->evaluate('192.168.5.002'));
+        $this->assertFalse($this->object->evaluate('192.168.005.003'));
+        $this->assertTrue($this->object->evaluate('0.10.20.30'));
     }
 
     /**
