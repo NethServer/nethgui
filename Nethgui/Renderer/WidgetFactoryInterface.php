@@ -40,7 +40,11 @@ interface WidgetFactoryInterface
     const STATE_DISABLED = 0x20;
     const STATE_VALIDATION_ERROR = 0x40;
     const STATE_READONLY = 0x80;
+    /**
+     * @deprecated since 1.6
+     */
     const STATE_UNOBSTRUSIVE = 0x2000000;
+    const STATE_UNOBTRUSIVE = 0x2000000;
     const INSET_WRAP = 0x8000;
     const INSET_FORM = 0x10000;
     const INSET_DIALOG = 0x4000;
@@ -372,4 +376,4 @@ interface WidgetFactoryInterface
      */
     public function objectsCollection($name, $flags = 0);
 }
-define('NETHGUI_INHERITABLE_FLAGS', WidgetFactoryInterface::STATE_DISABLED | WidgetFactoryInterface::LABEL_ABOVE | WidgetFactoryInterface::LABEL_LEFT | WidgetFactoryInterface::LABEL_RIGHT | WidgetFactoryInterface::LABEL_NONE | WidgetFactoryInterface::STATE_UNOBSTRUSIVE);
+define('NETHGUI_INHERITABLE_FLAGS', WidgetFactoryInterface::STATE_DISABLED | WidgetFactoryInterface::LABEL_ABOVE | WidgetFactoryInterface::LABEL_LEFT | WidgetFactoryInterface::LABEL_RIGHT | WidgetFactoryInterface::LABEL_NONE | WidgetFactoryInterface::STATE_UNOBTRUSIVE);

@@ -74,7 +74,7 @@ class TextLabel extends \Nethgui\Widget\XhtmlWidget
             $cssClass .= ' ' . $this->getClientEventTarget();
         }
 
-        $viewIsUnobstrusive = $flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE;
+        $viewIsUnobstrusive = $flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBTRUSIVE;
 
         if ( ! $viewIsUnobstrusive) {
             // Prepare static text:

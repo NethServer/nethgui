@@ -210,7 +210,7 @@ class Framework
             $decoratorView['currentModuleOutput'] = 'currentModule';
 
             // Override helpAreaOutput
-            $decoratorView['helpAreaOutput'] = (String) $renderer->panel($renderer::STATE_UNOBSTRUSIVE)
+            $decoratorView['helpAreaOutput'] = (String) $renderer->panel($renderer::STATE_UNOBTRUSIVE)
                     ->setAttribute('class', 'HelpArea')
                     ->insert(
                         $renderer->panel()
@@ -234,7 +234,7 @@ class Framework
                             );
             }
 
-            $decoratorView['trackerOutput'] = (String) $renderer->inset('Tracker', $renderer::STATE_UNOBSTRUSIVE);
+            $decoratorView['trackerOutput'] = (String) $renderer->inset('Tracker', $renderer::STATE_UNOBTRUSIVE);
             
             // Override menuOutput
             $decoratorView['menuOutput'] = (String) $renderer->inset('Menu');

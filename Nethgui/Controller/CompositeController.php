@@ -263,7 +263,7 @@ class CompositeController extends \Nethgui\Module\Composite implements \Nethgui\
             $flags = $renderer::INSET_WRAP;
 
             if ($index > 0) {
-                $flags |= $renderer::STATE_UNOBSTRUSIVE;
+                $flags |= $renderer::STATE_UNOBTRUSIVE;
             }
 
             if ($this->needsAutoFormWrap($module)) {

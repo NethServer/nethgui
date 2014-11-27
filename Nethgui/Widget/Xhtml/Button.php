@@ -77,7 +77,7 @@ class Button extends \Nethgui\Widget\XhtmlWidget
 
             if ($flags & \Nethgui\Renderer\WidgetFactoryInterface::BUTTON_CANCEL) {
                 $cssClass .= ' cancel';
-                $flags |= \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE;
+                $flags |= \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBTRUSIVE;
             } elseif ($flags & \Nethgui\Renderer\WidgetFactoryInterface::BUTTON_HELP) {
                 if ($value === '') {
                     $value = $this->view->getModuleUrl('/Help/Read/' . \Nethgui\array_head($this->view->getModulePath()) . '.html');

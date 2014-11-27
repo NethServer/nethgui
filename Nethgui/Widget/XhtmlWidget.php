@@ -399,8 +399,8 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
 
     protected function canEscapeUnobstrusive($flags)
     {
-        $unobstrusiveRequired = ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE) !== 0;
-        $unobstrusiveApplying = ($this->getRenderer()->getDefaultFlags() & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE) === 0;
+        $unobstrusiveRequired = ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBTRUSIVE) !== 0;
+        $unobstrusiveApplying = ($this->getRenderer()->getDefaultFlags() & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBTRUSIVE) === 0;
         return $unobstrusiveRequired && $unobstrusiveApplying;
     }
 

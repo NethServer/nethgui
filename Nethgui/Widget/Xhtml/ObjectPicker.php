@@ -141,7 +141,7 @@ class ObjectPicker extends \Nethgui\Widget\XhtmlWidget
 
         $flags = $this->getAttribute('flags', 0);
 
-        if ( ! ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE)) {
+        if ( ! ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBTRUSIVE)) {
             $content = $this->escapeUnobstrusive($content);
         }
 
@@ -166,7 +166,7 @@ class ObjectPicker extends \Nethgui\Widget\XhtmlWidget
 
         $content = '';
 
-        if ( ! ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBSTRUSIVE)) {
+        if ( ! ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBTRUSIVE)) {
             if ((is_array($objects) || $objects instanceof \Countable) && count($objects) > 0) {
                 $content .= '<ul>';
 
