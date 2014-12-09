@@ -108,11 +108,12 @@ class Validator implements \Nethgui\System\MandatoryValidatorInterface
     /**
      * @see preg_match
      * @param string $e A PHP preg_match compatible regular expression
+     * @param string $meaning The error message template
      * @return \Nethgui\System\Validator
      */
-    public function regexp($e)
+    public function regexp($e, $meaning='valid_regexp')
     {
-        $messageTemplate = array('valid_regexp', array($e));
+        $messageTemplate = array($meaning, array($e));
         return $this->addToChain(__FUNCTION__, $messageTemplate, $e);
     }
 
