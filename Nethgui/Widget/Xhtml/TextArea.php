@@ -54,6 +54,7 @@ class TextArea extends \Nethgui\Widget\XhtmlWidget
         $htmlAttributes = array(
             'rows' => $rows,
             'cols' => $cols,
+            'placeholder' => $this->getAttribute('placeholder', FALSE)
         );
 
         $cssClass = trim('TextArea ' . $this->getAttribute('class', ''));
