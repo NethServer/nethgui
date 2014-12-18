@@ -11,16 +11,18 @@
             this.element.children('ul.ActionList').remove();
             this.element.bind('nethguishow.' + this.namespace, $.proxy(this._onShow, this));
             this.element.children('.Action:eq(0)').trigger('nethguishow');
-            $(document).trigger('nethguiinitstate', [this.element.children('.Action:eq(0)')]);
         },
-        _onShow: function (e, cancel) {
-            if( ! e.target.id ) {
-                return;
+        _onShow: function (e) {
+            if(this.element.get(0) === e.target) {
+                // redirect to first Action:
+                e.stopPropagation();
+                this.element.getChildren().first().trigger('nethguishow');
+            } else {
+                this.getChildren().filter(function (idx, action) {
+                    return action !== e.target && $(action).find(e.target).length === 0;
+                    }).trigger('nethguihide');
+                }
             }
-            this.getChildren().filter(function (index) {
-                return this.id !== e.target.id && $(this).find('#' + e.target.id).length === 0;
-            }).trigger('nethguihide');
-        }
     });
 }( jQuery ));
 /*

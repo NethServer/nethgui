@@ -84,10 +84,7 @@
         return true;
     };
 
-    Server.prototype.processResponse = function(response, statusCode, caller) {
-        var state = null;
-        var needPushState = false;
-
+    Server.prototype.processResponse = function(response, statusCode) {
         $.each(response, function(index, item) {
             if (item === null) {
                 return;
@@ -97,17 +94,16 @@
             var value = item[1];
 
             if (selector === '__STATE__') {
-                state = value;
+                return;
             } else if (selector === '__COMMANDS__') {
                 $.each(value, function(index, command) {
-                    if (command.M.toLowerCase() === 'show') {
-                        needPushState = true;
-                    }
-                    if (command.M.toLowerCase() === 'sendquery') {
-                        caller = 'onpopstate';  // skip pushState
-                    }
                     if (command.R === 'Main') {
                         $(document).trigger('nethgui' + command.M.toLowerCase(), command.A);
+                    } else if(command.M.toLowerCase() === 'show') {
+                        if( ! history.state || history.state.target !== command.R) {
+                            history.pushState({target: command.R}, '', '#!' + command.R);
+                        }
+                        $('#' + command.R).trigger('nethgui' + command.M.toLowerCase(), command.A);
                     } else {
                         $('#' + command.R).trigger('nethgui' + command.M.toLowerCase(), command.A);
                     }
@@ -118,16 +114,6 @@
                 });
             }
         });
-
-        var url = window.location.href;
-
-        if(url.indexOf('#') > -1) {
-            url = url.substring(0, url.indexOf('#'));
-        }
-
-        if(caller !== 'onpopstate' && history.pushState && state !== null) {
-            history[needPushState ? 'pushState' : 'replaceState']({'response': response, 'statusCode': statusCode}, '', url + '#!' + state);
-        }
     };
 
     /**
@@ -444,21 +430,15 @@
             this.element.next('.throbber').remove();
         }
     });
-
-    var initialtargets = [];
     
     window.onpopstate = function(e) {
-        var server = new Server();
-        if(e.state && e.state['response']) {
-            server.processResponse(e.state['response'], e.state['statusCode'], 'onpopstate');
-        } else if(e.state === null) {
-            $.each(initialtargets, function(index, target) {
-                 $(target).trigger('nethguishow');
-            });
+        if(e.state && e.state.target) {
+            $('#' + e.state.target).trigger('nethguishow');
+        } else {
+            $('.Action:eq(0)').trigger('nethguishow');
         }
     };
     
-
     $(document).bind('nethguisendquery.nethgui', function(e, url, delay, freezeUi) {
         var server = new Server();
         if (server.isLocalUrl(url)) {
@@ -466,8 +446,6 @@
         }
     }).on('nethguicancel.nethgui', function(e) {
         history.back();
-    }).on('nethguiinitstate.nethgui', function(e, target) {
-        initialtargets.push(target);
     });
 
 }(jQuery));
