@@ -50,6 +50,12 @@ class Framework
      */
     private $urlParts;
 
+    /**
+     *
+     * @var \Pimple\Container
+     */
+    private $dc;
+
     public function __construct()
     {
         if (basename(__DIR__) !== __NAMESPACE__) {
@@ -64,6 +70,8 @@ class Framework
 
         $dc = new \Pimple\Container();
 
+        $dc['main.default_module'] = '';
+        $dc['login.forced_redirect'] = '';
         $dc['decorator.xhtml.template'] = 'Nethgui\Template\Main';
 
         $dc['Log'] = function($c) {
@@ -173,7 +181,7 @@ class Framework
         };
 
         $dc['Main.factory'] = $dc->factory(function ($c) {
-            return $c['objectInjector'](new \Nethgui\Module\Main($c['ModuleSet'], $c['defaultModuleIdentifier']), $c);
+            return $c['objectInjector'](new \Nethgui\Module\Main($c['ModuleSet'], $c['main.default_module']), $c);
         });        
 
         $dc['View'] = function ($c) use (&$urlParts) {
@@ -401,6 +409,8 @@ class Framework
     }
 
     /**
+     * Redirect to the given module if the original request
+     * does not specify any module.
      *
      * @api
      * @param string $moduleIdentifier
@@ -408,7 +418,20 @@ class Framework
      */
     public function setDefaultModule($moduleIdentifier)
     {
-        $this->dc['defaultModuleIdentifier'] = $moduleIdentifier;
+        $this->dc['main.default_module'] = $moduleIdentifier;
+        return $this;
+    }
+
+    /**
+     * Forcibly redirect to the given module after successful login
+     *
+     * @api
+     * @param type $moduleIdentifier
+     * @return \Nethgui\Framework
+     */
+    public function setForcedLoginModule($moduleIdentifier)
+    {
+        $this->dc['login.forced_redirect'] = $moduleIdentifier;
         return $this;
     }
 

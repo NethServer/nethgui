@@ -55,6 +55,8 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
      */
     private $xhtmlDecoratorParams;
 
+    private $forcedRedirect;
+
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
     {
         $attributes = new SystemModuleAttributesProvider();
@@ -81,6 +83,13 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
         $this->declareParameter('languageDatasource', FALSE, function () use ($languages) {
             return \Nethgui\Renderer\AbstractRenderer::hashToDatasource($languages);
         });
+    }
+    
+    public function bind(\Nethgui\Controller\RequestInterface $request) {
+        parent::bind($request);
+        if($this->forcedRedirect) {
+            $this->parameters['path'] = '/' . $this->forcedRedirect;
+        }
     }
 
     public function getDefaultLanguageCode()
@@ -153,6 +162,7 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
         $myHttpResponse = &$this->httpResponse;
         $myUserNotifications = &$this->userNotifications;
         $myXhtmlDecoratorParams = &$this->xhtmlDecoratorParams;
+        $myForcedRedirect = &$this->forcedRedirect;
         return array(
             'HttpResponse' => function (\Nethgui\Utility\HttpResponse $r) use (&$myHttpResponse) {
             $myHttpResponse = $r;
@@ -162,7 +172,10 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
         },
             'decorator.xhtml.params' => function(\ArrayAccess $params) use (&$myXhtmlDecoratorParams) {
             $myXhtmlDecoratorParams = $params;
-        }
+        },
+            'login.forced_redirect' => function($id) use (&$myForcedRedirect) {
+            $myForcedRedirect = $id;
+            }
         );
     }
 
