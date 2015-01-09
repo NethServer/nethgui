@@ -38,6 +38,12 @@ class Main extends \Nethgui\Controller\ListComposite
     private $moduleSet;
     private $moduleId;
 
+    /**
+     *
+     * @var string
+     */
+    private $defaultModule;
+
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
     {
         $attributes = new SystemModuleAttributesProvider();
@@ -45,7 +51,7 @@ class Main extends \Nethgui\Controller\ListComposite
         return $attributes;
     }
 
-    public function __construct(\Nethgui\Module\ModuleSetInterface $modules, $defaultModule = FALSE)
+    public function __construct(\Nethgui\Module\ModuleSetInterface $modules, $defaultModule = '')
     {
         parent::__construct(FALSE);
         $this->moduleSet = $modules;
@@ -106,7 +112,7 @@ class Main extends \Nethgui\Controller\ListComposite
     public function nextPath()
     {
         if ( ! $this->moduleId) {
-            if ($this->defaultModule !== FALSE) {
+            if ($this->defaultModule) {
                 return $this->defaultModule;
             }
             throw new \Nethgui\Exception\HttpException('Not found', 404, 1324379721);
