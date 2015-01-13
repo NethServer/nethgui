@@ -73,6 +73,10 @@ class Framework
         $dc['main.default_module'] = '';
         $dc['login.forced_redirect'] = '';
         $dc['decorator.xhtml.template'] = 'Nethgui\Template\Main';
+        $dc['user.authenticate'] = $dc->protect(function($user, $password, &$credentials) use ($dc) {
+            $dc['Log']->warning(sprintf("%s: user.authenticate is not set! Could not authenticate user `%s`.", __CLASS__, $user));
+            return FALSE;
+        });
 
         $dc['Log'] = function($c) {
             return new \Nethgui\Log\Syslog($c['log.level']);
@@ -99,8 +103,7 @@ class Framework
 
         $dc['User'] = function ($dc) {
             $user = $dc['objectInjector'](new \Nethgui\Authorization\User($dc['Session'], $dc['Log']), $dc);
-            $pamAuthenticator = new \Nethgui\Utility\PamAuthenticator($dc['Log']);
-            $user->setAuthenticationProcedure(array($pamAuthenticator, 'authenticate'));
+            $user->setAuthenticationProcedure($dc['user.authenticate']);
             return $user;
         };
 
@@ -432,6 +435,29 @@ class Framework
     public function setForcedLoginModule($moduleIdentifier)
     {
         $this->dc['login.forced_redirect'] = $moduleIdentifier;
+        return $this;
+    }
+
+
+    /**
+     * Set the login procedure used to authenticate a user in Login module
+     *
+     * The procedure must accept three arguments:
+     * - username (string)
+     * - password (string)
+     * - credentials (reference to array)
+     *
+     * The return value must be TRUE if authentication is successful, FALSE
+     * otherwise.  Additional login informations can be stored into the
+     * "credentials" hash, which will be accessible from through the UserInterface
+     *
+     * @see \Nethgui\Authorization\UserInterface
+     * @param callable $callable
+     * @return \Nethgui\Framework
+     */
+    public function setAuthenticationProcedure($callable)
+    {
+        $this->dc['user.authenticate'] = $this->dc->protect($callable);
         return $this;
     }
 
