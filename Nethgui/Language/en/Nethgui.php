@@ -22,7 +22,6 @@ $L['Hide_label'] = 'Hide';
 $L['Ignore_label'] = 'Ignore'; 
 $L['Incorrect value'] = 'Incorrect value'; 
 $L['Incorrect values'] = 'Incorrect values'; 
-$L['Invalid credentials'] = 'Invalid credentials'; 
 $L['Login_Description'] = 'Login'; 
 $L['Login_Tags'] = ''; 
 $L['Login_Title'] = 'Login'; 

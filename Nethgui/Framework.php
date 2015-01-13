@@ -82,6 +82,12 @@ class Framework
             return new \Nethgui\Log\Syslog($c['log.level']);
         };
 
+        $dc['PhpWrapper'] = function($c) {
+            $p = new \Nethgui\Utility\PhpWrapper();
+            $p->setLog($c['Log']);
+            return $p;
+        };
+
         $dc['namespaceMap'] = function ($c) use (&$nsMap) {
             return $nsMap;
         };
@@ -102,8 +108,8 @@ class Framework
         };
 
         $dc['User'] = function ($dc) {
-            $user = $dc['objectInjector'](new \Nethgui\Authorization\User($dc['Session'], $dc['Log']), $dc);
-            $user->setAuthenticationProcedure($dc['user.authenticate']);
+            $user = $dc['objectInjector'](new \Nethgui\Authorization\User($dc['Session'], $dc['Log']));
+            $user->setAuthenticationValidator($dc['user.authenticate']);
             return $user;
         };
 
@@ -440,24 +446,25 @@ class Framework
 
 
     /**
-     * Set the login procedure used to authenticate a user in Login module
+     * Configure the login procedure used to authenticate a user in Login module.
      *
-     * The procedure must accept three arguments:
+     * The $closure argument must return an object implementing ValidatorInterface.
+     *
+     * Its evaluate() method accepts one array argument with three elements:
      * - username (string)
      * - password (string)
      * - credentials (reference to array)
      *
-     * The return value must be TRUE if authentication is successful, FALSE
-     * otherwise.  Additional login informations can be stored into the
+     * Additional login informations can be stored into the
      * "credentials" hash, which will be accessible from through the UserInterface
      *
      * @see \Nethgui\Authorization\UserInterface
-     * @param callable $callable
+     * @param Closure $closure
      * @return \Nethgui\Framework
      */
-    public function setAuthenticationProcedure($callable)
+    public function setAuthenticationValidator(\Closure $closure)
     {
-        $this->dc['user.authenticate'] = $this->dc->protect($callable);
+        $this->dc['user.authenticate'] = $closure;
         return $this;
     }
 

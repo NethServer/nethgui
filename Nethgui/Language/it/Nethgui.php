@@ -21,7 +21,6 @@ $L['Help_Title'] = 'Guida';
 $L['Help_label'] = 'Aiuto'; 
 $L['Hide_label'] = 'Nascondi'; 
 $L['Ignore_label'] = 'Ignora'; 
-$L['Invalid credentials'] = 'Credenziali non valide'; 
 $L['Login_Description'] = 'Login'; 
 $L['Login_Tags'] = ''; 
 $L['Login_Title'] = 'Login'; 

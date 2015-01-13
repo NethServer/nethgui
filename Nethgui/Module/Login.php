@@ -57,6 +57,12 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
 
     private $forcedRedirect;
 
+    /**
+     *
+     * @var \Nethgui\System\ValidatorInterface
+     */
+    private $loginValidator;
+
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
     {
         $attributes = new SystemModuleAttributesProvider();
@@ -92,21 +98,27 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
         }
     }
 
+    public function validate(\Nethgui\Controller\ValidationReportInterface $report)
+    {
+        parent::validate($report);
+
+        if($report->hasValidationErrors()) {
+            return;
+        }
+
+        $user = $this->getRequest()->getUser();
+        if ( ! $user->isAuthenticated() && $this->getRequest()->isMutation()) {
+            $authenticated = $user->authenticate($this->parameters['username'], $this->parameters['password']);
+            $user->setLanguageCode($this->parameters['language']);
+            if( ! $authenticated) {
+                $report->addValidationError($this, 'password', $this->loginValidator);
+            }
+        }
+    }
+
     public function getDefaultLanguageCode()
     {
         return $this->getRequest()->getLanguageCode();
-    }
-
-    public function process()
-    {
-        $user = $this->getRequest()->getUser();
-        if ( ! $user->isAuthenticated() && $this->getRequest()->isMutation()) {            
-            $authenticated = $user->authenticate($this->parameters['username'], $this->parameters['password']);
-            $user->setLanguageCode($this->parameters['language']);
-            if ($authenticated) {
-                $this->getLog()->notice(sprintf("%s: user %s logged in", __CLASS__, $this->parameters['username']));
-            }
-        }
     }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
@@ -120,16 +132,11 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
         $this->xhtmlDecoratorParams['disableMenu'] = TRUE;
         $this->xhtmlDecoratorParams['disableFooter'] = FALSE;
 
-        $isInvalidLoginRequest = ! $user->isAuthenticated() && $this->getRequest()->isMutation() && $this->getRequest()->isValidated();
-
         $isAuthenticatedUserLoggingInAgain = $user->isAuthenticated() && ! $this->getRequest()->isMutation();
 
         $isUnauthUserRequest = ! $user->isAuthenticated() && ! $this->getRequest()->isMutation() && $this->parameters['path'];
 
-        if ($isInvalidLoginRequest) {
-            $this->httpResponse->addHeader('HTTP/1.1 400 Invalid credentials supplied');
-            $this->userNotifications->error($view->translate('Invalid credentials', array('username' => $this->parameters['username'])));
-        } elseif ($isAuthenticatedUserLoggingInAgain) {
+        if ($isAuthenticatedUserLoggingInAgain) {
             $this->httpResponse
                 ->setStatus(302)
                 ->addHeader('Location: ' . $view->getSiteUrl() . $view->getModuleUrl('/'))
@@ -163,6 +170,7 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
         $myUserNotifications = &$this->userNotifications;
         $myXhtmlDecoratorParams = &$this->xhtmlDecoratorParams;
         $myForcedRedirect = &$this->forcedRedirect;
+        $loginValidator = &$this->loginValidator;
         return array(
             'HttpResponse' => function (\Nethgui\Utility\HttpResponse $r) use (&$myHttpResponse) {
             $myHttpResponse = $r;
@@ -175,7 +183,10 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
         },
             'login.forced_redirect' => function($id) use (&$myForcedRedirect) {
             $myForcedRedirect = $id;
-            }
+        },
+           'user.authenticate' => function(\Nethgui\System\ValidatorInterface $v) use (&$loginValidator) {
+            $loginValidator = $v;
+        }
         );
     }
 

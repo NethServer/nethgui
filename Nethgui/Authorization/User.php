@@ -36,9 +36,9 @@ class User implements \Nethgui\Authorization\UserInterface, \Serializable
 
     /**
      *
-     * @var callable
+     * @var \Nethgui\System\ValidatorInterface
      */
-    private $authenticationProcedure;
+    private $authenticationValidator;
 
     /**
      *
@@ -67,14 +67,25 @@ class User implements \Nethgui\Authorization\UserInterface, \Serializable
         ));
         $this->log = $log;
         $this->session = $session;
-        $this->authenticationProcedure = function () {
-            return FALSE;
-        };
+        $this->authenticationValidator = new \Nethgui\System\AlwaysFailValidator();
     }
 
+    public function setAuthenticationValidator(\Nethgui\System\ValidatorInterface $v)
+    {
+        $this->authenticationValidator = $v;
+        return $this;
+    }
+
+    /**
+     * @deprecated since version 1.6.1
+     * @param callable $procedure
+     * @return \Nethgui\Authorization\User
+     */
     public function setAuthenticationProcedure($procedure)
     {
-        $this->authenticationProcedure = $procedure;
+        $this->authenticationValidator = new \Nethgui\System\CallbackValidator(function($args) use ($procedure) {
+            return \call_user_func_array($procedure, $args);
+        });
         return $this;
     }
 
@@ -117,8 +128,11 @@ class User implements \Nethgui\Authorization\UserInterface, \Serializable
     {
         $args = func_get_args();
         $args[] = &$this->state['credentials'];
-        $this->state['authenticated'] = call_user_func_array($this->authenticationProcedure, $args);
+        $this->state['authenticated'] = $this->authenticationValidator->evaluate($args);
         $this->modified = TRUE;
+        if($this->state['authenticated'] === TRUE) {
+            $this->log->notice(sprintf("%s: user `%s` authenticated", __CLASS__, $args[0]));
+        }
         return $this->state['authenticated'];
     }
 
@@ -184,7 +198,7 @@ class User implements \Nethgui\Authorization\UserInterface, \Serializable
 
     public function unserialize($serialized)
     {
-        list($authenticated, $credentials, $preferences, $php, $log) = unserialize($serialized);
+        list($authenticated, $credentials, $preferences) = unserialize($serialized);
         $this->modified = FALSE;
         $this->log = new \Nethgui\Log\Nullog();
         $this->state = new \ArrayObject(array(

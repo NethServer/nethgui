@@ -1,4 +1,5 @@
 <?php
+
 namespace Nethgui\Test\Unit\Nethgui\Authorization;
 
 /*
@@ -39,63 +40,34 @@ class UserTest extends \PHPUnit_Framework_TestCase
      *
      * @var \PHPUnit_Framework_MockObject_MockObject
      */
-    private $php;
-
-    /**
-     *
-     * @var \PHPUnit_Framework_MockObject_MockObject
-     */
     private $log;
 
     protected function setUp()
     {
-        $this->php = $this->getMock('Nethgui\Utility\PhpWrapper', array('phpReadGlobalVariable'));
+        $this->session = $this->getMock('Nethgui\Utility\Session', array('retrieve'));
         $this->log = $this->getMock('Nethgui\Log\LogInterface');
-
-        $this->object = new \Nethgui\Authorization\User($this->php, $this->log);
-    }
-
-    public function testNoArgumentsConstructor()
-    {
-        $object = new \Nethgui\Authorization\User();
-        $this->assertTrue($object->getLog() instanceof \Nethgui\Log\LogInterface);
+        $this->object = new \Nethgui\Authorization\User($this->session, $this->log);
     }
 
     public function testSetAuthenticationProcedure()
     {
-        $this->assertSame($this->object, $this->object->setAuthenticationProcedure(function ()
-                        {
-                            return FALSE;
-                        }));
+        $this->assertSame($this->object, $this->object->setAuthenticationProcedure(function () {
+                    return FALSE;
+                }));
     }
 
-    public function testGetLanguageCode1()
+    public function testGetLanguageCode()
     {
-        $this->php->expects($this->once())
-                ->method('phpReadGlobalVariable')
-                ->with('_SERVER', 'HTTP_ACCEPT_LANGUAGE')
-                ->will($this->returnValue('it'));
-
+        $this->session->expects($this->once())
+                ->method('retrieve')
+                ->with(get_class($this->object))
+                ->will($this->returnValue(new \ArrayObject(array(
+                            'credentials' => array(),
+                            'preferences' => array('lang' => 'it'),
+                            'authenticated' => array()
+        ))));
         $this->assertEquals('it', $this->object->getLanguageCode());
-    }
-
-    public function testGetLanguageCode2()
-    {
-        $this->php->expects($this->once())
-                ->method('phpReadGlobalVariable')
-                ->with('_SERVER', 'HTTP_ACCEPT_LANGUAGE')
-                ->will($this->returnValue(NULL));
-
-        $this->assertEquals('en', $this->object->getLanguageCode());
-    }
-
-    public function testGetLanguageCode3()
-    {
-        $this->php->expects($this->never())
-                ->method('phpReadGlobalVariable');
-
         $this->object->setPreference('lang', 'fr');
-
         $this->assertEquals('fr', $this->object->getLanguageCode());
     }
 
@@ -111,12 +83,11 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->object->hasCredential('groups'));
         $this->assertEquals(FALSE, $this->object->getAuthorizationAttribute('authenticated'));
 
-        $this->object->setAuthenticationProcedure(function ($uname, $pw, &$credentials)
-                {
-                    $credentials['groups'] = array('g1', 'g2');
-                    $credentials['username'] = $uname;
-                    return TRUE;
-                });
+        $this->object->setAuthenticationProcedure(function ($uname, $pw, &$credentials) {
+            $credentials['groups'] = array('g1', 'g2');
+            $credentials['username'] = $uname;
+            return TRUE;
+        });
 
         $this->assertTrue($this->object->authenticate('usr1', 'pass'));
         $this->assertTrue($this->object->isAuthenticated());
@@ -146,11 +117,6 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Nethgui\Authorization\User', $object);
     }
 
-    public function testSetPhpWrapper()
-    {
-        $this->assertSame($this->object, $this->object->setPhpWrapper(new \Nethgui\Utility\PhpWrapper()));
-    }
-
     public function testSetPreference()
     {
         $this->assertSame($this->object, $this->object->setPreference('lang', 'fr'));
@@ -163,15 +129,4 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('fr', $this->object->getPreference('lang'));
     }
 
-    public function testSetLog()
-    {
-        $this->assertSame($this->object, $this->object->setLog(new \Nethgui\Log\Nullog()));
-    }
-
-    public function testGetLog()
-    {
-        $this->assertInstanceOf('Nethgui\Log\LogInterface', $this->object->getLog());
-    }
-
 }
-
