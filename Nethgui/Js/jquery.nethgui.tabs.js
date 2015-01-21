@@ -71,6 +71,7 @@
                 if(a) {
                     e.stopPropagation();
                     $(a).find('.Action:eq(0)').trigger('nethguishow');
+                    $(this.element).parent().trigger('nethguishow');
                 }
                 if(idx >= 0) {
                     this.element.tabs('select', idx);
