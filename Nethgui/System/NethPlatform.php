@@ -245,7 +245,7 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
         $dumpPath = sprintf(\Nethgui\Model\SystemTasks::PTRACK_DUMP_PATH, md5($socketPath));
         $cmd = strtr('/usr/libexec/nethserver/ptrack %detached -j -s %socketPath -d %dumpPath %verbose -- ', array(
                 '%detached' => $detached ? '-D' : '',
-                '%verbose' => TRUE || \NETHGUI_DEBUG ? '-v' : '',
+                '%verbose' => \NETHGUI_DEBUG ? '-v' : '',
                 '%dumpPath' => \escapeshellarg($dumpPath),
                 '%socketPath' => \escapeshellarg($socketPath)
             )) . $this->prepareEscapedCommand($command, $args);
