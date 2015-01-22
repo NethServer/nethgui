@@ -24,6 +24,7 @@
             SUPER.prototype._setOption.apply( this, arguments );
             if(key === 'disabled' && ! this.element.hasClass('keepdisabled')) {
                 this.element.prop('disabled', value);
+                this.element.find('input').prop('disabled', value);
             }
         },
         _renderDatasourceDropdown: function (value) {
@@ -84,6 +85,7 @@
                 input.attr('id', inputId);
                 input.attr('name',  prefixName + (self._multiple ? '[' + i + ']' : ''));
                 input.attr('class', 'choice');
+                input.prop('disabled', self.element.prop('disabled'));
 
                 if($.inArray(value[i][0], self._selection) >= 0) {
                     input.attr('checked', 'checked');
