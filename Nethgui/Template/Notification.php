@@ -18,7 +18,7 @@ $t['validationError'] = '{{#data}}<dl class="fields">{{#fields}}
 
 $view->includeCss("
 #Notification { margin-bottom: 0.5em }
-li.notification { display: flex; color: #363636; border: 1px solid #fcefa1; background-color: #fbf9ee; padding: .5em; margin: 0; border-radius: 2px; font-size: 1.2em;}
+li.notification { display: flex; color: #363636; border: 1px solid #fcefa1; background-color: #fbf9ee; padding: 1em; margin: 0 0 .2em 0; border-radius: 2px; font-size: 1.2em;}
 li.notification .fa { flex: none }
 li.notification .pre.fa:before { content: \"\\f05a\"; font-size: 1.2em; }
 li.notification .post.fa:before { content: \"\\20\";  }
@@ -36,6 +36,9 @@ li.notification .content { margin: 0 .5em }
 #Notification li.notice {color: #fff; background-color: #00a21a; border-color: #00a21a }
 #Notification li.message .pre.fa:before,
 #Notification li.notice .pre.fa:before { content: \"\\f058\" }
+
+#Notification li.warning {color: #000; background-color: #F4D622; border-color: #F4D622 }
+#Notification li.warning .pre.fa:before { content: \"\\f071\" }
 ");
 
 $jsCode = '';
