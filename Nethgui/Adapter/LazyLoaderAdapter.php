@@ -1,4 +1,5 @@
 <?php
+
 namespace Nethgui\Adapter;
 
 /*
@@ -28,6 +29,7 @@ namespace Nethgui\Adapter;
  */
 class LazyLoaderAdapter implements \Nethgui\Adapter\AdapterInterface, \ArrayAccess, \Countable, \IteratorAggregate
 {
+
     /**
      *
      * @var \ArrayObject
@@ -42,11 +44,17 @@ class LazyLoaderAdapter implements \Nethgui\Adapter\AdapterInterface, \ArrayAcce
      */
     public function __construct($loader = NULL)
     {
+        $this->setLoader($loader);
+    }
+
+    public function setLoader($loader)
+    {
         if ( ! is_callable($loader) && $loader !== NULL) {
             throw new \InvalidArgumentException(sprintf("%s: must provide a callable argument", __CLASS__), 1373466604);
         }
 
         $this->loader = $loader;
+        return $this;
     }
 
     public function isModified()
