@@ -55,10 +55,10 @@ class Notification extends \Nethgui\Module\AbstractModule implements \Nethgui\Co
         parent::prepareView($view);
         if(count($this->validationErrors) > 0) {
 
-            $e = array('fields' => array());
+            $e = array();
             foreach($this->validationErrors as $fieldError) {
                 $tmpView = $view->spawnView($fieldError['module']);
-                $e['fields'][] = array(
+                $e[] = array(
                     'label' => $tmpView->translate($fieldError['parameter'] . '_label'),
                     'name' => $tmpView->getClientEventTarget($fieldError['parameter']),
                     'parameter' => $tmpView->getUniqueId($fieldError['parameter']),

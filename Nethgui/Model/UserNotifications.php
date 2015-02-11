@@ -32,9 +32,12 @@ class UserNotifications extends \ArrayObject
 
     private $templates = array();
 
-    public function defineTemplate($name, $value)
+    public function defineTemplate($name, $value, $cssClass = '')
     {
-        $this->templates[$name] = $value;
+        if( ! $cssClass) {
+            $cssClass = $name;
+        }
+        $this->templates[$name] = array($value, $cssClass);
         return $this;
     }
 
@@ -46,8 +49,8 @@ class UserNotifications extends \ArrayObject
     public function __call($name, $arguments)
     {
         $this[] = array(
-            'data' => is_array($arguments[0]) ? $arguments[0] : $arguments,            
-            'template' => $name
+            'a' => isset($arguments[0]) ? $arguments[0] : NULL,
+            't' => $name
         );
         return $this;
     }

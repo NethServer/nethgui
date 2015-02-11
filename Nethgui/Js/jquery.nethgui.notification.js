@@ -11,7 +11,7 @@
             var self = this;
             SUPER.prototype._create.apply(this);
             if( ! this.element.children().get(0)) {
-                $('<ul />').appendTo(this.element);
+                $('<ul />', {'class': 'fa-ul'}).appendTo(this.element);
             }
             $(document).on('ajaxStart.' + this.namespace, function () {
                $(self.element).find('li.notification').fadeOut(function () { $(this).remove() });
@@ -22,18 +22,18 @@
             if( ! $.isArray(value) || value.length === 0) {
                 return;
             }
-            
+
+            var N = $.nethgui.Notification;
             var ul = $(this.element.children().get(0)).empty();
-            $.each(value, function(index, notification) {
-                var tmpl = $.nethgui.Notification.templates[notification.template] ? $.nethgui.Notification.templates[notification.template] : $.nethgui.Notification.templates['default'];
-                $('<li />', {'class': 'notification ' + notification.template}).appendTo(ul)
-                        .append($('<span />', {'class': 'pre fa'}))
-                        .append($('<span />', {'class': 'content'}).html(Mustache.render(tmpl, notification)))
-                        .append($('<span />', {'class': 'post fa'}))
+            $.each(value, function(index, n) {
+                var t = N.templates[n.t] ? N.templates[n.t][0] : N.templates['__default__'][0];
+                var c = N.templates[n.t] ? N.templates[n.t][1] : N.templates['__default__'][1];
+                $('<li />', {'class': 'notification ' + c}).appendTo(ul)
+                        .append(Mustache.render(t, n.a))
                         .Component()
                 ;
-                if($.nethgui.Notification.callbacks[notification.template]) {
-                     $.nethgui.Notification.callbacks[notification.template].call(self, notification)
+                if(N.callbacks[n.t]) {
+                     N.callbacks[n.t].call(self, n)
                 }
             });
             ul.appendTo(this.element).slideDown();

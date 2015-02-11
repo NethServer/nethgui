@@ -8,40 +8,38 @@ $panelId = $view->getUniqueId();
 $viewTarget = $view->getClientEventTarget('notifications');
 
 $t = $view->getModule()->getTemplates();
-$t['default'] = '{{#data}}{{.}}{{/data}}';
-$t['validationError'] = '{{#data}}<dl class="fields">{{#fields}}
- <dt><a href="#{{parameter}}">{{label}}</a></dt>
- <dd>{{reason}}</dd>
-{{/fields}}
-    </dl>{{/data}}
-';
+$t['__default__'] = array('<i class="fa fa-li fa-info-circle"></i>{{.}}', 'bg-green pre-fa');
+$t['warning'] = array('<i class="fa fa-li fa-exclamation-triangle"></i>{{.}}', 'bg-yellow pre-fa');
+$t['error'] = array('<i class="fa fa-li fa-exclamation-circle"></i>{{.}}', 'bg-red pre-fa');
+$t['validationError'] = array('<i class="fa fa-li fa-exclamation-triangle"></i>
+<dl class="fields">
+ {{#.}}<dt><a href="#{{parameter}}">{{label}}</a></dt>
+ <dd>{{reason}}</dd>{{/.}}
+</dl>
+', 'validationError bg-red pre-fa');
 
 $view->includeCss("
-#Notification { margin-bottom: 0.5em }
-li.notification { display: flex; color: #363636; border: 1px solid #fcefa1; background-color: #fbf9ee; padding: 1em; margin: 0 0 .2em 0; border-radius: 2px; font-size: 1.2em;}
-li.notification .fa { flex: none }
-li.notification .pre.fa:before { content: \"\\f05a\"; font-size: 1.2em; }
-li.notification .post.fa:before { content: \"\\20\";  }
-li.notification .content { margin: 0 .5em }
+#Notification { margin-bottom: 0.5em; font-size: 1.2em }
+#Notification .fa-ul { margin: 0 }
+#Notification > ul > li { padding: .5em; margin-bottom: 0.5em; }
+#Notification ul.fa-ul > li { padding-left: 2.5em }
+#Notification ul.fa-ul > li.nolpad { padding-left: .5em }
+#Notification .fa-li { font-size: 1.2em; left: 0; top: .4em }
 
-#Notification li.error,
-#Notification li.validationError {color: #fff; background-color: #cd0a0a; border-color: #cd0a0a}
-#Notification li.error .pre.fa:before,
-#Notification li.validationError .pre.fa:before { content: \"\\f071\" }
+.notification.bg-red {color: #fff; background-color: #cd0a0a; border-color: #cd0a0a}
+.notification.bg-red a {color: #fff}
 
-#Notification li.validationError a {color: #fff}
-#Notification li.validationError dd {margin-bottom: .25em}
+.notification.bg-green {color: #fff; background-color: #00a21a; border-color: #00a21a }
+.notification.bg-green a {color: #fff}
 
-#Notification li.message,
-#Notification li.notice {color: #fff; background-color: #00a21a; border-color: #00a21a }
-#Notification li.message .pre.fa:before,
-#Notification li.notice .pre.fa:before { content: \"\\f058\" }
+.notification.bg-yellow {color: #000; background-color: #F4D622; border-color: #F4D622 }
+.notification.bg-yellow a {color: #000}
 
-#Notification li.warning {color: #000; background-color: #F4D622; border-color: #F4D622 }
-#Notification li.warning .pre.fa:before { content: \"\\f071\" }
+.notification.validationError dd {margin-bottom: .25em}
 ");
 
-$jsCode = '';
+$escc = json_encode($colorMap);
+$jsCode = "\n    $.nethgui.Notification.colors = $escc;";
 foreach($t as $templateName => $templateValue) {
     $escn = json_encode($templateName);
     $escv = json_encode($templateValue);
@@ -58,15 +56,15 @@ if(empty($view['notifications'])) {
 $mustache = new \Mustache_Engine();
 $contents = '';
 foreach($view['notifications'] as $n) {
-    $contents .= strtr('<li class="notification {{template}}"><span class="pre fa"></span><span class="content">{{content}}</span><span class="post fa"></span></li>',
+    $contents .= strtr('<li class="notification {{cssClass}}">{{content}}</li>',
         array(
-            '{{template}}' => $n['template'],
-            '{{content}}' => $mustache->render(isset($t[$n['template']]) ? $t[$n['template']] : $t['default'], $n)
+            '{{cssClass}}' => isset($t[$n['t']]) ? $t[$n['t']][1] : $t['__default__'][1],
+            '{{content}}' => $mustache->render(isset($t[$n['t']]) ? $t[$n['t']][0] : $t['__default__'][0], $n['a'])
             )
         );
 }
 
-echo sprintf('<div id="%s" class="Notifications %s"><ul>%s</ul></div>', $panelId, $viewTarget, $contents);
+echo sprintf('<div id="%s" class="Notifications %s"><ul class="fa-ul">%s</ul></div>', $panelId, $viewTarget, $contents);
 
 $view->includeJavascript("
 jQuery(document).ready(function($) {
