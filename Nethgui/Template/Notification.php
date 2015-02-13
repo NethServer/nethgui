@@ -21,10 +21,10 @@ $t['validationError'] = array('<i class="fa fa-li fa-exclamation-triangle"></i>
 $view->includeCss("
 #Notification { margin-bottom: 0.5em; font-size: 1.2em }
 #Notification .fa-ul { margin: 0 }
-#Notification > ul > li { padding: .5em; margin-bottom: 0.5em; }
+#Notification > ul > li { padding: 1em; margin-bottom: 0.5em; }
 #Notification ul.fa-ul > li { padding-left: 2.5em }
 #Notification ul.fa-ul > li.nolpad { padding-left: .5em }
-#Notification .fa-li { font-size: 1.2em; left: 0; top: .4em }
+#Notification .fa-li { font-size: 1.2em; left: 0; top: .8em }
 
 .notification.bg-red {color: #fff; background-color: #cd0a0a; border-color: #cd0a0a}
 .notification.bg-red a {color: #fff}
