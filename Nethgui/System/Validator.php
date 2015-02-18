@@ -566,32 +566,32 @@ class Validator implements \Nethgui\System\MandatoryValidatorInterface
      */
     private function evalInteger($value)
     {
-        return is_numeric($value) && (string) $value == (string) intval($value);
+        return is_numeric($value) && (strcmp($value, intval($value)) == 0);
     }
 
     private function evalPositive($value)
     {
-        return $value > 0;
+        return $this->evalInteger($value) && ($value > 0);
     }
 
     private function evalNegative($value)
     {
-        return $value < 0;
+        return $this->evalInteger($value) && ($value < 0);
     }
 
     private function evalLessThan($value, $cmp)
     {
-        return $value < $cmp;
+        return $this->evalInteger($value) && ($value < $cmp);
     }
 
     private function evalGreatThan($value, $cmp)
     {
-        return $value > $cmp;
+        return $this->evalInteger($value) && ($value > $cmp);
     }
 
     private function evalEqualTo($value, $cmp)
     {
-        return $value == $cmp;
+        return $this->evalInteger($value) && ($value == $cmp);
     }
 
     private function evalMinLength($s, $min)
