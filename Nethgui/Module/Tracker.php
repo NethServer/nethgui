@@ -29,6 +29,8 @@ namespace Nethgui\Module;
  */
 class Tracker extends \Nethgui\Controller\AbstractController implements \Nethgui\Component\DependencyConsumer
 {
+    const TRACKER_ERROR_TEMPLATE = '<i class="fa fa-li fa-exclamation-circle"></i> <span>{{genericLabel}}</span> <dl>{{#.}}<dt>{{title}} #{{id}} ({{codeLabel}} {{code}})</dt><dd class="wspreline">{{message}}</dd>{{/.}}</dl>';
+    const TRACKER_RUNNING_TEMPLATE = '<i class="fa fa-li fa-exclamation-triangle"></i> <span>{{message}}</span> <a class="Button link" href="{{btnLink}}">{{btnLabel}}</a>';
 
     protected function initializeAttributes(\Nethgui\Module\ModuleAttributesInterface $base)
     {
@@ -124,7 +126,7 @@ class Tracker extends \Nethgui\Controller\AbstractController implements \Nethgui
                 'message' => "",
                 'notification' => array(
                     'data' => function($data) {
-                        return array('failedTasks' => \Nethgui\Module\Tracker::findFailures($data));
+                        return \Nethgui\Module\Tracker::findFailures($data);
                     },
                     'template' => 'trackerError',
                 ),
@@ -241,6 +243,10 @@ class Tracker extends \Nethgui\Controller\AbstractController implements \Nethgui
         }        
     }
 
+    /**
+     * @deprecated
+     * @since 1.6.1
+     */
     public function defineNotificationTemplate($name, $value)
     {
         $this->notifications->defineTemplate($name, $value);
@@ -250,6 +256,17 @@ class Tracker extends \Nethgui\Controller\AbstractController implements \Nethgui
     public function prepareView(\Nethgui\View\ViewInterface $view)
     {
         parent::prepareView($view);
+        $this->notifications->defineTemplate('trackerError', strtr(self::TRACKER_ERROR_TEMPLATE, array(
+            '{{genericLabel}}' => $view->translate('Tracker_task_error_message'),
+            '{{codeLabel}}' => $view->translate('Tracker_code_label'),
+                )), 'bg-red');
+
+        // Define a notification template that opens the first running task details:
+        $this->notifications->defineTemplate('trackerRunning', strtr(self::TRACKER_RUNNING_TEMPLATE, array(
+            '{{message}}' => $view->translate('Tracker_running_tasks_message'),
+            '{{btnLink}}' => $view->getModuleUrl('/Tracker/{{taskId}}'),
+            '{{btnLabel}}' => $view->translate('Tracker_button_label')
+                )), 'bg-yellow');
 
         if( ! $this->getRequest()->getUser()->isAuthenticated()) {
             return;
