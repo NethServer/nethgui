@@ -15,7 +15,7 @@
                     <div id="CurrentModule"><?php echo $view['notificationOutput'] . $view['currentModuleOutput'] . $view['trackerOutput'] ?></div>
                     <?php if ( ! $view['disableFooter']): ?><div id="footer"><p><?php echo htmlspecialchars($view['company'] . ' - ' . $view['address']) ?></p></div><?php endif; ?>
                 </div>
-                <?php if ( ! $view['disableMenu']): ?><div class="secondaryContent" role="menu"><h2><?php echo htmlspecialchars($view->translate('Other modules')) ?></h2><?php echo $view['menuOutput'] . $view['logoutOutput'] ?></div><?php endif; ?>
+                <?php if ( ! $view['disableMenu']): ?><div class="secondaryContent" role="menu"><h2><?php echo htmlspecialchars($view->translate('Other modules')) ?></h2><?php echo $view['menuOutput'] ?></div><?php endif; ?>
             </div><?php echo $view['helpAreaOutput'] ?>
         </div><?php echo $view->literal($view['Resource']['js']) ?>
     </body>

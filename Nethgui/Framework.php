@@ -222,7 +222,7 @@ class Framework
             $decoratorView->copyFrom($dc['decorator.xhtml.params']);
 
             $decoratorView['lang'] = $dc['Translator']->getLanguageCode();
-
+            $decoratorView['username'] = $dc['User']->asAuthorizationString();
 
             $decoratorView['currentModuleOutput'] = 'currentModule';
 
@@ -255,7 +255,6 @@ class Framework
             
             // Override menuOutput
             $decoratorView['menuOutput'] = (String) $renderer->inset('Menu');
-            $decoratorView['logoutOutput'] = (String) $renderer->inset('Logout');
 
             // Override notificationOutput. Render Notification at the end, to catch notifications from other modules.
             $decoratorView['notificationOutput'] = (String) $renderer->inset('Notification');
