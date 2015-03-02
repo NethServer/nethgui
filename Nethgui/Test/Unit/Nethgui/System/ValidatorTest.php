@@ -239,6 +239,9 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->object->evaluate('123.0'));
         $this->assertFalse($this->object->evaluate('123.1'));
         $this->assertFalse($this->object->evaluate('a'));
+        $this->assertFalse($this->object->evaluate(' 1'));
+        $this->assertFalse($this->object->evaluate('01'));
+        $this->assertFalse($this->object->evaluate('1 '));
         $this->assertTrue($this->object->evaluate('-123'));
     }
 
@@ -253,6 +256,9 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->object->evaluate('0'));
         $this->assertFalse($this->object->evaluate(FALSE));
         $this->assertFalse($this->object->evaluate(-1));
+        $this->assertFalse($this->object->evaluate('a'));
+        $this->assertFalse($this->object->evaluate(' 1.1'));
+        $this->assertFalse($this->object->evaluate('1 '));
     }
 
     public function testNegative()
@@ -296,6 +302,14 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($this->object->evaluate('100'));
         $this->assertFalse($this->object->evaluate('101'));
+    }
+
+    public function testStringEqualTo()
+    {
+        $o = $this->object->equalTo('0');
+        $this->assertSame($this->object, $o);
+        $this->assertTrue($this->object->evaluate('0'));
+        $this->assertFalse($this->object->evaluate('00'));
     }
 
     /**
