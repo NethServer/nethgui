@@ -236,7 +236,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($this->object, $o);
 
         $this->assertTrue($this->object->evaluate('123'));
-        $this->assertTrue($this->object->evaluate('123.0'));
+        $this->assertFalse($this->object->evaluate('123.0'));
         $this->assertFalse($this->object->evaluate('123.1'));
         $this->assertFalse($this->object->evaluate('a'));
         $this->assertTrue($this->object->evaluate('-123'));

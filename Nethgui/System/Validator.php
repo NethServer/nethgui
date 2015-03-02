@@ -561,37 +561,42 @@ class Validator implements \Nethgui\System\MandatoryValidatorInterface
     }
 
     /**
-     * Check if $value is an integer
+     * Check if $value is a string of digits
      * @param string $value
      */
     private function evalInteger($value)
     {
-        return is_numeric($value) && (strcmp($value, intval($value)) == 0);
+        return preg_match('/^(0|-?[1-9][0-9]*)$/', $value) === 1;
+    }
+
+    private function evalNumeric($value)
+    {
+        return $this->evalInteger($value) || preg_match('/^-?(0|[1-9][0-9]*)\.[0-9]+$/', $value) === 1;
     }
 
     private function evalPositive($value)
     {
-        return $this->evalInteger($value) && ($value > 0);
+        return $this->evalNumeric($value) && $value > 0;
     }
 
     private function evalNegative($value)
     {
-        return $this->evalInteger($value) && ($value < 0);
+        return $this->evalNumeric($value) && $value < 0;
     }
 
     private function evalLessThan($value, $cmp)
     {
-        return $this->evalInteger($value) && ($value < $cmp);
+        return $this->evalNumeric($value) && ($value < $cmp);
     }
 
     private function evalGreatThan($value, $cmp)
     {
-        return $this->evalInteger($value) && ($value > $cmp);
+        return $this->evalNumeric($value) && ($value > $cmp);
     }
 
     private function evalEqualTo($value, $cmp)
     {
-        return $this->evalInteger($value) && ($value == $cmp);
+        return ($this->evalNumeric($value) && $value == $cmp) || strcmp($value, $cmp) === 0;
     }
 
     private function evalMinLength($s, $min)
