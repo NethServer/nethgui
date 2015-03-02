@@ -609,4 +609,14 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($o->evaluate('12.13.14.300/12'));
     }
 
+    public function testBug3044()
+    {
+        $o = $this->object->integer()->greatThan(0)->lessThan(256);
+        $this->assertTrue($o->evaluate('1'));
+        $this->assertTrue($o->evaluate('255'));
+        $this->assertTrue($o->evaluate('32'));
+        $this->assertFalse($o->evaluate('01'));
+        $this->assertFalse($o->evaluate(' 1'));
+        $this->assertFalse($o->evaluate('255 '));
+    }
 }
