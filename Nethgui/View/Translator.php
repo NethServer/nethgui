@@ -178,9 +178,8 @@ class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Utility\
         if (preg_match('/^[a-z_A-Z0-9]+$/', $languageCatalog) == 0) {
             throw new \InvalidArgumentException(sprintf("%s: Language catalog name can contain only alphanumeric or `_` characters. It was `%s`.", get_class($this), $languageCatalog), 1322150265);
         }
-        $prefix = \Nethgui\array_head(explode('_', $languageCatalog));
 
-        $filePath = call_user_func($this->catalogResolver, sprintf('%s\Language\%s\%s', $prefix, $languageCode, $languageCatalog));
+        $filePath = call_user_func($this->catalogResolver, $languageCode, $languageCatalog);
         $L = array();
 
         $tmp = $this->getLog()->getLevel();

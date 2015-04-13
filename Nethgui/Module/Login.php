@@ -57,6 +57,8 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
 
     private $forcedRedirect;
 
+    private $languages = array();
+
     /**
      *
      * @var \Nethgui\System\ValidatorInterface
@@ -74,21 +76,14 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
     {
         parent::initialize();
 
-        $languages = array(
-            'en' => 'English',
-            'it' => 'Italiano'
-        );
-
-        $languageValidator = $this->createValidator()->memberOf(array_keys($languages));
+        $languageValidator = $this->createValidator()->memberOf($this->languages);
 
         $this->declareParameter('username', Valid::NOTEMPTY);
         $this->declareParameter('password', Valid::NOTEMPTY);
         $this->declareParameter('path', Valid::NOTEMPTY);
         $this->declareParameter('language', $languageValidator, array($this, 'getDefaultLanguageCode'));
         $this->declareParameter('hostname', FALSE, array('configuration', 'SystemName'));
-        $this->declareParameter('languageDatasource', FALSE, function () use ($languages) {
-            return \Nethgui\Renderer\AbstractRenderer::hashToDatasource($languages);
-        });
+
     }
     
     public function bind(\Nethgui\Controller\RequestInterface $request) {
@@ -127,6 +122,12 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
         $user = $this->getRequest()->getUser();
 
         $view->setTemplate('Nethgui\Template\Login');
+
+        $tmp = array();
+        foreach($this->languages as $l) {
+            $tmp[$l] = $view->translate('lang_' . $l);
+        }
+        $view['languageDatasource'] = \Nethgui\Renderer\AbstractRenderer::hashToDatasource($tmp, TRUE);
 
         $this->xhtmlDecoratorParams['disableHeader'] = TRUE;
         $this->xhtmlDecoratorParams['disableMenu'] = TRUE;
@@ -171,6 +172,7 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
         $myXhtmlDecoratorParams = &$this->xhtmlDecoratorParams;
         $myForcedRedirect = &$this->forcedRedirect;
         $loginValidator = &$this->loginValidator;
+        $languages = &$this->languages;
         return array(
             'HttpResponse' => function (\Nethgui\Utility\HttpResponse $r) use (&$myHttpResponse) {
             $myHttpResponse = $r;
@@ -186,7 +188,10 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
         },
            'user.authenticate' => function(\Nethgui\System\ValidatorInterface $v) use (&$loginValidator) {
             $loginValidator = $v;
-        }
+        },
+            'l10n.available_locales' => function ($langs) use (&$languages) {
+            $languages = $langs;
+        },
         );
     }
 

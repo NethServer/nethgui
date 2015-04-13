@@ -78,6 +78,29 @@ class Framework
             return FALSE;
         });
 
+        $dc['l10n.available_locales'] = function($c) {
+            $langs = array();
+            foreach($c['namespaceMap'] as $ns => $prefix) {
+                $path = "${prefix}/${ns}/Language/*";
+                $langs = array_unique(array_merge($langs, array_map('basename', $c['PhpWrapper']->glob($path, GLOB_ONLYDIR))));
+            }
+            return $langs;
+        };
+
+        $dc['l10n.preferred_locales'] = array('en');
+        $dc['l10n.catalog_resolver'] = $dc->protect(function($lang, $catalog) use ($dc) {
+            $languages = array_merge(array($lang), $dc['l10n.preferred_locales']);
+            foreach($languages as $lang) {
+                foreach($dc['namespaceMap'] as $ns => $prefix) {
+                    $path = "${prefix}/${ns}/Language/${lang}/${catalog}.php";
+                    if($dc['PhpWrapper']->file_exists($path)) {
+                        return $path;
+                    }
+                }
+            }
+            return '';
+        });
+
         $dc['Log'] = function($c) {
             return new \Nethgui\Log\Syslog($c['log.level']);
         };
@@ -182,7 +205,7 @@ class Framework
         };
 
         $dc['Translator'] = function ($c) {
-            return $c['objectInjector'](new \Nethgui\View\Translator($c['OriginalRequest']->getLanguageCode(), $c['FilenameResolver'], array_keys($c['namespaceMap'])), $c);
+            return $c['objectInjector'](new \Nethgui\View\Translator($c['OriginalRequest']->getLanguageCode(), $c['l10n.catalog_resolver'], array_keys($c['namespaceMap'])), $c);
         };
 
         $dc['HttpResponse'] = function ($c) {
@@ -669,7 +692,7 @@ class Framework
         $pathInfo = array();
         $languageCode = '';
         $languageCodeDefault = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2) : 'en';
-        $acceptedLanguages = array('en', 'it');
+        $acceptedLanguages = $this->dc['l10n.available_locales'];
 
         if( ! in_array($languageCodeDefault, $acceptedLanguages)) {
             $languageCodeDefault = 'en';
