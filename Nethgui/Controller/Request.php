@@ -41,8 +41,8 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Log\LogC
      */
     private $attributes = array(
         'format' => 'xhtml',
-        'languageCode' => '',
-        'languageCodeDefault' => 'en',
+        'locale' => '',
+        'localeDefault' => 'en-US',
         'isValidated' => FALSE,
         'isMutation' => FALSE,
         'originalRequest' => FALSE,
@@ -202,14 +202,19 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Log\LogC
 
     public function getLanguageCode()
     {
-        $lang = $this->getAttribute('languageCode');
-        if ( ! $lang) {
-            $lang = $this->getUser()->getLanguageCode();
+        return substr($this->getLocale(), 0, 2);
+    }
+
+    public function getLocale()
+    {
+        $locale = $this->getAttribute('locale');
+        if ( ! $locale && $this->getUser()->isAuthenticated() ) {
+            $locale = $this->getUser()->getLocale();
         }
-        if ( ! $lang) {
-            $lang = $this->getAttribute('languageCodeDefault');
+        if ( ! $locale) {
+            $locale = $this->getAttribute('localeDefault');
         }
-        return $lang;
+        return $locale;
     }
 
     public function isValidated()

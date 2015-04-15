@@ -160,6 +160,15 @@ interface RequestInterface
     public function getLanguageCode();
 
     /**
+     * The RFC 4646 compliant request locale
+     *
+     * @api
+     * @return string
+     * @since 1.7.0
+     */
+    public function getLocale();
+
+    /**
      * The requested output format, used to build the Renderer object
      *
      * @api
