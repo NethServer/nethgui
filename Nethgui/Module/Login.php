@@ -57,6 +57,8 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
 
     private $forcedRedirect;
 
+    private $languages = array();
+
     /**
      *
      * @var \Nethgui\System\ValidatorInterface
@@ -70,27 +72,42 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
         return $attributes;
     }
 
+    private function getLocales()
+    {
+        static $locales;
+        if(isset($locales)) {
+            return $locales;
+        }
+
+        $output = array(); $retval = 0;
+        $this->getPhpWrapper()->exec('/usr/bin/locale -a', $output, $retval);
+
+        $locales = array();
+        foreach($output as $line) {
+            $M = array();
+
+            if(preg_match('/^(?P<lang>[a-z][a-z])_(?P<region>[A-Z][A-Z])\.utf8$/', trim($line), $M) && in_array($M['lang'], $this->languages)) {
+                $locales[] = $M['lang'] . '-' . $M['region'];
+            }
+        }
+
+        return $locales;
+    }
+
     public function initialize()
     {
         parent::initialize();
 
-        $languages = array(
-            'en' => 'English',
-            'it' => 'Italiano'
-        );
-
-        $languageValidator = $this->createValidator()->memberOf(array_keys($languages));
+        $localeValidator = $this->createValidator()->memberOf($this->getLocales());
 
         $this->declareParameter('username', Valid::NOTEMPTY);
         $this->declareParameter('password', Valid::NOTEMPTY);
         $this->declareParameter('path', Valid::NOTEMPTY);
-        $this->declareParameter('language', $languageValidator, array($this, 'getDefaultLanguageCode'));
+        $this->declareParameter('language', $localeValidator, array($this, 'getLocaleFromRequest'));
         $this->declareParameter('hostname', FALSE, array('configuration', 'SystemName'));
-        $this->declareParameter('languageDatasource', FALSE, function () use ($languages) {
-            return \Nethgui\Renderer\AbstractRenderer::hashToDatasource($languages);
-        });
+
     }
-    
+
     public function bind(\Nethgui\Controller\RequestInterface $request) {
         parent::bind($request);
         if($this->forcedRedirect) {
@@ -106,19 +123,32 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
             return;
         }
 
+        /* @var $user \Nethgui\Authorization\User */
         $user = $this->getRequest()->getUser();
         if ( ! $user->isAuthenticated() && $this->getRequest()->isMutation()) {
             $authenticated = $user->authenticate($this->parameters['username'], $this->parameters['password']);
-            $user->setLanguageCode($this->parameters['language']);
+            $user->setLocale($this->parameters['language']);
             if( ! $authenticated) {
                 $report->addValidationError($this, 'password', $this->loginValidator);
             }
         }
     }
 
-    public function getDefaultLanguageCode()
+    public function getLocaleFromRequest()
     {
-        return $this->getRequest()->getLanguageCode();
+        $locale = $this->getRequest()->getLocale();
+
+        // FIXME: this mapping is provided for backward compatibility
+        // and can be removed in future versions:
+        if($locale === 'en') {
+            $locale = 'en-GB';
+        } elseif($locale === 'it') {
+            $locale = 'it-IT';
+        } elseif(strlen($locale) === 2) {
+            // Try to guess Region code if it is missing:
+            $locale = $locale . '-' . \strtoupper($locale);
+        }
+        return $locale;
     }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
@@ -127,6 +157,17 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
         $user = $this->getRequest()->getUser();
 
         $view->setTemplate('Nethgui\Template\Login');
+
+        $tmp = array();
+        foreach ($this->getLocales() as $l) {
+            $lang = substr($l, 0, 2);;
+            if (\extension_loaded('intl')) {
+                $tmp[\locale_get_display_language($lang)][$l] = sprintf('%s (%s)', \locale_get_display_language($l, $lang), \locale_get_display_region($l, $lang));
+            } else {
+                $tmp[$lang][$l] = $l;
+            }
+        }
+        $view['languageDatasource'] = \Nethgui\Renderer\AbstractRenderer::hashToDatasource($tmp, TRUE);
 
         $this->xhtmlDecoratorParams['disableHeader'] = TRUE;
         $this->xhtmlDecoratorParams['disableMenu'] = TRUE;
@@ -152,7 +193,7 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
             if ( ! $this->parameters['path']) {
                 return '/';
             } else {
-                return $this->parameters['path'] . sprintf(( $this->parameters['language'] !== $this->getRequest()->getLanguageCode() ? '?Language[switch]=%s' : ''), $this->parameters['language']);
+                return $this->parameters['path'] . sprintf(( $this->parameters['language'] !== $this->getRequest()->getLocale() ? '?Language[switch]=%s' : ''), $this->parameters['language']);
             }
         }
         return FALSE;
@@ -171,6 +212,7 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
         $myXhtmlDecoratorParams = &$this->xhtmlDecoratorParams;
         $myForcedRedirect = &$this->forcedRedirect;
         $loginValidator = &$this->loginValidator;
+        $languages = &$this->languages;
         return array(
             'HttpResponse' => function (\Nethgui\Utility\HttpResponse $r) use (&$myHttpResponse) {
             $myHttpResponse = $r;
@@ -186,7 +228,10 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
         },
            'user.authenticate' => function(\Nethgui\System\ValidatorInterface $v) use (&$loginValidator) {
             $loginValidator = $v;
-        }
+        },
+            'l10n.available_languages' => function ($langs) use (&$languages) {
+            $languages = $langs;
+        },
         );
     }
 

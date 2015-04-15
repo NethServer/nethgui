@@ -135,7 +135,12 @@ class NullRequest implements \Nethgui\Controller\RequestInterface
 
     public function getLanguageCode()
     {
-        return '';
+        return 'en';
+    }
+
+    public function getLocale()
+    {
+        return 'en-US';
     }
     
 }

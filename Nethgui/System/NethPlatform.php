@@ -235,6 +235,20 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
         }
     }
 
+    private function getLangForProcess()
+    {
+        $locale = $this->request->getLocale();
+
+        // FIXME: this mapping is provided for backward compatibility
+        // and can be removed in future versions:
+        if($locale === 'en') {
+            $locale = 'en-GB';
+        } elseif($locale === 'it') {
+            $locale = 'it-IT';
+        }
+        return \str_replace('-', '_', $locale) . '.utf8';
+    }
+
     private function createPtrackProcess($command, $args, $detached)
     {
         $taskId = md5(uniqid());
@@ -251,6 +265,7 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
             )) . $this->prepareEscapedCommand($command, $args);
 
         $process = new \Nethgui\System\Process($cmd);
+        $process->setEnv(array('LANG' => $this->getLangForProcess()));
         $process->setInput('{}');
         $process->taskId = $taskId;
         return $process;
@@ -342,6 +357,7 @@ class NethPlatform implements PlatformInterface, \Nethgui\Authorization\PolicyEn
     {
         if ($detached === FALSE) {
             $process = new \Nethgui\System\Process($this->prepareEscapedCommand($command, $arguments));
+            $process->setEnv(array('LANG' => $this->getLangForProcess()));
             $process->log = $this->getLog();
             $process->run();
         } else {

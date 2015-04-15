@@ -99,3 +99,14 @@ $L['Tracker_task_error_message'] = 'Task completed with errors';
 $L['Tracker_title_taskRunning'] = 'Task is running';
 $L['Tracker_title_taskStarting'] = 'Task is starting...';
 $L['Tracker_code_label'] = 'exit status';
+
+$L['lang_en'] = 'English';
+$L['lang_it'] = 'Italiano';
+$L['lang_el'] = 'Ελληνικά';
+$L['lang_es'] = 'Español';
+$L['lang_ru_RU'] = 'Русский язык';
+$L['lang_pt_PT'] = 'Português (PT)';
+$L['lang_pt_BR'] = 'Português (Brazil)';
+$L['lang_de'] = 'Deutsch';
+$L['lang_nl'] = 'Nederlands';
+$L['lang_hu'] = 'Magyar';

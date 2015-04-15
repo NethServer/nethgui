@@ -62,7 +62,7 @@ class User implements \Nethgui\Authorization\UserInterface, \Serializable
     {
         $this->state = new \ArrayObject(array(
             'credentials' => array(),
-            'preferences' => array('lang' => ''),
+            'preferences' => array('lang' => 'en', 'locale' => 'en-US'),
             'authenticated' => FALSE
         ));
         $this->log = $log;
@@ -112,15 +112,32 @@ class User implements \Nethgui\Authorization\UserInterface, \Serializable
     {
         return $this->getPreference('lang');
     }
-
+    
+    public function getLocale()
+    {
+        return $this->getPreference('locale');
+    }
     /**
      *
      * @param string $lang
+     * @deprecated since version 1.7.0
      * @return User
      */
     public function setLanguageCode($lang)
     {
-        $this->setPreference('lang', strtolower(substr($lang, 0, 2)));
+        $this->log->deprecated();
+        return $this;
+    }
+
+    /**
+     * @since 1.7.0
+     * @param string $locale
+     * @return \Nethgui\Authorization\User
+     */
+    public function setLocale($locale)
+    {
+        $this->setPreference('locale', $locale);
+        $this->setPreference('lang', substr($locale, 0, 2));
         return $this;
     }
 

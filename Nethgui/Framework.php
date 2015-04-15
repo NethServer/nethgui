@@ -78,6 +78,29 @@ class Framework
             return FALSE;
         });
 
+        $dc['l10n.available_languages'] = function($c) {
+            $langs = array();
+            foreach($c['namespaceMap'] as $ns => $prefix) {
+                $path = "${prefix}/${ns}/Language/*";
+                $langs = array_unique(array_merge($langs, array_map('basename', $c['PhpWrapper']->glob($path, GLOB_ONLYDIR))));
+            }
+            return $langs;
+        };
+
+        $dc['l10n.preferred_locales'] = array('en');
+        $dc['l10n.catalog_resolver'] = $dc->protect(function($lang, $catalog) use ($dc) {
+            $languages = array_merge(array($lang), $dc['l10n.preferred_locales']);
+            foreach($languages as $lang) {
+                foreach($dc['namespaceMap'] as $ns => $prefix) {
+                    $path = "${prefix}/${ns}/Language/${lang}/${catalog}.php";
+                    if($dc['PhpWrapper']->file_exists($path)) {
+                        return $path;
+                    }
+                }
+            }
+            return '';
+        });
+
         $dc['Log'] = function($c) {
             return new \Nethgui\Log\Syslog($c['log.level']);
         };
@@ -182,7 +205,7 @@ class Framework
         };
 
         $dc['Translator'] = function ($c) {
-            return $c['objectInjector'](new \Nethgui\View\Translator($c['OriginalRequest']->getLanguageCode(), $c['FilenameResolver'], array_keys($c['namespaceMap'])), $c);
+            return $c['objectInjector'](new \Nethgui\View\Translator($c['OriginalRequest']->getLanguageCode(), $c['l10n.catalog_resolver'], array_keys($c['namespaceMap'])), $c);
         };
 
         $dc['HttpResponse'] = function ($c) {
@@ -570,7 +593,7 @@ class Framework
         $m = $originalRequest->toArray();
         unset($m[\Nethgui\array_head($originalRequest->getPath())]);
         $r = new \Nethgui\Controller\Request(array_replace_recursive(array('Login' => array('path' => '/' . implode('/', $originalRequest->getPath()))), $m));
-        $r->setAttribute('languageCode', $originalRequest->getLanguageCode());
+        $r->setAttribute('locale', $originalRequest->getLocale());
         $r->setAttribute('userClosure', $originalRequest->getAttribute('userClosure'));
         return $r;
     }
@@ -649,6 +672,16 @@ class Framework
         return $this->createRequestModApache();
     }
 
+    private function getClientLocaleDefault()
+    {
+        $acceptLanguageHeader = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : 'en-US';
+        $localeDefault = \extension_loaded('intl') ? \locale_accept_from_http($acceptLanguageHeader) : 'en-US';
+        if( ! in_array(substr($localeDefault, 0, 2), $this->dc['l10n.available_languages'])) {
+            $localeDefault = 'en-US';
+        }
+        return str_replace('_', '-', $localeDefault);
+    }
+
     /**
      * Creates a new \Nethgui\Controller\Request object from
      * current HTTP request.
@@ -665,29 +698,19 @@ class Framework
         $isMutation = FALSE;
         $postData = array();
         $getData = $_GET;
-        $log = new \Nethgui\Log\Syslog();
         $pathInfo = array();
-        $languageCode = '';
-        $languageCodeDefault = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2) : 'en';
-        $acceptedLanguages = array('en', 'it');
-
-        if( ! in_array($languageCodeDefault, $acceptedLanguages)) {
-            $languageCodeDefault = 'en';
-        }
+        $locale = '';
+        $localeDefault = $this->getClientLocaleDefault();
 
         // Split PATH_INFO
         if (isset($_SERVER['PATH_INFO']) && $_SERVER['PATH_INFO'] != '/') {
             $pathInfo = array_rest(explode('/', $_SERVER['PATH_INFO']));
-
             $pathHead = array_head($pathInfo);
-
-            // FIXME: read the language codes from Language/ subdirs
-            if ( ! in_array($pathHead, $acceptedLanguages)) {
+            if ( ! in_array(substr($pathHead, 0, 2), $this->dc['l10n.available_languages'])) {
                 throw new Exception\HttpException('Language not found', 404, 1377519247);
             }
-            $languageCode = $pathHead;
+            $locale = $pathHead;
             $pathInfo = array_rest($pathInfo);
-
 
             foreach ($pathInfo as $pathPart) {
                 if ($pathPart === '.' || $pathPart === '..' || $pathPart === '') {
@@ -695,9 +718,6 @@ class Framework
                 }
             }
         }
-
-        // Append the language code to the url parts:
-        $this->urlParts[] = ($languageCode ? $languageCode : $languageCodeDefault) . '/';
 
         // Extract the requested output format (xhtml, json...)
         $format = $this->extractTargetFormat($pathInfo);
@@ -735,16 +755,18 @@ class Framework
         $dc = $this->dc;
         $R = array_replace_recursive($pathInfoMod, $getData, $postData);
         $request = new \Nethgui\Controller\Request($R);
-        $request->setLog($log)
+        $request->setLog($this->dc['Log'])
             ->setAttribute('isMutation', $isMutation)
             ->setAttribute('format', $format)
-            ->setAttribute('languageCode', $languageCode)
-            ->setAttribute('languageCodeDefault', $languageCodeDefault)
+            ->setAttribute('locale', $locale)
+            ->setAttribute('localeDefault', $localeDefault)
             ->setAttribute('userClosure', function () use ($dc) {
                 return $dc['User'];
             })
         ;
 
+        // Append the language code to the url parts:
+        $this->urlParts[] = $request->getLocale() . '/';
         return $request;
     }
 
