@@ -51,6 +51,11 @@ html,body {
     border-radius: 2px;
 }
 
+#{$actionId} .labeled-control.label-above {
+    display: flex;
+    flex-direction: column;
+}
+
 #{$actionId} .Button.submit {
     font-size: 130%;
 }
