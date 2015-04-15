@@ -144,6 +144,9 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
             $locale = 'en-GB';
         } elseif($locale === 'it') {
             $locale = 'it-IT';
+        } elseif(strlen($locale) === 2) {
+            // Try to guess Region code if it is missing:
+            $locale = $locale . '-' . \strtoupper($locale);
         }
         return $locale;
     }
