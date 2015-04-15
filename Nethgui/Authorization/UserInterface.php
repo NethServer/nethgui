@@ -78,9 +78,18 @@ interface UserInterface extends AuthorizationAttributesProviderInterface
      * The language that was choosen by the user
      *
      * @api
+     * @deprecated since version 1.7.0
      * @return string ISO 639-1 language code (2 characters).
      */
     public function getLanguageCode();
+
+    /**
+     * Get the User preferred locale
+     * 
+     * @api
+     * @return string RFC 4646 compliant
+     */
+    public function getLocale();
 
 }
 
