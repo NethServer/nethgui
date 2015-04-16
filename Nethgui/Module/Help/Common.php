@@ -102,10 +102,23 @@ class Common extends \Nethgui\Controller\AbstractController
         $parts = explode('\\', get_class($module));
 
         $ns = \Nethgui\array_head($parts);
-        $lang = $this->getRequest()->getLanguageCode();
+
+        $locale = str_replace('-', '_', $this->getRequest()->getLocale());
+        $lang = substr($locale, 0, 2);
         $fileName = implode('_', $parts) . '.html';
 
-        return call_user_func($this->fileNameResolver, implode("\\", array($ns, 'Help', $lang, $fileName)));
+        $pathLocale = call_user_func($this->fileNameResolver, implode("\\", array($ns, 'Help', $locale, $fileName)));
+        if($this->getPhpWrapper()->file_exists($pathLocale)) {
+            return $pathLocale;
+        }
+        
+        $pathLang = call_user_func($this->fileNameResolver, implode("\\", array($ns, 'Help', $lang, $fileName)));
+        if($this->getPhpWrapper()->file_exists($pathLang)) {
+            return $pathLang;
+        }
+
+        # last resort: English
+        return call_user_func($this->fileNameResolver, implode("\\", array($ns, 'Help', 'en', $fileName)));
     }
 
     protected function getFileNameResolver()
