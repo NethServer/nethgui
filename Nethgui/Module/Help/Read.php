@@ -71,7 +71,7 @@ class Read extends Common implements \Nethgui\Component\DependencyConsumer
 
     public function getDependencySetters()
     {
-        return array('View' => array($this, 'setRootView'));
+        return array_merge(parent::getDependencySetters(), array('View' => array($this, 'setRootView')));
     }
 
 }

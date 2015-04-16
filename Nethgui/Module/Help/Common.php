@@ -24,7 +24,7 @@ namespace Nethgui\Module\Help;
 /**
  * @author Davide Principi <davide.principi@nethesis.it>
  */
-class Common extends \Nethgui\Controller\AbstractController
+class Common extends \Nethgui\Controller\AbstractController implements \Nethgui\Component\DependencyConsumer
 {
     /**
      * Holds the included file list for {{{INCLUDE}}} directive processing
@@ -45,6 +45,8 @@ class Common extends \Nethgui\Controller\AbstractController
      * @var callable
      */
     private $fileNameResolver;
+
+    private $nsMap = array();
 
     /**
      *
@@ -101,20 +103,20 @@ class Common extends \Nethgui\Controller\AbstractController
     {
         $parts = explode('\\', get_class($module));
 
-        $ns = \Nethgui\array_head($parts);
-
         $locale = str_replace('-', '_', $this->getRequest()->getLocale());
         $lang = substr($locale, 0, 2);
         $fileName = implode('_', $parts) . '.html';
 
-        $pathLocale = call_user_func($this->fileNameResolver, implode("\\", array($ns, 'Help', $locale, $fileName)));
-        if($this->getPhpWrapper()->file_exists($pathLocale)) {
-            return $pathLocale;
-        }
-        
-        $pathLang = call_user_func($this->fileNameResolver, implode("\\", array($ns, 'Help', $lang, $fileName)));
-        if($this->getPhpWrapper()->file_exists($pathLang)) {
-            return $pathLang;
+        $nsList = array_keys($this->nsMap);
+        foreach ($nsList as $ns) {
+            $pathLocale = call_user_func($this->fileNameResolver, implode("\\", array($ns, 'Help', $locale, $fileName)));
+            if($this->getPhpWrapper()->file_exists($pathLocale)) {
+                return $pathLocale;
+            }
+            $pathLang = call_user_func($this->fileNameResolver, implode("\\", array($ns, 'Help', $lang, $fileName)));
+            if($this->getPhpWrapper()->file_exists($pathLang)) {
+                return $pathLang;
+            }
         }
 
         # last resort: English
@@ -189,6 +191,18 @@ class Common extends \Nethgui\Controller\AbstractController
         }
 
         return $expansion;
+    }
+
+    public function setNamespaceMap($nsMap) {
+        $this->nsMap = $nsMap;
+        return $this;
+    }
+
+    public function getDependencySetters()
+    {
+        return array(
+           'namespaceMap' => array($this, 'setNamespaceMap')
+        );
     }
 
 }
