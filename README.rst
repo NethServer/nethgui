@@ -1,6 +1,6 @@
-=======================
-   Nethgui framework
-=======================
+=================
+Nethgui framework
+=================
 
 Copyright (C) 2012 Nethesis srl
 
@@ -14,3 +14,6 @@ along with this program; if not, write to
     Italy
 
 
+.. image:: https://badge.waffle.io/nethesis/nethserver-nethgui.svg?label=ready&title=Ready
+   :target: https://waffle.io/nethesis/nethserver-nethgui
+   :alt: 'Stories in Ready'
