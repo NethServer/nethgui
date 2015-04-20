@@ -79,18 +79,17 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
             return $locales;
         }
 
-        $output = array(); $retval = 0;
-        $this->getPhpWrapper()->exec('/usr/bin/locale -a', $output, $retval);
-
         $locales = array();
-        foreach($output as $line) {
-            $M = array();
 
-            if(preg_match('/^(?P<lang>[a-z][a-z])_(?P<region>[A-Z][A-Z])\.utf8$/', trim($line), $M) && in_array($M['lang'], $this->languages)) {
-                $locales[] = $M['lang'] . '-' . $M['region'];
+        foreach($this->languages as $lang) {
+            $M = array();
+            if( ! preg_match('/^(?P<lang>[a-z][a-z])_(?P<region>[A-Z][A-Z])$/', $lang, $M)) {
+                continue;
             }
+            $locales[] = $M['lang'] . '-' . strtoupper($M['region']);
         }
 
+        $locales = array_unique($locales);
         return $locales;
     }
 
@@ -162,7 +161,7 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
         foreach ($this->getLocales() as $l) {
             $lang = substr($l, 0, 2);;
             if (\extension_loaded('intl')) {
-                $tmp[\locale_get_display_language($lang)][$l] = sprintf('%s (%s)', \locale_get_display_language($l, $lang), \locale_get_display_region($l, $lang));
+                $tmp[$l] = sprintf('%s (%s)', ucfirst(\locale_get_display_language($l, $lang)), \locale_get_display_region($l, $lang));
             } else {
                 $tmp[$lang][$l] = $l;
             }
