@@ -124,7 +124,11 @@ class Menu extends \Nethgui\Controller\AbstractController implements \Nethgui\Co
         $categories = array();
         $translator = $view->getTranslator();
 
-        $categoryOrder = array_flip(array_map('trim', explode(',', $view->translate('Category_Order'))));
+        if(defined('NETHGUI_MENU_CATEGORIES')) {
+            $categoryOrder = array_flip(array_map('trim', explode(',', NETHGUI_MENU_CATEGORIES)));
+        } else {
+            $categoryOrder = array();
+        }
 
         foreach ($this->moduleSet as $moduleIdentifier => $moduleInstance) {
             if ( ! $moduleInstance instanceof \Nethgui\Module\ModuleInterface) {
