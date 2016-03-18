@@ -82,7 +82,7 @@ class Framework
             $langs = array();
             foreach($c['namespaceMap'] as $ns => $prefix) {
                 $path = "${prefix}/${ns}/Language/*";
-                $langs = array_unique(array_merge($langs, array_map('basename', $c['PhpWrapper']->glob($path, GLOB_ONLYDIR))));
+                $langs = array_unique(array_merge($langs, array_map(function ($p) { return substr(basename($p), 0, 2); }, $c['PhpWrapper']->glob($path, GLOB_ONLYDIR))));
             }
             return $langs;
         };
@@ -97,10 +97,8 @@ class Framework
                 // Try exact-match
                 $path = "${prefix}/${ns}/Language/${lang}/${catalog}.php";
                 if($dc['PhpWrapper']->file_exists($path)) {
-                    $dc['Log']->notice("FOUND ${ns} ${lang} ${catalog}");
                     return $path;
                 }
-                $dc['Log']->notice("Seek ${ns} ${lang} ${catalog}");
 
                 // Seek for alternative translations using the same short language code
                 $shortLang = substr($lang, 0, 2);
@@ -120,10 +118,8 @@ class Framework
                 foreach($globs["${prefix}:${ns}:${shortLang}"] as $altLang) {
                     $path = "${prefix}/${ns}/Language/${altLang}/${catalog}.php";
                     if($dc['PhpWrapper']->file_exists($path)) {
-                        $dc['Log']->notice("FOUND ${ns} ${altLang} ${catalog}");
                         return $path;
                     }
-                    $dc['Log']->notice("Seek ${ns} ${altLang} ${catalog}");
                 }
             }
 
@@ -132,7 +128,6 @@ class Framework
                 return call_user_func($dc['l10n.catalog_resolver'], 'en_US', $catalog);
             }
 
-            $dc['Log']->notice("${lang} ${catalog} NOT FOUND");
             return '';
         });
 
