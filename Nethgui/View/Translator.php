@@ -172,8 +172,8 @@ class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Utility\
 
     private function loadLanguageCatalog($languageCode, $languageCatalog)
     {
-        if (preg_match('/^[a-z][a-z]$/', $languageCode) == 0) {
-            throw new \InvalidArgumentException(sprintf('%s: Language code must be a valid ISO 639-1 language code', get_class($this)), 1322150170);
+        if (preg_match('/^[a-z][a-z]([-_][A-Z][A-Z])?$/', $languageCode) == 0) {
+            throw new \InvalidArgumentException(sprintf('%s: Language code must be an IETF-like language tag', get_class($this)), 1458301359);
         }
         if (preg_match('/^[a-z_A-Z0-9]+$/', $languageCatalog) == 0) {
             throw new \InvalidArgumentException(sprintf("%s: Language catalog name can contain only alphanumeric or `_` characters. It was `%s`.", get_class($this), $languageCatalog), 1322150265);

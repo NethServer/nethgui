@@ -87,17 +87,52 @@ class Framework
             return $langs;
         };
 
-        $dc['l10n.preferred_locales'] = array('en');
         $dc['l10n.catalog_resolver'] = $dc->protect(function($lang, $catalog) use ($dc) {
-            $languages = array_merge(array($lang), $dc['l10n.preferred_locales']);
-            foreach($languages as $lang) {
-                foreach($dc['namespaceMap'] as $ns => $prefix) {
-                    $path = "${prefix}/${ns}/Language/${lang}/${catalog}.php";
+            $lang = str_replace('-', '_', $lang);
+            static $globs;
+
+            // Iterate over namespaces
+            foreach($dc['namespaceMap'] as $ns => $prefix) {
+
+                // Try exact-match
+                $path = "${prefix}/${ns}/Language/${lang}/${catalog}.php";
+                if($dc['PhpWrapper']->file_exists($path)) {
+                    $dc['Log']->notice("FOUND ${ns} ${lang} ${catalog}");
+                    return $path;
+                }
+                $dc['Log']->notice("Seek ${ns} ${lang} ${catalog}");
+
+                // Seek for alternative translations using the same short language code
+                $shortLang = substr($lang, 0, 2);
+                if( ! isset($globs["${prefix}:${ns}:${shortLang}"])) {
+                    $globs["${prefix}:${ns}:${shortLang}"] = array_filter(
+                        array_map(
+                            'basename',
+                            $dc['PhpWrapper']->glob("${prefix}/${ns}/Language/${shortLang}_*", GLOB_ONLYDIR)
+                        ),
+                        function($e) use ($lang) { return $e !== $lang; }
+                    );
+                    // The short language code alone has precedence over country
+                    // code variants. Prepend it:
+                    array_unshift($globs["${prefix}:${ns}:${shortLang}"], $shortLang);
+                }
+
+                foreach($globs["${prefix}:${ns}:${shortLang}"] as $altLang) {
+                    $path = "${prefix}/${ns}/Language/${altLang}/${catalog}.php";
                     if($dc['PhpWrapper']->file_exists($path)) {
+                        $dc['Log']->notice("FOUND ${ns} ${altLang} ${catalog}");
                         return $path;
                     }
+                    $dc['Log']->notice("Seek ${ns} ${altLang} ${catalog}");
                 }
             }
+
+            // English fallback
+            if($lang !== 'en_US') {
+                return call_user_func($dc['l10n.catalog_resolver'], 'en_US', $catalog);
+            }
+
+            $dc['Log']->notice("${lang} ${catalog} NOT FOUND");
             return '';
         });
 
@@ -205,7 +240,7 @@ class Framework
         };
 
         $dc['Translator'] = function ($c) {
-            return $c['objectInjector'](new \Nethgui\View\Translator($c['OriginalRequest']->getLanguageCode(), $c['l10n.catalog_resolver'], array_keys($c['namespaceMap'])), $c);
+            return $c['objectInjector'](new \Nethgui\View\Translator($c['OriginalRequest']->getLocale(), $c['l10n.catalog_resolver'], array_keys($c['namespaceMap'])), $c);
         };
 
         $dc['HttpResponse'] = function ($c) {
