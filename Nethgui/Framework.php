@@ -82,9 +82,9 @@ class Framework
             $langs = array();
             foreach($c['namespaceMap'] as $ns => $prefix) {
                 $path = "${prefix}/${ns}/Language/*";
-                $langs = array_unique(array_merge($langs, array_map(function ($p) { return substr(basename($p), 0, 2); }, $c['PhpWrapper']->glob($path, GLOB_ONLYDIR))));
+                $langs = array_merge($langs, array_map('basename', $c['PhpWrapper']->glob($path, GLOB_ONLYDIR)));
             }
-            return $langs;
+            return array_unique($langs);
         };
 
         $dc['l10n.catalog_resolver'] = $dc->protect(function($lang, $catalog) use ($dc) {
@@ -706,7 +706,7 @@ class Framework
     {
         $acceptLanguageHeader = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : 'en-US';
         $localeDefault = \extension_loaded('intl') ? \locale_accept_from_http($acceptLanguageHeader) : 'en-US';
-        if( ! in_array(substr($localeDefault, 0, 2), $this->dc['l10n.available_languages'])) {
+        if( ! in_array($localeDefault, $this->dc['l10n.available_languages'])) {
             $localeDefault = 'en-US';
         }
         return str_replace('_', '-', $localeDefault);
@@ -736,7 +736,7 @@ class Framework
         if (isset($_SERVER['PATH_INFO']) && $_SERVER['PATH_INFO'] != '/') {
             $pathInfo = array_rest(explode('/', $_SERVER['PATH_INFO']));
             $pathHead = array_head($pathInfo);
-            if ( ! in_array(substr($pathHead, 0, 2), $this->dc['l10n.available_languages'])) {
+            if ( ! in_array(str_replace('-', '_', $pathHead), $this->dc['l10n.available_languages'])) {
                 throw new Exception\HttpException('Language not found', 404, 1377519247);
             }
             $locale = $pathHead;

@@ -135,19 +135,7 @@ class Login extends \Nethgui\Controller\AbstractController implements \Nethgui\U
 
     public function getLocaleFromRequest()
     {
-        $locale = $this->getRequest()->getLocale();
-
-        // FIXME: this mapping is provided for backward compatibility
-        // and can be removed in future versions:
-        if($locale === 'en') {
-            $locale = 'en-GB';
-        } elseif($locale === 'it') {
-            $locale = 'it-IT';
-        } elseif(strlen($locale) === 2) {
-            // Try to guess Region code if it is missing:
-            $locale = $locale . '-' . \strtoupper($locale);
-        }
-        return $locale;
+        return $this->getRequest()->getLocale();
     }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)
