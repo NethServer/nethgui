@@ -435,7 +435,7 @@
         if(e.state && e.state.target) {
             $('#' + e.state.target).trigger('nethguishow');
         } else {
-            $('.Action:eq(0)').trigger('nethguishow');
+            $('.Action:eq(0), .tabList:eq(0) + .Action').trigger('nethguishow');
         }
     };
     

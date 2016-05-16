@@ -80,7 +80,7 @@
             
         },
         _onCancel: function (e) {
-            $.debug('oncancel tabs');
+            // pass
         }  
     });
 
