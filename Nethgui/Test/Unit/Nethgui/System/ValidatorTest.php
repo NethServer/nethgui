@@ -570,23 +570,23 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
         $invalidEmails = array(
             // no domain            
-            array('invalidUserName', 'valid_email,missing-domainpart'),
+            array('invalidUserName', 'valid_email,generic_failure'),
             // no localpart
-            array('@domain.tld', 'valid_email,missing-localpart'),
+            array('@domain.tld', 'valid_email,generic_failure'),
             // start with letter 
-            array('.invalidusername@domain.tld', 'valid_email,malformed-localpart'),
+            array('.invalidusername@domain.tld', 'valid_email,generic_failure'),
             // no symbols           
-            array('in(valid)@domain.tld', 'valid_email,malformed-localpart'),
+            array('in(valid)@domain.tld', 'valid_email,generic_failure'),
             // no double-dots
-            array('in..valid@domain.tld', 'valid_email,malformed-localpart'),
+            array('in..valid@domain.tld', 'valid_email,generic_failure'),
             // no dot at end
-            array('invalid.@domain.tld', 'valid_email,malformed-localpart'),
+            array('invalid.@domain.tld', 'valid_email,generic_failure'),
             // localpart <= 64 chars 
-            array(str_repeat('x', 65) . '@domain.tld', 'valid_email,malformed-localpart'),
+            array(str_repeat('x', 65) . '@domain.tld', 'valid_email,generic_failure'),
             // localpart <= 254 chars 
-            array(str_repeat('x', 244) . '@domain.tld', 'valid_email,too-long'),
+            array(str_repeat('x', 244) . '@domain.tld', 'valid_email,generic_failure'),
             // invalid domain name 
-            array('my.email@.domain', 'valid_email,malformed-domainpart'),
+            array('my.email@.domain', 'valid_email,generic_failure'),
         );
 
         foreach ($invalidEmails as $test) {
