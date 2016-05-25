@@ -172,10 +172,16 @@ class Validator implements \Nethgui\System\MandatoryValidatorInterface
         }
 
         $message = 'valid_hostname';
-        if ($minDots > 0) {
-            $message = 'valid_hostname_fqdn';
-        } elseif ($maxDots === 0) {
+        if ($minDots === 0 && $maxDots === 0) {
             $message = 'valid_hostname_simple';
+        } elseif ($minDots === 0 && $maxDots === PHP_INT_MAX) {
+            $message = 'valid_hostname';
+        } elseif ($minDots === 1 && $maxDots === PHP_INT_MAX) {
+            $message = 'valid_hostname_fqdn';
+        } elseif ($minDots > 1 && $maxDots === PHP_INT_MAX) {
+            $message = 'valid_hostname_fqdn_long';
+        } else {
+            $message = 'valid_hostname_fqdn_exact';
         }
 
         return $this
