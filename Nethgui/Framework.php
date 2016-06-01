@@ -321,6 +321,14 @@ class Framework
                 $colors = explode(',', $colors);
                 $decoratorView['colors'] = $colors;
             }
+            $hb = $db->getProp('httpd-admin', 'headerBackground');
+            $mb = $db->getProp('httpd-admin', 'menuBackground');
+            if ($hb) {
+                $decoratorView['headerBackground'] = $hb;
+            }
+            if ($mb) {
+                $decoratorView['menuBackground'] = $mb;
+            }
             $logo = $db->getProp('httpd-admin', 'logo');
             $decoratorView['logo'] = $decoratorView->getPathUrl() . ($logo ? sprintf('images/%s', $logo) : 'images/logo.png');
             $decoratorView['company'] = $db->getProp('OrganizationContact', 'Company');
