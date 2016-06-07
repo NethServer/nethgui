@@ -313,29 +313,6 @@ class Framework
             $decoratorView['notificationOutput'] = (String) $renderer->inset('Notification');
             $decoratorView['moduleTitle'] = $dc['Translator']->translate($currentModule, $currentModule->getAttributesProvider()->getTitle());
 
-            //read css from db
-            $db = $dc['Main']->getPlatform()->getDatabase('configuration');
-
-            $colors = $db->getProp('httpd-admin', 'colors');
-            if ($colors) {
-                $colors = explode(',', $colors);
-                $decoratorView['colors'] = $colors;
-            }
-            $hb = $db->getProp('httpd-admin', 'headerBackground');
-            $mb = $db->getProp('httpd-admin', 'menuBackground');
-            if ($hb) {
-                $decoratorView['headerBackground'] = $hb;
-            }
-            if ($mb) {
-                $decoratorView['menuBackground'] = $mb;
-            }
-            $logo = $db->getProp('httpd-admin', 'logo');
-            $decoratorView['logo'] = $decoratorView->getPathUrl() . ($logo ? sprintf('images/%s', $logo) : 'images/logo.png');
-            $decoratorView['company'] = $db->getProp('OrganizationContact', 'Company');
-            $decoratorView['address'] = $db->getProp('OrganizationContact', 'Street') . ", " . $db->getProp('OrganizationContact', 'City');
-            $favicon = $db->getProp('httpd-admin', 'favicon');
-            $decoratorView['favicon'] = $decoratorView->getPathUrl() . ($favicon ? sprintf('images/%s', $favicon) : 'images/favicon.png');
-
             return $renderer->spawnRenderer($decoratorView)->render();
         });
 
