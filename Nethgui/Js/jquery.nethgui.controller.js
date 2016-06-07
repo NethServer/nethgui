@@ -87,8 +87,8 @@
             e.preventDefault();
             e.stopPropagation();            
             var form = e.target.tagName.toLowerCase() === 'form' ? $(e.target) : $(e.target).closest('form');
-            var formData = form.serializeArray();
-            if($.isArray(additionalData)) {
+            var formData = form.attr('enctype') === 'multipart/form-data' ? new FormData(form[0]) : form.serializeArray();
+            if($.isArray(additionalData) && $.isArray(formData)) {
                 $.merge(formData, additionalData);
             }
 
@@ -96,7 +96,7 @@
                 this._sendMutation(form.attr('action'), formData, true);
             } else {
                 var url = form.attr('action');
-                if(formData.length > 0) {
+                if($.isArray(formData) && formData.length > 0) {
                     url += '?' + $.param(formData);
                 }
                 this._sendQuery(url, undefined, true);

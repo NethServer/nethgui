@@ -276,6 +276,11 @@
             crossDomain: false,
             failures: 0
         };
+
+        if(data instanceof FormData) {
+            settings.contentType = false;
+            settings.processData = false;
+        }
         return $.ajax(settings);
     };
 
@@ -411,7 +416,7 @@
             this._server.ajaxMessage({
                 isMutation: true,
                 url: url,
-                data: typeof data === 'string' ? data : ($.isArray(data) ? data : undefined),
+                data: data,
                 freezeElement: freezeUi ? this.widget() : undefined
             });
         },
