@@ -45,28 +45,6 @@
     });
 
     $.nethgui.Notification.templates = {};
-    $.nethgui.Notification.callbacks = {
-        validationError: function (n) {
-            /* FIXME delay tooltip creation until all widgets are rendered */
-            window.setTimeout(function () {
-                $.each(n.data.fields, function (index, field) {
-
-                    var targets = $('.' + field.name).toArray();
-                    var extras = $('#' + field.parameter).toArray();
-
-                    if ($.inArray(extras[0], targets) === -1) {
-                        targets.push(extras[0]);
-                    }
-
-                    $(targets).trigger('nethguitooltip', [{
-                            text: field.reason,
-                            style: 2,
-                            show: true,
-                            sticky: true
-                        }])
-                });
-            }, 20);
-        }
-    };
+    $.nethgui.Notification.callbacks = {};
 
 }( jQuery ));
