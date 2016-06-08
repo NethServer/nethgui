@@ -329,6 +329,12 @@ class Validator implements \Nethgui\System\MandatoryValidatorInterface
         return $this;
     }
 
+    /**
+     * Invoke an external validation script
+     * @param type $validatorName
+     * @return Validator
+     * @throws \InvalidArgumentException
+     */
     public function platform($validatorName)
     {
         $arguments = func_get_args();
