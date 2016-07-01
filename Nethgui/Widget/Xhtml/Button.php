@@ -34,7 +34,7 @@ class Button extends \Nethgui\Widget\XhtmlWidget
 
     protected function getJsWidgetTypes()
     {
-        return array_merge(array('Nethgui:inputcontrol', 'Nethgui:tooltip'), parent::getJsWidgetTypes());
+        return array_merge(array('Nethgui:inputcontrol'), parent::getJsWidgetTypes());
     }
 
     private function getDefaultValue($name) {

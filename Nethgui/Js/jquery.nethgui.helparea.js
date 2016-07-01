@@ -9,7 +9,6 @@
         _create: function() {
             var self = this;
             SUPER.prototype._create.apply(this);
-            this._tooltipControls = [];
             this._proxyHelpHandler = function(e, url) {
                 self.open(url);
             };

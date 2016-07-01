@@ -33,9 +33,8 @@
 
             this.element.tabs();
 
-            // on tabsshow reposition and redraw tracked tooltips:
+            // on tabsshow reposition:
             this.element.bind('tabsshow.' + this.namespace, function (e, ui) {
-                $(ui.panel).find('[aria-describedby]').filter(':nethgui-Tooltip').Tooltip('repaint');
                 $(ui.panel).find('.Action:eq(0)').first().trigger('nethguishow');
             });
 

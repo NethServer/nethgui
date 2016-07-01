@@ -28,7 +28,7 @@ class CheckBox extends \Nethgui\Widget\XhtmlWidget
 
     protected function getJsWidgetTypes()
     {
-        return array('Nethgui:inputcontrol', 'Nethgui:tooltip');
+        return array('Nethgui:inputcontrol');
     }
 
     protected function renderContent()

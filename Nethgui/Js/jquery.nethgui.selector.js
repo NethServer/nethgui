@@ -18,7 +18,6 @@
             this._selection = [];
             this._multiple = this.element.hasClass('multiple');
             this._meta = this.element.children('input[type="hidden"]').first();
-            this.element.on('nethguitooltip.' + this.namespace, $.proxy(this._createTooltip, this));
         },
         _setOption: function( key, value ) {
             SUPER.prototype._setOption.apply( this, arguments );
@@ -155,9 +154,6 @@
                 }
 
             });
-        },
-        _createTooltip: function(e, options) {
-            this.element.Tooltip(options);
         }
     });
 }( jQuery ));
