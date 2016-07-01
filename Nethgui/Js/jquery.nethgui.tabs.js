@@ -38,7 +38,6 @@
                 $(ui.panel).find('.Action:eq(0)').first().trigger('nethguishow');
             });
 
-            this.element.tabs('show', 0);
         },
         _onTabClick: function (e) {
             var fragment = window.location.href.split(/#!?/, 2)[1];
