@@ -75,7 +75,7 @@ class Modify extends \Nethgui\Controller\Table\RowAbstractAction
                 $keyValue = FALSE;
             }
         } else {
-            $keyValue = \Nethgui\array_head($request->getPath());
+            $keyValue = implode('/', $request->getPath());
             $this->ensureKeyExists($keyValue);
         }
 
