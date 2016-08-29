@@ -371,6 +371,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->object->evaluate('davidep1'));
         $this->assertTrue($this->object->evaluate('host.domain'));
         $this->assertTrue($this->object->evaluate('host.domain.co.uk'));
+        $this->assertTrue($this->object->evaluate('xn--bcher-kva.ch'));
+        $this->assertTrue($this->object->evaluate('bcher--kva.ch'));
     }
 
     public function testHostnameSimple()
