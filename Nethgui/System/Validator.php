@@ -639,7 +639,7 @@ class Validator implements \Nethgui\System\MandatoryValidatorInterface
 
         // letter-case ignored.
         // FIXME: allow underscore (_) in hostname?
-        $pattern = '/^[a-z0-9](-?[a-z0-9])*$/i';
+        $pattern = '/^[a-z0-9]([-a-z0-9]*)$/i';
 
         foreach ($parts as $part) {
             if (strlen($part) > 63) {
