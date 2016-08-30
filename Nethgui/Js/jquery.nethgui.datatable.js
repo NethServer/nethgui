@@ -6,44 +6,6 @@
 (function( $ ) {
     var SUPER = $.nethgui.Component;
     $.widget('nethgui.DataTable', SUPER, {
-        language: {
-            'en':{
-                "sProcessing":   "Processing...",
-                "sLengthMenu":   "Show _MENU_ entries",
-                "sZeroRecords":  "No matching records found",
-                "sInfo":         "Showing _START_ to _END_ of _TOTAL_ entries",
-                "sInfoEmpty":    "Showing 0 to 0 of 0 entries",
-                "sInfoFiltered": "(filtered from _MAX_ total entries)",
-                "sInfoPostFix":  "",
-                "sSearch":       "Search:",
-                "sUrl":          "",
-                "oPaginate": {
-                    "sFirst":    "First",
-                    "sPrevious": "Previous",
-                    "sNext":     "Next",
-                    "sLast":     "Last"
-                }
-            },
-            'it':{
-                "sProcessing":   "Caricamento...",
-                "sLengthMenu":   "Visualizza _MENU_ elementi",
-                "sZeroRecords":  "La ricerca non ha portato alcun risultato.",
-                "sInfo":         "Vista da _START_ a _END_ di _TOTAL_ elementi",
-                "sInfoEmpty":    "Vista da 0 a 0 di 0 elementi",
-                "sInfoFiltered": "(filtrati da _MAX_ elementi totali)",
-                "sInfoPostFix":  "",
-                "sSearch":       "Cerca:",
-                "sUrl":          "",
-                "oPaginate": {
-                    "sFirst":    "Inizio",
-                    "sPrevious": "Precedente",
-                    "sNext":     "Successivo",
-                    "sLast":     "Fine"
-                }
-            }
-        },
-        
-
         // define a builtin "buttonList" formatter for actions..
         _formatterFunctions: {
             'default': function(o) {
@@ -112,12 +74,6 @@
             this._rowMeta = [];            
             this._dataTable = this.element.children('table').first();
 
-            var language = this.language[$('html').attr('lang')];
-            
-            if(language === undefined) {
-                language = this.language['en'];
-            }
-
             var defaultSettings = {
                 bJQueryUI: true,
                 columnDefs: [],
@@ -132,7 +88,7 @@
                     }
                     return nRow
                 },
-                oLanguage: language,
+                language: { url: '/js/datatable-' + $('html').attr('lang') + '.json' },
                 iDisplayLength: 25
             };
 
