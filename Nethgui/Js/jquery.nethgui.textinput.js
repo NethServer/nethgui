@@ -23,6 +23,15 @@
                     });
                 }
             }
+            if($.isFunction(this.element.timepicker) && this.element.hasClass('Time')) {
+                if(this.element.hasClass('hm')) {
+                    this.element.timepicker( { minTime: "00:00", timeFormat: "H:i" } );
+                } else if(this.element.hasClass('hms')) {
+                    this.element.timepicker( { minTime: "00:00:00", timeFormat: "H:i:s" } );
+                } else {
+                    this.element.timepicker( { minTime: "00:00", timeFormat: "H:i" } );
+                }
+            }
             this._onContentChange();
             this.element.on('nethguimandatory.' + this.namespace + ' keyup.' + this.namespace, $.proxy(this._onContentChange, this));
         },
