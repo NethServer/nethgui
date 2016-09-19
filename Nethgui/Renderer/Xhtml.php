@@ -391,7 +391,7 @@ class Xhtml extends \Nethgui\Renderer\TemplateRenderer implements \Nethgui\Rende
          * Set to "be" (Big Endian) date format. Supported also "le" and "me".
          * see http://en.wikipedia.org/wiki/Calendar_date
          */
-        return $this->textInput('date')->setAttribute('class', 'Date be');
+        return $this->textInput($name)->setAttribute('class', 'Date be');
     }
 
     public function objectPicker($name = NULL, $flags = 0)
