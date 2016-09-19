@@ -336,6 +336,18 @@ interface WidgetFactoryInterface
     public function dateInput($name, $flags);
 
     /**
+     * Create a time picker widget:
+     *
+     * Attributes:
+     * - class (string) "Time " plus one of "hm" or "hms"
+     *
+     * @return \Nethgui\Renderer\WidgetInterface
+     * @since 1.7
+     * @api
+     */
+    public function timeInput($name, $flags);
+
+    /**
      * Pick/selects objects from a collection
      *
      * @see WidgetFactoryInterface::selector()

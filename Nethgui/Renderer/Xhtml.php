@@ -394,6 +394,11 @@ class Xhtml extends \Nethgui\Renderer\TemplateRenderer implements \Nethgui\Rende
         return $this->textInput($name)->setAttribute('class', 'Date be');
     }
 
+    public function timeInput($name, $flags = 0)
+    {
+        return $this->textInput($name)->setAttribute('class', 'Time');
+    }
+
     public function objectPicker($name = NULL, $flags = 0)
     {
         $flags |= $this->inheritFlags;
