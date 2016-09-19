@@ -61,10 +61,10 @@ class CollectionEditor extends \Nethgui\Widget\XhtmlWidget
         $content .= $this->closeTag('textarea');
 
 
-        $content .= $this->selfClosingTag('div', array(
+        $content .= $this->openTag('div', array(
            'class'  => 'elements',
             'id' => $this->view->getUniqueId($name)
-        ));
+        )) . '</div>';
         
         $content .= $this->closeTag('div');
         
