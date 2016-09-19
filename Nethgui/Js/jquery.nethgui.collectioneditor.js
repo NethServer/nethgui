@@ -18,7 +18,7 @@
             elementView: {
                 template: $('<div></div>'),
                 build: function(ctx) {
-                    this.append('<code/>');
+                    this.append('<code></code>');
                 },
                 write: function(ctx) {
                     this.children('code').text(ctx.line);
@@ -113,7 +113,7 @@
 
             this.element.children('.Buttonset').remove();
 
-            var buttonset = $('<div class="Buttonset v1" />');
+            var buttonset = $('<div class="Buttonset v1"></div>');
 
             buttonset.prependTo(this.element);
 
