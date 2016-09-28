@@ -1,0 +1,8 @@
+[main]
+host = https://www.transifex.com
+
+[nethserver-v6.nethgui]
+source_file = Nethgui/Language/en/Nethgui.php
+source_lang = en
+type = PHP_ALT_ARRAY
+
