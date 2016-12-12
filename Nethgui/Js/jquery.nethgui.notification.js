@@ -13,8 +13,11 @@
             if( ! this.element.children().get(0)) {
                 $('<ul />', {'class': 'fa-ul'}).appendTo(this.element);
             }
-            $(document).on('ajaxStart.' + this.namespace, function () {
-               $(self.element).find('li.notification').fadeOut(function () { $(this).remove() });
+            $(document).on('ajaxSend.' + this.namespace, function (ev, jqxhr, settings) {
+                if(settings.url.match(/^\/js\//)) {
+                    return;
+                }
+                $(self.element).find('li.notification').fadeOut(function () { $(this).remove() });
             });
          },
         _updateView: function(value, selector) {
