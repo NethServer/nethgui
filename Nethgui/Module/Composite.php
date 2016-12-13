@@ -46,7 +46,7 @@ abstract class Composite extends \Nethgui\Module\AbstractModule implements \Neth
      *
      * @var callable
      */
-    private $dependencyInjector;
+    protected $dependencyInjector;
 
     /**
      * Propagates initialize() message to children.
