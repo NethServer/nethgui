@@ -14,7 +14,7 @@
                 $('<ul />', {'class': 'fa-ul'}).appendTo(this.element);
             }
             $(document).on('ajaxSend.' + this.namespace, function (ev, jqxhr, settings) {
-                if(settings.url.match(/^\/js\//)) {
+                if(settings.type === 'GET') {
                     return;
                 }
                 $(self.element).find('li.notification').fadeOut(function () { $(this).remove() });
