@@ -33,6 +33,6 @@ class SystemModuleAttributesProvider extends SimpleModuleAttributesProvider
         public function initializeFromModule(\Nethgui\Module\ModuleInterface $module)
         {
             parent::initializeFromModule($module);
-            $this->languageCatalog = 'Nethgui';
+            $this->languageCatalog = array();
         }
 }
