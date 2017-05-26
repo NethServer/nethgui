@@ -37,12 +37,6 @@ class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Utility\
      */
     private $phpWrapper;
 
-    /**
-     * This is a stack of catalog names. Current catalog is the last element
-     * of the array.
-     * @var array
-     */
-    private $languageCatalogStack;
     private $catalogs = array();
 
     /**
@@ -57,7 +51,7 @@ class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Utility\
      * @param callable $catalogResolver
      * @param array $initialCatalogStack 
      */
-    public function __construct($languageCode, $catalogResolver, $initialCatalogStack = array())
+    public function __construct($languageCode, $catalogResolver, $notUsed = array())
     {
         if ( ! is_callable($catalogResolver)) {
             throw new \InvalidArgumentException(sprintf('%s: $catalogResolver must be a valid callback function.', get_class($this)), 1322240722);
@@ -65,7 +59,6 @@ class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Utility\
 
         $this->log = new \Nethgui\Log\Nullog();
         $this->phpWrapper = new \Nethgui\Utility\PhpWrapper();
-        $this->languageCatalogStack = $initialCatalogStack;
         $this->defaultLanguage = $languageCode;
         $this->catalogResolver = $catalogResolver;
     }
@@ -124,22 +117,11 @@ class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Utility\
      */
     private function lookupTranslation($key, $languageCode, $catalogStack)
     {
-        $languageCatalogs = $this->languageCatalogStack;
-
-        if ( ! empty($catalogStack)) {
-            $languageCatalogs[] = $catalogStack;
-        }
-
+        $languageCatalogs = $catalogStack;
         $translation = NULL;
         $attempts = array();
 
-        while (($catalog = array_pop($languageCatalogs)) !== NULL) {
-
-            if (is_array($catalog)) {
-                // push nested catalog stack elements
-                $languageCatalogs = array_merge($languageCatalogs, $catalog);
-                continue;
-            }
+        while (($catalog = array_shift($languageCatalogs)) !== NULL) {
 
             // If catalog is missing load it
             if ( ! isset($this->catalogs[$languageCode][$catalog])) {
@@ -198,6 +180,9 @@ class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Utility\
     {
         $languageCatalogList = array();
 
+        $moduleNamespace = \Nethgui\array_head(explode("\\", get_class($module)));
+        $defaultNamespace = \Nethgui\array_head(explode("\\", get_class($this)));
+
         do {
             $catalog = $module->getAttributesProvider()->getLanguageCatalog();
             if (is_array($catalog)) {
@@ -207,6 +192,9 @@ class Translator implements \Nethgui\View\TranslatorInterface, \Nethgui\Utility\
             }
             $module = $module->getParent();
         } while ( ! is_null($module));
+
+        // Append namespace catalogs at the end of the list:
+        $languageCatalogList = array_unique(array_merge($languageCatalogList, array($moduleNamespace, $defaultNamespace)));
 
         return $languageCatalogList;
     }

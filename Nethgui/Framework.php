@@ -235,7 +235,7 @@ class Framework
         };
 
         $dc['Translator'] = function ($c) {
-            return $c['objectInjector'](new \Nethgui\View\Translator($c['OriginalRequest']->getLocale(), $c['l10n.catalog_resolver'], array_keys($c['namespaceMap'])), $c);
+            return $c['objectInjector'](new \Nethgui\View\Translator($c['OriginalRequest']->getLocale(), $c['l10n.catalog_resolver']), $c);
         };
 
         $dc['HttpResponse'] = function ($c) {
