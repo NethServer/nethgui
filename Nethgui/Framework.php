@@ -628,6 +628,28 @@ class Framework
         return $r;
     }
 
+    private function assertSecurity(\Nethgui\Controller\RequestInterface $request, \Nethgui\Utility\HttpResponse $response)
+    {
+        $log = $this->dc['Log'];
+        if( ! $request->getAttribute('sourceOrigin') && ! $request->isMutation() && $_SERVER['QUERY_STRING']) {
+            $module = implode('/', $request->getPath());
+            $response
+                ->addHeader(sprintf('Location: %s', $this->dc['View']->getModuleUrl($module)))
+                ->addHeader('Content-Type: text/plain; charset=UTF-8')
+                ->setContent("Redirecting to $module\n")
+            ;
+            $log->warning(sprintf("%s: The query string was stripped from request URI '%s'", __CLASS__, $_SERVER['REQUEST_URI']));
+            return TRUE;
+        }
+        if($request->getUser()->isAuthenticated()
+            && $request->isMutation()
+            && ( ! $request->getAttribute('sourceOrigin')
+                || $request->getAttribute('sourceOrigin') !== $request->getAttribute('targetOrigin'))) {
+            $log->error(sprintf("%s: Same origin assertion failed. Source '%s' does not match target '%s'", __CLASS__, $request->getAttribute('sourceOrigin'), $request->getAttribute('targetOrigin')));
+            throw new \Nethgui\Exception\HttpException('Forbidden', 403, 1504013793, new \RuntimeException("Same origin assertion failed", 1504014085));
+        }
+    }
+
     /**
      *
      * @param \Nethgui\Controller\RequestInterface $request
@@ -647,6 +669,10 @@ class Framework
 
         /* @var $response \Nethgui\Utility\HttpResponse */
         $response = $dc['HttpResponse'];
+
+        if($this->assertSecurity($request, $response)) {
+            return $response;
+        }
 
         if ( ! $mainModule->isInitialized()) {
             $mainModule->initialize();
@@ -782,6 +808,9 @@ class Framework
             }
         }
 
+        $targetOrigin = \Nethgui\array_head(explode(':', isset($_SERVER['HTTP_X_FORWARDED_HOST']) ? $_SERVER['HTTP_X_FORWARDED_HOST'] : $_SERVER['HTTP_HOST']));
+        $sourceOrigin = parse_url(isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : FALSE), PHP_URL_HOST);
+
         $dc = $this->dc;
         $R = array_replace_recursive($pathInfoMod, $getData, $postData);
         $request = new \Nethgui\Controller\Request($R);
@@ -793,6 +822,8 @@ class Framework
             ->setAttribute('userClosure', function () use ($dc) {
                 return $dc['User'];
             })
+            ->setAttribute('sourceOrigin', $sourceOrigin)
+            ->setAttribute('targetOrigin', $targetOrigin)
         ;
 
         // Append the language code to the url parts:

@@ -46,7 +46,9 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Log\LogC
         'isValidated' => FALSE,
         'isMutation' => FALSE,
         'originalRequest' => FALSE,
-        'userClosure' => FALSE
+        'userClosure' => FALSE,
+        'targetOrigin' => FALSE,
+        'sourceOrigin' => FALSE,
     );
 
     /**
