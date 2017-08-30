@@ -49,6 +49,7 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Log\LogC
         'userClosure' => FALSE,
         'targetOrigin' => FALSE,
         'sourceOrigin' => FALSE,
+        'reverseProxy' => FALSE,
     );
 
     /**

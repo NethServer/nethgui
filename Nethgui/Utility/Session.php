@@ -75,6 +75,7 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
         $this->data = $this->phpWrapper->phpReadGlobalVariable('_SESSION', self::SESSION_NAME);
         if (is_null($this->data)) {
             $this->data = new \ArrayObject();
+            $this->store('SECURITY', new \ArrayObject(array('reverseProxy' => (bool) $this->phpWrapper->phpReadGlobalVariable('_SERVER', 'HTTP_X_FORWARDED_HOST'))));
         } elseif ( ! $this->data instanceof \ArrayObject) {
             throw new \UnexpectedValueException(sprintf('%s: session data must be enclosed into an \ArrayObject', __CLASS__), 1322738011);
         }
