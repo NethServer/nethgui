@@ -631,6 +631,12 @@ class Framework
     private function assertSecurity(\Nethgui\Controller\RequestInterface $request, \Nethgui\Utility\HttpResponse $response)
     {
         $log = $this->dc['Log'];
+        $session = $this->dc['Session'];
+        $security = $session->retrieve('SECURITY');
+        if(isset($security['reverseProxy']) && $security['reverseProxy'] !== $request->getAttribute('reverseProxy')) {
+            $log->error(sprintf("%s: Same origin assertion failed. The request %s be proxied.", __CLASS__, $security['reverseProxy'] === TRUE ? 'must' : 'must not'));
+            throw new \Nethgui\Exception\HttpException('Forbidden', 403, 1504084156, new \RuntimeException("Same origin assertion failed", 1504084157));
+        }
         if( ! $request->getAttribute('sourceOrigin') && ! $request->isMutation() && $_SERVER['QUERY_STRING']) {
             $module = implode('/', $request->getPath());
             $response
@@ -824,6 +830,7 @@ class Framework
             })
             ->setAttribute('sourceOrigin', $sourceOrigin)
             ->setAttribute('targetOrigin', $targetOrigin)
+            ->setAttribute('reverseProxy', isset($_SERVER['HTTP_X_FORWARDED_HOST']))
         ;
 
         // Append the language code to the url parts:
