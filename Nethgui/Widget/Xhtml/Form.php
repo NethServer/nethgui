@@ -59,11 +59,27 @@ class Form extends Panel implements \Nethgui\Utility\SessionConsumerInterface
         // Change default panel wrap tag:
         $this->setAttribute('tag', $this->getAttribute('tag', FALSE));
 
+        $security = $this->session->retrieve('SECURITY');
+
         $content = '';
         $content .= $this->openTag('form', $attributes);
         $content .= parent::renderContent();
+        if(isset($security['csrfToken'])) {
+            $content .= $this->controlTag('input', 'csrfToken', 0, '', array(
+                'class' => FALSE,
+                'id' => FALSE,
+                'name' => 'csrfToken',
+                'type' => 'hidden',
+                'value' => $security['csrfToken'])
+            );
+        }
         $content .= $this->closeTag('form');
         return $content;
     }
 
+    public function setSession(\Nethgui\Utility\SessionInterface $session)
+    {
+        $this->session = $session;
+        return $this;
+    }
 }
