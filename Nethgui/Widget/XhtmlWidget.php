@@ -51,6 +51,7 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
     private function label($text, $id)
     {
         $labelWidget = new Xhtml\TextLabel($this->view);
+        call_user_func($this->di, $labelWidget);
 
         $labelWidget
             ->setAttribute('template', $text)

@@ -28,7 +28,7 @@ namespace Nethgui\Widget\Xhtml;
  * - string action the url (relative to the current module) set on the HTML FORM "action" attribute
  * - string method "post" (default), or "get"
  */
-class Form extends Panel
+class Form extends Panel implements \Nethgui\Utility\SessionConsumerInterface
 {
 
     protected function renderContent()
