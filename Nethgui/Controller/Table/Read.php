@@ -59,12 +59,17 @@ class Read extends AbstractAction
     public function setColumns($columns)
     {
         foreach ($columns as $columnInfo) {
-            if (is_array($columnInfo)) {
-                $this->columns[] = $columnInfo;
-            } else {
-                // FIXME: setting here the default buttonList formatter for Actions column:
-                $this->columns[] = array('name' => strval($columnInfo), 'formatter' => ($columnInfo == 'Actions' ? 'fmtButtonset' : 'default'));
+            if ( ! is_array($columnInfo)) {
+                $columnName = $columnInfo;
+                $columnInfo = array('name' => strval($columnName), 'formatter' => 'default');
+                $methodName = 'prepareViewForColumn' . ucfirst($columnName);
+                if($columnName == 'Actions') {
+                    $columnInfo['formatter'] = 'fmtButtonset';
+                } elseif (method_exists($this->getParent(), $methodName) || method_exists($this, $methodName)) {
+                    $columnInfo['formatter'] = 'fmtRawHtml';
+                }
             }
+            $this->columns[] = $columnInfo;
         }
         return $this;
     }
@@ -159,7 +164,7 @@ class Read extends AbstractAction
 
     public function prepareViewForColumnKey(\Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
     {
-        return strval($key);
+        return htmlspecialchars($key);
     }
 
     /**

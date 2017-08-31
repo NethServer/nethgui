@@ -28,6 +28,8 @@ foreach ($view['columns'] as $columnInfo) {
                         foreach ($row as $colId => $value) {
                             if ($colId == 0) {
                                 continue;
+                            } elseif ($view['columns'][$colId - 1]['formatter'] === 'default') {
+                                echo "<td>" . $view->literal($value)->setAttribute('hsc', TRUE) . "</td>";
                             } else {
                                 echo "<td>" . $view->literal($value) . "</td>";
                             }
