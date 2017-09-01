@@ -421,6 +421,12 @@ class Xhtml extends \Nethgui\Renderer\TemplateRenderer implements \Nethgui\Rende
         return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags));
     }
 
+    public function fileUpload($name, $flags = 0)
+    {
+        $flags |= $this->inheritFlags;
+        return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags));
+    }
+
     public function getDependencySetters()
     {
         return array_merge(parent::getDependencySetters(), array('StaticFiles' => array($this, 'setStaticFilesModel')));

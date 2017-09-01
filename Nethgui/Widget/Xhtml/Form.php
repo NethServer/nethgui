@@ -47,6 +47,11 @@ class Form extends Panel implements \Nethgui\Utility\SessionConsumerInterface
             $action = $this->view->getModuleUrl($this->getAttribute('action', ''));
         }
 
+        // Change the default enctype value if required by the view
+        if ( ! $this->hasAttribute('enctype') && $this->getAttribute('flags') & \Nethgui\Renderer\WidgetFactoryInterface::FORM_ENC_MULTIPART) {
+            $this->setAttribute('enctype', 'multipart/form-data');
+        };
+
         // Clear the INSET_FORM flag as the form is now rendered.
         $this->getRenderer()->rejectFlag(\Nethgui\Renderer\WidgetFactoryInterface::INSET_FORM);
 
@@ -54,6 +59,7 @@ class Form extends Panel implements \Nethgui\Utility\SessionConsumerInterface
             'method' => $this->getAttribute('method', 'post'),
             'action' => $action,
             'class' => 'Form ' . $this->getClientEventTarget(),
+            'enctype' => $this->getAttribute('enctype', 'application/x-www-form-urlencoded'),
         );
 
         // Change default panel wrap tag:
