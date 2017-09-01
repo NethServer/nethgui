@@ -47,7 +47,6 @@ class Literal extends \Nethgui\Widget\XhtmlWidget
         $content = '';
 
         if ($value instanceof \Nethgui\View\ViewInterface) {
-            //die("Literal: Unexpected view value");
             $content = $this->getRenderer()->spawnRenderer($value)->setDefaultFlags($flags | $this->getRenderer()->getDefaultFlags())->render();
         } else {
             $content = (String) $value;

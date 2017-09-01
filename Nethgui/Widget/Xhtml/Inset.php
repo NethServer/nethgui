@@ -61,12 +61,15 @@ class Inset extends \Nethgui\Widget\XhtmlWidget
 
     private function wrapContent($content, \Nethgui\Renderer\Xhtml $insetRenderer)
     {
+        $flags = $this->getAttribute('flags');
+        $flags = $flags & (~\Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBTRUSIVE);
+
         $panel = $this->getRenderer()
-            ->panel()
+            ->panel($flags)
             ->setAttribute('tag', FALSE)
             ->setAttribute('receiver', $this->getAttribute('receiver'))
         ;
-        $flags = $this->getAttribute('flags');
+
         $wrapFlags = $insetRenderer->calculateIncludeFlags($flags);
 
         $contentWidget = $this->getRenderer()->literal($content, $flags);
