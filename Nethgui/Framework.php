@@ -327,6 +327,8 @@ class Framework
             $decoratorView['address'] = $db->getProp('OrganizationContact', 'Street') . ", " . $db->getProp('OrganizationContact', 'City');
             $favicon = $db->getProp('httpd-admin', 'favicon');
             $decoratorView['favicon'] = $decoratorView->getPathUrl() . ($favicon ? sprintf('images/%s', $favicon) : 'images/favicon.png');
+            $security = $dc['Session']->retrieve('SECURITY');
+            $decoratorView['csrfToken'] = $security['csrfToken'];
 
             return $renderer->spawnRenderer($decoratorView)->render();
         });
