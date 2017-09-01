@@ -48,10 +48,17 @@ class TextInput extends \Nethgui\Widget\XhtmlWidget
         $content = '';
 
         $attributes = array(
-            'value' => strval($this->view[$name]),
-            'type' => ($flags & \Nethgui\Renderer\WidgetFactoryInterface::TEXTINPUT_PASSWORD) ? 'password' : 'text',
+            'value' => $this->getAttribute('value', strval($this->view[$name])),
+            'type' => $this->getAttribute('type', ($flags & \Nethgui\Renderer\WidgetFactoryInterface::TEXTINPUT_PASSWORD) ? 'password' : 'text'),
             'placeholder' => $this->getAttribute('placeholder',false),
         );
+
+        if($this->hasAttribute('htmlName')) {
+            $attributes['name'] = $this->getAttribute('htmlName');
+        }
+        if($this->hasAttribute('type')) {
+            $cssClass = str_replace('TextInput ', '', $cssClass);
+        }
 
         $flags = $this->applyDefaultLabelAlignment($flags, \Nethgui\Renderer\WidgetFactoryInterface::LABEL_ABOVE);
 

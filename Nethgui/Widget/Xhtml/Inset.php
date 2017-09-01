@@ -75,7 +75,8 @@ class Inset extends \Nethgui\Widget\XhtmlWidget
         $contentWidget = $this->getRenderer()->literal($content, $flags);
 
         if ($wrapFlags & \Nethgui\Renderer\WidgetFactoryInterface::INSET_FORM) {
-            $contentWidget = $insetRenderer->form($flags)->setAttribute('tag', FALSE)->insert($contentWidget);
+            $flagEncMultipart = $wrapFlags & \Nethgui\Renderer\WidgetFactoryInterface::FORM_ENC_MULTIPART;
+            $contentWidget = $insetRenderer->form($flags | $flagEncMultipart)->setAttribute('tag', FALSE)->insert($contentWidget);
         }
 
         $panel->insert($contentWidget);
