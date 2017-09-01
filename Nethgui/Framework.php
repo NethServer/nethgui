@@ -313,6 +313,9 @@ class Framework
             $decoratorView['notificationOutput'] = (String) $renderer->inset('Notification');
             $decoratorView['moduleTitle'] = $dc['Translator']->translate($currentModule, $currentModule->getAttributesProvider()->getTitle());
 
+            $security = $dc['Session']->retrieve('SECURITY');
+            $decoratorView['csrfToken'] = $security['csrfToken'];
+
             return $renderer->spawnRenderer($decoratorView)->render();
         });
 
