@@ -354,6 +354,7 @@ class Xhtml extends \Nethgui\Renderer\TemplateRenderer implements \Nethgui\Rende
 
     public function literal($data, $flags = 0)
     {
+        $flags |= $this->inheritFlags;
         return $this->createWidget(__FUNCTION__, array('data' => $data, 'flags' => $flags));
     }
 
