@@ -31,6 +31,7 @@ namespace Nethgui\Utility;
 class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Log\LogConsumerInterface
 {
     const SESSION_NAME = 'nethgui';
+    const SESSION_RENEW_PERIOD = 28800; // 8 hours
 
     /**
      *
@@ -75,11 +76,19 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
         $this->data = $this->phpWrapper->phpReadGlobalVariable('_SESSION', self::SESSION_NAME);
         if (is_null($this->data)) {
             $this->data = new \ArrayObject();
-            $this->store('SECURITY', new \ArrayObject(array(
-                'reverseProxy' => (bool) $this->phpWrapper->phpReadGlobalVariable('_SERVER', 'HTTP_X_FORWARDED_HOST'),
-            )));
+            $sessionFormatUpgrade = FALSE;
         } elseif ( ! $this->data instanceof \ArrayObject) {
             throw new \UnexpectedValueException(sprintf('%s: session data must be enclosed into an \ArrayObject', __CLASS__), 1322738011);
+        } else {
+            $sessionFormatUpgrade = TRUE;
+        }
+        if( ! isset($this->data['SECURITY'])) {
+            $tsnow = $sessionFormatUpgrade ? 0 : time();
+            $this->data['SECURITY'] = new \ArrayObject(array(
+                'reverseProxy' => (bool) $this->phpWrapper->phpReadGlobalVariable('_SERVER', 'HTTP_X_FORWARDED_HOST'),
+                'started' => $tsnow,
+                'renewed' => $tsnow,
+            ));
         }
         return $this;
     }
@@ -173,6 +182,16 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
         $this->log = $log;
         $this->phpWrapper->setLog($log);
         return $log;
+    }
+
+    public function checkHandoff()
+    {
+        $tsnow = time();
+        if(isset($this->data['SECURITY']['renewed']) && $this->data['SECURITY']['renewed'] + self::SESSION_RENEW_PERIOD < $tsnow) {
+            $this->getLog()->notice(sprintf('%s: regenerate session id', __CLASS__));
+            $this->phpWrapper->session_regenerate_id(TRUE);
+            $this->data['SECURITY']['renewed'] = $tsnow;
+        }
     }
 
     public function rotateCsrfToken()
