@@ -14,6 +14,6 @@ along with this program; if not, write to
     Italy
 
 
-.. image:: https://badge.waffle.io/nethesis/nethserver-nethgui.svg?label=ready&title=Ready
-   :target: https://waffle.io/nethesis/nethserver-nethgui
-   :alt: 'Stories in Ready'
+Browse API at
+
+http://nethserver.github.io/nethgui/Documentation/Api/
