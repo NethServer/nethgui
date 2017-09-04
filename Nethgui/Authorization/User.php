@@ -149,6 +149,7 @@ class User implements \Nethgui\Authorization\UserInterface, \Serializable
         $this->modified = TRUE;
         if($this->state['authenticated'] === TRUE) {
             $this->log->notice(sprintf("%s: user `%s` authenticated", __CLASS__, $args[0]));
+            $this->session->login();
         }
         return $this->state['authenticated'];
     }
@@ -201,14 +202,7 @@ class User implements \Nethgui\Authorization\UserInterface, \Serializable
         if ($state instanceof \ArrayObject) {
             $this->state = $state;
         } else {
-            // TODO: try to resume the session stored in old format:
-            $u = $this->session->retrieve(\Nethgui\Authorization\UserInterface::ID);
-            if ($u instanceof self) {
-                $this->state = $u->state;
-                $this->session->store(__CLASS__, $this->state);
-            } else {
-                $this->session->login()->store(__CLASS__, $this->state);
-            }
+            $this->session->store(__CLASS__, $this->state);
         }
         $this->modified = FALSE;
     }

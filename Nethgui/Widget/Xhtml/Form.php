@@ -28,7 +28,7 @@ namespace Nethgui\Widget\Xhtml;
  * - string action the url (relative to the current module) set on the HTML FORM "action" attribute
  * - string method "post" (default), or "get"
  */
-class Form extends Panel
+class Form extends Panel implements \Nethgui\Utility\SessionConsumerInterface
 {
 
     protected function renderContent()
@@ -47,6 +47,11 @@ class Form extends Panel
             $action = $this->view->getModuleUrl($this->getAttribute('action', ''));
         }
 
+        // Change the default enctype value if required by the view
+        if ( ! $this->hasAttribute('enctype') && $this->getAttribute('flags') & \Nethgui\Renderer\WidgetFactoryInterface::FORM_ENC_MULTIPART) {
+            $this->setAttribute('enctype', 'multipart/form-data');
+        };
+
         // Clear the INSET_FORM flag as the form is now rendered.
         $this->getRenderer()->rejectFlag(\Nethgui\Renderer\WidgetFactoryInterface::INSET_FORM);
 
@@ -54,16 +59,33 @@ class Form extends Panel
             'method' => $this->getAttribute('method', 'post'),
             'action' => $action,
             'class' => 'Form ' . $this->getClientEventTarget(),
+            'enctype' => $this->getAttribute('enctype', 'application/x-www-form-urlencoded'),
         );
 
         // Change default panel wrap tag:
         $this->setAttribute('tag', $this->getAttribute('tag', FALSE));
 
+        $security = $this->session->retrieve('SECURITY');
+
         $content = '';
         $content .= $this->openTag('form', $attributes);
         $content .= parent::renderContent();
+        if(isset($security['csrfToken'])) {
+            $content .= $this->controlTag('input', 'csrfToken', 0, '', array(
+                'class' => FALSE,
+                'id' => FALSE,
+                'name' => 'csrfToken',
+                'type' => 'hidden',
+                'value' => $security['csrfToken'])
+            );
+        }
         $content .= $this->closeTag('form');
         return $content;
     }
 
+    public function setSession(\Nethgui\Utility\SessionInterface $session)
+    {
+        $this->session = $session;
+        return $this;
+    }
 }

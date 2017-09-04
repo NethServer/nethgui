@@ -61,18 +61,22 @@ class Inset extends \Nethgui\Widget\XhtmlWidget
 
     private function wrapContent($content, \Nethgui\Renderer\Xhtml $insetRenderer)
     {
+        $flags = $this->getAttribute('flags');
+        $flags = $flags & (~\Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBTRUSIVE);
+
         $panel = $this->getRenderer()
-            ->panel()
+            ->panel($flags)
             ->setAttribute('tag', FALSE)
             ->setAttribute('receiver', $this->getAttribute('receiver'))
         ;
-        $flags = $this->getAttribute('flags');
+
         $wrapFlags = $insetRenderer->calculateIncludeFlags($flags);
 
         $contentWidget = $this->getRenderer()->literal($content, $flags);
 
         if ($wrapFlags & \Nethgui\Renderer\WidgetFactoryInterface::INSET_FORM) {
-            $contentWidget = $insetRenderer->form($flags)->setAttribute('tag', FALSE)->insert($contentWidget);
+            $flagEncMultipart = $wrapFlags & \Nethgui\Renderer\WidgetFactoryInterface::FORM_ENC_MULTIPART;
+            $contentWidget = $insetRenderer->form($flags | $flagEncMultipart)->setAttribute('tag', FALSE)->insert($contentWidget);
         }
 
         $panel->insert($contentWidget);

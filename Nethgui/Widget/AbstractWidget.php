@@ -38,6 +38,7 @@ abstract class AbstractWidget implements \Nethgui\Renderer\WidgetInterface, \Net
     static private $instance = 0;
     private $children = array();
     private $attributes = array();
+    private $log;
 
     /**
      * @var \Nethgui\View\ViewInterface
@@ -144,12 +145,16 @@ abstract class AbstractWidget implements \Nethgui\Renderer\WidgetInterface, \Net
 
     public function setLog(\Nethgui\Log\LogInterface $log)
     {
-        throw new \LogicException(sprintf('Cannot invoke setLog() on %s', get_class($this)), 1322148740);
+        $this->log = $log;
+        return $this;
     }
 
     public function getLog()
     {
-        return $this->view->getLog();
+        if( ! isset($this->log)) {
+            $this->log = new \Nethgui\Log\Nullog();
+        }
+        return $this->log;
     }
 
     /**

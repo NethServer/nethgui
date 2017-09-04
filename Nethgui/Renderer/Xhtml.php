@@ -29,7 +29,7 @@
  * @since 1.0
  * @api
  */
-class Xhtml extends \Nethgui\Renderer\TemplateRenderer implements \Nethgui\Renderer\WidgetFactoryInterface
+class Xhtml extends \Nethgui\Renderer\TemplateRenderer implements \Nethgui\Renderer\WidgetFactoryInterface, \Nethgui\Component\DependencyInjectorAggregate
 {
     /**
      *
@@ -60,6 +60,7 @@ class Xhtml extends \Nethgui\Renderer\TemplateRenderer implements \Nethgui\Rende
     public function spawnRenderer(\Nethgui\View\ViewInterface $view)
     {
         $renderer = new self($view, $this->getTemplateResolver(), $this->getDefaultFlags());
+        call_user_func($this->di, $renderer);
         $renderer->httpResponse = $this->httpResponse;
         $renderer->staticFiles = $this->staticFiles;
         return $renderer;
@@ -70,6 +71,7 @@ class Xhtml extends \Nethgui\Renderer\TemplateRenderer implements \Nethgui\Rende
         $className = 'Nethgui\Widget\Xhtml\\' . ucfirst($widgetType);
 
         $o = new $className($this);
+        call_user_func($this->di, $o);
 
         foreach ($attributes as $aname => $avalue) {
             $o->setAttribute($aname, $avalue);
@@ -352,6 +354,7 @@ class Xhtml extends \Nethgui\Renderer\TemplateRenderer implements \Nethgui\Rende
 
     public function literal($data, $flags = 0)
     {
+        $flags |= $this->inheritFlags;
         return $this->createWidget(__FUNCTION__, array('data' => $data, 'flags' => $flags));
     }
 
@@ -423,6 +426,12 @@ class Xhtml extends \Nethgui\Renderer\TemplateRenderer implements \Nethgui\Rende
         return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags));
     }
 
+    public function fileUpload($name, $flags = 0)
+    {
+        $flags |= $this->inheritFlags;
+        return $this->createWidget(__FUNCTION__, array('name' => $name, 'flags' => $flags));
+    }
+
     public function getDependencySetters()
     {
         return array_merge(parent::getDependencySetters(), array('StaticFiles' => array($this, 'setStaticFilesModel')));
@@ -434,4 +443,9 @@ class Xhtml extends \Nethgui\Renderer\TemplateRenderer implements \Nethgui\Rende
         return $this;
     }
 
+    public function setDependencyInjector($di)
+    {
+        $this->di = $di;
+        return $this;
+    }
 }

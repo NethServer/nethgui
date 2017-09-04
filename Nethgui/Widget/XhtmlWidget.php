@@ -51,6 +51,7 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
     private function label($text, $id)
     {
         $labelWidget = new Xhtml\TextLabel($this->view);
+        call_user_func($this->di, $labelWidget);
 
         $labelWidget
             ->setAttribute('template', $text)
@@ -394,14 +395,14 @@ abstract class XhtmlWidget extends AbstractWidget implements \Nethgui\View\Comma
 
     protected function escapeUnobstrusive($content)
     {
-        return "<script class='unobstrusive'>/*<![CDATA[*/\ndocument.write(" . json_encode(strval($content)) . ");\n/*]]>*/</script>";
+        return '<script class="unobstrusive">document.write(' . json_encode(strval($content)) . ');</script>';
     }
 
     protected function canEscapeUnobstrusive($flags)
     {
-        $unobstrusiveRequired = ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBTRUSIVE) !== 0;
-        $unobstrusiveApplying = ($this->getRenderer()->getDefaultFlags() & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBTRUSIVE) === 0;
-        return $unobstrusiveRequired && $unobstrusiveApplying;
+        $unobtrusiveRequired = ($flags & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBTRUSIVE);
+        $unobtrusiveApplying = ($this->getRenderer()->getDefaultFlags() & \Nethgui\Renderer\WidgetFactoryInterface::STATE_UNOBTRUSIVE);
+        return $unobtrusiveRequired && ! $unobtrusiveApplying;
     }
 
     public function insertPlugins($name = 'Plugin')
