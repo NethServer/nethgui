@@ -24,7 +24,7 @@ all: ${HTMLFILES} ${PDEPEND_OUTPUT}
 api: ${API_OUTPUT}
 
 Api/index.html:
-	apigen -s ../Nethgui/ --deprecated yes --main 'Nethgui' --title 'Nethgui Framework' -d Api/
+	apigen generate -s ../Nethgui/ --deprecated --main 'Nethgui' --title 'Nethgui Framework' -d Api/ 
 
 Api/Nethgui.xmi:
 	phpuml -x 2 ${PHPUML_OPTS} ../Nethgui > $@
