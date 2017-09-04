@@ -48,21 +48,21 @@
         _formatterFunctions: {
             'default': function(o) {
                 if(typeof o == "string") {
-                    return o;
+                    return Mustache.escape(o);
                 } else if(o === undefined || o === null) {
                     return '';
                 } else {
-                    return new String(o);
+                    return Mustache.escape(String(o));
                 }
             },
             'fmtButtonlist': function(o) {
                 if(typeof o == "string") {
-                    return o;
+                    return Mustache.escape(o);
                 }
                 var buttons = [];
                 var buttonTemplate = '<span><a href="${0}" class="Button link">${1}</a></span>';
                 for(var i in o) {
-                    buttons.push(buttonTemplate.replacePlaceholders(o[i][1], o[i][0]));
+                    buttons.push(buttonTemplate.replacePlaceholders(Mustache.escape(o[i][1]), Mustache.escape(o[i][0])));
                 }
                 if(buttons.length == 0) {
                     return '';
@@ -71,17 +71,20 @@
             },
             'fmtButtonset': function(o) {
                 if(typeof o == "string") {
-                    return o;
+                    return Mustache.escape(o);
                 }
                 var buttons = [];
                 var buttonTemplate = '<span><a href="${0}" class="Button link">${1}</a></span> ';
                 for(var i in o) {
-                    buttons.push(buttonTemplate.replacePlaceholders(o[i][1], o[i][0]));
+                    buttons.push(buttonTemplate.replacePlaceholders(Mustache.escape(o[i][1]), Mustache.escape(o[i][0])));
                 }
                 if(buttons.length == 0) {
                     return '';
                 }
                 return '<div class="Buttonset v1">' + buttons.join('') + '</div>';
+            },
+            'fmtRawHtml': function(o) {
+                return o;
             }
         },
         _initializeColumnFormatters: function(columnDefs) {

@@ -31,6 +31,7 @@ namespace Nethgui\Utility;
 class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Log\LogConsumerInterface
 {
     const SESSION_NAME = 'nethgui';
+    const SESSION_RENEW_PERIOD = 28800; // 8 hours
 
     /**
      *
@@ -75,8 +76,19 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
         $this->data = $this->phpWrapper->phpReadGlobalVariable('_SESSION', self::SESSION_NAME);
         if (is_null($this->data)) {
             $this->data = new \ArrayObject();
+            $sessionFormatUpgrade = FALSE;
         } elseif ( ! $this->data instanceof \ArrayObject) {
             throw new \UnexpectedValueException(sprintf('%s: session data must be enclosed into an \ArrayObject', __CLASS__), 1322738011);
+        } else {
+            $sessionFormatUpgrade = TRUE;
+        }
+        if( ! isset($this->data['SECURITY'])) {
+            $tsnow = $sessionFormatUpgrade ? 0 : time();
+            $this->data['SECURITY'] = new \ArrayObject(array(
+                'reverseProxy' => (bool) $this->phpWrapper->phpReadGlobalVariable('_SERVER', 'HTTP_X_FORWARDED_HOST'),
+                'started' => $tsnow,
+                'renewed' => $tsnow,
+            ));
         }
         return $this;
     }
@@ -138,13 +150,16 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
     public function login()
     {
         $this->phpWrapper->session_regenerate_id(TRUE);
+        $this->rotateCsrfToken();
         $this->data[get_class($this)] = TRUE;
         return $this;
     }
 
     public function logout()
     {
+        $this->phpWrapper->setcookie(self::SESSION_NAME, 'logout', time() - 1, '/');
         $this->phpWrapper->session_destroy();
+        $this->phpWrapper->session_write_close();
         $this->data[get_class($this)] = FALSE;
         return $this;
     }
@@ -169,4 +184,35 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
         return $log;
     }
 
+    public function checkHandoff()
+    {
+        $tsnow = time();
+        if(isset($this->data['SECURITY']['renewed']) && $this->data['SECURITY']['renewed'] + self::SESSION_RENEW_PERIOD < $tsnow) {
+            $this->getLog()->notice(sprintf('%s: regenerate session id', __CLASS__));
+            $this->phpWrapper->session_regenerate_id(TRUE);
+            $this->data['SECURITY']['renewed'] = $tsnow;
+        }
+    }
+
+    public function rotateCsrfToken()
+    {
+        static $once;
+        if(isset($once)) {
+            $once = TRUE;
+            $this->getLog()->notice(sprintf('%s: CSRF token has just been generated', __CLASS__));
+            return $this;
+        }
+
+        $uh = fopen('/dev/urandom', 'r');
+        if($uh !== FALSE) {
+            $data = fread($uh, 64);
+            fclose($uh);
+        }
+        if(! $data) {
+            $this->getLog()->error(sprintf('%s: could not generate CSRF token properly.', __CLASS__));
+            $data = md5(uniqid(mt_rand(), TRUE));
+        }
+        $this->data['SECURITY']['csrfToken'] = bin2hex($data);
+        return $this;
+    }
 }
