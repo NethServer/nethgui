@@ -1,0 +1,41 @@
+{
+    "name": "nethesis/nethserver-nethgui",
+    "description": "Nethgui is the PHP graphical user interface framework for NethServer.",
+    "require": {
+        "pimple/pimple": "~2.1",
+	"mustache/mustache": "~2.6",
+	"koala-framework/library-mustache-js": "~0.8",
+	"symfony/Process": "v2.5.2",
+	"datatables/datatables": "1.10.2",
+	"DataTables/Plugins": "1.10.2"
+    },
+    "repositories": [
+        {
+	    "type": "package",
+	    "package": {
+		"name": "DataTables/Plugins",
+		"version": "1.10.2",
+		"dist": {
+		    "type": "zip",
+		    "url": "https://github.com/DataTables/Plugins/archive/fa5734b2908382f771047e1486a67405ee4d9b42/Plugins.zip"
+		}
+	    }
+        }
+    ],
+    "license": "GPL-3.0+",
+    "authors": [
+        {
+            "name": "Davide Principi",
+            "email": "davide.principi@nethesis.it"
+        }
+    ],
+    "homepage": "http://dev.nethserver.org/projects/nethgui",
+    "support": {
+	"email": "nethserver@googlegroups.com",
+	"irc": "irc://irc.freenode.org/nethserver",
+	"source": "https://github.com/nethesis/nethserver-nethgui"
+    },
+    "archive": {
+	"exclude": ["/Documentation"]
+    }
+}

@@ -1,0 +1,12 @@
+
+@import url(html4css1.css);
+
+body {font-family: sans-serif; background: #eee; margin:0; padding:0}
+div.document {max-width: 72em; background: #fff; padding: 2em 1em; border-right: 1px solid #aaa}
+h1,h2,h3,h4,h5,h6 { margin: 2em 0 0.3em 0px; color: #333; font-weight: normal; letter-spacing: 2px }
+
+#contents {padding: 1ex; background: #ddd; border: 1px solid #ccc; }
+a.toc-backref, h1.title, h2.subtitle {color:#1d247c}
+h1.title {margin-top: 0}
+pre.literal-block {background-color: #ddd; padding: 1ex; border-left: 3px double #ddd}
+.section h1 {border-bottom: 2px solid #3d438f}
