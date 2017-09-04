@@ -648,6 +648,7 @@ class Framework
         }
         if($request->getUser()->isAuthenticated() && ! $request->isMutation() && $request->getAttribute('format') === 'xhtml' && $session instanceof \Nethgui\Utility\Session) {
             $session->rotateCsrfToken();
+            $session->checkHandoff();
         }
     }
 
