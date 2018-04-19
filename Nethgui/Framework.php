@@ -646,7 +646,7 @@ class Framework
             $log->error(sprintf("%s: CSRF token verification failed!", __CLASS__, $request->getAttribute('sourceOrigin'), $request->getAttribute('targetOrigin')));
             throw new \Nethgui\Exception\HttpException('Bad request', 400, 1504102184, new \RuntimeException("CSRF token verification failed", 1504102187));
         }
-        if($request->getUser()->isAuthenticated() && ! $request->isMutation() && $request->getAttribute('format') === 'xhtml' && $session instanceof \Nethgui\Utility\Session) {
+        if($request->getUser()->isAuthenticated() && ! $request->isMutation() && ! $request->getAttribute('isXhrRequest') && $request->getAttribute('format') === 'xhtml' && $session instanceof \Nethgui\Utility\Session) {
             $session->rotateCsrfToken();
             $session->checkHandoff();
         }
@@ -818,6 +818,7 @@ class Framework
         $request = new \Nethgui\Controller\Request($R);
         $request->setLog($this->dc['Log'])
             ->setAttribute('isMutation', $isMutation)
+            ->setAttribute('isXhrRequest', !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')
             ->setAttribute('format', $format)
             ->setAttribute('locale', $locale)
             ->setAttribute('localeDefault', $localeDefault)
