@@ -93,6 +93,12 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
         return $this;
     }
 
+    public function setSessionSetupRetriever($f)
+    {
+        $this->sessionSetupRetriever = $f;
+        return $this;
+    }
+
     public function unlock()
     {
         static $unlocked;
@@ -152,6 +158,9 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
         $this->phpWrapper->session_regenerate_id(TRUE);
         $this->rotateCsrfToken();
         $this->data[get_class($this)] = TRUE;
+        $sessionSetup = is_callable($this->sessionSetupRetriever) ? call_user_func($this->sessionSetupRetriever) : array();
+        $this->data['SECURITY']['MaxSessionIdleTime'] = $sessionSetup['MaxSessionIdleTime'] ?: 0; // disabled
+        $this->data['SECURITY']['MaxSessionLifeTime'] = $sessionSetup['MaxSessionLifeTime'] ?: 0; // disabled
         return $this;
     }
 

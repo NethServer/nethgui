@@ -148,6 +148,7 @@ class Framework
         $dc['Session'] = function ($c) {
             $s = new \Nethgui\Utility\Session();
             $s->setLog($c['Log']);
+            $s->setSessionSetupRetriever($c['Session.Setup']);
             return $s;
         };
 
@@ -484,6 +485,14 @@ class Framework
         return $this;
     }
 
+    public function setSessionSetup($f)
+    {
+        $dc = $this->dc;
+        $this->dc['Session.Setup'] = $this->dc->protect(function () use ($dc, $f) {
+            return call_user_func($f, $dc);
+        });
+        return $this;
+    }
 
     /**
      * Configure the login procedure used to authenticate a user in Login module.
