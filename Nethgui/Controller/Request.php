@@ -41,6 +41,7 @@ class Request implements \Nethgui\Controller\RequestInterface, \Nethgui\Log\LogC
      */
     private $attributes = array(
         'format' => 'xhtml',
+        'isXhrRequest' => FALSE,
         'locale' => '',
         'localeDefault' => 'en-US',
         'isValidated' => FALSE,
