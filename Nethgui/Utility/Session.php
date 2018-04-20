@@ -31,7 +31,7 @@ namespace Nethgui\Utility;
 class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Log\LogConsumerInterface
 {
     const SESSION_NAME = 'nethgui';
-    const SESSION_RENEW_PERIOD = 28800; // 8 hours
+    const SESSION_RENEW_PERIOD = 3642; // ~ 1 hour
 
     /**
      *
