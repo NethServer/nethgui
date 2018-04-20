@@ -325,7 +325,7 @@ method.</p>
 				<h1>dispatch(Controller\RequestInterface $request)</h1><br>
 				<b>Api</b>
 				<br>
-			<b>Located at</b> <a href="source-class-Nethgui.Framework.html#24-901" title="Go to source code">Framework.php</a>
+			<b>Located at</b> <a href="source-class-Nethgui.Framework.html#24-924" title="Go to source code">Framework.php</a>
 		<br>
 	</div>
 
@@ -345,7 +345,7 @@ method.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#___construct">#</a>
-		<code><a href="source-class-Nethgui.Framework.html#59-367" title="Go to source code">__construct</a>( )</code>
+		<code><a href="source-class-Nethgui.Framework.html#59-368" title="Go to source code">__construct</a>( )</code>
 
 		<div class="description short">
 			
@@ -375,7 +375,7 @@ method.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_registerNamespace">#</a>
-		<code><a href="source-class-Nethgui.Framework.html#369-396" title="Go to source code">registerNamespace</a>( <span>string <var>$namespacePath</var></span> )</code>
+		<code><a href="source-class-Nethgui.Framework.html#370-397" title="Go to source code">registerNamespace</a>( <span>string <var>$namespacePath</var></span> )</code>
 
 		<div class="description short">
 			<p>Add a namespace to the framework, where to search for Modules.</p>
@@ -432,7 +432,7 @@ subpackage.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_setSiteUrl">#</a>
-		<code><a href="source-class-Nethgui.Framework.html#430-442" title="Go to source code">setSiteUrl</a>( <span>string <var>$siteUrl</var></span> )</code>
+		<code><a href="source-class-Nethgui.Framework.html#431-443" title="Go to source code">setSiteUrl</a>( <span>string <var>$siteUrl</var></span> )</code>
 
 		<div class="description short">
 			<p>The web site URL without trailing slash</p>
@@ -478,7 +478,7 @@ subpackage.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_setBasePath">#</a>
-		<code><a href="source-class-Nethgui.Framework.html#444-458" title="Go to source code">setBasePath</a>( <span>type <var>$basePath</var></span> )</code>
+		<code><a href="source-class-Nethgui.Framework.html#445-459" title="Go to source code">setBasePath</a>( <span>type <var>$basePath</var></span> )</code>
 
 		<div class="description short">
 			<p>The path component of an URL with a leading and trailing slash.</p>
@@ -526,7 +526,7 @@ subpackage.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_setDefaultModule">#</a>
-		<code><a href="source-class-Nethgui.Framework.html#460-472" title="Go to source code">setDefaultModule</a>( <span>string <var>$moduleIdentifier</var></span> )</code>
+		<code><a href="source-class-Nethgui.Framework.html#461-473" title="Go to source code">setDefaultModule</a>( <span>string <var>$moduleIdentifier</var></span> )</code>
 
 		<div class="description short">
 			<p>Redirect to the given module if the original request
@@ -570,7 +570,7 @@ does not specify any module.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_setForcedLoginModule">#</a>
-		<code><a href="source-class-Nethgui.Framework.html#474-485" title="Go to source code">setForcedLoginModule</a>( <span>type <var>$moduleIdentifier</var></span> )</code>
+		<code><a href="source-class-Nethgui.Framework.html#475-486" title="Go to source code">setForcedLoginModule</a>( <span>type <var>$moduleIdentifier</var></span> )</code>
 
 		<div class="description short">
 			<p>Forcibly redirect to the given module after successful login</p>
@@ -600,6 +600,59 @@ does not specify any module.</p>
 		</div>
 		</div></td>
 	</tr>
+	<tr data-order="setSessionSetupProcedure" id="_setSessionSetupProcedure">
+
+		<td class="attributes"><code>
+			 public 
+
+			<code><a href="class-Nethgui.Framework.html">Nethgui\Framework</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_setSessionSetupProcedure">#</a>
+		<code><a href="source-class-Nethgui.Framework.html#488-508" title="Go to source code">setSessionSetupProcedure</a>( <span>Closure <var>$f</var></span> )</code>
+
+		<div class="description short">
+			<p>Install a call back function that retrieves the session setup parameters
+during the login() procedure. The function receives as first argument
+the dependency container object (Pimple\Container) and must return
+an associative array with session setup parameters. Allowed values are</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Install a call back function that retrieves the session setup parameters
+during the login() procedure. The function receives as first argument
+the dependency container object (Pimple\Container) and must return
+an associative array with session setup parameters. Allowed values are</p>
+
+<ul>
+<li>MaxSessionIdleTime (int)</li>
+<li>MaxSessionLifeTime (int)</li>
+</ul>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$f</var></dt>
+					<dd></dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code><a href="class-Nethgui.Framework.html">Nethgui\Framework</a></code>
+				</div>
+
+
+				<h4>Api</h4>
+				<div class="list">
+				</div>
+
+
+		</div>
+		</div></td>
+	</tr>
 	<tr data-order="setAuthenticationValidator" id="_setAuthenticationValidator">
 
 		<td class="attributes"><code>
@@ -612,7 +665,7 @@ does not specify any module.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_setAuthenticationValidator">#</a>
-		<code><a href="source-class-Nethgui.Framework.html#488-509" title="Go to source code">setAuthenticationValidator</a>( <span>Closure <var>$closure</var></span> )</code>
+		<code><a href="source-class-Nethgui.Framework.html#510-531" title="Go to source code">setAuthenticationValidator</a>( <span>Closure <var>$closure</var></span> )</code>
 
 		<div class="description short">
 			<p>Configure the login procedure used to authenticate a user in Login module.</p>
@@ -665,7 +718,7 @@ does not specify any module.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_setDecoratorTemplate">#</a>
-		<code><a href="source-class-Nethgui.Framework.html#511-522" title="Go to source code">setDecoratorTemplate</a>( <span>string|callable <var>$template</var></span> )</code>
+		<code><a href="source-class-Nethgui.Framework.html#533-544" title="Go to source code">setDecoratorTemplate</a>( <span>string|callable <var>$template</var></span> )</code>
 
 		<div class="description short">
 			<p>The script or function that decorates the current module output</p>
@@ -707,7 +760,7 @@ does not specify any module.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_setLogLevel">#</a>
-		<code><a href="source-class-Nethgui.Framework.html#524-535" title="Go to source code">setLogLevel</a>( <span>integer <var>$level</var></span> )</code>
+		<code><a href="source-class-Nethgui.Framework.html#546-557" title="Go to source code">setLogLevel</a>( <span>integer <var>$level</var></span> )</code>
 
 		<div class="description short">
 			<p>Change the level of details in the log output</p>
@@ -749,7 +802,7 @@ does not specify any module.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_absoluteScriptPath">#</a>
-		<code><a href="source-class-Nethgui.Framework.html#537-562" title="Go to source code">absoluteScriptPath</a>( <span>string <var>$symbol</var></span> )</code>
+		<code><a href="source-class-Nethgui.Framework.html#559-584" title="Go to source code">absoluteScriptPath</a>( <span>string <var>$symbol</var></span> )</code>
 
 		<div class="description short">
 			<p>Translate a namespaced classifier (interface, class) or a namespaced-script-name
@@ -796,7 +849,7 @@ into an absolute filesystem path.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_dispatch">#</a>
-		<code><a href="source-class-Nethgui.Framework.html#569-607" title="Go to source code">dispatch</a>( <span><code><a href="class-Nethgui.Controller.RequestInterface.html">Nethgui\Controller\RequestInterface</a></code> <var>$request</var></span>, <span>array <var>&amp; $output</var> = <span class="php-keyword1">NULL</span></span> )</code>
+		<code><a href="source-class-Nethgui.Framework.html#591-629" title="Go to source code">dispatch</a>( <span><code><a href="class-Nethgui.Controller.RequestInterface.html">Nethgui\Controller\RequestInterface</a></code> <var>$request</var></span>, <span>array <var>&amp; $output</var> = <span class="php-keyword1">NULL</span></span> )</code>
 
 		<div class="description short">
 			<p>Forwards control to Modules and creates output views.</p>
@@ -842,7 +895,7 @@ into an absolute filesystem path.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_handle">#</a>
-		<code><a href="source-class-Nethgui.Framework.html#655-718" title="Go to source code">handle</a>( <span><code><a href="class-Nethgui.Controller.RequestInterface.html">Nethgui\Controller\RequestInterface</a></code> <var>$request</var></span> )</code>
+		<code><a href="source-class-Nethgui.Framework.html#677-740" title="Go to source code">handle</a>( <span><code><a href="class-Nethgui.Controller.RequestInterface.html">Nethgui\Controller\RequestInterface</a></code> <var>$request</var></span> )</code>
 
 		<div class="description short">
 			
@@ -881,7 +934,7 @@ into an absolute filesystem path.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_createRequest">#</a>
-		<code><a href="source-class-Nethgui.Framework.html#720-731" title="Go to source code">createRequest</a>( <span>integer <var>$type</var> = <span class="php-keyword1">NULL</span></span> )</code>
+		<code><a href="source-class-Nethgui.Framework.html#742-753" title="Go to source code">createRequest</a>( <span>integer <var>$type</var> = <span class="php-keyword1">NULL</span></span> )</code>
 
 		<div class="description short">
 			<p>Create a default Request object for dispatch()</p>
@@ -929,7 +982,7 @@ into an absolute filesystem path.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_printHttpException">#</a>
-		<code><a href="source-class-Nethgui.Framework.html#871-899" title="Go to source code">printHttpException</a>( <span><code><a href="class-Nethgui.Exception.HttpException.html">Nethgui\Exception\HttpException</a></code> <var>$ex</var></span>, <span> <var>$backtrace</var> = <span class="php-keyword1">TRUE</span></span> )</code>
+		<code><a href="source-class-Nethgui.Framework.html#894-922" title="Go to source code">printHttpException</a>( <span><code><a href="class-Nethgui.Exception.HttpException.html">Nethgui\Exception\HttpException</a></code> <var>$ex</var></span>, <span> <var>$backtrace</var> = <span class="php-keyword1">TRUE</span></span> )</code>
 
 		<div class="description short">
 			<p>Send a plain text formatted string as server-response.</p>
