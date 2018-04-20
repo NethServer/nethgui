@@ -485,7 +485,20 @@ class Framework
         return $this;
     }
 
-    public function setSessionSetup($f)
+    /**
+     * Install a call back function that retrieves the session setup parameters
+     * during the login() procedure. The function receives as first argument
+     * the dependency container object (Pimple\Container) and must return
+     * an associative array with session setup parameters. Allowed values are
+     *
+     * - MaxSessionIdleTime (int)
+     * - MaxSessionLifeTime (int)
+     *
+     * @api
+     * @param Closure $f
+     * @return \Nethgui\Framework
+     */
+    public function setSessionSetupProcedure($f)
     {
         $dc = $this->dc;
         $this->dc['Session.Setup'] = $this->dc->protect(function () use ($dc, $f) {
