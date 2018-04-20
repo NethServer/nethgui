@@ -92,6 +92,11 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
             throw new \UnexpectedValueException(sprintf('%s: session data must be enclosed into an \ArrayObject', __CLASS__), 1322738011);
         }
 
+        // Upgrade to new session storage format, where csrfToken is an array:
+        if(isset($this->data['SECURITY']['csrfToken']) && is_string($this->data['SECURITY']['csrfToken'])) {
+            $this->data['SECURITY']['csrfToken'] = array($this->data['SECURITY']['csrfToken']);
+        }
+
         if(isset($this->data['SECURITY']['updated'])) {
             $updated = $this->data['SECURITY']['updated'];
             $maxSessionIdleTime = $this->data['SECURITY']['MaxSessionIdleTime'];
@@ -238,7 +243,8 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
             $this->getLog()->error(sprintf('%s: could not generate CSRF token properly.', __CLASS__));
             $data = md5(uniqid(mt_rand(), TRUE));
         }
-        $this->data['SECURITY']['csrfToken'] = bin2hex($data);
+        array_unshift($this->data['SECURITY']['csrfToken'], bin2hex($data));
+        $this->data['SECURITY']['csrfToken'] = array_splice($this->data['SECURITY']['csrfToken'], 0, 5);
         return $this;
     }
 }

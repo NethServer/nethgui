@@ -76,7 +76,7 @@ class Form extends Panel implements \Nethgui\Utility\SessionConsumerInterface
                 'id' => FALSE,
                 'name' => 'csrfToken',
                 'type' => 'hidden',
-                'value' => $security['csrfToken'])
+                'value' => $security['csrfToken'][0])
             );
         }
         $content .= $this->closeTag('form');
