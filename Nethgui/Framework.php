@@ -315,7 +315,7 @@ class Framework
             $decoratorView['moduleTitle'] = $dc['Translator']->translate($currentModule, $currentModule->getAttributesProvider()->getTitle());
 
             $security = $dc['Session']->retrieve('SECURITY');
-            $decoratorView['csrfToken'] = $security['csrfToken'];
+            $decoratorView['csrfToken'] = $security['csrfToken'][0];
 
             return $renderer->spawnRenderer($decoratorView)->render();
         });
@@ -664,7 +664,7 @@ class Framework
             $log->error(sprintf("%s: Same origin assertion failed. Source '%s' does not match target '%s'", __CLASS__, $request->getAttribute('sourceOrigin'), $request->getAttribute('targetOrigin')));
             throw new \Nethgui\Exception\HttpException('Forbidden', 403, 1504013793, new \RuntimeException("Same origin assertion failed", 1504014085));
         }
-        if($request->getUser()->isAuthenticated() && $request->isMutation() && isset($security['csrfToken']) && $security['csrfToken'] !== $request->getParameter('csrfToken')) {
+        if($request->getUser()->isAuthenticated() && $request->isMutation() && isset($security['csrfToken']) && ! in_array($request->getParameter('csrfToken'), $security['csrfToken'])) {
             $log->error(sprintf("%s: CSRF token verification failed!", __CLASS__, $request->getAttribute('sourceOrigin'), $request->getAttribute('targetOrigin')));
             throw new \Nethgui\Exception\HttpException('Bad request', 400, 1504102184, new \RuntimeException("CSRF token verification failed", 1504102187));
         }
