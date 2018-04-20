@@ -69,27 +69,50 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
             throw new \LogicException(sprintf('%s: cannot start an already started session!', __CLASS__), 1327397142);
         }
 
+        $tsnow = time();
         $this->phpWrapper->session_start();
 
         NETHGUI_DEBUG && $this->getLog()->notice(sprintf('%s: session_start()', __CLASS__));
 
         $this->data = $this->phpWrapper->phpReadGlobalVariable('_SESSION', self::SESSION_NAME);
         if (is_null($this->data)) {
-            $this->data = new \ArrayObject();
-            $sessionFormatUpgrade = FALSE;
-        } elseif ( ! $this->data instanceof \ArrayObject) {
-            throw new \UnexpectedValueException(sprintf('%s: session data must be enclosed into an \ArrayObject', __CLASS__), 1322738011);
-        } else {
-            $sessionFormatUpgrade = TRUE;
-        }
-        if( ! isset($this->data['SECURITY'])) {
-            $tsnow = $sessionFormatUpgrade ? 0 : time();
-            $this->data['SECURITY'] = new \ArrayObject(array(
+            // Session data initialization
+            $security = new \ArrayObject(array(
                 'reverseProxy' => (bool) $this->phpWrapper->phpReadGlobalVariable('_SERVER', 'HTTP_X_FORWARDED_HOST'),
                 'started' => $tsnow,
                 'renewed' => $tsnow,
+                'updated' => $tsnow,
+                'MaxSessionIdleTime' => 0,
+                'MaxSessionLifeTime' => 0,
             ));
+            $this->data = new \ArrayObject(array(
+                'SECURITY' => $security
+            ));
+        } elseif ( ! $this->data instanceof \ArrayObject) {
+            throw new \UnexpectedValueException(sprintf('%s: session data must be enclosed into an \ArrayObject', __CLASS__), 1322738011);
         }
+
+        if(isset($this->data['SECURITY']['updated'])) {
+            $updated = $this->data['SECURITY']['updated'];
+            $maxSessionIdleTime = $this->data['SECURITY']['MaxSessionIdleTime'];
+            $maxSessionLifeTime = $this->data['SECURITY']['MaxSessionLifeTime'];
+
+            $this->data['SECURITY']['updated'] = $tsnow;
+            if($maxSessionIdleTime > 0 && $tsnow > $updated + $maxSessionIdleTime) {
+                $this->getLog()->notice(sprintf('%s: Session terminated after %d seconds of inactivity', __CLASS__, $maxSessionIdleTime));
+                $this->logout();
+            } elseif($maxSessionLifeTime > 0 && $tsnow > $updated + $maxSessionLifeTime) {
+                $this->getLog()->notice(sprintf('%s: Session terminated after reaching the maximum age of %d seconds', __CLASS__, $maxSessionLifeTime));
+                $this->logout();
+            }
+        }
+
+        return $this;
+    }
+
+    public function setSessionSetupRetriever($f)
+    {
+        $this->sessionSetupRetriever = $f;
         return $this;
     }
 
@@ -152,6 +175,9 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
         $this->phpWrapper->session_regenerate_id(TRUE);
         $this->rotateCsrfToken();
         $this->data[get_class($this)] = TRUE;
+        $sessionSetup = is_callable($this->sessionSetupRetriever) ? call_user_func($this->sessionSetupRetriever) : array();
+        $this->data['SECURITY']['MaxSessionIdleTime'] = $sessionSetup['MaxSessionIdleTime'] ?: 0; // disabled
+        $this->data['SECURITY']['MaxSessionLifeTime'] = $sessionSetup['MaxSessionLifeTime'] ?: 0; // disabled
         return $this;
     }
 
