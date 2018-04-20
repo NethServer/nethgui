@@ -195,6 +195,8 @@
             this.failures += 1;
             if (jqXHR.status == 400 && (errorThrown == "Request validation error" || errorThrown == "Invalid credentials supplied")) {
                 dispatchResponse($.parseJSON(jqXHR.responseText), errorThrown, jqXHR);
+            } else if (jqXHR.status == 400 && (errorThrown == "Bad request" && jqXHR.responseText.match(/1504102187/))) {
+                confirmReload("This page has expired", "The request cannot be completed\r\nbecause this page has expired", this);
             } else if (jqXHR.status == 403 && errorThrown === 'Forbidden') {
                 $('<pre></pre>').text(jqXHR.responseText).dialog({
                     modal: true,
