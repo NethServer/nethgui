@@ -31,7 +31,7 @@ namespace Nethgui\Utility;
 class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\PhpConsumerInterface, \Nethgui\Log\LogConsumerInterface
 {
     const SESSION_NAME = 'nethgui';
-    const SESSION_RENEW_PERIOD = 28800; // 8 hours
+    const SESSION_RENEW_PERIOD = 3642; // ~ 1 hour
 
     /**
      *
@@ -90,6 +90,33 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
                 'renewed' => $tsnow,
             ));
         }
+
+        // Upgrade to new session storage format, where csrfToken is an array:
+        if(isset($this->data['SECURITY']['csrfToken']) && is_string($this->data['SECURITY']['csrfToken'])) {
+            $this->data['SECURITY']['csrfToken'] = array($this->data['SECURITY']['csrfToken']);
+        }
+
+        if(isset($this->data['SECURITY']['updated'])) {
+            $updated = $this->data['SECURITY']['updated'];
+            $maxSessionIdleTime = $this->data['SECURITY']['MaxSessionIdleTime'];
+            $maxSessionLifeTime = $this->data['SECURITY']['MaxSessionLifeTime'];
+
+            $this->data['SECURITY']['updated'] = $tsnow;
+            if($maxSessionIdleTime > 0 && $tsnow > $updated + $maxSessionIdleTime) {
+                $this->getLog()->notice(sprintf('%s: Session terminated after %d seconds of inactivity', __CLASS__, $maxSessionIdleTime));
+                $this->logout();
+            } elseif($maxSessionLifeTime > 0 && $tsnow > $updated + $maxSessionLifeTime) {
+                $this->getLog()->notice(sprintf('%s: Session terminated after reaching the maximum age of %d seconds', __CLASS__, $maxSessionLifeTime));
+                $this->logout();
+            }
+        }
+
+        return $this;
+    }
+
+    public function setSessionSetupRetriever($f)
+    {
+        $this->sessionSetupRetriever = $f;
         return $this;
     }
 
@@ -212,7 +239,12 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
             $this->getLog()->error(sprintf('%s: could not generate CSRF token properly.', __CLASS__));
             $data = md5(uniqid(mt_rand(), TRUE));
         }
-        $this->data['SECURITY']['csrfToken'] = bin2hex($data);
+        if( ! $this->data['SECURITY']['csrfToken'] || ! is_array($this->data['SECURITY']['csrfToken'])) {
+            $this->data['SECURITY']['csrfToken'] = array(bin2hex($data));
+        } else {
+            array_unshift($this->data['SECURITY']['csrfToken'], bin2hex($data));
+            array_splice($this->data['SECURITY']['csrfToken'], 5);
+        }
         return $this;
     }
 }
