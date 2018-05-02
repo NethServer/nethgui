@@ -243,8 +243,12 @@ class Session implements \Nethgui\Utility\SessionInterface, \Nethgui\Utility\Php
             $this->getLog()->error(sprintf('%s: could not generate CSRF token properly.', __CLASS__));
             $data = md5(uniqid(mt_rand(), TRUE));
         }
-        array_unshift($this->data['SECURITY']['csrfToken'], bin2hex($data));
-        $this->data['SECURITY']['csrfToken'] = array_splice($this->data['SECURITY']['csrfToken'], 0, 5);
+        if( ! $this->data['SECURITY']['csrfToken'] || ! is_array($this->data['SECURITY']['csrfToken'])) {
+            $this->data['SECURITY']['csrfToken'] = array(bin2hex($data));
+        } else {
+            array_unshift($this->data['SECURITY']['csrfToken'], bin2hex($data));
+            array_splice($this->data['SECURITY']['csrfToken'], 5);
+        }
         return $this;
     }
 }
