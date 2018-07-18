@@ -148,6 +148,7 @@ class Framework
         $dc['Session'] = function ($c) {
             $s = new \Nethgui\Utility\Session();
             $s->setLog($c['Log']);
+            $s->setSessionSetupRetriever($c['Session.Setup']);
             return $s;
         };
 
@@ -498,6 +499,27 @@ class Framework
         return $this;
     }
 
+    /**
+     * Install a call back function that retrieves the session setup parameters
+     * during the login() procedure. The function receives as first argument
+     * the dependency container object (Pimple\Container) and must return
+     * an associative array with session setup parameters. Allowed values are
+     *
+     * - MaxSessionIdleTime (int)
+     * - MaxSessionLifeTime (int)
+     *
+     * @api
+     * @param Closure $f
+     * @return \Nethgui\Framework
+     */
+    public function setSessionSetupProcedure($f)
+    {
+        $dc = $this->dc;
+        $this->dc['Session.Setup'] = $this->dc->protect(function () use ($dc, $f) {
+            return call_user_func($f, $dc);
+        });
+        return $this;
+    }
 
     /**
      * Configure the login procedure used to authenticate a user in Login module.
