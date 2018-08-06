@@ -32,6 +32,27 @@
                     this.element.timepicker( { minTime: "00:00", timeFormat: "H:i" } );
                 }
             }
+            if(this.element.attr('type') == 'password') {
+                this.element.wrap('<div class="PasswordInput"></div>');
+                var eyeButton = $('<button type="button" aria-hidden="true" class="PasswordButton"></button>');
+                var eyeIcon = $('<i class="fa fa-eye"></i>');
+                eyeButton.append(eyeIcon);
+                $(this.element).after(eyeButton);
+                var element = this.element;
+                eyeButton.click(function(e){
+                    e.stopPropagation();
+                    e.preventDefault();
+                    if(element.attr('type') == 'password') {
+                        element.attr('type', 'text');
+                        eyeIcon.removeClass('fa-eye');
+                        eyeIcon.addClass('fa-eye-slash');
+                    } else if(element.attr('type') == 'text') {
+                        element.attr('type', 'password');
+                        eyeIcon.addClass('fa-eye');
+                        eyeIcon.removeClass('fa-eye-slash');
+                    }
+                });
+            }
             this._onContentChange();
             this.element.on('nethguimandatory.' + this.namespace + ' keyup.' + this.namespace, $.proxy(this._onContentChange, this));
         },
